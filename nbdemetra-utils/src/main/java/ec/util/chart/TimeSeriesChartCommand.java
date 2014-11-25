@@ -16,12 +16,15 @@
  */
 package ec.util.chart;
 
+import ec.util.chart.TimeSeriesChart.CrosshairType;
 import ec.util.chart.TimeSeriesChart.RendererType;
 import ec.util.chart.TimeSeriesChart.Element;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
@@ -90,6 +93,7 @@ public abstract class TimeSeriesChartCommand {
                 chart.setObsFormatter(null);
                 chart.setDashPredicate(null);
                 chart.setLegendVisibilityPredicate(null);
+                chart.setCrosshairType(null);
             }
         };
     }
@@ -113,15 +117,7 @@ public abstract class TimeSeriesChartCommand {
      */
     @Nonnull
     public static TimeSeriesChartCommand toggleElementVisibility(@Nonnull Element element) {
-        switch (element) {
-            case AXIS:
-                return EV.AXIS;
-            case LEGEND:
-                return EV.LEGEND;
-            case TITLE:
-                return EV.TITLE;
-        }
-        throw new RuntimeException("Unreachable code");
+        return EVS.get(element);
     }
 
     /**
@@ -296,6 +292,11 @@ public abstract class TimeSeriesChartCommand {
     }
 
     @Nonnull
+    public static TimeSeriesChartCommand applyCrosshairType(@Nonnull CrosshairType crosshairType) {
+        return CTS.get(crosshairType);
+    }
+
+    @Nonnull
     public static TimeSeriesChartCommand copyImage() {
         return COPY_IMAGE;
     }
@@ -318,25 +319,46 @@ public abstract class TimeSeriesChartCommand {
         }
     };
 
-    private static class EV extends TimeSeriesChartCommand {
+    private static final Map<Element, TimeSeriesChartCommand> EVS = createEVS();
 
-        private static final EV TITLE = new EV(Element.TITLE), LEGEND = new EV(Element.LEGEND), AXIS = new EV(Element.AXIS);
-        final TimeSeriesChart.Element element;
+    private static EnumMap<Element, TimeSeriesChartCommand> createEVS() {
+        EnumMap<Element, TimeSeriesChartCommand> result = new EnumMap<>(Element.class);
+        for (final Element o : Element.values()) {
+            result.put(o, new TimeSeriesChartCommand() {
+                @Override
+                public void execute(TimeSeriesChart chart) {
+                    chart.setElementVisible(o, !chart.isElementVisible(o));
+                }
 
-        public EV(Element element) {
-            this.element = element;
+                @Override
+                public boolean isSelected(TimeSeriesChart chart) {
+                    return chart.isElementVisible(o);
+                }
+            });
         }
-
-        @Override
-        public void execute(TimeSeriesChart chart) {
-            chart.setElementVisible(element, !chart.isElementVisible(element));
-        }
-
-        @Override
-        public boolean isSelected(TimeSeriesChart chart) {
-            return chart.isElementVisible(element);
-        }
+        return result;
     }
+
+    private static final Map<CrosshairType, TimeSeriesChartCommand> CTS = createCTS();
+
+    private static EnumMap<CrosshairType, TimeSeriesChartCommand> createCTS() {
+        EnumMap<CrosshairType, TimeSeriesChartCommand> result = new EnumMap<>(CrosshairType.class);
+        for (final CrosshairType o : CrosshairType.values()) {
+            result.put(o, new TimeSeriesChartCommand() {
+                @Override
+                public void execute(TimeSeriesChart chart) {
+                    chart.setCrosshairType(o);
+                }
+
+                @Override
+                public boolean isSelected(TimeSeriesChart chart) {
+                    return chart.getCrosshairType() == o;
+                }
+            });
+        }
+        return result;
+    }
+
     private static final TimeSeriesChartCommand COPY_IMAGE = new TimeSeriesChartCommand() {
         @Override
         public void execute(TimeSeriesChart chart) {
@@ -347,6 +369,7 @@ public abstract class TimeSeriesChartCommand {
             }
         }
     };
+
     private static final TimeSeriesChartCommand SAVE_IMAGE = new TimeSeriesChartCommand() {
         @Override
         public void execute(TimeSeriesChart chart) {
@@ -357,6 +380,7 @@ public abstract class TimeSeriesChartCommand {
             }
         }
     };
+
     private static final TimeSeriesChartCommand PRINT_IMAGE = new TimeSeriesChartCommand() {
         @Override
         public void execute(TimeSeriesChart chart) {

@@ -23,6 +23,7 @@ import ec.util.chart.ObsPredicate;
 import ec.util.chart.TimeSeriesChart.Element;
 import ec.util.chart.TimeSeriesChart.RendererType;
 import ec.util.chart.SeriesFunction;
+import ec.util.chart.TimeSeriesChart.CrosshairType;
 import ec.util.chart.impl.AndroidColorScheme;
 import ec.util.various.swing.BasicSwingLauncher;
 import ec.util.various.swing.FontAwesome;
@@ -66,7 +67,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
                 .logLevel(Level.FINE)
                 .launch();
     }
-    //
+
     private final JTimeSeriesChart chart;
 
     public JTimeSeriesChartDemo() {
@@ -88,11 +89,10 @@ public final class JTimeSeriesChartDemo extends JPanel {
                 String value = chart.getValueFormat().format(dataset.getY(series, obs));
                 return "[" + chart.getSeriesFormatter().apply(series)
                         + "]\n" + chart.getPeriodFormat().format(new Date(dataset.getX(series, obs).longValue()))
-                        //                        + " : " + (dash ? ("{" + value + "}") : value);
                         + " : " + value + (dash ? ("\nForecast") : "");
             }
         });
-        chart.setDashPredicate(LAST_3_OBS);
+        chart.setDashPredicate(last3ObsPredicate());
         chart.setPlotWeights(new int[]{2, 1});
 
         chart.setPopupMenu(newMenu().getPopupMenu());
@@ -107,7 +107,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         chart.setLineThickness(2);
     }
 
-    final JMenu newMenu() {
+    private JMenu newMenu() {
         JMenu result = new JMenu();
 
         {
@@ -179,6 +179,13 @@ public final class JTimeSeriesChartDemo extends JPanel {
         item.add(new JCheckBoxMenuItem(applyLineThickness(2f).toAction(chart))).setText("Thick");
         result.add(item);
 
+        item = new JMenu("Crosshair type");
+        item.add(new JCheckBoxMenuItem(applyCrosshairType(CrosshairType.NONE).toAction(chart))).setText("None");
+        item.add(new JCheckBoxMenuItem(applyCrosshairType(CrosshairType.DOMAIN).toAction(chart))).setText("Domain");
+        item.add(new JCheckBoxMenuItem(applyCrosshairType(CrosshairType.RANGE).toAction(chart))).setText("Range");
+        item.add(new JCheckBoxMenuItem(applyCrosshairType(CrosshairType.BOTH).toAction(chart))).setText("Both");
+        result.add(item);
+
         result.addSeparator();
         result.add(resetZoom().toAction(chart)).setText("Reset zoom");
         result.add(newExportMenu());
@@ -187,7 +194,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         return result;
     }
 
-    final JMenu newExportMenu() {
+    private JMenu newExportMenu() {
         JMenu result = new JMenu("Export image to");
         result.add(printImage().toAction(chart)).setText("Printer...");
         result.add(copyImage().toAction(chart)).setText("Clipboard");
@@ -195,7 +202,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         return result;
     }
 
-    final JMenu newConfigureMenu() {
+    private JMenu newConfigureMenu() {
         JMenu result = new JMenu("Configure");
 
         result.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.AXIS).toAction(chart))).setText("Show axis");
@@ -212,15 +219,17 @@ public final class JTimeSeriesChartDemo extends JPanel {
 
         return result;
     }
-    //
-    final ObsPredicate LAST_3_OBS = new ObsPredicate() {
-        @Override
-        public boolean apply(int series, int obs) {
-            return obs >= chart.getDataset().getItemCount(series) - 3;
-        }
-    };
 
-    static class MoveToPlot extends SeriesFunctionCommand<Integer> {
+    private ObsPredicate last3ObsPredicate() {
+        return new ObsPredicate() {
+            @Override
+            public boolean apply(int series, int obs) {
+                return obs >= chart.getDataset().getItemCount(series) - 3;
+            }
+        };
+    }
+
+    private static final class MoveToPlot extends SeriesFunctionCommand<Integer> {
 
         public MoveToPlot(int plotIndex) {
             super(plotIndex, 0);
@@ -237,7 +246,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         }
     }
 
-    static class SetRenderer extends SeriesFunctionCommand<RendererType> {
+    private static final class SetRenderer extends SeriesFunctionCommand<RendererType> {
 
         public SetRenderer(RendererType value) {
             super(value, RendererType.LINE);
@@ -254,7 +263,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         }
     }
 
-    abstract static class SeriesFunctionCommand<X> extends JTimeSeriesChartCommand {
+    private abstract static class SeriesFunctionCommand<X> extends JTimeSeriesChartCommand {
 
         final X value;
         final X defaultValue;

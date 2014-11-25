@@ -46,6 +46,7 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     public static final String NO_DATA_MESSAGE_PROPERTY = "noDataMessage";
     public static final String PLOT_WEIGHTS_PROPERTY = "plotWeights";
     public static final String ELEMENT_VISIBLE_PROPERTY = "elementVisible";
+    public static final String CROSSHAIR_TYPE_PROPERTY = "crosshairType";
     // DEFAULT PROPERTIES
     private static final ColorSchemeSupport<? extends Color> DEFAULT_COLOR_SCHEME_SUPPORT = SwingColorSchemeSupport.from(new SmartColorScheme());
     private static final LineStrokes DEFAULT_LINE_STROKES = new LineStrokes(1f);
@@ -61,6 +62,7 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     private static final String DEFAULT_TITLE = "";
     private static final String DEFAULT_NO_DATA_MESSAGE = "No data";
     private static final int[] DEFAULT_PLOT_WEIGHTS = new int[]{1};
+    private static final CrosshairType DEFAULT_CROSSHAIR_TYPE = CrosshairType.NONE;
     // PROPERTIES
     protected ColorSchemeSupport<? extends Color> colorSchemeSupport;
     protected LineStrokes lineStrokes;
@@ -78,6 +80,7 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     protected int[] plotWeights;
     protected final boolean[] elementVisible;
     protected final List<RendererType> supportedRendererTypes;
+    protected CrosshairType crosshairType;
 
     public ATimeSeriesChart(List<RendererType> supportedRendererTypes) {
         this.colorSchemeSupport = DEFAULT_COLOR_SCHEME_SUPPORT;
@@ -96,6 +99,7 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
         this.plotWeights = DEFAULT_PLOT_WEIGHTS.clone();
         this.elementVisible = new boolean[Element.values().length];
         this.supportedRendererTypes = supportedRendererTypes;
+        this.crosshairType = DEFAULT_CROSSHAIR_TYPE;
         Arrays.fill(elementVisible, true);
     }
 
@@ -280,6 +284,18 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
         boolean old = elementVisible[element.ordinal()];
         elementVisible[element.ordinal()] = visible;
         firePropertyChange(ELEMENT_VISIBLE_PROPERTY, old, visible);
+    }
+
+    @Override
+    public CrosshairType getCrosshairType() {
+        return crosshairType;
+    }
+
+    @Override
+    public void setCrosshairType(CrosshairType crosshairType) {
+        CrosshairType old = this.crosshairType;
+        this.crosshairType = crosshairType != null ? crosshairType : DEFAULT_CROSSHAIR_TYPE;
+        firePropertyChange(CROSSHAIR_TYPE_PROPERTY, old, this.crosshairType);
     }
     //</editor-fold>
 

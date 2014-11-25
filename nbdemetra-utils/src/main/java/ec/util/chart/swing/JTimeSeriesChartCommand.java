@@ -22,6 +22,7 @@ import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorSchemeSupport;
 import ec.util.chart.ObsPredicate;
 import ec.util.chart.SeriesPredicate;
+import ec.util.chart.TimeSeriesChart.CrosshairType;
 import ec.util.chart.TimeSeriesChart.Element;
 import ec.util.chart.TimeSeriesChartCommand;
 import ec.util.various.swing.JCommand;
@@ -32,6 +33,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
+import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
 import org.jfree.data.time.Month;
 import org.jfree.data.time.TimePeriodAnchor;
@@ -127,6 +129,11 @@ public abstract class JTimeSeriesChartCommand extends JCommand<JTimeSeriesChart>
 
     public static JTimeSeriesChartCommand applyTitle(String title) {
         return new Adapter(TimeSeriesChartCommand.applyTitle(title));
+    }
+
+    @Nonnull
+    public static JTimeSeriesChartCommand applyCrosshairType(CrosshairType crosshairType) {
+        return new Adapter(TimeSeriesChartCommand.applyCrosshairType(crosshairType));
     }
 
     public static JTimeSeriesChartCommand copyImage() {

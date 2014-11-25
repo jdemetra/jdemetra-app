@@ -1,7 +1,7 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or â€“ as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
@@ -32,11 +32,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.dnd.DropTarget;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
@@ -46,6 +45,7 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JComponent;
@@ -79,34 +79,37 @@ import org.jfree.ui.RectangleInsets;
  */
 public final class JTimeSeriesChart extends ATimeSeriesChart {
 
+    // LOCAL PROPERTIES
+    private static final String MOUSE_OVER_OBS_PROPERTY = "mouseOverObs";
+    private static final String REVEAL_OBS_PROPERTY = "revealObs";
     // CONSTANTS
     private static final RectangleInsets CHART_PADDING = new RectangleInsets(5, 5, 5, 5);
     private static final int NOT_SELECTED_ALPHA = 50;
     private static final int SELECTED_ALPHA = 255;
     // OTHER
     private final ChartPanel chartPanel;
+    private final ChartNotification notification;
     private final ListSelectionModel seriesSelectionModel;
     private final CombinedDomainXYPlot mainPlot;
     // read-only list of plots
     private final java.util.List<XYPlot> roSubPlots;
     private final SeriesMapFactory seriesMapFactory;
-    private final MouseOverObs mouseOverObs;
-    private final RevealObs revealObs;
+    private ObsRef mouseOverObs;
+    private boolean revealObs;
     // EXPERIMENTAL
     private final SwingFontSupport fontSupport;
-    private final ChartNotification notification;
 
     public JTimeSeriesChart() {
         super(Arrays.asList(MARKER, LINE, SPLINE, COLUMN, STACKED_COLUMN, AREA, STACKED_AREA));
         this.chartPanel = new ChartPanel(createTsChart());
+        this.notification = new ChartNotification(chartPanel.getChart());
         this.seriesSelectionModel = new DefaultListSelectionModel();
         this.mainPlot = (CombinedDomainXYPlot) chartPanel.getChart().getXYPlot();
         this.roSubPlots = mainPlot.getSubplots();
         this.seriesMapFactory = new SeriesMapFactory();
-        this.mouseOverObs = new MouseOverObs();
-        this.revealObs = new RevealObs();
+        this.mouseOverObs = ObsRef.NULL;
+        this.revealObs = false;
         this.fontSupport = new SwingFontSupportImpl();
-        this.notification = new ChartNotification(chartPanel.getChart());
 
         notification.suspend();
 
@@ -126,84 +129,21 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         onNoDataMessageChange();
         onPlotWeightsChange();
         onElementVisibleChange();
+        onCrosshairTypeChange();
+        onMouseOverObsChange();
+        onRevealObsChange();
         onFontSupportChange();
 
         Charts.avoidScaling(chartPanel);
         Charts.enableFocusOnClick(chartPanel);
-        chartPanel.addKeyListener(revealObs);
-        chartPanel.addChartMouseListener(mouseOverObs);
-        chartPanel.addMouseListener(new SelectionMouseListener(seriesSelectionModel, true) {
-            @Override
-            protected int getSelectionIndex(LegendItemEntity entity) {
-                return entity != null ? dataset.indexOf(entity.getSeriesKey()) : -1;
-            }
-        });
+
+        enableMouseOverObs();
+        enableRevealObs();
+        enableSelection();
+        enableProperties();
+
         chartPanel.setActionMap(getActionMap());
         chartPanel.setInputMap(JComponent.WHEN_FOCUSED, getInputMap());
-
-        seriesSelectionModel.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    forceChartRefresh();
-                }
-            }
-        });
-
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                notification.suspend();
-                switch (evt.getPropertyName()) {
-                    case COLOR_SCHEME_SUPPORT_PROPERTY:
-                        onColorSchemeSupportChange();
-                        break;
-                    case LINE_THICKNESS_PROPERTY:
-                        onLineThicknessChange();
-                        break;
-                    case PERIOD_FORMAT_PROPERTY:
-                        onPeriodFormatChange();
-                        break;
-                    case VALUE_FORMAT_PROPERTY:
-                        onValueFormatChange();
-                        break;
-                    case SERIES_RENDERER_PROPERTY:
-                        onSeriesRendererChange();
-                        break;
-                    case SERIES_FORMATTER_PROPERTY:
-                        onSeriesFormatterChange();
-                        break;
-                    case OBS_FORMATTER_PROPERTY:
-                        onObsFormatterChange();
-                        break;
-                    case DASH_PREDICATE_PROPERTY:
-                        onDashPredicateChange();
-                        break;
-                    case LEGEND_VISIBILITY_PREDICATE_PROPERTY:
-                        onLegendVisibilityPredicateChange();
-                        break;
-                    case PLOT_DISPATCHER_PROPERTY:
-                        onPlotDispatcherChange();
-                        break;
-                    case DATASET_PROPERTY:
-                        onDatasetChange();
-                        break;
-                    case TITLE_PROPERTY:
-                        onTitleChange();
-                        break;
-                    case NO_DATA_MESSAGE_PROPERTY:
-                        onNoDataMessageChange();
-                        break;
-                    case PLOT_WEIGHTS_PROPERTY:
-                        onPlotWeightsChange();
-                        break;
-                    case ELEMENT_VISIBLE_PROPERTY:
-                        onElementVisibleChange();
-                        break;
-                }
-                notification.resume();
-            }
-        });
 
         notification.resume();
 
@@ -232,6 +172,9 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         plot.setBackgroundPaint(colorSchemeSupport.getPlotColor());
         plot.setDomainGridlinePaint(colorSchemeSupport.getGridColor());
         plot.setRangeGridlinePaint(colorSchemeSupport.getGridColor());
+        Color crosshairColor = SwingColorSchemeSupport.isDark(colorSchemeSupport.getPlotColor()) ? Color.WHITE : Color.BLACK;
+        plot.setDomainCrosshairPaint(crosshairColor);
+        plot.setRangeCrosshairPaint(crosshairColor);
         onColorSchemeSupportChange(plot.getRangeAxis());
     }
 
@@ -242,7 +185,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     }
 
     private void onLineThicknessChange() {
-        forceChartRefresh();
+        notification.forceRefresh();
     }
 
     private void onPeriodFormatChange() {
@@ -264,19 +207,19 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     }
 
     private void onSeriesFormatterChange() {
-        forceChartRefresh();
+        notification.forceRefresh();
     }
 
     private void onObsFormatterChange() {
-        forceChartRefresh();
+        notification.forceRefresh();
     }
 
     private void onDashPredicateChange() {
-        forceChartRefresh();
+        notification.forceRefresh();
     }
 
     private void onLegendVisibilityPredicateChange() {
-        forceChartRefresh();
+        notification.forceRefresh();
     }
 
     private void onPlotDispatcherChange() {
@@ -345,6 +288,10 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         plot.getRangeAxis().setVisible(elementVisible[Element.AXIS.ordinal()]);
     }
 
+    private void onCrosshairTypeChange() {
+        notification.forceRefresh();
+    }
+
     private void onFontSupportChange() {
         chartPanel.getChart().getTitle().setFont(fontSupport.getTitleFont());
         onFontSupportChange(mainPlot.getDomainAxis());
@@ -360,6 +307,33 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
 
     private void onFontSupportChange(Axis axis) {
         axis.setTickLabelFont(fontSupport.getAxisFont());
+    }
+
+    private void onMouseOverObsChange() {
+        if (!ObsRef.NULL.equals(mouseOverObs) && !CrosshairType.NONE.equals(crosshairType)) {
+            double x = dataset.getXValue(mouseOverObs.getSeries(), mouseOverObs.getObs());
+            double y = dataset.getYValue(mouseOverObs.getSeries(), mouseOverObs.getObs());
+            int index = plotDispatcher.apply(mouseOverObs.getSeries());
+            for (XYPlot subPlot : roSubPlots) {
+                subPlot.setDomainCrosshairValue(x);
+                subPlot.setDomainCrosshairVisible(crosshairType != CrosshairType.RANGE);
+                if (roSubPlots.indexOf(subPlot) == index && crosshairType != CrosshairType.DOMAIN) {
+                    subPlot.setRangeCrosshairValue(y);
+                    subPlot.setRangeCrosshairVisible(true);
+                } else {
+                    subPlot.setRangeCrosshairVisible(false);
+                }
+            }
+        } else {
+            for (XYPlot subPlot : roSubPlots) {
+                subPlot.setRangeCrosshairVisible(false);
+                subPlot.setDomainCrosshairVisible(false);
+            }
+        }
+    }
+
+    private void onRevealObsChange() {
+        notification.forceRefresh();
     }
     //</editor-fold>
 
@@ -475,12 +449,19 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         return seriesSelectionModel;
     }
 
-    private void forceChartRefresh() {
-        if (!notification.isSuspended()) {
-            chartPanel.getChart().fireChartChanged();
-        }
+    private void setMouseOverObs(ObsRef mouseOverObs) {
+        ObsRef old = this.mouseOverObs;
+        this.mouseOverObs = mouseOverObs != null ? mouseOverObs : ObsRef.NULL;
+        firePropertyChange(MOUSE_OVER_OBS_PROPERTY, old, this.mouseOverObs);
     }
 
+    private void setRevealObs(boolean revealObs) {
+        boolean old = this.revealObs;
+        this.revealObs = revealObs;
+        firePropertyChange(REVEAL_OBS_PROPERTY, old, this.revealObs);
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Subplots handlers">
     private void adjustSubPlots() {
         int diff = plotWeights.length - roSubPlots.size();
         if (diff > 0) {
@@ -523,6 +504,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
             mainPlot.remove(roSubPlots.get(roSubPlots.size() - 1));
         }
     }
+    //</editor-fold>
 
     private static JFreeChart createTsChart() {
         CombinedDomainXYPlot plot = new CombinedDomainXYPlot();
@@ -542,75 +524,6 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         result.getLegend().setBackgroundPaint(null);
 
         return result;
-    }
-
-    private final class RevealObs implements KeyListener {
-
-        private boolean enabled = false;
-
-        @Override
-        public void keyTyped(KeyEvent e) {
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyChar() == 'r') {
-                setEnabled(true);
-            }
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-            if (e.getKeyChar() == 'r') {
-                setEnabled(false);
-            }
-        }
-
-        private void setEnabled(boolean enabled) {
-            if (this.enabled != enabled) {
-                this.enabled = enabled;
-                firePropertyChange("revealObs", !enabled, enabled);
-                forceChartRefresh();
-            }
-        }
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-    }
-
-    private final class MouseOverObs implements ChartMouseListener {
-
-        private final Point highlight = new Point(-1, -1);
-
-        @Override
-        public void chartMouseClicked(ChartMouseEvent event) {
-            // FIXME: drag problem if you put mousePressed code here
-        }
-
-        @Override
-        public void chartMouseMoved(ChartMouseEvent event) {
-            if (event.getEntity() instanceof XYItemEntity) {
-                XYItemEntity xxx = (XYItemEntity) event.getEntity();
-                int series = ((FilteredXYDataset) xxx.getDataset()).originalIndexOf(xxx.getSeriesIndex());
-                int obs = xxx.getItem();
-                setMouseOverObs(series, obs);
-            } else {
-                setMouseOverObs(-1, -1);
-            }
-        }
-
-        private void setMouseOverObs(int series, int obs) {
-            if (highlight.x != series || highlight.y != obs) {
-                highlight.setLocation(series, obs);
-                firePropertyChange("mouseOverObs", null, new int[]{series, obs});
-                forceChartRefresh();
-            }
-        }
-
-        public boolean isMouseOverObs(int series, int obs) {
-            return highlight.x == series && highlight.y == obs;
-        }
     }
 
     private final class RendererSupport extends JTimeSeriesRendererSupport {
@@ -689,12 +602,12 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
 
         @Override
         public boolean isObsHighlighted(int series, int item) {
-            return revealObs.isEnabled() || isObsLabelVisible(series, item);
+            return revealObs || isObsLabelVisible(series, item);
         }
 
         @Override
         public boolean isObsLabelVisible(int series, int item) {
-            return mouseOverObs.isMouseOverObs(r.realIndexOf(series), item);
+            return mouseOverObs.equals(r.realIndexOf(series), item);
         }
     }
 
@@ -746,6 +659,203 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         }
     }
 
+    private static final class ChartNotification {
+
+        private final JFreeChart chart;
+        private final Deque<Boolean> notifyDeque;
+
+        public ChartNotification(JFreeChart chart) {
+            this.chart = chart;
+            this.notifyDeque = new LinkedList<>();
+        }
+
+        public void suspend() {
+            notifyDeque.addLast(chart.isNotify());
+            chart.setNotify(false);
+        }
+
+        public void resume() {
+            chart.setNotify(notifyDeque.removeLast());
+        }
+
+        public boolean isSuspended() {
+            return !notifyDeque.isEmpty();
+        }
+
+        public void forceRefresh() {
+            if (!isSuspended()) {
+                chart.fireChartChanged();
+            }
+        }
+    }
+
+    private static final class ObsRef {
+
+        public static final ObsRef NULL = new ObsRef(-1, -1);
+
+        public static ObsRef of(int series, int obs) {
+            return NULL.equals(series, obs) ? NULL : new ObsRef(series, obs);
+        }
+
+        private final int series;
+        private final int obs;
+
+        private ObsRef(int series, int obs) {
+            this.series = series;
+            this.obs = obs;
+        }
+
+        public int getSeries() {
+            return series;
+        }
+
+        public int getObs() {
+            return obs;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(series, obs);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return this == obj || (obj instanceof ObsRef && equals((ObsRef) obj));
+        }
+
+        private boolean equals(ObsRef that) {
+            return equals(that.series, that.obs);
+        }
+
+        public boolean equals(int series, int obs) {
+            return this.series == series && this.obs == obs;
+        }
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
+    private void enableMouseOverObs() {
+        chartPanel.addChartMouseListener(new ChartMouseListener() {
+            @Override
+            public void chartMouseClicked(ChartMouseEvent event) {
+                // FIXME: drag problem if you put mousePressed code here
+            }
+
+            @Override
+            public void chartMouseMoved(ChartMouseEvent event) {
+                if (event.getEntity() instanceof XYItemEntity) {
+                    XYItemEntity xxx = (XYItemEntity) event.getEntity();
+                    int series = ((FilteredXYDataset) xxx.getDataset()).originalIndexOf(xxx.getSeriesIndex());
+                    int obs = xxx.getItem();
+                    setMouseOverObs(ObsRef.of(series, obs));
+                } else {
+                    setMouseOverObs(ObsRef.NULL);
+                }
+            }
+        });
+    }
+
+    private void enableRevealObs() {
+        chartPanel.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyChar() == 'r') {
+                    setRevealObs(true);
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyChar() == 'r') {
+                    setRevealObs(false);
+                }
+            }
+        });
+    }
+
+    private void enableSelection() {
+        chartPanel.addMouseListener(new SelectionMouseListener(seriesSelectionModel, true) {
+            @Override
+            protected int getSelectionIndex(LegendItemEntity entity) {
+                return entity != null ? dataset.indexOf(entity.getSeriesKey()) : -1;
+            }
+        });
+        seriesSelectionModel.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    notification.forceRefresh();
+                }
+            }
+        });
+    }
+
+    private void enableProperties() {
+        addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                notification.suspend();
+                switch (evt.getPropertyName()) {
+                    case COLOR_SCHEME_SUPPORT_PROPERTY:
+                        onColorSchemeSupportChange();
+                        break;
+                    case LINE_THICKNESS_PROPERTY:
+                        onLineThicknessChange();
+                        break;
+                    case PERIOD_FORMAT_PROPERTY:
+                        onPeriodFormatChange();
+                        break;
+                    case VALUE_FORMAT_PROPERTY:
+                        onValueFormatChange();
+                        break;
+                    case SERIES_RENDERER_PROPERTY:
+                        onSeriesRendererChange();
+                        break;
+                    case SERIES_FORMATTER_PROPERTY:
+                        onSeriesFormatterChange();
+                        break;
+                    case OBS_FORMATTER_PROPERTY:
+                        onObsFormatterChange();
+                        break;
+                    case DASH_PREDICATE_PROPERTY:
+                        onDashPredicateChange();
+                        break;
+                    case LEGEND_VISIBILITY_PREDICATE_PROPERTY:
+                        onLegendVisibilityPredicateChange();
+                        break;
+                    case PLOT_DISPATCHER_PROPERTY:
+                        onPlotDispatcherChange();
+                        break;
+                    case DATASET_PROPERTY:
+                        onDatasetChange();
+                        break;
+                    case TITLE_PROPERTY:
+                        onTitleChange();
+                        break;
+                    case NO_DATA_MESSAGE_PROPERTY:
+                        onNoDataMessageChange();
+                        break;
+                    case PLOT_WEIGHTS_PROPERTY:
+                        onPlotWeightsChange();
+                        break;
+                    case ELEMENT_VISIBLE_PROPERTY:
+                        onElementVisibleChange();
+                        break;
+                    case CROSSHAIR_TYPE_PROPERTY:
+                        onCrosshairTypeChange();
+                        break;
+                    case MOUSE_OVER_OBS_PROPERTY:
+                        onMouseOverObsChange();
+                        break;
+                    case REVEAL_OBS_PROPERTY:
+                        onRevealObsChange();
+                        break;
+                }
+                notification.resume();
+            }
+        });
+    }
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Experimental code">
     private static abstract class FontSupport<F> {
 
@@ -786,30 +896,6 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         @Override
         public Font getSeriesFont(int series) {
             return seriesFont;
-        }
-    }
-
-    private static final class ChartNotification {
-
-        private final JFreeChart chart;
-        private final Deque<Boolean> notifyDeque;
-
-        public ChartNotification(JFreeChart chart) {
-            this.chart = chart;
-            this.notifyDeque = new LinkedList<>();
-        }
-
-        public void suspend() {
-            notifyDeque.addLast(chart.isNotify());
-            chart.setNotify(false);
-        }
-
-        public void resume() {
-            chart.setNotify(notifyDeque.removeLast());
-        }
-
-        public boolean isSuspended() {
-            return !notifyDeque.isEmpty();
         }
     }
     //</editor-fold>

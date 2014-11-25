@@ -75,6 +75,9 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
     @Nonnull
     SeriesPredicate getLegendVisibilityPredicate();
 
+    @Nonnull
+    CrosshairType getCrosshairType();
+
     void setDataset(@Nullable DS dataset);
 
     void setColorSchemeSupport(@Nullable COLORS colorSchemeSupport);
@@ -105,6 +108,8 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     void setLegendVisibilityPredicate(@Nullable SeriesPredicate predicate);
 
+    void setCrosshairType(@Nullable CrosshairType crosshairType);
+
     void copyImage() throws IOException;
 
     void saveImage() throws IOException;
@@ -126,5 +131,10 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
         COLUMN, STACKED_COLUMN,
         AREA, STACKED_AREA,
         MARKER
+    }
+
+    enum CrosshairType {
+
+        BOTH, RANGE, DOMAIN, NONE;
     }
 }
