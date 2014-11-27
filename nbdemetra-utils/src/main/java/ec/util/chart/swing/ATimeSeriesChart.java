@@ -1,11 +1,24 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or â€“ as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.util.chart.swing;
 
 import ec.util.chart.ColorSchemeSupport;
 import ec.util.chart.ObsFunction;
+import ec.util.chart.ObsIndex;
 import ec.util.chart.ObsPredicate;
 import ec.util.chart.SeriesFunction;
 import ec.util.chart.SeriesPredicate;
@@ -21,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 import org.jfree.data.xy.IntervalXYDataset;
 
@@ -47,6 +61,8 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     public static final String PLOT_WEIGHTS_PROPERTY = "plotWeights";
     public static final String ELEMENT_VISIBLE_PROPERTY = "elementVisible";
     public static final String CROSSHAIR_TYPE_PROPERTY = "crosshairType";
+    public static final String ACTIVE_OBS_PROPERTY = "activeObs";
+    public static final String OBS_HIGHLIGHTER_PROPERTY = "obsHighlighter";
     // DEFAULT PROPERTIES
     private static final ColorSchemeSupport<? extends Color> DEFAULT_COLOR_SCHEME_SUPPORT = SwingColorSchemeSupport.from(new SmartColorScheme());
     private static final LineStrokes DEFAULT_LINE_STROKES = new LineStrokes(1f);
@@ -63,6 +79,12 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     private static final String DEFAULT_NO_DATA_MESSAGE = "No data";
     private static final int[] DEFAULT_PLOT_WEIGHTS = new int[]{1};
     private static final CrosshairType DEFAULT_CROSSHAIR_TYPE = CrosshairType.NONE;
+    private static final ObsIndex DEFAULT_ACTIVE_OBS = ObsIndex.NULL;
+    // RESOURCES
+    protected final ObsPredicate existPredicate;
+    protected final ObsPredicate defaultObsHighlighter;
+    protected final ObsFunction valueFormatter;
+    protected final ObsFunction periodFormatter;
     // PROPERTIES
     protected ColorSchemeSupport<? extends Color> colorSchemeSupport;
     protected LineStrokes lineStrokes;
@@ -81,8 +103,15 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     protected final boolean[] elementVisible;
     protected final List<RendererType> supportedRendererTypes;
     protected CrosshairType crosshairType;
+    protected ObsIndex activeObs;
+    protected ObsPredicate obsHighlighter;
 
     public ATimeSeriesChart(List<RendererType> supportedRendererTypes) {
+        this.existPredicate = new ExistPredicate();
+        this.defaultObsHighlighter = new DefaultObsHighlighter();
+        this.valueFormatter = new ValueFormatter();
+        this.periodFormatter = new PeriodFormatter();
+
         this.colorSchemeSupport = DEFAULT_COLOR_SCHEME_SUPPORT;
         this.lineStrokes = DEFAULT_LINE_STROKES;
         this.periodFormat = new SimpleDateFormat(DEFAULT_PERIOD_FORMAT);
@@ -100,6 +129,8 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
         this.elementVisible = new boolean[Element.values().length];
         this.supportedRendererTypes = supportedRendererTypes;
         this.crosshairType = DEFAULT_CROSSHAIR_TYPE;
+        this.activeObs = DEFAULT_ACTIVE_OBS;
+        this.obsHighlighter = defaultObsHighlighter;
         Arrays.fill(elementVisible, true);
     }
 
@@ -297,11 +328,51 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
         this.crosshairType = crosshairType != null ? crosshairType : DEFAULT_CROSSHAIR_TYPE;
         firePropertyChange(CROSSHAIR_TYPE_PROPERTY, old, this.crosshairType);
     }
+
+    @Override
+    public ObsIndex getActiveObs() {
+        return activeObs;
+    }
+
+    @Override
+    public void setActiveObs(ObsIndex activeObs) {
+        ObsIndex old = this.activeObs;
+        this.activeObs = activeObs != null ? activeObs : DEFAULT_ACTIVE_OBS;
+        firePropertyChange(ACTIVE_OBS_PROPERTY, old, this.activeObs);
+    }
+
+    @Override
+    public ObsPredicate getObsHighlighter() {
+        return obsHighlighter;
+    }
+
+    @Override
+    public void setObsHighlighter(ObsPredicate obsHighlighter) {
+        ObsPredicate old = this.obsHighlighter;
+        this.obsHighlighter = obsHighlighter != null ? obsHighlighter : defaultObsHighlighter;
+        firePropertyChange(OBS_HIGHLIGHTER_PROPERTY, old, this.obsHighlighter);
+
+    }
     //</editor-fold>
 
     @Override
     public EnumSet<RendererType> getSupportedRendererTypes() {
         return EnumSet.copyOf(supportedRendererTypes);
+    }
+
+    @Nonnull
+    public ObsPredicate getObsExistPredicate() {
+        return existPredicate;
+    }
+
+    @Nonnull
+    public ObsFunction<String> getValueFormatter() {
+        return valueFormatter;
+    }
+
+    @Nonnull
+    public ObsFunction<String> getPeriodFormatter() {
+        return periodFormatter;
     }
 
     static final class LineStrokes {
@@ -324,6 +395,39 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
 
         public Stroke getStroke(boolean strong, boolean dash) {
             return strokes[(strong ? 1 : 0) * 2 + (dash ? 1 : 0)];
+        }
+    }
+
+    private final class DefaultObsHighlighter extends ObsPredicate {
+
+        @Override
+        public boolean apply(int series, int obs) {
+            return activeObs.equals(series, obs);
+        }
+    }
+
+    private final class ExistPredicate extends ObsPredicate {
+
+        @Override
+        public boolean apply(int series, int obs) {
+            return 0 <= series && series < dataset.getSeriesCount()
+                    && 0 <= obs && obs < dataset.getItemCount(series);
+        }
+    }
+
+    private final class ValueFormatter extends ObsFunction<String> {
+
+        @Override
+        public String apply(int series, int obs) {
+            return valueFormat.format(dataset.getY(series, obs));
+        }
+    }
+
+    private final class PeriodFormatter extends ObsFunction<String> {
+
+        @Override
+        public String apply(int series, int obs) {
+            return periodFormat.format(dataset.getX(series, obs));
         }
     }
 }

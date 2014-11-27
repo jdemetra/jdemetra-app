@@ -94,6 +94,8 @@ public abstract class TimeSeriesChartCommand {
                 chart.setDashPredicate(null);
                 chart.setLegendVisibilityPredicate(null);
                 chart.setCrosshairType(null);
+                chart.setActiveObs(null);
+                chart.setObsHighlighter(null);
             }
         };
     }
@@ -294,6 +296,21 @@ public abstract class TimeSeriesChartCommand {
     @Nonnull
     public static TimeSeriesChartCommand applyCrosshairType(@Nonnull CrosshairType crosshairType) {
         return CTS.get(crosshairType);
+    }
+
+    @Nonnull
+    public static TimeSeriesChartCommand applyObsHighlighter(@Nullable final ObsPredicate obsHighlighter) {
+        return new TimeSeriesChartCommand() {
+            @Override
+            public void execute(TimeSeriesChart chart) {
+                chart.setObsHighlighter(obsHighlighter);
+            }
+
+            @Override
+            public boolean isSelected(TimeSeriesChart chart) {
+                return chart.getObsHighlighter().equals(obsHighlighter);
+            }
+        };
     }
 
     @Nonnull

@@ -16,10 +16,12 @@
  */
 package ec.util.chart.swing;
 
+import ec.util.chart.ObsIndex;
 import ec.util.chart.SeriesFunction;
 import static ec.util.chart.TimeSeriesChart.Element.AXIS;
 import static ec.util.chart.TimeSeriesChart.Element.LEGEND;
 import static ec.util.chart.TimeSeriesChart.Element.TITLE;
+import static ec.util.chart.TimeSeriesChart.Element.TOOLTIP;
 import static ec.util.chart.TimeSeriesChart.RendererType.AREA;
 import static ec.util.chart.TimeSeriesChart.RendererType.COLUMN;
 import static ec.util.chart.TimeSeriesChart.RendererType.LINE;
@@ -45,7 +47,6 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JComponent;
@@ -80,7 +81,6 @@ import org.jfree.ui.RectangleInsets;
 public final class JTimeSeriesChart extends ATimeSeriesChart {
 
     // LOCAL PROPERTIES
-    private static final String MOUSE_OVER_OBS_PROPERTY = "mouseOverObs";
     private static final String REVEAL_OBS_PROPERTY = "revealObs";
     // CONSTANTS
     private static final RectangleInsets CHART_PADDING = new RectangleInsets(5, 5, 5, 5);
@@ -94,7 +94,6 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     // read-only list of plots
     private final java.util.List<XYPlot> roSubPlots;
     private final SeriesMapFactory seriesMapFactory;
-    private ObsRef mouseOverObs;
     private boolean revealObs;
     // EXPERIMENTAL
     private final SwingFontSupport fontSupport;
@@ -107,7 +106,6 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         this.mainPlot = (CombinedDomainXYPlot) chartPanel.getChart().getXYPlot();
         this.roSubPlots = mainPlot.getSubplots();
         this.seriesMapFactory = new SeriesMapFactory();
-        this.mouseOverObs = ObsRef.NULL;
         this.revealObs = false;
         this.fontSupport = new SwingFontSupportImpl();
 
@@ -130,14 +128,14 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         onPlotWeightsChange();
         onElementVisibleChange();
         onCrosshairTypeChange();
-        onMouseOverObsChange();
+        onActiveObsChange();
         onRevealObsChange();
         onFontSupportChange();
 
         Charts.avoidScaling(chartPanel);
         Charts.enableFocusOnClick(chartPanel);
 
-        enableMouseOverObs();
+        enableActiveObs();
         enableRevealObs();
         enableSelection();
         enableProperties();
@@ -309,11 +307,11 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         axis.setTickLabelFont(fontSupport.getAxisFont());
     }
 
-    private void onMouseOverObsChange() {
-        if (!ObsRef.NULL.equals(mouseOverObs) && !CrosshairType.NONE.equals(crosshairType)) {
-            double x = dataset.getXValue(mouseOverObs.getSeries(), mouseOverObs.getObs());
-            double y = dataset.getYValue(mouseOverObs.getSeries(), mouseOverObs.getObs());
-            int index = plotDispatcher.apply(mouseOverObs.getSeries());
+    private void onActiveObsChange() {
+        if (existPredicate.apply(activeObs) && !CrosshairType.NONE.equals(crosshairType)) {
+            double x = dataset.getXValue(activeObs.getSeries(), activeObs.getObs());
+            double y = dataset.getYValue(activeObs.getSeries(), activeObs.getObs());
+            int index = plotDispatcher.apply(activeObs.getSeries());
             for (XYPlot subPlot : roSubPlots) {
                 subPlot.setDomainCrosshairValue(x);
                 subPlot.setDomainCrosshairVisible(crosshairType != CrosshairType.RANGE);
@@ -330,6 +328,10 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
                 subPlot.setDomainCrosshairVisible(false);
             }
         }
+    }
+
+    private void onObsHighlighterChange() {
+        notification.forceRefresh();
     }
 
     private void onRevealObsChange() {
@@ -447,12 +449,6 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     @Nonnull
     public ListSelectionModel getSeriesSelectionModel() {
         return seriesSelectionModel;
-    }
-
-    private void setMouseOverObs(ObsRef mouseOverObs) {
-        ObsRef old = this.mouseOverObs;
-        this.mouseOverObs = mouseOverObs != null ? mouseOverObs : ObsRef.NULL;
-        firePropertyChange(MOUSE_OVER_OBS_PROPERTY, old, this.mouseOverObs);
     }
 
     private void setRevealObs(boolean revealObs) {
@@ -602,12 +598,12 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
 
         @Override
         public boolean isObsHighlighted(int series, int item) {
-            return revealObs || isObsLabelVisible(series, item);
+            return revealObs || obsHighlighter.apply(r.realIndexOf(series), item);
         }
 
         @Override
         public boolean isObsLabelVisible(int series, int item) {
-            return mouseOverObs.equals(r.realIndexOf(series), item);
+            return isElementVisible(TOOLTIP) && activeObs.equals(r.realIndexOf(series), item);
         }
     }
 
@@ -689,51 +685,8 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         }
     }
 
-    private static final class ObsRef {
-
-        public static final ObsRef NULL = new ObsRef(-1, -1);
-
-        public static ObsRef of(int series, int obs) {
-            return NULL.equals(series, obs) ? NULL : new ObsRef(series, obs);
-        }
-
-        private final int series;
-        private final int obs;
-
-        private ObsRef(int series, int obs) {
-            this.series = series;
-            this.obs = obs;
-        }
-
-        public int getSeries() {
-            return series;
-        }
-
-        public int getObs() {
-            return obs;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(series, obs);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return this == obj || (obj instanceof ObsRef && equals((ObsRef) obj));
-        }
-
-        private boolean equals(ObsRef that) {
-            return equals(that.series, that.obs);
-        }
-
-        public boolean equals(int series, int obs) {
-            return this.series == series && this.obs == obs;
-        }
-    }
-
     //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
-    private void enableMouseOverObs() {
+    private void enableActiveObs() {
         chartPanel.addChartMouseListener(new ChartMouseListener() {
             @Override
             public void chartMouseClicked(ChartMouseEvent event) {
@@ -742,13 +695,17 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
 
             @Override
             public void chartMouseMoved(ChartMouseEvent event) {
+                setActiveObs(getObsIndex(event));
+            }
+
+            private ObsIndex getObsIndex(ChartMouseEvent event) {
                 if (event.getEntity() instanceof XYItemEntity) {
                     XYItemEntity xxx = (XYItemEntity) event.getEntity();
                     int series = ((FilteredXYDataset) xxx.getDataset()).originalIndexOf(xxx.getSeriesIndex());
                     int obs = xxx.getItem();
-                    setMouseOverObs(ObsRef.of(series, obs));
+                    return ObsIndex.valueOf(series, obs);
                 } else {
-                    setMouseOverObs(ObsRef.NULL);
+                    return ObsIndex.NULL;
                 }
             }
         });
@@ -843,8 +800,11 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
                     case CROSSHAIR_TYPE_PROPERTY:
                         onCrosshairTypeChange();
                         break;
-                    case MOUSE_OVER_OBS_PROPERTY:
-                        onMouseOverObsChange();
+                    case ACTIVE_OBS_PROPERTY:
+                        onActiveObsChange();
+                        break;
+                    case OBS_HIGHLIGHTER_PROPERTY:
+                        onObsHighlighterChange();
                         break;
                     case REVEAL_OBS_PROPERTY:
                         onRevealObsChange();

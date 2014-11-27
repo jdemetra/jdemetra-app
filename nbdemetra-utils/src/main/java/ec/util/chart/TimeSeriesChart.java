@@ -78,6 +78,12 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
     @Nonnull
     CrosshairType getCrosshairType();
 
+    @Nonnull
+    ObsIndex getActiveObs();
+
+    @Nonnull
+    ObsPredicate getObsHighlighter();
+
     void setDataset(@Nullable DS dataset);
 
     void setColorSchemeSupport(@Nullable COLORS colorSchemeSupport);
@@ -110,6 +116,10 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     void setCrosshairType(@Nullable CrosshairType crosshairType);
 
+    void setActiveObs(@Nullable ObsIndex activeObs);
+
+    void setObsHighlighter(@Nullable ObsPredicate obsHighlighter);
+
     void copyImage() throws IOException;
 
     void saveImage() throws IOException;
@@ -121,7 +131,7 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     enum Element {
 
-        TITLE, LEGEND, AXIS
+        TITLE, LEGEND, AXIS, TOOLTIP
     }
 
     enum RendererType {
@@ -135,6 +145,6 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     enum CrosshairType {
 
-        BOTH, RANGE, DOMAIN, NONE;
+        ALL, RANGE, DOMAIN, NONE;
     }
 }

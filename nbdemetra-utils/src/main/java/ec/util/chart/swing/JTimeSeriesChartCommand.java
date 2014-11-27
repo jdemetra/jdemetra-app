@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JOptionPane;
 import org.jfree.data.time.Month;
 import org.jfree.data.time.TimePeriodAnchor;
@@ -134,6 +135,11 @@ public abstract class JTimeSeriesChartCommand extends JCommand<JTimeSeriesChart>
     @Nonnull
     public static JTimeSeriesChartCommand applyCrosshairType(CrosshairType crosshairType) {
         return new Adapter(TimeSeriesChartCommand.applyCrosshairType(crosshairType));
+    }
+
+    @Nonnull
+    public static JTimeSeriesChartCommand applyObsHighlighter(@Nullable ObsPredicate obsHighlighter) {
+        return new Adapter(TimeSeriesChartCommand.applyObsHighlighter(obsHighlighter));
     }
 
     public static JTimeSeriesChartCommand copyImage() {

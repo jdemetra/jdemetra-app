@@ -16,6 +16,8 @@
  */
 package ec.util.chart;
 
+import javax.annotation.Nonnull;
+
 /**
  *
  * @author Philippe Charles
@@ -24,24 +26,48 @@ public abstract class SeriesPredicate {
 
     public abstract boolean apply(int series);
 
+    @Nonnull
+    public SeriesFunction<Boolean> asFunction() {
+        return new AsFunction(this);
+    }
+
+    @Nonnull
     public static SeriesPredicate alwaysTrue() {
         return TRUE;
     }
 
+    @Nonnull
     public static SeriesPredicate alwaysFalse() {
         return FALSE;
     }
-    //
+
+    //<editor-fold defaultstate="collapsed" desc="Internal implementation">
     private static final SeriesPredicate TRUE = new SeriesPredicate() {
         @Override
         public boolean apply(int series) {
             return true;
         }
     };
+
     private static final SeriesPredicate FALSE = new SeriesPredicate() {
         @Override
         public boolean apply(int series) {
             return false;
         }
     };
+
+    private static final class AsFunction extends SeriesFunction<Boolean> {
+
+        private final SeriesPredicate predicate;
+
+        public AsFunction(SeriesPredicate predicate) {
+            this.predicate = predicate;
+        }
+
+        @Override
+        public Boolean apply(int series) {
+            return predicate.apply(series);
+        }
+    }
+    //</editor-fold>
 }
