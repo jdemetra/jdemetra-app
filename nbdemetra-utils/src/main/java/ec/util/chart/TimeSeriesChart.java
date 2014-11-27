@@ -76,7 +76,7 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
     SeriesPredicate getLegendVisibilityPredicate();
 
     @Nonnull
-    CrosshairType getCrosshairType();
+    CrosshairOrientation getCrosshairOrientation();
 
     @Nonnull
     ObsIndex getActiveObs();
@@ -114,7 +114,7 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     void setLegendVisibilityPredicate(@Nullable SeriesPredicate predicate);
 
-    void setCrosshairType(@Nullable CrosshairType crosshairType);
+    void setCrosshairOrientation(@Nullable CrosshairOrientation crosshairOrientation);
 
     void setActiveObs(@Nullable ObsIndex activeObs);
 
@@ -131,7 +131,7 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     enum Element {
 
-        TITLE, LEGEND, AXIS, TOOLTIP
+        TITLE, LEGEND, AXIS, TOOLTIP, CROSSHAIR
     }
 
     enum RendererType {
@@ -143,8 +143,8 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
         MARKER
     }
 
-    enum CrosshairType {
+    enum CrosshairOrientation {
 
-        ALL, RANGE, DOMAIN, NONE;
+        BOTH, HORIZONTAL, VERTICAL;
     }
 }

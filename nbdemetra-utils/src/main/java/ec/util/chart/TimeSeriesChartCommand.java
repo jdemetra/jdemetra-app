@@ -16,7 +16,7 @@
  */
 package ec.util.chart;
 
-import ec.util.chart.TimeSeriesChart.CrosshairType;
+import ec.util.chart.TimeSeriesChart.CrosshairOrientation;
 import ec.util.chart.TimeSeriesChart.RendererType;
 import ec.util.chart.TimeSeriesChart.Element;
 import java.io.IOException;
@@ -93,7 +93,7 @@ public abstract class TimeSeriesChartCommand {
                 chart.setObsFormatter(null);
                 chart.setDashPredicate(null);
                 chart.setLegendVisibilityPredicate(null);
-                chart.setCrosshairType(null);
+                chart.setCrosshairOrientation(null);
                 chart.setActiveObs(null);
                 chart.setObsHighlighter(null);
             }
@@ -294,8 +294,8 @@ public abstract class TimeSeriesChartCommand {
     }
 
     @Nonnull
-    public static TimeSeriesChartCommand applyCrosshairType(@Nonnull CrosshairType crosshairType) {
-        return CTS.get(crosshairType);
+    public static TimeSeriesChartCommand applyCrosshairOrientation(@Nonnull CrosshairOrientation crosshairOrientation) {
+        return CTS.get(crosshairOrientation);
     }
 
     @Nonnull
@@ -356,20 +356,20 @@ public abstract class TimeSeriesChartCommand {
         return result;
     }
 
-    private static final Map<CrosshairType, TimeSeriesChartCommand> CTS = createCTS();
+    private static final Map<CrosshairOrientation, TimeSeriesChartCommand> CTS = createCTS();
 
-    private static EnumMap<CrosshairType, TimeSeriesChartCommand> createCTS() {
-        EnumMap<CrosshairType, TimeSeriesChartCommand> result = new EnumMap<>(CrosshairType.class);
-        for (final CrosshairType o : CrosshairType.values()) {
+    private static EnumMap<CrosshairOrientation, TimeSeriesChartCommand> createCTS() {
+        EnumMap<CrosshairOrientation, TimeSeriesChartCommand> result = new EnumMap<>(CrosshairOrientation.class);
+        for (final CrosshairOrientation o : CrosshairOrientation.values()) {
             result.put(o, new TimeSeriesChartCommand() {
                 @Override
                 public void execute(TimeSeriesChart chart) {
-                    chart.setCrosshairType(o);
+                    chart.setCrosshairOrientation(o);
                 }
 
                 @Override
                 public boolean isSelected(TimeSeriesChart chart) {
-                    return chart.getCrosshairType() == o;
+                    return chart.getCrosshairOrientation() == o;
                 }
             });
         }

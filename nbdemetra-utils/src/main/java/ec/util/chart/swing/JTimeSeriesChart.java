@@ -127,7 +127,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         onNoDataMessageChange();
         onPlotWeightsChange();
         onElementVisibleChange();
-        onCrosshairTypeChange();
+        onCrosshairOrientationChange();
         onActiveObsChange();
         onRevealObsChange();
         onFontSupportChange();
@@ -286,7 +286,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         plot.getRangeAxis().setVisible(elementVisible[Element.AXIS.ordinal()]);
     }
 
-    private void onCrosshairTypeChange() {
+    private void onCrosshairOrientationChange() {
         notification.forceRefresh();
     }
 
@@ -308,14 +308,14 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     }
 
     private void onActiveObsChange() {
-        if (existPredicate.apply(activeObs) && !CrosshairType.NONE.equals(crosshairType)) {
+        if (existPredicate.apply(activeObs) && isElementVisible(Element.CROSSHAIR)) {
             double x = dataset.getXValue(activeObs.getSeries(), activeObs.getObs());
             double y = dataset.getYValue(activeObs.getSeries(), activeObs.getObs());
             int index = plotDispatcher.apply(activeObs.getSeries());
             for (XYPlot subPlot : roSubPlots) {
                 subPlot.setDomainCrosshairValue(x);
-                subPlot.setDomainCrosshairVisible(crosshairType != CrosshairType.RANGE);
-                if (roSubPlots.indexOf(subPlot) == index && crosshairType != CrosshairType.DOMAIN) {
+                subPlot.setDomainCrosshairVisible(crosshairOrientation != CrosshairOrientation.HORIZONTAL);
+                if (roSubPlots.indexOf(subPlot) == index && crosshairOrientation != CrosshairOrientation.VERTICAL) {
                     subPlot.setRangeCrosshairValue(y);
                     subPlot.setRangeCrosshairVisible(true);
                 } else {
@@ -797,8 +797,8 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
                     case ELEMENT_VISIBLE_PROPERTY:
                         onElementVisibleChange();
                         break;
-                    case CROSSHAIR_TYPE_PROPERTY:
-                        onCrosshairTypeChange();
+                    case CROSSHAIR_ORIENTATION_PROPERTY:
+                        onCrosshairOrientationChange();
                         break;
                     case ACTIVE_OBS_PROPERTY:
                         onActiveObsChange();

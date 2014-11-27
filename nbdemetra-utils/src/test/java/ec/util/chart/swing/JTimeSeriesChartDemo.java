@@ -25,7 +25,7 @@ import ec.util.chart.ObsPredicate;
 import ec.util.chart.TimeSeriesChart.Element;
 import ec.util.chart.TimeSeriesChart.RendererType;
 import ec.util.chart.SeriesFunction;
-import ec.util.chart.TimeSeriesChart.CrosshairType;
+import ec.util.chart.TimeSeriesChart.CrosshairOrientation;
 import ec.util.chart.impl.AndroidColorScheme;
 import ec.util.various.swing.BasicSwingLauncher;
 import ec.util.various.swing.FontAwesome;
@@ -184,6 +184,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         item.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.LEGEND).toAction(chart))).setText("Legend");
         item.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.AXIS).toAction(chart))).setText("Axis");
         item.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.TOOLTIP).toAction(chart))).setText("Tooltip");
+        item.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.CROSSHAIR).toAction(chart))).setText("Crosshair");
         result.add(item);
 
         item = new JMenu("Color scheme");
@@ -199,11 +200,10 @@ public final class JTimeSeriesChartDemo extends JPanel {
         item.add(new JCheckBoxMenuItem(applyLineThickness(2f).toAction(chart))).setText("Thick");
         result.add(item);
 
-        item = new JMenu("Crosshair type");
-        item.add(new JCheckBoxMenuItem(applyCrosshairType(CrosshairType.NONE).toAction(chart))).setText("None");
-        item.add(new JCheckBoxMenuItem(applyCrosshairType(CrosshairType.DOMAIN).toAction(chart))).setText("Domain");
-        item.add(new JCheckBoxMenuItem(applyCrosshairType(CrosshairType.RANGE).toAction(chart))).setText("Range");
-        item.add(new JCheckBoxMenuItem(applyCrosshairType(CrosshairType.ALL).toAction(chart))).setText("All");
+        item = new JMenu("Crosshair orientation");
+        item.add(new JCheckBoxMenuItem(applyCrosshairOrientation(CrosshairOrientation.BOTH).toAction(chart))).setText("Both");
+        item.add(new JCheckBoxMenuItem(applyCrosshairOrientation(CrosshairOrientation.HORIZONTAL).toAction(chart))).setText("Horizontal");
+        item.add(new JCheckBoxMenuItem(applyCrosshairOrientation(CrosshairOrientation.VERTICAL).toAction(chart))).setText("Vertical");
         result.add(item);
 
         item = new JMenu("Custom tooltip");

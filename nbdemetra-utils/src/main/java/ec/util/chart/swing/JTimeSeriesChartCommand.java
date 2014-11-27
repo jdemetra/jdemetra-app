@@ -22,7 +22,7 @@ import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorSchemeSupport;
 import ec.util.chart.ObsPredicate;
 import ec.util.chart.SeriesPredicate;
-import ec.util.chart.TimeSeriesChart.CrosshairType;
+import ec.util.chart.TimeSeriesChart.CrosshairOrientation;
 import ec.util.chart.TimeSeriesChart.Element;
 import ec.util.chart.TimeSeriesChartCommand;
 import ec.util.various.swing.JCommand;
@@ -133,8 +133,8 @@ public abstract class JTimeSeriesChartCommand extends JCommand<JTimeSeriesChart>
     }
 
     @Nonnull
-    public static JTimeSeriesChartCommand applyCrosshairType(CrosshairType crosshairType) {
-        return new Adapter(TimeSeriesChartCommand.applyCrosshairType(crosshairType));
+    public static JTimeSeriesChartCommand applyCrosshairOrientation(CrosshairOrientation crosshairOrientation) {
+        return new Adapter(TimeSeriesChartCommand.applyCrosshairOrientation(crosshairOrientation));
     }
 
     @Nonnull

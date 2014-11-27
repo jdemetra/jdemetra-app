@@ -60,7 +60,7 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     public static final String NO_DATA_MESSAGE_PROPERTY = "noDataMessage";
     public static final String PLOT_WEIGHTS_PROPERTY = "plotWeights";
     public static final String ELEMENT_VISIBLE_PROPERTY = "elementVisible";
-    public static final String CROSSHAIR_TYPE_PROPERTY = "crosshairType";
+    public static final String CROSSHAIR_ORIENTATION_PROPERTY = "crosshairOrientation";
     public static final String ACTIVE_OBS_PROPERTY = "activeObs";
     public static final String OBS_HIGHLIGHTER_PROPERTY = "obsHighlighter";
     // DEFAULT PROPERTIES
@@ -78,7 +78,7 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     private static final String DEFAULT_TITLE = "";
     private static final String DEFAULT_NO_DATA_MESSAGE = "No data";
     private static final int[] DEFAULT_PLOT_WEIGHTS = new int[]{1};
-    private static final CrosshairType DEFAULT_CROSSHAIR_TYPE = CrosshairType.NONE;
+    private static final CrosshairOrientation DEFAULT_CROSSHAIR_ORIENTATION = CrosshairOrientation.BOTH;
     private static final ObsIndex DEFAULT_ACTIVE_OBS = ObsIndex.NULL;
     // RESOURCES
     protected final ObsPredicate existPredicate;
@@ -102,7 +102,7 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     protected int[] plotWeights;
     protected final boolean[] elementVisible;
     protected final List<RendererType> supportedRendererTypes;
-    protected CrosshairType crosshairType;
+    protected CrosshairOrientation crosshairOrientation;
     protected ObsIndex activeObs;
     protected ObsPredicate obsHighlighter;
 
@@ -128,10 +128,12 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
         this.plotWeights = DEFAULT_PLOT_WEIGHTS.clone();
         this.elementVisible = new boolean[Element.values().length];
         this.supportedRendererTypes = supportedRendererTypes;
-        this.crosshairType = DEFAULT_CROSSHAIR_TYPE;
+        this.crosshairOrientation = DEFAULT_CROSSHAIR_ORIENTATION;
         this.activeObs = DEFAULT_ACTIVE_OBS;
         this.obsHighlighter = defaultObsHighlighter;
+
         Arrays.fill(elementVisible, true);
+        elementVisible[Element.CROSSHAIR.ordinal()] = false;
     }
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
@@ -318,15 +320,15 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     }
 
     @Override
-    public CrosshairType getCrosshairType() {
-        return crosshairType;
+    public CrosshairOrientation getCrosshairOrientation() {
+        return crosshairOrientation;
     }
 
     @Override
-    public void setCrosshairType(CrosshairType crosshairType) {
-        CrosshairType old = this.crosshairType;
-        this.crosshairType = crosshairType != null ? crosshairType : DEFAULT_CROSSHAIR_TYPE;
-        firePropertyChange(CROSSHAIR_TYPE_PROPERTY, old, this.crosshairType);
+    public void setCrosshairOrientation(CrosshairOrientation crosshairOrientation) {
+        CrosshairOrientation old = this.crosshairOrientation;
+        this.crosshairOrientation = crosshairOrientation != null ? crosshairOrientation : DEFAULT_CROSSHAIR_ORIENTATION;
+        firePropertyChange(CROSSHAIR_ORIENTATION_PROPERTY, old, this.crosshairOrientation);
     }
 
     @Override
