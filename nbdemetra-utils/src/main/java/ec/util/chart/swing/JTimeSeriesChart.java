@@ -598,7 +598,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
 
         @Override
         public boolean isObsHighlighted(int series, int item) {
-            return revealObs || obsHighlighter.apply(r.realIndexOf(series), item);
+            return revealObs ^ obsHighlighter.apply(r.realIndexOf(series), item);
         }
 
         @Override
