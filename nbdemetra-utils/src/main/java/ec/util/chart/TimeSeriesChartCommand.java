@@ -17,6 +17,7 @@
 package ec.util.chart;
 
 import ec.util.chart.TimeSeriesChart.CrosshairOrientation;
+import ec.util.chart.TimeSeriesChart.DisplayTrigger;
 import ec.util.chart.TimeSeriesChart.RendererType;
 import ec.util.chart.TimeSeriesChart.Element;
 import java.io.IOException;
@@ -94,7 +95,7 @@ public abstract class TimeSeriesChartCommand {
                 chart.setDashPredicate(null);
                 chart.setLegendVisibilityPredicate(null);
                 chart.setCrosshairOrientation(null);
-                chart.setActiveObs(null);
+                chart.setFocusedObs(null);
                 chart.setObsHighlighter(null);
             }
         };
@@ -314,6 +315,16 @@ public abstract class TimeSeriesChartCommand {
     }
 
     @Nonnull
+    public static TimeSeriesChartCommand applyTooltipTrigger(@Nonnull DisplayTrigger tooltipTrigger) {
+        return TTS.get(tooltipTrigger);
+    }
+
+    @Nonnull
+    public static TimeSeriesChartCommand applyCrosshairTrigger(@Nonnull DisplayTrigger crosshairTrigger) {
+        return XTS.get(crosshairTrigger);
+    }
+
+    @Nonnull
     public static TimeSeriesChartCommand copyImage() {
         return COPY_IMAGE;
     }
@@ -370,6 +381,46 @@ public abstract class TimeSeriesChartCommand {
                 @Override
                 public boolean isSelected(TimeSeriesChart chart) {
                     return chart.getCrosshairOrientation() == o;
+                }
+            });
+        }
+        return result;
+    }
+
+    private static final Map<DisplayTrigger, TimeSeriesChartCommand> TTS = createTTS();
+
+    private static EnumMap<DisplayTrigger, TimeSeriesChartCommand> createTTS() {
+        EnumMap<DisplayTrigger, TimeSeriesChartCommand> result = new EnumMap<>(DisplayTrigger.class);
+        for (final DisplayTrigger o : DisplayTrigger.values()) {
+            result.put(o, new TimeSeriesChartCommand() {
+                @Override
+                public void execute(TimeSeriesChart chart) {
+                    chart.setTooltipTrigger(o);
+                }
+
+                @Override
+                public boolean isSelected(TimeSeriesChart chart) {
+                    return chart.getTooltipTrigger() == o;
+                }
+            });
+        }
+        return result;
+    }
+
+    private static final Map<DisplayTrigger, TimeSeriesChartCommand> XTS = createXTS();
+
+    private static EnumMap<DisplayTrigger, TimeSeriesChartCommand> createXTS() {
+        EnumMap<DisplayTrigger, TimeSeriesChartCommand> result = new EnumMap<>(DisplayTrigger.class);
+        for (final DisplayTrigger o : DisplayTrigger.values()) {
+            result.put(o, new TimeSeriesChartCommand() {
+                @Override
+                public void execute(TimeSeriesChart chart) {
+                    chart.setCrosshairTrigger(o);
+                }
+
+                @Override
+                public boolean isSelected(TimeSeriesChart chart) {
+                    return chart.getCrosshairTrigger() == o;
                 }
             });
         }

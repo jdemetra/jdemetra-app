@@ -26,6 +26,7 @@ import ec.util.chart.TimeSeriesChart.Element;
 import ec.util.chart.TimeSeriesChart.RendererType;
 import ec.util.chart.SeriesFunction;
 import ec.util.chart.TimeSeriesChart.CrosshairOrientation;
+import ec.util.chart.TimeSeriesChart.DisplayTrigger;
 import ec.util.chart.impl.AndroidColorScheme;
 import ec.util.various.swing.BasicSwingLauncher;
 import ec.util.various.swing.FontAwesome;
@@ -36,8 +37,6 @@ import java.awt.Component;
 import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -201,24 +200,33 @@ public final class JTimeSeriesChartDemo extends JPanel {
         result.add(item);
 
         item = new JMenu("Crosshair orientation");
-        item.add(new JCheckBoxMenuItem(applyCrosshairOrientation(CrosshairOrientation.BOTH).toAction(chart))).setText("Both");
         item.add(new JCheckBoxMenuItem(applyCrosshairOrientation(CrosshairOrientation.HORIZONTAL).toAction(chart))).setText("Horizontal");
         item.add(new JCheckBoxMenuItem(applyCrosshairOrientation(CrosshairOrientation.VERTICAL).toAction(chart))).setText("Vertical");
+        item.add(new JCheckBoxMenuItem(applyCrosshairOrientation(CrosshairOrientation.BOTH).toAction(chart))).setText("Both");
         result.add(item);
 
-        item = new JMenu("Custom tooltip");
-        item.add(new JCheckBoxMenuItem(new CustomTooltipCommand(CustomTooltip.Type.DISABLED).toAction(customTooltip))).setText("Disabled");
-        item.add(new JCheckBoxMenuItem(new CustomTooltipCommand(CustomTooltip.Type.ON_MOUSE_OVER).toAction(customTooltip))).setText("On mouse over");
-        item.add(new JCheckBoxMenuItem(new CustomTooltipCommand(CustomTooltip.Type.ON_MOUSE_CLICK).toAction(customTooltip))).setText("On mouse click");
-        result.add(item);
+        result.add(new JCheckBoxMenuItem(new ToggleCustomTooltip(chart).toAction(customTooltip))).setText("Custom tooltip");
 
         item = new JMenu("Highlighter");
-        item.add(new JCheckBoxMenuItem(applyObsHighlighter(chart.getObsHighlighter()).toAction(chart))).setText("Active obs");
-        item.add(new JCheckBoxMenuItem(applyObsHighlighter(highlightPassive(chart)).toAction(chart))).setText("Passive obs");
+        item.add(new JCheckBoxMenuItem(applyObsHighlighter(chart.getObsHighlighter()).toAction(chart))).setText("Focused");
+        item.add(new JCheckBoxMenuItem(applyObsHighlighter(highlightSelected(chart)).toAction(chart))).setText("Selected");
+        item.add(new JCheckBoxMenuItem(applyObsHighlighter(highlightBoth(chart)).toAction(chart))).setText("Both");
         item.add(new JCheckBoxMenuItem(applyObsHighlighter(highlightSerie(chart)).toAction(chart))).setText("Serie");
         item.add(new JCheckBoxMenuItem(applyObsHighlighter(highlightObs(chart)).toAction(chart))).setText("Period");
         item.add(new JCheckBoxMenuItem(applyObsHighlighter(ObsPredicate.alwaysTrue()).toAction(chart))).setText("All");
         item.add(new JCheckBoxMenuItem(applyObsHighlighter(ObsPredicate.alwaysFalse()).toAction(chart))).setText("None");
+        result.add(item);
+
+        result.addSeparator();
+        item = new JMenu("Tooltip trigger");
+        item.add(new JCheckBoxMenuItem(applyTooltipTrigger(DisplayTrigger.FOCUS).toAction(chart))).setText("Focus");
+        item.add(new JCheckBoxMenuItem(applyTooltipTrigger(DisplayTrigger.SELECTION).toAction(chart))).setText("Selection");
+        item.add(new JCheckBoxMenuItem(applyTooltipTrigger(DisplayTrigger.BOTH).toAction(chart))).setText("Both");
+        result.add(item);
+        item = new JMenu("Crosshair trigger");
+        item.add(new JCheckBoxMenuItem(applyCrosshairTrigger(DisplayTrigger.FOCUS).toAction(chart))).setText("Focus");
+        item.add(new JCheckBoxMenuItem(applyCrosshairTrigger(DisplayTrigger.SELECTION).toAction(chart))).setText("Selection");
+        item.add(new JCheckBoxMenuItem(applyCrosshairTrigger(DisplayTrigger.BOTH).toAction(chart))).setText("Both");
         result.add(item);
 
         result.addSeparator();
@@ -262,11 +270,21 @@ public final class JTimeSeriesChartDemo extends JPanel {
         };
     }
 
-    private static ObsPredicate highlightPassive(final JTimeSeriesChart chart) {
+    private static ObsPredicate highlightSelected(final JTimeSeriesChart chart) {
         return new ObsPredicate() {
             @Override
             public boolean apply(int series, int obs) {
-                return !chart.getActiveObs().equals(series, obs);
+                return chart.getSelectedObs().equals(series, obs);
+            }
+        };
+    }
+
+    private static ObsPredicate highlightBoth(final JTimeSeriesChart chart) {
+        return new ObsPredicate() {
+            @Override
+            public boolean apply(int series, int obs) {
+                return chart.getFocusedObs().equals(series, obs)
+                        || chart.getSelectedObs().equals(series, obs);
             }
         };
     }
@@ -275,7 +293,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         return new ObsPredicate() {
             @Override
             public boolean apply(int series, int obs) {
-                return chart.getActiveObs().getSeries() == series;
+                return chart.getFocusedObs().getSeries() == series;
             }
         };
     }
@@ -284,7 +302,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         return new ObsPredicate() {
             @Override
             public boolean apply(int series, int obs) {
-                return chart.getActiveObs().getObs() == obs;
+                return chart.getFocusedObs().getObs() == obs;
             }
         };
     }
@@ -375,41 +393,11 @@ public final class JTimeSeriesChartDemo extends JPanel {
 
     private static final class CustomTooltip extends JLabel {
 
-        public static final String TYPE_PROPERTY = "type";
-
-        public enum Type {
-
-            DISABLED, ON_MOUSE_OVER, ON_MOUSE_CLICK
-        }
-
-        private Type type;
         private Popup popup;
 
         public CustomTooltip() {
-            this.type = Type.DISABLED;
             this.popup = null;
-            addPropertyChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    switch (evt.getPropertyName()) {
-                        case TYPE_PROPERTY:
-                            if (popup != null) {
-                                popup.hide();
-                            }
-                            break;
-                    }
-                }
-            });
-        }
-
-        public void setType(Type type) {
-            Type old = this.type;
-            this.type = type != null ? type : Type.DISABLED;
-            firePropertyChange(TYPE_PROPERTY, old, this.type);
-        }
-
-        private static boolean isValidObs(JTimeSeriesChart chart) {
-            return chart.getObsExistPredicate().apply(chart.getActiveObs());
+            setEnabled(false);
         }
 
         public void enable(final JTimeSeriesChart chart) {
@@ -418,22 +406,24 @@ public final class JTimeSeriesChartDemo extends JPanel {
                 @Override
                 public void propertyChange(PropertyChangeEvent evt) {
                     switch (evt.getPropertyName()) {
-                        case JTimeSeriesChart.ACTIVE_OBS_PROPERTY:
-                            if (Type.ON_MOUSE_OVER == type) {
-                                updateCustomTooltip(chart, isValidObs(chart));
+                        case JTimeSeriesChart.TOOLTIP_TRIGGER_PROPERTY:
+                            if (popup != null) {
+                                popup.hide();
+                            }
+                            break;
+                        case JTimeSeriesChart.FOCUSED_OBS_PROPERTY:
+                            if (isEnabled() && chart.getTooltipTrigger() != DisplayTrigger.SELECTION) {
+                                updateCustomTooltip(chart, chart.getObsExistPredicate().apply(chart.getFocusedObs()));
+                            }
+                            break;
+                        case JTimeSeriesChart.SELECTED_OBS_PROPERTY:
+                            if (isEnabled() && chart.getTooltipTrigger() != DisplayTrigger.FOCUS) {
+                                updateCustomTooltip(chart, chart.getObsExistPredicate().apply(chart.getSelectedObs()));
                             }
                             break;
                         case JTimeSeriesChart.COLOR_SCHEME_SUPPORT_PROPERTY:
                             updateColors(chart);
                             break;
-                    }
-                }
-            });
-            chart.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (Type.ON_MOUSE_CLICK == type) {
-                        updateCustomTooltip(chart, e.getClickCount() > 1 && isValidObs(chart));
                     }
                 }
             });
@@ -459,7 +449,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         }
 
         private Component getCustomTooltip(JTimeSeriesChart chart) {
-            ObsIndex o = chart.getActiveObs();
+            ObsIndex o = chart.getFocusedObs();
             String serie = chart.getSeriesFormatter().apply(o.getSeries());
             String value = chart.getValueFormatter().apply(o);
             String period = chart.getPeriodFormatter().apply(o);
@@ -476,22 +466,23 @@ public final class JTimeSeriesChartDemo extends JPanel {
         }
     }
 
-    private static final class CustomTooltipCommand extends JCommand<CustomTooltip> {
+    private static final class ToggleCustomTooltip extends JCommand<CustomTooltip> {
 
-        private final CustomTooltip.Type type;
+        private final JTimeSeriesChart chart;
 
-        public CustomTooltipCommand(CustomTooltip.Type type) {
-            this.type = type;
+        public ToggleCustomTooltip(JTimeSeriesChart chart) {
+            this.chart = chart;
         }
 
         @Override
         public void execute(CustomTooltip component) throws Exception {
-            component.setType(type);
+            component.setEnabled(!component.isEnabled());
+            chart.setElementVisible(Element.TOOLTIP, !component.isEnabled());
         }
 
         @Override
         public boolean isSelected(CustomTooltip component) {
-            return component.type == this.type;
+            return component.isEnabled();
         }
 
         @Override

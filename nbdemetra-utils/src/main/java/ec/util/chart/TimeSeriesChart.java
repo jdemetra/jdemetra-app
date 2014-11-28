@@ -79,10 +79,19 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
     CrosshairOrientation getCrosshairOrientation();
 
     @Nonnull
-    ObsIndex getActiveObs();
+    ObsIndex getFocusedObs();
+
+    @Nonnull
+    ObsIndex getSelectedObs();
 
     @Nonnull
     ObsPredicate getObsHighlighter();
+
+    @Nonnull
+    DisplayTrigger getTooltipTrigger();
+
+    @Nonnull
+    DisplayTrigger getCrosshairTrigger();
 
     void setDataset(@Nullable DS dataset);
 
@@ -116,9 +125,15 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     void setCrosshairOrientation(@Nullable CrosshairOrientation crosshairOrientation);
 
-    void setActiveObs(@Nullable ObsIndex activeObs);
+    void setFocusedObs(@Nullable ObsIndex focusedObs);
+
+    void setSelectedObs(@Nullable ObsIndex selectedObs);
 
     void setObsHighlighter(@Nullable ObsPredicate obsHighlighter);
+
+    void setTooltipTrigger(@Nullable DisplayTrigger tooltipTrigger);
+
+    void setCrosshairTrigger(@Nullable DisplayTrigger crosshairTrigger);
 
     void copyImage() throws IOException;
 
@@ -145,6 +160,11 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     enum CrosshairOrientation {
 
-        BOTH, HORIZONTAL, VERTICAL;
+        HORIZONTAL, VERTICAL, BOTH;
+    }
+
+    enum DisplayTrigger {
+
+        FOCUS, SELECTION, BOTH
     }
 }

@@ -128,14 +128,18 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         onPlotWeightsChange();
         onElementVisibleChange();
         onCrosshairOrientationChange();
-        onActiveObsChange();
+        onFocusedObsChange();
+        onSelectedObsChange();
+        onObsHighlighterChange();
+        onTooltipTriggerChange();
+        onCrosshairTriggerChange();
         onRevealObsChange();
         onFontSupportChange();
 
         Charts.avoidScaling(chartPanel);
         Charts.enableFocusOnClick(chartPanel);
 
-        enableActiveObs();
+        enableObsTriggering();
         enableRevealObs();
         enableSelection();
         enableProperties();
@@ -307,11 +311,25 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         axis.setTickLabelFont(fontSupport.getAxisFont());
     }
 
-    private void onActiveObsChange() {
-        if (existPredicate.apply(activeObs) && isElementVisible(Element.CROSSHAIR)) {
-            double x = dataset.getXValue(activeObs.getSeries(), activeObs.getObs());
-            double y = dataset.getYValue(activeObs.getSeries(), activeObs.getObs());
-            int index = plotDispatcher.apply(activeObs.getSeries());
+    private void onFocusedObsChange() {
+        if (crosshairTrigger != DisplayTrigger.SELECTION) {
+            onCrosshairValueChange(focusedObs);
+        }
+        notification.forceRefresh();
+    }
+
+    private void onSelectedObsChange() {
+        if (crosshairTrigger != DisplayTrigger.FOCUS) {
+            onCrosshairValueChange(selectedObs);
+        }
+        notification.forceRefresh();
+    }
+
+    private void onCrosshairValueChange(ObsIndex value) {
+        if (isElementVisible(Element.CROSSHAIR) && existPredicate.apply(value)) {
+            double x = dataset.getXValue(value.getSeries(), value.getObs());
+            double y = dataset.getYValue(value.getSeries(), value.getObs());
+            int index = plotDispatcher.apply(value.getSeries());
             for (XYPlot subPlot : roSubPlots) {
                 subPlot.setDomainCrosshairValue(x);
                 subPlot.setDomainCrosshairVisible(crosshairOrientation != CrosshairOrientation.HORIZONTAL);
@@ -331,6 +349,14 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     }
 
     private void onObsHighlighterChange() {
+        notification.forceRefresh();
+    }
+
+    private void onTooltipTriggerChange() {
+        notification.forceRefresh();
+    }
+
+    private void onCrosshairTriggerChange() {
         notification.forceRefresh();
     }
 
@@ -603,7 +629,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
 
         @Override
         public boolean isObsLabelVisible(int series, int item) {
-            return isElementVisible(TOOLTIP) && activeObs.equals(r.realIndexOf(series), item);
+            return isElementVisible(TOOLTIP) && isRequested(r.realIndexOf(series), item);
         }
     }
 
@@ -685,17 +711,30 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         }
     }
 
+    private boolean isRequested(int series, int item) {
+        switch (tooltipTrigger) {
+            case FOCUS:
+                return focusedObs.equals(series, item);
+            case SELECTION:
+                return selectedObs.equals(series, item);
+            case BOTH:
+                return focusedObs.equals(series, item) || selectedObs.equals(series, item);
+        }
+        throw new RuntimeException();
+    }
+
     //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
-    private void enableActiveObs() {
+    private void enableObsTriggering() {
         chartPanel.addChartMouseListener(new ChartMouseListener() {
             @Override
             public void chartMouseClicked(ChartMouseEvent event) {
                 // FIXME: drag problem if you put mousePressed code here
+                setSelectedObs(getObsIndex(event));
             }
 
             @Override
             public void chartMouseMoved(ChartMouseEvent event) {
-                setActiveObs(getObsIndex(event));
+                setFocusedObs(getObsIndex(event));
             }
 
             private ObsIndex getObsIndex(ChartMouseEvent event) {
@@ -800,11 +839,20 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
                     case CROSSHAIR_ORIENTATION_PROPERTY:
                         onCrosshairOrientationChange();
                         break;
-                    case ACTIVE_OBS_PROPERTY:
-                        onActiveObsChange();
+                    case FOCUSED_OBS_PROPERTY:
+                        onFocusedObsChange();
+                        break;
+                    case SELECTED_OBS_PROPERTY:
+                        onSelectedObsChange();
                         break;
                     case OBS_HIGHLIGHTER_PROPERTY:
                         onObsHighlighterChange();
+                        break;
+                    case TOOLTIP_TRIGGER_PROPERTY:
+                        onTooltipTriggerChange();
+                        break;
+                    case CROSSHAIR_TRIGGER_PROPERTY:
+                        onCrosshairTriggerChange();
                         break;
                     case REVEAL_OBS_PROPERTY:
                         onRevealObsChange();

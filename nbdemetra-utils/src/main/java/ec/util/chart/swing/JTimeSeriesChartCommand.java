@@ -23,6 +23,7 @@ import ec.util.chart.ColorSchemeSupport;
 import ec.util.chart.ObsPredicate;
 import ec.util.chart.SeriesPredicate;
 import ec.util.chart.TimeSeriesChart.CrosshairOrientation;
+import ec.util.chart.TimeSeriesChart.DisplayTrigger;
 import ec.util.chart.TimeSeriesChart.Element;
 import ec.util.chart.TimeSeriesChartCommand;
 import ec.util.various.swing.JCommand;
@@ -140,6 +141,16 @@ public abstract class JTimeSeriesChartCommand extends JCommand<JTimeSeriesChart>
     @Nonnull
     public static JTimeSeriesChartCommand applyObsHighlighter(@Nullable ObsPredicate obsHighlighter) {
         return new Adapter(TimeSeriesChartCommand.applyObsHighlighter(obsHighlighter));
+    }
+
+    @Nonnull
+    public static JTimeSeriesChartCommand applyTooltipTrigger(@Nonnull DisplayTrigger tooltipTrigger) {
+        return new Adapter(TimeSeriesChartCommand.applyTooltipTrigger(tooltipTrigger));
+    }
+
+    @Nonnull
+    public static JTimeSeriesChartCommand applyCrosshairTrigger(@Nonnull DisplayTrigger crosshairTrigger) {
+        return new Adapter(TimeSeriesChartCommand.applyCrosshairTrigger(crosshairTrigger));
     }
 
     public static JTimeSeriesChartCommand copyImage() {
