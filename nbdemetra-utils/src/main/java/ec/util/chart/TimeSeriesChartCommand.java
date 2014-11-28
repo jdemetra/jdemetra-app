@@ -20,12 +20,16 @@ import ec.util.chart.TimeSeriesChart.CrosshairOrientation;
 import ec.util.chart.TimeSeriesChart.DisplayTrigger;
 import ec.util.chart.TimeSeriesChart.RendererType;
 import ec.util.chart.TimeSeriesChart.Element;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
@@ -131,18 +135,8 @@ public abstract class TimeSeriesChartCommand {
      * @return a non-null command
      */
     @Nonnull
-    public static TimeSeriesChartCommand applyLineThickness(final float thickness) {
-        return new TimeSeriesChartCommand() {
-            @Override
-            public void execute(TimeSeriesChart chart) {
-                chart.setLineThickness(thickness);
-            }
-
-            @Override
-            public boolean isSelected(TimeSeriesChart chart) {
-                return chart.getLineThickness() == thickness;
-            }
-        };
+    public static TimeSeriesChartCommand applyLineThickness(float thickness) {
+        return new QuickCommand("lineThickness", thickness);
     }
 
     /**
@@ -153,18 +147,8 @@ public abstract class TimeSeriesChartCommand {
      * @return a non-null command
      */
     @Nonnull
-    public static TimeSeriesChartCommand applyDash(@Nullable final ObsPredicate predicate) {
-        return new TimeSeriesChartCommand() {
-            @Override
-            public void execute(TimeSeriesChart chart) {
-                chart.setDashPredicate(predicate);
-            }
-
-            @Override
-            public boolean isSelected(TimeSeriesChart chart) {
-                return chart.getDashPredicate().equals(predicate);
-            }
-        };
+    public static TimeSeriesChartCommand applyDash(@Nullable ObsPredicate predicate) {
+        return new QuickCommand("dashPredicate", predicate);
     }
 
     /**
@@ -175,33 +159,13 @@ public abstract class TimeSeriesChartCommand {
      * @return a non-null command
      */
     @Nonnull
-    public static TimeSeriesChartCommand applyLegendVisibility(@Nullable final SeriesPredicate predicate) {
-        return new TimeSeriesChartCommand() {
-            @Override
-            public void execute(TimeSeriesChart chart) {
-                chart.setLegendVisibilityPredicate(predicate);
-            }
-
-            @Override
-            public boolean isSelected(TimeSeriesChart chart) {
-                return chart.getLegendVisibilityPredicate().equals(predicate);
-            }
-        };
+    public static TimeSeriesChartCommand applyLegendVisibility(@Nullable SeriesPredicate predicate) {
+        return new QuickCommand("legendVisibilityPredicate", predicate);
     }
 
     @Nonnull
-    public static TimeSeriesChartCommand applyRenderer(@Nullable final SeriesFunction<RendererType> renderer) {
-        return new TimeSeriesChartCommand() {
-            @Override
-            public void execute(TimeSeriesChart chart) {
-                chart.setSeriesRenderer(renderer);
-            }
-
-            @Override
-            public boolean isSelected(TimeSeriesChart chart) {
-                return chart.getSeriesRenderer().equals(renderer);
-            }
-        };
+    public static TimeSeriesChartCommand applyRenderer(@Nullable SeriesFunction<RendererType> renderer) {
+        return new QuickCommand("seriesRenderer", renderer);
     }
 
     @Nonnull
@@ -210,18 +174,8 @@ public abstract class TimeSeriesChartCommand {
     }
 
     @Nonnull
-    public static TimeSeriesChartCommand applyPlotDispatcher(@Nullable final SeriesFunction<Integer> plotDispatcher) {
-        return new TimeSeriesChartCommand() {
-            @Override
-            public void execute(TimeSeriesChart chart) {
-                chart.setPlotDispatcher(plotDispatcher);
-            }
-
-            @Override
-            public boolean isSelected(TimeSeriesChart chart) {
-                return chart.getPlotDispatcher().equals(plotDispatcher);
-            }
-        };
+    public static TimeSeriesChartCommand applyPlotDispatcher(@Nullable SeriesFunction<Integer> plotDispatcher) {
+        return new QuickCommand("plotDispatcher", plotDispatcher);
     }
 
     @Nonnull
@@ -230,18 +184,8 @@ public abstract class TimeSeriesChartCommand {
     }
 
     @Nonnull
-    public static TimeSeriesChartCommand applySeriesFormatter(@Nullable final SeriesFunction<String> formatter) {
-        return new TimeSeriesChartCommand() {
-            @Override
-            public void execute(TimeSeriesChart chart) {
-                chart.setSeriesFormatter(formatter);
-            }
-
-            @Override
-            public boolean isSelected(TimeSeriesChart chart) {
-                return chart.getSeriesFormatter().equals(formatter);
-            }
-        };
+    public static TimeSeriesChartCommand applySeriesFormatter(@Nullable SeriesFunction<String> formatter) {
+        return new QuickCommand("seriesFormatter", formatter);
     }
 
     @Nonnull
@@ -250,18 +194,8 @@ public abstract class TimeSeriesChartCommand {
     }
 
     @Nonnull
-    public static TimeSeriesChartCommand applyPeriod(@Nullable final DateFormat periodFormat) {
-        return new TimeSeriesChartCommand() {
-            @Override
-            public void execute(TimeSeriesChart chart) {
-                chart.setPeriodFormat(periodFormat);
-            }
-
-            @Override
-            public boolean isSelected(TimeSeriesChart chart) {
-                return chart.getPeriodFormat().equals(periodFormat);
-            }
-        };
+    public static TimeSeriesChartCommand applyPeriod(@Nullable DateFormat periodFormat) {
+        return new QuickCommand("periodFormat", periodFormat);
     }
 
     @Nonnull
@@ -285,13 +219,8 @@ public abstract class TimeSeriesChartCommand {
     }
 
     @Nonnull
-    public static TimeSeriesChartCommand applyTitle(@Nullable final String title) {
-        return new TimeSeriesChartCommand() {
-            @Override
-            public void execute(TimeSeriesChart chart) {
-                chart.setTitle(title);
-            }
-        };
+    public static TimeSeriesChartCommand applyTitle(@Nullable String title) {
+        return new QuickCommand("title", title);
     }
 
     @Nonnull
@@ -300,18 +229,8 @@ public abstract class TimeSeriesChartCommand {
     }
 
     @Nonnull
-    public static TimeSeriesChartCommand applyObsHighlighter(@Nullable final ObsPredicate obsHighlighter) {
-        return new TimeSeriesChartCommand() {
-            @Override
-            public void execute(TimeSeriesChart chart) {
-                chart.setObsHighlighter(obsHighlighter);
-            }
-
-            @Override
-            public boolean isSelected(TimeSeriesChart chart) {
-                return chart.getObsHighlighter().equals(obsHighlighter);
-            }
-        };
+    public static TimeSeriesChartCommand applyObsHighlighter(@Nullable ObsPredicate obsHighlighter) {
+        return new QuickCommand("obsHighlighter", obsHighlighter);
     }
 
     @Nonnull
@@ -339,7 +258,49 @@ public abstract class TimeSeriesChartCommand {
         return PRINT_IMAGE;
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Implementation">
+    //<editor-fold defaultstate="collapsed" desc="Implementation details">
+    private static final class QuickCommand extends TimeSeriesChartCommand {
+
+        private final PropertyDescriptor property;
+        private final Object value;
+
+        public QuickCommand(String propertyName, Object value) {
+            this.property = lookupProperty(propertyName);
+            this.value = value;
+        }
+
+        private static PropertyDescriptor lookupProperty(String propertyName) {
+            try {
+                for (PropertyDescriptor o : Introspector.getBeanInfo(TimeSeriesChart.class).getPropertyDescriptors()) {
+                    if (o.getName().equals(propertyName)) {
+                        return o;
+                    }
+                }
+            } catch (IntrospectionException ex) {
+                throw new RuntimeException(ex);
+            }
+            throw new IllegalArgumentException(propertyName);
+        }
+
+        @Override
+        public void execute(TimeSeriesChart chart) {
+            try {
+                property.getWriteMethod().invoke(chart, value);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        @Override
+        public boolean isSelected(TimeSeriesChart chart) {
+            try {
+                return Objects.equals(property.getReadMethod().invoke(chart), value);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
     private static final TimeSeriesChartCommand CLEAR = new TimeSeriesChartCommand() {
         @Override
         public void execute(TimeSeriesChart chart) {
@@ -367,65 +328,19 @@ public abstract class TimeSeriesChartCommand {
         return result;
     }
 
-    private static final Map<CrosshairOrientation, TimeSeriesChartCommand> CTS = createCTS();
-
-    private static EnumMap<CrosshairOrientation, TimeSeriesChartCommand> createCTS() {
-        EnumMap<CrosshairOrientation, TimeSeriesChartCommand> result = new EnumMap<>(CrosshairOrientation.class);
-        for (final CrosshairOrientation o : CrosshairOrientation.values()) {
-            result.put(o, new TimeSeriesChartCommand() {
-                @Override
-                public void execute(TimeSeriesChart chart) {
-                    chart.setCrosshairOrientation(o);
-                }
-
-                @Override
-                public boolean isSelected(TimeSeriesChart chart) {
-                    return chart.getCrosshairOrientation() == o;
-                }
-            });
+    private static <T extends Enum<T>> Map<T, TimeSeriesChartCommand> allOf(Class<T> clazz, String propertyName) {
+        EnumMap<T, TimeSeriesChartCommand> result = new EnumMap<>(clazz);
+        for (T o : clazz.getEnumConstants()) {
+            result.put(o, new QuickCommand(propertyName, o));
         }
         return result;
     }
 
-    private static final Map<DisplayTrigger, TimeSeriesChartCommand> TTS = createTTS();
+    private static final Map<CrosshairOrientation, TimeSeriesChartCommand> CTS = allOf(CrosshairOrientation.class, "crosshairOrientation");
 
-    private static EnumMap<DisplayTrigger, TimeSeriesChartCommand> createTTS() {
-        EnumMap<DisplayTrigger, TimeSeriesChartCommand> result = new EnumMap<>(DisplayTrigger.class);
-        for (final DisplayTrigger o : DisplayTrigger.values()) {
-            result.put(o, new TimeSeriesChartCommand() {
-                @Override
-                public void execute(TimeSeriesChart chart) {
-                    chart.setTooltipTrigger(o);
-                }
+    private static final Map<DisplayTrigger, TimeSeriesChartCommand> TTS = allOf(DisplayTrigger.class, "tooltipTrigger");
 
-                @Override
-                public boolean isSelected(TimeSeriesChart chart) {
-                    return chart.getTooltipTrigger() == o;
-                }
-            });
-        }
-        return result;
-    }
-
-    private static final Map<DisplayTrigger, TimeSeriesChartCommand> XTS = createXTS();
-
-    private static EnumMap<DisplayTrigger, TimeSeriesChartCommand> createXTS() {
-        EnumMap<DisplayTrigger, TimeSeriesChartCommand> result = new EnumMap<>(DisplayTrigger.class);
-        for (final DisplayTrigger o : DisplayTrigger.values()) {
-            result.put(o, new TimeSeriesChartCommand() {
-                @Override
-                public void execute(TimeSeriesChart chart) {
-                    chart.setCrosshairTrigger(o);
-                }
-
-                @Override
-                public boolean isSelected(TimeSeriesChart chart) {
-                    return chart.getCrosshairTrigger() == o;
-                }
-            });
-        }
-        return result;
-    }
+    private static final Map<DisplayTrigger, TimeSeriesChartCommand> XTS = allOf(DisplayTrigger.class, "crosshairTrigger");
 
     private static final TimeSeriesChartCommand COPY_IMAGE = new TimeSeriesChartCommand() {
         @Override
