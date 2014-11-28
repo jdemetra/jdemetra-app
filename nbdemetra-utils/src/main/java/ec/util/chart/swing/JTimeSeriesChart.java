@@ -38,6 +38,7 @@ import java.awt.Stroke;
 import java.awt.dnd.DropTarget;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
@@ -724,17 +725,24 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
+    private boolean isInteractive() {
+        return isEnabled();
+    }
+
     private void enableObsTriggering() {
         chartPanel.addChartMouseListener(new ChartMouseListener() {
             @Override
             public void chartMouseClicked(ChartMouseEvent event) {
-                // FIXME: drag problem if you put mousePressed code here
-                setSelectedObs(getObsIndex(event));
+                if (isInteractive()) {
+                    setSelectedObs(getObsIndex(event));
+                }
             }
 
             @Override
             public void chartMouseMoved(ChartMouseEvent event) {
-                setFocusedObs(getObsIndex(event));
+                if (isInteractive()) {
+                    setFocusedObs(getObsIndex(event));
+                }
             }
 
             private ObsIndex getObsIndex(ChartMouseEvent event) {
@@ -754,14 +762,14 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         chartPanel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyChar() == 'r') {
+                if (isInteractive() && e.getKeyChar() == 'r') {
                     setRevealObs(true);
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if (e.getKeyChar() == 'r') {
+                if (isInteractive() && e.getKeyChar() == 'r') {
                     setRevealObs(false);
                 }
             }
@@ -770,6 +778,13 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
 
     private void enableSelection() {
         chartPanel.addMouseListener(new SelectionMouseListener(seriesSelectionModel, true) {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (isInteractive()) {
+                    super.mousePressed(e);
+                }
+            }
+
             @Override
             protected int getSelectionIndex(LegendItemEntity entity) {
                 return entity != null ? dataset.indexOf(entity.getSeriesKey()) : -1;
@@ -856,6 +871,11 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
                         break;
                     case REVEAL_OBS_PROPERTY:
                         onRevealObsChange();
+                        break;
+                    case "enabled":
+                        boolean enabled = isEnabled();
+                        chartPanel.setDomainZoomable(enabled);
+                        chartPanel.setRangeZoomable(enabled);
                         break;
                 }
                 notification.resume();

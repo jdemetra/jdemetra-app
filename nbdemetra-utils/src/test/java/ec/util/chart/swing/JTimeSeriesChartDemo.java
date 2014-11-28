@@ -37,6 +37,7 @@ import java.awt.Component;
 import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
+import javax.swing.AbstractAction;
 import static javax.swing.BorderFactory.createCompoundBorder;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.BorderFactory.createLineBorder;
@@ -114,6 +116,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         chart.setSeriesRenderer(SeriesFunction.array(RendererType.LINE, RendererType.LINE, RendererType.COLUMN));
         chart.setColorSchemeSupport(SwingColorSchemeSupport.from(new AndroidColorScheme.AndroidDarkColorScheme()));
         chart.setLineThickness(2);
+        chart.setMouseWheelEnabled(true);
 
         customTooltip.enable(chart);
 
@@ -232,6 +235,12 @@ public final class JTimeSeriesChartDemo extends JPanel {
         result.addSeparator();
         result.add(resetZoom().toAction(chart)).setText("Reset zoom");
         result.add(newExportMenu());
+        result.add(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                chart.setEnabled(!chart.isEnabled());
+            }
+        }).setText("Enable/Disable");
         result.add(newConfigureMenu());
 
         return result;
