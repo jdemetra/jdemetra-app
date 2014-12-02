@@ -140,6 +140,7 @@ public class JGrid extends JComponent {
         fct = new FixedColumnTable(1, scrollPane);
         fct.getFixedTable().getTableHeader().setReorderingAllowed(false);
         fct.getFixedTable().setFillsViewportHeight(true);
+        fct.getFixedTable().setIntercellSpacing(new Dimension(0, 0));
 
         // click on header select/unselect all the columns
         fct.getFixedTable().getTableHeader().addMouseListener(new MouseAdapter() {
@@ -253,6 +254,10 @@ public class JGrid extends JComponent {
 
     public void setRowRenderer(TableCellRenderer renderer) {
         fct.getFixedTable().setDefaultRenderer(Object.class, renderer);
+    }
+
+    public void setCornerRenderer(TableCellRenderer renderer) {
+        fct.getFixedTable().getTableHeader().setDefaultRenderer(renderer);
     }
 
     @Nonnull

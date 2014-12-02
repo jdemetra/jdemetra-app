@@ -22,20 +22,16 @@ import ec.util.chart.TimeSeriesChart;
 import ec.util.chart.swing.JTimeSeriesChart;
 import ec.util.various.swing.BasicSwingLauncher;
 import ec.util.various.swing.FontAwesome;
+import ec.util.various.swing.LineBorder2;
 import ec.util.various.swing.ModernUI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.geom.Path2D;
-import java.awt.geom.Rectangle2D;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -96,8 +92,9 @@ public final class JGridDemo extends JPanel {
         grid.setPreferredSize(new Dimension(350, 10));
         grid.setRowSelectionAllowed(true);
         grid.setColumnSelectionAllowed(true);
-        grid.setRowRenderer(new HeaderRenderer(true));
-        grid.setColumnRenderer(new HeaderRenderer(false));
+        grid.setRowRenderer(new RowRenderer());
+        grid.setColumnRenderer(new ColumnRenderer());
+        grid.setCornerRenderer(new CornerRenderer());
 
         grid.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             final NumberFormat format = new DecimalFormat("#.##");
@@ -106,9 +103,10 @@ public final class JGridDemo extends JPanel {
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 ObsIndex focusedObs = ObsIndex.valueOf(table.columnAtPoint(focusedCell), table.rowAtPoint(focusedCell));
                 chart.setFocusedObs(focusedObs);
+                boolean xxx = focusedObs.equals(column, row);
                 setHorizontalAlignment(JLabel.TRAILING);
                 super.getTableCellRendererComponent(table, format.format(value), isSelected, hasFocus, row, column);
-                setForeground(focusedObs.equals(column, row) ? Color.RED : null);
+                setForeground(xxx ? Color.RED : null);
                 return this;
             }
         });
@@ -208,79 +206,57 @@ public final class JGridDemo extends JPanel {
         return result;
     }
 
-    private static class HeaderRenderer extends DefaultTableCellRenderer {
+    private abstract static class HeaderRenderer extends DefaultTableCellRenderer {
 
         private final Color background;
-        private final Color selectedBackground;
-        private final Border border;
-        private final Border selectedBorder;
+        private final Border padding;
 
-        private static Color getControlColor() {
-            Color result = UIManager.getColor("control");
-            return result != null ? result : Color.LIGHT_GRAY;
+        public HeaderRenderer() {
+            Color controlColor = UIManager.getColor("control");
+            this.background = controlColor != null ? controlColor : Color.LIGHT_GRAY;
+            this.padding = new LineBorder2(background.brighter(), 0, 0, 1, 1);
         }
 
-        public HeaderRenderer(boolean stuff) {
-            this.background = getControlColor();
-            this.selectedBackground = background.darker();
-            this.border = new CustomBorder(2, 2, 2, 2, new Color(0f, 0, 0, 0));
-//            this.border = new CustomBorder(0, 0, 0, 2, Color.BLACK);
-            this.selectedBorder = new CustomBorder(0, 0, stuff ? 0 : 2, stuff ? 2 : 0, new JTable().getSelectionBackground());
-            setHorizontalAlignment(JLabel.CENTER);
-            setOpaque(true);
-        }
+        abstract protected boolean isSelected(JTable table, int row, int column);
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-            boolean x = isSelected || (table.isColumnSelected(column));
+            boolean x = isSelected || isSelected(table, row, column);
 
-            result.setForeground(x ? table.getSelectionForeground() : table.getForeground());
-            result.setBackground(x ? selectedBackground : background);
-            result.setBorder(x ? selectedBorder : border);
+            JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, x, hasFocus, row, column);
+
+            result.setBorder(padding);
+            result.setBackground(x ? table.getSelectionBackground().darker() : background);
+            result.setHorizontalAlignment(JLabel.CENTER);
+            result.setPreferredSize(new Dimension(10, table.getRowHeight() + 1));
             return result;
+        }
+
+    }
+
+    private static class RowRenderer extends HeaderRenderer {
+
+        @Override
+        protected boolean isSelected(JTable table, int row, int column) {
+            return table.isRowSelected(row);
         }
     }
 
-    private static final class CustomBorder implements Border {
-
-        private final int left, right, top, bottom;
-        private final Color color;
-
-        public CustomBorder(int top, int left, int bottom, int right, Color color) {
-            this.left = left;
-            this.right = right;
-            this.top = top;
-            this.bottom = bottom;
-            this.color = color;
-        }
+    private static class ColumnRenderer extends HeaderRenderer {
 
         @Override
-        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-            if (g instanceof Graphics2D) {
-                Graphics2D g2d = (Graphics2D) g;
-
-                Color oldColor = g2d.getColor();
-                g2d.setColor(color);
-
-                Path2D path = new Path2D.Float(Path2D.WIND_EVEN_ODD);
-                path.append(new Rectangle2D.Float(x, y, width, height), false);
-                path.append(new Rectangle2D.Float(x + left, y + top, width - left - right, height - top - bottom), false);
-                g2d.fill(path);
-
-                g2d.setColor(oldColor);
-            }
+        protected boolean isSelected(JTable table, int row, int column) {
+            return table.isColumnSelected(column);
         }
+    }
+
+    private static class CornerRenderer extends HeaderRenderer {
 
         @Override
-        public Insets getBorderInsets(Component c) {
-            return new Insets(top, left, bottom, right);
-        }
-
-        @Override
-        public boolean isBorderOpaque() {
-            return true;
+        protected boolean isSelected(JTable table, int row, int column) {
+            return false;
+//            return table.isCellSelected(row, column);
         }
     }
 }
