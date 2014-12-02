@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.util.grid.swing;
 
@@ -8,6 +20,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.annotation.Nonnull;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
@@ -34,11 +47,11 @@ import javax.swing.table.TableColumnModel;
  *
  * from: http://tips4java.wordpress.com/2008/11/05/fixed-column-table/
  */
-class FixedColumnTable implements PropertyChangeListener, ChangeListener, TableModelListener {
+final class FixedColumnTable implements PropertyChangeListener, ChangeListener, TableModelListener {
 
-    private JTable main;
-    private JTable fixed;
-    private JScrollPane scrollPane;
+    private final JTable main;
+    private final JTable fixed;
+    private final JScrollPane scrollPane;
 
     /*
      * Specify the number of columns to be fixed and the scroll pane containing
@@ -84,13 +97,13 @@ class FixedColumnTable implements PropertyChangeListener, ChangeListener, TableM
         fixed.setRowHeight(main.getRowHeight());
     }
 
-    static void clear(TableColumnModel columnModel) {
+    private static void clear(TableColumnModel columnModel) {
         while (columnModel.getColumnCount() > 0) {
             columnModel.removeColumn(columnModel.getColumn(0));
         }
     }
 
-    void makeColumns(int fixedColumns) {
+    private void makeColumns(int fixedColumns) {
         clear(fixed.getColumnModel());
         clear(main.getColumnModel());
         for (int i = 0; i < fixedColumns; i++) {
@@ -104,6 +117,7 @@ class FixedColumnTable implements PropertyChangeListener, ChangeListener, TableM
     /*
      * Return the table being used in the row header
      */
+    @Nonnull
     public JTable getFixedTable() {
         return fixed;
     }

@@ -53,7 +53,7 @@ public final class Grid2Factory extends DemoComponentFactory {
             public Component call() throws Exception {
                 JGrid result = new JGrid();
                 result.setModel(new ExcelModel());
-                result.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                result.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
                 result.setColumnSelectionAllowed(true);
                 result.setDragEnabled(true);
                 result.setDefaultRenderer(Object.class, new ExcelCellRenderer());

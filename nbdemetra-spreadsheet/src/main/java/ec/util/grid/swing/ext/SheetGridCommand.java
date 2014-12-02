@@ -134,8 +134,8 @@ public abstract class SheetGridCommand extends JCommand<JGrid> {
 
         @Override
         public Table<?> toTable(JGrid grid) {
-            ListSelectionModel r = grid.getSelectionModel();
-            ListSelectionModel c = grid.getColumnModel().getSelectionModel();
+            ListSelectionModel r = grid.getRowSelectionModel();
+            ListSelectionModel c = grid.getColumnSelectionModel();
             return !r.isSelectionEmpty() && !c.isSelectionEmpty()
                     ? copy2(grid.getModel(), Range.closed(r.getMinSelectionIndex(), r.getMaxSelectionIndex()), Range.closed(c.getMinSelectionIndex(), c.getMaxSelectionIndex()), rowHeader, columnHeader)
                     : new Table<>(0, 0);

@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.util.grid.swing;
 
@@ -8,6 +20,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.table.TableCellRenderer;
@@ -27,13 +41,16 @@ public class XTable extends JTable {
     public static final String CELL_PADDING_PROPERTY = "Table.cellPadding";
     public static final String ODD_BACKGROUND_PROPERTY = "Table.oddBackground";
     public static final String NO_DATA_RENDERER_PROPERTY = "noDataRenderer";
+
     protected static final Dimension DEFAULT_CELL_PADDING = new Dimension(4, 2);
     protected static final Color DEFAULT_ODD_BACKGROUND = new Color(250, 250, 250);
     protected static final NoDataRenderer DEFAULT_NO_DATA_RENDERER = new DefaultNoDataRenderer();
+
     protected Dimension cellPadding;
     protected Color oddBackground;
     protected NoDataRenderer noDataRenderer;
     //</editor-fold>
+
     // OTHER
     private Border cellBorder = BorderFactory.createEmptyBorder();
     private boolean hasDropLocation;
@@ -100,24 +117,25 @@ public class XTable extends JTable {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
-    public void setCellPadding(Dimension cellPadding) {
+    public void setCellPadding(@Nullable Dimension cellPadding) {
         Dimension old = this.cellPadding;
         this.cellPadding = cellPadding != null ? cellPadding : DEFAULT_CELL_PADDING;
         firePropertyChange(CELL_PADDING_PROPERTY, old, this.cellPadding);
     }
 
-    public void setOddBackground(Color oddBackground) {
+    public void setOddBackground(@Nullable Color oddBackground) {
         Color old = this.oddBackground;
 //        this.oddBackground = oddBackground != null ? oddBackground : DEFAULT_ODD_BACKGROUND;
         this.oddBackground = oddBackground;
         firePropertyChange(ODD_BACKGROUND_PROPERTY, old, this.oddBackground);
     }
 
+    @Nonnull
     public NoDataRenderer getNoDataRenderer() {
         return noDataRenderer;
     }
 
-    public void setNoDataRenderer(NoDataRenderer noDataRenderer) {
+    public void setNoDataRenderer(@Nullable NoDataRenderer noDataRenderer) {
         NoDataRenderer old = this.noDataRenderer;
         this.noDataRenderer = noDataRenderer != null ? noDataRenderer : DEFAULT_NO_DATA_RENDERER;
         firePropertyChange(NO_DATA_RENDERER_PROPERTY, old, this.noDataRenderer);

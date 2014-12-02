@@ -27,7 +27,10 @@ import java.awt.dnd.DragSource;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.Enumeration;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import javax.swing.JScrollPane;
@@ -53,15 +56,16 @@ import javax.swing.table.TableColumnModel;
  */
 public class JGrid extends JComponent {
 
-    final JScrollPane scrollPane;
-    final XTable noDataPanel;
-    final XTable main;
-    final FixedColumnTable fct;
-    final InternalTableModel internalModel;
-    static final int COLUMN_WIDTH;
-    static final int ROW_HEIGTH;
-    float zoomRatio = 1.0f;
-    static final float FONT_SIZE;
+    private static final int COLUMN_WIDTH;
+    private static final int ROW_HEIGTH;
+    private static final float FONT_SIZE;
+
+    private final JScrollPane scrollPane;
+    private final XTable noDataPanel;
+    private final XTable main;
+    private final FixedColumnTable fct;
+    private final InternalTableModel internalModel;
+    private float zoomRatio = 1.0f;
 
     static {
         // Setting constants used to implement zoom
@@ -226,6 +230,7 @@ public class JGrid extends JComponent {
         return main.getRowHeight();
     }
 
+    @Deprecated
     public JTableHeader getTableHeader() {
         return main.getTableHeader();
     }
@@ -246,18 +251,31 @@ public class JGrid extends JComponent {
         fct.getFixedTable().setDefaultRenderer(Object.class, renderer);
     }
 
+    @Nonnull
     public XTable.NoDataRenderer getNoDataRenderer() {
         return this.noDataPanel.getNoDataRenderer();
     }
 
-    public void setNoDataRenderer(XTable.NoDataRenderer renderer) {
+    public void setNoDataRenderer(@Nullable XTable.NoDataRenderer renderer) {
         this.noDataPanel.setNoDataRenderer(renderer);
     }
 
-    public ListSelectionModel getSelectionModel() {
+    @Nonnull
+    public ListSelectionModel getRowSelectionModel() {
         return main.getSelectionModel();
     }
 
+    @Nonnull
+    public ListSelectionModel getColumnSelectionModel() {
+        return main.getColumnModel().getSelectionModel();
+    }
+
+    @Deprecated
+    public ListSelectionModel getSelectionModel() {
+        return getRowSelectionModel();
+    }
+
+    @Deprecated
     public TableColumnModel getColumnModel() {
         return main.getColumnModel();
     }
@@ -270,6 +288,33 @@ public class JGrid extends JComponent {
         internalModel.setGridModel(model);
     }
 
+    public void setRowSelectionAllowed(boolean rowSelectionAllowed) {
+        main.setRowSelectionAllowed(rowSelectionAllowed);
+    }
+
+    public void setColumnSelectionAllowed(boolean columnSelectionAllowed) {
+        main.setColumnSelectionAllowed(columnSelectionAllowed);
+    }
+
+    @Nonnull
+    public int[] getSelectedColumns() {
+        return main.getSelectedColumns();
+    }
+
+    @Nonnull
+    public int[] getSelectedRows() {
+        return main.getSelectedRows();
+    }
+
+    public void setOddBackground(@Nullable Color oddBackground) {
+        main.setOddBackground(oddBackground);
+    }
+
+    public void setGridColor(Color gridColor) {
+        main.setGridColor(gridColor);
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Listeners">
     @Override
     public synchronized void addMouseListener(MouseListener l) {
         super.addMouseListener(l);
@@ -284,33 +329,25 @@ public class JGrid extends JComponent {
         super.removeMouseListener(l);
     }
 
-    public void setRowSelectionAllowed(boolean rowSelectionAllowed) {
-        main.setRowSelectionAllowed(rowSelectionAllowed);
+    @Override
+    public synchronized void addMouseMotionListener(MouseMotionListener l) {
+        super.addMouseMotionListener(l);
+        main.addMouseMotionListener(l);
+        noDataPanel.addMouseMotionListener(l);
     }
 
-    public void setColumnSelectionAllowed(boolean columnSelectionAllowed) {
-        main.setColumnSelectionAllowed(columnSelectionAllowed);
+    @Override
+    public synchronized void removeMouseMotionListener(MouseMotionListener l) {
+        noDataPanel.removeMouseMotionListener(l);
+        main.removeMouseMotionListener(l);
+        super.removeMouseMotionListener(l);
     }
+    //</editor-fold>
 
-    public int[] getSelectedColumns() {
-        return main.getSelectedColumns();
-    }
+    //<editor-fold defaultstate="collapsed" desc="Internal implementation">
+    private static final class InternalTableModel extends AbstractTableModel implements TableModelListener {
 
-    public int[] getSelectedRows() {
-        return main.getSelectedRows();
-    }
-
-    public void setOddBackground(Color oddBackground) {
-        main.setOddBackground(oddBackground);
-    }
-
-    public void setGridColor(Color gridColor) {
-        main.setGridColor(gridColor);
-    }
-
-    static class InternalTableModel extends AbstractTableModel implements TableModelListener {
-
-        GridModel gridModel;
+        private GridModel gridModel;
 
         InternalTableModel() {
             this.gridModel = GridModels.empty();
@@ -362,7 +399,7 @@ public class JGrid extends JComponent {
         }
     }
 
-    static void addDragOnHeader(final JTableHeader tableHeader) {
+    private static void addDragOnHeader(final JTableHeader tableHeader) {
         DragSource dragSource = DragSource.getDefaultDragSource();
         dragSource.createDefaultDragGestureRecognizer(tableHeader, DnDConstants.ACTION_COPY_OR_MOVE, new DragGestureListener() {
             @Override
@@ -378,4 +415,5 @@ public class JGrid extends JComponent {
     private static int getCount(ListSelectionModel m) {
         return !m.isSelectionEmpty() ? (m.getMaxSelectionIndex() - m.getMinSelectionIndex() + 1) : 0;
     }
+    //</editor-fold>
 }

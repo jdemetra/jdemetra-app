@@ -268,7 +268,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
         void addGrid(Sheet sheet) {
             JGrid grid = new JGrid();
             grid.setModel(new SheetGridModel(sheet));
-            grid.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+            grid.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
             grid.setColumnSelectionAllowed(true);
             grid.setRowRenderer(new SheetRowRenderer());
             grid.setColumnRenderer(new SheetColumnRenderer());
