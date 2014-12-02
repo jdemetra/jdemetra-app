@@ -101,7 +101,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
 
     public JTimeSeriesChart() {
         super(Arrays.asList(MARKER, LINE, SPLINE, COLUMN, STACKED_COLUMN, AREA, STACKED_AREA));
-        this.chartPanel = new ChartPanel(createTsChart());
+        this.chartPanel = new ChartPanel(createTsChart(), false, false, false, false, false);
         this.notification = new ChartNotification(chartPanel.getChart());
         this.seriesSelectionModel = new DefaultListSelectionModel();
         this.mainPlot = (CombinedDomainXYPlot) chartPanel.getChart().getXYPlot();
