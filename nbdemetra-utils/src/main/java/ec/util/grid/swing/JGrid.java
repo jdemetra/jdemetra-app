@@ -57,22 +57,19 @@ import javax.swing.table.TableColumnModel;
 public class JGrid extends JComponent {
 
     private static final int COLUMN_WIDTH;
-    private static final int ROW_HEIGTH;
-    private static final float FONT_SIZE;
 
     private final JScrollPane scrollPane;
     private final XTable noDataPanel;
     private final XTable main;
     private final FixedColumnTable fct;
     private final InternalTableModel internalModel;
-    private float zoomRatio = 1.0f;
+    private final float initialFontSize;
+    private final int initialRowHeight;
+    private float zoomRatio;
 
     static {
         // Setting constants used to implement zoom
-        JTable t = new JTable();
         COLUMN_WIDTH = new TableColumn().getPreferredWidth();
-        ROW_HEIGTH = t.getRowHeight();
-        FONT_SIZE = t.getFont().getSize2D();
     }
 
     public JGrid() {
@@ -176,6 +173,10 @@ public class JGrid extends JComponent {
         setInputMap(WHEN_FOCUSED, main.getInputMap(WHEN_FOCUSED));
         setInputMap(WHEN_IN_FOCUSED_WINDOW, main.getInputMap(WHEN_IN_FOCUSED_WINDOW));
         setInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, main.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT));
+
+        this.initialFontSize = main.getFont().getSize2D();
+        this.initialRowHeight = main.getRowHeight();
+        this.zoomRatio = 1f;
     }
 
     // setFont() method now scales all elements when the font has the size changed
@@ -183,22 +184,23 @@ public class JGrid extends JComponent {
     public void setFont(Font font) {
         super.setFont(font);
 
-        zoomRatio = font.getSize2D() / FONT_SIZE;
-        main.setRowHeight((int) (ROW_HEIGTH * zoomRatio));
-        fct.getFixedTable().setRowHeight(main.getRowHeight());
+        zoomRatio = font.getSize2D() / initialFontSize;
+        int rowHeight = (int) (initialRowHeight * zoomRatio);
+        main.setRowHeight(rowHeight);
+        fct.getFixedTable().setRowHeight(rowHeight);
+
+        int columnWidth = (int) (COLUMN_WIDTH * zoomRatio);
 
         // Resize of data columns according to the zoom ratio
         Enumeration<TableColumn> cols = main.getTableHeader().getColumnModel().getColumns();
         while (cols.hasMoreElements()) {
-            TableColumn c = cols.nextElement();
-            c.setPreferredWidth((int) (COLUMN_WIDTH * zoomRatio));
+            cols.nextElement().setPreferredWidth(columnWidth);
         }
 
         // Resize of row headers according to the zoom ratio
         JTable j = fct.getFixedTable();
-        Dimension dim = new Dimension((int) (COLUMN_WIDTH * zoomRatio), (int) (ROW_HEIGTH * zoomRatio));
-        j.setPreferredScrollableViewportSize(dim);
-        j.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth((int) (COLUMN_WIDTH * zoomRatio));
+        j.setPreferredScrollableViewportSize(new Dimension(columnWidth, rowHeight));
+        j.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(columnWidth);
 
         // Resize of the fonts according to the zoom ratio
         noDataPanel.setFont(font);
@@ -222,10 +224,12 @@ public class JGrid extends JComponent {
         noDataPanel.setTransferHandler(newHandler);
     }
 
+    @Deprecated
     public void setRowHeight(int rowHeight) {
         main.setRowHeight(rowHeight);
     }
 
+    @Deprecated
     public int getRowHeight() {
         return main.getRowHeight();
     }
@@ -296,12 +300,12 @@ public class JGrid extends JComponent {
         main.setColumnSelectionAllowed(columnSelectionAllowed);
     }
 
-    @Nonnull
+    @Deprecated
     public int[] getSelectedColumns() {
         return main.getSelectedColumns();
     }
 
-    @Nonnull
+    @Deprecated
     public int[] getSelectedRows() {
         return main.getSelectedRows();
     }
