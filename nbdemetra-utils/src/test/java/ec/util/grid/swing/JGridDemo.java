@@ -20,18 +20,29 @@ import ec.util.chart.ObsIndex;
 import ec.util.chart.ObsPredicate;
 import ec.util.chart.TimeSeriesChart;
 import ec.util.chart.swing.JTimeSeriesChart;
+import static ec.util.grid.swing.AGrid.COLUMN_SELECTION_ALLOWED_PROPERTY;
+import static ec.util.grid.swing.AGrid.DRAG_ENABLED_PROPERTY;
+import static ec.util.grid.swing.AGrid.MODEL_PROPERTY;
+import static ec.util.grid.swing.AGrid.ROW_SELECTION_ALLOWED_PROPERTY;
 import ec.util.various.swing.BasicSwingLauncher;
 import ec.util.various.swing.FontAwesome;
+import ec.util.various.swing.JCommand;
 import ec.util.various.swing.LineBorder2;
 import ec.util.various.swing.ModernUI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -39,11 +50,16 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
+import javax.swing.Action;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
@@ -80,13 +96,17 @@ public final class JGridDemo extends JPanel {
     }
 
     private Point focusedCell = new Point(-1, -1);
+    private final JGrid grid;
+    private final JTimeSeriesChart chart;
+    private final long startTimeMillis;
+    private final double[][] values;
 
     public JGridDemo() {
-        long startTimeMillis = new Date().getTime();
-        double[][] values = getValues(3, 12 * 3, new Random(), startTimeMillis);
+        this.startTimeMillis = new Date().getTime();
+        this.values = getValues(3, 12 * 3, new Random(), startTimeMillis);
 
-        final JGrid grid = new JGrid();
-        final JTimeSeriesChart chart = new JTimeSeriesChart();
+        this.grid = new JGrid();
+        this.chart = new JTimeSeriesChart();
 
         grid.setModel(asModel(values, startTimeMillis));
         grid.setPreferredSize(new Dimension(350, 10));
@@ -95,6 +115,26 @@ public final class JGridDemo extends JPanel {
         grid.setRowRenderer(new RowRenderer());
         grid.setColumnRenderer(new ColumnRenderer());
         grid.setCornerRenderer(new CornerRenderer());
+        grid.setOddBackground(null);
+        grid.addMouseListener(new MouseAdapter() {
+            private final JPopupMenu popup = createMenu().getPopupMenu();
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                maybeShowPopup(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                maybeShowPopup(e);
+            }
+
+            private void maybeShowPopup(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    popup.show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+        });
 
         grid.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             final NumberFormat format = new DecimalFormat("#.##");
@@ -140,10 +180,33 @@ public final class JGridDemo extends JPanel {
                 });
             }
         });
-        grid.getColumnModel().setSelectionModel(chart.getSeriesSelectionModel());
+        grid.setColumnSelectionModel(chart.getSeriesSelectionModel());
 
         setLayout(new BorderLayout());
         add(BorderLayout.CENTER, ModernUI.withEmptyBorders(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, grid, chart)));
+    }
+
+    private JMenu createMenu() {
+        JMenu result = new JMenu();
+
+        result.add(apply(grid, MODEL_PROPERTY, GridModels.empty())).setText("Clear");
+        result.add(apply(grid, MODEL_PROPERTY, asModel(values, startTimeMillis))).setText("Fill");
+
+        result.addSeparator();
+        result.add(new JCheckBoxMenuItem(toggle(grid, DRAG_ENABLED_PROPERTY))).setText("Enable drag");
+        result.add(new JCheckBoxMenuItem(toggle(grid, ROW_SELECTION_ALLOWED_PROPERTY))).setText("Row selection");
+        result.add(new JCheckBoxMenuItem(toggle(grid, COLUMN_SELECTION_ALLOWED_PROPERTY))).setText("Column selection");
+
+        result.addSeparator();
+        JMenu menu = new JMenu("Zoom");
+        for (int o : new int[]{200, 100, 75, 50, 25}) {
+            Font font = getFont();
+            font = font.deriveFont(font.getSize2D() * (o / 100f));
+            menu.add(new JCheckBoxMenuItem(apply(grid, "font", font))).setText(o + "%");
+        }
+        result.add(menu);
+
+        return result;
     }
 
     private static double[][] getValues(int series, int obs, Random rng, long startTimeMillis) {
@@ -222,7 +285,7 @@ public final class JGridDemo extends JPanel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-            boolean x = isSelected || isSelected(table, row, column);
+            boolean x = isSelected(table, row, column);
 
             JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, x, hasFocus, row, column);
 
@@ -239,7 +302,7 @@ public final class JGridDemo extends JPanel {
 
         @Override
         protected boolean isSelected(JTable table, int row, int column) {
-            return table.isRowSelected(row);
+            return table.getRowSelectionAllowed() && table.isRowSelected(row);
         }
     }
 
@@ -247,7 +310,7 @@ public final class JGridDemo extends JPanel {
 
         @Override
         protected boolean isSelected(JTable table, int row, int column) {
-            return table.isColumnSelected(column);
+            return table.getColumnSelectionAllowed() && table.isColumnSelected(column);
         }
     }
 
@@ -256,7 +319,107 @@ public final class JGridDemo extends JPanel {
         @Override
         protected boolean isSelected(JTable table, int row, int column) {
             return false;
-//            return table.isCellSelected(row, column);
         }
     }
+
+    //<editor-fold defaultstate="collapsed" desc="Commands">
+    private static <X extends Component> Action apply(X component, String propertyName, Object value) {
+        return new ApplyProperty(component.getClass(), propertyName, value).toAction(component);
+    }
+
+    private static <X extends Component> Action toggle(X component, String propertyName) {
+        return new ToggleProperty(component.getClass(), propertyName).toAction(component);
+    }
+
+    private static <X extends Component> JCommand<X> applyProperty(Class<X> clazz, String propertyName, Object value) {
+        return new ApplyProperty(clazz, propertyName, value);
+    }
+
+    private static <X extends Component> JCommand<X> toggleProperty(Class<X> clazz, String propertyName) {
+        return new ToggleProperty(clazz, propertyName);
+    }
+
+    private static PropertyDescriptor lookupProperty(Class<?> clazz, String propertyName) {
+        try {
+            for (PropertyDescriptor o : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
+                if (o.getName().equals(propertyName)) {
+                    return o;
+                }
+            }
+        } catch (IntrospectionException ex) {
+            throw new RuntimeException(ex);
+        }
+        throw new IllegalArgumentException(propertyName);
+    }
+
+    private static final class ApplyProperty<C extends Component> extends JCommand<C> {
+
+        private final PropertyDescriptor property;
+        private final Object value;
+
+        public ApplyProperty(Class<C> clazz, String propertyName, Object value) {
+            this.property = lookupProperty(clazz, propertyName);
+            this.value = value;
+        }
+
+        @Override
+        public void execute(C component) {
+            try {
+                property.getWriteMethod().invoke(component, value);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        @Override
+        public boolean isSelected(C component) {
+            try {
+                return Objects.equals(property.getReadMethod().invoke(component), value);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        @Override
+        public ActionAdapter toAction(C component) {
+            return super.toAction(component).withWeakPropertyChangeListener(component, property.getName());
+        }
+    }
+
+    private static final class ToggleProperty<C extends Component> extends JCommand<C> {
+
+        private final PropertyDescriptor property;
+
+        public ToggleProperty(Class<C> clazz, String propertyName) {
+            this.property = lookupProperty(clazz, propertyName);
+            if (!property.getPropertyType().equals(boolean.class)) {
+                throw new IllegalArgumentException("Invalid property type: " + property.getPropertyType());
+            }
+        }
+
+        @Override
+        public void execute(C component) {
+            try {
+                Boolean value = (Boolean) property.getReadMethod().invoke(component);
+                property.getWriteMethod().invoke(component, !value);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        @Override
+        public boolean isSelected(C component) {
+            try {
+                return (Boolean) property.getReadMethod().invoke(component);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        @Override
+        public JCommand.ActionAdapter toAction(C component) {
+            return super.toAction(component).withWeakPropertyChangeListener(component, property.getName());
+        }
+    }
+    //</editor-fold>
 }
