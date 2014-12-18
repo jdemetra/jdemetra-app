@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- http://en.wikipedia.org/wiki/The_Lord_of_the_Rings#Main_characters -->
+<mainCharacters>
+    <character name="Frodo Baggins" type="Protagonists" description="a well-to-do hobbit from the Shire, who inherits the One Ring from Bilbo. Frodo accepts the task of destroying the Ring in the fire of Mount Doom" />
+    <character name="Samwise Gamgee" type="Protagonists" description="gardener and friend of the Bagginses, who accompanies Frodo on the quest to destroy the Ring" />
+    <character name="Meriadoc Brandybuck" type="Protagonists" description="or Merry, Frodo's cousin and companion in the Fellowship" />
+    <character name="Peregrin Took" type="Protagonists" description="Pip or Pippin, Frodo's cousin and companion in the Fellowship" />
+    <character name="Gandalf" type="Protagonists" description="a wizard, who guides Frodo in his quest. He is a Maia, an angelic being sent by the godlike Valar to contest Sauron" />
+    <character name="Aragorn" type="Protagonists" description="descendant of Isildur and rightful heir to the thrones of Arnor and Gondor. He becomes a loyal companion to Frodo" />
+    <character name="Legolas Greenleaf" type="Protagonists" description="an elf prince, who aids Frodo and the Fellowship. Son of King Thranduil of Mirkwood" />
+    <character name="Gimli" type="Protagonists" description="son of Glóin, A representative of the Dwarves in the Fellowship" />
+    <character name="Denethor" type="Protagonists" description="ruling Steward of Gondor and Lord of Minas Tirith" />
+    <character name="Boromir" type="Protagonists" description="the eldest son of Denethor and member of the Fellowship. tempted by the power of the Ring he tries to take it from Frodo by force" />
+    <character name="Faramir" type="Protagonists" description="younger brother of Boromir and not favoured by Denethor" />
+    <character name="Galadriel" type="Protagonists" description="royal Elf, co-ruler of Lothlórien, and grandmother of Arwen Undómiel (Arwen Evenstar). Keeper of one of the three elven rings" />
+    <character name="Celeborn" type="Protagonists" description="husband of Galadriel, co-ruler of Lothlórien, and grandfather of Arwen Undomiel" />
+    <character name="Elrond" type="Protagonists" description="Lord of Rivendell and father to Arwen Undomiel" />
+    <character name="Bilbo Baggins" type="Protagonists" description="Frodo's adoptive uncle" />
+    <character name="Théoden" type="Protagonists" description="King of Rohan" />
+    <character name="Éomer" type="Protagonists" description="the 3rd Marshal of the Mark, Théoden's nephew. Later King of Rohan after Théoden's death" />
+    <character name="Éowyn" type="Protagonists" description="sister of Éomer, who disguises herself as a male warrior named Dernhelm to fight beside Théoden" />
+    <character name="Treebeard" type="Protagonists" description="an Ent, who rescues Meriadoc and Pippin from orcs and who helps to turn the tide of battle" />
+    <character name="Sauron" type="Antagonists" description="the Dark Lord and titular Lord of the Rings, a fallen Maia who helped the Elves forge the Rings of Power long ago. He forged the One Ring in secret to control all the other Rings of Power" />
+    <character name="The Nazgûl" type="Antagonists" description="or Ringwraiths, nine servants of Sauron. Kings of old, they were enslaved to the One Ring through nine of the Rings of Power" />
+    <character name="The Witch-king of Angmar" type="Antagonists" description="the Lord of the Nazgûl, and Sauron's most powerful servant, who commands Sauron's army" />
+    <character name="Saruman" type="Antagonists" description="a corrupted wizard who seeks the One Ring for himself. Brainwashed by Sauron through use of the palantír. Like Gandalf, he is in fact a Maia, lesser (but still mighty) member of godlike kin of Valar" />
+    <character name="Gríma Wormtongue" type="Antagonists" description="a servant of Saruman and traitor of Rohan, a go-between from Saruman to Théoden who poisons Théoden's perceptions with well placed 'advice'" />
+    <character name="Gollum" type="Antagonists" description="(named Sméagol in earlier life), who once possessed the Ring, which warped his mind and body and gave him unnaturally long life and poisoned his soul" />
+    <character name="Various Orcs" type="Antagonists" description="soldiers of Mordor or Isengard. Those who play significant roles in the story include Uglúk, captain of the Uruk-hai of Isengard, Grishnákh, orc of Mordor and Uglúk's antagonist, Shagrat of Cirith Ungol, and Gorbag of Minas Morgul" />
+    <character name="Shelob" type="Antagonists" description="a giant spider who dwells in the passes above Minas Morgul" />
+    <character name="The Balrog" type="Antagonists" description="a fire-demon dwelling beneath the Mines of Moria awaken by the digging and mining of Dwarves" />
+    <character name="The Haradrim" type="Antagonists" description="evil men south of Gondor. Allies with Sauron" />
+    <character name="Easterlings" type="Antagonists" description="men of the East of Middle-earth" />
+    <character name="Corsairs of Umbar" type="Antagonists" description="enemies of Gondor" />
+</mainCharacters>

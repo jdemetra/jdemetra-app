@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace pref="21" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="lotrLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="lotrLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="singleLocaleLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="multipleLocaleLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="systemPropertyLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="fileLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="imLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="customLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="lotr" max="32767" attributes="0"/>
+                  <Component id="instantMessaging" pref="284" max="32767" attributes="0"/>
+                  <Component id="file" max="32767" attributes="0"/>
+                  <Component id="systemProperty" max="32767" attributes="0"/>
+                  <Component id="multipleLocale" max="32767" attributes="0"/>
+                  <Component id="singleLocale" max="32767" attributes="0"/>
+                  <Component id="exception" max="32767" attributes="0"/>
+                  <Component id="custom" alignment="0" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace pref="13" max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="singleLocaleLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="singleLocale" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="multipleLocaleLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="multipleLocale" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="systemPropertyLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="systemProperty" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="fileLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="file" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="imLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="instantMessaging" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lotrLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lotr" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="lotrLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="exception" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="custom" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="customLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace pref="29" max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JTextField" name="singleLocale">
+    </Component>
+    <Component class="javax.swing.JLabel" name="singleLocaleLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Single locale:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="multipleLocaleLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Multiple locale:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="multipleLocale">
+    </Component>
+    <Component class="javax.swing.JLabel" name="systemPropertyLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="System property:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="systemProperty">
+    </Component>
+    <Component class="javax.swing.JLabel" name="fileLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="File path:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="file">
+    </Component>
+    <Component class="javax.swing.JLabel" name="imLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Instant messaging:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="instantMessaging">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lotrLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="LOTR character:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="lotr">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lotrLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Exception:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="exception">
+    </Component>
+    <Component class="javax.swing.JTextField" name="custom">
+    </Component>
+    <Component class="javax.swing.JLabel" name="customLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Custom:"/>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>

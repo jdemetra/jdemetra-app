@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Install: ec/nbdemetra/ui/Installer.class
+OpenIDE-Module-Localizing-Bundle: ec/nbdemetra/ui/Bundle.properties
+OpenIDE-Module-Layer: ec/nbdemetra/ui/layer.xml
+OpenIDE-Module-Requires: org.openide.windows.WindowManager
+OpenIDE-Module-Display-Category: Platform

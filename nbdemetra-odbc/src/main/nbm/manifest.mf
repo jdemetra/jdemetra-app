@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: ec/nbdemetra/odbc/Bundle.properties
+OpenIDE-Module-Display-Category: IO
+OpenIDE-Module-Requires: org.openide.modules.os.Windows

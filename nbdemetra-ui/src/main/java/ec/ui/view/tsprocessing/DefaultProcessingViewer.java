@@ -1,0 +1,414 @@
+package ec.ui.view.tsprocessing;
+
+import ec.nbdemetra.ui.DocumentUIServices;
+import ec.nbdemetra.ui.DocumentUIServices.UIFactory;
+import ec.nbdemetra.ui.NbComponents;
+import ec.nbdemetra.ui.awt.ExceptionPanel;
+import ec.nbdemetra.ui.nodes.DecoratedNode;
+import ec.nbdemetra.ui.nodes.IdNodes;
+import ec.tstoolkit.algorithm.IActiveProcDocument;
+import ec.tstoolkit.algorithm.IProcDocument;
+import ec.tstoolkit.algorithm.IProcSpecification;
+import ec.tstoolkit.descriptors.IObjectDescriptor;
+import ec.tstoolkit.utilities.Arrays2;
+import ec.tstoolkit.utilities.Id;
+import ec.ui.interfaces.IDisposable;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.util.UUID;
+import javax.swing.*;
+import javax.swing.tree.TreeSelectionModel;
+import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.view.BeanTreeView;
+import org.openide.nodes.Node;
+import org.openide.util.Exceptions;
+
+/**
+ *
+ * @author Demortier Jeremy
+ */
+public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JComponent implements IDisposable, ExplorerManager.Provider {
+
+    public static final String BUTTONS = "Buttons", BUTTON_APPLY = "Apply", BUTTON_RESTORE = "Restore", BUTTON_SAVE = "Save";
+
+    public static enum Type {
+
+        NONE, APPLY, APPLY_RESTORE_SAVE
+    };
+    protected final Type type_;
+    protected final UUID m_identifier;
+    // visual components
+    protected final JSplitPane splitter;
+    protected final JPanel specPanel;
+    protected final BeanTreeView m_tree;
+    protected final ExplorerManager em;
+    protected final JToolBar toolBar;
+    protected final JComponent emptyView;
+    // document-related data
+    protected IProcDocumentView<D> m_procView;
+    protected IObjectDescriptor<? extends IProcSpecification> specDescriptor;
+    protected IProcSpecification originalSpec;
+    // other
+    protected int specWidth_ = 300;
+
+    protected DefaultProcessingViewer(Type type) {
+        this.type_ = type;
+        this.m_identifier = UUID.randomUUID();
+
+        this.specPanel = new JPanel(new BorderLayout());
+        specPanel.setVisible(false);
+
+        this.m_tree = new BeanTreeView();
+        m_tree.setRootVisible(false);
+        m_tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+        this.em = new ExplorerManager();
+        em.addVetoableChangeListener(new VetoableChangeListener() {
+            @Override
+            public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
+                if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
+                    Node[] nodes = (Node[]) evt.getNewValue();
+                    if (nodes.length > 0) {
+                        Id id = nodes[0].getLookup().lookup(Id.class);
+                        showComponent(id);
+                    }
+                }
+            }
+        });
+
+        this.emptyView = new JPanel(new BorderLayout());
+
+        this.splitter = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, m_tree, emptyView);
+        splitter.setDividerLocation(200);
+        splitter.setResizeWeight(.20);
+
+        this.toolBar = NbComponents.newInnerToolbar();
+        toolBar.add(Box.createHorizontalGlue());
+        toolBar.addSeparator();
+        toolBar.add(new JToggleButton(new AbstractAction("Specifications") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setSpecificationsVisible(!isSpecificationsVisible());
+            }
+        }));
+
+        setLayout(new BorderLayout());
+        add(toolBar, BorderLayout.NORTH);
+        add(splitter, BorderLayout.CENTER);
+        add(specPanel, BorderLayout.EAST);
+    }
+
+    // GETTERS/SETTERS >
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return em;
+    }
+
+    public UUID getIdentifier() {
+        return m_identifier;
+    }
+
+    public int getSpecWidth() {
+        return specWidth_;
+    }
+
+    public void setSpecWidth(int value) {
+        specWidth_ = value;
+    }
+
+    public D getDocument() {
+        return m_procView == null ? null : m_procView.getDocument();
+    }
+
+    public void setDocument(D doc) {
+        try {
+            if (m_procView != null) {
+                m_procView.dispose();
+                m_procView = null;
+            }
+            if (doc == null) {
+                originalSpec = null;
+                return;
+            }
+            originalSpec = doc.getSpecification();
+            // initialize all items
+            UIFactory factory = DocumentUIServices.getDefault().getFactory(doc.getClass());
+            if (factory == null) {
+                return;
+            }
+
+            m_procView = factory.getDocumentView(doc);
+            initSpecView(factory, doc);
+        } finally {
+            buildTree();
+            refreshHeader();
+        }
+    }
+
+    public boolean isHeaderVisible() {
+        return toolBar.isVisible();
+    }
+
+    public void setHeaderVisible(boolean visible) {
+        toolBar.setVisible(visible);
+        if (visible) {
+            refreshHeader();
+        }
+    }
+
+    public boolean isSpecificationsVisible() {
+        return specPanel.isVisible();
+    }
+
+    public void setSpecificationsVisible(boolean visible) {
+        specPanel.setVisible(visible);
+    }
+    // < GETTERS/SETTERS
+
+    public void initSpecView() {
+        // initialize all items
+        IProcDocument doc = getDocument();
+        if (doc == null) {
+            return;
+        }
+        UIFactory factory = DocumentUIServices.getDefault().getFactory(doc.getClass());
+        if (factory == null) {
+            return;
+        }
+        initSpecView(factory, getDocument());
+    }
+
+    private void initSpecView(UIFactory factory, D document) {
+        specDescriptor = factory.getSpecificationDescriptor(document);
+        if (specDescriptor == null) {
+            return;
+        }
+        if (type_ == Type.APPLY) {
+            initApplySpecView(factory);
+        } else if (type_ == Type.APPLY_RESTORE_SAVE) {
+            initAllSpecView(factory);
+        }
+    }
+
+    private void initApplySpecView(UIFactory factory) {
+        Action[] commands = {
+            new AbstractAction("Apply") {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    IActiveProcDocument doc = getDocument();
+                    IProcSpecification pspec = specDescriptor.getCore();
+                    doc.setSpecification(pspec.clone());
+                    setDirty(null, false);
+                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
+                    refreshView();
+                    if (isHeaderVisible()) {
+                        refreshHeader();
+                    }
+                }
+            }};
+        setPropertiesPanel(commands, factory.getSpecView(specDescriptor), specWidth_);
+    }
+
+    private void initAllSpecView(final UIFactory factory) {
+        final IActiveProcDocument doc = getDocument();
+
+        Action[] commands = {
+            new AbstractAction(BUTTON_APPLY) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    IProcSpecification pspec = specDescriptor.getCore();
+                    doc.setSpecification(pspec.clone());
+                    setDirty(BUTTON_APPLY, false);
+                    setDirty(BUTTON_RESTORE, true);
+                    setDirty(BUTTON_SAVE, true);
+                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
+                    refreshView();
+                    if (isHeaderVisible()) {
+                        refreshHeader();
+                    }
+                }
+            },
+            new AbstractAction(BUTTON_RESTORE) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    doc.setSpecification(originalSpec);
+                    setDirty(BUTTON_APPLY, false);
+                    setDirty(BUTTON_RESTORE, false);
+                    setDirty(BUTTON_SAVE, false);
+                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_RESTORE, null, null);
+                    refreshView();
+                    if (isHeaderVisible()) {
+                        refreshHeader();
+                    }
+                }
+            },
+            new AbstractAction(BUTTON_SAVE) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    setDirty(BUTTON_APPLY, false);
+                    setDirty(BUTTON_RESTORE, false);
+                    setDirty(BUTTON_SAVE, false);
+                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_SAVE, null, null);
+                }
+            }};
+
+        specDescriptor = factory.getSpecificationDescriptor(doc);
+        setPropertiesPanel(commands, factory.getSpecView(specDescriptor), specWidth_);
+    }
+
+    private void setPropertiesPanel(final Action[] commands, final JComponent pane, int width) {
+
+        specPanel.removeAll();
+        specPanel.add(pane, BorderLayout.CENTER);
+        pane.addPropertyChangeListener(DocumentUIServices.SPEC_PROPERTY, new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                setDirty(BUTTON_APPLY, true);
+                setDirty(BUTTON_RESTORE, true);
+            }
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setName(BUTTONS);
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        for (int i = 0; i < commands.length; ++i) {
+            JButton applyButton = new JButton(commands[i]);
+            applyButton.setForeground(Color.GRAY);
+            buttonPanel.add(applyButton);
+            if (i < commands.length - 1) {
+                buttonPanel.add(Box.createRigidArea(new Dimension(2, 0)));
+            }
+        }
+        specPanel.add(buttonPanel, BorderLayout.SOUTH);
+        specPanel.setPreferredSize(new Dimension(width, 100));
+        specPanel.validate();
+    }
+
+    public void refreshAll() {
+        m_procView.refresh();
+        // refresh properties
+        D doc = getDocument();
+        UIFactory factory = DocumentUIServices.getDefault().getFactory(doc.getClass());
+        if (factory != null) {
+            initSpecView(factory, doc);
+        }
+
+        Node[] sel = em.getSelectedNodes();
+        if (!Arrays2.isNullOrEmpty(sel)) {
+            Id curid = sel[0].getLookup().lookup(Id.class);
+            if (curid != null) {
+                showComponent(curid);
+            }
+        } else {
+            selectPreferredView();
+        }
+        if (isHeaderVisible()) {
+            refreshHeader();
+        }
+    }
+
+    public void refreshHeader() {
+        // do nothing
+    }
+
+    public void refreshView() {
+        m_procView.refresh();
+        Node[] sel = em.getSelectedNodes();
+        if (!Arrays2.isNullOrEmpty(sel)) {
+            Id curid = sel[0].getLookup().lookup(Id.class);
+            if (curid != null) {
+                showComponent(curid);
+            }
+        } else {
+            selectPreferredView();
+        }
+    }
+
+    protected void setTreeTransferHandler(TransferHandler handler) {
+        m_tree.setTransferHandler(handler);
+    }
+
+    private void buildTree() {
+        if (m_procView != null) {
+            em.setRootContext(new DecoratedNode(IdNodes.getRootNode(m_procView.getItems())));
+            selectPreferredView();
+        } else {
+            em.setRootContext(Node.EMPTY);
+            showComponent(null);
+        }
+    }
+
+    private void showComponent(Id id) {
+        Component oldView = splitter.getBottomComponent();
+        if (oldView instanceof IDisposable) {
+            ((IDisposable) oldView).dispose();
+        }
+
+        JComponent newView;
+        try {
+            newView = id == null ? emptyView : m_procView.getView(id);
+        } catch (RuntimeException ex) {
+            newView = ExceptionPanel.create(ex);
+        }
+
+        int sep = splitter.getDividerLocation();
+        splitter.setBottomComponent(newView != null ? newView : emptyView);
+        splitter.setDividerLocation(sep);
+    }
+
+    private void selectPreferredView() {
+        Id pview = m_procView.getPreferredView();
+        if (pview != null) {
+            showComponent(pview);
+            Node node = IdNodes.findNode(em.getRootContext(), pview);
+            try {
+                if (node != null) {
+                    em.setSelectedNodes(new Node[]{node});
+                    ((DecoratedNode) node).setHtmlDecorator(DecoratedNode.Html.BOLD);
+                }
+            } catch (PropertyVetoException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (m_procView != null) {
+            m_procView.dispose();
+        }
+        m_tree.setTransferHandler(null);
+        Component old = splitter.getBottomComponent();
+        if (old instanceof IDisposable) {
+            ((IDisposable) old).dispose();
+        }
+        splitter.setBottomComponent(emptyView);
+        removeAll();
+    }
+
+    public void setDirty(String cmd, boolean b) {
+        setDirty(specPanel, cmd, b);
+    }
+
+    private static void setDirty(Container container, String cmd, boolean dirty) {
+        for (Component o : container.getComponents()) {
+            if (o instanceof JButton) {
+                JButton bn = (JButton) o;
+                String bncmd = bn.getActionCommand();
+                if (cmd == null || cmd.equals(bncmd)) {
+                    bn.setEnabled(dirty);
+                    bn.setForeground(dirty ? Color.BLUE : Color.GRAY);
+                    if (cmd != null) {
+                        return;
+                    }
+                }
+            } else if (o instanceof Container && BUTTONS.equals(o.getName())) {
+                setDirty((Container) o, cmd, dirty);
+            }
+        }
+    }
+}

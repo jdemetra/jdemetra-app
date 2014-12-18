@@ -1,0 +1,17 @@
+/nbdemetra-benchmarking/target/
+/nbdemetra-branding/target/
+/nbdemetra-core/target/
+/nbdemetra-utils/target/
+/nbdemetra-ui/target/
+/nbdemetra-jdbc/target/
+/nbdemetra-odbc/target/
+/nbdemetra-common/target/
+/nbdemetra-spreadsheet/target/
+/nbdemetra-sa/target/
+/nbdemetra-sa-advanced/target/
+/nbdemetra-sdmx/target/
+/nbdemetra-anomalydetection/target/
+/nbdemetra-app/target/
+/nbdemetra-businesscycle/target/
+/nbdemetra-sa-ext/target/
+/nbdemetra-chainlinking/target/
