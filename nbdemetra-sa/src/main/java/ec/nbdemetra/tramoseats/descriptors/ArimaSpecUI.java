@@ -50,22 +50,6 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
-        desc = accdefDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = amiDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = pcDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = tsigDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
         desc = cancelDesc();
         if (desc != null) {
             descs.add(desc);
@@ -78,7 +62,23 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = pcDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = tsigDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         desc = pcrDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = accdefDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = amiDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -312,7 +312,7 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, PC_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(PC_NAME);
-            desc.setShortDescription(PC_NAME);
+            desc.setShortDescription(PC_DESC);
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -628,9 +628,9 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
             UB1_NAME = "Initial unit root limit",
             UB2_NAME = "Final unit root limit",
             CANCEL_NAME = "Cancelation limit",
-            PC_NAME = "LjungBox limit",
+            PCR_NAME = "LjungBox limit",
             TSIG_NAME = "ArmaLimit",
-            PCR_NAME = "Reduce CV";
+            PC_NAME = "Reduce CV";
     private static final String ENABLED_DESC = "Enables automatic modelling.",
             ACCDEF_DESC = "[fal] Controls whether the default model is acceptable.",
             TD_DESC = "Controls whether the new initial test on td is executed.",
@@ -638,9 +638,9 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
             UB1_DESC = "(ub1] Initial unit root limit in the automatic differencing procedure.",
             UB2_DESC = "[ub2] Final unit root limit in the automatic differencing procedure.",
             CANCEL_DESC = "[cancel] Cancelation limit for AR and MA roots.",
-            TSIG_DESC = "[tsig] Threshold value for t-statistics of ARMA coefficients used for final test of model parsimony.",
-            PC_DESC = "[pc] Ljung-Box Q statistic limit for the acceptance of a model.",
-            PCR_DESC = "[pcr] The percentage by which the outlier critical value will be reduced when an identified model is found to have a Ljung-Box Q statistic with an unacceptable confidence coefficient.";
+            TSIG_DESC = "[tsig] Threshold value for t-statistics of ARMA coefficients and mean correction used for test of model parsimony.",
+            PCR_DESC = "[pcr] Ljung-Box Q statistic limit for the acceptance of a model.",
+            PC_DESC = "[pc] The percentage by which the outlier critical value will be reduced when an identified model is found to have a Ljung-Box Q statistic with an unacceptable confidence coefficient.";
     private static final String P_DESC = "[p] Regular auto-regresssive order",
             D_DESC = "[d] Regular differencing order",
             Q_DESC = "[q] Regular moving average order",
