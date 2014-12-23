@@ -64,6 +64,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -146,7 +147,9 @@ public final class JGridDemo extends JPanel {
                 boolean xxx = focusedObs.equals(column, row);
                 setHorizontalAlignment(JLabel.TRAILING);
                 super.getTableCellRendererComponent(table, format.format(value), isSelected, hasFocus, row, column);
-                setForeground(xxx ? Color.RED : null);
+                if (xxx) {
+                    setBorder(new LineBorder(table.getSelectionBackground().darker()));
+                }
                 return this;
             }
         });

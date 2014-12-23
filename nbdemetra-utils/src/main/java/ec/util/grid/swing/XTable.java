@@ -23,7 +23,7 @@ import java.beans.PropertyChangeListener;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
-import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -52,7 +52,7 @@ public class XTable extends JTable {
     //</editor-fold>
 
     // OTHER
-    private Border cellBorder = BorderFactory.createEmptyBorder();
+    private final PaddingBorder cellBorder;
     private boolean hasDropLocation;
     private JComponent toolTipFactory;
 
@@ -72,6 +72,7 @@ public class XTable extends JTable {
             setGridColor(newGridColor);
         }
 
+        this.cellBorder = new PaddingBorder();
         hasDropLocation = false;
         toolTipFactory = null;
 
@@ -101,7 +102,7 @@ public class XTable extends JTable {
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
     protected void onCellPaddingChange() {
-        cellBorder = BorderFactory.createEmptyBorder(cellPadding.height, cellPadding.width, cellPadding.height, cellPadding.width);
+        cellBorder.setPadding(cellPadding);
         setRowHeight(getFontMetrics(getFont()).getHeight() + cellPadding.height * 2 + 1);
     }
 
@@ -198,9 +199,7 @@ public class XTable extends JTable {
         if (oddBackground != null && !isPaintingForPrint() && !isCellSelected(row, column)) {
             result.setBackground(row % 2 == 0 ? getBackground() : oddBackground);
         }
-        if (result instanceof JComponent) {
-            ((JComponent) result).setBorder(cellBorder);
-        }
+        cellBorder.apply(result);
         return result;
     }
     //</editor-fold>
@@ -278,6 +277,28 @@ public class XTable extends JTable {
             }
             label.setFont(table.getFont());
             return label;
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Padding hack">
+    private static final class PaddingBorder extends CompoundBorder {
+
+        public void setPadding(Dimension cellPadding) {
+            insideBorder = BorderFactory.createEmptyBorder(cellPadding.height, cellPadding.width, cellPadding.height, cellPadding.width);
+        }
+
+        public void apply(Component c) {
+            if (c instanceof JComponent) {
+                apply((JComponent) c);
+            }
+        }
+
+        public void apply(JComponent c) {
+            if (c.getBorder() != this) {
+                this.outsideBorder = c.getBorder();
+                c.setBorder(this);
+            }
         }
     }
     //</editor-fold>
