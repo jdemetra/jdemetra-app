@@ -124,7 +124,8 @@ public class BasicSpecUI extends BaseTsDisaggregationSpecUI implements IObjectDe
     public void setFrequency(TsFrequency freq) {
         core.setDefaultFrequency(freq);
     }
-        public TsPeriodSelectorUI getSpan() {
+    
+    public TsPeriodSelectorUI getSpan() {
         return new TsPeriodSelectorUI(core.getSpan(), domain_, ro_);
     }
 
