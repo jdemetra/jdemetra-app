@@ -127,7 +127,7 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
         }
     }
     ////////////////////////////////////////////////////////////////////////////
-    private static final String FN_DESC = "[lam]. None=no transformation of data; Log=takes logs of data; Auto:the program tests for the log-level specification.",
-            AICDIFF_DESC = "aicdiff] Defines the difference in AICC needed to accept no transformation when the automatic transformation selection option is invoked.",
+    private static final String FN_DESC = "[lam] None=no transformation of data; Log=takes logs of data; Auto:the program tests for the log-level specification.",
+            AICDIFF_DESC = "[aicdiff] Defines the difference in AICC needed to accept no transformation when the automatic transformation selection option is invoked.",
             ADJUST_DESC = "[adjust] Preadjustment of the series for length of period or leap year effects. The series is divided by the specified effect. Not available with the \"auto\" mode";
 }
