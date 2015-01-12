@@ -643,7 +643,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, HRINITIAL_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(HRINITIAL_NAME);
-            desc.setShortDescription(HRINITIAL_NAME);
+            desc.setShortDescription(HRINITIAL_DESC);
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -661,7 +661,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, URLIMIT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(URLIMIT_NAME);
-            desc.setShortDescription(URLIMIT_NAME);
+            desc.setShortDescription(URLIMIT_DESC);
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -679,7 +679,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, IURLIMIT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(IURLIMIT_NAME);
-            desc.setShortDescription(IURLIMIT_NAME);
+            desc.setShortDescription(IURLIMIT_DESC);
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -697,7 +697,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FURLIMIT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(FURLIMIT_NAME);
-            desc.setShortDescription(FURLIMIT_NAME);
+            desc.setShortDescription(FURLIMIT_DESC);
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -715,7 +715,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, CANCELLIMIT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(CANCELLIMIT_NAME);
-            desc.setShortDescription(CANCELLIMIT_NAME);
+            desc.setShortDescription(CANCELLIMIT_DESC);
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -733,7 +733,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, LJUNGBOXLIMIT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(LJUNGBOXLIMIT_NAME);
-            desc.setShortDescription(LJUNGBOXLIMIT_NAME);
+            desc.setShortDescription(LJUNGBOXLIMIT_DESC);
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -751,7 +751,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ARMALIMIT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(ARMALIMIT_NAME);
-            desc.setShortDescription(ARMALIMIT_NAME);
+            desc.setShortDescription(ARMALIMIT_DESC);
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -769,7 +769,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, REDUCECV_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(REDUCECV_NAME);
-            desc.setShortDescription(REDUCECV_NAME);
+            desc.setShortDescription(REDUCECV_DESC);
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -787,7 +787,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, REDUCESE_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(REDUCESE_NAME);
-            desc.setShortDescription(REDUCESE_NAME);
+            desc.setShortDescription(REDUCESE_DESC);
             edesc.setReadOnly(ro_);
             return edesc;
         }
