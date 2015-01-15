@@ -4,6 +4,7 @@ import com.l2fprod.common.beans.editor.ComboBoxPropertyEditor;
 import com.l2fprod.common.propertysheet.PropertyEditorRegistry;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.benchmarking.SaBenchmarkingSpec.Target;
+import ec.satoolkit.x11.CalendarSigma;
 import ec.satoolkit.x11.SeasonalFilterOption;
 import ec.tss.sa.output.CsvLayout;
 import ec.tstoolkit.Parameter;
@@ -66,6 +67,7 @@ public enum CustomPropertyEditorRegistry {
         registerEnumEditor(SeasonalModel.class);
         registerEnumEditor(Method.class);
         registerEnumEditor(DecompositionMode.class);
+        registerEnumEditor(CalendarSigma.class);
         registerEnumEditor(CsvLayout.class);
         registerEnumEditor(Target.class);
         registerEnumEditor(EasterSpec.Type.class);
