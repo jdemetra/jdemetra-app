@@ -16,9 +16,13 @@
  */
 package ec.nbdemetra.disaggregation.ui;
 
+import ec.nbdemetra.ui.chart3d.functions.SurfacePlotterUI;
+import ec.nbdemetra.ui.chart3d.functions.SurfacePlotterUI.Functions;
 import ec.tss.disaggregation.documents.DisaggregationResults;
 import ec.tss.disaggregation.documents.TsDisaggregationModelDocument;
 import ec.tss.html.IHtmlElement;
+import ec.tstoolkit.maths.realfunctions.IFunction;
+import ec.tstoolkit.maths.realfunctions.IFunctionInstance;
 import ec.tstoolkit.stats.NiidTests;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
@@ -27,6 +31,7 @@ import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.InformationExtractor;
 import ec.tstoolkit.utilities.LinearId;
 import ec.ui.view.tsprocessing.ComposedProcDocumentItemFactory;
+import ec.ui.view.tsprocessing.DocumentInformationExtractor;
 import ec.ui.view.tsprocessing.GenericChartUI;
 import ec.ui.view.tsprocessing.GenericTableUI;
 import ec.ui.view.tsprocessing.HtmlItemUI;
@@ -38,6 +43,7 @@ import ec.ui.view.tsprocessing.ProcDocumentViewFactory;
 import ec.ui.view.tsprocessing.ResidualsDistUI;
 import ec.ui.view.tsprocessing.ResidualsStatsUI;
 import ec.ui.view.tsprocessing.ResidualsUI;
+import ec.ui.view.tsprocessing.TsDocumentInformationExtractor;
 import java.util.concurrent.atomic.AtomicReference;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -55,14 +61,15 @@ public class TsDisaggregationViewFactory extends ProcDocumentViewFactory<TsDisag
             DECOMPOSITION = "Decomposition",
             DIAGNOSTICS = "Diagnostics",
             MODEL = "Model",
-            ANALYSIS="Analysis",
+            ANALYSIS = "Analysis",
             OSAMPLE = "Out-of-sample test",
             DETAILS = "Details",
             SUMMARY = "Summary",
             REGRESSORS = "Regressors",
             RESIDUALS = "Residuals",
             STATS = "Statistics",
-            DISTRIBUTION = "Distribution";
+            DISTRIBUTION = "Distribution",
+            LIKELIHOOD="Likelihood";
     public static final Id MODEL_RES = new LinearId(MODEL, RESIDUALS),
             MODEL_RES_STATS = new LinearId(MODEL, RESIDUALS, STATS),
             MODEL_RES_DIST = new LinearId(MODEL, RESIDUALS, DISTRIBUTION),
@@ -71,8 +78,10 @@ public class TsDisaggregationViewFactory extends ProcDocumentViewFactory<TsDisag
             ANALYSIS_OSAMPLE = new LinearId(ANALYSIS, OSAMPLE),
             MAIN_CHART = new LinearId(MAIN, CHART),
             MAIN_DECOMPOSITION = new LinearId(MAIN, DECOMPOSITION),
-            MAIN_TABLE = new LinearId(MAIN, TABLE);
-    
+            MAIN_TABLE = new LinearId(MAIN, TABLE),
+            LIKELIHOOD_FN = new LinearId(MODEL, LIKELIHOOD)
+;
+
     public static final Id MODEL_SUMMARY = new LinearId(MODEL, SUMMARY);
     private static final AtomicReference<IProcDocumentViewFactory<TsDisaggregationModelDocument>> INSTANCE = new AtomicReference(new TsDisaggregationViewFactory());
 
@@ -235,4 +244,42 @@ public class TsDisaggregationViewFactory extends ProcDocumentViewFactory<TsDisag
             return source.getResults();
         }
     };
+
+    private static class LikelihoodExtractor extends DocumentInformationExtractor<TsDisaggregationModelDocument, Functions> {
+
+        public static final LikelihoodExtractor INSTANCE = new LikelihoodExtractor();
+
+//        @Override
+//        protected Functions buildInfo(SaDocument<? extends ISaSpecification> source) {
+//            PreprocessingModel preprocessingPart = source.getPreprocessingPart();
+//            if (preprocessingPart == null) {
+//                return null;
+//            } else {
+//                return Functions.create(preprocessingPart.likelihoodFunction(), source.getPreprocessingPart().maxLikelihoodFunction());
+//            }
+//        }
+//
+        @Override
+        protected Functions buildInfo(TsDisaggregationModelDocument source) {
+            DisaggregationResults results = source.getResults();
+            if (results == null) {
+                return null;
+            }
+            IFunction fn = results.getEstimationFunction();
+            IFunctionInstance min = results.getMin();
+            if (min == null)
+                return null;
+            return Functions.create(fn, min, 2);
+        }
+    };
+
+        @ServiceProvider(service = ProcDocumentItemFactory.class, position = 306000)
+    public static class LikelihoodFactory extends ItemFactory<Functions> {
+
+        public LikelihoodFactory() {
+            super(LIKELIHOOD_FN, LikelihoodExtractor.INSTANCE, new SurfacePlotterUI());
+            setAsync(true);
+        }
+    }
+
 }
