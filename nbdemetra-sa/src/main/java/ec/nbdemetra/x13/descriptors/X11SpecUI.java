@@ -7,6 +7,7 @@ package ec.nbdemetra.x13.descriptors;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.x11.CalendarSigma;
 import ec.satoolkit.x11.SeasonalFilterOption;
+import ec.satoolkit.x11.Sigmavec;
 import ec.satoolkit.x11.X11Exception;
 import ec.satoolkit.x11.X11Specification;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
@@ -73,6 +74,10 @@ public class X11SpecUI extends BaseX11SpecUI {
         }
         desc = calendarsigmaDesc();
         if (desc != null) {
+            descs.add(desc);
+        }
+        desc=sigmavecDesc();
+          if (desc != null) {
             descs.add(desc);
         }
         return descs;
@@ -192,26 +197,55 @@ public class X11SpecUI extends BaseX11SpecUI {
         }
     }
 
-
-
     public CalendarSigma getCalendarSigma() {
         return core.getCalendarSigma();
     }
-
     public void setCalendarSigma(CalendarSigma calendarsigma) {
         core.setCalendarSigma(calendarsigma);
     }
 
+   public Sigmavec[] getSigmavec(){
+       return core.getSigmavec();
+   }
+   
+   public void setSigmavec(Sigmavec[] sigmavec){
+       core.setSigmavec(sigmavec);
+   }
+   
     private static final int MODE_ID = 0, SEAS_ID = 1, FORECAST_ID = 2, LSIGMA_ID = 3, USIGMA_ID = 4, AUTOTREND_ID = 5,
-            TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8, CALENDARSIGMA_ID = 9;
+            TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8, CALENDARSIGMA_ID = 9, SIGMAVEC_ID=10;
 
-    private EnhancedPropertyDescriptor calendarsigmaDesc() {
-        try {
+        private EnhancedPropertyDescriptor calendarsigmaDesc() {
+        if (!core.isSeasonal()) {
+            return null;
+        }
+            try {
             PropertyDescriptor desc = new PropertyDescriptor("CalendarSigma", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, CALENDARSIGMA_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(CALENDARSIGMA_NAME);
             desc.setShortDescription(CALENDARSIGMA_DESC);
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+    
+    private EnhancedPropertyDescriptor sigmavecDesc() {
+       if (!core.isSeasonal()) {
+            return null;
+        }
+       if(!core.getCalendarSigma().equals(CalendarSigma.Signif)) {
+           return null;
+       }
+       
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("Sigmavec", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SIGMAVEC_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(SIGMAVECTOR_NAME);
+            desc.setShortDescription(SIGMAVECTOR_DESC);
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -389,5 +423,5 @@ public class X11SpecUI extends BaseX11SpecUI {
             FULLSEASONMA_DESC = "[seasonalma] Details on specifc seasonalma for the different periods.",
             TRUE7TERM_DESC = "[true7term] Specifies the end weights used for the seven term Henderson filter.",
             CALENDARSIGMA_DESC = "[calendarsigma] Specifies if the standard errors used for extreme value detection and adjustment are computed separately for each calendar month (quarter), or separately for two complementary sets of calendar months (quarters).",
-            SIGMAVECTOR_DESC = "[sigmavec] Specifies one of the two groups of periods for whose irregulars a group standard error will be calculated under the calendarsigma=select option.";
+            SIGMAVECTOR_DESC = "[sigmavec] Specifies the two groups of periods (month or quarters) for whose irregulars a group standard error will be calculated under the calendarsigma=select option.";
 }
