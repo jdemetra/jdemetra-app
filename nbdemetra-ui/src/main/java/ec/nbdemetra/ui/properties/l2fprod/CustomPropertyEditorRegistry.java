@@ -6,7 +6,7 @@ import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.benchmarking.SaBenchmarkingSpec.Target;
 import ec.satoolkit.x11.CalendarSigma;
 import ec.satoolkit.x11.SeasonalFilterOption;
-import ec.satoolkit.x11.Sigmavec;
+import ec.satoolkit.x11.SigmavecOption;
 import ec.tss.sa.output.CsvLayout;
 import ec.tstoolkit.Parameter;
 import ec.tstoolkit.modelling.ComponentType;
@@ -80,7 +80,7 @@ public enum CustomPropertyEditorRegistry {
         register(Day.class, new JDayPropertyEditor());
         register(Parameter[].class, new ParametersPropertyEditor());
         register(SeasonalFilterOption[].class, new SeasonalFilterPropertyEditor());
-        register(Sigmavec[].class, new CalendarsigmaPropertyEditor());
+        register(SigmavecOption[].class, new SigmavecPropertyEditor());
         register(Ramp[].class, new RampsEditor());
         register(TsVariableDescriptor[].class, new TsVariableDescriptorsEditor());
         register(InterventionVariable[].class, new InterventionVariablesEditor());
