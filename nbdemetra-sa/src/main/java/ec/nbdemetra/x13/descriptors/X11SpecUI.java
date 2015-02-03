@@ -248,7 +248,7 @@ public class X11SpecUI extends BaseX11SpecUI {
        if (!core.isSeasonal()) {
             return null;
         }
-       if(!core.getCalendarSigma().equals(CalendarSigma.None)) {
+       if(!core.getCalendarSigma().equals(CalendarSigma.Select)) {
           return null;
        }
        
