@@ -10,8 +10,8 @@ import ec.satoolkit.x11.SeasonalFilterOption;
 import ec.satoolkit.x11.SigmavecOption;
 import ec.satoolkit.x11.X11Exception;
 import ec.satoolkit.x11.X11Specification;
-import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
+import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class X11SpecUI extends BaseX11SpecUI {
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
-     
+
         EnhancedPropertyDescriptor desc = modeDesc();
         if (desc != null) {
             descs.add(desc);
@@ -76,8 +76,8 @@ public class X11SpecUI extends BaseX11SpecUI {
         if (desc != null) {
             descs.add(desc);
         }
-        desc=sigmavecDesc();
-          if (desc != null) {
+        desc = sigmavecDesc();
+        if (desc != null) {
             descs.add(desc);
         }
         return descs;
@@ -142,7 +142,7 @@ public class X11SpecUI extends BaseX11SpecUI {
 //        if (hasSeasDetails()) {
 //            return null;
 //        }
-//        else 
+//        else
         if (core.getSeasonalFilters() == null) {
             return SeasonalFilterOption.Msr;
         } else {
@@ -200,38 +200,39 @@ public class X11SpecUI extends BaseX11SpecUI {
     public CalendarSigma getCalendarSigma() {
         return core.getCalendarSigma();
     }
+
     public void setCalendarSigma(CalendarSigma calendarsigma) {
         core.setCalendarSigma(calendarsigma);
     }
 
-   public SigmavecOption[] getSigmavec(){
-      SigmavecOption[] groups = core.getSigmavec();
+    public SigmavecOption[] getSigmavec() {
+        SigmavecOption[] groups = core.getSigmavec();
         int len = freq_.intValue();
         if (groups != null && groups.length == len) {
             return groups;
         }
         //Sigmavec option = groups == null ? Sigmavec.group1 : groups[0];
-     //   Sigmavec option = Sigmavec.group1;
+        //   Sigmavec option = Sigmavec.group1;
         groups = new SigmavecOption[len];
         for (int i = 0; i < len; ++i) {
             groups[i] = SigmavecOption.Group1;
         }
         return groups;
 
-   }
-   
-   public void setSigmavec(SigmavecOption[] sigmavec){
-       core.setSigmavec(sigmavec);
-   }
-   
-    private static final int MODE_ID = 0, SEAS_ID = 1, FORECAST_ID = 2, LSIGMA_ID = 3, USIGMA_ID = 4, AUTOTREND_ID = 5,
-            TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8, CALENDARSIGMA_ID = 9, SIGMAVEC_ID=10;
+    }
 
-        private EnhancedPropertyDescriptor calendarsigmaDesc() {
+    public void setSigmavec(SigmavecOption[] sigmavec) {
+        core.setSigmavec(sigmavec);
+    }
+
+    private static final int MODE_ID = 0, SEAS_ID = 1, FORECAST_ID = 2, LSIGMA_ID = 3, USIGMA_ID = 4, AUTOTREND_ID = 5,
+            TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8, CALENDARSIGMA_ID = 9, SIGMAVEC_ID = 10;
+
+    private EnhancedPropertyDescriptor calendarsigmaDesc() {
         if (!core.isSeasonal()) {
             return null;
         }
-            try {
+        try {
             PropertyDescriptor desc = new PropertyDescriptor("CalendarSigma", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, CALENDARSIGMA_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
@@ -243,22 +244,18 @@ public class X11SpecUI extends BaseX11SpecUI {
             return null;
         }
     }
-    
+
     private EnhancedPropertyDescriptor sigmavecDesc() {
-       if (!core.isSeasonal()) {
+        if (!core.isSeasonal() || !core.getCalendarSigma().equals(CalendarSigma.Select)) {
             return null;
         }
-       if(!core.getCalendarSigma().equals(CalendarSigma.Select)) {
-          return null;
-       }
-       
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Sigmavec", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SIGMAVEC_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(SIGMAVEC_NAME);
             desc.setShortDescription(SIGMAVEC_DESC);
-            edesc.setReadOnly(ro_|| freq_ == TsFrequency.Undefined);
+            edesc.setReadOnly(ro_ || freq_ == TsFrequency.Undefined);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
