@@ -170,7 +170,7 @@ public class JTsList extends ATsList {
             result.setGridColor(newGridColor);
         }
 
-        result.setDefaultRenderer(TsData.class, new TsSparklineCellRenderer());
+        result.setDefaultRenderer(TsData.class, new TsDataTableCellRenderer());
         result.setDefaultRenderer(TsPeriod.class, new TsPeriodTableCellRenderer());
         result.setDefaultRenderer(TsFrequency.class, new TsFrequencyTableCellRenderer());
         result.setDefaultRenderer(TsIdentifier.class, new TsIdentifierTableCellRenderer());
@@ -310,7 +310,14 @@ public class JTsList extends ATsList {
                 case Length:
                     return ts.hasData().equals(TsStatus.Valid) ? ts.getTsData().getLength() : null;
                 case Data:
-                    return ts.hasData().equals(TsStatus.Valid) ? ts.getTsData() : null;
+                    switch (ts.hasData()) {
+                        case Valid:
+                            return ts.getTsData();
+                        case Invalid:
+                            return ts.getInvalidDataCause();
+                        default:
+                            return null;
+                    }
                 case TsIdentifier:
                     return new TsIdentifier(ts.getName(), ts.getMoniker());
             }
@@ -367,6 +374,26 @@ public class JTsList extends ATsList {
                 result.setIcon(monikerUI.getIcon(id.getMoniker()));
             }
             return result;
+        }
+    }
+
+    private static final class TsDataTableCellRenderer implements TableCellRenderer {
+
+        private final TsSparklineCellRenderer validRenderer;
+        private final DefaultTableCellRenderer invalidRenderer;
+
+        public TsDataTableCellRenderer() {
+            this.validRenderer = new TsSparklineCellRenderer();
+            this.invalidRenderer = new DefaultTableCellRenderer();
+            invalidRenderer.setForeground(new JTextField().getDisabledTextColor());
+            invalidRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            return value instanceof TsData
+                    ? validRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
+                    : invalidRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
