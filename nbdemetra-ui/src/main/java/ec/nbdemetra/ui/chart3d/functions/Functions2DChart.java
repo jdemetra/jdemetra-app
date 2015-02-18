@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.chart3d.functions;
 
 import ec.tstoolkit.data.DataBlock;
+import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.maths.realfunctions.IFunction;
 import ec.tstoolkit.maths.realfunctions.IFunctionInstance;
@@ -105,8 +106,14 @@ public class Functions2DChart extends ATsView {
         final IParametersDomain d = function.getDomain();
 
         float xMin = ((float) p.get(0) - epsilon);
+        double dMin=d.lbound(0);
+        if (DescriptiveStatistics.isFinite(dMin) && xMin < dMin)
+            xMin=(float) dMin;
         float xMax = ((float) p.get(0) + epsilon);
-        float stepX = (xMax - xMin) / steps;    // Calculates the "distance" between each point
+        double dMax=d.ubound(0);
+        if (DescriptiveStatistics.isFinite(dMax) && xMax > dMax)
+            xMax=(float) dMax;
+        float stepX = (xMax - xMin) / (steps-1);    // Calculates the "distance" between each point
 
         // Optimum point of the max likelihood function
         double optiX = parameters.get(0);
@@ -199,10 +206,14 @@ public class Functions2DChart extends ATsView {
      * @param eps
      */
     public void setEpsilon(float eps) {
-        if (eps < ConfigurationToolBar.MIN_EPS || eps > ConfigurationToolBar.MAX_EPS) {
-            throw new IllegalArgumentException("Epsilon must be between " 
-                    + ConfigurationToolBar.MIN_EPS + " and " + ConfigurationToolBar.MAX_EPS + " !");
+        if (eps < ConfigurationToolBar.MIN_EPS) {
+            throw new IllegalArgumentException("Epsilon must be greater than" 
+                    + ConfigurationToolBar.MIN_EPS + " !");
         }
+//        if (eps < ConfigurationToolBar.MIN_EPS || eps > ConfigurationToolBar.MAX_EPS) {
+//            throw new IllegalArgumentException("Epsilon must be between " 
+//                    + ConfigurationToolBar.MIN_EPS + " and " + ConfigurationToolBar.MAX_EPS + " !");
+//        }
         epsilon = eps;
         generateData();
     }

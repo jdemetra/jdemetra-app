@@ -22,6 +22,7 @@ import ec.nbdemetra.ui.properties.l2fprod.CustomPropertyEditorRegistry;
 import ec.tss.disaggregation.documents.DentonSpecification;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.descriptors.IObjectDescriptor;
+import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -87,6 +88,14 @@ public class DentonSpecUI implements IObjectDescriptor<DentonSpecification> {
         core.setModifiedDenton(mod);
     }
 
+    public TsFrequency getFrequency() {
+        return core.getDefaultFrequency();
+    }
+
+    public void setFrequency(TsFrequency freq) {
+        core.setDefaultFrequency(freq);
+    }
+    
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         List<EnhancedPropertyDescriptor> props = new ArrayList<>();
@@ -103,6 +112,10 @@ public class DentonSpecUI implements IObjectDescriptor<DentonSpecification> {
             props.add(desc);
         }
         desc = diffDesc();
+        if (desc != null) {
+            props.add(desc);
+        }
+        desc = freqDesc();
         if (desc != null) {
             props.add(desc);
         }
@@ -161,14 +174,27 @@ public class DentonSpecUI implements IObjectDescriptor<DentonSpecification> {
         }
     }
 
+    private EnhancedPropertyDescriptor freqDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("Frequency", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DEFFREQ_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(DEFFREQ_NAME);
+            desc.setShortDescription(DEFFREQ_DESC);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+    
     @Override
     public String getDisplayName() {
         return DENTON; //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static final int TYPE_ID = 10, DIFF_ID = 40, MUL_ID = 20, MOD_ID = 30;
+    private static final int TYPE_ID = 10, DIFF_ID = 40, MUL_ID = 20, MOD_ID = 30, DEFFREQ_ID=40;
     private static final String TYPE_NAME = "Type", DIFF_NAME = "Differencing",
-            MUL_NAME = "Multiplicative", MOD_NAME = "Modified Denton",
+            MUL_NAME = "Multiplicative", MOD_NAME = "Modified Denton", DEFFREQ_NAME="Default frequency",
             TYPE_DESC = "Type", DIFF_DESC = "Differencing order in the objective function",
-            MUL_DESC = "Multiplicative", MOD_DESC = "Modified Denton";
+            MUL_DESC = "Multiplicative", MOD_DESC = "Modified Denton", DEFFREQ_DESC="Default frequency";
 }

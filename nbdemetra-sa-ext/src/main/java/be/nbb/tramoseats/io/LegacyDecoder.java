@@ -16,19 +16,15 @@
  */
 package be.nbb.tramoseats.io;
 
-import static be.nbb.tramoseats.io.AbstractDecoder.takeCode;
-import static be.nbb.tramoseats.io.AbstractDecoder.takePeriod;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.information.InformationSet;
 import ec.tstoolkit.maths.matrices.Matrix;
-import ec.tstoolkit.modelling.ComponentType;
 import ec.tstoolkit.modelling.TsVariableDescriptor;
 import ec.tstoolkit.modelling.TsVariableDescriptor.UserComponentType;
 import ec.tstoolkit.modelling.arima.tramo.OutlierSpec;
 import ec.tstoolkit.modelling.arima.tramo.RegressionSpec;
 import ec.tstoolkit.modelling.arima.tramo.TradingDaysSpec;
-import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.regression.InterventionVariable;
 import ec.tstoolkit.timeseries.regression.OutlierDefinition;
 import ec.tstoolkit.timeseries.regression.OutlierType;
@@ -37,6 +33,7 @@ import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
+import ec.tstoolkit.utilities.Arrays2;
 import ec.tstoolkit.utilities.IntList;
 import ec.tstoolkit.utilities.NamedObject;
 import ec.tstoolkit.utilities.Tokenizer;
@@ -44,13 +41,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -290,6 +283,7 @@ public class LegacyDecoder extends AbstractDecoder {
     private int readVariables(BufferedReader reader, RegressionSpec regression, boolean external) throws IOException {
         Number n = takeInt(Item.ILONG, elements);
         Number nser = takeInt(Item.NSER, elements);
+        Number regeffect = takeInt(Item.REGEFF, elements);
         if (n == null || nser == null) {
             return 0;
         }
@@ -336,7 +330,6 @@ public class LegacyDecoder extends AbstractDecoder {
         }
         ArrayList<String> cdesc = new ArrayList<>();
         for (int i = 0; i < nvars; ++i) {
-            Number regeffect = takeInt(Item.REGEFF, elements);
             if (regeffect != null && regeffect.intValue() == 6) {
                 cdesc.add(InformationSet.item(TEMP, names[i]));
             } else {
@@ -352,11 +345,9 @@ public class LegacyDecoder extends AbstractDecoder {
             TradingDaysSpec td = regression.getCalendar().getTradingDays();
             String[] ntd = new String[cdesc.size()];
             ntd = cdesc.toArray(ntd);
-            String[] otd = td.getUserVariables();
-            if (otd != null) {
-                String[] tmp = Arrays.copyOf(otd, otd.length + ntd.length);
-                System.arraycopy(ntd, 0, tmp, otd.length, ntd.length);
-                ntd = tmp;
+            String[] oldtd = td.getUserVariables();
+            if (oldtd != null) {
+                ntd = Arrays2.concat(oldtd, ntd);
             }
             td.setUserVariables(ntd);
         }

@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  *
  * @author pcuser
+ * @param <D>
+ * @param <I>
  */
 public abstract class TsDocumentInformationExtractor<D extends TsDocument, I> implements InformationExtractor<D, I> {
 
