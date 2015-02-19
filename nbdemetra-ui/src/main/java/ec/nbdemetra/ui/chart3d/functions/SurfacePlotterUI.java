@@ -25,6 +25,7 @@ import ec.ui.view.tsprocessing.PooledItemUI;
 /**
  *
  * @author Mats Maggi
+ * @param <V>
  */
 public class SurfacePlotterUI<V extends IProcDocumentView<?>> extends PooledItemUI<V, Functions, SurfacePlotterView> {
 
@@ -35,19 +36,35 @@ public class SurfacePlotterUI<V extends IProcDocumentView<?>> extends PooledItem
     @Override
     protected void init(SurfacePlotterView c, V host, Functions information) {
         c.setFunctions(information.function, information.maxFunction, 100);
+        if (information.eps > 0) {
+            c.setEpsilon((float) information.eps);
+        }
     }
-    
+
     public static class Functions {
-        public IFunction function;
-        public IFunctionInstance maxFunction;
-        
+
+        public final IFunction function;
+        public final IFunctionInstance maxFunction;
+        public final double eps;
+
         public static Functions create(IFunction f, IFunctionInstance max) {
             return new Functions(f, max);
         }
-        
+
+        public static Functions create(IFunction f, IFunctionInstance max, double eps) {
+            return new Functions(f, max, eps);
+        }
+
         private Functions(IFunction f, IFunctionInstance maxF) {
             function = f;
             maxFunction = maxF;
+            eps = 0;
+        }
+
+        private Functions(IFunction f, IFunctionInstance maxF, double e) {
+            function = f;
+            maxFunction = maxF;
+            eps = e;
         }
     }
 }

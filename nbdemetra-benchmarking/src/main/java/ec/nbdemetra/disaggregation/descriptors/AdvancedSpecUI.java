@@ -145,7 +145,8 @@ public class AdvancedSpecUI extends BaseTsDisaggregationSpecUI implements IObjec
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(ZERO_NAME);
             desc.setShortDescription(ZERO_DESC);
-            edesc.setReadOnly(ro_ || core.getModel() == DisaggregationSpecification.Model.Wn);
+            edesc.setReadOnly(ro_ || core.getModel() == DisaggregationSpecification.Model.Wn
+            || core.getModel().getDifferencingOrder()>1);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

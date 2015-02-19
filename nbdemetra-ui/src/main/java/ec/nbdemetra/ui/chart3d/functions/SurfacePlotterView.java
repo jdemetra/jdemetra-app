@@ -167,4 +167,12 @@ public class SurfacePlotterView extends JPanel {
             add(ExceptionPanel.create(e), BorderLayout.CENTER);
         }
     }
+    
+    public void setEpsilon(float eps){
+        chart.setEpsilon(eps);
+    }
+
+    public void setSteps(int steps){
+        chart.setSteps(steps);
+    }
 }
