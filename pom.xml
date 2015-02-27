@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
 
     <name>NbDemetra - Parent</name>
-    <url>https://joinup.ec.europa.eu/software/sat/description</url>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
