@@ -149,7 +149,7 @@ public class WinDesktop extends AwtDesktop {
         try {
             return extractResource("winsearch.vbs", "winsearch", ".vbs");
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "Cannot load search script", ex);
+            LOGGER.log(Level.INFO, "Cannot load search script", ex);
             return null;
         }
     }
@@ -158,7 +158,7 @@ public class WinDesktop extends AwtDesktop {
         try {
             return registry.keyExists(HKEY_LOCAL_MACHINE, DESKTOP_SEARCH_KEY_PATH);
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "While checking desktop search existence", ex);
+            LOGGER.log(Level.INFO, "While checking desktop search existence", ex);
             return false;
         }
     }
@@ -177,7 +177,7 @@ public class WinDesktop extends AwtDesktop {
             Object result = registry.getValue(HKEY_CURRENT_USER, SHELL_FOLDERS_KEY_PATH, winFolderName);
             return result instanceof String && !((String) result).isEmpty() ? new File((String) result) : null;
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "While getting known folder", ex);
+            LOGGER.log(Level.INFO, "While getting known folder", ex);
             return null;
         }
     }
