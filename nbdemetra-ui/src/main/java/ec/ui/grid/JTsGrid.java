@@ -474,6 +474,9 @@ public class JTsGrid extends ATsGrid {
             Component result = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             if (result instanceof JLabel) {
                 JLabel label = (JLabel) result;
+                if (label.getText().isEmpty()) {
+                    label.setText(" ");
+                }
                 label.setToolTipText(label.getText());
             }
             return result;
