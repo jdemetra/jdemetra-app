@@ -21,10 +21,13 @@ import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.AutoCompletionSource.Behavior;
 import ec.util.completion.AutoCompletionSources;
 import ec.util.completion.FileAutoCompletionSource;
+import ec.util.desktop.Desktop;
+import ec.util.desktop.DesktopManager;
 import ec.util.various.swing.BasicSwingLauncher;
 import ec.util.various.swing.FontAwesome;
 import java.awt.Color;
 import java.awt.Component;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -60,7 +63,7 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
                 .content(JAutoCompletionDemo.class)
                 .title("Auto Completion Demo")
                 .size(414, 300)
-                .resizable(false)
+                .resizable(true)
                 .launch();
     }
 
@@ -122,7 +125,7 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
 
     final void initExample4() {
         JAutoCompletion ac = new JAutoCompletion(file);
-        ac.setSource(new FileAutoCompletionSource());
+        ac.setSource(new DesktopFileAutoCompletionSource());
         ac.getList().setCellRenderer(new FileListCellRenderer(Executors.newSingleThreadExecutor()));
 
         fileLabel.setToolTipText(toHtml(ac));
@@ -219,6 +222,7 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
         ac.setSource(AutoCompletionSources.of(false, FontAwesome.values()));
         ac.getList().setCellRenderer(new DefaultListCellRenderer() {
             final Border border = BorderFactory.createEmptyBorder(5, 2, 5, 2);
+
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -279,7 +283,7 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(21, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lotrLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(lotrLabel, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -296,10 +300,10 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
                     .addComponent(file)
                     .addComponent(systemProperty)
                     .addComponent(multipleLocale)
-                    .addComponent(singleLocale)
                     .addComponent(exception)
-                    .addComponent(custom))
-                .addContainerGap(13, Short.MAX_VALUE))
+                    .addComponent(custom)
+                    .addComponent(singleLocale))
+                .addGap(20, 20, 20))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -402,6 +406,39 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
         @Override
         public int compare(Locale o1, Locale o2) {
             return o1.toString().compareTo(o2.toString());
+        }
+    }
+
+    private static final class DesktopFileAutoCompletionSource extends FileAutoCompletionSource {
+
+        private Desktop getDesktop() {
+            return DesktopManager.get();
+        }
+
+        @Override
+        public List<File> getValues(String term) throws IOException {
+            final List<File> result = super.getValues(term);
+            Desktop desktop = getDesktop();
+            if (!desktop.isSupported(Desktop.Action.SEARCH) || term.length() < 3) {
+                return result;
+            }
+            final List<File> enhancedResult = new ArrayList<>();
+            if (fileFilter == null) {
+                Collections.addAll(enhancedResult, desktop.search(term));
+            } else {
+                for (File o : desktop.search(term)) {
+                    if (fileFilter.accept(o)) {
+                        enhancedResult.add(o);
+                    }
+                }
+            }
+            if (enhancedResult.isEmpty()) {
+                return result;
+            }
+            if (enhancedResult.addAll(result)) {
+                Collections.sort(enhancedResult);
+            }
+            return enhancedResult;
         }
     }
 }
