@@ -92,8 +92,8 @@ public class WinDesktop extends AwtDesktop {
     }
 
     @Override
-    public File getKnownFolder(KnownFolder userDir) {
-        switch (userDir) {
+    public File getKnownFolderPath(KnownFolder knownFolder) throws IOException {
+        switch (knownFolder) {
             case DESKTOP:
                 return getKnownFolderByName(registry, DESKTOP_DIR);
             case DOCUMENTS:
@@ -112,6 +112,16 @@ public class WinDesktop extends AwtDesktop {
                 return getKnownFolderByName(registry, VIDEOS_DIR);
         }
         return null;
+    }
+
+    @Override
+    public File getKnownFolder(KnownFolder knownFolder) {
+        try {
+            return getKnownFolderPath(knownFolder);
+        } catch (IOException ex) {
+            LOGGER.log(Level.INFO, "While getting known folder", ex);
+            return null;
+        }
     }
 
     @Override
@@ -172,14 +182,9 @@ public class WinDesktop extends AwtDesktop {
     }
 
     @Nullable
-    private static File getKnownFolderByName(@Nonnull WinRegistry registry, @Nonnull String winFolderName) {
-        try {
-            Object result = registry.getValue(HKEY_CURRENT_USER, SHELL_FOLDERS_KEY_PATH, winFolderName);
-            return result instanceof String && !((String) result).isEmpty() ? new File((String) result) : null;
-        } catch (IOException ex) {
-            LOGGER.log(Level.INFO, "While getting known folder", ex);
-            return null;
-        }
+    private static File getKnownFolderByName(@Nonnull WinRegistry registry, @Nonnull String winFolderName) throws IOException {
+        Object result = registry.getValue(HKEY_CURRENT_USER, SHELL_FOLDERS_KEY_PATH, winFolderName);
+        return result instanceof String && !((String) result).isEmpty() ? new File((String) result) : null;
     }
 
     @Nonnull

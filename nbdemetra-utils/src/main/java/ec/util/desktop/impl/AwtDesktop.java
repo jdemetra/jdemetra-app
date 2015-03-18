@@ -65,6 +65,8 @@ public class AwtDesktop implements Desktop {
                 return isJnaPlatformAvailable() && FileUtils.getInstance().hasTrash();
             case SEARCH:
                 return false;
+            case KNOWN_FOLDER_LOOKUP:
+                return true;
         }
         return false;
     }
@@ -112,6 +114,11 @@ public class AwtDesktop implements Desktop {
         FileUtils.getInstance().moveToTrash(files);
     }
 
+    @Override
+    public File getKnownFolderPath(KnownFolder knownFolder) throws IOException {
+        return getKnownFolder(knownFolder);
+    }
+    
     @Override
     public File getKnownFolder(Desktop.KnownFolder userDir) {
         return null;
