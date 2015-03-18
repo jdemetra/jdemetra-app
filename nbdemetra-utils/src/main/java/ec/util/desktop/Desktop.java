@@ -91,7 +91,13 @@ public interface Desktop {
          *
          * @see Desktop#search(java.lang.String)
          */
-        SEARCH
+        SEARCH,
+        /**
+         * Represents the lookup of known folders.
+         * 
+         * @see Desktop#getKnownFolderPath(ec.util.desktop.Desktop.KnownFolder) 
+         */
+        KNOWN_FOLDER_LOOKUP;
     }
 
     /**
@@ -286,12 +292,19 @@ public interface Desktop {
     void moveToTrash(@Nonnull File... files) throws IOException;
 
     /**
-     * Returns a {@link File} representing a known folder.
+     * Returns the path of a known folder as a {@link File}.
      *
      * @param knownFolder
      * @return a <code>File</code> object if the folder has been found and
      * exist, null otherwise
+     * @throws IOException if the operation failed
+     * @throws UnsupportedOperationException if the current platform does not
+     * support the {@link Desktop.Action#KNOWN_FOLDER_LOOKUP} action
      */
+    @Nullable
+    File getKnownFolderPath(@Nonnull KnownFolder knownFolder) throws IOException;
+
+    @Deprecated
     @Nullable
     File getKnownFolder(@Nonnull KnownFolder knownFolder);
 

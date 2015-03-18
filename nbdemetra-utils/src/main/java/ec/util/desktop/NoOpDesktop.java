@@ -74,6 +74,11 @@ public final class NoOpDesktop implements Desktop {
     }
 
     @Override
+    public File getKnownFolderPath(KnownFolder knownFolder) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
     public File getKnownFolder(Desktop.KnownFolder knownFolder) {
         return null;
     }
