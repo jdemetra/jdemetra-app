@@ -16,6 +16,7 @@
  */
 package ec.ui.list;
 
+import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.awt.PopupListener.PopupAdapter;
@@ -314,9 +315,12 @@ public class JTsList extends ATsList {
                         case Valid:
                             return ts.getTsData();
                         case Invalid:
-                            return ts.getInvalidDataCause();
+                            String cause = ts.getInvalidDataCause();
+                            return !Strings.isNullOrEmpty(cause) ? cause : "Invalid";
+                        case Undefined:
+                            return "loading";
                         default:
-                            return null;
+                            return "Unknown error";
                     }
                 case TsIdentifier:
                     return new TsIdentifier(ts.getName(), ts.getMoniker());
@@ -379,21 +383,24 @@ public class JTsList extends ATsList {
 
     private static final class TsDataTableCellRenderer implements TableCellRenderer {
 
-        private final TsSparklineCellRenderer validRenderer;
-        private final DefaultTableCellRenderer invalidRenderer;
+        private final TsSparklineCellRenderer dataRenderer;
+        private final DefaultTableCellRenderer labelRenderer;
 
         public TsDataTableCellRenderer() {
-            this.validRenderer = new TsSparklineCellRenderer();
-            this.invalidRenderer = new DefaultTableCellRenderer();
-            invalidRenderer.setForeground(new JTextField().getDisabledTextColor());
-            invalidRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+            this.dataRenderer = new TsSparklineCellRenderer();
+            this.labelRenderer = new DefaultTableCellRenderer();
+            labelRenderer.setForeground(new JTextField().getDisabledTextColor());
+            labelRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            return value instanceof TsData
-                    ? validRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
-                    : invalidRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (value instanceof TsData) {
+                return dataRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            }
+            labelRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            labelRenderer.setToolTipText(labelRenderer.getText());
+            return labelRenderer;
         }
     }
 

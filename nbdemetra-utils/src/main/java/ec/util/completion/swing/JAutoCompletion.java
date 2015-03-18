@@ -4,6 +4,8 @@ import ec.util.completion.AbstractAutoCompletion;
 import ec.util.completion.AutoCompletionSource;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -26,6 +28,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.event.DocumentEvent;
@@ -356,12 +359,8 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
             if (values.isEmpty()) {
                 return;
             }
-            // FIXME: compute component size 
-            list.revalidate();
-            int width = Math.max(list.getPreferredSize().width + 10, inputView.getComponent().getWidth());
-            int height = Math.min(list.getPreferredSize().height, inputView.getComponent().getHeight() * 7) + 4;
-            scrollPane.setPreferredSize(new Dimension(width, height));
-            scrollPane.revalidate();
+            // compute size
+            scrollPane.setPreferredSize(computeSize());
             // set selection
             if (autoFocus) {
                 list.setSelectedIndex(0);
@@ -370,6 +369,43 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
             }
             list.ensureIndexIsVisible(0);
             showPopup(scrollPane);
+        }
+
+        Dimension computeSize() {
+            Dimension size = list.getPreferredSize();
+            JTextComponent textComponent = inputView.getComponent();
+            Insets popupInsets = scrollPane.getInsets();
+
+            int width = size.width + popupInsets.left + popupInsets.right;
+            int minWidth = textComponent.getWidth();
+            boolean horizontalScrollBarVisible = false;
+
+            if (width <= minWidth) {
+                width = minWidth;
+            } else {
+                Window window = SwingUtilities.getWindowAncestor(textComponent);
+                int x = textComponent.getLocationOnScreen().x - window.getLocationOnScreen().x;
+                int maxWidth = window.getWidth() - x - window.getInsets().right;
+                if (width > maxWidth) {
+                    width = maxWidth;
+                    horizontalScrollBarVisible = true;
+                }
+            }
+
+            int height = size.height + popupInsets.top + popupInsets.bottom
+                    + (horizontalScrollBarVisible ? getHorizontalScrollBarHeight() : 0);
+            int maxHeight = textComponent.getHeight() * 7;
+
+            if (height > maxHeight) {
+                height = maxHeight;
+            }
+
+            return new Dimension(width, height);
+        }
+
+        int getHorizontalScrollBarHeight() {
+            int result = scrollPane.getHorizontalScrollBar().getHeight();
+            return result != 0 ? result : UIManager.getInt("ScrollBar.width");
         }
 
         void showPopup(Component c) {
