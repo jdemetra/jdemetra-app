@@ -16,6 +16,7 @@
  */
 package ec.util.grid.swing;
 
+import ec.util.grid.CellIndex;
 import java.awt.Color;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,6 +34,9 @@ abstract class AGrid extends JComponent {
     public static final String MODEL_PROPERTY = "model";
     public static final String ROW_SELECTION_ALLOWED_PROPERTY = "rowSelectionAllowed";
     public static final String COLUMN_SELECTION_ALLOWED_PROPERTY = "columnSelectionAllowed";
+    public static final String FOCUSED_CELL_PROPERTY = "focusedCell";
+    public static final String SELECTED_CELL_PROPERTY = "selectedCell";
+
     public static final String DRAG_ENABLED_PROPERTY = "dragEnabled";
     public static final String GRID_COLOR_PROPERTY = "gridColor";
     public static final String NO_DATA_RENDERER_PROPERTY = "noDataRenderer";
@@ -42,12 +46,18 @@ abstract class AGrid extends JComponent {
     private static final GridModel DEFAULT_MODEL = GridModels.empty();
     private static final boolean DEFAULT_ROW_SELECTION_ALLOWED = true;
     private static final boolean DEFAULT_COLUMN_SELECTION_ALLOWED = false;
+    private static final CellIndex DEFAULT_FOCUSED_CELL = CellIndex.NULL;
+    private static final CellIndex DEFAULT_SELECTED_CELL = CellIndex.NULL;
+
     private static final boolean DEFAULT_DRAG_ENABLED = false;
     private static final XTable.NoDataRenderer DEFAULT_NO_DATA_RENDERER = new XTable.DefaultNoDataRenderer();
 
     protected GridModel model;
     protected boolean rowSelectionAllowed;
     protected boolean columnSelectionAllowed;
+    protected CellIndex focusedCell;
+    protected CellIndex selectedCell;
+
     protected boolean dragEnabled;
     protected Color gridColor;
     protected XTable.NoDataRenderer noDataRenderer;
@@ -58,6 +68,9 @@ abstract class AGrid extends JComponent {
         this.model = DEFAULT_MODEL;
         this.rowSelectionAllowed = DEFAULT_ROW_SELECTION_ALLOWED;
         this.columnSelectionAllowed = DEFAULT_COLUMN_SELECTION_ALLOWED;
+        this.focusedCell = DEFAULT_FOCUSED_CELL;
+        this.selectedCell = DEFAULT_SELECTED_CELL;
+
         this.dragEnabled = DEFAULT_DRAG_ENABLED;
         this.gridColor = getControlColor();
         this.noDataRenderer = DEFAULT_NO_DATA_RENDERER;
@@ -95,6 +108,28 @@ abstract class AGrid extends JComponent {
         boolean old = this.columnSelectionAllowed;
         this.columnSelectionAllowed = columnSelectionAllowed;
         firePropertyChange(COLUMN_SELECTION_ALLOWED_PROPERTY, old, this.columnSelectionAllowed);
+    }
+
+    @Nonnull
+    public CellIndex getFocusedCell() {
+        return focusedCell;
+    }
+
+    public void setFocusedCell(@Nullable CellIndex focusedCell) {
+        CellIndex old = this.focusedCell;
+        this.focusedCell = focusedCell != null ? focusedCell : DEFAULT_FOCUSED_CELL;
+        firePropertyChange(FOCUSED_CELL_PROPERTY, old, this.focusedCell);
+    }
+
+    @Nonnull
+    public CellIndex getSelectedCell() {
+        return selectedCell;
+    }
+
+    public void setSelectedCell(@Nullable CellIndex selectedCell) {
+        CellIndex old = this.selectedCell;
+        this.selectedCell = selectedCell != null ? selectedCell : DEFAULT_SELECTED_CELL;
+        firePropertyChange(SELECTED_CELL_PROPERTY, old, this.selectedCell);
     }
 
     public boolean isDragEnabled() {
