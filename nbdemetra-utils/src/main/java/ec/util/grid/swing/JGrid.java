@@ -19,14 +19,22 @@ package ec.util.grid.swing;
 import ec.util.grid.CellIndex;
 import static ec.util.grid.swing.AGrid.FOCUSED_CELL_PROPERTY;
 import static ec.util.various.swing.ModernUI.withEmptyBorders;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSource;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -36,17 +44,19 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import javax.annotation.Nullable;
+import javax.swing.JComponent;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import javax.swing.JLayer;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.OverlayLayout;
 import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.plaf.LayerUI;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -66,7 +76,6 @@ public final class JGrid extends AGrid {
     private static final int COLUMN_WIDTH = new TableColumn().getPreferredWidth();
 
     private final JScrollPane scrollPane;
-    private final XTable noDataPanel;
     private final XTable main;
     private final FixedColumnTable fct;
     private final InternalTableModel internalModel;
@@ -77,18 +86,11 @@ public final class JGrid extends AGrid {
 
     public JGrid() {
         this.scrollPane = withEmptyBorders(new JScrollPane());
-        scrollPane.setVisible(false);
-
-        this.noDataPanel = new XTable();
 
         this.internalModel = new InternalTableModel();
         internalModel.addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
-                boolean tmp = internalModel.hasData();
-                scrollPane.setVisible(tmp);
-                noDataPanel.setVisible(!tmp);
-
                 // Adding resize support of newly added columns
                 if (e.getType() == TableModelEvent.UPDATE) {
                     applyZoomRatioOnColumns(zoomRatio, main);
@@ -152,9 +154,8 @@ public final class JGrid extends AGrid {
         enableCellSelection();
         enableProperties();
 
-        setLayout(new OverlayLayout(this));
-        add(scrollPane);
-        add(withEmptyBorders(new JScrollPane(noDataPanel)));
+        setLayout(new BorderLayout());
+        add(new JLayer<>(scrollPane, new NoDataUI()), BorderLayout.CENTER);
     }
 
     public TableCellRenderer getDefaultRenderer(Class<?> aClass) {
@@ -185,12 +186,10 @@ public final class JGrid extends AGrid {
     public synchronized void addMouseListener(MouseListener l) {
         super.addMouseListener(l);
         main.addMouseListener(l);
-        noDataPanel.addMouseListener(l);
     }
 
     @Override
     public synchronized void removeMouseListener(MouseListener l) {
-        noDataPanel.removeMouseListener(l);
         main.removeMouseListener(l);
         super.removeMouseListener(l);
     }
@@ -289,7 +288,6 @@ public final class JGrid extends AGrid {
         applyZoomRatioOnColumns(zoomRatio, j);
 
         // Resize of the fonts according to the zoom ratio
-        noDataPanel.setFont(font);
         main.setFont(font);
         main.getTableHeader().setFont(font);
         fct.getFixedTable().setFont(font);
@@ -301,7 +299,7 @@ public final class JGrid extends AGrid {
         main.getTableHeader().setTransferHandler(handler);
         fct.getFixedTable().setTransferHandler(handler);
         fct.getFixedTable().getTableHeader().setTransferHandler(handler);
-        noDataPanel.setTransferHandler(handler);
+        scrollPane.setTransferHandler(handler);
     }
 
     private void onGridColorChange() {
@@ -309,7 +307,7 @@ public final class JGrid extends AGrid {
     }
 
     private void onNoDataRendererChange() {
-        noDataPanel.setNoDataRenderer(noDataRenderer);
+        repaint();
     }
 
     private void onRowSelectionModelChange() {
@@ -324,7 +322,6 @@ public final class JGrid extends AGrid {
         JPopupMenu popupMenu = getComponentPopupMenu();
         main.setComponentPopupMenu(popupMenu);
         fct.getFixedTable().setComponentPopupMenu(popupMenu);
-        noDataPanel.setComponentPopupMenu(popupMenu);
     }
     //</editor-fold>
 
@@ -550,6 +547,86 @@ public final class JGrid extends AGrid {
         Enumeration<TableColumn> cols = table.getTableHeader().getColumnModel().getColumns();
         while (cols.hasMoreElements()) {
             cols.nextElement().setPreferredWidth(columnWidth);
+        }
+    }
+
+    private final class NoDataUI extends LayerUI<JScrollPane> {
+
+        private static final String HAS_DROP_LOCATION_PROPERTY = "hasDropLocation";
+
+        private boolean hasDropLocation = false;
+        private DropTarget dropTarget = null;
+
+        private void setHasDropLocation(boolean hasDropLocation) {
+            boolean old = this.hasDropLocation;
+            this.hasDropLocation = hasDropLocation;
+            firePropertyChange(HAS_DROP_LOCATION_PROPERTY, old, this.hasDropLocation);
+        }
+
+        @Override
+        public void applyPropertyChange(PropertyChangeEvent evt, JLayer<? extends JScrollPane> l) {
+            if (evt.getPropertyName().equals(HAS_DROP_LOCATION_PROPERTY)) {
+                l.repaint();
+            }
+        }
+
+        @Override
+        public void installUI(JComponent c) {
+            super.installUI(c);
+            dropTarget = new DropTarget(scrollPane, new DropTargetListener() {
+
+                @Override
+                public void dragEnter(DropTargetDragEvent dtde) {
+                    main.getDropTarget().dragEnter(dtde);
+                    // FIXME: value still set to true even if import refused
+                    setHasDropLocation(true);
+                }
+
+                @Override
+                public void dragOver(DropTargetDragEvent dtde) {
+                    main.getDropTarget().dragOver(dtde);
+                }
+
+                @Override
+                public void dropActionChanged(DropTargetDragEvent dtde) {
+                    main.getDropTarget().dropActionChanged(dtde);
+                }
+
+                @Override
+                public void dragExit(DropTargetEvent dte) {
+                    main.getDropTarget().dragExit(dte);
+                    setHasDropLocation(false);
+                }
+
+                @Override
+                public void drop(DropTargetDropEvent dtde) {
+                    main.getDropTarget().drop(dtde);
+                    setHasDropLocation(false);
+                }
+            });
+            PropertyChangeListener listener = new PropertyChangeListener() {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    switch (evt.getPropertyName()) {
+                        case "dropLocation":
+                            JTable table = (JTable) evt.getSource();
+                            setHasDropLocation(table.getDropLocation() != null);
+                            break;
+                    }
+                }
+            };
+            main.addPropertyChangeListener(listener);
+            fct.getFixedTable().addPropertyChangeListener(listener);
+        }
+
+        @Override
+        public void paint(Graphics g, JComponent c) {
+            super.paint(g, c);
+            if (!internalModel.hasData()/* || hasDropLocation*/) {
+                Component renderer = noDataRenderer.getNoDataRendererComponent(main, hasDropLocation);
+                renderer.setSize(scrollPane.getSize());
+                renderer.paint(g);
+            }
         }
     }
     //</editor-fold>
