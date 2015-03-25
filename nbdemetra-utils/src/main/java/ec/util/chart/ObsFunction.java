@@ -39,6 +39,11 @@ public abstract class ObsFunction<T> {
     @Nullable
     public abstract T apply(int series, int obs);
 
+    @Nullable
+    final public T apply(@Nonnull ObsIndex index) throws NullPointerException {
+        return apply(index.getSeries(), index.getObs());
+    }
+
     /**
      * Creates a function that formats the observation indexes as a String.
      *
@@ -69,7 +74,7 @@ public abstract class ObsFunction<T> {
         @Nullable
         protected final X value;
 
-        public Constant(X value)   {
+        public Constant(X value) {
             this.value = value;
         }
 

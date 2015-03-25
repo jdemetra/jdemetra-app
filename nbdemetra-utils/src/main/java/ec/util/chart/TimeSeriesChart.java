@@ -75,6 +75,24 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
     @Nonnull
     SeriesPredicate getLegendVisibilityPredicate();
 
+    @Nonnull
+    CrosshairOrientation getCrosshairOrientation();
+
+    @Nonnull
+    ObsIndex getFocusedObs();
+
+    @Nonnull
+    ObsIndex getSelectedObs();
+
+    @Nonnull
+    ObsPredicate getObsHighlighter();
+
+    @Nonnull
+    DisplayTrigger getTooltipTrigger();
+
+    @Nonnull
+    DisplayTrigger getCrosshairTrigger();
+
     void setDataset(@Nullable DS dataset);
 
     void setColorSchemeSupport(@Nullable COLORS colorSchemeSupport);
@@ -105,6 +123,18 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     void setLegendVisibilityPredicate(@Nullable SeriesPredicate predicate);
 
+    void setCrosshairOrientation(@Nullable CrosshairOrientation crosshairOrientation);
+
+    void setFocusedObs(@Nullable ObsIndex focusedObs);
+
+    void setSelectedObs(@Nullable ObsIndex selectedObs);
+
+    void setObsHighlighter(@Nullable ObsPredicate obsHighlighter);
+
+    void setTooltipTrigger(@Nullable DisplayTrigger tooltipTrigger);
+
+    void setCrosshairTrigger(@Nullable DisplayTrigger crosshairTrigger);
+
     void copyImage() throws IOException;
 
     void saveImage() throws IOException;
@@ -116,7 +146,7 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     enum Element {
 
-        TITLE, LEGEND, AXIS
+        TITLE, LEGEND, AXIS, TOOLTIP, CROSSHAIR
     }
 
     enum RendererType {
@@ -126,5 +156,15 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
         COLUMN, STACKED_COLUMN,
         AREA, STACKED_AREA,
         MARKER
+    }
+
+    enum CrosshairOrientation {
+
+        HORIZONTAL, VERTICAL, BOTH;
+    }
+
+    enum DisplayTrigger {
+
+        FOCUS, SELECTION, BOTH
     }
 }

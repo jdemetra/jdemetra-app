@@ -16,28 +16,47 @@
  */
 package ec.util.grid.swing;
 
+import ec.util.grid.CellIndex;
+import static ec.util.grid.swing.AGrid.FOCUSED_CELL_PROPERTY;
 import static ec.util.various.swing.ModernUI.withEmptyBorders;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSource;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import javax.swing.JLayer;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.OverlayLayout;
 import javax.swing.TransferHandler;
-import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.plaf.LayerUI;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -51,80 +70,42 @@ import javax.swing.table.TableColumnModel;
  * @author Philippe Charles
  * @author Mats Maggi
  */
-public class JGrid extends JComponent {
+public final class JGrid extends AGrid {
 
-    final JScrollPane scrollPane;
-    final XTable noDataPanel;
-    final XTable main;
-    final FixedColumnTable fct;
-    final InternalTableModel internalModel;
-    static final int COLUMN_WIDTH;
-    static final int ROW_HEIGTH;
-    float zoomRatio = 1.0f;
-    static final float FONT_SIZE;
+    // Setting constants used to implement zoom
+    private static final int COLUMN_WIDTH = new TableColumn().getPreferredWidth();
 
-    static {
-        // Setting constants used to implement zoom
-        JTable t = new JTable();
-        COLUMN_WIDTH = new TableColumn().getPreferredWidth();
-        ROW_HEIGTH = t.getRowHeight();
-        FONT_SIZE = t.getFont().getSize2D();
-    }
+    private final JScrollPane scrollPane;
+    private final XTable main;
+    private final FixedColumnTable fct;
+    private final InternalTableModel internalModel;
+    private final CellSelectionListener cellSelectionListener;
+    private final float initialFontSize;
+    private final int initialRowHeight;
+    private float zoomRatio;
 
     public JGrid() {
-        setLayout(new OverlayLayout(this));
-
         this.scrollPane = withEmptyBorders(new JScrollPane());
-        scrollPane.setVisible(false);
-        add(scrollPane);
-
-        this.noDataPanel = new XTable();
-        add(withEmptyBorders(new JScrollPane(noDataPanel)));
 
         this.internalModel = new InternalTableModel();
         internalModel.addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
-//                fct.getFixedTable().getColumnModel().getColumn(0).setWidth(300);
-                boolean tmp = internalModel.hasData();
-                scrollPane.setVisible(tmp);
-                noDataPanel.setVisible(!tmp);
+                // Adding resize support of newly added columns
+                if (e.getType() == TableModelEvent.UPDATE) {
+                    applyZoomRatioOnColumns(zoomRatio, main);
+                }
             }
         });
 
         this.main = new XTable();
         main.setModel(internalModel);
-        main.setNoDataRenderer(new XTable.DefaultNoDataRenderer("", ""));
-
-        // Adding resize support of newly added columns
-        main.getModel().addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                if (e.getType() == TableModelEvent.UPDATE) {
-                    Enumeration<TableColumn> cols = main.getTableHeader().getColumnModel().getColumns();
-                    while (cols.hasMoreElements()) {
-                        TableColumn c = cols.nextElement();
-                        c.setPreferredWidth((int) (COLUMN_WIDTH * zoomRatio));
-                    }
-                }
-            }
-        });
 
         // This makes sure user can drop on all component and not only on present cell
         main.setFillsViewportHeight(true);
 
         main.getTableHeader().setReorderingAllowed(false);
         main.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
-        // click on header select the column
-        main.getTableHeader().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                int selection = main.getTableHeader().columnAtPoint(e.getPoint());
-                main.getColumnModel().getSelectionModel().setSelectionInterval(selection, selection);
-            }
-        });
-        addDragOnHeader(main.getTableHeader());
 
         scrollPane.setViewportView(main);
 
@@ -139,95 +120,42 @@ public class JGrid extends JComponent {
         fct = new FixedColumnTable(1, scrollPane);
         fct.getFixedTable().getTableHeader().setReorderingAllowed(false);
         fct.getFixedTable().setFillsViewportHeight(true);
-
-        // click on header select/unselect all the columns
-        fct.getFixedTable().getTableHeader().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                ListSelectionModel columnSelectionModel = main.getColumnModel().getSelectionModel();
-                ListSelectionModel rowSelectionModel = main.getSelectionModel();
-                int columnCount = main.getColumnCount();
-                int rowCount = main.getRowCount();
-
-                if (columnCount == getCount(columnSelectionModel) || rowCount == getCount(rowSelectionModel)) {
-                    columnSelectionModel.clearSelection();
-                    rowSelectionModel.clearSelection();
-                } else {
-                    columnSelectionModel.setSelectionInterval(0, columnCount - 1);
-                    rowSelectionModel.setSelectionInterval(0, rowCount - 1);
-                }
-            }
-        });
-        addDragOnHeader(fct.getFixedTable().getTableHeader());
-
-        Color newGridColor = UIManager.getColor("control");
-        if (newGridColor != null) {
-            main.setGridColor(newGridColor);
-            // fct.getFixedTable().setGridColor(newGridColor);
-        }
-        setRowRenderer(new GridRowHeaderRenderer());
+        fct.getFixedTable().setIntercellSpacing(new Dimension(0, 0));
 
         // InputMap and ActionMap
         //setActionMap(main.getActionMap());
         setInputMap(WHEN_FOCUSED, main.getInputMap(WHEN_FOCUSED));
         setInputMap(WHEN_IN_FOCUSED_WINDOW, main.getInputMap(WHEN_IN_FOCUSED_WINDOW));
         setInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, main.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT));
-    }
 
-    // setFont() method now scales all elements when the font has the size changed
-    @Override
-    public void setFont(Font font) {
-        super.setFont(font);
+        this.cellSelectionListener = new CellSelectionListener();
+        this.initialFontSize = main.getFont().getSize2D();
+        this.initialRowHeight = main.getRowHeight();
+        this.zoomRatio = 1f;
 
-        zoomRatio = font.getSize2D() / FONT_SIZE;
-        main.setRowHeight((int) (ROW_HEIGTH * zoomRatio));
-        fct.getFixedTable().setRowHeight(main.getRowHeight());
+        setRowRenderer(new GridRowHeaderRenderer());
 
-        // Resize of data columns according to the zoom ratio
-        Enumeration<TableColumn> cols = main.getTableHeader().getColumnModel().getColumns();
-        while (cols.hasMoreElements()) {
-            TableColumn c = cols.nextElement();
-            c.setPreferredWidth((int) (COLUMN_WIDTH * zoomRatio));
-        }
+        onModelChange();
+        onRowSelectionAllowedChange();
+        onColumnSelectionAllowedChange();
+        onDragEnabledChange();
+        onGridColorChange();
+        onNoDataRendererChange();
+        onTransferHandlerChange();
+        onRowSelectionModelChange();
+        onColumnSelectionModelChange();
+        onComponentPopupMenuChange();
 
-        // Resize of row headers according to the zoom ratio
-        JTable j = fct.getFixedTable();
-        Dimension dim = new Dimension((int) (COLUMN_WIDTH * zoomRatio), (int) (ROW_HEIGTH * zoomRatio));
-        j.setPreferredScrollableViewportSize(dim);
-        j.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth((int) (COLUMN_WIDTH * zoomRatio));
+        enableSelectColumnOnHeader();
+        enableDragOnHeader(main.getTableHeader());
+        enableSelectAllOnHeader();
+        enableDragOnHeader(fct.getFixedTable().getTableHeader());
+        enableCellFocus();
+        enableCellSelection();
+        enableProperties();
 
-        // Resize of the fonts according to the zoom ratio
-        noDataPanel.setFont(font);
-        main.setFont(font);
-        main.getTableHeader().setFont(font);
-        fct.getFixedTable().setFont(font);
-    }
-
-    public void setDragEnabled(boolean dragEnabled) {
-        main.setDragEnabled(dragEnabled);
-        fct.getFixedTable().setDragEnabled(dragEnabled);
-    }
-
-    @Override
-    public void setTransferHandler(TransferHandler newHandler) {
-        super.setTransferHandler(newHandler);
-        main.setTransferHandler(newHandler);
-        main.getTableHeader().setTransferHandler(newHandler);
-        fct.getFixedTable().setTransferHandler(newHandler);
-        fct.getFixedTable().getTableHeader().setTransferHandler(newHandler);
-        noDataPanel.setTransferHandler(newHandler);
-    }
-
-    public void setRowHeight(int rowHeight) {
-        main.setRowHeight(rowHeight);
-    }
-
-    public int getRowHeight() {
-        return main.getRowHeight();
-    }
-
-    public JTableHeader getTableHeader() {
-        return main.getTableHeader();
+        setLayout(new BorderLayout());
+        add(new JLayer<>(scrollPane, new NoDataUI()), BorderLayout.CENTER);
     }
 
     public TableCellRenderer getDefaultRenderer(Class<?> aClass) {
@@ -246,71 +174,317 @@ public class JGrid extends JComponent {
         fct.getFixedTable().setDefaultRenderer(Object.class, renderer);
     }
 
-    public XTable.NoDataRenderer getNoDataRenderer() {
-        return this.noDataPanel.getNoDataRenderer();
+    public void setCornerRenderer(TableCellRenderer renderer) {
+        fct.getFixedTable().getTableHeader().setDefaultRenderer(renderer);
     }
 
-    public void setNoDataRenderer(XTable.NoDataRenderer renderer) {
-        this.noDataPanel.setNoDataRenderer(renderer);
-    }
-
-    public ListSelectionModel getSelectionModel() {
-        return main.getSelectionModel();
-    }
-
-    public TableColumnModel getColumnModel() {
-        return main.getColumnModel();
-    }
-
-    public GridModel getModel() {
-        return internalModel.getGridModel();
-    }
-
-    public void setModel(GridModel model) {
-        internalModel.setGridModel(model);
+    public void setOddBackground(@Nullable Color oddBackground) {
+        main.setOddBackground(oddBackground);
     }
 
     @Override
     public synchronized void addMouseListener(MouseListener l) {
         super.addMouseListener(l);
         main.addMouseListener(l);
-        noDataPanel.addMouseListener(l);
     }
 
     @Override
     public synchronized void removeMouseListener(MouseListener l) {
-        noDataPanel.removeMouseListener(l);
         main.removeMouseListener(l);
         super.removeMouseListener(l);
     }
 
-    public void setRowSelectionAllowed(boolean rowSelectionAllowed) {
-        main.setRowSelectionAllowed(rowSelectionAllowed);
+    @Deprecated
+    public void setRowHeight(int rowHeight) {
+        main.setRowHeight(rowHeight);
     }
 
-    public void setColumnSelectionAllowed(boolean columnSelectionAllowed) {
-        main.setColumnSelectionAllowed(columnSelectionAllowed);
+    @Deprecated
+    public int getRowHeight() {
+        return main.getRowHeight();
     }
 
+    @Deprecated
+    public JTableHeader getTableHeader() {
+        return main.getTableHeader();
+    }
+
+    @Deprecated
+    public ListSelectionModel getSelectionModel() {
+        return getRowSelectionModel();
+    }
+
+    @Deprecated
+    public TableColumnModel getColumnModel() {
+        return main.getColumnModel();
+    }
+
+    @Deprecated
     public int[] getSelectedColumns() {
         return main.getSelectedColumns();
     }
 
+    @Deprecated
     public int[] getSelectedRows() {
         return main.getSelectedRows();
     }
 
-    public void setOddBackground(Color oddBackground) {
-        main.setOddBackground(oddBackground);
+    //<editor-fold defaultstate="collapsed" desc="Event handlers">
+    private void onModelChange() {
+        internalModel.setGridModel(model);
     }
 
-    public void setGridColor(Color gridColor) {
+    private void onRowSelectionAllowedChange() {
+        main.setRowSelectionAllowed(rowSelectionAllowed);
+        fct.getFixedTable().setRowSelectionAllowed(rowSelectionAllowed);
+    }
+
+    private void onColumnSelectionAllowedChange() {
+        main.setColumnSelectionAllowed(columnSelectionAllowed);
+    }
+
+    private void onFocusedCellChange() {
+        main.repaint();
+    }
+
+    private void onSelectedCellChange() {
+        if (cellSelectionListener.enabled) {
+            cellSelectionListener.enabled = false;
+            CellIndex index = getSelectedCell();
+            if (CellIndex.NULL.equals(index)) {
+                getRowSelectionModel().clearSelection();
+                getColumnSelectionModel().clearSelection();
+            } else {
+                getRowSelectionModel().setSelectionInterval(index.getRow(), index.getRow());
+                getColumnSelectionModel().setSelectionInterval(index.getColumn(), index.getColumn());
+            }
+            cellSelectionListener.enabled = true;
+        }
+        main.getTableHeader().repaint();
+    }
+
+    private void onDragEnabledChange() {
+        main.setDragEnabled(dragEnabled);
+        fct.getFixedTable().setDragEnabled(dragEnabled);
+    }
+
+    private void onFontChange() {
+        // setFont() method now scales all elements when the font has the size changed
+        Font font = getFont();
+
+        zoomRatio = font.getSize2D() / initialFontSize;
+        int rowHeight = (int) (initialRowHeight * zoomRatio);
+        main.setRowHeight(rowHeight);
+        fct.getFixedTable().setRowHeight(rowHeight);
+
+        int columnWidth = (int) (COLUMN_WIDTH * zoomRatio);
+
+        // Resize of data columns according to the zoom ratio
+        applyZoomRatioOnColumns(zoomRatio, main);
+
+        // Resize of row headers according to the zoom ratio
+        JTable j = fct.getFixedTable();
+        j.setPreferredScrollableViewportSize(new Dimension(columnWidth, rowHeight));
+        applyZoomRatioOnColumns(zoomRatio, j);
+
+        // Resize of the fonts according to the zoom ratio
+        main.setFont(font);
+        main.getTableHeader().setFont(font);
+        fct.getFixedTable().setFont(font);
+    }
+
+    private void onTransferHandlerChange() {
+        TransferHandler handler = getTransferHandler();
+        main.setTransferHandler(handler);
+        main.getTableHeader().setTransferHandler(handler);
+        fct.getFixedTable().setTransferHandler(handler);
+        fct.getFixedTable().getTableHeader().setTransferHandler(handler);
+        scrollPane.setTransferHandler(handler);
+    }
+
+    private void onGridColorChange() {
         main.setGridColor(gridColor);
     }
 
-    static class InternalTableModel extends AbstractTableModel implements TableModelListener {
+    private void onNoDataRendererChange() {
+        repaint();
+    }
 
-        GridModel gridModel;
+    private void onRowSelectionModelChange() {
+        main.setSelectionModel(rowSelectionModel);
+    }
+
+    private void onColumnSelectionModelChange() {
+        main.getColumnModel().setSelectionModel(columnSelectionModel);
+    }
+
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        main.setComponentPopupMenu(popupMenu);
+        fct.getFixedTable().setComponentPopupMenu(popupMenu);
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
+    private void enableProperties() {
+        addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case MODEL_PROPERTY:
+                        onModelChange();
+                        break;
+                    case ROW_SELECTION_ALLOWED_PROPERTY:
+                        onRowSelectionAllowedChange();
+                        break;
+                    case COLUMN_SELECTION_ALLOWED_PROPERTY:
+                        onColumnSelectionAllowedChange();
+                        break;
+                    case FOCUSED_CELL_PROPERTY:
+                        onFocusedCellChange();
+                        break;
+                    case SELECTED_CELL_PROPERTY:
+                        onSelectedCellChange();
+                        break;
+                    case DRAG_ENABLED_PROPERTY:
+                        onDragEnabledChange();
+                        break;
+                    case GRID_COLOR_PROPERTY:
+                        onGridColorChange();
+                        break;
+                    case NO_DATA_RENDERER_PROPERTY:
+                        onNoDataRendererChange();
+                        break;
+                    case ROW_SELECTION_MODEL_PROPERTY:
+                        onRowSelectionModelChange();
+                        break;
+                    case COLUMN_SELECTION_MODEL_PROPERTY:
+                        onColumnSelectionModelChange();
+                        break;
+                    case "font":
+                        onFontChange();
+                        break;
+                    case "transferHandler":
+                        onTransferHandlerChange();
+                        break;
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
+                }
+            }
+        });
+    }
+
+    private void enableSelectColumnOnHeader() {
+        // click on header select the column
+        main.getTableHeader().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int selection = main.getTableHeader().columnAtPoint(e.getPoint());
+                getColumnSelectionModel().setSelectionInterval(selection, selection);
+            }
+        });
+    }
+
+    private void enableSelectAllOnHeader() {
+        // click on header select/unselect all the columns
+        fct.getFixedTable().getTableHeader().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                ListSelectionModel columnSelectionModel = getColumnSelectionModel();
+                ListSelectionModel rowSelectionModel = getRowSelectionModel();
+                int columnCount = main.getColumnCount();
+                int rowCount = main.getRowCount();
+
+                if (columnCount == getCount(columnSelectionModel) || rowCount == getCount(rowSelectionModel)) {
+                    columnSelectionModel.clearSelection();
+                    rowSelectionModel.clearSelection();
+                } else {
+                    columnSelectionModel.setSelectionInterval(0, columnCount - 1);
+                    rowSelectionModel.setSelectionInterval(0, rowCount - 1);
+                }
+            }
+        });
+    }
+
+    private static void enableDragOnHeader(final JTableHeader tableHeader) {
+        DragSource dragSource = DragSource.getDefaultDragSource();
+        dragSource.createDefaultDragGestureRecognizer(tableHeader, DnDConstants.ACTION_COPY_OR_MOVE, new DragGestureListener() {
+            @Override
+            public void dragGestureRecognized(DragGestureEvent dge) {
+                TransferHandler transferHandler = tableHeader.getTransferHandler();
+                if (transferHandler != null) {
+                    transferHandler.exportAsDrag(tableHeader, dge.getTriggerEvent(), TransferHandler.COPY);
+                }
+            }
+        });
+    }
+
+    private CellIndex getIndex(MouseEvent e) {
+        if (e.getSource() instanceof JTable) {
+            JTable table = (JTable) e.getSource();
+            Point point = e.getPoint();
+            return CellIndex.valueOf(table.rowAtPoint(point), table.columnAtPoint(point));
+        }
+        return CellIndex.NULL;
+    }
+
+    private void enableCellFocus() {
+        MouseMotionListener cellFocus = new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                setFocusedCell(getIndex(e));
+            }
+
+        };
+        main.addMouseMotionListener(cellFocus);
+        main.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                setFocusedCell(getIndex(e));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                setFocusedCell(getIndex(e));
+            }
+        });
+    }
+
+    private final class CellSelectionListener implements ListSelectionListener {
+
+        boolean enabled = true;
+
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            if (enabled && !e.getValueIsAdjusting()) {
+                enabled = false;
+                ListSelectionModel rowSelectionModel = getRowSelectionModel();
+                ListSelectionModel columnSelectionModel = getColumnSelectionModel();
+                if (rowSelectionModel.isSelectionEmpty() || columnSelectionModel.isSelectionEmpty()) {
+                    setSelectedCell(CellIndex.NULL);
+                } else {
+                    int row = rowSelectionModel.getLeadSelectionIndex();
+                    int column = columnSelectionModel.getLeadSelectionIndex();
+                    if (!getSelectedCell().equals(row, column)) {
+                        setSelectedCell(CellIndex.valueOf(row, column));
+                    }
+                }
+                enabled = true;
+            }
+        }
+    }
+
+    private void enableCellSelection() {
+        getRowSelectionModel().addListSelectionListener(cellSelectionListener);
+        getColumnSelectionModel().addListSelectionListener(cellSelectionListener);
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Internal implementation">
+    private static final class InternalTableModel extends AbstractTableModel implements TableModelListener {
+
+        private GridModel gridModel;
 
         InternalTableModel() {
             this.gridModel = GridModels.empty();
@@ -362,20 +536,98 @@ public class JGrid extends JComponent {
         }
     }
 
-    static void addDragOnHeader(final JTableHeader tableHeader) {
-        DragSource dragSource = DragSource.getDefaultDragSource();
-        dragSource.createDefaultDragGestureRecognizer(tableHeader, DnDConstants.ACTION_COPY_OR_MOVE, new DragGestureListener() {
-            @Override
-            public void dragGestureRecognized(DragGestureEvent dge) {
-                TransferHandler transferHandler = tableHeader.getTransferHandler();
-                if (transferHandler != null) {
-                    transferHandler.exportAsDrag(tableHeader, dge.getTriggerEvent(), TransferHandler.COPY);
-                }
-            }
-        });
-    }
-
     private static int getCount(ListSelectionModel m) {
         return !m.isSelectionEmpty() ? (m.getMaxSelectionIndex() - m.getMinSelectionIndex() + 1) : 0;
     }
+
+    private static void applyZoomRatioOnColumns(float zoomRatio, JTable table) {
+        int columnWidth = (int) (COLUMN_WIDTH * zoomRatio);
+
+        // Resize of data columns according to the zoom ratio
+        Enumeration<TableColumn> cols = table.getTableHeader().getColumnModel().getColumns();
+        while (cols.hasMoreElements()) {
+            cols.nextElement().setPreferredWidth(columnWidth);
+        }
+    }
+
+    private final class NoDataUI extends LayerUI<JScrollPane> {
+
+        private static final String HAS_DROP_LOCATION_PROPERTY = "hasDropLocation";
+
+        private boolean hasDropLocation = false;
+        private DropTarget dropTarget = null;
+
+        private void setHasDropLocation(boolean hasDropLocation) {
+            boolean old = this.hasDropLocation;
+            this.hasDropLocation = hasDropLocation;
+            firePropertyChange(HAS_DROP_LOCATION_PROPERTY, old, this.hasDropLocation);
+        }
+
+        @Override
+        public void applyPropertyChange(PropertyChangeEvent evt, JLayer<? extends JScrollPane> l) {
+            if (evt.getPropertyName().equals(HAS_DROP_LOCATION_PROPERTY)) {
+                l.repaint();
+            }
+        }
+
+        @Override
+        public void installUI(JComponent c) {
+            super.installUI(c);
+            dropTarget = new DropTarget(scrollPane, new DropTargetListener() {
+
+                @Override
+                public void dragEnter(DropTargetDragEvent dtde) {
+                    main.getDropTarget().dragEnter(dtde);
+                    // FIXME: value still set to true even if import refused
+                    setHasDropLocation(true);
+                }
+
+                @Override
+                public void dragOver(DropTargetDragEvent dtde) {
+                    main.getDropTarget().dragOver(dtde);
+                }
+
+                @Override
+                public void dropActionChanged(DropTargetDragEvent dtde) {
+                    main.getDropTarget().dropActionChanged(dtde);
+                }
+
+                @Override
+                public void dragExit(DropTargetEvent dte) {
+                    main.getDropTarget().dragExit(dte);
+                    setHasDropLocation(false);
+                }
+
+                @Override
+                public void drop(DropTargetDropEvent dtde) {
+                    main.getDropTarget().drop(dtde);
+                    setHasDropLocation(false);
+                }
+            });
+            PropertyChangeListener listener = new PropertyChangeListener() {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    switch (evt.getPropertyName()) {
+                        case "dropLocation":
+                            JTable table = (JTable) evt.getSource();
+                            setHasDropLocation(table.getDropLocation() != null);
+                            break;
+                    }
+                }
+            };
+            main.addPropertyChangeListener(listener);
+            fct.getFixedTable().addPropertyChangeListener(listener);
+        }
+
+        @Override
+        public void paint(Graphics g, JComponent c) {
+            super.paint(g, c);
+            if (!internalModel.hasData()/* || hasDropLocation*/) {
+                Component renderer = noDataRenderer.getNoDataRendererComponent(main, hasDropLocation);
+                renderer.setSize(scrollPane.getSize());
+                renderer.paint(g);
+            }
+        }
+    }
+    //</editor-fold>
 }
