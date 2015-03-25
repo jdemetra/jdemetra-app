@@ -100,7 +100,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     // OTHER
     protected final TsFactoryObserver tsFactoryObserver;
 
-    protected DemetraUI demetraUI = DemetraUI.getDefault();
+    protected final DemetraUI demetraUI = DemetraUI.getDefault();
 
     public ATsCollectionView() {
         this.collection = TsFactory.instance.createTsCollection();

@@ -6,7 +6,6 @@ package ec.ui.list;
 
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.awt.PopupListener;
 import ec.tss.DynamicTsVariable;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -76,7 +75,7 @@ public class JTsVariableList extends JComponent {
         clear = new ClearAction();
         this.listTableListener = new ListTableSelectionListener();
         table.getSelectionModel().addListSelectionListener(listTableListener);
-        table.addMouseListener(new PopupListener.PopupAdapter(buildPopupMenu()));
+        table.setComponentPopupMenu(buildPopupMenu());
 
         setLayout(new BorderLayout());
         add(NbComponents.newJScrollPane(table), BorderLayout.CENTER);

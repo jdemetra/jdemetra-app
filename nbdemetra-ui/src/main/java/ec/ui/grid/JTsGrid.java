@@ -18,9 +18,7 @@ package ec.ui.grid;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.MonikerUI;
-import ec.nbdemetra.ui.awt.PopupListener;
 import ec.tss.Ts;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.Formatters.Formatter;
@@ -88,11 +86,11 @@ public class JTsGrid extends ATsGrid {
 
     private Font originalFont;
     //</editor-fold>
+
     protected final JGrid grid;
     private final JComboBox combo;
     private final GridSelectionListener selectionListener;
     protected final DataFeatureModel dataFeatureModel;
-    private DemetraUI demetraUI = DemetraUI.getDefault();
 
     public JTsGrid() {
         this.useColorScheme = DEFAULT_USE_COLOR_SCHEME;
@@ -272,6 +270,7 @@ public class JTsGrid extends ATsGrid {
         firePropertyChange(USE_COLOR_SCHEME_PROPERTY, old, this.useColorScheme);
     }
 
+    @Deprecated
     public int[] getSelectedColumns() {
         return grid.getSelectedColumns();
     }
@@ -324,16 +323,16 @@ public class JTsGrid extends ATsGrid {
     }
 
     private void updateSelectionBehavior() {
-        grid.getColumnModel().getSelectionModel().removeListSelectionListener(selectionListener);
-        grid.getSelectionModel().removeListSelectionListener(selectionListener);
+        grid.getColumnSelectionModel().removeListSelectionListener(selectionListener);
+        grid.getRowSelectionModel().removeListSelectionListener(selectionListener);
         grid.setColumnSelectionAllowed(false);
         grid.setRowSelectionAllowed(false);
         if (mode == Mode.MULTIPLETS) {
             if (orientation == Orientation.NORMAL) {
-                grid.getColumnModel().getSelectionModel().addListSelectionListener(selectionListener);
+                grid.getColumnSelectionModel().addListSelectionListener(selectionListener);
                 grid.setColumnSelectionAllowed(true);
             } else {
-                grid.getSelectionModel().addListSelectionListener(selectionListener);
+                grid.getRowSelectionModel().addListSelectionListener(selectionListener);
                 grid.setRowSelectionAllowed(true);
             }
         }
@@ -345,7 +344,7 @@ public class JTsGrid extends ATsGrid {
 
     private void updateSelection() {
         if (mode == Mode.MULTIPLETS) {
-            selectionListener.changeSelection(orientation == Orientation.NORMAL ? grid.getColumnModel().getSelectionModel() : grid.getSelectionModel());
+            selectionListener.changeSelection(orientation == Orientation.NORMAL ? grid.getColumnSelectionModel() : grid.getRowSelectionModel());
         } else {
             if (!collection.isEmpty()) {
                 int index = Math.min(singleTsIndex, collection.getCount() - 1);
@@ -382,9 +381,8 @@ public class JTsGrid extends ATsGrid {
         result.setTransferHandler(new TsCollectionTransferHandler());
         result.setColumnRenderer(new GridColumnRenderer());
         result.setRowRenderer(new GridRowRenderer());
-        result.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
-        result.addMouseListener(new PopupListener.PopupAdapter(buildGridMenu().getPopupMenu()));
+        result.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        result.setComponentPopupMenu(buildGridMenu().getPopupMenu());
         result.addMouseListener(new TsActionMouseAdapter());
 
         fillActionMap(result.getActionMap());

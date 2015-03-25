@@ -19,7 +19,6 @@ package ec.ui.list;
 import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.awt.PopupListener.PopupAdapter;
 import ec.nbdemetra.ui.awt.TableColumnModelAdapter;
 import ec.tss.*;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -72,7 +71,7 @@ public class JTsList extends ATsList {
         this.table = buildTable();
         this.selectionListener = new ListTableSelectionListener();
         table.getSelectionModel().addListSelectionListener(selectionListener);
-        table.addMouseListener(new PopupAdapter(buildPopupMenu()));
+        table.setComponentPopupMenu(buildPopupMenu());
         this.tableHeader = table.getTableHeader();
 
         setLayout(new BorderLayout());

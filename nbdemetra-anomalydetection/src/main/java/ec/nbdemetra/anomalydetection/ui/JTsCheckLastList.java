@@ -21,7 +21,6 @@ import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.awt.ListTableModel;
-import ec.nbdemetra.ui.awt.PopupListener;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
@@ -99,7 +98,7 @@ public class JTsCheckLastList extends ATsList {
         spec = TramoSpecification.TR4.clone();
         this.selectionListener = new ListTableSelectionListener();
         table.getSelectionModel().addListSelectionListener(selectionListener);
-        table.addMouseListener(new PopupListener.PopupAdapter(buildPopupMenu()));
+        table.setComponentPopupMenu(buildPopupMenu());
 
         checkLast = new CheckLast(spec.build());
 

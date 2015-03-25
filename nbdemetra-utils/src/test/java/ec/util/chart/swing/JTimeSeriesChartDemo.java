@@ -109,7 +109,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         chart.setDashPredicate(lastObsPredicate(3));
         chart.setPlotWeights(new int[]{2, 1});
 
-        chart.setPopupMenu(newMenu().getPopupMenu());
+        chart.setComponentPopupMenu(newMenu().getPopupMenu());
 
         applyRandomData().executeSafely(chart);
         chart.setPlotDispatcher(SeriesFunction.array(0, 0, 1));

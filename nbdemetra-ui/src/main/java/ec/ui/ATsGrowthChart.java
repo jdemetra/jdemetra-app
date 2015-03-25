@@ -16,7 +16,6 @@
  */
 package ec.ui;
 
-import ec.nbdemetra.ui.DemetraUI;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
@@ -57,8 +56,6 @@ public abstract class ATsGrowthChart extends ATsChart implements ITsGrowthChart 
     protected final TsCollection growthCollection = TsFactory.instance.createTsCollection();
 
     public ATsGrowthChart() {
-        DemetraUI demetraUI = DemetraUI.getDefault();
-        
         this.growthKind = DEFAULT_GROWTH_KIND;
         this.lastYears = demetraUI.getGrowthLastYears();
         this.useToolLayout = DEFAULT_USE_TOOL_LAYOUT;
