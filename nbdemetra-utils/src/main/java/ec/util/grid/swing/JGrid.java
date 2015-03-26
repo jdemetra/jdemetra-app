@@ -322,6 +322,7 @@ public final class JGrid extends AGrid {
         JPopupMenu popupMenu = getComponentPopupMenu();
         main.setComponentPopupMenu(popupMenu);
         fct.getFixedTable().setComponentPopupMenu(popupMenu);
+        scrollPane.setComponentPopupMenu(popupMenu);
     }
     //</editor-fold>
 
