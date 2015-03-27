@@ -244,7 +244,7 @@ public final class JGrid extends AGrid {
     }
 
     private void onFocusedCellChange() {
-        main.repaint();
+        scrollPane.repaint();
     }
 
     private void onSelectedCellChange() {
@@ -260,7 +260,7 @@ public final class JGrid extends AGrid {
             }
             cellSelectionListener.enabled = true;
         }
-        main.getTableHeader().repaint();
+        scrollPane.repaint();
     }
 
     private void onDragEnabledChange() {

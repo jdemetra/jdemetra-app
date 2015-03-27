@@ -30,7 +30,7 @@ import ec.ui.DemoUtils;
 import ec.ui.chart.DataFeatureModel;
 import ec.ui.commands.TsGridCommand;
 import ec.util.chart.swing.SwingColorSchemeSupport;
-import ec.util.grid.swing.GridRowHeaderRenderer;
+import ec.util.grid.CellIndex;
 import ec.util.grid.swing.JGrid;
 import ec.util.grid.swing.XTable;
 import ec.util.various.swing.FontAwesome;
@@ -62,6 +62,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 /**
@@ -77,24 +78,29 @@ public class JTsGrid extends ATsGrid {
     public static final String USE_COLOR_SCHEME_PROPERTY = "useColorScheme";
     public static final String SHOW_BARS_PROPERTY = "showBars";
     public static final String CELL_RENDERER_PROPERTY = "cellRenderer";
+    public static final String CROSSHAIR_VISIBLE_PROPERTY = "crosshairVisible";
+
     private static final boolean DEFAULT_USE_COLOR_SCHEME = false;
     private static final boolean DEFAULT_SHOW_BARS = false;
+    private static final boolean DEFAULT_CROSSHAIR_VISIBLE = false;
+
     private boolean useColorScheme;
     private boolean showBars;
-
-    private TableCellRenderer cellRenderer;
-
-    private Font originalFont;
+    private TableCellRenderer customCellRenderer;
+    private boolean crosshairVisible;
     //</editor-fold>
 
     protected final JGrid grid;
     private final JComboBox combo;
     private final GridSelectionListener selectionListener;
     protected final DataFeatureModel dataFeatureModel;
+    private Font originalFont;
 
     public JTsGrid() {
         this.useColorScheme = DEFAULT_USE_COLOR_SCHEME;
         this.showBars = DEFAULT_SHOW_BARS;
+        this.customCellRenderer = null;
+        this.crosshairVisible = DEFAULT_CROSSHAIR_VISIBLE;
 
         this.selectionListener = new GridSelectionListener();
 
@@ -134,6 +140,9 @@ public class JTsGrid extends ATsGrid {
                         break;
                     case CELL_RENDERER_PROPERTY:
                         onCellRendererChange();
+                        break;
+                    case CROSSHAIR_VISIBLE_PROPERTY:
+                        onCrosshairVisibleChange();
                         break;
                 }
             }
@@ -228,7 +237,6 @@ public class JTsGrid extends ATsGrid {
     }
 
     private void onUseColorSchemeChange() {
-        grid.setOddBackground(useColorScheme ? null : new Color(250, 250, 250));
         updateGridCellRenderer();
         updateComboCellRenderer();
     }
@@ -238,6 +246,10 @@ public class JTsGrid extends ATsGrid {
     }
 
     private void onCellRendererChange() {
+        updateGridCellRenderer();
+    }
+
+    private void onCrosshairVisibleChange() {
         updateGridCellRenderer();
     }
 
@@ -285,14 +297,25 @@ public class JTsGrid extends ATsGrid {
         firePropertyChange(SHOW_BARS_PROPERTY, old, this.showBars);
     }
 
+    @Nullable
     public TableCellRenderer getCellRenderer() {
-        return cellRenderer;
+        return customCellRenderer;
     }
 
-    public void setCellRenderer(TableCellRenderer cellRenderer) {
-        TableCellRenderer old = this.cellRenderer;
-        this.cellRenderer = cellRenderer;
-        firePropertyChange(CELL_RENDERER_PROPERTY, old, this.cellRenderer);
+    public void setCellRenderer(@Nullable TableCellRenderer cellRenderer) {
+        TableCellRenderer old = this.customCellRenderer;
+        this.customCellRenderer = cellRenderer;
+        firePropertyChange(CELL_RENDERER_PROPERTY, old, this.customCellRenderer);
+    }
+
+    public boolean isCrosshairVisible() {
+        return crosshairVisible;
+    }
+
+    public void setCrosshairVisible(boolean crosshairVisible) {
+        boolean old = this.crosshairVisible;
+        this.crosshairVisible = crosshairVisible;
+        firePropertyChange(CROSSHAIR_VISIBLE_PROPERTY, old, this.crosshairVisible);
     }
     //</editor-fold>
 
@@ -366,7 +389,7 @@ public class JTsGrid extends ATsGrid {
     }
 
     private void updateGridCellRenderer() {
-        grid.setDefaultRenderer(TsGridObs.class, cellRenderer != null ? cellRenderer : new GridCellRenderer(themeSupport.getDataFormat(), useColorScheme ? themeSupport : null, showBars, dataFeatureModel));
+        grid.setDefaultRenderer(TsGridObs.class, customCellRenderer != null ? customCellRenderer : new GridCellRenderer(grid, themeSupport.getDataFormat(), useColorScheme ? themeSupport : null, showBars, dataFeatureModel, crosshairVisible));
         grid.repaint();
     }
 
@@ -379,11 +402,13 @@ public class JTsGrid extends ATsGrid {
 
         result.setDragEnabled(true);
         result.setTransferHandler(new TsCollectionTransferHandler());
-        result.setColumnRenderer(new GridColumnRenderer());
-        result.setRowRenderer(new GridRowRenderer());
+        result.setRowRenderer(new RowRenderer(result));
+        result.setColumnRenderer(new ColumnRenderer(result));
+        result.setCornerRenderer(new CornerRenderer());
         result.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         result.setComponentPopupMenu(buildGridMenu().getPopupMenu());
         result.addMouseListener(new TsActionMouseAdapter());
+        result.setOddBackground(null);
 
         fillActionMap(result.getActionMap());
         fillInputMap(result.getInputMap(WHEN_IN_FOCUSED_WINDOW));
@@ -413,6 +438,11 @@ public class JTsGrid extends ATsGrid {
         item = new JCheckBoxMenuItem(JTsGridCommand.toggleShowBars().toAction(this));
         item.setText("Show bars");
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_TASKS));
+        result.add(item);
+
+        item = new JCheckBoxMenuItem(JTsGridCommand.toggleCrosshairVisibility().toAction(this));
+        item.setText("Show crosshair");
+        item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_CROSSHAIRS));
         result.add(item);
 
         JMenu zoom = new JMenu("Zoom");
@@ -459,64 +489,132 @@ public class JTsGrid extends ATsGrid {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Renderers">
-    private static class GridColumnRenderer implements TableCellRenderer {
+    private abstract static class HeaderRenderer implements TableCellRenderer {
 
-        private final TableCellRenderer delegate;
+        private final JLabel renderer;
+        private final GridUIResource gridResource;
 
-        public GridColumnRenderer() {
-            delegate = new JTable().getTableHeader().getDefaultRenderer();
+        public HeaderRenderer() {
+            this.renderer = new DefaultTableCellRenderer();
+            this.gridResource = GridUIResource.getDefault();
+            renderer.setOpaque(true);
+        }
+
+        abstract protected boolean isHeaderSelected(JTable table, int row, int column);
+
+        abstract protected boolean isHeaderFocused(JTable table, int row, int column);
+
+        @Override
+        public JLabel getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            renderer.setText(value != null ? value.toString() : "");
+            renderer.setToolTipText(renderer.getText());
+            renderer.setFont(table.getFont());
+            CellUIResource cellResource = gridResource.getHeader(isHeaderSelected(table, row, column), isHeaderFocused(table, row, column));
+            renderer.setBackground(cellResource.getBackground());
+            renderer.setForeground(cellResource.getForeground());
+            renderer.setBorder(cellResource.getBorder());
+            int preferredHeight = table.getRowHeight() + 1;
+            if (renderer.getPreferredSize().height != preferredHeight) {
+                renderer.setPreferredSize(new Dimension(10, preferredHeight));
+            }
+            return renderer;
+        }
+    }
+
+    private static final class RowRenderer extends HeaderRenderer {
+
+        private final JGrid grid;
+
+        public RowRenderer(JGrid grid) {
+            this.grid = grid;
         }
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component result = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            if (result instanceof JLabel) {
-                JLabel label = (JLabel) result;
-                if (label.getText().isEmpty()) {
-                    label.setText(" ");
-                }
-                label.setToolTipText(label.getText());
+        protected boolean isHeaderSelected(JTable table, int row, int column) {
+            return table.getRowSelectionAllowed() && table.isRowSelected(row);
+        }
+
+        @Override
+        protected boolean isHeaderFocused(JTable table, int row, int column) {
+            return grid.getFocusedCell().getRow() == row;
+        }
+
+        @Override
+        public JLabel getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            JLabel result = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            result.setHorizontalAlignment(JLabel.TRAILING);
+            result.setText(result.getText() + " ");
+            return result;
+        }
+    }
+
+    private static final class ColumnRenderer extends HeaderRenderer {
+
+        private final JGrid grid;
+
+        public ColumnRenderer(JGrid grid) {
+            this.grid = grid;
+        }
+
+        @Override
+        protected boolean isHeaderSelected(JTable table, int row, int column) {
+            return table.getColumnSelectionAllowed() && table.isColumnSelected(column);
+        }
+
+        @Override
+        protected boolean isHeaderFocused(JTable table, int row, int column) {
+            return grid.getFocusedCell().getColumn() == column;
+        }
+
+        @Override
+        public JLabel getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            JLabel result = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            result.setHorizontalAlignment(JLabel.CENTER);
+            if (result.getText().isEmpty()) {
+                result.setText(" ");
             }
             return result;
         }
     }
 
-    private static class GridRowRenderer extends GridRowHeaderRenderer {
+    private static final class CornerRenderer extends HeaderRenderer {
 
-        public GridRowRenderer() {
-            setHorizontalAlignment(JLabel.TRAILING);
+        @Override
+        protected boolean isHeaderSelected(JTable table, int row, int column) {
+            return false;
         }
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component result = super.getTableCellRendererComponent(table, value, false, hasFocus, row, column);
-            if (result instanceof JLabel) {
-                JLabel label = (JLabel) result;
-                label.setToolTipText(label.getText());
-            }
-            return result;
+        protected boolean isHeaderFocused(JTable table, int row, int column) {
+            return false;
         }
     }
 
-    private static class GridCellRenderer extends BarTableCellRenderer {
+    private static final class GridCellRenderer extends BarTableCellRenderer {
 
+        private final JGrid grid;
+        private final GridUIResource gridResources;
         private final Formatter<? super TsPeriod> periodFormatter;
         private final Formatter<? super Number> valueFormatter;
         private final SwingColorSchemeSupport colorSchemeSupport;
         private final boolean showBars;
         private final DataFeatureModel dataFeatureModel;
         private final JToolTip toolTip;
+        private final boolean crosshairVisible;
 
-        public GridCellRenderer(@Nonnull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars, DataFeatureModel dataFeatureModel) {
+        public GridCellRenderer(@Nonnull JGrid grid, @Nonnull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars, DataFeatureModel dataFeatureModel, boolean crosshairVisible) {
             super(false);
             setHorizontalAlignment(JLabel.TRAILING);
             setOpaque(true);
+            this.grid = grid;
+            this.gridResources = GridUIResource.getDefault();
             this.periodFormatter = dataFormat.dateFormatter().compose(DateFunction.INSTANCE);
             this.valueFormatter = dataFormat.numberFormatter();
             this.colorSchemeSupport = colorSchemeSupport;
             this.showBars = showBars;
             this.dataFeatureModel = dataFeatureModel;
             this.toolTip = super.createToolTip();
+            this.crosshairVisible = crosshairVisible;
         }
 
         @Override
@@ -530,25 +628,43 @@ public class JTsGrid extends ATsGrid {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
             TsGridObs obs = (TsGridObs) value;
 
-            if (colorSchemeSupport != null) {
-                setBackground(colorSchemeSupport.getPlotColor());
-                setForeground(colorSchemeSupport.getLineColor(obs.getSeriesIndex()));
-            }
+            setFont(table.getFont());
 
-            setBarValues(0, 0, 0);
+            CellIndex focusedCell = grid.getFocusedCell();
+            boolean focused = !crosshairVisible
+                    ? focusedCell.equals(row, column)
+                    : (focusedCell.getRow() == row || focusedCell.getColumn() == column);
+
+            CellUIResource resource = gridResources.getCell(isSelected, focused);
+            setBorder(resource.getBorder());
+
+            if (colorSchemeSupport != null) {
+                Color plotColor = colorSchemeSupport.getPlotColor();
+                Color lineColor = colorSchemeSupport.getLineColor(obs.getSeriesIndex());
+                if (isSelected) {
+                    setBackground(lineColor);
+                    setForeground(plotColor);
+                } else {
+                    setBackground(plotColor);
+                    setForeground(lineColor);
+                }
+            } else {
+                setBackground(resource.getBackground());
+                setForeground(resource.getForeground());
+            }
 
             switch (obs.getInfo()) {
                 case Empty:
                     setText(null);
                     setToolTipText(null);
+                    setBarValues(0, 0, 0);
                     break;
                 case Missing:
                     setText(".");
                     setToolTipText(periodFormatter.formatAsString(obs.getPeriod()));
+                    setBarValues(0, 0, 0);
                     break;
                 case Valid:
                     boolean forecast = dataFeatureModel.hasFeature(Ts.DataFeature.Forecasts, obs.getSeriesIndex(), obs.getIndex());
@@ -557,9 +673,6 @@ public class JTsGrid extends ATsGrid {
                     if (forecast) {
                         setText("<html><i>" + valueAsString);
                         setToolTipText("<html>" + periodAsString + ": " + valueAsString + "<br>Forecast");
-                        if (!isSelected) {
-                            setForeground(getForeground().darker());
-                        }
                     } else {
                         setText(valueAsString);
                         setToolTipText(periodAsString + ": " + valueAsString);
@@ -567,21 +680,17 @@ public class JTsGrid extends ATsGrid {
                     if (showBars && !isSelected) {
                         DescriptiveStatistics stats = obs.getStats();
                         setBarValues(stats.getMin(), stats.getMax(), obs.getValue());
+                    } else {
+                        setBarValues(0, 0, 0);
                     }
                     break;
-            }
-
-            if (isSelected && colorSchemeSupport != null) {
-                Color saved = getForeground();
-                setForeground(getBackground());
-                setBackground(saved);
             }
 
             return this;
         }
     }
 
-    private static class ComboCellRenderer extends DefaultListCellRenderer {
+    private static final class ComboCellRenderer extends DefaultListCellRenderer {
 
         private final MonikerUI monikerUI;
         private final SwingColorSchemeSupport colorSchemeSupport;
