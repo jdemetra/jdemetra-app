@@ -33,7 +33,7 @@ public final class CellIndex {
 
     @Nonnull
     public static CellIndex valueOf(int row, int column) {
-        return NULL.equals(row, column) ? NULL : new CellIndex(row, column);
+        return row < 0 || column < 0 ? NULL : new CellIndex(row, column);
     }
 
     private final int row;
