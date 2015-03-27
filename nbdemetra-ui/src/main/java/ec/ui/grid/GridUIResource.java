@@ -64,7 +64,9 @@ abstract class GridUIResource {
             Color selectionBackground = lookup("Table.selectionBackground").or(new Color(51, 153, 255));
             Color selectionForeground = lookup("Table.selectionForeground").or(new Color(255, 255, 255));
 
-            Border headerBorder = new LineBorder2(headerBackground.brighter(), 0, 0, 1, 1);
+            Border headerBorder = BorderFactory.createCompoundBorder(
+                    new LineBorder2(headerBackground.brighter(), 0, 0, 1, 1),
+                    BorderFactory.createEmptyBorder(0, 4, 0, 4));
             Border noBorder = BorderFactory.createEmptyBorder();
 
             this.header = CellUIResource.of(headerBackground, headerForeground, headerBorder);

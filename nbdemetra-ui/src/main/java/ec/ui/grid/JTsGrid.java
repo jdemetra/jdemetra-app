@@ -491,8 +491,8 @@ public class JTsGrid extends ATsGrid {
     //<editor-fold defaultstate="collapsed" desc="Renderers">
     private abstract static class HeaderRenderer implements TableCellRenderer {
 
-        private final JLabel renderer;
-        private final GridUIResource gridResource;
+        protected final JLabel renderer;
+        protected final GridUIResource gridResource;
 
         public HeaderRenderer() {
             this.renderer = new DefaultTableCellRenderer();
@@ -506,8 +506,9 @@ public class JTsGrid extends ATsGrid {
 
         @Override
         public JLabel getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            renderer.setText(value != null ? value.toString() : "");
-            renderer.setToolTipText(renderer.getText());
+            String text = value != null ? value.toString() : "";
+            renderer.setText(text.isEmpty() ? " " : text);
+            renderer.setToolTipText(text.isEmpty() ? null : text);
             renderer.setFont(table.getFont());
             CellUIResource cellResource = gridResource.getHeader(isHeaderSelected(table, row, column), isHeaderFocused(table, row, column));
             renderer.setBackground(cellResource.getBackground());
@@ -527,6 +528,7 @@ public class JTsGrid extends ATsGrid {
 
         public RowRenderer(JGrid grid) {
             this.grid = grid;
+            renderer.setHorizontalAlignment(JLabel.TRAILING);
         }
 
         @Override
@@ -538,14 +540,6 @@ public class JTsGrid extends ATsGrid {
         protected boolean isHeaderFocused(JTable table, int row, int column) {
             return grid.getFocusedCell().getRow() == row;
         }
-
-        @Override
-        public JLabel getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            JLabel result = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            result.setHorizontalAlignment(JLabel.TRAILING);
-            result.setText(result.getText() + " ");
-            return result;
-        }
     }
 
     private static final class ColumnRenderer extends HeaderRenderer {
@@ -554,6 +548,7 @@ public class JTsGrid extends ATsGrid {
 
         public ColumnRenderer(JGrid grid) {
             this.grid = grid;
+            renderer.setHorizontalAlignment(JLabel.CENTER);
         }
 
         @Override
@@ -564,16 +559,6 @@ public class JTsGrid extends ATsGrid {
         @Override
         protected boolean isHeaderFocused(JTable table, int row, int column) {
             return grid.getFocusedCell().getColumn() == column;
-        }
-
-        @Override
-        public JLabel getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            JLabel result = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            result.setHorizontalAlignment(JLabel.CENTER);
-            if (result.getText().isEmpty()) {
-                result.setText(" ");
-            }
-            return result;
         }
     }
 
