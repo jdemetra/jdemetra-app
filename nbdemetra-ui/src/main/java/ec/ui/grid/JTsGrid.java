@@ -342,7 +342,7 @@ public class JTsGrid extends ATsGrid {
 
     private void updateGridModel() {
         int index = mode == Mode.SINGLETS ? Math.min(singleTsIndex, collection.getCount() - 1) : -1;
-        grid.setModel(new GridModelAdapter(TsGridData.create(collection, index, orientation, chronology)));
+        grid.setModel(new GridModelAdapter(TsGridData.create(collection, index, orientation, chronology, dataFeatureModel)));
     }
 
     private void updateSelectionBehavior() {
@@ -389,7 +389,7 @@ public class JTsGrid extends ATsGrid {
     }
 
     private void updateGridCellRenderer() {
-        grid.setDefaultRenderer(TsGridObs.class, customCellRenderer != null ? customCellRenderer : new GridCellRenderer(grid, themeSupport.getDataFormat(), useColorScheme ? themeSupport : null, showBars, dataFeatureModel, crosshairVisible));
+        grid.setDefaultRenderer(TsGridObs.class, customCellRenderer != null ? customCellRenderer : new GridCellRenderer(grid, themeSupport.getDataFormat(), useColorScheme ? themeSupport : null, showBars, crosshairVisible));
         grid.repaint();
     }
 
@@ -583,11 +583,10 @@ public class JTsGrid extends ATsGrid {
         private final Formatter<? super Number> valueFormatter;
         private final SwingColorSchemeSupport colorSchemeSupport;
         private final boolean showBars;
-        private final DataFeatureModel dataFeatureModel;
         private final JToolTip toolTip;
         private final boolean crosshairVisible;
 
-        public GridCellRenderer(@Nonnull JGrid grid, @Nonnull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars, DataFeatureModel dataFeatureModel, boolean crosshairVisible) {
+        public GridCellRenderer(@Nonnull JGrid grid, @Nonnull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars, boolean crosshairVisible) {
             super(false);
             setHorizontalAlignment(JLabel.TRAILING);
             setOpaque(true);
@@ -597,7 +596,6 @@ public class JTsGrid extends ATsGrid {
             this.valueFormatter = dataFormat.numberFormatter();
             this.colorSchemeSupport = colorSchemeSupport;
             this.showBars = showBars;
-            this.dataFeatureModel = dataFeatureModel;
             this.toolTip = super.createToolTip();
             this.crosshairVisible = crosshairVisible;
         }
@@ -652,10 +650,9 @@ public class JTsGrid extends ATsGrid {
                     setBarValues(0, 0, 0);
                     break;
                 case Valid:
-                    boolean forecast = dataFeatureModel.hasFeature(Ts.DataFeature.Forecasts, obs.getSeriesIndex(), obs.getIndex());
                     String valueAsString = valueFormatter.formatAsString(obs.getValue());
                     String periodAsString = periodFormatter.formatAsString(obs.getPeriod());
-                    if (forecast) {
+                    if (obs.hasFeature(Ts.DataFeature.Forecasts)) {
                         setText("<html><i>" + valueAsString);
                         setToolTipText("<html>" + periodAsString + ": " + valueAsString + "<br>Forecast");
                     } else {

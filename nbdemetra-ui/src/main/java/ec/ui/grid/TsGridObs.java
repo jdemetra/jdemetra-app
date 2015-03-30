@@ -17,10 +17,12 @@
 package ec.ui.grid;
 
 import com.google.common.base.Supplier;
+import ec.tss.Ts;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.design.FlyweightPattern;
 import ec.tstoolkit.timeseries.simplets.TsDataTableInfo;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
+import ec.ui.chart.DataFeatureModel;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
@@ -32,13 +34,15 @@ import javax.annotation.Nonnull;
 public final class TsGridObs {
 
     private final Supplier<DescriptiveStatistics> stats;
+    private final DataFeatureModel dataFeatureModel;
     private int seriesIndex;
     private int index;
     private TsPeriod period;
     private double value;
 
-    TsGridObs(Supplier<DescriptiveStatistics> stats) {
+    TsGridObs(Supplier<DescriptiveStatistics> stats, DataFeatureModel dataFeatureModel) {
         this.stats = stats;
+        this.dataFeatureModel = dataFeatureModel;
         empty(-1);
     }
 
@@ -94,5 +98,12 @@ public final class TsGridObs {
             throw new IllegalStateException("Empty or missing");
         }
         return value;
+    }
+
+    public boolean hasFeature(@Nonnull Ts.DataFeature feature) throws IllegalStateException {
+        if (index == -1) {
+            throw new IllegalStateException("Empty or missing");
+        }
+        return dataFeatureModel.hasFeature(feature, seriesIndex, index);
     }
 }

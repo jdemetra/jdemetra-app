@@ -23,6 +23,7 @@ import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.data.Values;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
+import ec.ui.chart.DataFeatureModel;
 
 /**
  *
@@ -37,13 +38,13 @@ final class SingleTsGridData extends TsGridData {
     private final int startYear;
     private final int startPosition;
 
-    public SingleTsGridData(TsCollection col, int seriesIndex) {
+    public SingleTsGridData(TsCollection col, int seriesIndex, DataFeatureModel dataFeatureModel) {
         this.seriesIndex = seriesIndex;
         this.data = col.get(seriesIndex).getTsData().getValues();
         this.domain = col.get(seriesIndex).getTsData().getDomain();
         this.startYear = domain.getStart().getYear();
         this.startPosition = domain.getStart().getPosition();
-        this.obs = new TsGridObs(Suppliers.memoize(createStats(data)));
+        this.obs = new TsGridObs(Suppliers.memoize(createStats(data)), dataFeatureModel);
     }
 
     private static Supplier<DescriptiveStatistics> createStats(final Values data) {

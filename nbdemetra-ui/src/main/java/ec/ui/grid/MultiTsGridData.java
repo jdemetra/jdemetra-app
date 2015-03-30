@@ -26,6 +26,7 @@ import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsDataTable;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.utilities.IntList;
+import ec.ui.chart.DataFeatureModel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,7 @@ final class MultiTsGridData extends TsGridData {
     private final TsDomain domain;
     private final IntList firstObsIndexes;
 
-    public MultiTsGridData(TsCollection col) {
+    public MultiTsGridData(TsCollection col, DataFeatureModel dataFeatureModel) {
         this.names = new ArrayList<>();
         this.dataTable = new TsDataTable();
         for (Ts o : col) {
@@ -57,7 +58,7 @@ final class MultiTsGridData extends TsGridData {
                 firstObsIndexes.add(domain.search(dataTable.series(i).getStart()));
             }
         }
-        this.obs = new TsGridObs(Suppliers.memoize(createStats(dataTable)));
+        this.obs = new TsGridObs(Suppliers.memoize(createStats(dataTable)), dataFeatureModel);
     }
 
     private static Supplier<DescriptiveStatistics> createStats(final TsDataTable dataTable) {

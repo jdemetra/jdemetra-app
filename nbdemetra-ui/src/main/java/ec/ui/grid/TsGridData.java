@@ -18,6 +18,7 @@ package ec.ui.grid;
 
 import ec.tss.TsCollection;
 import ec.tss.TsStatus;
+import ec.ui.chart.DataFeatureModel;
 import ec.ui.interfaces.ITsGrid.Chronology;
 import ec.ui.interfaces.ITsGrid.Orientation;
 import javax.annotation.Nonnegative;
@@ -65,11 +66,11 @@ abstract class TsGridData {
     }
 
     @Nonnull
-    public static TsGridData create(TsCollection col, int singleSeriesIndex, Orientation orientation, Chronology chronology) {
+    public static TsGridData create(TsCollection col, int singleSeriesIndex, Orientation orientation, Chronology chronology, DataFeatureModel dataFeatureModel) {
         if (col.isEmpty() || (singleSeriesIndex != -1 && col.get(singleSeriesIndex).hasData() != TsStatus.Valid)) {
             return empty();
         }
-        TsGridData result = singleSeriesIndex == -1 ? new MultiTsGridData(col) : new SingleTsGridData(col, singleSeriesIndex);
+        TsGridData result = singleSeriesIndex == -1 ? new MultiTsGridData(col, dataFeatureModel) : new SingleTsGridData(col, singleSeriesIndex, dataFeatureModel);
         result = chronology == Chronology.ASCENDING ? result : result.flipVerticaly();
         result = orientation == Orientation.NORMAL ? result : result.transpose();
         return result;
