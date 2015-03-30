@@ -1,9 +1,23 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.ui.grid;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import ec.tss.TsCollection;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.data.Values;
@@ -14,14 +28,14 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
  *
  * @author Philippe Charles
  */
-class SingleTsGridData extends TsGridData {
+final class SingleTsGridData extends TsGridData {
 
-    final TsGridObs obs;
-    final int seriesIndex;
-    final Values data;
-    final TsDomain domain;
-    final int startYear;
-    final int startPosition;
+    private final TsGridObs obs;
+    private final int seriesIndex;
+    private final Values data;
+    private final TsDomain domain;
+    private final int startYear;
+    private final int startPosition;
 
     public SingleTsGridData(TsCollection col, int seriesIndex) {
         this.seriesIndex = seriesIndex;
@@ -29,7 +43,16 @@ class SingleTsGridData extends TsGridData {
         this.domain = col.get(seriesIndex).getTsData().getDomain();
         this.startYear = domain.getStart().getYear();
         this.startPosition = domain.getStart().getPosition();
-        this.obs = new TsGridObs(new DescriptiveStatistics(data));
+        this.obs = new TsGridObs(Suppliers.memoize(createStats(data)));
+    }
+
+    private static Supplier<DescriptiveStatistics> createStats(final Values data) {
+        return new Supplier<DescriptiveStatistics>() {
+            @Override
+            public DescriptiveStatistics get() {
+                return new DescriptiveStatistics(data);
+            }
+        };
     }
 
     int getPeriodId(int i, int j) {

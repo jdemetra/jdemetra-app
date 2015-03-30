@@ -1,10 +1,23 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.ui.grid;
 
-import com.google.common.collect.Iterables;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.primitives.Doubles;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -20,16 +33,15 @@ import java.util.List;
  *
  * @author Philippe Charles
  */
-class MultiTsGridData extends TsGridData {
+final class MultiTsGridData extends TsGridData {
 
-    final TsGridObs obs;
-    final List<String> names;
-    final TsDataTable dataTable;
-    final TsDomain domain;
-    final IntList firstObsIndexes;
+    private final TsGridObs obs;
+    private final List<String> names;
+    private final TsDataTable dataTable;
+    private final TsDomain domain;
+    private final IntList firstObsIndexes;
 
     public MultiTsGridData(TsCollection col) {
-        this.obs = new TsGridObs(createStats(col));
         this.names = new ArrayList<>();
         this.dataTable = new TsDataTable();
         for (Ts o : col) {
@@ -45,16 +57,20 @@ class MultiTsGridData extends TsGridData {
                 firstObsIndexes.add(domain.search(dataTable.series(i).getStart()));
             }
         }
+        this.obs = new TsGridObs(Suppliers.memoize(createStats(dataTable)));
     }
 
-    static DescriptiveStatistics createStats(TsCollection col) {
-        List<double[]> allValues = new ArrayList<>();
-        for (Ts o : col) {
-            if (o.hasData() == TsStatus.Valid) {
-                allValues.add(o.getTsData().getValues().internalStorage());
+    private static Supplier<DescriptiveStatistics> createStats(final TsDataTable dataTable) {
+        return new Supplier<DescriptiveStatistics>() {
+            @Override
+            public DescriptiveStatistics get() {
+                double[][] allValues = new double[dataTable.getSeriesCount()][];
+                for (int i = 0; i < allValues.length; i++) {
+                    allValues[i] = dataTable.series(i).getValues().internalStorage();
+                }
+                return new DescriptiveStatistics(Doubles.concat(allValues));
             }
-        }
-        return new DescriptiveStatistics(Doubles.concat(Iterables.toArray(allValues, double[].class)));
+        };
     }
 
     @Override
