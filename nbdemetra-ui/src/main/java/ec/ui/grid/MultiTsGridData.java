@@ -17,7 +17,6 @@
 package ec.ui.grid;
 
 import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 import com.google.common.primitives.Doubles;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -34,13 +33,14 @@ import java.util.List;
  *
  * @author Philippe Charles
  */
-final class MultiTsGridData extends TsGridData {
+final class MultiTsGridData extends TsGridData implements Supplier<DescriptiveStatistics> {
 
-    private final TsGridObs obs;
     private final List<String> names;
     private final TsDataTable dataTable;
     private final TsDomain domain;
     private final IntList firstObsIndexes;
+    private final DataFeatureModel dataFeatureModel;
+    private DescriptiveStatistics stats;
 
     public MultiTsGridData(TsCollection col, DataFeatureModel dataFeatureModel) {
         this.names = new ArrayList<>();
@@ -58,20 +58,20 @@ final class MultiTsGridData extends TsGridData {
                 firstObsIndexes.add(domain.search(dataTable.series(i).getStart()));
             }
         }
-        this.obs = new TsGridObs(Suppliers.memoize(createStats(dataTable)), dataFeatureModel);
+        this.dataFeatureModel = dataFeatureModel;
+        this.stats = null;
     }
 
-    private static Supplier<DescriptiveStatistics> createStats(final TsDataTable dataTable) {
-        return new Supplier<DescriptiveStatistics>() {
-            @Override
-            public DescriptiveStatistics get() {
-                double[][] allValues = new double[dataTable.getSeriesCount()][];
-                for (int i = 0; i < allValues.length; i++) {
-                    allValues[i] = dataTable.series(i).getValues().internalStorage();
-                }
-                return new DescriptiveStatistics(Doubles.concat(allValues));
+    @Override
+    public DescriptiveStatistics get() {
+        if (stats == null) {
+            double[][] allValues = new double[dataTable.getSeriesCount()][];
+            for (int i = 0; i < allValues.length; i++) {
+                allValues[i] = dataTable.series(i).getValues().internalStorage();
             }
-        };
+            stats = new DescriptiveStatistics(Doubles.concat(allValues));
+        }
+        return stats;
     }
 
     @Override
@@ -88,11 +88,11 @@ final class MultiTsGridData extends TsGridData {
     public TsGridObs getObs(int i, int series) {
         switch (dataTable.getDataInfo(i, series)) {
             case Empty:
-                return obs.empty(series);
+                return TsGridObs.empty(series);
             case Missing:
-                return obs.missing(series, i - firstObsIndexes.get(series), domain.get(i));
+                return TsGridObs.missing(series, i - firstObsIndexes.get(series), domain.get(i));
             case Valid:
-                return obs.valid(series, i - firstObsIndexes.get(series), domain.get(i), dataTable.getData(i, series));
+                return TsGridObs.valid(series, i - firstObsIndexes.get(series), domain.get(i), dataTable.getData(i, series), this, dataFeatureModel);
         }
         throw new UnsupportedOperationException();
     }

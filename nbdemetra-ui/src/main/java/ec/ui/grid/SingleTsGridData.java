@@ -17,7 +17,6 @@
 package ec.ui.grid;
 
 import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 import ec.tss.TsCollection;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.data.Values;
@@ -29,14 +28,15 @@ import ec.ui.chart.DataFeatureModel;
  *
  * @author Philippe Charles
  */
-final class SingleTsGridData extends TsGridData {
+final class SingleTsGridData extends TsGridData implements Supplier<DescriptiveStatistics> {
 
-    private final TsGridObs obs;
     private final int seriesIndex;
     private final Values data;
     private final TsDomain domain;
     private final int startYear;
     private final int startPosition;
+    private final DataFeatureModel dataFeatureModel;
+    private DescriptiveStatistics stats;
 
     public SingleTsGridData(TsCollection col, int seriesIndex, DataFeatureModel dataFeatureModel) {
         this.seriesIndex = seriesIndex;
@@ -44,21 +44,20 @@ final class SingleTsGridData extends TsGridData {
         this.domain = col.get(seriesIndex).getTsData().getDomain();
         this.startYear = domain.getStart().getYear();
         this.startPosition = domain.getStart().getPosition();
-        this.obs = new TsGridObs(Suppliers.memoize(createStats(data)), dataFeatureModel);
+        this.dataFeatureModel = dataFeatureModel;
     }
 
-    private static Supplier<DescriptiveStatistics> createStats(final Values data) {
-        return new Supplier<DescriptiveStatistics>() {
-            @Override
-            public DescriptiveStatistics get() {
-                return new DescriptiveStatistics(data);
-            }
-        };
-    }
-
-    int getPeriodId(int i, int j) {
+    private int getPeriodId(int i, int j) {
         int periodId = j + (getColumnCount() * i) - startPosition;
         return (periodId < 0 || periodId >= domain.getLength()) ? -1 : periodId;
+    }
+
+    @Override
+    public DescriptiveStatistics get() {
+        if (stats == null) {
+            stats = new DescriptiveStatistics(data);
+        }
+        return stats;
     }
 
     @Override
@@ -74,7 +73,9 @@ final class SingleTsGridData extends TsGridData {
     @Override
     public TsGridObs getObs(int i, int j) {
         int periodId = getPeriodId(i, j);
-        return periodId == -1 ? obs.empty(seriesIndex) : obs.valid(seriesIndex, periodId, domain.get(periodId), data.get(periodId));
+        return periodId == -1
+                ? TsGridObs.empty(seriesIndex)
+                : TsGridObs.valid(seriesIndex, periodId, domain.get(periodId), data.get(periodId), this, dataFeatureModel);
     }
 
     @Override
