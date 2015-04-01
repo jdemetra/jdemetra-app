@@ -20,8 +20,8 @@ import com.google.common.base.Supplier;
 import com.google.common.primitives.Doubles;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsStatus;
 import ec.tstoolkit.data.DescriptiveStatistics;
+import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDataTable;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.utilities.IntList;
@@ -46,16 +46,15 @@ final class MultiTsGridData extends TsGridData implements Supplier<DescriptiveSt
         this.names = new ArrayList<>();
         this.dataTable = new TsDataTable();
         for (Ts o : col) {
-            if (o.hasData() == TsStatus.Valid) {
-                names.add(o.getName());
-                dataTable.insert(-1, o.getTsData());
-            }
+            names.add(o.getName());
+            dataTable.insert(-1, o.getTsData());
         }
         this.domain = dataTable.getDomain();
         this.firstObsIndexes = new IntList();
         if (domain != null) {
             for (int i = 0; i < dataTable.getSeriesCount(); i++) {
-                firstObsIndexes.add(domain.search(dataTable.series(i).getStart()));
+                TsData data = dataTable.series(i);
+                firstObsIndexes.add(data != null ? domain.search(data.getStart()) : -1);
             }
         }
         this.dataFeatureModel = dataFeatureModel;
@@ -67,7 +66,8 @@ final class MultiTsGridData extends TsGridData implements Supplier<DescriptiveSt
         if (stats == null) {
             double[][] allValues = new double[dataTable.getSeriesCount()][];
             for (int i = 0; i < allValues.length; i++) {
-                allValues[i] = dataTable.series(i).getValues().internalStorage();
+                TsData data = dataTable.series(i);
+                allValues[i] = data != null ? data.getValues().internalStorage() : new double[0];
             }
             stats = new DescriptiveStatistics(Doubles.concat(allValues));
         }
