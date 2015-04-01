@@ -72,10 +72,14 @@ final class SingleTsGridData extends TsGridData implements Supplier<DescriptiveS
 
     @Override
     public TsGridObs getObs(int i, int j) {
-        int periodId = getPeriodId(i, j);
-        return periodId == -1
-                ? TsGridObs.empty(seriesIndex)
-                : TsGridObs.valid(seriesIndex, periodId, domain.get(periodId), data.get(periodId), this, dataFeatureModel);
+        int obsIndex = getPeriodId(i, j);
+        if (obsIndex == -1) {
+            return TsGridObs.empty(seriesIndex);
+        }
+        if (data.isMissing(obsIndex)) {
+            return TsGridObs.missing(seriesIndex, obsIndex, domain.get(obsIndex));
+        }
+        return TsGridObs.valid(seriesIndex, obsIndex, domain.get(obsIndex), data.get(obsIndex), this, dataFeatureModel);
     }
 
     @Override
