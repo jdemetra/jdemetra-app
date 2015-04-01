@@ -80,14 +80,17 @@ public final class TsCollectionFactory extends DemoComponentFactory {
                 switch (obs.getInfo()) {
                     case Empty:
                         setText("Empty");
+                        break;
                     case Missing:
                         setText("Missing");
+                        break;
                     case Valid:
                         long longValue = (long) obs.getValue();
                         setText(Long.toString(longValue));
                         if (longValue % 2 != 0) {
                             setForeground(Color.RED);
                         }
+                        break;
                 }
             }
 
