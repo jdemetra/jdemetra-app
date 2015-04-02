@@ -69,7 +69,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
             col.quietAdd(BUILDER.withFrequency(o).withObs(nbrYears * o.intValue()).build().get(0).rename(o.name()));
         }
 
-        BUILDER.withFrequency(TsFrequency.Monthly).withForecast(0);
+        BUILDER.withFrequency(TsFrequency.Monthly);
         col.quietAdd(BUILDER.withObs(nbrYears * 12).withMissingValues(3).build().get(0).rename("Missing"));
         col.quietAdd(BUILDER.withObs(0).withMissingValues(0).build().get(0).rename("Empty"));
         col.quietAdd(BUILDER.withStatus(TsStatus.Invalid).build().get(0).rename("Invalid"));

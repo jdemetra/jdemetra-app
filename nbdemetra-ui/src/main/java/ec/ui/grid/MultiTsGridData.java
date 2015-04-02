@@ -24,10 +24,13 @@ import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDataTable;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
-import ec.tstoolkit.utilities.IntList;
+import ec.tstoolkit.timeseries.simplets.TsFrequency;
+import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.chart.DataFeatureModel;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
 
 /**
  *
@@ -38,7 +41,7 @@ final class MultiTsGridData extends TsGridData implements Supplier<DescriptiveSt
     private final List<String> names;
     private final TsDataTable dataTable;
     private final TsDomain domain;
-    private final IntList firstObsIndexes;
+    private final TsDataTableCursor cursor;
     private final DataFeatureModel dataFeatureModel;
     private DescriptiveStatistics stats;
 
@@ -50,13 +53,7 @@ final class MultiTsGridData extends TsGridData implements Supplier<DescriptiveSt
             dataTable.insert(-1, o.getTsData());
         }
         this.domain = dataTable.getDomain();
-        this.firstObsIndexes = new IntList();
-        if (domain != null) {
-            for (int i = 0; i < dataTable.getSeriesCount(); i++) {
-                TsData data = dataTable.series(i);
-                firstObsIndexes.add(data != null ? domain.search(data.getStart()) : -1);
-            }
-        }
+        this.cursor = domain != null ? new TsDataTableCursor(dataTable) : null;
         this.dataFeatureModel = dataFeatureModel;
         this.stats = null;
     }
@@ -90,9 +87,11 @@ final class MultiTsGridData extends TsGridData implements Supplier<DescriptiveSt
             case Empty:
                 return TsGridObs.empty(series);
             case Missing:
-                return TsGridObs.missing(series, i - firstObsIndexes.get(series), domain.get(i));
+                cursor.moveTo(i, series);
+                return TsGridObs.missing(series, cursor.getObsIndex(), cursor.getPeriod());
             case Valid:
-                return TsGridObs.valid(series, i - firstObsIndexes.get(series), domain.get(i), dataTable.getData(i, series), this, dataFeatureModel);
+                cursor.moveTo(i, series);
+                return TsGridObs.valid(series, cursor.getObsIndex(), cursor.getPeriod(), dataTable.getData(i, series), this, dataFeatureModel);
         }
         throw new UnsupportedOperationException();
     }
@@ -105,5 +104,66 @@ final class MultiTsGridData extends TsGridData implements Supplier<DescriptiveSt
     @Override
     public int getColumnCount() {
         return dataTable.getSeriesCount();
+    }
+
+    private static final class TsDataTableCursor {
+
+        private final int tableFirstPosition;
+        private final SeriesInfo[] seriesInfo;
+        private SeriesInfo currentSeries;
+        private int obsIndex;
+
+        public TsDataTableCursor(TsDataTable dataTable) {
+            this.tableFirstPosition = dataTable.getDomain().getStart().getPosition();
+            this.seriesInfo = new SeriesInfo[dataTable.getSeriesCount()];
+            for (int i = 0; i < seriesInfo.length; i++) {
+                TsData data = dataTable.series(i);
+                if (data != null) {
+                    seriesInfo[i] = new SeriesInfo(dataTable.getDomain().getFrequency(), data.getStart());
+                }
+            }
+            currentSeries = null;
+            obsIndex = 0;
+        }
+
+        public void moveTo(int periodId, int seriesId) {
+            currentSeries = seriesInfo[seriesId];
+            obsIndex = currentSeries.computeObsIndex(tableFirstPosition, periodId);
+        }
+
+        @Nonnegative
+        public int getObsIndex() {
+            return obsIndex;
+        }
+
+        @Nonnull
+        public TsPeriod getPeriod() {
+            return currentSeries.getPeriod(obsIndex);
+        }
+    }
+
+    private static final class SeriesInfo {
+
+        private final int ratio;
+        private final int firstPosition;
+        private final TsPeriod firstPeriod;
+        private final TsPeriod period;
+
+        public SeriesInfo(TsFrequency tableFreq, TsPeriod seriesStart) {
+            this.ratio = tableFreq.ratio(seriesStart.getFrequency());
+            this.firstPosition = seriesStart.getPosition();
+            this.firstPeriod = seriesStart;
+            this.period = seriesStart.clone();
+        }
+
+        public int computeObsIndex(int tableFirstPosition, int periodId) {
+            return ((periodId + tableFirstPosition) - (ratio - 1)) / ratio - firstPosition;
+        }
+
+        public TsPeriod getPeriod(int obsIndex) {
+            // we recycle periods
+            period.move(firstPeriod.minus(period) + obsIndex);
+            return period;
+        }
     }
 }
