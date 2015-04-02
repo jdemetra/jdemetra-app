@@ -16,7 +16,6 @@
  */
 package ec.ui.grid;
 
-import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.tss.Ts;
@@ -44,7 +43,6 @@ import java.awt.event.ItemListener;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Date;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.DefaultComboBoxModel;
@@ -592,7 +590,7 @@ public class JTsGrid extends ATsGrid {
             setOpaque(true);
             this.grid = grid;
             this.gridResources = GridUIResource.getDefault();
-            this.periodFormatter = dataFormat.dateFormatter().compose(DateFunction.INSTANCE);
+            this.periodFormatter = TsPeriodFormatter.INSTANCE;
             this.valueFormatter = dataFormat.numberFormatter();
             this.colorSchemeSupport = colorSchemeSupport;
             this.showBars = showBars;
@@ -699,13 +697,13 @@ public class JTsGrid extends ATsGrid {
     }
     //</editor-fold>
 
-    private static class DateFunction implements Function<TsPeriod, Date> {
+    private static final class TsPeriodFormatter extends Formatter<TsPeriod> {
 
-        public static final DateFunction INSTANCE = new DateFunction();
+        private final static TsPeriodFormatter INSTANCE = new TsPeriodFormatter();
 
         @Override
-        public Date apply(TsPeriod input) {
-            return input.middle();
+        public CharSequence format(TsPeriod value) throws NullPointerException {
+            return value.toString();
         }
     }
 }
