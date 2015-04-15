@@ -28,23 +28,26 @@ public class PeriodogramView extends ARPView {
     public static final String DIFF_PROPERTY = "differencing";
     public static final String DIFF_LAG_PROPERTY = "differencingLag";
     public static final String LASTYEARS_PROPERTY = "lastYears";
+    public static final String FULL_PROPERTY = "fullYears";
     // DEFAULT PROPERTIES
     private static final boolean DEFAULT_LIMIT_VISIBLE = true;
     private static final int DEFAULT_WINDOW_LENGTH = 1;
     private static final boolean DEFAULT_LOG = false;
     private static final int DEFAULT_DIFF = 1;
     private static final int DEFAULT_DIFF_LAG = 1;
+    private static final boolean DEFAULT_FULL = true;
     // PROPERTIES
     protected boolean limitVisible;
     protected int windowLength;
     private int del = DEFAULT_DIFF, lag = DEFAULT_DIFF_LAG;
     private boolean log = DEFAULT_LOG;
     private int lastYears;
+    private boolean full = DEFAULT_FULL;
 
     public PeriodogramView() {
         DemetraUI demetraUI = DemetraUI.getDefault();
         lastYears = demetraUI.getSpectralLastYears();
-        
+
         this.limitVisible = DEFAULT_LIMIT_VISIBLE;
         this.windowLength = DEFAULT_WINDOW_LENGTH;
 
@@ -69,6 +72,9 @@ public class PeriodogramView extends ARPView {
                         break;
                     case LASTYEARS_PROPERTY:
                         onLastYearsChange();
+                        break;
+                    case FULL_PROPERTY:
+                        onFullChange();
                         break;
                 }
             }
@@ -98,6 +104,16 @@ public class PeriodogramView extends ARPView {
         int old = del;
         del = order;
         firePropertyChange(DIFF_PROPERTY, old, this.del);
+    }
+
+    public boolean isFullYears() {
+        return full;
+    }
+
+    public void setFullYears(boolean f) {
+        boolean old = full;
+        full = f;
+        firePropertyChange(FULL_PROPERTY, old, this.full);
     }
 
     // EVENT HANDLERS > 
@@ -130,6 +146,10 @@ public class PeriodogramView extends ARPView {
         onARPDataChange();
     }
 
+    protected void onFullChange() {
+        onARPDataChange();
+    }
+    
     public int getDifferencingLag() {
         return lag;
     }
@@ -204,7 +224,8 @@ public class PeriodogramView extends ARPView {
                     s[j] -= s[j - lag];
                 }
             }
-            val = new Values(new DataBlock(s, del * lag, s.length, 1));
+            val = new Values(s.length - del * lag);
+            val.copyFrom(s, del * lag);
         }
         if (lastYears > 0 && data.freq > 0) {
             int nmax = lastYears * data.freq;
@@ -212,12 +233,20 @@ public class PeriodogramView extends ARPView {
             if (nbeg > 0) {
                 val = val.drop(nbeg, 0);
             }
+        } else if (full && data.freq > 0) {
+            // Keep full years
+            int nvals = val.getLength();
+            int nbeg = nvals % data.freq;
+            if (nbeg > 0) {
+                val = val.drop(nbeg, 0);
+            }
         }
+
         Periodogram periodogram = new Periodogram(val);
         periodogram.setWindowLength(windowLength);
         double[] yp = periodogram.getS();
         for (int i = 0; i < yp.length; ++i) {
-            result.add(i * TWO_PI / (val.getLength() - 1), yp[i]);
+            result.add(i * TWO_PI / val.getLength(), yp[i]);
         }
 
         return result;
