@@ -148,7 +148,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
         onUpdateModeChange();
         onDataFormatChange();
 
-        chartPanel.setPopupMenu(buildChartMenu().getPopupMenu());
+        chartPanel.setComponentPopupMenu(buildChartMenu().getPopupMenu());
 
         fillActionMap(chartPanel.getActionMap());
         fillInputMap(chartPanel.getInputMap());

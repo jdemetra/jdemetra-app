@@ -16,7 +16,6 @@
  */
 package ec.ui;
 
-import ec.nbdemetra.ui.DemetraUI;
 import ec.ui.commands.TsGridCommand;
 import ec.ui.interfaces.ITsGrid;
 import static ec.ui.interfaces.ITsGrid.SINGLE_TS_INDEX_PROPERTY;
@@ -54,8 +53,6 @@ public abstract class ATsGrid extends ATsCollectionView implements ITsGrid {
     protected Mode mode;
     protected int singleTsIndex;
     protected int zoomRatio;
-    
-    private DemetraUI demetraUI = DemetraUI.getDefault();
 
     public ATsGrid() {
         this.orientation = DEFAULT_ORIENTATION;
@@ -204,6 +201,7 @@ public abstract class ATsGrid extends ATsCollectionView implements ITsGrid {
 
     protected JMenu buildGridMenu() {
         ActionMap am = getActionMap();
+
         JMenu result = buildMenu();
 
         int index = 0;

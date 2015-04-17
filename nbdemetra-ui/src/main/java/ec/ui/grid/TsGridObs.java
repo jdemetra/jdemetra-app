@@ -1,69 +1,223 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.ui.grid;
 
+import com.google.common.base.Supplier;
+import ec.tss.Ts;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.design.FlyweightPattern;
 import ec.tstoolkit.timeseries.simplets.TsDataTableInfo;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
+import ec.ui.chart.DataFeatureModel;
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
 
 /**
  *
  * @author Philippe Charles
  */
 @FlyweightPattern
-public class TsGridObs {
+public abstract class TsGridObs {
 
-    private final DescriptiveStatistics stats;
-    private int seriesIndex;
-    private int index;
-    private TsPeriod period;
-    private double value;
+    @Nonnull
+    abstract public TsDataTableInfo getInfo();
 
-    TsGridObs(DescriptiveStatistics stats) {
-        this.stats = stats;
-        empty(-1);
+    @Nonnegative
+    abstract public int getSeriesIndex();
+
+    @Nonnegative
+    abstract public int getIndex() throws IllegalStateException;
+
+    @Nonnull
+    abstract public TsPeriod getPeriod() throws IllegalStateException;
+
+    abstract public double getValue() throws IllegalStateException;
+
+    @Nonnull
+    abstract public DescriptiveStatistics getStats() throws IllegalStateException;
+
+    abstract public boolean hasFeature(@Nonnull Ts.DataFeature feature) throws IllegalStateException;
+
+    //<editor-fold defaultstate="collapsed" desc="Internal implementation">
+    static final TsGridObs empty(int seriesIndex) {
+        return Empty.INSTANCE.with(seriesIndex);
     }
 
-    final TsGridObs empty(int seriesIndex) {
-        return missing(seriesIndex, -1, null);
+    static final TsGridObs missing(int seriesIndex, int obsIndex, TsPeriod period) {
+        return Missing.INSTANCE.with(seriesIndex, obsIndex, period);
     }
 
-    final TsGridObs missing(int seriesIndex, int obsIndex, TsPeriod period) {
-        return valid(seriesIndex, obsIndex, period, Double.NaN);
+    static final TsGridObs valid(int seriesIndex, int obsIndex, TsPeriod period, double value, Supplier<DescriptiveStatistics> stats, DataFeatureModel dataFeatureModel) {
+        return Valid.INSTANCE.with(seriesIndex, obsIndex, period, value, stats, dataFeatureModel);
     }
 
-    final TsGridObs valid(int seriesIndex, int obsIndex, TsPeriod period, double value) {
-        this.seriesIndex = seriesIndex;
-        this.index = obsIndex;
-        this.period = period;
-        this.value = value;
-        return this;
+    private static final class Empty extends TsGridObs {
+
+        private static final Empty INSTANCE = new Empty();
+
+        private int seriesIndex;
+
+        private TsGridObs with(int seriesIndex) {
+            this.seriesIndex = seriesIndex;
+            return this;
+        }
+
+        @Override
+        public TsDataTableInfo getInfo() {
+            return TsDataTableInfo.Empty;
+        }
+
+        @Override
+        public int getSeriesIndex() {
+            return seriesIndex;
+        }
+
+        @Override
+        public int getIndex() throws IllegalStateException {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public TsPeriod getPeriod() throws IllegalStateException {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public double getValue() throws IllegalStateException {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public DescriptiveStatistics getStats() throws IllegalStateException {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public boolean hasFeature(Ts.DataFeature feature) throws IllegalStateException {
+            throw new IllegalStateException();
+        }
     }
 
-    public DescriptiveStatistics getStats() {
-        return stats;
+    private static final class Missing extends TsGridObs {
+
+        private static final Missing INSTANCE = new Missing();
+
+        private int seriesIndex;
+        private int index;
+        private TsPeriod period;
+
+        private TsGridObs with(int seriesIndex, int index, TsPeriod period) {
+            this.seriesIndex = seriesIndex;
+            this.index = index;
+            this.period = period;
+            return this;
+        }
+
+        @Override
+        public TsDataTableInfo getInfo() {
+            return TsDataTableInfo.Missing;
+        }
+
+        @Override
+        public int getSeriesIndex() {
+            return seriesIndex;
+        }
+
+        @Override
+        public int getIndex() throws IllegalStateException {
+            return index;
+        }
+
+        @Override
+        public TsPeriod getPeriod() throws IllegalStateException {
+            return period;
+        }
+
+        @Override
+        public double getValue() throws IllegalStateException {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public DescriptiveStatistics getStats() throws IllegalStateException {
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public boolean hasFeature(Ts.DataFeature feature) throws IllegalStateException {
+            throw new IllegalStateException();
+        }
     }
 
-    public TsDataTableInfo getInfo() {
-        return period == null ? TsDataTableInfo.Empty : Double.isNaN(value) ? TsDataTableInfo.Missing : TsDataTableInfo.Valid;
-    }
+    private static final class Valid extends TsGridObs {
 
-    public int getSeriesIndex() {
-        return seriesIndex;
-    }
+        private static final Valid INSTANCE = new Valid();
 
-    public int getIndex() {
-        return index;
-    }
+        private int seriesIndex;
+        private int index;
+        private TsPeriod period;
+        private double value;
+        private Supplier<DescriptiveStatistics> stats;
+        private DataFeatureModel dataFeatureModel;
 
-    public TsPeriod getPeriod() {
-        return period;
-    }
+        private TsGridObs with(int seriesIndex, int index, TsPeriod period, double value, Supplier<DescriptiveStatistics> stats, DataFeatureModel dataFeatureModel) {
+            this.seriesIndex = seriesIndex;
+            this.index = index;
+            this.period = period;
+            this.value = value;
+            this.stats = stats;
+            this.dataFeatureModel = dataFeatureModel;
+            return this;
+        }
 
-    public double getValue() {
-        return value;
+        @Override
+        public TsDataTableInfo getInfo() {
+            return TsDataTableInfo.Valid;
+        }
+
+        @Override
+        public int getSeriesIndex() {
+            return seriesIndex;
+        }
+
+        @Override
+        public int getIndex() throws IllegalStateException {
+            return index;
+        }
+
+        @Override
+        public TsPeriod getPeriod() throws IllegalStateException {
+            return period;
+        }
+
+        @Override
+        public double getValue() throws IllegalStateException {
+            return value;
+        }
+
+        @Override
+        public DescriptiveStatistics getStats() throws IllegalStateException {
+            return stats.get();
+        }
+
+        @Override
+        public boolean hasFeature(Ts.DataFeature feature) throws IllegalStateException {
+            return dataFeatureModel.hasFeature(feature, seriesIndex, index);
+        }
     }
+    //</editor-fold>
 }

@@ -6,13 +6,11 @@ package ec.nbdemetra.sa;
 
 import com.google.common.collect.Maps;
 import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.awt.PopupListener;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.satoolkit.algorithm.implementation.X13ProcessingFactory;
 import ec.satoolkit.x11.Mstatistics;
 import ec.tss.ITsIdentified;
 import ec.tss.formatters.TableFormatter;
-import ec.tss.sa.RegArimaReport;
 import ec.tss.sa.SaItem;
 import ec.tss.sa.SaProcessing;
 import ec.tss.sa.diagnostics.*;
@@ -32,7 +30,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +41,6 @@ import javax.swing.table.TableModel;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
-import org.openide.windows.TopComponent;
 
 /**
  *
@@ -142,7 +138,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
         JMenu menu = new JMenu();
         menu.add(TableGridCommand.copyAll(true, true).toAction(result)).setText("Copy");
-        result.addMouseListener(new PopupListener.PopupAdapter(menu.getPopupMenu()));
+        result.setComponentPopupMenu(menu.getPopupMenu());
 
         return result;
     }

@@ -119,7 +119,7 @@ public class JTsGrowthChart extends ATsGrowthChart {
         onUpdateModeChange();
         onDataFormatChange();
 
-        chartPanel.setPopupMenu(buildChartMenu().getPopupMenu());
+        chartPanel.setComponentPopupMenu(buildChartMenu().getPopupMenu());
 
         fillActionMap(chartPanel.getActionMap());
         fillInputMap(chartPanel.getInputMap());

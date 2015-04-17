@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
-import ec.nbdemetra.ui.awt.PopupListener;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.IProcResults;
 import ec.util.grid.swing.AbstractGridModel;
@@ -76,7 +75,7 @@ public class RevisionAnalysisJGrid extends JComponent {
 
         JMenu menu = new JMenu();
         menu.add(TableGridCommand.copyAll(true, true).toAction(result)).setText("Copy All");
-        result.addMouseListener(new PopupListener.PopupAdapter(menu.getPopupMenu()));
+        result.setComponentPopupMenu(menu.getPopupMenu());
 
         return result;
     }

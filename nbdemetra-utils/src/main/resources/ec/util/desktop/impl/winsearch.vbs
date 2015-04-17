@@ -18,7 +18,7 @@ If Err.Number <> 0 Then
 End If
 
 Set rs = CreateObject("ADODB.Recordset")
-rs.Open "SELECT System.ItemPathDisplay FROM SYSTEMINDEX WHERE System.FileName like '%" & query & "%'", conn
+rs.Open "SELECT System.ItemUrl FROM SYSTEMINDEX WHERE System.FileName like '%" & query & "%'", conn
 
 If Err.Number <> 0 Then
   Wscript.Echo "Query failed: [" &  Err.Number & "] " & Err.Description
@@ -29,7 +29,7 @@ End If
 If Not (rs.BOF and rs.EOF) Then
   rs.MoveFirst
   Do Until rs.EOF
-    Wscript.Echo rs.Fields.Item("System.ItemPathDisplay")
+    Wscript.Echo Replace(rs.Fields.Item(0), "file:", "")
     rs.MoveNext
   Loop 
 End If

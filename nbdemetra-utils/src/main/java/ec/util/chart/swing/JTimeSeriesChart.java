@@ -364,6 +364,10 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     private void onRevealObsChange() {
         notification.forceRefresh();
     }
+    
+    private void onComponentPopupMenuChange() {
+        chartPanel.setPopupMenu(getComponentPopupMenu());
+    }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Delegate to chartPanel">
@@ -398,8 +402,9 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         return chartPanel.getDropTarget();
     }
 
+    @Deprecated
     public void setPopupMenu(JPopupMenu popupMenu) {
-        chartPanel.setPopupMenu(popupMenu);
+        setComponentPopupMenu(popupMenu);
     }
     //</editor-fold>
 
@@ -876,6 +881,9 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
                         boolean enabled = isEnabled();
                         chartPanel.setDomainZoomable(enabled);
                         chartPanel.setRangeZoomable(enabled);
+                        break;
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
                         break;
                 }
                 notification.resume();

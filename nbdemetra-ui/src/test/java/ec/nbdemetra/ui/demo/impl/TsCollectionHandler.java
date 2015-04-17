@@ -23,6 +23,10 @@ import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.DemoTsActions;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
+import ec.tss.TsFactory;
+import ec.tss.TsStatus;
+import ec.tstoolkit.timeseries.simplets.TsFrequency;
+import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.DemoUtils;
 import ec.ui.commands.TsCollectionViewCommand;
 import ec.ui.interfaces.ITsCollectionView;
@@ -35,7 +39,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import javax.swing.*;
 import org.openide.awt.DropDownButtonFactory;
@@ -48,12 +54,27 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemoComponentHandler.class)
 public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<ITsCollectionView> {
 
+    private static final DemoUtils.RandomTsCollectionBuilder BUILDER = new DemoUtils.RandomTsCollectionBuilder();
+
+    private final TsCollection col;
+
     public TsCollectionHandler() {
         super(ITsCollectionView.class);
-    }
+        col = TsFactory.instance.createTsCollection();
 
-    static final DemoUtils.RandomTsCollectionBuilder BUILDER = new DemoUtils.RandomTsCollectionBuilder().withForecast(3);
-    final TsCollection col = BUILDER.build();
+        int nbrYears = 3;
+
+        BUILDER.withSeries(1).withForecast(2);
+        for (TsFrequency o : EnumSet.complementOf(EnumSet.of(TsFrequency.Undefined))) {
+            col.quietAdd(BUILDER.withFrequency(o).withObs(nbrYears * o.intValue()).build().get(0).rename(o.name()));
+        }
+
+        BUILDER.withFrequency(TsFrequency.Monthly);
+        col.quietAdd(BUILDER.withObs(nbrYears * 12).withMissingValues(3).build().get(0).rename("Missing"));
+        col.quietAdd(BUILDER.withObs(0).withMissingValues(0).build().get(0).rename("Empty"));
+        col.quietAdd(BUILDER.withStatus(TsStatus.Invalid).build().get(0).rename("Invalid"));
+        col.quietAdd(BUILDER.withStatus(TsStatus.Undefined).build().get(0).rename("Undefined"));
+    }
 
     @Override
     public void doConfigure(ITsCollectionView c) {
@@ -75,6 +96,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         for (int i = 10; i < 10000; i *= 10) {
             menu.add(new AddRandomCommand(i).toAction(view)).setText(Integer.toString(i));
         }
+        menu.add(new AddCustomCommand().toAction(view)).setText("Custom...");
         JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LIST_ADD_16, menu.getPopupMenu());
         result.addActionListener(new AddRandomCommand(1).toAction(view));
         return result;
@@ -83,14 +105,49 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
     static final class AddRandomCommand extends JCommand<ITsCollectionView> {
 
         private final int size;
+        private final TsPeriod startPeriod;
 
         public AddRandomCommand(int size) {
             this.size = size;
+            this.startPeriod = new TsPeriod(TsFrequency.Monthly, new Date());
         }
 
         @Override
         public void execute(ITsCollectionView component) throws Exception {
-            component.getTsCollection().append(BUILDER.withSeries(size).build());
+            component.getTsCollection().append(BUILDER
+                    .withSeries(size)
+                    .withObs(24)
+                    .withStartPeriod(startPeriod)
+                    .withStatus(TsStatus.Valid)
+                    .withForecast(3)
+                    .withNaming(DemoUtils.TsNamingScheme.DEFAULT)
+                    .withMissingValues(0)
+                    .build());
+        }
+    }
+
+    static final class AddCustomCommand extends JCommand<ITsCollectionView> {
+
+        private final AddTsCollectionPanel panel;
+
+        public AddCustomCommand() {
+            this.panel = new AddTsCollectionPanel();
+            panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        }
+
+        @Override
+        public void execute(ITsCollectionView c) throws Exception {
+            if (JOptionPane.showConfirmDialog((Component) c, panel, "Add time series", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+                c.getTsCollection().append(BUILDER
+                        .withSeries(panel.getSeriesCount())
+                        .withObs(panel.getObsCount())
+                        .withStartPeriod(panel.getStartPeriod())
+                        .withStatus(panel.getTsStatus())
+                        .withForecast(panel.getForecastCount())
+                        .withNaming(panel.getNaming())
+                        .withMissingValues(panel.getMissingValues())
+                        .build());
+            }
         }
     }
 

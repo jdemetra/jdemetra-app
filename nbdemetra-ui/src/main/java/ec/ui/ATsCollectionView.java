@@ -28,7 +28,9 @@ import ec.tss.TsEvent;
 import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TsDragRenderer;
+import ec.tss.datatransfer.TssTransferHandler;
 import ec.tss.datatransfer.TssTransferSupport;
+import ec.tss.datatransfer.impl.LocalObjectTssTransferHandler;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.ui.commands.ColorSchemeCommand;
 import ec.ui.commands.TsCollectionViewCommand;
@@ -40,18 +42,22 @@ import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nullable;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JCheckBoxMenuItem;
@@ -64,6 +70,7 @@ import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
 
 public abstract class ATsCollectionView extends ATsControl implements ITsCollectionView {
 
@@ -92,8 +99,8 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     protected Ts[] dropContent;
     // OTHER
     protected final TsFactoryObserver tsFactoryObserver;
-    
-    protected DemetraUI demetraUI = DemetraUI.getDefault();
+
+    protected final DemetraUI demetraUI = DemetraUI.getDefault();
 
     public ATsCollectionView() {
         this.collection = TsFactory.instance.createTsCollection();
@@ -494,6 +501,38 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
 
     public class TsCollectionTransferHandler extends TransferHandler {
 
+        @Nullable
+        private TsCollection peekCollection(TransferSupport support) {
+            TssTransferHandler localObjectHandler = Lookup.getDefault().lookup(LocalObjectTssTransferHandler.class);
+            if (localObjectHandler != null) {
+                DataFlavor dataFlavor = localObjectHandler.getDataFlavor();
+                if (support.isDataFlavorSupported(dataFlavor)) {
+                    try {
+                        Object data = support.getTransferable().getTransferData(dataFlavor);
+                        if (localObjectHandler.canImportTsCollection(data)) {
+                            return localObjectHandler.importTsCollection(data);
+                        }
+                    } catch (UnsupportedFlavorException | IOException ex) {
+                    }
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        private boolean mayChangeContent(TransferSupport support) {
+            TsCollection newContent = peekCollection(support);
+            if (newContent != null) {
+                for (Ts o : newContent) {
+                    if (!collection.contains(o)) {
+                        return true; // YES
+                    }
+                }
+                return false; // NO
+            }
+            return true; // MAYBE
+        }
+
         @Override
         public int getSourceActions(JComponent c) {
             TsDragRenderer r = selection.length < 10 ? TsDragRenderer.asChart() : TsDragRenderer.asCount();
@@ -510,7 +549,8 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         @Override
         public boolean canImport(TransferSupport support) {
             boolean result = !ATsCollectionView.this.getTsUpdateMode().isReadOnly()
-                    && TssTransferSupport.getDefault().canImport(support.getDataFlavors());
+                    && TssTransferSupport.getDefault().canImport(support.getDataFlavors())
+                    && mayChangeContent(support);
             if (result && support.isDrop()) {
                 support.setDropAction(COPY);
             }

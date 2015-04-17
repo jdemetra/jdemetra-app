@@ -1,16 +1,25 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.ui.grid;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import javax.swing.JLabel;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
@@ -19,17 +28,11 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 class BarTableCellRenderer extends DefaultTableCellRenderer {
 
-    private boolean horizontalBar;
+    private final boolean horizontalBar;
     private double a, b = 0;
 
     public BarTableCellRenderer(boolean horizontalBar) {
         this.horizontalBar = true;
-    }
-
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        return result;
     }
 
     public void setBarValues(double min, double max, double val) {
