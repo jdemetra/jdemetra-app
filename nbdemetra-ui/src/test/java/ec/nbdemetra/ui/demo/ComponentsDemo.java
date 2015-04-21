@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.awt.ExceptionPanel;
+import ec.tss.TsFactory;
 import ec.tstoolkit.utilities.Id;
 import ec.ui.interfaces.ITsList;
 import ec.ui.list.JTsList;
@@ -75,6 +76,8 @@ public final class ComponentsDemo extends JPanel {
         BarRenderer.setDefaultBarPainter(new StandardBarPainter());
 
         UIManager.put("Nb.Editor.Toolbar.border", BorderFactory.createLineBorder(Color.WHITE));
+
+        TsFactory.instance.add(new FakeTsProvider());
 
         setLayout(new BorderLayout());
 

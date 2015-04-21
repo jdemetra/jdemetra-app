@@ -144,12 +144,10 @@ public final class ToolsPersistence {
                 for (ContentItemBean o : input.items) {
                     TsMoniker moniker = new TsMoniker(o.source, o.id);
                     Ts ts = TsFactory.instance.createTs(o.name, moniker, TsInformationType.Definition);
-                    if (ts != null) {
-                        if (o.selected) {
-                            result.selection.add(ts);
-                        }
-                        result.collection.add(ts);
+                    if (o.selected) {
+                        result.selection.add(ts);
                     }
+                    result.collection.add(ts);
                 }
             }
             return result;

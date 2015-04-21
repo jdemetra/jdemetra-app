@@ -24,19 +24,28 @@ import ec.nbdemetra.ui.demo.DemoTsActions;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
+import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
+import ec.tss.tsproviders.DataSet;
+import ec.tss.tsproviders.DataSource;
+import ec.tss.tsproviders.IDataSourceProvider;
+import ec.tss.tsproviders.TsProviders;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.DemoUtils;
 import ec.ui.commands.TsCollectionViewCommand;
 import ec.ui.interfaces.ITsCollectionView;
 import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
+import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
+import ec.util.various.swing.ext.FontAwesomeUtils;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -84,6 +93,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
 
     @Override
     public void doFillToolBar(JToolBar toolBar, ITsCollectionView c) {
+        toolBar.add(createFakeProviderButton(c));
         toolBar.add(createAddButton(c));
         toolBar.add(createRemoveButton(c));
         toolBar.add(createUpdateModeButton(c));
@@ -282,5 +292,69 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
             }
         });
         return result;
+    }
+
+    static JButton createFakeProviderButton(ITsCollectionView view) {
+        JMenu menu = new JMenu();
+        for (IDataSourceProvider provider : TsProviders.all().filter(IDataSourceProvider.class)) {
+            for (DataSource dataSource : provider.getDataSources()) {
+                JMenu subMenu = new JMenu(provider.getDisplayName(dataSource));
+                subMenu.setIcon(getIcon(FontAwesome.FA_FOLDER));
+                JMenuItem all = subMenu.add(new AddDataSourceCommand(dataSource).toAction(view));
+                all.setText("All");
+                all.setIcon(getIcon(FontAwesome.FA_FOLDER));
+                subMenu.addSeparator();
+                try {
+                    for (DataSet dataSet : provider.children(dataSource)) {
+                        JMenuItem item = subMenu.add(new AddDataSetCommand(dataSet).toAction(view));
+                        item.setText(provider.getDisplayNodeName(dataSet));
+                        item.setIcon(getIcon(FontAwesome.FA_LINE_CHART));
+                    }
+                } catch (IOException ex) {
+                    subMenu.add(ex.getMessage()).setIcon(getIcon(FontAwesome.FA_EXCLAMATION_CIRCLE));
+                }
+                menu.add(subMenu);
+            }
+        }
+        menu.add(new AddDataSourceCommand(DataSource.builder("Missing", "").build()).toAction(view)).setText("Missing provider");
+        JButton result = DropDownButtonFactory.createDropDownButton(getIcon(FontAwesome.FA_DATABASE), menu.getPopupMenu());
+        result.setToolTipText("Data sources");
+        return result;
+    }
+
+    static Icon getIcon(FontAwesome fa) {
+        return FontAwesomeUtils.getIcon(fa, BeanInfo.ICON_COLOR_16x16);
+    }
+
+    static final class AddDataSourceCommand extends JCommand<ITsCollectionView> {
+
+        private final DataSource dataSource;
+
+        public AddDataSourceCommand(DataSource dataSource) {
+            this.dataSource = dataSource;
+        }
+
+        @Override
+        public void execute(ITsCollectionView component) throws Exception {
+            TsCollection col = TsProviders.getTsCollection(dataSource, TsInformationType.Definition).get();
+            col.query(TsInformationType.All);
+            component.getTsCollection().append(col);
+        }
+    }
+
+    static final class AddDataSetCommand extends JCommand<ITsCollectionView> {
+
+        private final DataSet dataSet;
+
+        public AddDataSetCommand(DataSet dataSet) {
+            this.dataSet = dataSet;
+        }
+
+        @Override
+        public void execute(ITsCollectionView component) throws Exception {
+            TsCollection col = TsProviders.getTsCollection(dataSet, TsInformationType.Definition).get();
+            col.query(TsInformationType.All);
+            component.getTsCollection().append(col);
+        }
     }
 }
