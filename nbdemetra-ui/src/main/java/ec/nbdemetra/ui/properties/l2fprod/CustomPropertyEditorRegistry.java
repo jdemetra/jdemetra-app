@@ -4,7 +4,9 @@ import com.l2fprod.common.beans.editor.ComboBoxPropertyEditor;
 import com.l2fprod.common.propertysheet.PropertyEditorRegistry;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.benchmarking.SaBenchmarkingSpec.Target;
+import ec.satoolkit.x11.CalendarSigma;
 import ec.satoolkit.x11.SeasonalFilterOption;
+import ec.satoolkit.x11.SigmavecOption;
 import ec.tss.sa.output.CsvLayout;
 import ec.tstoolkit.Parameter;
 import ec.tstoolkit.modelling.ComponentType;
@@ -66,6 +68,7 @@ public enum CustomPropertyEditorRegistry {
         registerEnumEditor(SeasonalModel.class);
         registerEnumEditor(Method.class);
         registerEnumEditor(DecompositionMode.class);
+        registerEnumEditor(CalendarSigma.class);
         registerEnumEditor(CsvLayout.class);
         registerEnumEditor(Target.class);
         registerEnumEditor(EasterSpec.Type.class);
@@ -77,6 +80,7 @@ public enum CustomPropertyEditorRegistry {
         register(Day.class, new JDayPropertyEditor());
         register(Parameter[].class, new ParametersPropertyEditor());
         register(SeasonalFilterOption[].class, new SeasonalFilterPropertyEditor());
+        register(SigmavecOption[].class, new SigmavecPropertyEditor());
         register(Ramp[].class, new RampsEditor());
         register(TsVariableDescriptor[].class, new TsVariableDescriptorsEditor());
         register(InterventionVariable[].class, new InterventionVariablesEditor());
@@ -118,7 +122,7 @@ public enum CustomPropertyEditorRegistry {
             m_registry.registerEditor(c, editor);
         }
     }
-    
+
     public void unregister(Class c) {
         if (null != m_registry.getEditor(c)) {
             m_registry.unregisterEditor(c);
