@@ -413,9 +413,11 @@ public final class JGrid extends AGrid {
         dragSource.createDefaultDragGestureRecognizer(tableHeader, DnDConstants.ACTION_COPY_OR_MOVE, new DragGestureListener() {
             @Override
             public void dragGestureRecognized(DragGestureEvent dge) {
-                TransferHandler transferHandler = tableHeader.getTransferHandler();
-                if (transferHandler != null) {
-                    transferHandler.exportAsDrag(tableHeader, dge.getTriggerEvent(), TransferHandler.COPY);
+                if (tableHeader.getResizingColumn() == null) {
+                    TransferHandler transferHandler = tableHeader.getTransferHandler();
+                    if (transferHandler != null) {
+                        transferHandler.exportAsDrag(tableHeader, dge.getTriggerEvent(), TransferHandler.COPY);
+                    }
                 }
             }
         });
