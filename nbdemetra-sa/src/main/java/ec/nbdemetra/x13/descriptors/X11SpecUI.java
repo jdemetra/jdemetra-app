@@ -5,11 +5,13 @@
 package ec.nbdemetra.x13.descriptors;
 
 import ec.satoolkit.DecompositionMode;
+import ec.satoolkit.x11.CalendarSigma;
 import ec.satoolkit.x11.SeasonalFilterOption;
+import ec.satoolkit.x11.SigmavecOption;
 import ec.satoolkit.x11.X11Exception;
 import ec.satoolkit.x11.X11Specification;
-import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
+import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ public class X11SpecUI extends BaseX11SpecUI {
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
+
         EnhancedPropertyDescriptor desc = modeDesc();
         if (desc != null) {
             descs.add(desc);
@@ -69,6 +72,14 @@ public class X11SpecUI extends BaseX11SpecUI {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = calendarsigmaDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = sigmavecDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         return descs;
     }
 
@@ -88,11 +99,10 @@ public class X11SpecUI extends BaseX11SpecUI {
 //    public boolean isUseForecast() {
 //        return core.getForecastHorizon() != 0;
 //    }
-
-    public int getForecastHorizon(){
+    public int getForecastHorizon() {
         return core.getForecastHorizon();
     }
-    
+
     public boolean isSeasonal() {
         return core.isSeasonal();
     }
@@ -100,8 +110,8 @@ public class X11SpecUI extends BaseX11SpecUI {
     public void setSeasonal(boolean value) {
         core.setSeasonal(value);
     }
-    
-    public void setForecastHorizon(int value){
+
+    public void setForecastHorizon(int value) {
         core.setForecastHorizon(value);
     }
 
@@ -112,7 +122,6 @@ public class X11SpecUI extends BaseX11SpecUI {
 //            core.setForecastHorizon(0);
 //        }
 //    }
-
     public double getLSigma() {
         return core.getLowerSigma();
     }
@@ -133,7 +142,7 @@ public class X11SpecUI extends BaseX11SpecUI {
 //        if (hasSeasDetails()) {
 //            return null;
 //        }
-//        else 
+//        else
         if (core.getSeasonalFilters() == null) {
             return SeasonalFilterOption.Msr;
         } else {
@@ -187,8 +196,74 @@ public class X11SpecUI extends BaseX11SpecUI {
             core.setHendersonFilterLength(value);
         }
     }
+
+    public CalendarSigma getCalendarSigma() {
+        return core.getCalendarSigma();
+    }
+
+    public void setCalendarSigma(CalendarSigma calendarsigma) {
+        core.setCalendarSigma(calendarsigma);
+        if (calendarsigma.Select == CalendarSigma.Select && core.getSigmavec() == null) {
+            this.setSigmavec(this.getSigmavec());
+        };
+    }
+
+    public SigmavecOption[] getSigmavec() {
+        SigmavecOption[] groups = core.getSigmavec();
+        int len = freq_.intValue();
+        if (groups != null && groups.length == len) {
+            return groups;
+        }
+        //Sigmavec option = groups == null ? Sigmavec.group1 : groups[0];
+        //   Sigmavec option = Sigmavec.group1;
+        groups = new SigmavecOption[len];
+        for (int i = 0; i < len; ++i) {
+            groups[i] = SigmavecOption.Group1;
+        }
+        return groups;
+
+    }
+
+    public void setSigmavec(SigmavecOption[] sigmavec) {
+        core.setSigmavec(sigmavec);
+    }
+
     private static final int MODE_ID = 0, SEAS_ID = 1, FORECAST_ID = 2, LSIGMA_ID = 3, USIGMA_ID = 4, AUTOTREND_ID = 5,
-            TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8;
+            TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8, CALENDARSIGMA_ID = 9, SIGMAVEC_ID = 10;
+
+    private EnhancedPropertyDescriptor calendarsigmaDesc() {
+        if (!core.isSeasonal()) {
+            return null;
+        }
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("CalendarSigma", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, CALENDARSIGMA_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(CALENDARSIGMA_NAME);
+            desc.setShortDescription(CALENDARSIGMA_DESC);
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    private EnhancedPropertyDescriptor sigmavecDesc() {
+        if (!core.isSeasonal() || !core.getCalendarSigma().equals(CalendarSigma.Select)) {
+            return null;
+        }
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("Sigmavec", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SIGMAVEC_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(SIGMAVEC_NAME);
+            desc.setShortDescription(SIGMAVEC_DESC);
+            edesc.setReadOnly(ro_ || freq_ == TsFrequency.Undefined);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
 
     private EnhancedPropertyDescriptor modeDesc() {
         try {
@@ -347,8 +422,8 @@ public class X11SpecUI extends BaseX11SpecUI {
             SEASONMA_NAME = "Seasonal filter",
             FULLSEASONMA_NAME = "Details on seasonal filters",
             TRUE7TERM_NAME = "True 7 term",
-            CALENDARSIGMA_NAME = "Calendar Sigma",
-            SIGMAVECTOR_NAME = "Sigma Vector";
+            CALENDARSIGMA_NAME = "Calendarsigma",
+            SIGMAVEC_NAME = "Sigma Vector";
     private static final String MODE_DESC = "[mode] Decomposition mode. Could be changed by the program, if needed.",
             SEAS_DESC = "Computes a seasonal component (true) or set it to 0 (additive decomposition) or 1 (multiplicative decomposition) (false)",
             FORECAST_DESC = "[forecast(maxlead)] Length of the forecasts generated by ARIMA. Negative figures are translated in years of forecasts",
@@ -360,5 +435,5 @@ public class X11SpecUI extends BaseX11SpecUI {
             FULLSEASONMA_DESC = "[seasonalma] Details on specifc seasonalma for the different periods.",
             TRUE7TERM_DESC = "[true7term] Specifies the end weights used for the seven term Henderson filter.",
             CALENDARSIGMA_DESC = "[calendarsigma] Specifies if the standard errors used for extreme value detection and adjustment are computed separately for each calendar month (quarter), or separately for two complementary sets of calendar months (quarters).",
-            SIGMAVECTOR_DESC = "[sigmavec] Specifies one of the two groups of periods for whose irregulars a group standard error will be calculated under the calendarsigma=select option.";
+            SIGMAVEC_DESC = "[sigmavec] Specifies the two groups of periods (month or quarters) for whose irregulars a group standard error will be calculated under the calendarsigma=select option.";
 }
