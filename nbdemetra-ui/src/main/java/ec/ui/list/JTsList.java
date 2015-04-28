@@ -30,6 +30,7 @@ import ec.ui.chart.TsSparklineCellRenderer;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.grid.swing.XTable;
 import ec.util.various.swing.FontAwesome;
+import ec.util.various.swing.StandardSwingColor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -165,7 +166,7 @@ public class JTsList extends ATsList {
         result.setFullyNonEditable(true);
         result.setShowHorizontalLines(true);
         result.setBorder(null);
-        Color newGridColor = UIManager.getColor("control");
+        Color newGridColor = StandardSwingColor.CONTROL.value();
         if (newGridColor != null) {
             result.setGridColor(newGridColor);
         }
@@ -388,7 +389,7 @@ public class JTsList extends ATsList {
         public TsDataTableCellRenderer() {
             this.dataRenderer = new TsSparklineCellRenderer();
             this.labelRenderer = new DefaultTableCellRenderer();
-            labelRenderer.setForeground(new JTextField().getDisabledTextColor());
+            labelRenderer.setForeground(StandardSwingColor.TEXT_FIELD_INACTIVE_FOREGROUND.value());
             labelRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         }
 

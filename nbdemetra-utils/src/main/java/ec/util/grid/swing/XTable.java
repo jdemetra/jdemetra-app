@@ -16,6 +16,7 @@
  */
 package ec.util.grid.swing;
 
+import ec.util.various.swing.StandardSwingColor;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -67,7 +68,7 @@ public class XTable extends JTable {
         }
         noDataRenderer = DEFAULT_NO_DATA_RENDERER;
 
-        Color newGridColor = UIManager.getColor("control");
+        Color newGridColor = StandardSwingColor.CONTROL.value();
         if (newGridColor != null) {
             setGridColor(newGridColor);
         }

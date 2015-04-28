@@ -28,6 +28,7 @@ import ec.util.various.swing.BasicSwingLauncher;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.LineBorder2;
 import ec.util.various.swing.ModernUI;
+import ec.util.various.swing.StandardSwingColor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -54,7 +55,6 @@ import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -252,8 +252,7 @@ public final class JGridDemo extends JPanel {
         private final Border padding;
 
         public HeaderRenderer() {
-            Color controlColor = UIManager.getColor("control");
-            this.background = controlColor != null ? controlColor : Color.LIGHT_GRAY;
+            this.background = StandardSwingColor.CONTROL.or(Color.LIGHT_GRAY);
             this.padding = new LineBorder2(background.brighter(), 0, 0, 1, 1);
         }
 

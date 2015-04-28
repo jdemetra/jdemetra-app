@@ -9,6 +9,7 @@ import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.chart.TsCharts;
 import ec.util.chart.swing.Charts;
+import ec.util.various.swing.StandardSwingColor;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -16,7 +17,6 @@ import java.awt.Rectangle;
 import java.beans.PropertyEditorSupport;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
 import org.jfree.chart.JFreeChart;
 import org.jfree.ui.RectangleInsets;
 import org.openide.nodes.PropertyEditorRegistration;
@@ -33,7 +33,7 @@ public class TsDataValuesPropertyEditor extends PropertyEditorSupport {
     final JLabel singleValuePainter;
 
     public TsDataValuesPropertyEditor() {
-        Color disabledTextColor = new JTextField().getDisabledTextColor();
+        Color disabledTextColor = StandardSwingColor.TEXT_FIELD_INACTIVE_FOREGROUND.value();
         sparkLinePainter = Charts.createSparkLineChart(null);
         sparkLinePainter.getXYPlot().getRenderer().setBasePaint(disabledTextColor);
         sparkLinePainter.setPadding(PADDING);

@@ -17,13 +17,13 @@
 package ec.util.grid.swing;
 
 import ec.util.grid.CellIndex;
+import ec.util.various.swing.StandardSwingColor;
 import java.awt.Color;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JComponent;
 import javax.swing.ListSelectionModel;
-import javax.swing.UIManager;
 
 /**
  *
@@ -72,7 +72,7 @@ abstract class AGrid extends JComponent {
         this.selectedCell = DEFAULT_SELECTED_CELL;
 
         this.dragEnabled = DEFAULT_DRAG_ENABLED;
-        this.gridColor = getControlColor();
+        this.gridColor = StandardSwingColor.CONTROL.or(Color.LIGHT_GRAY);
         this.noDataRenderer = DEFAULT_NO_DATA_RENDERER;
         this.rowSelectionModel = new DefaultListSelectionModel();
         this.columnSelectionModel = new DefaultListSelectionModel();
@@ -149,7 +149,7 @@ abstract class AGrid extends JComponent {
 
     public void setGridColor(@Nullable Color gridColor) {
         Color old = this.gridColor;
-        this.gridColor = gridColor != null ? gridColor : getControlColor();
+        this.gridColor = gridColor != null ? gridColor : StandardSwingColor.CONTROL.or(Color.LIGHT_GRAY);
         firePropertyChange(GRID_COLOR_PROPERTY, old, this.gridColor);
     }
 
@@ -186,10 +186,4 @@ abstract class AGrid extends JComponent {
         firePropertyChange(COLUMN_SELECTION_MODEL_PROPERTY, old, this.columnSelectionModel);
     }
     //</editor-fold>
-
-    @Nonnull
-    private static Color getControlColor() {
-        Color result = UIManager.getColor("control");
-        return result != null ? result : Color.LIGHT_GRAY;
-    }
 }

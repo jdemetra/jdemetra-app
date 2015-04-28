@@ -19,10 +19,14 @@ package ec.util.various.swing;
 import java.awt.Color;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 /**
+ * http://alvinalexander.com/java/java-uimanager-color-keys-list
+ * http://nadeausoftware.com/articles/2008/11/all_ui_defaults_names_common_java_look_and_feels_windows_mac_os_x_and_linux
  *
  * @author Philippe Charles
  */
@@ -33,9 +37,14 @@ public enum StandardSwingColor {
     TABLE_BACKGROUND("Table.background"),
     TABLE_FOREGROUND("Table.foreground"),
     TABLE_SELECTION_BACKGROUND("Table.selectionBackground"),
-    TABLE_SELECTION_FOREGROUND("Table.selectionForeground");
+    TABLE_SELECTION_FOREGROUND("Table.selectionForeground"),
+    TEXT_FIELD_INACTIVE_BACKGROUND("TextField.inactiveBackground"),
+    TEXT_FIELD_INACTIVE_FOREGROUND("TextField.inactiveForeground"),
+    CONTROL("control");
 
     private static final JTable TABLE = new JTable();
+    private static final JTextField TEXT_FIELD = new JTextField();
+    private static final JPanel PANEL = new JPanel();
 
     private final String key;
 
@@ -70,7 +79,24 @@ public enum StandardSwingColor {
             case TABLE_SELECTION_FOREGROUND:
                 result = TABLE.getSelectionForeground();
                 break;
+            case TEXT_FIELD_INACTIVE_BACKGROUND:
+                break;
+            case TEXT_FIELD_INACTIVE_FOREGROUND:
+                result = TEXT_FIELD.getDisabledTextColor();
+                break;
+            case CONTROL:
+                result = PANEL.getBackground();
+                break;
         }
         return result != null ? result : UIManager.getColor(key);
+    }
+
+    @Nonnull
+    public Color or(@Nonnull Color fallback) {
+        if (fallback == null) {
+            throw new NullPointerException();
+        }
+        Color result = value();
+        return result != null ? result : fallback;
     }
 }
