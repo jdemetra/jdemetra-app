@@ -218,12 +218,19 @@ public class TukeySpectrumView extends ARPView {
         }
 
         BlackmanTukeySpectrum tukey = new BlackmanTukeySpectrum();
-        tukey.setTaper(new TukeyHanningTaper(taperPart));
+        if (taperPart != 0) {
+            tukey.setTaper(new TukeyHanningTaper(taperPart));
+        }
         tukey.setWindowType(windowType);
-        if (this.windowLength == 0 || this.windowLength >= val.getLength() - 1) {
-            tukey.setWindowLength(((val.getLength() * 3 / 4) / data.freq) * data.freq);
-        } else {
+        if (this.windowLength != 0 && this.windowLength < val.getLength() - 1) {
             tukey.setWindowLength(this.windowLength);
+        } else {
+            int len = defWindowLength(val.getLength(), data.freq);
+            if (len > 0) {
+                tukey.setWindowLength(len);
+            } else {
+                return result;
+            }
         }
         tukey.setData(val.internalStorage());
         double[] yp = tukey.getSpectrum();
@@ -233,4 +240,17 @@ public class TukeySpectrumView extends ARPView {
 
         return result;
     }
+
+    private int defWindowLength(int ndata, int freq) {
+        if (freq != 12 && ndata >= 45) {
+            return 44;
+        } else if (freq == 12 && ndata >= 120) {
+            return 112;
+        } else if (freq == 12 && ndata >= 80) {
+            return 79;
+        } else {
+            return -1;
+        }
+    }
+
 }
