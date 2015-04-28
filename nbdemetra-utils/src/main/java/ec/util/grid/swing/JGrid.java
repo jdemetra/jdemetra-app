@@ -121,6 +121,7 @@ public final class JGrid extends AGrid {
         fct.getFixedTable().getTableHeader().setReorderingAllowed(false);
         fct.getFixedTable().setFillsViewportHeight(true);
         fct.getFixedTable().setIntercellSpacing(new Dimension(0, 0));
+        fct.getFixedTable().setShowGrid(false);
 
         // InputMap and ActionMap
         //setActionMap(main.getActionMap());
@@ -153,7 +154,7 @@ public final class JGrid extends AGrid {
         enableCellFocus();
         enableCellSelection();
         enableProperties();
-
+        
         setLayout(new BorderLayout());
         add(new JLayer<>(scrollPane, new NoDataUI()), BorderLayout.CENTER);
     }
