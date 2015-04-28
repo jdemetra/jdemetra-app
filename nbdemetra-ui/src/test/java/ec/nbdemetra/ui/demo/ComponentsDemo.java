@@ -68,25 +68,16 @@ public final class ComponentsDemo extends JPanel {
                 .launch();
     }
 
-    private final Map<Id, Component> demoData;
-
     public ComponentsDemo() {
+        initStaticResources();
 
-        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
-        BarRenderer.setDefaultBarPainter(new StandardBarPainter());
-
-        UIManager.put("Nb.Editor.Toolbar.border", BorderFactory.createLineBorder(Color.WHITE));
-
-        TsFactory.instance.add(new FakeTsProvider());
-
-        setLayout(new BorderLayout());
+        final Map<Id, Component> demoData = lookupComponents();
 
         final JPanel main = new JPanel(new BorderLayout());
         final JTree tree = new JTree();
         tree.setRootVisible(false);
-        tree.setCellRenderer(new IdRenderer());
+        tree.setCellRenderer(new IdRenderer(demoData));
 
-        demoData = lookupComponents();
         IdsTree.fill(tree, Lists.newArrayList(demoData.keySet()));
         expandAll(tree);
 
@@ -115,9 +106,18 @@ public final class ComponentsDemo extends JPanel {
         JSplitPane left = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, NbComponents.newJScrollPane(tree), dragDrop);
         JSplitPane splitPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, main);
         splitPane.getLeftComponent().setPreferredSize(new Dimension(200, 400));
+        
+        setLayout(new BorderLayout());
         add(splitPane, BorderLayout.CENTER);
     }
 
+    private static void initStaticResources() {
+        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
+        BarRenderer.setDefaultBarPainter(new StandardBarPainter());
+        UIManager.put("Nb.Editor.Toolbar.border", BorderFactory.createLineBorder(Color.WHITE));
+        TsFactory.instance.add(new FakeTsProvider());
+    }
+    
     private static void expandAll(JTree tree) {
         int row = 0;
         while (row < tree.getRowCount()) {
@@ -166,8 +166,14 @@ public final class ComponentsDemo extends JPanel {
         return c;
     }
 
-    private final class IdRenderer extends DefaultTreeCellRenderer {
+    private static final class IdRenderer extends DefaultTreeCellRenderer {
 
+        private final Map<Id, Component> demoData;
+
+        public IdRenderer(Map<Id, Component> demoData) {
+            this.demoData = demoData;
+        }
+        
         @Override
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
             JLabel result = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);

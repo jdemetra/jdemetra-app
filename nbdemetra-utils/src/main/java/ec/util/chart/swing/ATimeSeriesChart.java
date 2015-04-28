@@ -61,7 +61,7 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     public static final String PLOT_WEIGHTS_PROPERTY = "plotWeights";
     public static final String ELEMENT_VISIBLE_PROPERTY = "elementVisible";
     public static final String CROSSHAIR_ORIENTATION_PROPERTY = "crosshairOrientation";
-    public static final String FOCUSED_OBS_PROPERTY = "focusedObs";
+    public static final String HOVERED_OBS_PROPERTY = "hoveredObs";
     public static final String SELECTED_OBS_PROPERTY = "selectedObs";
     public static final String OBS_HIGHLIGHTER_PROPERTY = "obsHighlighter";
     public static final String TOOLTIP_TRIGGER_PROPERTY = "tooltipTrigger";
@@ -82,10 +82,10 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     private static final String DEFAULT_NO_DATA_MESSAGE = "No data";
     private static final int[] DEFAULT_PLOT_WEIGHTS = new int[]{1};
     private static final CrosshairOrientation DEFAULT_CROSSHAIR_ORIENTATION = CrosshairOrientation.BOTH;
-    private static final ObsIndex DEFAULT_FOCUSED_OBS = ObsIndex.NULL;
+    private static final ObsIndex DEFAULT_HOVERED_OBS = ObsIndex.NULL;
     private static final ObsIndex DEFAULT_SELECTED_OBS = ObsIndex.NULL;
-    private static final DisplayTrigger DEFAULT_TOOLTIP_TRIGGER = DisplayTrigger.FOCUS;
-    private static final DisplayTrigger DEFAULT_CROSSHAIR_TRIGGER = DisplayTrigger.FOCUS;
+    private static final DisplayTrigger DEFAULT_TOOLTIP_TRIGGER = DisplayTrigger.HOVERING;
+    private static final DisplayTrigger DEFAULT_CROSSHAIR_TRIGGER = DisplayTrigger.HOVERING;
     // RESOURCES
     protected final ObsPredicate existPredicate;
     protected final ObsPredicate defaultObsHighlighter;
@@ -109,7 +109,7 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     protected final boolean[] elementVisible;
     protected final List<RendererType> supportedRendererTypes;
     protected CrosshairOrientation crosshairOrientation;
-    protected ObsIndex focusedObs;
+    protected ObsIndex hoveredObs;
     protected ObsIndex selectedObs;
     protected ObsPredicate obsHighlighter;
     protected DisplayTrigger tooltipTrigger;
@@ -138,7 +138,7 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
         this.elementVisible = new boolean[Element.values().length];
         this.supportedRendererTypes = supportedRendererTypes;
         this.crosshairOrientation = DEFAULT_CROSSHAIR_ORIENTATION;
-        this.focusedObs = DEFAULT_FOCUSED_OBS;
+        this.hoveredObs = DEFAULT_HOVERED_OBS;
         this.selectedObs = DEFAULT_SELECTED_OBS;
         this.obsHighlighter = defaultObsHighlighter;
         this.tooltipTrigger = DEFAULT_TOOLTIP_TRIGGER;
@@ -344,15 +344,15 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     }
 
     @Override
-    public ObsIndex getFocusedObs() {
-        return focusedObs;
+    public ObsIndex getHoveredObs() {
+        return hoveredObs;
     }
 
     @Override
-    public void setFocusedObs(ObsIndex focusedObs) {
-        ObsIndex old = this.focusedObs;
-        this.focusedObs = focusedObs != null ? focusedObs : DEFAULT_FOCUSED_OBS;
-        firePropertyChange(FOCUSED_OBS_PROPERTY, old, this.focusedObs);
+    public void setHoveredObs(ObsIndex hoveredObs) {
+        ObsIndex old = this.hoveredObs;
+        this.hoveredObs = hoveredObs != null ? hoveredObs : DEFAULT_HOVERED_OBS;
+        firePropertyChange(HOVERED_OBS_PROPERTY, old, this.hoveredObs);
     }
 
     @Override
@@ -452,7 +452,7 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
 
         @Override
         public boolean apply(int series, int obs) {
-            return focusedObs.equals(series, obs);
+            return hoveredObs.equals(series, obs);
         }
     }
 

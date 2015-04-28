@@ -99,7 +99,7 @@ public abstract class TimeSeriesChartCommand {
                 chart.setDashPredicate(null);
                 chart.setLegendVisibilityPredicate(null);
                 chart.setCrosshairOrientation(null);
-                chart.setFocusedObs(null);
+                chart.setHoveredObs(null);
                 chart.setObsHighlighter(null);
             }
         };

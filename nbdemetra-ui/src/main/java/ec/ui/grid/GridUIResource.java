@@ -16,13 +16,17 @@
  */
 package ec.ui.grid;
 
-import com.google.common.base.Optional;
 import static ec.util.chart.swing.SwingColorSchemeSupport.withAlpha;
 import ec.util.various.swing.LineBorder2;
+import static ec.util.various.swing.StandardSwingColor.TABLE_BACKGROUND;
+import static ec.util.various.swing.StandardSwingColor.TABLE_FOREGROUND;
+import static ec.util.various.swing.StandardSwingColor.TABLE_HEADER_BACKGROUND;
+import static ec.util.various.swing.StandardSwingColor.TABLE_HEADER_FOREGROUND;
+import static ec.util.various.swing.StandardSwingColor.TABLE_SELECTION_BACKGROUND;
+import static ec.util.various.swing.StandardSwingColor.TABLE_SELECTION_FOREGROUND;
 import java.awt.Color;
 import javax.annotation.Nonnull;
 import javax.swing.BorderFactory;
-import javax.swing.UIManager;
 import javax.swing.border.Border;
 
 /**
@@ -32,10 +36,10 @@ import javax.swing.border.Border;
 abstract class GridUIResource {
 
     @Nonnull
-    abstract public CellUIResource getHeader(boolean selected, boolean focused);
+    abstract public CellUIResource getHeader(boolean selected, boolean hovered);
 
     @Nonnull
-    abstract public CellUIResource getCell(boolean selected, boolean focused);
+    abstract public CellUIResource getCell(boolean selected, boolean hovered);
 
     @Nonnull
     public static GridUIResource getDefault() {
@@ -57,12 +61,12 @@ abstract class GridUIResource {
         private final CellUIResource cellBoth;
 
         private GridColorsImpl() {
-            Color headerBackground = lookup("TableHeader.background").or(new Color(240, 240, 240));
-            Color headerForeground = lookup("TableHeader.foreground").or(Color.BLACK);
-            Color background = lookup("Table.background").or(Color.WHITE);
-            Color foreground = lookup("Table.foreground").or(Color.BLACK);
-            Color selectionBackground = lookup("Table.selectionBackground").or(new Color(51, 153, 255));
-            Color selectionForeground = lookup("Table.selectionForeground").or(new Color(255, 255, 255));
+            Color headerBackground = TABLE_HEADER_BACKGROUND.or(new Color(240, 240, 240));
+            Color headerForeground = TABLE_HEADER_FOREGROUND.or(Color.BLACK);
+            Color background = TABLE_BACKGROUND.or(Color.WHITE);
+            Color foreground = TABLE_FOREGROUND.or(Color.BLACK);
+            Color selectionBackground = TABLE_SELECTION_BACKGROUND.or(new Color(51, 153, 255));
+            Color selectionForeground = TABLE_SELECTION_FOREGROUND.or(new Color(255, 255, 255));
 
             Border headerBorder = BorderFactory.createCompoundBorder(
                     new LineBorder2(headerBackground.brighter(), 0, 0, 1, 1),
@@ -81,18 +85,14 @@ abstract class GridUIResource {
         }
 
         @Override
-        public CellUIResource getHeader(boolean selected, boolean focused) {
-            return selected ? (focused ? headerBoth : headerSelection) : (focused ? headerFocus : header);
+        public CellUIResource getHeader(boolean selected, boolean hovered) {
+            return selected ? (hovered ? headerBoth : headerSelection) : (hovered ? headerFocus : header);
         }
 
         @Override
-        public CellUIResource getCell(boolean selected, boolean focused) {
-            return selected ? (focused ? cellBoth : cellSelection) : (focused ? cellFocus : cell);
+        public CellUIResource getCell(boolean selected, boolean hovered) {
+            return selected ? (hovered ? cellBoth : cellSelection) : (hovered ? cellFocus : cell);
         }
-    }
-
-    private static Optional<Color> lookup(String key) {
-        return Optional.fromNullable(UIManager.getColor(key));
     }
     //</editor-fold>
 }

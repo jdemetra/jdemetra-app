@@ -28,6 +28,7 @@ import ec.util.various.swing.BasicSwingLauncher;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.LineBorder2;
 import ec.util.various.swing.ModernUI;
+import ec.util.various.swing.StandardSwingColor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -54,7 +55,6 @@ import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -148,14 +148,14 @@ public final class JGridDemo extends JPanel {
                 }
                 updating = true;
                 switch (evt.getPropertyName()) {
-                    case JGrid.FOCUSED_CELL_PROPERTY:
-                        chart.setFocusedObs(toObsIndex(grid.getFocusedCell()));
+                    case JGrid.HOVERED_CELL_PROPERTY:
+                        chart.setHoveredObs(toObsIndex(grid.getHoveredCell()));
                         break;
                     case JGrid.SELECTED_CELL_PROPERTY:
                         chart.setSelectedObs(toObsIndex(grid.getSelectedCell()));
                         break;
-                    case JTimeSeriesChart.FOCUSED_OBS_PROPERTY:
-                        grid.setFocusedCell(toCellIndex(chart.getFocusedObs()));
+                    case JTimeSeriesChart.HOVERED_OBS_PROPERTY:
+                        grid.setHoveredCell(toCellIndex(chart.getHoveredObs()));
                         break;
                     case JTimeSeriesChart.SELECTED_OBS_PROPERTY:
                         grid.setSelectedCell(toCellIndex(chart.getSelectedObs()));
@@ -252,8 +252,7 @@ public final class JGridDemo extends JPanel {
         private final Border padding;
 
         public HeaderRenderer() {
-            Color controlColor = UIManager.getColor("control");
-            this.background = controlColor != null ? controlColor : Color.LIGHT_GRAY;
+            this.background = StandardSwingColor.CONTROL.or(Color.LIGHT_GRAY);
             this.padding = new LineBorder2(background.brighter(), 0, 0, 1, 1);
         }
 
@@ -315,7 +314,7 @@ public final class JGridDemo extends JPanel {
             String formattedValue = format.format(value);
             super.getTableCellRendererComponent(table, formattedValue, isSelected, hasFocus, row, column);
             setToolTipText(formattedValue);
-            if (grid.getFocusedCell().equals(row, column)) {
+            if (grid.getHoveredCell().equals(row, column)) {
                 setBorder(new LineBorder(table.getSelectionBackground().darker()));
             }
             return this;

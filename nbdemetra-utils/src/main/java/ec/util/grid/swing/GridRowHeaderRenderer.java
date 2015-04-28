@@ -17,13 +17,13 @@
 package ec.util.grid.swing;
 
 import ec.util.various.swing.LineBorder2;
+import ec.util.various.swing.StandardSwingColor;
 import java.awt.Color;
 import java.awt.Component;
 import static javax.swing.BorderFactory.createCompoundBorder;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -37,8 +37,7 @@ public class GridRowHeaderRenderer extends DefaultTableCellRenderer {
     private final Border padding;
 
     public GridRowHeaderRenderer() {
-        Color controlColor = UIManager.getColor("control");
-        this.background = controlColor != null ? controlColor : Color.LIGHT_GRAY;
+        this.background = StandardSwingColor.CONTROL.or(Color.LIGHT_GRAY);
         this.padding = createCompoundBorder(new LineBorder2(background.darker(), 0, 0, 1, 1), createEmptyBorder(0, 5, 0, 4));
     }
 
