@@ -129,7 +129,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         onPlotWeightsChange();
         onElementVisibleChange();
         onCrosshairOrientationChange();
-        onFocusedObsChange();
+        onHoveredObsChange();
         onSelectedObsChange();
         onObsHighlighterChange();
         onTooltipTriggerChange();
@@ -312,15 +312,15 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         axis.setTickLabelFont(fontSupport.getAxisFont());
     }
 
-    private void onFocusedObsChange() {
+    private void onHoveredObsChange() {
         if (crosshairTrigger != DisplayTrigger.SELECTION) {
-            onCrosshairValueChange(focusedObs);
+            onCrosshairValueChange(hoveredObs);
         }
         notification.forceRefresh();
     }
 
     private void onSelectedObsChange() {
-        if (crosshairTrigger != DisplayTrigger.FOCUS) {
+        if (crosshairTrigger != DisplayTrigger.HOVERING) {
             onCrosshairValueChange(selectedObs);
         }
         notification.forceRefresh();
@@ -719,12 +719,12 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
 
     private boolean isRequested(int series, int item) {
         switch (tooltipTrigger) {
-            case FOCUS:
-                return focusedObs.equals(series, item);
+            case HOVERING:
+                return hoveredObs.equals(series, item);
             case SELECTION:
                 return selectedObs.equals(series, item);
             case BOTH:
-                return focusedObs.equals(series, item) || selectedObs.equals(series, item);
+                return hoveredObs.equals(series, item) || selectedObs.equals(series, item);
         }
         throw new RuntimeException();
     }
@@ -746,7 +746,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
             @Override
             public void chartMouseMoved(ChartMouseEvent event) {
                 if (isInteractive()) {
-                    setFocusedObs(getObsIndex(event));
+                    setHoveredObs(getObsIndex(event));
                 }
             }
 
@@ -859,8 +859,8 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
                     case CROSSHAIR_ORIENTATION_PROPERTY:
                         onCrosshairOrientationChange();
                         break;
-                    case FOCUSED_OBS_PROPERTY:
-                        onFocusedObsChange();
+                    case HOVERED_OBS_PROPERTY:
+                        onHoveredObsChange();
                         break;
                     case SELECTED_OBS_PROPERTY:
                         onSelectedObsChange();

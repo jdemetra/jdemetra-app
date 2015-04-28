@@ -17,7 +17,7 @@
 package ec.util.grid.swing;
 
 import ec.util.grid.CellIndex;
-import static ec.util.grid.swing.AGrid.FOCUSED_CELL_PROPERTY;
+import static ec.util.grid.swing.AGrid.HOVERED_CELL_PROPERTY;
 import static ec.util.various.swing.ModernUI.withEmptyBorders;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -151,7 +151,7 @@ public final class JGrid extends AGrid {
         enableDragOnHeader(main.getTableHeader());
         enableSelectAllOnHeader();
         enableDragOnHeader(fct.getFixedTable().getTableHeader());
-        enableCellFocus();
+        enableCellHovering();
         enableCellSelection();
         enableProperties();
         
@@ -244,7 +244,7 @@ public final class JGrid extends AGrid {
         main.setColumnSelectionAllowed(columnSelectionAllowed);
     }
 
-    private void onFocusedCellChange() {
+    private void onHoveredCellChange() {
         scrollPane.repaint();
     }
 
@@ -342,8 +342,8 @@ public final class JGrid extends AGrid {
                     case COLUMN_SELECTION_ALLOWED_PROPERTY:
                         onColumnSelectionAllowedChange();
                         break;
-                    case FOCUSED_CELL_PROPERTY:
-                        onFocusedCellChange();
+                    case HOVERED_CELL_PROPERTY:
+                        onHoveredCellChange();
                         break;
                     case SELECTED_CELL_PROPERTY:
                         onSelectedCellChange();
@@ -433,11 +433,11 @@ public final class JGrid extends AGrid {
         return CellIndex.NULL;
     }
 
-    private void enableCellFocus() {
+    private void enableCellHovering() {
         MouseMotionListener cellFocus = new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                setFocusedCell(getIndex(e));
+                setHoveredCell(getIndex(e));
             }
 
         };
@@ -445,12 +445,12 @@ public final class JGrid extends AGrid {
         main.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                setFocusedCell(getIndex(e));
+                setHoveredCell(getIndex(e));
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                setFocusedCell(getIndex(e));
+                setHoveredCell(getIndex(e));
             }
         });
     }

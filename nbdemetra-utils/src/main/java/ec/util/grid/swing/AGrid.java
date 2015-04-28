@@ -34,7 +34,7 @@ abstract class AGrid extends JComponent {
     public static final String MODEL_PROPERTY = "model";
     public static final String ROW_SELECTION_ALLOWED_PROPERTY = "rowSelectionAllowed";
     public static final String COLUMN_SELECTION_ALLOWED_PROPERTY = "columnSelectionAllowed";
-    public static final String FOCUSED_CELL_PROPERTY = "focusedCell";
+    public static final String HOVERED_CELL_PROPERTY = "hoveredCell";
     public static final String SELECTED_CELL_PROPERTY = "selectedCell";
 
     public static final String DRAG_ENABLED_PROPERTY = "dragEnabled";
@@ -46,7 +46,7 @@ abstract class AGrid extends JComponent {
     private static final GridModel DEFAULT_MODEL = GridModels.empty();
     private static final boolean DEFAULT_ROW_SELECTION_ALLOWED = true;
     private static final boolean DEFAULT_COLUMN_SELECTION_ALLOWED = false;
-    private static final CellIndex DEFAULT_FOCUSED_CELL = CellIndex.NULL;
+    private static final CellIndex DEFAULT_HOVERED_CELL = CellIndex.NULL;
     private static final CellIndex DEFAULT_SELECTED_CELL = CellIndex.NULL;
 
     private static final boolean DEFAULT_DRAG_ENABLED = false;
@@ -55,7 +55,7 @@ abstract class AGrid extends JComponent {
     protected GridModel model;
     protected boolean rowSelectionAllowed;
     protected boolean columnSelectionAllowed;
-    protected CellIndex focusedCell;
+    protected CellIndex hoveredCell;
     protected CellIndex selectedCell;
 
     protected boolean dragEnabled;
@@ -68,7 +68,7 @@ abstract class AGrid extends JComponent {
         this.model = DEFAULT_MODEL;
         this.rowSelectionAllowed = DEFAULT_ROW_SELECTION_ALLOWED;
         this.columnSelectionAllowed = DEFAULT_COLUMN_SELECTION_ALLOWED;
-        this.focusedCell = DEFAULT_FOCUSED_CELL;
+        this.hoveredCell = DEFAULT_HOVERED_CELL;
         this.selectedCell = DEFAULT_SELECTED_CELL;
 
         this.dragEnabled = DEFAULT_DRAG_ENABLED;
@@ -111,14 +111,14 @@ abstract class AGrid extends JComponent {
     }
 
     @Nonnull
-    public CellIndex getFocusedCell() {
-        return focusedCell;
+    public CellIndex getHoveredCell() {
+        return hoveredCell;
     }
 
-    public void setFocusedCell(@Nullable CellIndex focusedCell) {
-        CellIndex old = this.focusedCell;
-        this.focusedCell = focusedCell != null ? focusedCell : DEFAULT_FOCUSED_CELL;
-        firePropertyChange(FOCUSED_CELL_PROPERTY, old, this.focusedCell);
+    public void setHoveredCell(@Nullable CellIndex hoveredCell) {
+        CellIndex old = this.hoveredCell;
+        this.hoveredCell = hoveredCell != null ? hoveredCell : DEFAULT_HOVERED_CELL;
+        firePropertyChange(HOVERED_CELL_PROPERTY, old, this.hoveredCell);
     }
 
     @Nonnull

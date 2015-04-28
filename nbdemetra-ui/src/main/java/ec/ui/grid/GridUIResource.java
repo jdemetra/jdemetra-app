@@ -36,10 +36,10 @@ import javax.swing.border.Border;
 abstract class GridUIResource {
 
     @Nonnull
-    abstract public CellUIResource getHeader(boolean selected, boolean focused);
+    abstract public CellUIResource getHeader(boolean selected, boolean hovered);
 
     @Nonnull
-    abstract public CellUIResource getCell(boolean selected, boolean focused);
+    abstract public CellUIResource getCell(boolean selected, boolean hovered);
 
     @Nonnull
     public static GridUIResource getDefault() {
@@ -85,13 +85,13 @@ abstract class GridUIResource {
         }
 
         @Override
-        public CellUIResource getHeader(boolean selected, boolean focused) {
-            return selected ? (focused ? headerBoth : headerSelection) : (focused ? headerFocus : header);
+        public CellUIResource getHeader(boolean selected, boolean hovered) {
+            return selected ? (hovered ? headerBoth : headerSelection) : (hovered ? headerFocus : header);
         }
 
         @Override
-        public CellUIResource getCell(boolean selected, boolean focused) {
-            return selected ? (focused ? cellBoth : cellSelection) : (focused ? cellFocus : cell);
+        public CellUIResource getCell(boolean selected, boolean hovered) {
+            return selected ? (hovered ? cellBoth : cellSelection) : (hovered ? cellFocus : cell);
         }
     }
     //</editor-fold>

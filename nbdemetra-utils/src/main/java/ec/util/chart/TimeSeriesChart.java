@@ -79,7 +79,7 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
     CrosshairOrientation getCrosshairOrientation();
 
     @Nonnull
-    ObsIndex getFocusedObs();
+    ObsIndex getHoveredObs();
 
     @Nonnull
     ObsIndex getSelectedObs();
@@ -125,7 +125,7 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     void setCrosshairOrientation(@Nullable CrosshairOrientation crosshairOrientation);
 
-    void setFocusedObs(@Nullable ObsIndex focusedObs);
+    void setHoveredObs(@Nullable ObsIndex hoveredObs);
 
     void setSelectedObs(@Nullable ObsIndex selectedObs);
 
@@ -165,6 +165,6 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     enum DisplayTrigger {
 
-        FOCUS, SELECTION, BOTH
+        HOVERING, SELECTION, BOTH
     }
 }

@@ -148,14 +148,14 @@ public final class JGridDemo extends JPanel {
                 }
                 updating = true;
                 switch (evt.getPropertyName()) {
-                    case JGrid.FOCUSED_CELL_PROPERTY:
-                        chart.setFocusedObs(toObsIndex(grid.getFocusedCell()));
+                    case JGrid.HOVERED_CELL_PROPERTY:
+                        chart.setHoveredObs(toObsIndex(grid.getHoveredCell()));
                         break;
                     case JGrid.SELECTED_CELL_PROPERTY:
                         chart.setSelectedObs(toObsIndex(grid.getSelectedCell()));
                         break;
-                    case JTimeSeriesChart.FOCUSED_OBS_PROPERTY:
-                        grid.setFocusedCell(toCellIndex(chart.getFocusedObs()));
+                    case JTimeSeriesChart.HOVERED_OBS_PROPERTY:
+                        grid.setHoveredCell(toCellIndex(chart.getHoveredObs()));
                         break;
                     case JTimeSeriesChart.SELECTED_OBS_PROPERTY:
                         grid.setSelectedCell(toCellIndex(chart.getSelectedObs()));
@@ -314,7 +314,7 @@ public final class JGridDemo extends JPanel {
             String formattedValue = format.format(value);
             super.getTableCellRendererComponent(table, formattedValue, isSelected, hasFocus, row, column);
             setToolTipText(formattedValue);
-            if (grid.getFocusedCell().equals(row, column)) {
+            if (grid.getHoveredCell().equals(row, column)) {
                 setBorder(new LineBorder(table.getSelectionBackground().darker()));
             }
             return this;

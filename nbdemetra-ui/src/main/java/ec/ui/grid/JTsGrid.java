@@ -500,7 +500,7 @@ public class JTsGrid extends ATsGrid {
 
         abstract protected boolean isHeaderSelected(JTable table, int row, int column);
 
-        abstract protected boolean isHeaderFocused(JTable table, int row, int column);
+        abstract protected boolean isHeaderHovered(JTable table, int row, int column);
 
         @Override
         public JLabel getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -508,7 +508,7 @@ public class JTsGrid extends ATsGrid {
             renderer.setText(text.isEmpty() ? " " : text);
             renderer.setToolTipText(text.isEmpty() ? null : text);
             renderer.setFont(table.getFont());
-            CellUIResource cellResource = gridResource.getHeader(isHeaderSelected(table, row, column), isHeaderFocused(table, row, column));
+            CellUIResource cellResource = gridResource.getHeader(isHeaderSelected(table, row, column), isHeaderHovered(table, row, column));
             renderer.setBackground(cellResource.getBackground());
             renderer.setForeground(cellResource.getForeground());
             renderer.setBorder(cellResource.getBorder());
@@ -535,8 +535,8 @@ public class JTsGrid extends ATsGrid {
         }
 
         @Override
-        protected boolean isHeaderFocused(JTable table, int row, int column) {
-            return grid.getFocusedCell().getRow() == row;
+        protected boolean isHeaderHovered(JTable table, int row, int column) {
+            return grid.getHoveredCell().getRow() == row;
         }
     }
 
@@ -555,8 +555,8 @@ public class JTsGrid extends ATsGrid {
         }
 
         @Override
-        protected boolean isHeaderFocused(JTable table, int row, int column) {
-            return grid.getFocusedCell().getColumn() == column;
+        protected boolean isHeaderHovered(JTable table, int row, int column) {
+            return grid.getHoveredCell().getColumn() == column;
         }
     }
 
@@ -568,7 +568,7 @@ public class JTsGrid extends ATsGrid {
         }
 
         @Override
-        protected boolean isHeaderFocused(JTable table, int row, int column) {
+        protected boolean isHeaderHovered(JTable table, int row, int column) {
             return false;
         }
     }
@@ -613,10 +613,10 @@ public class JTsGrid extends ATsGrid {
 
             setFont(table.getFont());
 
-            CellIndex focusedCell = grid.getFocusedCell();
+            CellIndex hoveredCell = grid.getHoveredCell();
             boolean focused = !crosshairVisible
-                    ? focusedCell.equals(row, column)
-                    : (focusedCell.getRow() == row || focusedCell.getColumn() == column);
+                    ? hoveredCell.equals(row, column)
+                    : (hoveredCell.getRow() == row || hoveredCell.getColumn() == column);
 
             CellUIResource resource = gridResources.getCell(isSelected, focused);
             setBorder(resource.getBorder());

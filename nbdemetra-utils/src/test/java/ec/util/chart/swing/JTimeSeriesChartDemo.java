@@ -211,7 +211,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         result.add(new JCheckBoxMenuItem(new ToggleCustomTooltip(chart).toAction(customTooltip))).setText("Custom tooltip");
 
         item = new JMenu("Highlighter");
-        item.add(new JCheckBoxMenuItem(applyObsHighlighter(chart.getObsHighlighter()).toAction(chart))).setText("Focused");
+        item.add(new JCheckBoxMenuItem(applyObsHighlighter(chart.getObsHighlighter()).toAction(chart))).setText("Hovered");
         item.add(new JCheckBoxMenuItem(applyObsHighlighter(highlightSelected(chart)).toAction(chart))).setText("Selected");
         item.add(new JCheckBoxMenuItem(applyObsHighlighter(highlightBoth(chart)).toAction(chart))).setText("Both");
         item.add(new JCheckBoxMenuItem(applyObsHighlighter(highlightSerie(chart)).toAction(chart))).setText("Serie");
@@ -222,12 +222,12 @@ public final class JTimeSeriesChartDemo extends JPanel {
 
         result.addSeparator();
         item = new JMenu("Tooltip trigger");
-        item.add(new JCheckBoxMenuItem(applyTooltipTrigger(DisplayTrigger.FOCUS).toAction(chart))).setText("Focus");
+        item.add(new JCheckBoxMenuItem(applyTooltipTrigger(DisplayTrigger.HOVERING).toAction(chart))).setText("Focus");
         item.add(new JCheckBoxMenuItem(applyTooltipTrigger(DisplayTrigger.SELECTION).toAction(chart))).setText("Selection");
         item.add(new JCheckBoxMenuItem(applyTooltipTrigger(DisplayTrigger.BOTH).toAction(chart))).setText("Both");
         result.add(item);
         item = new JMenu("Crosshair trigger");
-        item.add(new JCheckBoxMenuItem(applyCrosshairTrigger(DisplayTrigger.FOCUS).toAction(chart))).setText("Focus");
+        item.add(new JCheckBoxMenuItem(applyCrosshairTrigger(DisplayTrigger.HOVERING).toAction(chart))).setText("Focus");
         item.add(new JCheckBoxMenuItem(applyCrosshairTrigger(DisplayTrigger.SELECTION).toAction(chart))).setText("Selection");
         item.add(new JCheckBoxMenuItem(applyCrosshairTrigger(DisplayTrigger.BOTH).toAction(chart))).setText("Both");
         result.add(item);
@@ -292,7 +292,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         return new ObsPredicate() {
             @Override
             public boolean apply(int series, int obs) {
-                return chart.getFocusedObs().equals(series, obs)
+                return chart.getHoveredObs().equals(series, obs)
                         || chart.getSelectedObs().equals(series, obs);
             }
         };
@@ -302,7 +302,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         return new ObsPredicate() {
             @Override
             public boolean apply(int series, int obs) {
-                return chart.getFocusedObs().getSeries() == series;
+                return chart.getHoveredObs().getSeries() == series;
             }
         };
     }
@@ -311,7 +311,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         return new ObsPredicate() {
             @Override
             public boolean apply(int series, int obs) {
-                return chart.getFocusedObs().getObs() == obs;
+                return chart.getHoveredObs().getObs() == obs;
             }
         };
     }
@@ -420,13 +420,13 @@ public final class JTimeSeriesChartDemo extends JPanel {
                                 popup.hide();
                             }
                             break;
-                        case JTimeSeriesChart.FOCUSED_OBS_PROPERTY:
+                        case JTimeSeriesChart.HOVERED_OBS_PROPERTY:
                             if (isEnabled() && chart.getTooltipTrigger() != DisplayTrigger.SELECTION) {
-                                updateCustomTooltip(chart, chart.getObsExistPredicate().apply(chart.getFocusedObs()));
+                                updateCustomTooltip(chart, chart.getObsExistPredicate().apply(chart.getHoveredObs()));
                             }
                             break;
                         case JTimeSeriesChart.SELECTED_OBS_PROPERTY:
-                            if (isEnabled() && chart.getTooltipTrigger() != DisplayTrigger.FOCUS) {
+                            if (isEnabled() && chart.getTooltipTrigger() != DisplayTrigger.HOVERING) {
                                 updateCustomTooltip(chart, chart.getObsExistPredicate().apply(chart.getSelectedObs()));
                             }
                             break;
@@ -458,7 +458,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         }
 
         private Component getCustomTooltip(JTimeSeriesChart chart) {
-            ObsIndex o = chart.getFocusedObs();
+            ObsIndex o = chart.getHoveredObs();
             String serie = chart.getSeriesFormatter().apply(o.getSeries());
             String value = chart.getValueFormatter().apply(o);
             String period = chart.getPeriodFormatter().apply(o);
