@@ -31,13 +31,8 @@ import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferHandler;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetCollection;
+import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetParser;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetSeries;
-import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetSource;
-import ec.tss.tsproviders.spreadsheet.facade.Book;
-import ec.tss.tsproviders.spreadsheet.facade.Cell;
-import ec.tss.tsproviders.spreadsheet.facade.utils.MemBook;
-import ec.tss.tsproviders.spreadsheet.facade.utils.MemBook.Builder.SheetStep;
-import ec.tss.tsproviders.spreadsheet.facade.xmlss.XmlssBookFactory;
 import ec.tss.tsproviders.utils.IParam;
 import ec.tss.tsproviders.utils.Params;
 import ec.tss.tsproviders.utils.Parsers;
@@ -45,6 +40,11 @@ import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.timeseries.TsAggregationType;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
+import ec.util.spreadsheet.Book;
+import ec.util.spreadsheet.Cell;
+import ec.util.spreadsheet.helpers.ArrayBook;
+import ec.util.spreadsheet.helpers.ArraySheet;
+import ec.util.spreadsheet.xmlss.XmlssBookFactory;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.SystemFlavorMap;
 import java.beans.IntrospectionException;
@@ -55,6 +55,7 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import javax.annotation.Nonnull;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
@@ -113,30 +114,33 @@ public final class XmlssTssTransferHandler extends TssTransferHandler implements
     public Object exportTsCollection(TsCollection col) throws IOException {
         col.load(TsInformationType.Data);
 
-        MemBook.Builder builder = new MemBook.Builder();
-        SheetStep sheetStep = builder.sheet("dnd");
-
         TsCollectionAnalyser analyser = new TsCollectionAnalyser();
         analyser.set(col, config.beginPeriod);
 
         if (analyser.data != null && analyser.dates != null && analyser.titles != null) {
 
+            ArraySheet.Builder builder = ArraySheet.builder().name("dnd");
+
             if (config.showTitle) {
-                sheetStep.row(0, config.showDates ? 1 : 0, analyser.titles);
+                builder.row(0, config.showDates ? 1 : 0, analyser.titles);
             }
 
             if (config.showDates) {
-                sheetStep.column(config.showTitle ? 1 : 0, 0, analyser.dates);
+                builder.column(config.showTitle ? 1 : 0, 0, analyser.dates);
             }
 
-            sheetStep.matrix(config.showTitle ? 1 : 0, config.showDates ? 1 : 0, analyser.data);
+            builder.table(config.showTitle ? 1 : 0, config.showDates ? 1 : 0, asSheet("", analyser.data));
+
+            ArraySheet sheet = builder.build();
 
             if (!config.vertical) {
-                sheetStep.inv();
+                sheet = sheet.inv();
             }
+
+            return bookToByteArray(sheet.toBook());
         }
-        sheetStep.add();
-        return bookToByteArray(builder.build());
+
+        return bookToByteArray(ArrayBook.builder().build());
     }
 
     @Override
@@ -148,7 +152,7 @@ public final class XmlssTssTransferHandler extends TssTransferHandler implements
     public TsCollection importTsCollection(Object obj) throws IOException {
         try (Book book = byteArrayToBook((byte[]) obj)) {
             TsCollection result = TsFactory.instance.createTsCollection();
-            for (SpreadSheetCollection o : SpreadSheetSource.load(book, Parsers.onDateFormat(dateFormat), Parsers.onNumberFormat(numberFormat), TsFrequency.Undefined, TsAggregationType.None, true).collections.values()) {
+            for (SpreadSheetCollection o : SpreadSheetParser.getDefault().parse(book, Parsers.onDateFormat(dateFormat), Parsers.onNumberFormat(numberFormat), TsFrequency.Undefined, TsAggregationType.None, true).collections.values()) {
                 for (SpreadSheetSeries s : o.series) {
                     if (s.data.isPresent()) {
                         result.add(TsFactory.instance.createTs(s.seriesName, null, s.data.get()));
@@ -166,8 +170,7 @@ public final class XmlssTssTransferHandler extends TssTransferHandler implements
 
     @Override
     public Object exportMatrix(Matrix matrix) throws IOException {
-        MemBook book = new MemBook.Builder().sheet("dnd").matrix(0, 0, matrix).add().build();
-        return bookToByteArray(book);
+        return bookToByteArray(newArraySheet("dnd", matrix).toBook());
     }
 
     @Override
@@ -181,7 +184,7 @@ public final class XmlssTssTransferHandler extends TssTransferHandler implements
             if (book.getSheetCount() == 0) {
                 return null;
             }
-            ec.tss.tsproviders.spreadsheet.facade.Sheet sheet = book.getSheet(0);
+            ec.util.spreadsheet.Sheet sheet = book.getSheet(0);
             Table<Object> result = new Table<>(sheet.getRowCount(), sheet.getColumnCount());
             for (int i = 0; i < sheet.getRowCount(); i++) {
                 for (int j = 0; j < sheet.getColumnCount(); j++) {
@@ -208,13 +211,7 @@ public final class XmlssTssTransferHandler extends TssTransferHandler implements
 
     @Override
     public Object exportTable(Table<?> table) throws IOException {
-        MemBook.Builder.SheetStep sheet = new MemBook.Builder().sheet("dnd");
-        for (int i = 0; i < table.getRowsCount(); i++) {
-            for (int j = 0; j < table.getColumnsCount(); j++) {
-                sheet.cell(i, j, table.get(i, j));
-            }
-        }
-        return bookToByteArray(sheet.add().build());
+        return bookToByteArray(newArraySheet("dnd", table).toBook());
     }
     //</editor-fold>
 
@@ -264,6 +261,79 @@ public final class XmlssTssTransferHandler extends TssTransferHandler implements
             return result;
         }
         return result;
+    }
+
+    private static ArraySheet newArraySheet(String name, Matrix matrix) {
+        ArraySheet.Builder result = ArraySheet.builder(matrix.getRowsCount(), matrix.getColumnsCount()).name(name);
+        for (int i = 0; i < matrix.getRowsCount(); i++) {
+            for (int j = 0; j < matrix.getColumnsCount(); j++) {
+                result.value(i, j, matrix.get(i, j));
+            }
+        }
+        return result.build();
+    }
+
+    private static ArraySheet newArraySheet(String name, Table<?> table) {
+        ArraySheet.Builder result = ArraySheet.builder(table.getRowsCount(), table.getColumnsCount()).name(name);
+        for (int i = 0; i < table.getRowsCount(); i++) {
+            for (int j = 0; j < table.getColumnsCount(); j++) {
+                result.value(i, j, table.get(i, j));
+            }
+        }
+        return result.build();
+    }
+
+    private static ec.util.spreadsheet.Sheet asSheet(final String name, final Matrix matrix) {
+        return new ec.util.spreadsheet.Sheet() {
+
+            private final DoubleCell cell = new DoubleCell();
+
+            @Override
+            public int getRowCount() {
+                return matrix.getRowsCount();
+            }
+
+            @Override
+            public int getColumnCount() {
+                return matrix.getColumnsCount();
+            }
+
+            @Override
+            public Object getCellValue(int rowIdx, int columnIdx) throws IndexOutOfBoundsException {
+                return matrix.get(rowIdx, columnIdx);
+            }
+
+            @Override
+            public Cell getCell(int rowIdx, int columnIdx) throws IndexOutOfBoundsException {
+                return cell.withValue(matrix.get(rowIdx, columnIdx));
+            }
+
+            @Override
+            public String getName() {
+                return name;
+            }
+        };
+    }
+
+    private static final class DoubleCell extends Cell {
+
+        private double value = Double.NaN;
+
+        @Nonnull
+        public DoubleCell withValue(double value) {
+            this.value = value;
+            return this;
+        }
+
+        @Override
+        public boolean isNumber() {
+            return true;
+        }
+
+        @Override
+        public Number getNumber() {
+            return value;
+        }
     }
 
     public static final class InternalConfig {

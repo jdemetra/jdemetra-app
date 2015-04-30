@@ -23,13 +23,6 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.FluentIterable;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.ThemeSupport;
-import ec.tss.tsproviders.spreadsheet.facade.Book;
-import ec.tss.tsproviders.spreadsheet.facade.Sheet;
-import ec.tss.tsproviders.spreadsheet.facade.od.OpenDocumentBookFactory;
-import ec.tss.tsproviders.spreadsheet.facade.poi.ExcelBookFactory;
-import ec.tss.tsproviders.spreadsheet.facade.poi.ExcelClassicBookFactory;
-import ec.tss.tsproviders.spreadsheet.facade.utils.MemBook;
-import ec.tss.tsproviders.spreadsheet.facade.xmlss.XmlssBookFactory;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.ui.commands.ColorSchemeCommand;
 import ec.ui.interfaces.IColorSchemeAble;
@@ -39,6 +32,13 @@ import ec.util.grid.swing.JGrid;
 import ec.util.grid.swing.ext.SheetColumnRenderer;
 import ec.util.grid.swing.ext.SheetGridCommand;
 import ec.util.grid.swing.ext.SheetGridModel;
+import ec.util.spreadsheet.Book;
+import ec.util.spreadsheet.Sheet;
+import ec.util.spreadsheet.helpers.ArrayBook;
+import ec.util.spreadsheet.od.OpenDocumentBookFactory;
+import ec.util.spreadsheet.poi.ExcelBookFactory;
+import ec.util.spreadsheet.poi.ExcelClassicBookFactory;
+import ec.util.spreadsheet.xmlss.XmlssBookFactory;
 import ec.util.various.swing.BasicFileViewer;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.PopupMouseAdapter;
@@ -85,13 +85,12 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
     //<editor-fold defaultstate="collapsed" desc="BasicFileHandler">
     @Override
     public Object asyncLoad(File file, BasicFileViewer.ProgressCallback progress) throws Exception {
-        MemBook.Builder result = new MemBook.Builder();
+        ArrayBook.Builder result = ArrayBook.builder();
         Stopwatch sw = Stopwatch.createStarted();
         Book.Factory factory = factories.firstMatch(filePredicate(file)).get();
         try (Book book = factory.load(file)) {
             for (int s = 0; s < book.getSheetCount(); s++) {
-                Sheet sheet = book.getSheet(s);
-                result.sheet(sheet.getName()).copy(0, 0, sheet).add();
+                result.sheet(book.getSheet(s));
                 progress.setProgress(0, book.getSheetCount(), s);
             }
         }
@@ -122,14 +121,14 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
 
     private static class Model {
 
-        static final Model EMPTY = new Model("", new File(""), new MemBook.Builder().build(), 0);
+        static final Model EMPTY = new Model("", new File(""), ArrayBook.builder().build(), 0);
         //
         final String factoryName;
         final File file;
-        final MemBook book;
+        final ArrayBook book;
         final long duration;
 
-        public Model(String factoryName, File file, MemBook book, long duration) {
+        public Model(String factoryName, File file, ArrayBook book, long duration) {
             this.factoryName = factoryName;
             this.file = file;
             this.book = book;
