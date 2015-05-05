@@ -18,6 +18,7 @@ package ec.ui.grid;
 
 import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
+import ec.nbdemetra.ui.awt.MultiLineString;
 import ec.tss.Ts;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.Formatters.Formatter;
@@ -505,8 +506,16 @@ public class JTsGrid extends ATsGrid {
         @Override
         public JLabel getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             String text = value != null ? value.toString() : "";
-            renderer.setText(text.isEmpty() ? " " : text);
-            renderer.setToolTipText(text.isEmpty() ? null : text);
+            if (text.isEmpty()) {
+                renderer.setText(" ");
+                renderer.setToolTipText(null);
+            } else if (text.startsWith("<html>")) {
+                renderer.setText(text);
+                renderer.setToolTipText(text);
+            } else {
+                renderer.setText(MultiLineString.join(text));
+                renderer.setToolTipText(MultiLineString.toHtml(text));
+            }
             renderer.setFont(table.getFont());
             CellUIResource cellResource = gridResource.getHeader(isHeaderSelected(table, row, column), isHeaderHovered(table, row, column));
             renderer.setBackground(cellResource.getBackground());

@@ -19,6 +19,7 @@ package ec.nbdemetra.ui.tsproviders;
 import com.google.common.base.Optional;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IReloadable;
+import ec.nbdemetra.ui.awt.MultiLineString;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
@@ -91,7 +92,7 @@ abstract public class DataSetNode extends AbstractNode {
             abilities.add(NodeAnnotator.Support.getDefault());
         }
         // 3. Name and display name
-        setDisplayName(TsProviders.lookup(IDataSourceProvider.class, dataSet).get().getDisplayNodeName(dataSet));
+        applyText(TsProviders.lookup(IDataSourceProvider.class, dataSet).get().getDisplayNodeName(dataSet));
     }
 
     @Override
@@ -165,6 +166,19 @@ abstract public class DataSetNode extends AbstractNode {
             if (data.isPresent()) {
                 DemetraUI.getDefault().getTsAction().open(data.get());
             }
+        }
+    }
+
+    private void applyText(String text) {
+        if (text.isEmpty()) {
+            setDisplayName(" ");
+            setShortDescription(null);
+        } else if (text.startsWith("<html>")) {
+            setDisplayName(text);
+            setShortDescription(text);
+        } else {
+            setDisplayName(MultiLineString.join(text));
+            setShortDescription(MultiLineString.toHtml(text));
         }
     }
 }

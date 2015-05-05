@@ -16,18 +16,15 @@
  */
 package ec.nbdemetra.ui.tsaction;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
+import ec.nbdemetra.ui.awt.MultiLineString;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tools.GridTopComponent;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
-import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.TsProviders;
 import ec.ui.interfaces.ITsChart.LinesThickness;
 import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
 import ec.ui.interfaces.ITsGrid;
@@ -67,20 +64,24 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
             MultiViewDescription[] descriptions = {new ChartTab(ts), new GridTab(ts)};
             c = MultiViewFactory.createMultiView(descriptions, descriptions[0], null);
             c.setName(name);
-
-            Optional<IDataSourceProvider> provider = TsProviders.lookup(IDataSourceProvider.class, ts.getMoniker());
-            if (provider.isPresent()) {
-                DataSet dataSet = provider.get().toDataSet(ts.getMoniker());
-                if (dataSet != null) {
-                    c.setIcon(getIcon(ts.getMoniker()));
-                    c.setDisplayName(provider.get().getDisplayNodeName(dataSet));
-                }
-            } else {
-                c.setDisplayName(ts.getName());
-            }
+            c.setIcon(getIcon(ts.getMoniker()));
+            applyText(ts.getName(), c);
             c.open();
         }
         c.requestActive();
+    }
+
+    private void applyText(String text, TopComponent c) {
+        if (text.isEmpty()) {
+            c.setDisplayName(" ");
+            c.setToolTipText(null);
+        } else if (text.startsWith("<html>")) {
+            c.setDisplayName(text);
+            c.setToolTipText(text);
+        } else {
+            c.setDisplayName(MultiLineString.lastWithMax(text, 40));
+            c.setToolTipText(MultiLineString.toHtml(text));
+        }
     }
 
     private static Image getIcon(TsMoniker moniker) {
