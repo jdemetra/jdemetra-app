@@ -283,8 +283,8 @@ public final class TukeySpectrumTopComponent extends TopComponent implements ITs
                 @Override
                 public void setValue(Object t) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
                     double p = (Double) t;
-                    if (p <= 0 || p > 1) {
-                        throw new IllegalArgumentException("Should be in ]0,1]");
+                    if (p < 0 || p > 1) {
+                        throw new IllegalArgumentException("Should be in [0,1]");
                     }
                     view.setTaperPart(p);
                 }

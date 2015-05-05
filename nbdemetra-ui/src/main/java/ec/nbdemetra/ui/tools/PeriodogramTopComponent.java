@@ -248,6 +248,30 @@ public final class PeriodogramTopComponent extends TopComponent implements ITsVi
             length.setShortDescription("Number of years at the end of the series taken into account (0 = whole series)");
             transform.put(length);
 
+            Node.Property<Integer> full = new Node.Property(Boolean.class) {
+                @Override
+                public boolean canRead() {
+                    return true;
+                }
+
+                @Override
+                public Object getValue() throws IllegalAccessException, InvocationTargetException {
+                    return view.isFullYears();
+                }
+
+                @Override
+                public boolean canWrite() {
+                    return true;
+                }
+
+                @Override
+                public void setValue(Object t) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+                    view.setFullYears((Boolean) t);
+                }
+            };
+            full.setName("Full years");
+            full.setShortDescription("Use full years (end of series)");
+            transform.put(full);
             sheet.put(transform);
             return sheet;
         }
