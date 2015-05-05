@@ -19,6 +19,7 @@ package ec.ui.list;
 import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
+import ec.nbdemetra.ui.awt.MultiLineString;
 import ec.nbdemetra.ui.awt.TableColumnModelAdapter;
 import ec.tss.*;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -374,7 +375,17 @@ public class JTsList extends ATsList {
             JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             if (value != null) {
                 TsIdentifier id = (TsIdentifier) value;
-                result.setText(id.getName());
+                String text = id.getName();
+                if (text.isEmpty()) {
+                    result.setText(" ");
+                    result.setToolTipText(null);
+                } else if (text.startsWith("<html>")) {
+                    result.setText(text);
+                    result.setToolTipText(text);
+                } else {
+                    result.setText(MultiLineString.join(text));
+                    result.setToolTipText(MultiLineString.toHtml(text));
+                }
                 result.setIcon(monikerUI.getIcon(id.getMoniker()));
             }
             return result;

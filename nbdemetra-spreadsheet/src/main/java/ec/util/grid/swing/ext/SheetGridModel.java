@@ -16,8 +16,8 @@
  */
 package ec.util.grid.swing.ext;
 
-import ec.tss.tsproviders.spreadsheet.facade.Sheet;
 import ec.util.grid.swing.AbstractGridModel;
+import ec.util.spreadsheet.Sheet;
 import javax.annotation.Nonnull;
 
 /**

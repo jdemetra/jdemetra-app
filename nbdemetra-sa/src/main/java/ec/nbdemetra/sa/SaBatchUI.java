@@ -19,10 +19,10 @@ import ec.nbdemetra.ui.Menus.DynamicPopup;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.awt.ListTableModel;
+import ec.nbdemetra.ui.awt.MultiLineString;
 import ec.nbdemetra.ui.awt.PopupMenuAdapter;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.ui.SpecSelectionComponent;
-import ec.nbdemetra.ws.ui.WorkspaceTopComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;
@@ -786,6 +786,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             label.setText(getText((T) value));
+            label.setToolTipText(getToolTipText((T) value));
             label.setIcon(getIcon((T) value));
             if (!isSelected) {
                 label.setForeground(getColor((T) value));
@@ -795,6 +796,10 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         protected String getText(T item) {
             return item.toString();
+        }
+
+        protected String getToolTipText(T item) {
+            return null;
         }
 
         protected Color getColor(T item) {
@@ -813,7 +818,13 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         @Override
         protected String getText(SaItem item) {
             String name = item.getTs().getName();
-            return name != null ? name : ("item_" + item.getKey());
+            return !Strings.isNullOrEmpty(name) ? MultiLineString.join(name) : ("item_" + item.getKey());
+        }
+
+        @Override
+        protected String getToolTipText(SaItem item) {
+            String name = item.getTs().getName();
+            return !Strings.isNullOrEmpty(name) ? MultiLineString.toHtml(name) : null;
         }
 
         @Override

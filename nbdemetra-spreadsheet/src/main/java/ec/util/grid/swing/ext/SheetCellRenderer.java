@@ -16,12 +16,12 @@
  */
 package ec.util.grid.swing.ext;
 
-import ec.tss.tsproviders.spreadsheet.facade.Cell;
-import ec.tss.tsproviders.spreadsheet.facade.utils.CellRefHelper;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.Formatters.Formatter;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.SwingColorSchemeSupport;
+import ec.util.spreadsheet.Cell;
+import ec.util.spreadsheet.helpers.CellRefHelper;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Date;
@@ -69,21 +69,21 @@ public final class SheetCellRenderer implements TableCellRenderer {
         Cell cell = (Cell) value;
         if (cell == null) {
             result.setText("");
-            result.setToolTipText("<html>" + CellRefHelper.getName(row, column) + ": Null");
+            result.setToolTipText("<html>" + CellRefHelper.getCellRef(row, column) + ": Null");
             cellColor = ColorScheme.KnownColor.GRAY;
         } else if (cell.isDate()) {
             result.setText(dateFormat.formatAsString(cell.getDate()));
-            result.setToolTipText("<html>" + CellRefHelper.getName(row, column) + ": Date<br>" + result.getText());
+            result.setToolTipText("<html>" + CellRefHelper.getCellRef(row, column) + ": Date<br>" + result.getText());
             result.setHorizontalAlignment(JLabel.LEADING);
             cellColor = ColorScheme.KnownColor.RED;
         } else if (cell.isNumber()) {
             result.setText(numberFormat.formatAsString(cell.getNumber()));
-            result.setToolTipText("<html>" + CellRefHelper.getName(row, column) + ": Number<br>" + result.getText());
+            result.setToolTipText("<html>" + CellRefHelper.getCellRef(row, column) + ": Number<br>" + result.getText());
             result.setHorizontalAlignment(JLabel.TRAILING);
             cellColor = ColorScheme.KnownColor.GREEN;
         } else if (cell.isString()) {
             result.setText(cell.getString());
-            result.setToolTipText("<html>" + CellRefHelper.getName(row, column) + ": String<br>" + result.getText());
+            result.setToolTipText("<html>" + CellRefHelper.getCellRef(row, column) + ": String<br>" + result.getText());
             result.setHorizontalAlignment(JLabel.LEADING);
             cellColor = ColorScheme.KnownColor.BLUE;
         }
