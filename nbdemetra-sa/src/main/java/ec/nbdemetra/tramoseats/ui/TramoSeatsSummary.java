@@ -5,13 +5,13 @@
 package ec.nbdemetra.tramoseats.ui;
 
 import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.awt.MultiLineString;
 import ec.satoolkit.ComponentDescriptor;
 import ec.satoolkit.seats.SeatsResults;
 import ec.tss.Ts;
 import ec.tss.documents.DocumentManager;
 import ec.tss.html.implementation.HtmlTramoSeatsSummary;
 import ec.tss.sa.documents.TramoSeatsDocument;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.arima.ArimaModel;
 import ec.tstoolkit.modelling.ModellingDictionary;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -110,10 +110,10 @@ public class TramoSeatsSummary extends JComponent implements IDisposable {
         SeatsResults seats = doc_.getDecompositionPart();
         HtmlTramoSeatsSummary document;
         if (seats == null) {
-            document = new HtmlTramoSeatsSummary(MultiLineString.join(doc_.getInput().getName()), doc_.getResults(), null, null, null);
+            document = new HtmlTramoSeatsSummary(MultiLineNameUtil.join(doc_.getInput().getName()), doc_.getResults(), null, null, null);
         } else {
             UcarimaModel ucm = seats.getUcarimaModel();
-            document = new HtmlTramoSeatsSummary(MultiLineString.join(doc_.getInput().getName()), doc_.getResults(), getComponentsName(ucm), getComponents(ucm), null);
+            document = new HtmlTramoSeatsSummary(MultiLineNameUtil.join(doc_.getInput().getName()), doc_.getResults(), getComponentsName(ucm), getComponents(ucm), null);
         }
         Disposables.disposeAndRemoveAll(document_).add(toolkit_.getHtmlViewer(document));
 

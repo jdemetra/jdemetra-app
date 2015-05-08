@@ -5,7 +5,6 @@
 package ec.nbdemetra.x13.ui;
 
 import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.awt.MultiLineString;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.x11.X11Results;
 import ec.tstoolkit.modelling.ModellingDictionary;
@@ -13,6 +12,7 @@ import ec.tss.Ts;
 import ec.tss.documents.DocumentManager;
 import ec.tss.html.implementation.HtmlX13Summary;
 import ec.tss.sa.documents.X13Document;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.Disposables;
@@ -77,7 +77,7 @@ public class X13Summary extends JComponent implements IDisposable {
             return;
         }
 
-        HtmlX13Summary summary = new HtmlX13Summary(MultiLineString.join(doc.getInput().getName()), results, null);
+        HtmlX13Summary summary = new HtmlX13Summary(MultiLineNameUtil.join(doc.getInput().getName()), results, null);
         Disposables.disposeAndRemoveAll(document_).add(toolkit_.getHtmlViewer(summary));
 
         List<Ts> list = Arrays.asList(

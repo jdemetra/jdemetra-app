@@ -19,7 +19,6 @@ import ec.nbdemetra.ui.Menus.DynamicPopup;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.awt.ListTableModel;
-import ec.nbdemetra.ui.awt.MultiLineString;
 import ec.nbdemetra.ui.awt.PopupMenuAdapter;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.ui.SpecSelectionComponent;
@@ -35,6 +34,7 @@ import ec.tss.sa.EstimationPolicyType;
 import ec.tss.sa.SaItem;
 import ec.tss.sa.SaProcessing;
 import ec.tss.sa.documents.SaDocument;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tss.xml.sa.XmlSaProcessing;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.ProcQuality;
@@ -818,13 +818,13 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         @Override
         protected String getText(SaItem item) {
             String name = item.getTs().getName();
-            return !Strings.isNullOrEmpty(name) ? MultiLineString.join(name) : ("item_" + item.getKey());
+            return !Strings.isNullOrEmpty(name) ? MultiLineNameUtil.join(name) : ("item_" + item.getKey());
         }
 
         @Override
         protected String getToolTipText(SaItem item) {
             String name = item.getTs().getName();
-            return !Strings.isNullOrEmpty(name) ? MultiLineString.toHtml(name) : null;
+            return !Strings.isNullOrEmpty(name) ? MultiLineNameUtil.toHtml(name) : null;
         }
 
         @Override

@@ -18,13 +18,13 @@ package ec.nbdemetra.ui.tsaction;
 
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.awt.MultiLineString;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tools.GridTopComponent;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.ui.interfaces.ITsChart.LinesThickness;
 import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
 import ec.ui.interfaces.ITsGrid;
@@ -79,8 +79,8 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
             c.setDisplayName(text);
             c.setToolTipText(text);
         } else {
-            c.setDisplayName(MultiLineString.lastWithMax(text, 40));
-            c.setToolTipText(MultiLineString.toHtml(text));
+            c.setDisplayName(MultiLineNameUtil.lastWithMax(text, 40));
+            c.setToolTipText(MultiLineNameUtil.toHtml(text));
         }
     }
 
