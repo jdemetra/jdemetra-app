@@ -343,7 +343,7 @@ public class TssTransferSupport extends ListenableBean {
                 if (handler == null) {
                     throw new UnsupportedFlavorException(flavor);
                 }
-                LOGGER.info("Getting transfer data using '{}'", handler.getName());
+                LOGGER.debug("Getting transfer data using '{}'", handler.getName());
                 result = helper.getTransferData(data, handler);
                 cache.put(flavor, result);
             }
