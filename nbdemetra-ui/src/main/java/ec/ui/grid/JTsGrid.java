@@ -18,10 +18,10 @@ package ec.ui.grid;
 
 import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
-import ec.nbdemetra.ui.awt.MultiLineString;
 import ec.tss.Ts;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.Formatters.Formatter;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import static ec.ui.ATsControl.FORMAT_ACTION;
@@ -513,8 +513,8 @@ public class JTsGrid extends ATsGrid {
                 renderer.setText(text);
                 renderer.setToolTipText(text);
             } else {
-                renderer.setText(MultiLineString.join(text));
-                renderer.setToolTipText(MultiLineString.toHtml(text));
+                renderer.setText(MultiLineNameUtil.join(text));
+                renderer.setToolTipText(MultiLineNameUtil.toHtml(text));
             }
             renderer.setFont(table.getFont());
             CellUIResource cellResource = gridResource.getHeader(isHeaderSelected(table, row, column), isHeaderHovered(table, row, column));

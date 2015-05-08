@@ -4,14 +4,13 @@
  */
 package ec.ui.list;
 
-import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.DynamicTsVariable;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsIdentifier;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferSupport;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.timeseries.regression.ITsVariable;
 import ec.tstoolkit.timeseries.regression.TsVariable;
@@ -196,7 +195,7 @@ public class JTsVariableList extends JComponent {
         result.setDefaultRenderer(TsData.class, new TsSparklineCellRenderer());
         result.setDefaultRenderer(TsPeriod.class, new TsPeriodTableCellRenderer());
         result.setDefaultRenderer(TsFrequency.class, new TsFrequencyTableCellRenderer());
-        result.setDefaultRenderer(TsIdentifier.class, new TsIdentifierTableCellRenderer());
+        result.setDefaultRenderer(String.class, new MultiLineNameTableCellRenderer());
 
         result.setModel(new CustomTableModel());
         XTable.setWidthAsPercentages(result, .1, .2, .1, .1, .1, .1, .3);
@@ -271,16 +270,22 @@ public class JTsVariableList extends JComponent {
         ((CustomTableModel) table.getModel()).fireTableStructureChanged();
     }
 
-    private static class TsIdentifierTableCellRenderer extends DefaultTableCellRenderer {
-
-        final MonikerUI monikerUI = MonikerUI.getDefault();
+    private static final class MultiLineNameTableCellRenderer extends DefaultTableCellRenderer {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            TsIdentifier identifier = (TsIdentifier) value;
-            result.setText(identifier.getName());
-            result.setIcon(monikerUI.getIcon(identifier.getMoniker()));
+            String text = (String) value;
+            if (text.isEmpty()) {
+                result.setText(" ");
+                result.setToolTipText(null);
+            } else if (text.startsWith("<html>")) {
+                result.setText(text);
+                result.setToolTipText(text);
+            } else {
+                result.setText(MultiLineNameUtil.join(text));
+                result.setToolTipText(MultiLineNameUtil.toHtml(text));
+            }
             return result;
         }
     }
@@ -361,6 +366,8 @@ public class JTsVariableList extends JComponent {
         @Override
         public Class<?> getColumnClass(int columnIndex) {
             switch (columnIndex) {
+                case 1:
+                    return String.class;
                 case 4:
                     return TsPeriod.class;
                 case 5:
@@ -397,23 +404,23 @@ public class JTsVariableList extends JComponent {
             super(title, text, NotifyDescriptor.QUESTION_MESSAGE, NotifyDescriptor.OK_CANCEL_OPTION);
 
             setInputText(oldname);
-        textField.addKeyListener(new KeyListener() {
+            textField.addKeyListener(new KeyListener() {
                 // To handle VK_ENTER !!!
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER && ! textField.getInputVerifier().verify(textField)){
-                    e.consume();
+                @Override
+                public void keyTyped(KeyEvent e) {
                 }
-            }
 
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-        });
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER && !textField.getInputVerifier().verify(textField)) {
+                        e.consume();
+                    }
+                }
+
+                @Override
+                public void keyReleased(KeyEvent e) {
+                }
+            });
             textField.setInputVerifier(new InputVerifier() {
                 @Override
                 public boolean verify(JComponent input) {

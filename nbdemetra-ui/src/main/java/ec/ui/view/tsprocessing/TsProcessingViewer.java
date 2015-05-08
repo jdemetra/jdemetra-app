@@ -6,11 +6,11 @@ package ec.ui.view.tsprocessing;
 
 import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
-import ec.nbdemetra.ui.awt.MultiLineString;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.documents.TsDocument;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import java.awt.Font;
 import javax.swing.Box;
@@ -68,8 +68,8 @@ public class TsProcessingViewer extends DefaultProcessingViewer<TsDocument> {
         } else {
             dropDataLabel.setVisible(false);
             String displayName = doc.getTs().getName();
-            tsLabel.setText(MultiLineString.lastWithMax(displayName, 70));
-            tsLabel.setToolTipText(!Strings.isNullOrEmpty(displayName) ? MultiLineString.toHtml(displayName) : null);
+            tsLabel.setText(MultiLineNameUtil.lastWithMax(displayName, 70));
+            tsLabel.setToolTipText(!Strings.isNullOrEmpty(displayName) ? MultiLineNameUtil.toHtml(displayName) : null);
             TsMoniker moniker = doc.getMoniker();
             tsLabel.setIcon(MonikerUI.getDefault().getIcon(moniker));
             tsLabel.setVisible(true);

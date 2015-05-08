@@ -19,7 +19,6 @@ package ec.nbdemetra.ui.tsproviders;
 import com.google.common.base.Optional;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IReloadable;
-import ec.nbdemetra.ui.awt.MultiLineString;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
@@ -28,6 +27,7 @@ import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.TsProviders;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.List;
@@ -177,8 +177,8 @@ abstract public class DataSetNode extends AbstractNode {
             setDisplayName(text);
             setShortDescription(text);
         } else {
-            setDisplayName(MultiLineString.join(text));
-            setShortDescription(MultiLineString.toHtml(text));
+            setDisplayName(MultiLineNameUtil.join(text));
+            setShortDescription(MultiLineNameUtil.toHtml(text));
         }
     }
 }

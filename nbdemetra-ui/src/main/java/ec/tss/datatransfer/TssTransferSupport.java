@@ -16,11 +16,8 @@
  */
 package ec.tss.datatransfer;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import ec.nbdemetra.core.GlobalService;
@@ -73,7 +70,7 @@ public class TssTransferSupport extends ListenableBean {
     public static TssTransferSupport getDefault() {
         return Lookup.getDefault().lookup(TssTransferSupport.class);
     }
-    
+
     @Deprecated
     @Nonnull
     public static TssTransferSupport getInstance() {
@@ -169,7 +166,7 @@ public class TssTransferSupport extends ListenableBean {
     @Nonnull
     public Transferable fromTsCollection(@Nonnull TsCollection col) {
         Preconditions.checkNotNull(col);
-        return new TsCollectionAdapter(col, all());
+        return asTransferable(col, all(), TsCollectionHelper.INSTANCE);
     }
 
     /**
@@ -181,7 +178,7 @@ public class TssTransferSupport extends ListenableBean {
     @Nonnull
     public Transferable fromMatrix(@Nonnull Matrix matrix) {
         Preconditions.checkNotNull(matrix);
-        return new MatrixAdapter(matrix, all());
+        return asTransferable(matrix, all(), MatrixHelper.INSTANCE);
     }
 
     /**
@@ -193,7 +190,7 @@ public class TssTransferSupport extends ListenableBean {
     @Nonnull
     public Transferable fromTable(@Nonnull Table<?> table) {
         Preconditions.checkNotNull(table);
-        return new TableAdapter(table, all());
+        return asTransferable(table, all(), TableHelper.INSTANCE);
     }
 
     /**
@@ -304,114 +301,106 @@ public class TssTransferSupport extends ListenableBean {
         return null;
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Adapters for Transferable">
-    private static abstract class CustomAdapter<T> implements Transferable {
+    //<editor-fold defaultstate="collapsed" desc="Implementation details">
+    private static <T> Transferable asTransferable(T data, FluentIterable<? extends TssTransferHandler> allHandlers, TransferHelper<T> helper) {
+        return new CustomAdapter(data, allHandlers, helper);
+    }
+
+    private static final class CustomAdapter<T> implements Transferable {
 
         private final T data;
-        private final List<? extends TssTransferHandler> handlers;
+        private final Map<DataFlavor, TssTransferHandler> handlers;
+        private final TransferHelper<T> helper;
+        private final Map<DataFlavor, Object> cache;
 
-        public CustomAdapter(T data, List<? extends TssTransferHandler> handlers) {
+        CustomAdapter(T data, FluentIterable<? extends TssTransferHandler> allHandlers, TransferHelper<T> helper) {
             this.data = data;
-            this.handlers = handlers;
+            this.handlers = new HashMap<>();
+            for (TssTransferHandler o : allHandlers) {
+                if (helper.canTransferData(data, o) && !handlers.containsKey(o.getDataFlavor())) {
+                    handlers.put(o.getDataFlavor(), o);
+                }
+            }
+            this.helper = helper;
+            this.cache = new HashMap<>();
         }
 
         @Override
         public DataFlavor[] getTransferDataFlavors() {
-            return FluentIterable.from(handlers).transform(TO_DATA_FLAVOR).toArray(DataFlavor.class);
+            return Iterables.toArray(handlers.keySet(), DataFlavor.class);
         }
 
         @Override
         public boolean isDataFlavorSupported(DataFlavor flavor) {
-            return FluentIterable.from(handlers).anyMatch(onDataFlavor(flavor));
+            return handlers.containsKey(flavor);
         }
 
         @Override
         public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-            Optional<? extends TssTransferHandler> handler = FluentIterable.from(handlers).firstMatch(onDataFlavor(flavor));
-            if (handler.isPresent()) {
-                LOGGER.debug("Getting transfer data using '{}'", handler.get().getName());
-                return getTransferData(data, handler.get());
+            Object result = cache.get(flavor);
+            if (result == null) {
+                TssTransferHandler handler = handlers.get(flavor);
+                if (handler == null) {
+                    throw new UnsupportedFlavorException(flavor);
+                }
+                LOGGER.debug("Getting transfer data using '{}'", handler.getName());
+                result = helper.getTransferData(data, handler);
+                cache.put(flavor, result);
             }
-            throw new UnsupportedFlavorException(flavor);
+            return result;
         }
-
-        abstract protected Object getTransferData(T data, TssTransferHandler handler) throws IOException;
     }
 
-    private static class TsCollectionAdapter extends CustomAdapter<TsCollection> {
+    private interface TransferHelper<T> {
 
-        TsCollectionAdapter(TsCollection col, FluentIterable<? extends TssTransferHandler> allHandlers) {
-            super(col, allHandlers.filter(onExportability(col)).toList());
+        boolean canTransferData(T data, TssTransferHandler handler);
+
+        Object getTransferData(T data, TssTransferHandler handler) throws IOException;
+    }
+
+    private static final class TsCollectionHelper implements TransferHelper<TsCollection> {
+
+        private static final TsCollectionHelper INSTANCE = new TsCollectionHelper();
+
+        @Override
+        public boolean canTransferData(TsCollection data, TssTransferHandler handler) {
+            return handler.canExportTsCollection(data);
         }
 
         @Override
-        protected Object getTransferData(TsCollection data, TssTransferHandler handler) throws IOException {
+        public Object getTransferData(TsCollection data, TssTransferHandler handler) throws IOException {
             return handler.exportTsCollection(data);
         }
     }
 
-    private static class MatrixAdapter extends CustomAdapter<Matrix> {
+    private static final class MatrixHelper implements TransferHelper<Matrix> {
 
-        MatrixAdapter(Matrix matrix, FluentIterable<? extends TssTransferHandler> allHandlers) {
-            super(matrix, allHandlers.filter(onExportability(matrix)).toList());
+        private static final MatrixHelper INSTANCE = new MatrixHelper();
+
+        @Override
+        public boolean canTransferData(Matrix data, TssTransferHandler handler) {
+            return handler.canExportMatrix(data);
         }
 
         @Override
-        protected Object getTransferData(Matrix data, TssTransferHandler handler) throws IOException {
+        public Object getTransferData(Matrix data, TssTransferHandler handler) throws IOException {
             return handler.exportMatrix(data);
         }
     }
 
-    private static class TableAdapter extends CustomAdapter<Table<?>> {
+    private static final class TableHelper implements TransferHelper<Table<?>> {
 
-        TableAdapter(Table<?> table, FluentIterable<? extends TssTransferHandler> allHandlers) {
-            super(table, allHandlers.filter(onExportability(table)).toList());
+        private static final TableHelper INSTANCE = new TableHelper();
+
+        @Override
+        public boolean canTransferData(Table<?> data, TssTransferHandler handler) {
+            return handler.canExportTable(data);
         }
 
         @Override
-        protected Object getTransferData(Table<?> data, TssTransferHandler handler) throws IOException {
+        public Object getTransferData(Table<?> data, TssTransferHandler handler) throws IOException {
             return handler.exportTable(data);
         }
-    }
-    //</editor-fold>
-    //
-    //<editor-fold defaultstate="collapsed" desc="Functions and Predicates">
-    private static final Function<TssTransferHandler, DataFlavor> TO_DATA_FLAVOR = new Function<TssTransferHandler, DataFlavor>() {
-        @Override
-        public DataFlavor apply(TssTransferHandler input) {
-            return input != null ? input.getDataFlavor() : null;
-        }
-    };
-
-    private static Predicate<TssTransferHandler> onExportability(final TsCollection col) {
-        return new Predicate<TssTransferHandler>() {
-            @Override
-            public boolean apply(TssTransferHandler input) {
-                return input != null ? input.canExportTsCollection(col) : null;
-            }
-        };
-    }
-
-    private static Predicate<TssTransferHandler> onExportability(final Matrix matrix) {
-        return new Predicate<TssTransferHandler>() {
-            @Override
-            public boolean apply(TssTransferHandler input) {
-                return input != null ? input.canExportMatrix(matrix) : null;
-            }
-        };
-    }
-
-    private static Predicate<TssTransferHandler> onExportability(final Table<?> table) {
-        return new Predicate<TssTransferHandler>() {
-            @Override
-            public boolean apply(TssTransferHandler input) {
-                return input != null ? input.canExportTable(table) : null;
-            }
-        };
-    }
-
-    private static Predicate<TssTransferHandler> onDataFlavor(DataFlavor dataFlavor) {
-        return Predicates.compose(Predicates.equalTo(dataFlavor), TO_DATA_FLAVOR);
     }
 
     private static Predicate<TssTransferHandler> onDataFlavors(DataFlavor[] dataFlavors) {
