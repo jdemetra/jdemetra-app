@@ -35,10 +35,6 @@ import ec.util.grid.swing.ext.SheetGridModel;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.Sheet;
 import ec.util.spreadsheet.helpers.ArrayBook;
-import ec.util.spreadsheet.od.OpenDocumentBookFactory;
-import ec.util.spreadsheet.poi.ExcelBookFactory;
-import ec.util.spreadsheet.poi.ExcelClassicBookFactory;
-import ec.util.spreadsheet.xmlss.XmlssBookFactory;
 import ec.util.various.swing.BasicFileViewer;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.PopupMouseAdapter;
@@ -51,7 +47,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.AbstractList;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.swing.AbstractAction;
@@ -67,6 +62,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -78,7 +74,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
     private final View uniqueView;
 
     public SpreadSheetBasicFileHandler() {
-        this.factories = FluentIterable.from(Arrays.asList(new ExcelBookFactory(), new ExcelClassicBookFactory(), new XmlssBookFactory(), new OpenDocumentBookFactory()));
+        this.factories = FluentIterable.from(Lookup.getDefault().lookupAll(Book.Factory.class));
         this.uniqueView = new View();
     }
 
