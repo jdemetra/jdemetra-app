@@ -48,7 +48,8 @@ import org.openide.util.lookup.ServiceProvider;
  */
 public class StructuralModelViewFactory extends SaDocumentViewFactory<StmSpecification, StmDocument> {
 
-    public static final String SELECTION = "Selection", STOCHASTIC = "Stochastic series",
+    public static final String SELECTION = "Selection", STOCHASTIC = "Stochastic series"
+            , STM = "Structural model components",
             MODELBASED = "Model-based tests",
             WKANALYSIS = "WK analysis",
             WK_COMPONENTS = "Components",
@@ -57,6 +58,7 @@ public class StructuralModelViewFactory extends SaDocumentViewFactory<StmSpecifi
             WK_ERRORS = "Errors analysis";
     public static final Id DECOMPOSITION_SUMMARY = new LinearId(DECOMPOSITION);
     public static final Id DECOMPOSITION_SERIES = new LinearId(DECOMPOSITION, STOCHASTIC);
+    public static final Id DECOMPOSITION_STM = new LinearId(DECOMPOSITION, STM);
     public static final Id DECOMPOSITION_WK_COMPONENTS = new LinearId(DECOMPOSITION, WKANALYSIS, WK_COMPONENTS);
     public static final Id DECOMPOSITION_WK_FINALS = new LinearId(DECOMPOSITION, WKANALYSIS, WK_FINALS);
     public static final Id DECOMPOSITION_TESTS = new LinearId(DECOMPOSITION, MODELBASED);
@@ -278,6 +280,15 @@ public class StructuralModelViewFactory extends SaDocumentViewFactory<StmSpecifi
 
         public DecompositionSeriesFactory() {
             super(DECOMPOSITION_SERIES, saExtractor(), new SaTableUI(ModellingDictionary.getStochasticSeries(), null));
+        }
+    }
+
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 401010)
+    public static class StmSeriesFactory extends ItemFactory<CompositeResults> {
+
+        public StmSeriesFactory() {
+            super(DECOMPOSITION_STM, saExtractor(), new SaTableUI("level", "slope"
+                    , "cycle", "noise", "seasonal"));
         }
     }
 

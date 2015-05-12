@@ -19,7 +19,6 @@ package ec.nbdemetra.sa.advanced.descriptors;
 
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.descriptors.IPropertyDescriptors;
-import ec.tstoolkit.structural.BsmSpecification;
 import ec.tstoolkit.structural.ComponentUse;
 import ec.tstoolkit.structural.ModelSpecification;
 import ec.tstoolkit.structural.SeasonalModel;
@@ -64,6 +63,13 @@ public class BsmModelSpecUI implements IPropertyDescriptors {
         core.useNoise(use);
     }
 
+    public ComponentUse getCycle() {
+        return core.getCycleUse();
+    }
+
+    public void setCycle(ComponentUse use) {
+        core.useCycle(use);
+    }
     public SeasonalModel getModel() {
         return core.getSeasonalModel();
     }
@@ -121,6 +127,19 @@ public class BsmModelSpecUI implements IPropertyDescriptors {
             return null;
         }
     }
+    
+        private EnhancedPropertyDescriptor cDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("cycle", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, C_ID);
+            desc.setDisplayName(C_NAME);
+            desc.setShortDescription(C_DESC);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
 
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
@@ -130,6 +149,10 @@ public class BsmModelSpecUI implements IPropertyDescriptors {
             descs.add(desc);
         }
         desc = sDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = cDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -143,17 +166,25 @@ public class BsmModelSpecUI implements IPropertyDescriptors {
         }
         return descs;
     }
-    public static final int L_ID = 0, S_ID = 1, N_ID = 2, SM_ID = 3;
+    public static final int L_ID = 0, S_ID = 1, C_ID=2, N_ID = 3, SM_ID = 4;
     public static final String L_NAME = "Level",
             S_NAME = "Slope",
+            C_NAME = "Cycle",
             N_NAME = "Noise",
             SM_NAME = "Seasonal model";
     public static final String L_DESC = "Level",
             S_DESC = "Slope",
+            C_DESC = "Cycle",
             N_DESC = "Noise",
             SM_DESC = "Seasonal model";
 
+    @Override
     public String getDisplayName() {
         return "Basic structural model";
+    }
+    
+    @Override
+    public String toString(){
+        return "";
     }
 }
