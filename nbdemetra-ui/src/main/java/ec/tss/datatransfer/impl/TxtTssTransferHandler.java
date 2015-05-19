@@ -35,6 +35,7 @@ import ec.tss.TsStatus;
 import ec.tss.datatransfer.TssTransferHandler;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IParam;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tss.tsproviders.utils.Params;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.tss.tsproviders.utils.Parsers.Parser;
@@ -198,7 +199,7 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
                     result.append(DELIMITOR);
                 }
                 for (int i = 0; i < nseries; i++) {
-                    result.append(analyser.titles[i]);
+                    result.append(MultiLineNameUtil.join(analyser.titles[i]));
                     if (i == nseries - 1) {
                         result.append(NEWLINE);
                     } else {
@@ -242,7 +243,7 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
             }
             for (int i = 0; i < nseries; i++) {
                 if (config.showTitle) {
-                    result.append(analyser.titles[i]);
+                    result.append(MultiLineNameUtil.join(analyser.titles[i]));
                     result.append(DELIMITOR);
                 }
                 for (int j = 0; j < nbdates; j++) {

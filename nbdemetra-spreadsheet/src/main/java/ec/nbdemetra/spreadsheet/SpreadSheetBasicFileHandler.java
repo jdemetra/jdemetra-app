@@ -16,57 +16,47 @@
  */
 package ec.nbdemetra.spreadsheet;
 
-import ec.util.grid.swing.ext.SheetRowRenderer;
-import ec.util.grid.swing.ext.SheetCellRenderer;
 import com.google.common.base.Predicate;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.FluentIterable;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.ThemeSupport;
-import ec.tss.tsproviders.utils.DataFormat;
+import ec.nbdemetra.ui.NbComponents;
 import ec.ui.commands.ColorSchemeCommand;
-import ec.ui.interfaces.IColorSchemeAble;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.ColorSchemeIcon;
-import ec.util.grid.swing.JGrid;
-import ec.util.grid.swing.ext.SheetColumnRenderer;
-import ec.util.grid.swing.ext.SheetGridCommand;
-import ec.util.grid.swing.ext.SheetGridModel;
+import ec.util.desktop.Desktop;
+import ec.util.desktop.DesktopManager;
+import ec.util.grid.swing.ext.SpreadSheetView;
 import ec.util.spreadsheet.Book;
-import ec.util.spreadsheet.Sheet;
 import ec.util.spreadsheet.helpers.ArrayBook;
-import ec.util.spreadsheet.od.OpenDocumentBookFactory;
-import ec.util.spreadsheet.poi.ExcelBookFactory;
-import ec.util.spreadsheet.poi.ExcelClassicBookFactory;
-import ec.util.spreadsheet.xmlss.XmlssBookFactory;
 import ec.util.various.swing.BasicFileViewer;
+import static ec.util.various.swing.FontAwesome.FA_EXTERNAL_LINK;
+import static ec.util.various.swing.FontAwesome.FA_INFO;
+import static ec.util.various.swing.FontAwesome.FA_SEARCH;
 import ec.util.various.swing.JCommand;
-import ec.util.various.swing.PopupMouseAdapter;
+import ec.util.various.swing.ext.FontAwesomeUtils;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
+import static java.beans.BeanInfo.ICON_MONO_16x16;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.AbstractList;
-import java.util.Arrays;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.swing.AbstractAction;
-import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.JTabbedPane;
-import javax.swing.ListSelectionModel;
+import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import static org.openide.awt.DropDownButtonFactory.createDropDownButton;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -78,7 +68,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
     private final View uniqueView;
 
     public SpreadSheetBasicFileHandler() {
-        this.factories = FluentIterable.from(Arrays.asList(new ExcelBookFactory(), new ExcelClassicBookFactory(), new XmlssBookFactory(), new OpenDocumentBookFactory()));
+        this.factories = FluentIterable.from(Lookup.getDefault().lookupAll(Book.Factory.class));
         this.uniqueView = new View();
     }
 
@@ -119,7 +109,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
     }
     //</editor-fold>
 
-    private static class Model {
+    private static final class Model {
 
         static final Model EMPTY = new Model("", new File(""), ArrayBook.builder().build(), 0);
         //
@@ -136,104 +126,39 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
         }
     }
 
-    private static class View extends JPanel implements IColorSchemeAble {
+    private static final class View extends JPanel {
 
-        private static final String ZOOM_RATIO_PROPERTY = "zoomRatio";
-        private static final String INVERT_COLORS_PROPERTY = "invertColors";
-        //
-        final JTabbedPane tabbedPane;
-        final JMenuBar statusBar;
-        final JLabel statusLabel;
-        final JSlider zoomSlider;
-        final JMenu zoomLabel;
-        final JMenu menu;
-        final SheetGridCommand copy = SheetGridCommand.copySelection(false, false);
-        final SheetGridCommand copyAll = SheetGridCommand.copyAll(false, false);
-        final DataFormat dataFormat = new DataFormat(Locale.ROOT, "yyyy-MM-dd", null);
-        // Properties
-        final ThemeSupport themeSupport;
-        int zoomRatio;
-        boolean invertColors;
+        private static final String MODEL_PROPERTY = "model";
+
+        private final SpreadSheetView view;
+        private Model model;
 
         public View() {
-            this.tabbedPane = new JTabbedPane();
-            this.statusBar = new JMenuBar();
-            this.statusLabel = new JLabel();
-            this.zoomSlider = new JSlider(10, 200);
-            this.zoomLabel = new JMenu("100%");
-            this.themeSupport = new ThemeSupport() {
-                @Override
-                protected void colorSchemeChanged() {
-                    View.this.firePropertyChange(COLOR_SCHEME_PROPERTY, null, themeSupport.getColorScheme());
-                }
-            };
-            this.zoomRatio = 100;
-            this.invertColors = false;
-            this.menu = createMenu();
+            this.view = new SpreadSheetView();
+            this.model = Model.EMPTY;
 
-            zoomSlider.setValue(zoomRatio);
-            zoomSlider.setOpaque(false);
-            zoomSlider.setMaximumSize(new Dimension(100, 30));
-            zoomSlider.addChangeListener(new ChangeListener() {
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    setZoomRatio(zoomSlider.getValue());
-                }
-            });
-            for (int o : new int[]{200, 100, 75, 50, 25}) {
-                zoomLabel.add(new JCheckBoxMenuItem(new ZoomRatioCommand(o).toAction(this))).setText(o + "%");
-            }
-
-//            statusBar.setFloatable(false);
-            statusBar.setOpaque(false);
-            statusBar.add(statusLabel);
-            statusBar.add(Box.createHorizontalGlue());
-//            statusBar.addSeparator();
-            statusBar.add(zoomLabel);
-            statusBar.add(zoomSlider);
+            view.setComponentPopupMenu(createPopupMenu().getPopupMenu());
 
             setLayout(new BorderLayout());
-            add(tabbedPane, BorderLayout.CENTER);
-            add(statusBar, BorderLayout.SOUTH);
+            add(view, BorderLayout.CENTER);
+            add(createToolbar(), BorderLayout.NORTH);
 
             addPropertyChangeListener(new PropertyChangeListener() {
                 @Override
                 public void propertyChange(PropertyChangeEvent evt) {
                     switch (evt.getPropertyName()) {
-                        case COLOR_SCHEME_PROPERTY:
-                            onColorSchemeChange();
-                            break;
-                        case ZOOM_RATIO_PROPERTY:
-                            onZoomRatioChange();
-                            break;
-                        case INVERT_COLORS_PROPERTY:
-                            onInvertColorsChange();
+                        case MODEL_PROPERTY:
+                            onModelChange();
                             break;
                     }
                 }
             });
         }
 
-        private JMenu createMenu() {
+        private JMenu createPopupMenu() {
             JMenu result = new JMenu();
-            result.add(new AbstractAction("Copy") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Component c = tabbedPane.getSelectedComponent();
-                    if (c instanceof JGrid) {
-                        copy.execute((JGrid) c);
-                    }
-                }
-            });
-            result.add(new AbstractAction("Copy all") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Component c = tabbedPane.getSelectedComponent();
-                    if (c instanceof JGrid) {
-                        copyAll.execute((JGrid) c);
-                    }
-                }
-            });
+            result.add(SpreadSheetView.copySelection().toAction(view)).setText("Copy");
+            result.add(SpreadSheetView.copyAll().toAction(view)).setText("Copy all");
             result.addSeparator();
 
             JMenuItem item;
@@ -247,113 +172,87 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
             item.setEnabled(false);
 
             JMenu colorSchemeMenu = new JMenu("Color scheme");
-            item = colorSchemeMenu.add(new JCheckBoxMenuItem(ColorSchemeCommand.applyColorScheme(null).toAction(this)));
+            item = colorSchemeMenu.add(new JCheckBoxMenuItem(ColorSchemeCommand.applyColorScheme(null).toAction(view)));
             item.setText("Default");
             colorSchemeMenu.addSeparator();
             for (ColorScheme o : DemetraUI.getDefault().getColorSchemes()) {
-                item = new JCheckBoxMenuItem(ColorSchemeCommand.applyColorScheme(o).toAction(this));
+                item = new JCheckBoxMenuItem(ColorSchemeCommand.applyColorScheme(o).toAction(view));
                 item.setText(o.getDisplayName());
                 item.setIcon(new ColorSchemeIcon(o));
                 colorSchemeMenu.add(item);
             }
             result.add(colorSchemeMenu);
 
-            item = result.add(new JCheckBoxMenuItem(new InvertColorsCommand().toAction(this)));
+            item = result.add(new JCheckBoxMenuItem(SpreadSheetView.invertColors().toAction(view)));
             item.setText("Invert colors");
 
             return result;
         }
 
-        void addGrid(Sheet sheet) {
-            JGrid grid = new JGrid();
-            grid.setModel(new SheetGridModel(sheet));
-            grid.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-            grid.setColumnSelectionAllowed(true);
-            grid.setRowRenderer(new SheetRowRenderer());
-            grid.setColumnRenderer(new SheetColumnRenderer());
-            grid.setOddBackground(null);
-            grid.addMouseListener(PopupMouseAdapter.fromMenu(menu));
-            grid.getActionMap().put("copy", copy.toAction(grid));
-            tabbedPane.add(sheet.getName(), grid);
+        private JToolBar createToolbar() {
+            JToolBar result = NbComponents.newInnerToolbar();
+            result.setFloatable(false);
+            result.setOpaque(false);
+
+            JButton button;
+            button = result.add(new InfoCmd().toAction(this));
+            button.setIcon(FontAwesomeUtils.getIcon(FA_INFO, ICON_MONO_16x16));
+            button.setToolTipText("Info");
+
+            button = result.add(new ShowInFolderCmd().toAction(this));
+            button.setIcon(FontAwesomeUtils.getIcon(FA_EXTERNAL_LINK, ICON_MONO_16x16));
+            button.setToolTipText("Show in folder");
+
+            result.addSeparator();
+
+            button = createDropDownButton(FontAwesomeUtils.getIcon(FA_SEARCH, ICON_MONO_16x16), createZoomMenu().getPopupMenu());
+            button.setToolTipText("Zoom");
+            result.add(button);
+
+            return result;
         }
 
-        void setModel(Model model) {
-            tabbedPane.removeAll();
-            for (int s = 0; s < model.book.getSheetCount(); s++) {
-                addGrid(model.book.getSheet(s));
+        private JMenu createZoomMenu() {
+            JMenu result = new JMenu();
+            final JSlider slider = new JSlider(10, 200, 100);
+            {
+                slider.setPreferredSize(new Dimension(50, slider.getPreferredSize().height));
+                slider.addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        view.setZoomRatio(slider.getValue());
+                    }
+                });
+                view.addPropertyChangeListener(SpreadSheetView.ZOOM_RATIO_PROPERTY, new PropertyChangeListener() {
+                    @Override
+                    public void propertyChange(PropertyChangeEvent evt) {
+                        slider.setValue(view.getZoomRatio());
+                    }
+                });
             }
-            onColorSchemeChange();
-            onZoomRatioChange();
-            statusLabel.setText(" File " + model.file.getName() + " loaded by " + model.factoryName + " in " + model.duration + " ms");
-        }
-
-        //<editor-fold defaultstate="collapsed" desc="Event handlers">
-        private void onColorSchemeChange() {
-            SheetCellRenderer cellRenderer = new SheetCellRenderer(dataFormat, themeSupport, invertColors);
-            for (JGrid grid : asList(tabbedPane).filter(JGrid.class)) {
-                grid.setGridColor(themeSupport.getGridColor());
-                grid.setDefaultRenderer(Object.class, cellRenderer);
+            result.add(slider);
+            for (int o : new int[]{200, 100, 75, 50, 25}) {
+                result.add(new JCheckBoxMenuItem(SpreadSheetView.applyZoomRatio(o).toAction(view))).setText(o + "%");
             }
+            return result;
         }
 
-        private void onZoomRatioChange() {
-            zoomLabel.setText(zoomRatio + "%");
-            zoomSlider.setValue(zoomRatio);
-            Font font = computeFont(getFont(), zoomRatio);
-            for (JGrid grid : asList(tabbedPane).filter(JGrid.class)) {
-                grid.setFont(font);
-            }
+        private void onModelChange() {
+            view.setModel(model.book);
         }
 
-        private void onInvertColorsChange() {
-            onColorSchemeChange();
-        }
-        //</editor-fold>
-
-        //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
-        @Override
-        public void setColorScheme(ColorScheme colorScheme) {
-            themeSupport.setLocalColorScheme(colorScheme);
+        public Model getModel() {
+            return model;
         }
 
-        @Override
-        public ColorScheme getColorScheme() {
-            return themeSupport.getLocalColorScheme();
+        public void setModel(Model model) {
+            Model old = this.model;
+            this.model = model != null ? model : Model.EMPTY;
+            firePropertyChange(MODEL_PROPERTY, old, this.model);
         }
-
-        public int getZoomRatio() {
-            return zoomRatio;
-        }
-
-        public void setZoomRatio(int zoomRatio) {
-            int old = this.zoomRatio;
-            this.zoomRatio = zoomRatio >= 10 && zoomRatio <= 200 ? zoomRatio : 100;
-            firePropertyChange(ZOOM_RATIO_PROPERTY, old, this.zoomRatio);
-        }
-
-        public boolean isInvertColors() {
-            return invertColors;
-        }
-
-        public void setInvertColors(boolean invertColors) {
-            boolean old = this.invertColors;
-            this.invertColors = invertColors;
-            firePropertyChange(INVERT_COLORS_PROPERTY, old, this.invertColors);
-        }
-        //</editor-fold>
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Tools">
-    private static Font computeFont(Font originalFont, int zoomRatio) {
-        Font font = originalFont;
-        float floatRatio = ((float) zoomRatio) / 100.0f;
-        if (floatRatio != 1) {
-            float scaledSize = originalFont.getSize2D() * floatRatio;
-            font = originalFont.deriveFont(scaledSize);
-        }
-        return font;
-    }
-
+    //<editor-fold defaultstate="collapsed" desc="Internal implementation">
     private static Predicate<Book.Factory> filePredicate(final File file) {
         return new Predicate<Book.Factory>() {
             @Override
@@ -363,60 +262,27 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
         };
     }
 
-    private static FluentIterable<Component> asList(final JTabbedPane pane) {
-        return FluentIterable.from(new AbstractList<Component>() {
-            @Override
-            public Component get(int index) {
-                return pane.getComponentAt(index);
-            }
+    private static final class ShowInFolderCmd extends JCommand<View> {
 
-            @Override
-            public int size() {
-                return pane.getTabCount();
-            }
-        });
+        @Override
+        public void execute(View component) throws Exception {
+            DesktopManager.get().showInFolder(component.getModel().file);
+        }
+
+        @Override
+        public boolean isEnabled(View component) {
+            return DesktopManager.get().isSupported(Desktop.Action.SHOW_IN_FOLDER);
+        }
+    }
+
+    private static final class InfoCmd extends JCommand<View> {
+
+        @Override
+        public void execute(View c) throws Exception {
+            Model model = c.getModel();
+            String message = " File '" + model.file.getName() + "' loaded by " + model.factoryName + " in " + model.duration + " ms";
+            JOptionPane.showMessageDialog(c, message);
+        }
     }
     //</editor-fold>
-
-    private static class ZoomRatioCommand extends JCommand<View> {
-
-        private final int zoomRatio;
-
-        public ZoomRatioCommand(int zoomRatio) {
-            this.zoomRatio = zoomRatio;
-        }
-
-        @Override
-        public void execute(View component) throws Exception {
-            component.setZoomRatio(zoomRatio);
-        }
-
-        @Override
-        public boolean isSelected(View component) {
-            return zoomRatio == component.getZoomRatio();
-        }
-
-        @Override
-        public ActionAdapter toAction(View component) {
-            return super.toAction(component).withWeakPropertyChangeListener(component, View.ZOOM_RATIO_PROPERTY);
-        }
-    }
-
-    private static class InvertColorsCommand extends JCommand<View> {
-
-        @Override
-        public void execute(View component) throws Exception {
-            component.setInvertColors(!component.isInvertColors());
-        }
-
-        @Override
-        public boolean isSelected(View component) {
-            return component.isInvertColors();
-        }
-
-        @Override
-        public ActionAdapter toAction(View component) {
-            return super.toAction(component).withWeakPropertyChangeListener(component, View.INVERT_COLORS_PROPERTY);
-        }
-    }
 }
