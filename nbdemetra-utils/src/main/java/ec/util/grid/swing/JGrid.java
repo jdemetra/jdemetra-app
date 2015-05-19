@@ -154,7 +154,7 @@ public final class JGrid extends AGrid {
         enableCellHovering();
         enableCellSelection();
         enableProperties();
-        
+
         setLayout(new BorderLayout());
         add(new JLayer<>(scrollPane, new NoDataUI()), BorderLayout.CENTER);
     }
@@ -577,34 +577,29 @@ public final class JGrid extends AGrid {
         @Override
         public void installUI(JComponent c) {
             super.installUI(c);
-            dropTarget = new DropTarget(scrollPane, new DropTargetListener() {
+            dropTarget = new DropTarget(scrollPane, new ForwardingListener() {
+
+                @Override
+                protected DropTarget getDelegate() {
+                    return main.getDropTarget();
+                }
 
                 @Override
                 public void dragEnter(DropTargetDragEvent dtde) {
-                    main.getDropTarget().dragEnter(dtde);
+                    super.dragEnter(dtde);
                     // FIXME: value still set to true even if import refused
                     setHasDropLocation(true);
                 }
 
                 @Override
-                public void dragOver(DropTargetDragEvent dtde) {
-                    main.getDropTarget().dragOver(dtde);
-                }
-
-                @Override
-                public void dropActionChanged(DropTargetDragEvent dtde) {
-                    main.getDropTarget().dropActionChanged(dtde);
-                }
-
-                @Override
                 public void dragExit(DropTargetEvent dte) {
-                    main.getDropTarget().dragExit(dte);
+                    super.dragExit(dte);
                     setHasDropLocation(false);
                 }
 
                 @Override
                 public void drop(DropTargetDropEvent dtde) {
-                    main.getDropTarget().drop(dtde);
+                    super.drop(dtde);
                     setHasDropLocation(false);
                 }
             });
@@ -630,6 +625,52 @@ public final class JGrid extends AGrid {
                 Component renderer = noDataRenderer.getNoDataRendererComponent(main, hasDropLocation);
                 renderer.setSize(scrollPane.getSize());
                 renderer.paint(g);
+            }
+        }
+    }
+
+    private static abstract class ForwardingListener implements DropTargetListener {
+
+        @Nullable
+        abstract protected DropTarget getDelegate();
+
+        @Override
+        public void dragEnter(DropTargetDragEvent dtde) {
+            DropTarget dt = getDelegate();
+            if (dt != null) {
+                dt.dragEnter(dtde);
+            }
+        }
+
+        @Override
+        public void dragOver(DropTargetDragEvent dtde) {
+            DropTarget dt = getDelegate();
+            if (dt != null) {
+                dt.dragOver(dtde);
+            }
+        }
+
+        @Override
+        public void dropActionChanged(DropTargetDragEvent dtde) {
+            DropTarget dt = getDelegate();
+            if (dt != null) {
+                dt.dropActionChanged(dtde);
+            }
+        }
+
+        @Override
+        public void dragExit(DropTargetEvent dte) {
+            DropTarget dt = getDelegate();
+            if (dt != null) {
+                dt.dragExit(dte);
+            }
+        }
+
+        @Override
+        public void drop(DropTargetDropEvent dtde) {
+            DropTarget dt = getDelegate();
+            if (dt != null) {
+                dt.drop(dtde);
             }
         }
     }
