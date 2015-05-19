@@ -74,7 +74,7 @@ public final class SheetCellRenderer implements TableCellRenderer {
         } else if (cell.isDate()) {
             result.setText(dateFormat.formatAsString(cell.getDate()));
             result.setToolTipText("<html>" + CellRefHelper.getCellRef(row, column) + ": Date<br>" + result.getText());
-            result.setHorizontalAlignment(JLabel.LEADING);
+            result.setHorizontalAlignment(JLabel.TRAILING);
             cellColor = ColorScheme.KnownColor.RED;
         } else if (cell.isNumber()) {
             result.setText(numberFormat.formatAsString(cell.getNumber()));
