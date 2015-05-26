@@ -14,9 +14,9 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-
 package ec.nbdemetra.sa.advanced.descriptors;
 
+import ec.tstoolkit.Parameter;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.descriptors.IPropertyDescriptors;
 import ec.tstoolkit.structural.ComponentUse;
@@ -70,6 +70,7 @@ public class BsmModelSpecUI implements IPropertyDescriptors {
     public void setCycle(ComponentUse use) {
         core.useCycle(use);
     }
+
     public SeasonalModel getModel() {
         return core.getSeasonalModel();
     }
@@ -77,7 +78,30 @@ public class BsmModelSpecUI implements IPropertyDescriptors {
     public void setModel(SeasonalModel model) {
         core.setSeasonalModel(model);
     }
+    
+    public Parameter[] getCycleDumpingFactor(){
+        Parameter p=core.getCyclicalDumpingFactor();
+        if (p == null)
+            p=new Parameter();
+        return new Parameter[]{p};
+    }
 
+    public Parameter[] getCycleLength(){
+        Parameter p=core.getCyclicalPeriod();
+        if (p == null)
+            p=new Parameter();
+        return new Parameter[]{p};
+    }
+    
+    public void setCycleDumpingFactor(Parameter[] p){
+        if (p != null && p.length == 1)
+            core.setCyclicalDumpingFactor(p[0]);
+    }
+
+    public void setCycleLength(Parameter[] p){
+        if (p != null && p.length == 1)
+            core.setCyclicalPeriod(p[0]);
+    }
 
     private EnhancedPropertyDescriptor lDesc() {
         try {
@@ -127,8 +151,8 @@ public class BsmModelSpecUI implements IPropertyDescriptors {
             return null;
         }
     }
-    
-        private EnhancedPropertyDescriptor cDesc() {
+
+    private EnhancedPropertyDescriptor cDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("cycle", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, C_ID);
@@ -140,6 +164,35 @@ public class BsmModelSpecUI implements IPropertyDescriptors {
         }
     }
 
+    private EnhancedPropertyDescriptor cdDesc() {
+        try {
+            if (core.getCycleUse() == ComponentUse.Unused) {
+                return null;
+            }
+            PropertyDescriptor desc = new PropertyDescriptor("cycleDumpingFactor", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, CDUMP_ID);
+            desc.setDisplayName(CDUMP_NAME);
+            desc.setShortDescription(CDUMP_DESC);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    private EnhancedPropertyDescriptor clDesc() {
+        try {
+            if (core.getCycleUse() == ComponentUse.Unused) {
+                return null;
+            }
+            PropertyDescriptor desc = new PropertyDescriptor("cycleLength", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, CLEN_ID);
+            desc.setDisplayName(CLEN_NAME);
+            desc.setShortDescription(CLEN_DESC);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
 
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
@@ -156,6 +209,14 @@ public class BsmModelSpecUI implements IPropertyDescriptors {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = cdDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = clDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         desc = nDesc();
         if (desc != null) {
             descs.add(desc);
@@ -166,15 +227,19 @@ public class BsmModelSpecUI implements IPropertyDescriptors {
         }
         return descs;
     }
-    public static final int L_ID = 0, S_ID = 1, C_ID=2, N_ID = 3, SM_ID = 4;
+    public static final int L_ID = 0, S_ID = 1, C_ID = 2, CDUMP_ID = 3, CLEN_ID = 4, N_ID = 6, SM_ID = 10;
     public static final String L_NAME = "Level",
             S_NAME = "Slope",
             C_NAME = "Cycle",
+            CLEN_NAME = "Cycle length",
+            CDUMP_NAME = "Cycle dumping factor",
             N_NAME = "Noise",
             SM_NAME = "Seasonal model";
     public static final String L_DESC = "Level",
             S_DESC = "Slope",
             C_DESC = "Cycle",
+            CLEN_DESC = "Cycle length",
+            CDUMP_DESC = "Cycle dumping factor",
             N_DESC = "Noise",
             SM_DESC = "Seasonal model";
 
@@ -182,9 +247,9 @@ public class BsmModelSpecUI implements IPropertyDescriptors {
     public String getDisplayName() {
         return "Basic structural model";
     }
-    
+
     @Override
-    public String toString(){
+    public String toString() {
         return "";
     }
 }
