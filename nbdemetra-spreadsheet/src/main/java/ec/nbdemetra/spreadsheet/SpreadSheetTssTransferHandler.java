@@ -23,7 +23,10 @@ import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tss.TsCollection;
+import ec.tss.TsCollectionInformation;
 import ec.tss.TsFactory;
+import ec.tss.TsInformation;
+import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferHandler;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
 import ec.tss.tsproviders.spreadsheet.engine.TsExportOptions;
@@ -36,6 +39,7 @@ import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.timeseries.TsAggregationType;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.util.spreadsheet.Book;
+import ec.util.spreadsheet.helpers.ArraySheet;
 import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.io.IOException;
@@ -56,6 +60,10 @@ abstract class SpreadSheetTssTransferHandler<T> extends TssTransferHandler {
     abstract protected T fromBook(Book book) throws IOException;
 
     abstract protected boolean isInstance(Object obj);
+    
+    protected SpreadSheetFactory getFactory() {
+        return SpreadSheetFactory.getDefault();
+    }
 
     @Override
     public boolean canExportTsCollection(TsCollection col) {
@@ -64,7 +72,9 @@ abstract class SpreadSheetTssTransferHandler<T> extends TssTransferHandler {
 
     @Override
     public Object exportTsCollection(TsCollection col) throws IOException {
-        return fromBook(SpreadSheetFactory.getDefault().fromTsCollection(col, getInternalConfig().getTsExportOptions()).toBook());
+        TsCollectionInformation info = new TsCollectionInformation(col, TsInformationType.Data);
+        ArraySheet sheet = getFactory().fromTsCollectionInfo(info, getInternalConfig().getTsExportOptions());
+        return fromBook(sheet.toBook());
     }
 
     @Override
@@ -75,9 +85,16 @@ abstract class SpreadSheetTssTransferHandler<T> extends TssTransferHandler {
     @Override
     public TsCollection importTsCollection(Object obj) throws IOException {
         try (Book book = toBook((T) obj)) {
-            return book.getSheetCount() > 0
-                    ? SpreadSheetFactory.getDefault().toTsCollection(book.getSheet(0), getInternalConfig().getTsImportOptions())
-                    : TsFactory.instance.createTsCollection();
+            TsCollection result = TsFactory.instance.createTsCollection();
+            if (book.getSheetCount() > 0) {
+                TsCollectionInformation info = getFactory().toTsCollectionInfo(book.getSheet(0), getInternalConfig().getTsImportOptions());
+                for (TsInformation o : info.items) {
+                    if (o.hasData()) {
+                        result.add(TsFactory.instance.createTs(o.name, null, o.data));
+                    }
+                }
+            }
+            return result;
         }
     }
 
@@ -88,7 +105,7 @@ abstract class SpreadSheetTssTransferHandler<T> extends TssTransferHandler {
 
     @Override
     public Object exportMatrix(Matrix matrix) throws IOException {
-        return fromBook(SpreadSheetFactory.getDefault().fromMatrix(matrix).toBook());
+        return fromBook(getFactory().fromMatrix(matrix).toBook());
     }
 
     @Override
@@ -100,7 +117,7 @@ abstract class SpreadSheetTssTransferHandler<T> extends TssTransferHandler {
     public Table<?> importTable(Object obj) throws IOException, ClassCastException {
         try (Book book = toBook((T) obj)) {
             return book.getSheetCount() > 0
-                    ? SpreadSheetFactory.getDefault().toTable(book.getSheet(0))
+                    ? getFactory().toTable(book.getSheet(0))
                     : new Table<>(0, 0);
         }
     }
@@ -112,7 +129,7 @@ abstract class SpreadSheetTssTransferHandler<T> extends TssTransferHandler {
 
     @Override
     public Object exportTable(Table<?> table) throws IOException {
-        return fromBook(SpreadSheetFactory.getDefault().fromTable(table).toBook());
+        return fromBook(getFactory().fromTable(table).toBook());
     }
 
     public abstract static class AbstractBean {
