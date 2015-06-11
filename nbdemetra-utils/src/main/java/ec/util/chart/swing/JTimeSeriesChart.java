@@ -44,6 +44,7 @@ import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -364,7 +365,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     private void onRevealObsChange() {
         notification.forceRefresh();
     }
-    
+
     private void onComponentPopupMenuChange() {
         chartPanel.setPopupMenu(getComponentPopupMenu());
     }
@@ -411,17 +412,22 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     //<editor-fold defaultstate="collapsed" desc="TimeSeriesChart Implementation">
     @Override
     public void copyImage() {
-        chartPanel.doCopy();
+        Charts.copyChart(chartPanel);
     }
 
     @Override
     public void saveImage() throws IOException {
-        chartPanel.doSaveAs();
+        Charts.saveChart(chartPanel);
     }
 
     @Override
     public void printImage() {
         chartPanel.createChartPrintJob();
+    }
+
+    @Override
+    public void writeImage(String mediaType, OutputStream stream) throws IOException {
+        Charts.writeChart(mediaType, stream, chartPanel.getChart(), chartPanel.getWidth(), chartPanel.getHeight());
     }
     //</editor-fold>
 

@@ -17,6 +17,7 @@
 package ec.util.chart;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.EnumSet;
@@ -141,6 +142,8 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     void printImage() throws IOException;
 
+    void writeImage(@Nonnull String mediaType, @Nonnull OutputStream stream) throws IOException;
+    
     @Nonnull
     EnumSet<RendererType> getSupportedRendererTypes();
 
