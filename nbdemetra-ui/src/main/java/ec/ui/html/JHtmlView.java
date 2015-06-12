@@ -18,8 +18,10 @@ package ec.ui.html;
 
 import ec.nbdemetra.ui.NbComponents;
 import ec.ui.AHtmlView;
+import ec.util.various.swing.JCommand;
 import java.awt.BorderLayout;
 import javax.swing.BorderFactory;
+import javax.swing.JMenu;
 
 /**
  *
@@ -32,6 +34,8 @@ public final class JHtmlView extends AHtmlView {
     public JHtmlView() {
         this.html = new JHtmlPane();
         html.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        html.setComponentPopupMenu(createMenu().getPopupMenu());
+
         setLayout(new BorderLayout());
         add(NbComponents.newJScrollPane(html), BorderLayout.CENTER);
     }
@@ -40,5 +44,27 @@ public final class JHtmlView extends AHtmlView {
     public void loadContent(String content) {
         html.setText(content);
         html.setCaretPosition(0);
+    }
+
+    private JMenu createMenu() {
+        JMenu result = new JMenu();
+        result.add(CopyCmd.INSTANCE.toAction(html)).setText("Copy");
+        return result;
+    }
+
+    private static final class CopyCmd extends JCommand<JHtmlPane> {
+
+        private static final CopyCmd INSTANCE = new CopyCmd();
+
+        @Override
+        public void execute(JHtmlPane c) throws Exception {
+            if (c.getSelectedText() != null) {
+                c.copy();
+            } else {
+                c.selectAll();
+                c.copy();
+                c.select(0, 0);
+            }
+        }
     }
 }
