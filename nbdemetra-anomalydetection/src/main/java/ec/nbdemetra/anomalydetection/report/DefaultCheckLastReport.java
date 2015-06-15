@@ -17,6 +17,7 @@
 package ec.nbdemetra.anomalydetection.report;
 
 import ec.nbdemetra.ui.NbComponents;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.utilities.Paths;
 import java.awt.Dimension;
 import java.io.FileWriter;
@@ -146,7 +147,7 @@ public class DefaultCheckLastReport implements ICheckLastReportFactory {
             out.write("No invalid series..." + NL);
         } else {
             for (AnomalyPojo p : invalid) {
-                out.write(p.getTsName() + NL);
+                out.write(MultiLineNameUtil.join(p.getTsName()) + NL);
             }
         }
     }
@@ -161,7 +162,7 @@ public class DefaultCheckLastReport implements ICheckLastReportFactory {
             out.write("No empty series..." + NL);
         } else {
             for (AnomalyPojo p : empty) {
-                out.write(p.getTsName() + NL);
+                out.write(MultiLineNameUtil.join(p.getTsName()) + NL);
             }
         }
     }
