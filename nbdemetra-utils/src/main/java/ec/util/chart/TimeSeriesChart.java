@@ -29,15 +29,15 @@ import javax.annotation.Nullable;
  *
  * @author Philippe Charles
  * @param <DS> the type of the data source
- * @param <COLORS> the type of the color scheme support
+ * @param <COLOR> the type of the color class
  */
-public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
+public interface TimeSeriesChart<DS, COLOR> {
 
     @Nonnull
     DS getDataset();
 
     @Nonnull
-    COLORS getColorSchemeSupport();
+    ColorSchemeSupport<? extends COLOR> getColorSchemeSupport();
 
     @Nonnull
     String getTitle();
@@ -68,7 +68,13 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
     SeriesFunction<String> getSeriesFormatter();
 
     @Nonnull
+    SeriesFunction<COLOR> getSeriesColorist();
+
+    @Nonnull
     ObsFunction<String> getObsFormatter();
+
+    @Nonnull
+    ObsFunction<COLOR> getObsColorist();
 
     @Nonnull
     ObsPredicate getDashPredicate();
@@ -96,7 +102,7 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     void setDataset(@Nullable DS dataset);
 
-    void setColorSchemeSupport(@Nullable COLORS colorSchemeSupport);
+    void setColorSchemeSupport(@Nullable ColorSchemeSupport<? extends COLOR> colorSchemeSupport);
 
     void setTitle(@Nullable String title);
 
@@ -118,7 +124,11 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
 
     void setSeriesFormatter(@Nullable SeriesFunction<String> formatter);
 
+    void setSeriesColorist(@Nullable SeriesFunction<COLOR> colorist);
+
     void setObsFormatter(@Nullable ObsFunction<String> formatter);
+
+    void setObsColorist(@Nullable ObsFunction<COLOR> colorist);
 
     void setDashPredicate(@Nullable ObsPredicate predicate);
 
@@ -143,7 +153,7 @@ public interface TimeSeriesChart<DS, COLORS extends ColorSchemeSupport> {
     void printImage() throws IOException;
 
     void writeImage(@Nonnull String mediaType, @Nonnull OutputStream stream) throws IOException;
-    
+
     @Nonnull
     EnumSet<RendererType> getSupportedRendererTypes();
 

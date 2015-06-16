@@ -28,6 +28,9 @@ import ec.util.chart.SeriesFunction;
 import ec.util.chart.TimeSeriesChart.CrosshairOrientation;
 import ec.util.chart.TimeSeriesChart.DisplayTrigger;
 import ec.util.chart.impl.AndroidColorScheme;
+import static ec.util.chart.swing.ATimeSeriesChart.ELEMENT_VISIBLE_PROPERTY;
+import static ec.util.chart.swing.SwingColorSchemeSupport.blend;
+import static ec.util.chart.swing.SwingColorSchemeSupport.isDark;
 import ec.util.various.swing.BasicSwingLauncher;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
@@ -40,11 +43,14 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import static javax.swing.BorderFactory.createCompoundBorder;
 import static javax.swing.BorderFactory.createEmptyBorder;
@@ -83,10 +89,12 @@ public final class JTimeSeriesChartDemo extends JPanel {
 
     private final JTimeSeriesChart chart;
     private final CustomTooltip customTooltip;
+    private final SeriesState seriesState;
 
     public JTimeSeriesChartDemo() {
         this.chart = new JTimeSeriesChart();
         this.customTooltip = new CustomTooltip();
+        this.seriesState = new SeriesState();
 
         chart.setTitle("Some random data");
         chart.setNoDataMessage("No data available ?");
@@ -106,14 +114,24 @@ public final class JTimeSeriesChartDemo extends JPanel {
                         + " : " + value + (dash ? ("\nForecast") : "");
             }
         });
+        chart.setObsColorist(new ObsFunction<Color>() {
+            @Override
+            public Color apply(int series, int obs) {
+                Color color = chart.getSeriesColorist().apply(series);
+                return obs == 2 && color != null ? blend(color, isDark(color) ? Color.WHITE : Color.BLACK, .5) : color;
+            }
+        });
         chart.setDashPredicate(lastObsPredicate(3));
         chart.setPlotWeights(new int[]{2, 1});
+        chart.setPlotDispatcher(seriesState.plotDispatcher());
+        chart.setSeriesRenderer(seriesState.seriesRenderer());
+        chart.setSeriesColorist(seriesState.seriesColorist(chart));
 
         chart.setComponentPopupMenu(newMenu().getPopupMenu());
 
+        seriesState.withPlotIndex(0, 0, 0, 1);
+        seriesState.withRendererType(0, RendererType.LINE, RendererType.LINE, RendererType.COLUMN);
         applyRandomData().executeSafely(chart);
-        chart.setPlotDispatcher(SeriesFunction.array(0, 0, 1));
-        chart.setSeriesRenderer(SeriesFunction.array(RendererType.LINE, RendererType.LINE, RendererType.COLUMN));
         chart.setColorSchemeSupport(SwingColorSchemeSupport.from(new AndroidColorScheme.AndroidDarkColorScheme()));
         chart.setLineThickness(2);
         chart.setMouseWheelEnabled(true);
@@ -130,15 +148,21 @@ public final class JTimeSeriesChartDemo extends JPanel {
 
         {
             final JMenu moveTo = new JMenu("Move to");
-            moveTo.add(new MoveToPlot(0).toAction(chart)).setText("First plot");
-            moveTo.add(new MoveToPlot(1).toAction(chart)).setText("Second plot");
+            moveTo.add(new MoveToPlot(0, seriesState).toAction(chart)).setText("First plot");
+            moveTo.add(new MoveToPlot(1, seriesState).toAction(chart)).setText("Second plot");
             result.add(moveTo);
 
             final JMenu renderAs = new JMenu("Render as");
             for (RendererType o : chart.getSupportedRendererTypes()) {
-                renderAs.add(new SetRenderer(o).toAction(chart)).setText(o.name());
+                renderAs.add(new SetRenderer(o, seriesState).toAction(chart)).setText(o.name());
             }
             result.add(renderAs);
+
+            final JMenu colorWith = new JMenu("Color with");
+            for (ColorScheme.KnownColor o : ColorScheme.KnownColor.values()) {
+                colorWith.add(new SetColor(o, seriesState).toAction(chart)).setText(o.name());
+            }
+            result.add(colorWith);
 
             final JSeparator separator = new JSeparator();
             result.add(separator);
@@ -150,6 +174,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
                     moveTo.setVisible(hasSelection && chart.getPlotWeights().length > 1);
                     renderAs.setVisible(hasSelection);
                     separator.setVisible(hasSelection);
+                    colorWith.setVisible(hasSelection);
                 }
             };
             r.run();
@@ -181,13 +206,6 @@ public final class JTimeSeriesChartDemo extends JPanel {
         result.add(clearDataset().toAction(chart)).setText("Clear");
 
         result.addSeparator();
-        item = new JMenu("Show element");
-        item.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.TITLE).toAction(chart))).setText("Title");
-        item.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.LEGEND).toAction(chart))).setText("Legend");
-        item.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.AXIS).toAction(chart))).setText("Axis");
-        item.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.TOOLTIP).toAction(chart))).setText("Tooltip");
-        item.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.CROSSHAIR).toAction(chart))).setText("Crosshair");
-        result.add(item);
 
         item = new JMenu("Color scheme");
         for (ColorScheme o : ServiceLoader.load(ColorScheme.class)) {
@@ -202,13 +220,8 @@ public final class JTimeSeriesChartDemo extends JPanel {
         item.add(new JCheckBoxMenuItem(applyLineThickness(2f).toAction(chart))).setText("Thick");
         result.add(item);
 
-        item = new JMenu("Crosshair orientation");
-        item.add(new JCheckBoxMenuItem(applyCrosshairOrientation(CrosshairOrientation.HORIZONTAL).toAction(chart))).setText("Horizontal");
-        item.add(new JCheckBoxMenuItem(applyCrosshairOrientation(CrosshairOrientation.VERTICAL).toAction(chart))).setText("Vertical");
-        item.add(new JCheckBoxMenuItem(applyCrosshairOrientation(CrosshairOrientation.BOTH).toAction(chart))).setText("Both");
-        result.add(item);
-
-        result.add(new JCheckBoxMenuItem(new ToggleCustomTooltip(chart).toAction(customTooltip))).setText("Custom tooltip");
+        result.add(newTooltipMenu());
+        result.add(newCrosshairMenu());
 
         item = new JMenu("Highlighter");
         item.add(new JCheckBoxMenuItem(applyObsHighlighter(chart.getObsHighlighter()).toAction(chart))).setText("Hovered");
@@ -220,16 +233,10 @@ public final class JTimeSeriesChartDemo extends JPanel {
         item.add(new JCheckBoxMenuItem(applyObsHighlighter(ObsPredicate.alwaysFalse()).toAction(chart))).setText("None");
         result.add(item);
 
-        result.addSeparator();
-        item = new JMenu("Tooltip trigger");
-        item.add(new JCheckBoxMenuItem(applyTooltipTrigger(DisplayTrigger.HOVERING).toAction(chart))).setText("Focus");
-        item.add(new JCheckBoxMenuItem(applyTooltipTrigger(DisplayTrigger.SELECTION).toAction(chart))).setText("Selection");
-        item.add(new JCheckBoxMenuItem(applyTooltipTrigger(DisplayTrigger.BOTH).toAction(chart))).setText("Both");
-        result.add(item);
-        item = new JMenu("Crosshair trigger");
-        item.add(new JCheckBoxMenuItem(applyCrosshairTrigger(DisplayTrigger.HOVERING).toAction(chart))).setText("Focus");
-        item.add(new JCheckBoxMenuItem(applyCrosshairTrigger(DisplayTrigger.SELECTION).toAction(chart))).setText("Selection");
-        item.add(new JCheckBoxMenuItem(applyCrosshairTrigger(DisplayTrigger.BOTH).toAction(chart))).setText("Both");
+        item = new JMenu("Show element");
+        item.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.TITLE).toAction(chart))).setText("Title");
+        item.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.LEGEND).toAction(chart))).setText("Legend");
+        item.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.AXIS).toAction(chart))).setText("Axis");
         result.add(item);
 
         result.addSeparator();
@@ -242,6 +249,60 @@ public final class JTimeSeriesChartDemo extends JPanel {
             }
         }).setText("Enable/Disable");
         result.add(newConfigureMenu());
+
+        return result;
+    }
+
+    private JMenu newTooltipMenu() {
+        JMenu result = new JMenu("Tooltip");
+
+        result.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.TOOLTIP).toAction(chart))).setText("Default Tooltip");
+        result.add(new JCheckBoxMenuItem(new ToggleCustomTooltip(chart).toAction(customTooltip))).setText("Custom tooltip");
+
+        final JMenu trigger = new JMenu("Trigger");
+        for (DisplayTrigger o : DisplayTrigger.values()) {
+            trigger.add(new JCheckBoxMenuItem(applyTooltipTrigger(o).toAction(chart))).setText(o.name());
+        }
+        result.add(trigger);
+
+        chart.addPropertyChangeListener(ELEMENT_VISIBLE_PROPERTY, new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                boolean enabled = chart.isElementVisible(Element.TOOLTIP);
+                trigger.setEnabled(enabled);
+            }
+        });
+
+        return result;
+    }
+
+    private JMenu newCrosshairMenu() {
+        JMenu result = new JMenu("Crosshair");
+
+        result.add(new JCheckBoxMenuItem(toggleElementVisibility(Element.CROSSHAIR).toAction(chart))).setText("Enabled");
+
+        final JMenu orientation = new JMenu("Orientation");
+        for (CrosshairOrientation o : CrosshairOrientation.values()) {
+            orientation.add(new JCheckBoxMenuItem(applyCrosshairOrientation(o).toAction(chart))).setText(o.name());
+        }
+        orientation.setEnabled(false);
+        result.add(orientation);
+
+        final JMenu trigger = new JMenu("Trigger");
+        for (DisplayTrigger o : DisplayTrigger.values()) {
+            trigger.add(new JCheckBoxMenuItem(applyTooltipTrigger(o).toAction(chart))).setText(o.name());
+        }
+        trigger.setEnabled(false);
+        result.add(trigger);
+
+        chart.addPropertyChangeListener(ELEMENT_VISIBLE_PROPERTY, new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                boolean enabled = chart.isElementVisible(Element.CROSSHAIR);
+                orientation.setEnabled(enabled);
+                trigger.setEnabled(enabled);
+            }
+        });
 
         return result;
     }
@@ -316,88 +377,152 @@ public final class JTimeSeriesChartDemo extends JPanel {
         };
     }
 
-    private static final class MoveToPlot extends SeriesFunctionCommand<Integer> {
+    private static final class MoveToPlot extends SeriesStateCommand<Integer> {
 
-        public MoveToPlot(int plotIndex) {
-            super(plotIndex, 0);
+        public MoveToPlot(int plotIndex, SeriesState seriesState) {
+            super(plotIndex, seriesState);
         }
 
         @Override
-        protected SeriesFunction<Integer> get(JTimeSeriesChart chart) {
-            return chart.getPlotDispatcher();
+        protected void putValue(int series) {
+            seriesState.withPlotIndex(series, value);
         }
 
         @Override
-        protected void set(JTimeSeriesChart chart, SeriesFunction<Integer> function) {
-            chart.setPlotDispatcher(function);
+        protected void update(JTimeSeriesChart chart) {
+            chart.setPlotDispatcher(seriesState.plotDispatcher());
         }
     }
 
-    private static final class SetRenderer extends SeriesFunctionCommand<RendererType> {
+    private static final class SetRenderer extends SeriesStateCommand<RendererType> {
 
-        public SetRenderer(RendererType value) {
-            super(value, RendererType.LINE);
+        public SetRenderer(RendererType value, SeriesState seriesState) {
+            super(value, seriesState);
         }
 
         @Override
-        protected SeriesFunction<RendererType> get(JTimeSeriesChart chart) {
-            return chart.getSeriesRenderer();
+        protected void putValue(int series) {
+            seriesState.withRendererType(series, value);
         }
 
         @Override
-        protected void set(JTimeSeriesChart chart, SeriesFunction<RendererType> function) {
-            chart.setSeriesRenderer(function);
+        protected void update(JTimeSeriesChart chart) {
+            chart.setSeriesRenderer(seriesState.seriesRenderer());
         }
     }
 
-    private abstract static class SeriesFunctionCommand<X> extends JTimeSeriesChartCommand {
+    private static final class SetColor extends SeriesStateCommand<ColorScheme.KnownColor> {
 
-        final X value;
-        final X defaultValue;
+        public SetColor(ColorScheme.KnownColor color, SeriesState seriesState) {
+            super(color, seriesState);
+        }
 
-        public SeriesFunctionCommand(X value, X defaultValue) {
+        @Override
+        protected void putValue(int series) {
+            seriesState.withKnownColor(series, value);
+        }
+    }
+
+    private static abstract class SeriesStateCommand<X> extends JTimeSeriesChartCommand {
+
+        protected final X value;
+        protected final SeriesState seriesState;
+
+        protected SeriesStateCommand(X value, SeriesState seriesState) {
             this.value = value;
-            this.defaultValue = defaultValue;
+            this.seriesState = seriesState;
+        }
+
+        abstract protected void putValue(int series);
+
+        protected void update(JTimeSeriesChart chart) {
+            chart.invalidate();
         }
 
         @Override
-        public void execute(JTimeSeriesChart chart) {
-            int seriesCount = chart.getDataset().getSeriesCount();
-            List<X> result = new ArrayList<>(seriesCount);
-            SeriesFunction<X> function = get(chart);
+        public void execute(JTimeSeriesChart chart) throws Exception {
             ListSelectionModel selectionModel = chart.getSeriesSelectionModel();
-            for (int series = 0; series < seriesCount; series++) {
-                result.add(selectionModel.isSelectedIndex(series) ? value : function.apply(series));
+            for (int series = 0; series < chart.getDataset().getSeriesCount(); series++) {
+                if (selectionModel.isSelectedIndex(series)) {
+                    putValue(series);
+                }
             }
-            set(chart, SeriesFunction.array((X[]) result.toArray()));
+            update(chart);
         }
 
         @Override
         public boolean isEnabled(JTimeSeriesChart chart) {
-            ListSelectionModel selectionModel = chart.getSeriesSelectionModel();
-            if (selectionModel.isSelectionEmpty()) {
-                return false;
+            return !chart.getSeriesSelectionModel().isSelectionEmpty();
+        }
+    }
+
+    private static final class SeriesState {
+
+        private final Map<Integer, Map<Class<?>, Object>> data = new HashMap<>();
+
+        public SeriesState withPlotIndex(int series, int... list) {
+            for (int i = 0; i < list.length; i++) {
+                putValue(series + i, Integer.class, list[i]);
             }
-            return !all(selectionModel, get(chart));
+            return this;
         }
 
-        boolean all(ListSelectionModel selectionModel, SeriesFunction<X> function) {
-            int min = selectionModel.getMinSelectionIndex();
-            int max = selectionModel.getMaxSelectionIndex();
-            for (int series = min; series <= max; series++) {
-                if (selectionModel.isSelectedIndex(series)) {
-                    X result = function.apply(series);
-                    if ((result != null ? result : defaultValue) != value) {
-                        return false;
-                    }
+        public SeriesState withRendererType(int series, RendererType... list) {
+            for (int i = 0; i < list.length; i++) {
+                putValue(series + i, RendererType.class, list[i]);
+            }
+            return this;
+        }
+
+        public SeriesState withKnownColor(int series, ColorScheme.KnownColor... list) {
+            for (int i = 0; i < list.length; i++) {
+                putValue(series + i, ColorScheme.KnownColor.class, list[i]);
+            }
+            return this;
+        }
+
+        private <X> void putValue(int series, @Nonnull Class<X> clazz, @Nullable X value) {
+            Map<Class<?>, Object> tmp = data.get(series);
+            if (tmp == null) {
+                tmp = new HashMap<>();
+                data.put(series, tmp);
+            }
+            tmp.put(clazz, value);
+        }
+
+        @Nullable
+        private <X> X getValue(int series, @Nonnull Class<X> clazz) {
+            Map<Class<?>, Object> tmp = data.get(series);
+            return tmp != null ? clazz.cast(tmp.get(clazz)) : null;
+        }
+
+        public SeriesFunction<Integer> plotDispatcher() {
+            return new SeriesFunction<Integer>() {
+                @Override
+                public Integer apply(int series) {
+                    return getValue(series, Integer.class);
                 }
-            }
-            return true;
+            };
         }
 
-        abstract protected SeriesFunction<X> get(JTimeSeriesChart chart);
+        public SeriesFunction<RendererType> seriesRenderer() {
+            return new SeriesFunction<RendererType>() {
+                @Override
+                public RendererType apply(int series) {
+                    return getValue(series, RendererType.class);
+                }
+            };
+        }
 
-        abstract protected void set(JTimeSeriesChart chart, SeriesFunction<X> function);
+        public SeriesFunction<Color> seriesColorist(final JTimeSeriesChart chart) {
+            return new SeriesFunction<Color>() {
+                @Override
+                public Color apply(int series) {
+                    ColorScheme.KnownColor tmp = getValue(series, ColorScheme.KnownColor.class);
+                    return tmp != null ? chart.getColorSchemeSupport().getLineColor(tmp) : chart.getColorSchemeSupport().getLineColor(series);
+                }
+            };
+        }
     }
 
     private static final class CustomTooltip extends JLabel {
