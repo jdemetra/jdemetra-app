@@ -13,16 +13,21 @@ import ec.ui.view.tsprocessing.WkComponentsUI;
 import ec.ui.view.tsprocessing.UcarimaUI;
 import ec.ui.view.tsprocessing.ArimaUI;
 import ec.satoolkit.ComponentDescriptor;
+import ec.satoolkit.GenericSaProcessingFactory;
 import ec.satoolkit.seats.SeatsResults;
-import ec.satoolkit.special.StmResults;
+import ec.satoolkit.special.StmDecomposition;
+import ec.satoolkit.special.StmEstimation;
 import ec.satoolkit.special.StmSpecification;
+import ec.tss.documents.DocumentManager;
 import ec.tss.html.IHtmlElement;
 import ec.tss.html.implementation.HtmlBsm;
 import ec.tss.sa.documents.StmDocument;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.arima.ArimaModel;
 import ec.tstoolkit.arima.IArimaModel;
+import ec.tstoolkit.information.InformationSet;
 import ec.tstoolkit.modelling.ModellingDictionary;
+import ec.tstoolkit.modelling.SeriesInfo;
 import ec.tstoolkit.sarima.SarimaModel;
 import ec.tstoolkit.stats.NiidTests;
 import ec.tstoolkit.timeseries.analysis.SlidingSpans;
@@ -48,8 +53,10 @@ import org.openide.util.lookup.ServiceProvider;
  */
 public class StructuralModelViewFactory extends SaDocumentViewFactory<StmSpecification, StmDocument> {
 
-    public static final String SELECTION = "Selection", STOCHASTIC = "Stochastic series"
-            , STM = "Structural model components",
+    public static final String SELECTION = "Selection", 
+            STOCHASTIC = "Stochastic series", 
+            COMPONENTS = "Components",
+            STM = "Structural model components",
             MODELBASED = "Model-based tests",
             WKANALYSIS = "WK analysis",
             WK_COMPONENTS = "Components",
@@ -58,7 +65,8 @@ public class StructuralModelViewFactory extends SaDocumentViewFactory<StmSpecifi
             WK_ERRORS = "Errors analysis";
     public static final Id DECOMPOSITION_SUMMARY = new LinearId(DECOMPOSITION);
     public static final Id DECOMPOSITION_SERIES = new LinearId(DECOMPOSITION, STOCHASTIC);
-    public static final Id DECOMPOSITION_STM = new LinearId(DECOMPOSITION, STM);
+    public static final Id DECOMPOSITION_CMPSERIES = new LinearId(DECOMPOSITION, COMPONENTS);
+   public static final Id DECOMPOSITION_STM = new LinearId(DECOMPOSITION, STM);
     public static final Id DECOMPOSITION_WK_COMPONENTS = new LinearId(DECOMPOSITION, WKANALYSIS, WK_COMPONENTS);
     public static final Id DECOMPOSITION_WK_FINALS = new LinearId(DECOMPOSITION, WKANALYSIS, WK_FINALS);
     public static final Id DECOMPOSITION_TESTS = new LinearId(DECOMPOSITION, MODELBASED);
@@ -178,17 +186,17 @@ public class StructuralModelViewFactory extends SaDocumentViewFactory<StmSpecifi
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 301000)
-    public static class ModelSelectionFactory extends ItemFactory<StmResults> {
+    public static class ModelSelectionFactory extends ItemFactory<StmEstimation> {
 
         public ModelSelectionFactory() {
-            super(MODEL_SELECTION, new DefaultInformationExtractor<StmDocument, StmResults>() {
+            super(MODEL_SELECTION, new DefaultInformationExtractor<StmDocument, StmEstimation>() {
                 @Override
-                public StmResults retrieve(StmDocument source) {
-                    return source.getDecompositionPart();
+                public StmEstimation retrieve(StmDocument source) {
+                    return source.getEstimationPart();
                 }
-            }, new HtmlItemUI<View, StmResults>() {
+            }, new HtmlItemUI<View, StmEstimation>() {
                 @Override
-                public IHtmlElement getHtmlElement(View host, StmResults information) {
+                public IHtmlElement getHtmlElement(View host, StmEstimation information) {
                     return new HtmlBsm(information);
                 }
             });
@@ -230,7 +238,7 @@ public class StructuralModelViewFactory extends SaDocumentViewFactory<StmSpecifi
             super(MODEL_RES_STATS, new DefaultInformationExtractor<StmDocument, NiidTests>() {
                 @Override
                 public NiidTests retrieve(StmDocument source) {
-                    TsData res = source.getDecompositionPart().getResiduals();
+                    TsData res = source.getEstimationPart().getResiduals();
                     int np = source.getPreprocessingPart() != null
                             ? source.getPreprocessingPart().description.getArimaComponent().getFreeParametersCount()
                             : 0;
@@ -276,14 +284,77 @@ public class StructuralModelViewFactory extends SaDocumentViewFactory<StmSpecifi
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 401000)
-    public static class DecompositionSeriesFactory extends ItemFactory<CompositeResults> {
+    public static class LinearizedSeriesFactory extends ItemFactory<CompositeResults> {
 
-        public DecompositionSeriesFactory() {
-            super(DECOMPOSITION_SERIES, saExtractor(), new SaTableUI(ModellingDictionary.getStochasticSeries(), null));
+        private static String[] generateItems() {
+            StringBuilder y = new StringBuilder();
+            y.append(DocumentManager.COMPOSITE).append("Series (lin)=,").append(InformationSet.item(GenericSaProcessingFactory.DECOMPOSITION, ModellingDictionary.Y_LIN))
+                    .append(',').append(InformationSet.item(GenericSaProcessingFactory.DECOMPOSITION, ModellingDictionary.Y_LIN)).append(SeriesInfo.F_SUFFIX);
+            StringBuilder t = new StringBuilder();
+            t.append(DocumentManager.COMPOSITE).append("Trend (lin)=,").append(ModellingDictionary.T_LIN)
+                    .append(',').append(ModellingDictionary.T_LIN).append(SeriesInfo.F_SUFFIX);
+            StringBuilder sa = new StringBuilder();
+            sa.append(DocumentManager.COMPOSITE).append("Seasonally adjusted (lin)=,").append(ModellingDictionary.SA_LIN)
+                    .append(',').append(ModellingDictionary.SA_LIN).append(SeriesInfo.F_SUFFIX);
+            StringBuilder s = new StringBuilder();
+            s.append(DocumentManager.COMPOSITE).append("Seasonal (lin)=,").append(ModellingDictionary.S_LIN)
+                    .append(',').append(ModellingDictionary.S_LIN).append(SeriesInfo.F_SUFFIX);
+            StringBuilder i = new StringBuilder();
+            i.append(DocumentManager.COMPOSITE).append("Irregular (lin)=,").append(ModellingDictionary.I_LIN)
+                    .append(',').append(ModellingDictionary.I_LIN).append(SeriesInfo.F_SUFFIX);
+            StringBuilder te = new StringBuilder();
+            te.append(DocumentManager.COMPOSITE).append("Trend (stde lin)=,")
+                    .append(ModellingDictionary.T_LIN).append(SeriesInfo.E_SUFFIX)
+                    .append(',').append(ModellingDictionary.T_LIN).append(SeriesInfo.EF_SUFFIX);
+            StringBuilder sae = new StringBuilder();
+            sae.append(DocumentManager.COMPOSITE).append("Seasonally adjusted (stde lin)=,")
+                    .append(ModellingDictionary.SA_LIN).append(SeriesInfo.E_SUFFIX)
+                    .append(',').append(ModellingDictionary.SA_LIN).append(SeriesInfo.EF_SUFFIX);
+            StringBuilder se = new StringBuilder();
+            se.append(DocumentManager.COMPOSITE).append("Seasonal (stde lin)=,")
+                    .append(ModellingDictionary.S_LIN).append(SeriesInfo.E_SUFFIX)
+                    .append(',').append(ModellingDictionary.S_LIN).append(SeriesInfo.EF_SUFFIX);
+            StringBuilder ie = new StringBuilder();
+            ie.append(DocumentManager.COMPOSITE).append("Irregular (stde lin)=,")
+                    .append(ModellingDictionary.I_LIN).append(SeriesInfo.E_SUFFIX)
+                    .append(',').append(ModellingDictionary.I_LIN).append(SeriesInfo.EF_SUFFIX);
+            return new String[]{y.toString(), sa.toString(), t.toString(), s.toString(), i.toString()/*, ye.toString()*/, sae.toString(), te.toString(), se.toString(), ie.toString()};
+        }
+
+        public LinearizedSeriesFactory() {
+            super(DECOMPOSITION_SERIES, saExtractor(), new GenericTableUI(false, generateItems()));
         }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 401010)
+    public static class ComponentsSeriesFactory extends ItemFactory<CompositeResults> {
+
+        private static String[] generateItems() {
+            StringBuilder y = new StringBuilder();
+            y.append(DocumentManager.COMPOSITE).append("Series (cmp)=,").append(ModellingDictionary.Y_CMP)
+                    .append(',').append(ModellingDictionary.Y_CMP).append(SeriesInfo.F_SUFFIX);
+            StringBuilder t = new StringBuilder();
+            t.append(DocumentManager.COMPOSITE).append("Trend (cmp)=,").append(ModellingDictionary.T_CMP)
+                    .append(',').append(ModellingDictionary.T_CMP).append(SeriesInfo.F_SUFFIX);
+            StringBuilder sa = new StringBuilder();
+            sa.append(DocumentManager.COMPOSITE).append("Seasonally adjusted (cmp)=,").append(ModellingDictionary.SA_CMP)
+                    .append(',').append(ModellingDictionary.SA_CMP).append(SeriesInfo.F_SUFFIX);
+            StringBuilder s = new StringBuilder();
+            s.append(DocumentManager.COMPOSITE).append("Seasonal (cmp)=,").append(ModellingDictionary.S_CMP)
+                    .append(',').append(ModellingDictionary.S_CMP).append(SeriesInfo.F_SUFFIX);
+            StringBuilder i = new StringBuilder();
+            i.append(DocumentManager.COMPOSITE).append("Irregular (cmp)=,").append(ModellingDictionary.I_CMP)
+                    .append(',').append(ModellingDictionary.I_CMP).append(SeriesInfo.F_SUFFIX);
+            return new String[]{y.toString(), sa.toString(), t.toString(), s.toString(), i.toString()};
+        }
+
+        public ComponentsSeriesFactory() {
+            super(DECOMPOSITION_CMPSERIES, saExtractor(), new GenericTableUI(false, generateItems()));
+        }
+    }
+
+
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 401020)
     public static class StmSeriesFactory extends ItemFactory<CompositeResults> {
 
         public StmSeriesFactory() {
@@ -316,10 +387,10 @@ public class StructuralModelViewFactory extends SaDocumentViewFactory<StmSpecifi
                 @Override
                 public ModelBasedUI.Information retrieve(StmDocument source) {
                     ModelBasedUI.Information info = new ModelBasedUI.Information();
-                    StmResults rslt = source.getDecompositionPart();
+                    StmDecomposition rslt = source.getDecompositionPart();
                     info.decomposition = rslt.getComponents();
                     info.ucm = rslt.getUcarimaModel();
-                    info.err = rslt.getLikelihood().getSer() * rslt.getResidualsScalingFactor();
+                    info.err = source.getEstimationPart().getLikelihood().getSer() * rslt.getResidualsScalingFactor();
                     return info;
                 }
             }, new ModelBasedUI());
@@ -443,7 +514,8 @@ public class StructuralModelViewFactory extends SaDocumentViewFactory<StmSpecifi
 
         @Override
         public TsData retrieve(StmDocument source) {
-            return source.getDecompositionPart().getResiduals();
+            StmEstimation stm = source.getEstimationPart();
+            return stm.getResiduals();
         }
     };
 
@@ -453,11 +525,11 @@ public class StructuralModelViewFactory extends SaDocumentViewFactory<StmSpecifi
 
         @Override
         protected Functions buildInfo(StmDocument source) {
-            StmResults stm = source.getDecompositionPart();
+            StmEstimation stm = source.getEstimationPart();
             if (stm == null) {
                 return null;
             } else {
-                return Functions.create(stm.likelihoodFunction(), source.getDecompositionPart().maxLikelihoodFunction());
+                return Functions.create(stm.likelihoodFunction(), stm.maxLikelihoodFunction());
             }
         }
     };
