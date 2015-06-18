@@ -15,6 +15,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
+import org.openide.util.WeakListeners;
 
 /**
  *
@@ -22,13 +24,15 @@ import java.util.Map;
  */
 public abstract class ThemeSupport extends SwingColorSchemeSupport implements IDisposable {
 
-    final PropertyChangeListener listener;
-    final Map<Integer, KnownColor> forcedLineColors;
-    ColorScheme localColorScheme;
-    DataFormat localDataFormat;
+    private final DemetraUI demetraUI;
+    private final PropertyChangeListener listener;
+    private final Map<Integer, KnownColor> forcedLineColors;
+    private ColorScheme localColorScheme;
+    private DataFormat localDataFormat;
 
     public ThemeSupport() {
-        this.listener = new Listener();
+        this.demetraUI = DemetraUI.getDefault();
+        this.listener = new DemetraUIListener();
         this.forcedLineColors = new HashMap<>();
         this.localColorScheme = null;
     }
@@ -41,27 +45,29 @@ public abstract class ThemeSupport extends SwingColorSchemeSupport implements ID
         // does nothing by default
     }
 
-    public void setLocalColorScheme(ColorScheme localColorScheme) {
+    public void setLocalColorScheme(@Nullable ColorScheme localColorScheme) {
         if (!Objects.equal(this.localColorScheme, localColorScheme)) {
             this.localColorScheme = localColorScheme;
             colorSchemeChanged();
         }
     }
 
+    @Nullable
     public ColorScheme getLocalColorScheme() {
         return localColorScheme;
     }
 
     @Override
     public ColorScheme getColorScheme() {
-        return localColorScheme != null ? localColorScheme : DemetraUI.getDefault().getColorScheme();
+        return localColorScheme != null ? localColorScheme : demetraUI.getColorScheme();
     }
 
+    @Nullable
     public DataFormat getLocalDataFormat() {
         return localDataFormat;
     }
 
-    public void setLocalDataFormat(DataFormat localDataFormat) {
+    public void setLocalDataFormat(@Nullable DataFormat localDataFormat) {
         if (!Objects.equal(this.localDataFormat, localDataFormat)) {
             this.localDataFormat = localDataFormat;
             dataFormatChanged();
@@ -69,13 +75,15 @@ public abstract class ThemeSupport extends SwingColorSchemeSupport implements ID
     }
 
     public DataFormat getDataFormat() {
-        return localDataFormat != null ? localDataFormat : DemetraUI.getDefault().getDataFormat();
+        return localDataFormat != null ? localDataFormat : demetraUI.getDataFormat();
     }
 
+    @Deprecated
     public void clearLineColors() {
         forcedLineColors.clear();
     }
 
+    @Deprecated
     public void setLineColor(int index, KnownColor color) {
         forcedLineColors.put(index, color);
     }
@@ -87,15 +95,15 @@ public abstract class ThemeSupport extends SwingColorSchemeSupport implements ID
     }
 
     public void register() {
-        DemetraUI.getDefault().addPropertyChangeListener(listener);
+        demetraUI.addPropertyChangeListener(WeakListeners.propertyChange(listener, this));
     }
 
+    @Deprecated
     @Override
     public void dispose() {
-        DemetraUI.getDefault().removePropertyChangeListener(listener);
     }
 
-    private class Listener implements PropertyChangeListener {
+    private final class DemetraUIListener implements PropertyChangeListener {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
