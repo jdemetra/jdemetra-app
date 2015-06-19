@@ -27,6 +27,9 @@ import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.tstoolkit.timeseries.regression.OutlierEstimation;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
+import static ec.ui.chart.JTimeSeriesChartUtil.newExportImageMenu;
+import static ec.ui.chart.JTimeSeriesChartUtil.newThemeSupport;
+import static ec.ui.chart.JTimeSeriesChartUtil.setSeriesColorist;
 import ec.ui.chart.TsXYDatasets;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.ObsFunction;
@@ -34,9 +37,6 @@ import ec.util.chart.ObsPredicate;
 import ec.util.chart.SeriesFunction;
 import ec.util.chart.SeriesPredicate;
 import ec.util.chart.swing.JTimeSeriesChart;
-import static ec.util.chart.swing.JTimeSeriesChartCommand.copyImage;
-import static ec.util.chart.swing.JTimeSeriesChartCommand.printImage;
-import static ec.util.chart.swing.JTimeSeriesChartCommand.saveImage;
 import ec.util.various.swing.JCommand;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -64,15 +64,10 @@ final class AnomalyDetectionChart extends JComponent {
 
     public AnomalyDetectionChart() {
         this.chart = new JTimeSeriesChart();
-        this.themeSupport = ThemeSupport.create(chart);
+        this.themeSupport = newThemeSupport(chart);
 
         chart.setLegendVisibilityPredicate(SeriesPredicate.alwaysFalse());
-        chart.setSeriesColorist(new SeriesFunction<Color>() {
-            @Override
-            public Color apply(int series) {
-                return chart.getColorSchemeSupport().getLineColor(ColorScheme.KnownColor.GRAY);
-            }
-        });
+        setSeriesColorist(chart, SeriesFunction.always(ColorScheme.KnownColor.GRAY));
         chart.setObsFormatter(new ObsFunction<String>() {
             @Override
             public String apply(int series, int obs) {
@@ -111,6 +106,13 @@ final class AnomalyDetectionChart extends JComponent {
         });
         chart.setComponentPopupMenu(newMenu().getPopupMenu());
 
+        enableProperties();
+
+        setLayout(new BorderLayout());
+        add(chart, BorderLayout.CENTER);
+    }
+
+    private void enableProperties() {
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -122,15 +124,15 @@ final class AnomalyDetectionChart extends JComponent {
             }
         });
         themeSupport.register();
-
-        setLayout(new BorderLayout());
-        add(chart, BorderLayout.CENTER);
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Event handlers">
     private void onModelChange() {
         chart.setDataset(model != null ? TsXYDatasets.from(model.getTs()) : null);
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
     @Nullable
     public Model getModel() {
         return model;
@@ -141,6 +143,7 @@ final class AnomalyDetectionChart extends JComponent {
         this.model = model;
         firePropertyChange(MODEL_PROPERTY, old, this.model);
     }
+    //</editor-fold>
 
     public static final class Model {
 
@@ -175,16 +178,8 @@ final class AnomalyDetectionChart extends JComponent {
         result.add(new CopyData().toAction(this)).setText("Copy data");
         result.add(new CopyOutliers().toAction(this)).setText("Copy outliers");
         result.addSeparator();
-        result.add(newExportMenu());
+        result.add(newExportImageMenu(chart));
 
-        return result;
-    }
-
-    private JMenu newExportMenu() {
-        JMenu result = new JMenu("Export image to");
-        result.add(printImage().toAction(chart)).setText("Printer...");
-        result.add(copyImage().toAction(chart)).setText("Clipboard");
-        result.add(saveImage().toAction(chart)).setText("File...");
         return result;
     }
     //</editor-fold>

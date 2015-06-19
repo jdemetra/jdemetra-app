@@ -9,14 +9,12 @@ import ec.tss.tsproviders.utils.DataFormat;
 import ec.ui.interfaces.IDisposable;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorScheme.KnownColor;
-import ec.util.chart.swing.JTimeSeriesChart;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.openide.util.WeakListeners;
 
@@ -121,47 +119,6 @@ public abstract class ThemeSupport extends SwingColorSchemeSupport implements ID
                     }
                     break;
             }
-        }
-    }
-
-    @Nonnull
-    public static ThemeSupport create(@Nonnull JTimeSeriesChart chart) {
-        return new ThemeSupportImpl(chart);
-    }
-
-    private static final class ThemeSupportImpl extends ThemeSupport {
-
-        private final JTimeSeriesChart chart;
-
-        public ThemeSupportImpl(JTimeSeriesChart chart) {
-            this.chart = chart;
-        }
-
-        @Override
-        protected void colorSchemeChanged() {
-            chart.setColorSchemeSupport(SwingColorSchemeSupport.from(getColorScheme()));
-        }
-
-        @Override
-        protected void dataFormatChanged() {
-            DataFormat df = getDataFormat();
-            try {
-                chart.setPeriodFormat(df.newDateFormat());
-            } catch (IllegalArgumentException ex) {
-                // do nothing?
-            }
-            try {
-                chart.setValueFormat(df.newNumberFormat());
-            } catch (IllegalArgumentException ex) {
-                // do nothing?
-            }
-        }
-
-        @Override
-        public void register() {
-            colorSchemeChanged();
-            dataFormatChanged();
-            super.register();
         }
     }
 }
