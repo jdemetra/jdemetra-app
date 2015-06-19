@@ -24,7 +24,7 @@
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
         <findbugs-maven-plugin.version>3.0.0</findbugs-maven-plugin.version>
         <animal-sniffer-maven-plugin.version>1.14</animal-sniffer-maven-plugin.version>
-        <nbm-maven-plugin.version>3.13.2</nbm-maven-plugin.version>
+        <nbm-maven-plugin.version>3.14</nbm-maven-plugin.version>
         <!-- < plugins versions -->
     </properties>
 

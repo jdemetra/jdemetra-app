@@ -137,7 +137,6 @@ public abstract class AChartView extends JComponent implements IColorSchemeAble,
 
     @Override
     public void dispose() {
-        themeSupport.dispose();
     }
 
     // EVENT HANDLERS >

@@ -42,7 +42,7 @@ import org.jfree.data.xy.IntervalXYDataset;
  *
  * @author Philippe Charles
  */
-abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<IntervalXYDataset, ColorSchemeSupport<? extends Color>> {
+abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<IntervalXYDataset, Color> {
 
     // PROPERTIES DEFINITION
     public static final String COLOR_SCHEME_SUPPORT_PROPERTY = "colorSchemeSupport";
@@ -51,7 +51,9 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     public static final String VALUE_FORMAT_PROPERTY = "valueFormat";
     public static final String SERIES_RENDERER_PROPERTY = "seriesRenderer";
     public static final String SERIES_FORMATTER_PROPERTY = "seriesFormatter";
+    public static final String SERIES_COLORIST_PROPERTY = "seriesColorist";
     public static final String OBS_FORMATTER_PROPERTY = "obsFormatter";
+    public static final String OBS_COLORIST_PROPERTY = "obsColorist";
     public static final String DASH_PREDICATE_PROPERTY = "dashPredicate";
     public static final String LEGEND_VISIBILITY_PREDICATE_PROPERTY = "legendVisibilityPredicate";
     public static final String PLOT_DISPATCHER_PROPERTY = "plotDispatcher";
@@ -89,8 +91,8 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     // RESOURCES
     protected final ObsPredicate existPredicate;
     protected final ObsPredicate defaultObsHighlighter;
-    protected final ObsFunction valueFormatter;
-    protected final ObsFunction periodFormatter;
+    protected final ObsFunction<String> valueFormatter;
+    protected final ObsFunction<String> periodFormatter;
     // PROPERTIES
     protected ColorSchemeSupport<? extends Color> colorSchemeSupport;
     protected LineStrokes lineStrokes;
@@ -98,7 +100,9 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     protected NumberFormat valueFormat;
     protected SeriesFunction<RendererType> seriesRenderer;
     protected SeriesFunction<String> seriesFormatter;
+    protected SeriesFunction<Color> seriesColorist;
     protected ObsFunction<String> obsFormatter;
+    protected ObsFunction<Color> obsColorist;
     protected ObsPredicate dashPredicate;
     protected SeriesPredicate legendVisibilityPredicate;
     protected SeriesFunction<Integer> plotDispatcher;
@@ -115,7 +119,7 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     protected DisplayTrigger tooltipTrigger;
     protected DisplayTrigger crosshairTrigger;
 
-    public ATimeSeriesChart(List<RendererType> supportedRendererTypes) {
+    protected ATimeSeriesChart(List<RendererType> supportedRendererTypes) {
         this.existPredicate = new ExistPredicate();
         this.defaultObsHighlighter = new DefaultObsHighlighter();
         this.valueFormatter = new ValueFormatter();
@@ -127,7 +131,9 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
         this.valueFormat = new DecimalFormat(DEFAULT_VALUE_FORMAT);
         this.seriesRenderer = DEFAULT_SERIES_RENDERER;
         this.seriesFormatter = DEFAULT_SERIES_FORMATTER;
+        this.seriesColorist = seriesColoristUsingColorScheme();
         this.obsFormatter = DEFAULT_OBS_FORMATTER;
+        this.obsColorist = obsColoristUsingSeriesColorist();
         this.dashPredicate = DEFAULT_DASH_PREDICATE;
         this.legendVisibilityPredicate = DEFAULT_LEGEND_VISIBILITY_PREDICATE;
         this.plotDispatcher = DEFAULT_PLOT_DISPATCHER;
@@ -284,6 +290,18 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     }
 
     @Override
+    public SeriesFunction<Color> getSeriesColorist() {
+        return seriesColorist;
+    }
+
+    @Override
+    public void setSeriesColorist(SeriesFunction<Color> seriesColorist) {
+        SeriesFunction<Color> old = this.seriesColorist;
+        this.seriesColorist = seriesColorist != null ? seriesColorist : seriesColoristUsingColorScheme();
+        firePropertyChange(SERIES_COLORIST_PROPERTY, old, this.seriesColorist);
+    }
+
+    @Override
     public ObsFunction<String> getObsFormatter() {
         return obsFormatter;
     }
@@ -293,6 +311,18 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
         ObsFunction<String> old = this.obsFormatter;
         this.obsFormatter = obsFormatter != null ? obsFormatter : DEFAULT_OBS_FORMATTER;
         firePropertyChange(OBS_FORMATTER_PROPERTY, old, this.obsFormatter);
+    }
+
+    @Override
+    public ObsFunction<Color> getObsColorist() {
+        return obsColorist;
+    }
+
+    @Override
+    public void setObsColorist(ObsFunction<Color> obsColorist) {
+        ObsFunction<Color> old = this.obsColorist;
+        this.obsColorist = obsColorist != null ? obsColorist : obsColoristUsingSeriesColorist();
+        firePropertyChange(OBS_COLORIST_PROPERTY, old, this.obsColorist);
     }
 
     @Override
@@ -479,5 +509,23 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
         public String apply(int series, int obs) {
             return periodFormat.format(dataset.getX(series, obs));
         }
+    }
+
+    private SeriesFunction<Color> seriesColoristUsingColorScheme() {
+        return new SeriesFunction<Color>() {
+            @Override
+            public Color apply(int series) {
+                return colorSchemeSupport.getLineColor(series);
+            }
+        };
+    }
+
+    private ObsFunction<Color> obsColoristUsingSeriesColorist() {
+        return new ObsFunction<Color>() {
+            @Override
+            public Color apply(int series, int obs) {
+                return seriesColorist.apply(series);
+            }
+        };
     }
 }

@@ -19,7 +19,6 @@ import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.datatransfer.TssTransferSupport;
-import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IParam;
 import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.utilities.Arrays2;
@@ -197,17 +196,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
     //<editor-fold defaultstate="collapsed" desc="Event Handlers">
     @Override
     protected void onDataFormatChange() {
-        DataFormat df = themeSupport.getDataFormat();
-        try {
-            chartPanel.setPeriodFormat(df.newDateFormat());
-        } catch (IllegalArgumentException ex) {
-            // do nothing?
-        }
-        try {
-            chartPanel.setValueFormat(df.newNumberFormat());
-        } catch (IllegalArgumentException ex) {
-            // do nothing?
-        }
+        JTimeSeriesChartUtil.setDataFormat(chartPanel, themeSupport.getDataFormat());
     }
 
     @Override

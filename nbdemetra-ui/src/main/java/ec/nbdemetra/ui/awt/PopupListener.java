@@ -6,6 +6,7 @@ package ec.nbdemetra.ui.awt;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 
 /**
@@ -41,19 +42,24 @@ public abstract class PopupListener extends MouseAdapter {
      * @return
      */
     protected abstract JPopupMenu getPopup(MouseEvent e);
-    
+
+    /**
+     *
+     * @deprecated use
+     * {@link JComponent#setComponentPopupMenu(javax.swing.JPopupMenu)} instead
+     */
+    @Deprecated
     public static class PopupAdapter extends PopupListener {
 
         final JPopupMenu menu;
-        
+
         public PopupAdapter(JPopupMenu menu) {
             this.menu = menu;
         }
-        
+
         @Override
         protected JPopupMenu getPopup(MouseEvent e) {
             return menu;
         }
-        
     }
 }

@@ -18,25 +18,47 @@ package ec.util.chart.swing;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Stroke;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.AbstractList;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
+import java.util.zip.GZIPOutputStream;
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartTransferable;
+import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.LegendItemEntity;
@@ -364,6 +386,80 @@ public final class Charts {
         JTimeSeriesRendererSupport.drawToolTip(g2, x, y, anchorOffset, label, font, paint, fillPaint, outlinePaint, outlineStroke);
     }
 
+    public static void copyChart(@Nonnull ChartPanel chartPanel) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Insets insets = chartPanel.getInsets();
+        int w = chartPanel.getWidth() - insets.left - insets.right;
+        int h = chartPanel.getHeight() - insets.top - insets.bottom;
+        Transferable selection = new ChartTransferable2(chartPanel.getChart(), w, h,
+                chartPanel.getMinimumDrawWidth(), chartPanel.getMinimumDrawHeight(),
+                chartPanel.getMaximumDrawWidth(), chartPanel.getMaximumDrawHeight(), true);
+        clipboard.setContents(selection, null);
+    }
+
+    public static void saveChart(@Nonnull ChartPanel chartPanel) throws IOException {
+        JFileChooser fileChooser = new JFileChooser();
+        FileFilter defaultFilter = new FileNameExtensionFilter("PNG (.png)", "png");
+        fileChooser.addChoosableFileFilter(defaultFilter);
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JPG (.jpg) (.jpeg)", "jpg", "jpeg"));
+        if (Charts.canWriteChartAsSVG()) {
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("SVG (.svg)", "svg"));
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Compressed SVG (.svgz)", "svgz"));
+        }
+        fileChooser.setFileFilter(defaultFilter);
+        File currentDir = chartPanel.getDefaultDirectoryForSaveAs();
+        if (currentDir != null) {
+            fileChooser.setCurrentDirectory(currentDir);
+        }
+        if (fileChooser.showSaveDialog(chartPanel) == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try (OutputStream stream = Files.newOutputStream(file.toPath())) {
+                writeChart(getMediaType(file), stream, chartPanel.getChart(), chartPanel.getWidth(), chartPanel.getHeight());
+            }
+            chartPanel.setDefaultDirectoryForSaveAs(fileChooser.getCurrentDirectory());
+        }
+    }
+
+    public static void writeChart(@Nonnull String mediaType, @Nonnull OutputStream stream, @Nonnull JFreeChart chart, @Nonnegative int width, @Nonnegative int height) throws IOException {
+        switch (mediaType) {
+            case SVG_MEDIA_TYPE:
+                Charts.writeChartAsSVG(stream, chart, width, height);
+                break;
+            case SVG_COMP_MEDIA_TYPE:
+                try (GZIPOutputStream gzip = new GZIPOutputStream(stream)) {
+                    Charts.writeChartAsSVG(gzip, chart, width, height);
+                }
+                break;
+            case JPEG_MEDIA_TYPE:
+                ChartUtilities.writeChartAsJPEG(stream, chart, width, height);
+                break;
+            case PNG_MEDIA_TYPE:
+                ChartUtilities.writeChartAsPNG(stream, chart, width, height);
+                break;
+            default:
+                throw new IOException("Media type '" + mediaType + "' not supported");
+        }
+    }
+
+    public static void writeChartAsSVG(@Nonnull OutputStream stream, @Nonnull JFreeChart chart, @Nonnegative int width, @Nonnegative int height) throws IOException {
+        String svg = generateSVG(chart, width, height);
+        try (OutputStreamWriter writer = new OutputStreamWriter(stream)) {
+            writer.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+            writer.write("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
+            writer.write(svg + "\n");
+            writer.flush();
+        }
+    }
+
+    public static boolean canWriteChartAsSVG() {
+        try {
+            Class.forName("org.jfree.graphics2d.svg.SVGGraphics2D");
+            return true;
+        } catch (ClassNotFoundException ex) {
+            return false;
+        }
+    }
+
     //<editor-fold defaultstate="collapsed" desc="Internal Implementation">
     private static final ItemLabelPosition TOP_LEFT = new ItemLabelPosition(ItemLabelAnchor.OUTSIDE4, TextAnchor.TOP_LEFT);
     private static final ItemLabelPosition TOP_RIGHT = new ItemLabelPosition(ItemLabelAnchor.OUTSIDE8, TextAnchor.TOP_RIGHT);
@@ -426,6 +522,84 @@ public final class Charts {
         @Override
         public Number getEndY(int series, int item) {
             throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+
+    private static String generateSVG(JFreeChart chart, int width, int height) throws IOException {
+        try {
+            Class<?> svgGraphics2d = Class.forName("org.jfree.graphics2d.svg.SVGGraphics2D");
+            Graphics2D g2 = (Graphics2D) svgGraphics2d.getConstructor(int.class, int.class).newInstance(width, height);
+            // we suppress shadow generation, because SVG is a vector format and
+            // the shadow effect is applied via bitmap effects...
+            g2.setRenderingHint(JFreeChart.KEY_SUPPRESS_SHADOW_GENERATION, true);
+            chart.draw(g2, new Rectangle2D.Double(0, 0, width, height));
+            return (String) g2.getClass().getMethod("getSVGElement").invoke(g2);
+        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            throw new IOException("Cannot generate SVG", ex);
+        }
+    }
+
+    private static final String PNG_MEDIA_TYPE = "image/png";
+    private static final String JPEG_MEDIA_TYPE = "image/jpeg";
+    private static final String SVG_MEDIA_TYPE = "image/svg+xml";
+    private static final String SVG_COMP_MEDIA_TYPE = "image/svg+xml-compressed";
+
+    @Nonnull
+    private static String getMediaType(@Nonnull File file) {
+        String ext = file.getPath().toLowerCase(Locale.ROOT);
+        if (ext.endsWith(".png")) {
+            return PNG_MEDIA_TYPE;
+        }
+        if (ext.endsWith(".jpeg") || ext.endsWith(".jpg")) {
+            return JPEG_MEDIA_TYPE;
+        }
+        if (ext.endsWith(".svg")) {
+            return SVG_MEDIA_TYPE;
+        }
+        if (ext.endsWith(".svgz")) {
+            return SVG_COMP_MEDIA_TYPE;
+        }
+        return PNG_MEDIA_TYPE;
+    }
+
+    private static final class ChartTransferable2 extends ChartTransferable {
+
+        private static final DataFlavor SVG_DATA_FLAVOR = new DataFlavor(SVG_MEDIA_TYPE + "; charset=unicode; class=java.lang.String", "Scalable Vector Graphics");
+
+        private final JFreeChart chart;
+        private final int width;
+        private final int height;
+
+        public ChartTransferable2(JFreeChart chart, int width, int height, int minDrawW, int minDrawH, int maxDrawW, int maxDrawH, boolean cloneData) {
+            super(chart, width, height, minDrawW, minDrawH, maxDrawW, maxDrawH, cloneData);
+            this.chart = chart;
+            this.width = width;
+            this.height = height;
+        }
+
+        @Override
+        public DataFlavor[] getTransferDataFlavors() {
+            DataFlavor[] parent = super.getTransferDataFlavors();
+            DataFlavor[] result = new DataFlavor[parent.length + 1];
+            System.arraycopy(parent, 0, result, 0, parent.length);
+            result[parent.length] = SVG_DATA_FLAVOR;
+            return result;
+        }
+
+        @Override
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
+            return super.isDataFlavorSupported(flavor) || SVG_DATA_FLAVOR.equals(flavor);
+        }
+
+        @Override
+        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+            if (SVG_DATA_FLAVOR.equals(flavor)) {
+                try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+                    writeChartAsSVG(stream, chart, width, height);
+                    return new String(stream.toByteArray(), StandardCharsets.UTF_8);
+                }
+            }
+            return super.getTransferData(flavor);
         }
     }
     //</editor-fold>

@@ -109,7 +109,6 @@ public abstract class ATsControl extends JComponent2 implements ITsControl, Clip
 
     @Override
     public void dispose() {
-        themeSupport.dispose();
     }
 
     @Override

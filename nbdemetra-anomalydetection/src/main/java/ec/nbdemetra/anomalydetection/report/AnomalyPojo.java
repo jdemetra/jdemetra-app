@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.anomalydetection.report;
 
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import java.text.DecimalFormat;
 
@@ -103,7 +104,7 @@ public class AnomalyPojo {
 //        } else {
 //            result += String.format("%1$-" + (NAME_LEN+3)+"s \t ", tsName);
 //        }
-        result.append(tsName).append('\t');
+        result.append(MultiLineNameUtil.join(tsName)).append('\t');
         result.append(period).append('\t');
         result.append(df.format(absoluteError)).append('\t');
         result.append(df.format(relativeError));

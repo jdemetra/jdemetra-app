@@ -44,6 +44,7 @@ import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -119,7 +120,9 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         onValueFormatChange();
         onSeriesRendererChange();
         onSeriesFormatterChange();
+        onSeriesColoristChange();
         onObsFormatterChange();
+        onObsColoristChange();
         onDashPredicateChange();
         onLegendVisibilityPredicateChange();
         onPlotDispatcherChange();
@@ -213,7 +216,15 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         notification.forceRefresh();
     }
 
+    private void onSeriesColoristChange() {
+        notification.forceRefresh();
+    }
+
     private void onObsFormatterChange() {
+        notification.forceRefresh();
+    }
+
+    private void onObsColoristChange() {
         notification.forceRefresh();
     }
 
@@ -364,7 +375,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     private void onRevealObsChange() {
         notification.forceRefresh();
     }
-    
+
     private void onComponentPopupMenuChange() {
         chartPanel.setPopupMenu(getComponentPopupMenu());
     }
@@ -411,17 +422,22 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     //<editor-fold defaultstate="collapsed" desc="TimeSeriesChart Implementation">
     @Override
     public void copyImage() {
-        chartPanel.doCopy();
+        Charts.copyChart(chartPanel);
     }
 
     @Override
     public void saveImage() throws IOException {
-        chartPanel.doSaveAs();
+        Charts.saveChart(chartPanel);
     }
 
     @Override
     public void printImage() {
         chartPanel.createChartPrintJob();
+    }
+
+    @Override
+    public void writeImage(String mediaType, OutputStream stream) throws IOException {
+        Charts.writeChart(mediaType, stream, chartPanel.getChart(), chartPanel.getWidth(), chartPanel.getHeight());
     }
     //</editor-fold>
 
@@ -584,18 +600,23 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
             return colorSchemeSupport.getPlotColor();
         }
 
-        @Override
-        public Color getSeriesColor(int series) {
-            int index = r.realIndexOf(series);
-            Color color = colorSchemeSupport.getLineColor(index);
+        private Color applySelection(int index, Color color) {
             return seriesSelectionModel.isSelectionEmpty() ? color : seriesSelectionModel.isSelectedIndex(index) ? withAlpha(color, SELECTED_ALPHA) : withAlpha(color, NOT_SELECTED_ALPHA);
         }
 
         @Override
+        public Color getSeriesColor(int series) {
+            int index = r.realIndexOf(series);
+            Color color = seriesColorist.apply(index);
+            return applySelection(index, color != null ? color : Color.BLACK);
+        }
+
+        @Override
         public Color getObsColor(int series, int item) {
-            Color color = getSeriesColor(series);
-            boolean dash = dashPredicate.apply(r.realIndexOf(series), item);
-            return dash ? color.darker() : color;
+            int index = r.realIndexOf(series);
+            Color color = obsColorist.apply(index, item);
+            boolean dash = dashPredicate.apply(index, item);
+            return applySelection(index, dash && color != null ? color.darker() : color);
         }
 
         @Override
@@ -829,8 +850,14 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
                     case SERIES_FORMATTER_PROPERTY:
                         onSeriesFormatterChange();
                         break;
+                    case SERIES_COLORIST_PROPERTY:
+                        onSeriesColoristChange();
+                        break;
                     case OBS_FORMATTER_PROPERTY:
                         onObsFormatterChange();
+                        break;
+                    case OBS_COLORIST_PROPERTY:
+                        onObsColoristChange();
                         break;
                     case DASH_PREDICATE_PROPERTY:
                         onDashPredicateChange();

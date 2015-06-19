@@ -14,6 +14,7 @@
     <properties>
         <jna.version>3.5.2</jna.version>
         <jfreechart.version>1.0.19</jfreechart.version>
+        <jfreesvg.version>3.0</jfreesvg.version>
     </properties>
 
     <dependencyManagement>
@@ -32,6 +33,11 @@
                         <artifactId>itext</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.jfree</groupId>
+                <artifactId>jfreesvg</artifactId>
+                <version>${jfreesvg.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
@@ -64,6 +70,11 @@
             <artifactId>jsr305</artifactId>
             <optional>true</optional>
         </dependency>   
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreesvg</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
 </project>
