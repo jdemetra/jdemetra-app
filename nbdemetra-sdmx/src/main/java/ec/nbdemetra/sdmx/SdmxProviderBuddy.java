@@ -72,7 +72,20 @@ public class SdmxProviderBuddy extends AbstractDataSourceProviderBuddy implement
                 .paths(loader.getPaths())
                 .directories(false)
                 .add();
-        b.withAutoCompletion().select(bean, "factory").source(CunningPlanFactory.NAME).display("Factory").description("The factory used to extract the data.").add();
+        result.add(b.build());
+
+        b.reset("Options");
+        b.withAutoCompletion()
+                .select(bean, "factory")
+                .source(CunningPlanFactory.NAME)
+                .display("Factory")
+                .description("The factory used to extract the data.")
+                .add();
+        b.with(String.class)
+                .select(bean, "titleAttribute")
+                .display("Title attribute")
+                .description("The attribute used as a time series title.")
+                .add();
         result.add(b.build());
 
         return result;
