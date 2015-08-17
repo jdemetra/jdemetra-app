@@ -1,28 +1,28 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  *
  * http://ec.europa.eu/idabc/eupl
  *
- * Unless required by applicable law or agreed to in writing, software 
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.ui;
 
-import ec.nbdemetra.core.GlobalService;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
+import ec.nbdemetra.core.GlobalService;
 import static ec.nbdemetra.ui.Jdk6Functions.colorSchemeDisplayName;
 import static ec.nbdemetra.ui.Jdk6Functions.colorSchemeName;
 import static ec.nbdemetra.ui.Jdk6Functions.namedServiceDisplayName;
@@ -30,6 +30,7 @@ import static ec.nbdemetra.ui.Jdk6Functions.namedServiceName;
 import ec.nbdemetra.ui.awt.ListenableBean;
 import ec.nbdemetra.ui.tsaction.ChartGridTsAction;
 import ec.nbdemetra.ui.tsaction.ITsAction;
+import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;
@@ -109,6 +110,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     // INTERNAL STUFF
     private static final Ordering<ColorScheme> COLOR_SCHEME_ORDERING = Ordering.natural().onResultOf(colorSchemeDisplayName());
     private static final Ordering<? super ITsAction> TS_ACTION_ORDERING = Ordering.natural().onResultOf(namedServiceDisplayName());
+    private static final Ordering<? super ITsSave> TS_SAVE_ORDERING = Ordering.natural().onResultOf(namedServiceDisplayName());
     // PROPERTIES
     private final ConfigBean properties;
 
@@ -146,7 +148,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
         this.properties.showUnavailableTsProviders = show;
         firePropertyChange(SHOW_UNAVAILABLE_TSPROVIDER_PROPERTY, old, this.properties.showUnavailableTsProviders);
     }
-    
+
     public boolean isShowTsProviderNodes() {
         return properties.showTsProviderNodes;
     }
@@ -305,6 +307,10 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
 
     public List<? extends ITsAction> getTsActions() {
         return TS_ACTION_ORDERING.sortedCopy(Lookup.getDefault().lookupAll(ITsAction.class));
+    }
+
+    public List<? extends ITsSave> getTsSave() {
+        return TS_SAVE_ORDERING.sortedCopy(Lookup.getDefault().lookupAll(ITsSave.class));
     }
 
     public ColorScheme getColorScheme() {
