@@ -119,6 +119,6 @@ public class DhmsPropertyEditor extends PropertyEditorSupport {
         int hours = Integer.parseInt(m.group(2));
         int minutes = Integer.parseInt(m.group(3));
         int seconds = Integer.parseInt(m.group(4));
-        return (((days * 24 + hours) * 60 + minutes) * 60 + seconds) * 1000;
+        return (((days * 24L + hours) * 60 + minutes) * 60 + seconds) * 1000;
     }
 }
