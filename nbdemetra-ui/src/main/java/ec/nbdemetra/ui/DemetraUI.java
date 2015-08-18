@@ -215,7 +215,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
 
     public void setGrowthLastYears(Integer lastYears) {
         Integer old = this.properties.growthLastYears;
-        properties.growthLastYears = GROWTH_LAST_YEARS != null ? lastYears : GROWTH_LAST_YEARS.defaultValue();
+        properties.growthLastYears = lastYears != null ? lastYears : GROWTH_LAST_YEARS.defaultValue();
         firePropertyChange(GROWTH_CHART_LENGTH_PROPERTY, old, properties.growthLastYears);
     }
 
@@ -225,7 +225,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
 
     public void setSpectralLastYears(Integer lastYears) {
         Integer old = this.properties.spectralLastYears;
-        properties.spectralLastYears = SPECTRAL_LAST_YEARS != null ? lastYears : SPECTRAL_LAST_YEARS.defaultValue();
+        properties.spectralLastYears = lastYears != null ? lastYears : SPECTRAL_LAST_YEARS.defaultValue();
         firePropertyChange(SPECTRAL_YEARS_PROPERTY, old, properties.spectralLastYears);
     }
 
@@ -235,7 +235,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
 
     public void setStabilityLength(Integer length) {
         Integer old = this.properties.stabilityLength;
-        properties.stabilityLength = STABILITY_LENGTH != null ? length : STABILITY_LENGTH.defaultValue();
+        properties.stabilityLength = length != null ? length : STABILITY_LENGTH.defaultValue();
         firePropertyChange(STABILITY_YEARS_PROPERTY, old, properties.stabilityLength);
     }
 
