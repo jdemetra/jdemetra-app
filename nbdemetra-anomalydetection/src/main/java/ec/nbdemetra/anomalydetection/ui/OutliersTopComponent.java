@@ -184,13 +184,19 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
                 runButton.setEnabled(false);
                 break;
             case DONE:
-            case PENDING:
                 runButton.setEnabled(!grid.getTsCollection().isEmpty());
                 makeBusy(false);
-                NotifyUtil.show("Done !", "Processed " + grid.getTsCollection().getCount() + " items in " + stopwatch.stop().toString(), MessageType.SUCCESS, null, null, null);
+                try {
+                    NotifyUtil.show("Done !", "Processed " + grid.getTsCollection().getCount() + " items in " + stopwatch.stop().toString(), MessageType.SUCCESS, null, null, null);
+                } catch (IllegalStateException e) {
+                }
+
                 if (!active) {
                     requestAttention(false);
                 }
+                break;
+            case PENDING:
+                runButton.setEnabled(!grid.getTsCollection().isEmpty());
         }
     }
     // </editor-fold>

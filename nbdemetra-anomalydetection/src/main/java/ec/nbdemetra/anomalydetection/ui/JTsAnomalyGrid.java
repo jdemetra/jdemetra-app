@@ -26,11 +26,11 @@ import ec.tstoolkit.modelling.arima.tramo.TramoException;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import ec.tstoolkit.timeseries.regression.OutlierEstimation;
 import ec.tstoolkit.timeseries.regression.OutlierType;
-import ec.ui.grid.JTsGrid;
-import ec.ui.grid.TsGridObs;
 import static ec.tstoolkit.timeseries.simplets.TsDataTableInfo.Empty;
 import static ec.tstoolkit.timeseries.simplets.TsDataTableInfo.Missing;
 import static ec.tstoolkit.timeseries.simplets.TsDataTableInfo.Valid;
+import ec.ui.grid.JTsGrid;
+import ec.ui.grid.TsGridObs;
 import ec.ui.interfaces.ITsGrid;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -75,8 +75,8 @@ public class JTsAnomalyGrid extends JComponent {
     private PreprocessingModel model;
     private DefaultTransformationType transformation;
     private TsCollection tsCollection;
-    private TramoSpecification defaultSpec = TramoSpecification.TR4.clone();
-    private TramoSpecification spec = TramoSpecification.TR4.clone();
+    private TramoSpecification defaultSpec = TramoSpecification.TRfull.clone();
+    private TramoSpecification spec = TramoSpecification.TRfull.clone();
     private double criticalValue = .0;
     private boolean defaultCritical = true;
     private ProgressHandle progressHandle;
@@ -154,7 +154,7 @@ public class JTsAnomalyGrid extends JComponent {
     }
 
     public void setZoomPercentage(int percentage) {
-        grid.zoom(percentage);
+        grid.setZoomRatio(percentage);
     }
 
     public int getZoomPercentage() {
@@ -348,8 +348,14 @@ public class JTsAnomalyGrid extends JComponent {
                 if (tsCollection.get(i).getTsData().getLength() == 0) {
                     outliers.add(i, null);
                 } else {
+                    OutlierEstimation[] o;
                     model = preprocessor.process(tsCollection.get(i).getTsData(), null);
-                    OutlierEstimation[] o = model.outliersEstimation(true, false);
+                    if (model != null) {
+                        o = model.outliersEstimation(true, false);
+                    } else {
+                        o = null;
+                    }
+                    
                     if (o != null && o.length > 0) {
                         outliers.add(i, o);
                     } else {

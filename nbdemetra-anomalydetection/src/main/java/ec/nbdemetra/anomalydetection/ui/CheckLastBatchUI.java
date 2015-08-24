@@ -252,25 +252,26 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
     // <editor-fold defaultstate="collapsed" desc="Create Spec Change Button">
     private JButton createSpecDropDownButton(final JTsCheckLastList view) {
         final JPopupMenu addPopup = new JPopupMenu();
-        String[] specs = {"TR0", "TR1", "TR2", "TR3", "TR4", "TR5"};
+        TramoSpecification[] specs = TramoSpecification.allSpecifications();
         for (int i = 0; i < specs.length; ++i) {
-            JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(specs[i]);
-            menuItem.setName(Integer.toString(i));
-            menuItem.addActionListener(new AbstractAction(String.valueOf(i)) {
+            String name = specs[i].toString();
+            JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(name);
+            menuItem.setName(name);
+            menuItem.addActionListener(new AbstractAction(name) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     TramoSpecification s = TramoSpecification.TR0.clone();
-                    int index = Integer.parseInt(String.valueOf(getValue(NAME)));
+                    JCheckBoxMenuItem source = (JCheckBoxMenuItem)e.getSource();
                     try {
-                        s = (TramoSpecification) TramoSpecification.class.getDeclaredField("TR" + index).get(new TramoSpecification());
+                        s = (TramoSpecification) TramoSpecification.class.getDeclaredField(source.getText()).get(new TramoSpecification());
                     } catch (IllegalAccessException | NoSuchFieldException | SecurityException ex) {
-                        LOGGER.error("Tramo Specification [TR" + index + "] can't be accessed !");
+                        LOGGER.error("Tramo Specification " + source.getText() + " can't be accessed !");
                     }
                     view.setSpec(s);
                 }
             });
-            menuItem.setState(i == 4);
-            menuItem.setEnabled(i != 4);
+            menuItem.setState(i == specs.length-1);
+            menuItem.setEnabled(i != specs.length-1);
             addPopup.add(menuItem);
         }
         view.addPropertyChangeListener(JTsCheckLastList.SPEC_CHANGE, new PropertyChangeListener() {
@@ -279,7 +280,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
                 refreshNode();
                 for (Component o : addPopup.getComponents()) {
                     JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
-                    item.setState(view.getSpec().toString().equals("TR" + o.getName()));
+                    item.setState(view.getSpec().toString().equals(o.getName()));
                     item.setEnabled(!item.isSelected());
                     defSpecLabel.setText(view.getSpec().toLongString());
                     reportButton.setEnabled(false);
