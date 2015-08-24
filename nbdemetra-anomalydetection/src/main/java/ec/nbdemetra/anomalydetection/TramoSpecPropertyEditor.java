@@ -56,9 +56,7 @@ public class TramoSpecPropertyEditor extends PropertyEditorSupport implements Ex
 
         private PropertyEditor editor = null;
         private PropertyModel model = null;
-        private JComboBox specs = new JComboBox(new TramoSpecification[]{
-            TramoSpecification.TR1, TramoSpecification.TR2, TramoSpecification.TR3,
-            TramoSpecification.TR4, TramoSpecification.TR5});
+        private final JComboBox specs = new JComboBox(TramoSpecification.allSpecifications());
 
         @Override
         public void connect(PropertyEditor pe, PropertyEnv pe1) {
