@@ -26,6 +26,7 @@ import java.awt.Stroke;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.SystemFlavorMap;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
@@ -40,7 +41,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.AbstractList;
 import java.util.AbstractMap.SimpleEntry;
@@ -562,9 +562,25 @@ public final class Charts {
         return PNG_MEDIA_TYPE;
     }
 
+    private static DataFlavor registerSystemFlavor(String nat, String mimeType, String humanPresentableName) {
+        DataFlavor result = null;
+        try {
+            result = SystemFlavorMap.decodeDataFlavor(nat);
+        } catch (ClassNotFoundException ex) {
+        }
+        if (result == null) {
+            result = new DataFlavor(mimeType, humanPresentableName);
+            SystemFlavorMap map = (SystemFlavorMap) SystemFlavorMap.getDefaultFlavorMap();
+            map.addUnencodedNativeForFlavor(result, nat);
+            map.addFlavorForUnencodedNative(nat, result);
+            return result;
+        }
+        return result;
+    }
+
     private static final class ChartTransferable2 extends ChartTransferable {
 
-        private static final DataFlavor SVG_DATA_FLAVOR = new DataFlavor(SVG_MEDIA_TYPE + "; charset=unicode; class=java.lang.String", "Scalable Vector Graphics");
+        private static final DataFlavor SVG_DATA_FLAVOR = registerSystemFlavor(SVG_MEDIA_TYPE, SVG_MEDIA_TYPE + ";class=\"[B\"", "Scalable Vector Graphics");
 
         private final JFreeChart chart;
         private final int width;
@@ -596,7 +612,7 @@ public final class Charts {
             if (SVG_DATA_FLAVOR.equals(flavor)) {
                 try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
                     writeChartAsSVG(stream, chart, width, height);
-                    return new String(stream.toByteArray(), StandardCharsets.UTF_8);
+                    return stream.toByteArray();
                 }
             }
             return super.getTransferData(flavor);
