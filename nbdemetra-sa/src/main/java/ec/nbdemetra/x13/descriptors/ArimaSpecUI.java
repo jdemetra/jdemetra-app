@@ -63,10 +63,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
-//        desc = mixedDesc();
-//        if (desc != null) {
-//            descs.add(desc);
-//        }
+        desc = mixedDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         desc = armaDesc();
         if (desc != null) {
             descs.add(desc);
