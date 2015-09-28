@@ -62,6 +62,15 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER FORECASTS">
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000 + 500)
+    public static class ModelFCastsTableFactory extends PreprocessingViewFactory.PreprocessingFCastsTableFactory<TramoDocument> {
+
+        public ModelFCastsTableFactory() {
+            super(TramoDocument.class);
+        }
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="REGISTER FORECASTS">
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000 + 1000)
     public static class ModelFCastsFactory extends PreprocessingViewFactory.ModelFCastsFactory<TramoDocument> {
 

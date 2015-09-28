@@ -80,6 +80,15 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
         }
     }
 
+    //<editor-fold defaultstate="collapsed" desc="REGISTER FORECASTS">
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000 + 500)
+    public static class ModelFCastsTableFactory extends PreprocessingViewFactory.PreprocessingFCastsTableFactory<RegArimaDocument> {
+
+        public ModelFCastsTableFactory() {
+            super(RegArimaDocument.class);
+        }
+    }
+
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000 + 2000)
     public static class ModelFCastsOutFactory extends PreprocessingViewFactory.ModelFCastsOutFactory<RegArimaDocument> {
 
