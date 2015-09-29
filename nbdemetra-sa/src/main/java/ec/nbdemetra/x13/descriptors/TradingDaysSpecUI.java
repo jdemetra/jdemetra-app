@@ -12,7 +12,6 @@ import ec.tstoolkit.modelling.RegressionTestSpec;
 import ec.tstoolkit.modelling.TradingDaysSpecType;
 import static ec.tstoolkit.modelling.TradingDaysSpecType.UserDefined;
 import ec.tstoolkit.modelling.arima.x13.RegArimaSpecification;
-import ec.tstoolkit.modelling.arima.x13.RegressionSpec;
 import ec.tstoolkit.modelling.arima.x13.TradingDaysSpec;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
 import ec.tstoolkit.timeseries.calendars.LengthOfPeriodType;
@@ -21,6 +20,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -67,9 +67,10 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         return descs;
     }
 
+    @Messages("tradingDaysSpecUI.getDisplayName=Trading days")
     @Override
     public String getDisplayName() {
-        return "Trading days";
+        return Bundle.tradingDaysSpecUI_getDisplayName();
     }
 
     private TradingDaysSpec inner() {
@@ -191,10 +192,16 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
 /////////////////////////////////////////////////////////
     private static final int TYPE_ID = 0, OPTION_ID = 1, STOCK_ID = 2, HOLIDAYS_ID = 3, USER_ID = 4, TD_ID = 5, LP_ID = 6, AUTO_ID = 7, TEST_ID = 10;
 
+    @Messages({
+        "tradingDaysSpecUI.optionDesc.name=option",
+        "tradingDaysSpecUI.optionDesc.desc="
+    })
     private EnhancedPropertyDescriptor optionDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("option", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OPTION_ID);
+            desc.setDisplayName(Bundle.tradingDaysSpecUI_optionDesc_name());
+            desc.setShortDescription(Bundle.tradingDaysSpecUI_optionDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(ro_);
             return edesc;
@@ -203,6 +210,10 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "tradingDaysSpecUI.testDesc.name=test",
+        "tradingDaysSpecUI.testDesc.desc="
+    })
     private EnhancedPropertyDescriptor testDesc() {
         if (getOption() == TradingDaysSpecType.None) {
             return null;
@@ -210,6 +221,8 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("test", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TEST_ID);
+            desc.setDisplayName(Bundle.tradingDaysSpecUI_testDesc_name());
+            desc.setShortDescription(Bundle.tradingDaysSpecUI_testDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -217,6 +230,10 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "tradingDaysSpecUI.autoDesc.name=autoAdjust",
+        "tradingDaysSpecUI.autoDesc.desc="
+    })
     private EnhancedPropertyDescriptor autoDesc() {
         if (getOption() != TradingDaysSpecType.Default && getOption() != TradingDaysSpecType.Holidays) {
             return null;
@@ -224,6 +241,8 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("autoAdjust", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AUTO_ID);
+            desc.setDisplayName(Bundle.tradingDaysSpecUI_autoDesc_name());
+            desc.setShortDescription(Bundle.tradingDaysSpecUI_autoDesc_desc());
             edesc.setReadOnly(ro_ || core.getTransform().getFunction() != DefaultTransformationType.Auto);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -231,6 +250,10 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "tradingDaysSpecUI.tdDesc.name=td",
+        "tradingDaysSpecUI.tdDesc.desc=Option for trading days"
+    })
     private EnhancedPropertyDescriptor tdDesc() {
         if (getOption() != TradingDaysSpecType.Default && getOption() != TradingDaysSpecType.Holidays) {
             return null;
@@ -238,8 +261,8 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("tradingDays", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TD_ID);
-            desc.setDisplayName(TD_NAME);
-            desc.setShortDescription(TD_DESC);
+            desc.setDisplayName(Bundle.tradingDaysSpecUI_tdDesc_name());
+            desc.setShortDescription(Bundle.tradingDaysSpecUI_tdDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -247,6 +270,10 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "tradingDaysSpecUI.lpDesc.name=lp",
+        "tradingDaysSpecUI.lpDesc.desc=Option for length of period"
+    })
     private EnhancedPropertyDescriptor lpDesc() {
         if (getOption() != TradingDaysSpecType.Default && getOption() != TradingDaysSpecType.Holidays) {
             return null;
@@ -254,8 +281,8 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("lengthOfPeriod", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, LP_ID);
-            desc.setDisplayName(LP_NAME);
-            desc.setShortDescription(LP_DESC);
+            desc.setDisplayName(Bundle.tradingDaysSpecUI_lpDesc_name());
+            desc.setShortDescription(Bundle.tradingDaysSpecUI_lpDesc_desc());
             edesc.setReadOnly(ro_ || core.getTransform().getAdjust() != LengthOfPeriodType.None || isAutoAdjust());
             return edesc;
         } catch (IntrospectionException ex) {
@@ -263,6 +290,10 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "tradingDaysSpecUI.holidaysDesc.name=holidays",
+        "tradingDaysSpecUI.holidaysDesc.desc="
+    })
     private EnhancedPropertyDescriptor holidaysDesc() {
         if (inner().getHolidays() == null) {
             return null;
@@ -270,6 +301,8 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("holidays", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, HOLIDAYS_ID);
+            desc.setDisplayName(Bundle.tradingDaysSpecUI_holidaysDesc_name());
+            desc.setShortDescription(Bundle.tradingDaysSpecUI_holidaysDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(ro_);
             return edesc;
@@ -277,8 +310,4 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
             return null;
         }
     }
-    public static final String TD_NAME = "td",
-            LP_NAME = "lp";
-    public static final String TD_DESC = "Option for trading days",
-            LP_DESC = "Option for length of period";
 }

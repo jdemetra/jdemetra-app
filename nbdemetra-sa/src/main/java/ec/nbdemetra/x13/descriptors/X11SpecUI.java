@@ -16,6 +16,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -83,9 +84,10 @@ public class X11SpecUI extends BaseX11SpecUI {
         return descs;
     }
 
+    @Messages("x11SpecUI.getDisplayName=X11")
     @Override
     public String getDisplayName() {
-        return "X11";
+        return Bundle.x11SpecUI_getDisplayName();
     }
 
     public DecompositionMode getMode() {
@@ -231,6 +233,10 @@ public class X11SpecUI extends BaseX11SpecUI {
     private static final int MODE_ID = 0, SEAS_ID = 1, FORECAST_ID = 2, LSIGMA_ID = 3, USIGMA_ID = 4, AUTOTREND_ID = 5,
             TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8, CALENDARSIGMA_ID = 9, SIGMAVEC_ID = 10;
 
+    @Messages({
+        "x11SpecUI.calendarsigmaDesc.name=Calendarsigma",
+        "x11SpecUI.calendarsigmaDesc.desc=[calendarsigma] Specifies if the standard errors used for extreme value detection and adjustment are computed separately for each calendar month (quarter), or separately for two complementary sets of calendar months (quarters)."
+    })
     private EnhancedPropertyDescriptor calendarsigmaDesc() {
         if (!core.isSeasonal()) {
             return null;
@@ -239,8 +245,8 @@ public class X11SpecUI extends BaseX11SpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("CalendarSigma", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, CALENDARSIGMA_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(CALENDARSIGMA_NAME);
-            desc.setShortDescription(CALENDARSIGMA_DESC);
+            desc.setDisplayName(Bundle.x11SpecUI_calendarsigmaDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_calendarsigmaDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -248,6 +254,10 @@ public class X11SpecUI extends BaseX11SpecUI {
         }
     }
 
+    @Messages({
+        "x11SpecUI.sigmavecDesc.name=Sigma Vector",
+        "x11SpecUI.sigmavecDesc.desc=[sigmavec] Specifies the two groups of periods (month or quarters) for whose irregulars a group standard error will be calculated under the calendarsigma=select option."
+    })
     private EnhancedPropertyDescriptor sigmavecDesc() {
         if (!core.isSeasonal() || !core.getCalendarSigma().equals(CalendarSigma.Select)) {
             return null;
@@ -256,8 +266,8 @@ public class X11SpecUI extends BaseX11SpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("Sigmavec", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SIGMAVEC_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(SIGMAVEC_NAME);
-            desc.setShortDescription(SIGMAVEC_DESC);
+            desc.setDisplayName(Bundle.x11SpecUI_sigmavecDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_sigmavecDesc_desc());
             edesc.setReadOnly(ro_ || freq_ == TsFrequency.Undefined);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -265,13 +275,17 @@ public class X11SpecUI extends BaseX11SpecUI {
         }
     }
 
+    @Messages({
+        "x11SpecUI.modeDesc.name=Mode",
+        "x11SpecUI.modeDesc.desc=[mode] Decomposition mode. Could be changed by the program, if needed."
+    })
     private EnhancedPropertyDescriptor modeDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Mode", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, MODE_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(MODE_NAME);
-            desc.setShortDescription(MODE_DESC);
+            desc.setDisplayName(Bundle.x11SpecUI_modeDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_modeDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -279,13 +293,17 @@ public class X11SpecUI extends BaseX11SpecUI {
         }
     }
 
+    @Messages({
+        "x11SpecUI.seasDesc.name=Seasonal component",
+        "x11SpecUI.seasDesc.desc=Computes a seasonal component (true) or set it to 0 (additive decomposition) or 1 (multiplicative decomposition) (false)"
+    })
     private EnhancedPropertyDescriptor seasDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Seasonal", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SEAS_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(SEAS_NAME);
-            desc.setShortDescription(SEAS_DESC);
+            desc.setDisplayName(Bundle.x11SpecUI_seasDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_seasDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -293,6 +311,10 @@ public class X11SpecUI extends BaseX11SpecUI {
         }
     }
 
+    @Messages({
+        "x11SpecUI.forecastDesc.name=Forecasts horizon",
+        "x11SpecUI.forecastDesc.desc=[forecast(maxlead)] Length of the forecasts generated by ARIMA. Negative figures are translated in years of forecasts"
+    })
     private EnhancedPropertyDescriptor forecastDesc() {
         try {
             if (!x13_) {
@@ -300,8 +322,8 @@ public class X11SpecUI extends BaseX11SpecUI {
             }
             PropertyDescriptor desc = new PropertyDescriptor("ForecastHorizon", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FORECAST_ID);
-            desc.setDisplayName(FORECAST_NAME);
-            desc.setShortDescription(FORECAST_DESC);
+            desc.setDisplayName(Bundle.x11SpecUI_forecastDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_forecastDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -309,13 +331,17 @@ public class X11SpecUI extends BaseX11SpecUI {
         }
     }
 
+    @Messages({
+        "x11SpecUI.lsigmaDesc.name=LSigma",
+        "x11SpecUI.lsigmaDesc.desc=[sigmalim] Lower sigma boundary for the detection of extreme values."
+    })
     private EnhancedPropertyDescriptor lsigmaDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("LSigma", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, LSIGMA_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(LSIGMA_NAME);
-            desc.setShortDescription(LSIGMA_DESC);
+            desc.setDisplayName(Bundle.x11SpecUI_lsigmaDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_lsigmaDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -323,13 +349,17 @@ public class X11SpecUI extends BaseX11SpecUI {
         }
     }
 
+    @Messages({
+        "x11SpecUI.usigmaDesc.name=USigma",
+        "x11SpecUI.usigmaDesc.desc=[sigmalim] Upper sigma boundary for the detection of extreme values."
+    })
     private EnhancedPropertyDescriptor usigmaDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("USigma", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, USIGMA_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(USIGMA_NAME);
-            desc.setShortDescription(USIGMA_DESC);
+            desc.setDisplayName(Bundle.x11SpecUI_usigmaDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_usigmaDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -352,6 +382,10 @@ public class X11SpecUI extends BaseX11SpecUI {
         return false;
     }
 
+    @Messages({
+        "x11SpecUI.seasonmaDesc.name=Seasonal filter",
+        "x11SpecUI.seasonmaDesc.desc=[seasonalma] Specifies which seasonal moving average (also called seasonal filter) will be used to estimate the seasonal factors."
+    })
     private EnhancedPropertyDescriptor seasonmaDesc() {
         if (!core.isSeasonal() || hasSeasDetails()) {
             return null;
@@ -360,8 +394,8 @@ public class X11SpecUI extends BaseX11SpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("SeasonalMA", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SEASONMA_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(SEASONMA_NAME);
-            desc.setShortDescription(SEASONMA_DESC);
+            desc.setDisplayName(Bundle.x11SpecUI_seasonmaDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_seasonmaDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -369,6 +403,10 @@ public class X11SpecUI extends BaseX11SpecUI {
         }
     }
 
+    @Messages({
+        "x11SpecUI.fullseasonmaDesc.name=Details on seasonal filters",
+        "x11SpecUI.fullseasonmaDesc.desc=[seasonalma] Details on specifc seasonalma for the different periods."
+    })
     private EnhancedPropertyDescriptor fullseasonmaDesc() {
         if (!core.isSeasonal()) {
             return null;
@@ -377,8 +415,8 @@ public class X11SpecUI extends BaseX11SpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("FullSeasonalMA", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FULLSEASONMA_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(FULLSEASONMA_NAME);
-            desc.setShortDescription(FULLSEASONMA_DESC);
+            desc.setDisplayName(Bundle.x11SpecUI_fullseasonmaDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_fullseasonmaDesc_desc());
             edesc.setReadOnly(ro_ || freq_ == TsFrequency.Undefined);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -386,13 +424,17 @@ public class X11SpecUI extends BaseX11SpecUI {
         }
     }
 
+    @Messages({
+        "x11SpecUI.autotrendmaDesc.name=Automatic henderson filter",
+        "x11SpecUI.autotrendmaDesc.desc=[trendma] The length of the henderson filter used in the estimation of the trend is detected automatically by the program."
+    })
     private EnhancedPropertyDescriptor autotrendmaDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("AutoTrendMA", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AUTOTREND_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(AUTOTREND_NAME);
-            desc.setShortDescription(AUTOTREND_DESC);
+            desc.setDisplayName(Bundle.x11SpecUI_autotrendmaDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_autotrendmaDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -400,40 +442,20 @@ public class X11SpecUI extends BaseX11SpecUI {
         }
     }
 
+    @Messages({
+        "x11SpecUI.trendmaDesc.name=Henderson filter",
+        "x11SpecUI.trendmaDesc.desc=[trendma] Length of the henderson filter used in the estimation of the trend. Should be an odd number in the range [1, 101]."
+    })
     private EnhancedPropertyDescriptor trendmaDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("TrendMA", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TREND_ID);
             edesc.setReadOnly(core.isAutoHenderson() || ro_);
-            desc.setDisplayName(TREND_NAME);
-            desc.setShortDescription(TREND_DESC);
+            desc.setDisplayName(Bundle.x11SpecUI_trendmaDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_trendmaDesc_desc());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
-    private static final String MODE_NAME = "Mode",
-            SEAS_NAME = "Seasonal component",
-            FORECAST_NAME = "Forecasts horizon",
-            LSIGMA_NAME = "LSigma",
-            USIGMA_NAME = "USigma",
-            AUTOTREND_NAME = "Automatic henderson filter",
-            TREND_NAME = "Henderson filter",
-            SEASONMA_NAME = "Seasonal filter",
-            FULLSEASONMA_NAME = "Details on seasonal filters",
-            TRUE7TERM_NAME = "True 7 term",
-            CALENDARSIGMA_NAME = "Calendarsigma",
-            SIGMAVEC_NAME = "Sigma Vector";
-    private static final String MODE_DESC = "[mode] Decomposition mode. Could be changed by the program, if needed.",
-            SEAS_DESC = "Computes a seasonal component (true) or set it to 0 (additive decomposition) or 1 (multiplicative decomposition) (false)",
-            FORECAST_DESC = "[forecast(maxlead)] Length of the forecasts generated by ARIMA. Negative figures are translated in years of forecasts",
-            LSIGMA_DESC = "[sigmalim] Lower sigma boundary for the detection of extreme values.",
-            USIGMA_DESC = "[sigmalim] Upper sigma boundary for the detection of extreme values.",
-            AUTOTREND_DESC = "[trendma] The length of the henderson filter used in the estimation of the trend is detected automatically by the program.",
-            TREND_DESC = "[trendma] Length of the henderson filter used in the estimation of the trend. Should be an odd number in the range [1, 101].",
-            SEASONMA_DESC = "[seasonalma] Specifies which seasonal moving average (also called seasonal filter) will be used to estimate the seasonal factors.",
-            FULLSEASONMA_DESC = "[seasonalma] Details on specifc seasonalma for the different periods.",
-            TRUE7TERM_DESC = "[true7term] Specifies the end weights used for the seven term Henderson filter.",
-            CALENDARSIGMA_DESC = "[calendarsigma] Specifies if the standard errors used for extreme value detection and adjustment are computed separately for each calendar month (quarter), or separately for two complementary sets of calendar months (quarters).",
-            SIGMAVEC_DESC = "[sigmavec] Specifies the two groups of periods (month or quarters) for whose irregulars a group standard error will be calculated under the calendarsigma=select option.";
 }

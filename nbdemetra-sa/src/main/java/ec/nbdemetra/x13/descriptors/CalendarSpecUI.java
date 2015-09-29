@@ -11,6 +11,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -61,10 +62,16 @@ public class CalendarSpecUI extends BaseRegArimaSpecUI {
 
     private static final int TD_ID=1, EASTER_ID=2;
 
+    @Messages({
+        "calendarSpecUI.tdDesc.name=tradingDays",
+        "calendarSpecUI.tdDesc.desc=tradingDays"
+    })
     private EnhancedPropertyDescriptor tdDesc(){
         try {
             PropertyDescriptor desc = new PropertyDescriptor("tradingDays", this.getClass());
             EnhancedPropertyDescriptor edesc=new EnhancedPropertyDescriptor(desc, TD_ID);
+            desc.setDisplayName(Bundle.calendarSpecUI_tdDesc_name());
+            desc.setShortDescription(Bundle.calendarSpecUI_tdDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -72,10 +79,16 @@ public class CalendarSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "calendarSpecUI.easterDesc.name=easter",
+        "calendarSpecUI.easterDesc.desc=easter"
+    })
     private EnhancedPropertyDescriptor easterDesc(){
         try {
             PropertyDescriptor desc = new PropertyDescriptor("easter", this.getClass());
             EnhancedPropertyDescriptor edesc=new EnhancedPropertyDescriptor(desc, EASTER_ID);
+            desc.setDisplayName(Bundle.calendarSpecUI_easterDesc_name());
+            desc.setShortDescription(Bundle.calendarSpecUI_easterDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -83,7 +96,8 @@ public class CalendarSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages("calendarSpecUI.getDisplayName=Calendar")
     public String getDisplayName() {
-        return "Calendar";
+        return Bundle.calendarSpecUI_getDisplayName();
     }
 }
