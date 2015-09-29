@@ -12,6 +12,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -55,8 +56,9 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
     }
 
     @Override
+    @Messages("seatsSpecUI.getDisplayName=Seats")
     public String getDisplayName() {
-        return "Seats";
+        return Bundle.seatsSpecUI_getDisplayName();
     }
 
     public double getRMod() {
@@ -100,27 +102,35 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
     }
     private static final int RMOD_ID = 0, EPSPHI_ID = 1, NOADMISS_ID = 2, XL_ID = 3, WK_ID = 4;
 
+    @Messages({
+        "seatsSpecUI.rmodDesc.name=Trend boundary",
+        "seatsSpecUI.rmodDesc.desc=[rmod] Boundary from which an AR root is integrated in the trend component."
+    })
     private EnhancedPropertyDescriptor rmodDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("RMod", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, RMOD_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(RMOD_NAME);
-            desc.setShortDescription(RMOD_DESC);
+            desc.setDisplayName(Bundle.seatsSpecUI_rmodDesc_name());
+            desc.setShortDescription(Bundle.seatsSpecUI_rmodDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
-
+    
+    @Messages({
+        "seatsSpecUI.wkDesc.name=Method",
+        "seatsSpecUI.wkDesc.desc=Estimation method of the component"
+    })
     private EnhancedPropertyDescriptor wkDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("method", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, WK_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(METHOD_NAME);
-            desc.setShortDescription(METHOD_DESC);
+            desc.setDisplayName(Bundle.seatsSpecUI_wkDesc_name());
+            desc.setShortDescription(Bundle.seatsSpecUI_wkDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -128,13 +138,17 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
         }
     }
 
+    @Messages({
+        "seatsSpecUI.epsphiDesc.name=Seasonal tolerance",
+        "seatsSpecUI.epsphiDesc.desc=[epsphi] Tolerance(measured in degrees) to allocate ar roots into the seasonal component."
+    })
     private EnhancedPropertyDescriptor epsphiDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("EpsPhi", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, EPSPHI_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(EPSPHI_NAME);
-            desc.setShortDescription(EPSPHI_DESC);
+            desc.setDisplayName(Bundle.seatsSpecUI_epsphiDesc_name());
+            desc.setShortDescription(Bundle.seatsSpecUI_epsphiDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -142,13 +156,17 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
         }
     }
 
+    @Messages({
+        "seatsSpecUI.noadmissDesc.name=Approximation mode",
+        "seatsSpecUI.noadmissDesc.desc=[noadmiss] When model does not accept an admissible decomposition, force to use an approximation. The approximation may be a noisy model or defined as in previous Seats code"
+    })
     private EnhancedPropertyDescriptor noadmissDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("ApproximationMode", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, NOADMISS_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(NOADMISS_NAME);
-            desc.setShortDescription(NOADMISS_DESC);
+            desc.setDisplayName(Bundle.seatsSpecUI_noadmissDesc_name());
+            desc.setShortDescription(Bundle.seatsSpecUI_noadmissDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -156,27 +174,21 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
         }
     }
 
+    @Messages({
+        "seatsSpecUI.xlDesc.name=MA unit root boundary",
+        "seatsSpecUI.xlDesc.desc=[xl] When the modulus of an estimated root falls in the range(xl,1), it is set to 1 if it is in AR; if root is in MA, it is set equal to xl."
+    })
     private EnhancedPropertyDescriptor xlDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Xl", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, XL_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(XL_NAME);
-            desc.setShortDescription(XL_DESC);
+            desc.setDisplayName(Bundle.seatsSpecUI_xlDesc_name());
+            desc.setShortDescription(Bundle.seatsSpecUI_xlDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
-    private static final String RMOD_NAME = "Trend boundary",
-            EPSPHI_NAME = "Seasonal tolerance",
-            NOADMISS_NAME = "Approximation mode",
-            METHOD_NAME = "Method",
-            XL_NAME = "MA unit root boundary";
-    private static final String RMOD_DESC = "[rmod] Boundary from which an AR root is integrated in the trend component.",
-            EPSPHI_DESC = "[epsphi] Tolerance(measured in degrees) to allocate ar roots into the seasonal component.",
-            NOADMISS_DESC = "[noadmiss] When model does not accept an admissible decomposition, force to use an approximation. The approximation may be a noisy model or defined as in previous Seats code",
-            METHOD_DESC = "Estimation method of the component",
-            XL_DESC = "[xl] When the modulus of an estimated root falls in the range(xl,1), it is set to 1 if it is in AR; if root is in MA, it is set equal to xl.";
 }

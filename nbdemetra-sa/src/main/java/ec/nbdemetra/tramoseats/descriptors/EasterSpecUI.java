@@ -11,6 +11,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -86,10 +87,16 @@ public class EasterSpecUI extends BaseTramoSpecUI {
     ///////////////////////////////////////////////////////////////////////////
     private static final int OPTION_ID = 1, DUR_ID = 2, TEST_ID = 3;
 
+    @Messages({
+        "easterSpecUI.optionDesc.name=Option",
+        "easterSpecUI.optionDesc.desc=Option"
+    })
     private EnhancedPropertyDescriptor optionDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("option", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OPTION_ID);
+            desc.setDisplayName(Bundle.easterSpecUI_optionDesc_name());
+            desc.setShortDescription(Bundle.easterSpecUI_optionDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(ro_);
             return edesc;
@@ -98,10 +105,16 @@ public class EasterSpecUI extends BaseTramoSpecUI {
         }
     }
 
+    @Messages({
+        "easterSpecUI.durationDesc.name=Duration",
+        "easterSpecUI.durationDesc.desc=Duration"
+    })
     private EnhancedPropertyDescriptor durationDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("duration", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DUR_ID);
+            desc.setDisplayName(Bundle.easterSpecUI_durationDesc_name());
+            desc.setShortDescription(Bundle.easterSpecUI_durationDesc_desc());
             if (ro_ || getOption() == EasterSpec.Type.Unused) {
                 edesc.setReadOnly(true);
             }
@@ -111,10 +124,16 @@ public class EasterSpecUI extends BaseTramoSpecUI {
         }
     }
 
+    @Messages({
+        "easterSpecUI.testDesc.name=Test",
+        "easterSpecUI.testDesc.desc=Test",
+    })
     private EnhancedPropertyDescriptor testDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("test", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TEST_ID);
+            desc.setDisplayName(Bundle.easterSpecUI_testDesc_name());
+            desc.setShortDescription(Bundle.easterSpecUI_testDesc_desc());
             if (ro_ || getOption() == EasterSpec.Type.Unused) {
                 edesc.setReadOnly(true);
             }
@@ -125,7 +144,8 @@ public class EasterSpecUI extends BaseTramoSpecUI {
     }
 
     @Override
+    @Messages("easterSpecUI.getDisplayName=Easter")
     public String getDisplayName() {
-        return "Easter";
+        return Bundle.easterSpecUI_getDisplayName();
     }
 }

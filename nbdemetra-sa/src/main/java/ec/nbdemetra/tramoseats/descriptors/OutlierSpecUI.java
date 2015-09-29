@@ -13,6 +13,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -80,8 +81,9 @@ public class OutlierSpecUI extends BaseTramoSpecUI {
     }
 
     @Override
+    @Messages("outlierSpecUI.getDisplayName=Outliers")
     public String getDisplayName() {
-        return "Outliers";
+        return Bundle.outlierSpecUI_getDisplayName();
     }
 
     public boolean isOutliersDetectionEnabled() {
@@ -197,13 +199,17 @@ public class OutlierSpecUI extends BaseTramoSpecUI {
             DEFAULTVA_ID = 3, VA_ID = 4,
             TCRATE_ID = 5, EML_ID = 6;
 
+    @Messages({
+        "outliersSpecUI.enableDesc.name=Is enabled",
+        "outliersSpecUI.enableDesc.desc=[iatip] Is automatic outliers detection enabled"
+    })
     private EnhancedPropertyDescriptor enabledDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("OutliersDetectionEnabled", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ENABLED_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(ENABLED_NAME);
-            desc.setShortDescription(ENABLED_DESC);
+            desc.setDisplayName(Bundle.outliersSpecUI_enableDesc_name());
+            desc.setShortDescription(Bundle.outliersSpecUI_enableDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -211,26 +217,34 @@ public class OutlierSpecUI extends BaseTramoSpecUI {
         }
     }
 
+    @Messages({
+        "outliersSpecUI.spanDesc.name=Detection span",
+        "outliersSpecUI.spanDesc.desc=[int1, int2] Time span used for the automatic outliers detection. Encompasses the int1 and int2 parameters."
+    })
     private EnhancedPropertyDescriptor spanDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Span", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SPAN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(SPAN_NAME);
-            desc.setShortDescription(SPAN_DESC);
+            desc.setDisplayName(Bundle.outliersSpecUI_spanDesc_name());
+            desc.setShortDescription(Bundle.outliersSpecUI_spanDesc_desc());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @Messages({
+        "outliersSpecUI.aoDesc.name=Additive",
+        "outliersSpecUI.aoDesc.desc=[aio-partim] Additive outlier"
+    })
     private EnhancedPropertyDescriptor aoDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("AO", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AO_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(AO_NAME);
-            desc.setShortDescription(AO_DESC);
+            desc.setDisplayName(Bundle.outliersSpecUI_aoDesc_name());
+            desc.setShortDescription(Bundle.outliersSpecUI_aoDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -238,13 +252,17 @@ public class OutlierSpecUI extends BaseTramoSpecUI {
         }
     }
 
+    @Messages({
+        "outliersSpecUI.lsDesc.name=Level shift",
+        "outliersSpecUI.lsDesc.desc=[aio-partim] Level shift"
+    })
     private EnhancedPropertyDescriptor lsDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("LS", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, LS_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(LS_NAME);
-            desc.setShortDescription(LS_DESC);
+            desc.setDisplayName(Bundle.outliersSpecUI_lsDesc_name());
+            desc.setShortDescription(Bundle.outliersSpecUI_lsDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -252,13 +270,17 @@ public class OutlierSpecUI extends BaseTramoSpecUI {
         }
     }
 
+    @Messages({
+        "outliersSpecUI.tcDesc.name=Transitory",
+        "outliersSpecUI.tcDesc.desc=[aio-partim] Transitory change"
+    })
     private EnhancedPropertyDescriptor tcDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("TC", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TC_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(TC_NAME);
-            desc.setShortDescription(TC_DESC);
+            desc.setDisplayName(Bundle.outliersSpecUI_tcDesc_name());
+            desc.setShortDescription(Bundle.outliersSpecUI_tcDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -266,13 +288,17 @@ public class OutlierSpecUI extends BaseTramoSpecUI {
         }
     }
 
+    @Messages({
+        "outliersSpecUI.soDesc.name=Seasonal",
+        "outliersSpecUI.soDesc.desc=[aio-partim] Seasonal outlier"
+    })
     private EnhancedPropertyDescriptor soDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("SO", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SO_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(SO_NAME);
-            desc.setShortDescription(SO_DESC);
+            desc.setDisplayName(Bundle.outliersSpecUI_soDesc_name());
+            desc.setShortDescription(Bundle.outliersSpecUI_soDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -280,13 +306,17 @@ public class OutlierSpecUI extends BaseTramoSpecUI {
         }
     }
 
+    @Messages({
+        "outliersSpecUI.vaDesc.name=Critical value",
+        "outliersSpecUI.vaDesc.desc=[va] The critical value used in the outliers detection procedure"
+    })
     private EnhancedPropertyDescriptor vaDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Va", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, VA_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(VA_NAME);
-            desc.setShortDescription(VA_DESC);
+            desc.setDisplayName(Bundle.outliersSpecUI_vaDesc_name());
+            desc.setShortDescription(Bundle.outliersSpecUI_vaDesc_desc());
             edesc.setReadOnly(ro_ || isAutoVa());
             return edesc;
         } catch (IntrospectionException ex) {
@@ -294,13 +324,17 @@ public class OutlierSpecUI extends BaseTramoSpecUI {
         }
     }
 
+    @Messages({
+        "outliersSpecUI.autoDesc.name=Use default critical value",
+        "outliersSpecUI.autoDesc.desc=[va] The critical value is automatically determined. It depends on the number of observations considered in the outliers detection procedure"
+    })
     private EnhancedPropertyDescriptor autoDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("autoVa", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DEFAULTVA_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(DEFAULTVA_NAME);
-            desc.setShortDescription(DEFAULTVA_DESC);
+            desc.setDisplayName(Bundle.outliersSpecUI_autoDesc_name());
+            desc.setShortDescription(Bundle.outliersSpecUI_autoDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -308,13 +342,17 @@ public class OutlierSpecUI extends BaseTramoSpecUI {
         }
     }
 
+    @Messages({
+        "outliersSpecUI.tcrateDesc.name=TC rate",
+        "outliersSpecUI.tcrateDesc.desc=[deltatc] Rate of decay for the temporary change outlier regressor"
+    })
     private EnhancedPropertyDescriptor tcrateDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("TCRate", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TCRATE_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(TCRATE_NAME);
-            desc.setShortDescription(TCRATE_DESC);
+            desc.setDisplayName(Bundle.outliersSpecUI_tcrateDesc_name());
+            desc.setShortDescription(Bundle.outliersSpecUI_tcrateDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -322,37 +360,21 @@ public class OutlierSpecUI extends BaseTramoSpecUI {
         }
     }
 
+    @Messages({
+        "outliersSpecUI.emlDesc.name=EML estimation",
+        "outliersSpecUI.emlDesc.desc=[imvx] True if exact likelihood estimation method is used, false if the fast Hannan-Rissanen method is used"
+    })
     private EnhancedPropertyDescriptor emlDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("EML", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, EML_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(EML_NAME);
-            desc.setShortDescription(EML_DESC);
+            desc.setDisplayName(Bundle.outliersSpecUI_emlDesc_name());
+            desc.setShortDescription(Bundle.outliersSpecUI_emlDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
-    private static final String ENABLED_NAME = "Is enabled",
-            SPAN_NAME = "Detection span",
-            AO_NAME = "Additive",
-            LS_NAME = "Level shift",
-            TC_NAME = "Transitory",
-            SO_NAME = "Seasonal",
-            DEFAULTVA_NAME = "Use default critical value",
-            VA_NAME = "Critical value",
-            TCRATE_NAME = "TC rate",
-            EML_NAME = "EML estimation";
-    private static final String ENABLED_DESC = "[iatip] Is automatic outliers detection enabled",
-            SPAN_DESC = "[int1, int2] Time span used for the automatic outliers detection. Encompasses the int1 and int2 parameters.",
-            AO_DESC = "[aio-partim] Additive outlier",
-            LS_DESC = "[aio-partim] Level shift",
-            TC_DESC = "[aio-partim] Transitory change",
-            SO_DESC = "[aio-partim] Seasonal outlier",
-            DEFAULTVA_DESC = "[va] The critical value is automatically determined. It depends on the number of observations considered in the outliers detection procedure",
-            VA_DESC = "[va] The critical value used in the outliers detection procedure",
-            TCRATE_DESC = "[deltatc] Rate of decay for the temporary change outlier regressor",
-            EML_DESC = "[imvx] True if exact likelihood estimation method is used, false if the fast Hannan-Rissanen method is used";
 }

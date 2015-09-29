@@ -13,6 +13,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -111,12 +112,16 @@ public class EasterSpecUI extends BaseRegArimaSpecUI {
     ///////////////////////////////////////////////////////////////////////////
     private static final int ENABLED_ID = 1, TEST_ID = 2, DUR_ID = 3;
 
+    @Messages({
+        "easterSpecUI.enabledDesc.name=Is enabled",
+        "easterSpecUI.enabledDesc.desc="
+    })
     private EnhancedPropertyDescriptor enabledDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("enabled", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ENABLED_ID);
-            desc.setDisplayName(ENABLED_NAME);
-            desc.setShortDescription(ENABLED_DESC);
+            desc.setDisplayName(Bundle.easterSpecUI_enabledDesc_name());
+            desc.setShortDescription(Bundle.easterSpecUI_enabledDesc_desc());
             edesc.setReadOnly(ro_);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             return edesc;
@@ -125,6 +130,10 @@ public class EasterSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "easterSpecUI.durationDesc.name=Easter duration",
+        "easterSpecUI.durationDesc.desc=[w] Length of the easter regression effect"
+    })
     private EnhancedPropertyDescriptor durationDesc() {
         if (!isEnabled()) {
             return null;
@@ -132,8 +141,8 @@ public class EasterSpecUI extends BaseRegArimaSpecUI {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("duration", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DUR_ID);
-            desc.setDisplayName(DURATION_NAME);
-            desc.setShortDescription(DURATION_DESC);
+            desc.setDisplayName(Bundle.easterSpecUI_durationDesc_name());
+            desc.setShortDescription(Bundle.easterSpecUI_durationDesc_desc());
             edesc.setReadOnly(ro_ || getTest() == RegressionTestSpec.Add);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -141,6 +150,10 @@ public class EasterSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "easterSpecUI.testDesc.name=Pre-test",
+        "easterSpecUI.testDesc.desc="
+    })
     private EnhancedPropertyDescriptor testDesc() {
         if (!isEnabled()) {
             return null;
@@ -148,8 +161,8 @@ public class EasterSpecUI extends BaseRegArimaSpecUI {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("test", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TEST_ID);
-            desc.setDisplayName(TEST_NAME);
-            desc.setShortDescription(TEST_DESC);
+            desc.setDisplayName(Bundle.easterSpecUI_testDesc_name());
+            desc.setShortDescription(Bundle.easterSpecUI_testDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -158,13 +171,8 @@ public class EasterSpecUI extends BaseRegArimaSpecUI {
     }
 
     @Override
+    @Messages("easterSpecUI.getDisplayName=Easter")
     public String getDisplayName() {
-        return "Easter";
+        return Bundle.easterSpecUI_getDisplayName();
     }
-    public static final String ENABLED_NAME = "Is enabled",
-            TEST_NAME = "Pre-test",
-            DURATION_NAME = "Easter duration";
-    public static final String ENABLED_DESC = "",
-            TEST_DESC = "",
-            DURATION_DESC = "[w] Length of the easter regression effect";
 }

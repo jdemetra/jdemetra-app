@@ -13,6 +13,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -51,9 +52,10 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
         return descs;
     }
 
+    @Messages("transformSpecUI.getDisplayName=Transformation")
     @Override
     public String getDisplayName() {
-        return "Transformation";
+        return Bundle.transformSpecUI_getDisplayName();
     }
 
     public DefaultTransformationType getFunction() {
@@ -86,12 +88,17 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
     ///////////////////////////////////////////////////////////////////////////
     private static final int FN_ID = 1, AIC_ID = 2, ADJUST_ID = 3;
 
+    @Messages({
+        "transformSpecUI.fnDesc.name=function",
+        "transformSpecUI.fnDesc.desc=[lam] None=no transformation of data; Log=takes logs of data; Auto:the program tests for the log-level specification."
+    })
     private EnhancedPropertyDescriptor fnDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("function", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(FN_DESC);
+            desc.setDisplayName(Bundle.transformSpecUI_fnDesc_name());
+            desc.setShortDescription(Bundle.transformSpecUI_fnDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -99,35 +106,39 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "transformSpecUI.aicDesc.name=AIC difference",
+        "transformSpecUI.aicDesc.desc=[aicdiff] Defines the difference in AICC needed to accept no transformation when the automatic transformation selection option is invoked."
+    })
     private EnhancedPropertyDescriptor aicDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("aic", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AIC_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(ro_ || getFunction() != DefaultTransformationType.Auto);
-            desc.setShortDescription(AICDIFF_DESC);
-            desc.setDisplayName("AIC difference");
+            desc.setShortDescription(Bundle.transformSpecUI_aicDesc_desc());
+            desc.setDisplayName(Bundle.transformSpecUI_aicDesc_name());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @Messages({
+        "transformSpecUI.adjustDesc.name=Adjust",
+        "transformSpecUI.adjustDesc.desc=[adjust] Preadjustment of the series for length of period or leap year effects. The series is divided by the specified effect. Not available with the \"auto\" mode"
+    })
     private EnhancedPropertyDescriptor adjustDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("adjust", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ADJUST_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(ro_ || getFunction() != DefaultTransformationType.Log);
-            desc.setShortDescription(ADJUST_DESC);
-            desc.setDisplayName("Adjust");
+            desc.setShortDescription(Bundle.transformSpecUI_adjustDesc_desc());
+            desc.setDisplayName(Bundle.transformSpecUI_adjustDesc_name());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
-    ////////////////////////////////////////////////////////////////////////////
-    private static final String FN_DESC = "[lam] None=no transformation of data; Log=takes logs of data; Auto:the program tests for the log-level specification.",
-            AICDIFF_DESC = "[aicdiff] Defines the difference in AICC needed to accept no transformation when the automatic transformation selection option is invoked.",
-            ADJUST_DESC = "[adjust] Preadjustment of the series for length of period or leap year effects. The series is divided by the specified effect. Not available with the \"auto\" mode";
 }

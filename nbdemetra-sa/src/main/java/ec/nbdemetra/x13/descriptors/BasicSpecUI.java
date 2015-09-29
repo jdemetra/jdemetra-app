@@ -11,6 +11,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -48,20 +49,25 @@ public class BasicSpecUI extends BaseRegArimaSpecUI {
         return descs;
     }
 
+    @Messages("basicSpecUI.getDisplayName=Basic")
     @Override
     public String getDisplayName() {
-        return "Basic";
+        return Bundle.basicSpecUI_getDisplayName();
     }
     ///////////////////////////////////////////////////////////////////////////
     private static final int SPAN_ID = 1, PREPROCESSING_ID = 2;
 
+    @Messages({
+        "basicSpecUI.spanDesc.name=Series span",
+        "basicSpecUI.spanDesc.desc=Time span used for the processing"
+    })
     private EnhancedPropertyDescriptor spanDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("span", this.getClass(), "getSpan", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SPAN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(SPAN_DESC);
-            desc.setDisplayName("Series span");
+            desc.setShortDescription(Bundle.basicSpecUI_spanDesc_name());
+            desc.setDisplayName(Bundle.basicSpecUI_spanDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -69,12 +75,16 @@ public class BasicSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "basicSpecUI.ppDesc.name=Use preprocessing",
+        "basicSpecUI.ppDesc.desc=Do pre-processing"
+    })
     private EnhancedPropertyDescriptor ppDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("preprocessing", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, PREPROCESSING_ID);
-            desc.setDisplayName("Use preprocessing");
-            desc.setShortDescription(PREPROCESSING_DESC);
+            desc.setDisplayName(Bundle.basicSpecUI_ppDesc_name());
+            desc.setShortDescription(Bundle.basicSpecUI_ppDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(ro_);
             return edesc;
@@ -83,7 +93,4 @@ public class BasicSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
-     private static final String
-            PREPROCESSING_DESC = "Do pre-processing",
-            SPAN_DESC = "Time span used for the processing";
 }

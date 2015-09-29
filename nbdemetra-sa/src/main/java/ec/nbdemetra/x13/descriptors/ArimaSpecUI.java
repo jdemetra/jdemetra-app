@@ -13,6 +13,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -151,8 +152,9 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
     }
 
     @Override
+    @Messages("arimaSpecUI.getDisplayName=Arima")
     public String getDisplayName() {
-        return "Arima";
+        return Bundle.arimaSpecUI_getDisplayName();
     }
 
     public int getP() {
@@ -244,6 +246,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         arima().setMean(value);
     }
 
+    @Messages({
+        "arimaSpecUI.pDesc.name=P",
+        "arimaSpecUI.pDesc.desc=[p] Regular auto-regresssive order"
+    })
     private EnhancedPropertyDescriptor pDesc() {
         if (core.isUsingAutoModel()) {
             return null;
@@ -252,7 +258,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("P", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, P_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(P_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_pDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_pDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -261,6 +268,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.dDesc.name=D",
+        "arimaSpecUI.dDesc.desc=[d] Regular differencing order",
+    })
     private EnhancedPropertyDescriptor dDesc() {
         if (core.isUsingAutoModel()) {
             return null;
@@ -269,7 +280,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("D", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, D_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(D_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_dDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_dDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -278,6 +290,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.qDesc.name=Q",
+        "arimaSpecUI.qDesc.desc=[q] Regular moving average order"
+    })
     private EnhancedPropertyDescriptor qDesc() {
         if (core.isUsingAutoModel()) {
             return null;
@@ -286,7 +302,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("Q", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, Q_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(Q_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_qDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_qDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -295,6 +312,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.bpDesc.name=BP",
+        "arimaSpecUI.bpDesc.desc=[bp] Seasonal auto-regressive order"
+    })
     private EnhancedPropertyDescriptor bpDesc() {
         if (core.isUsingAutoModel()) {
             return null;
@@ -303,7 +324,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("BP", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BP_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(BP_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_bpDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_bpDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -312,6 +334,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.bdDesc.name=BD",
+        "arimaSpecUI.bdDesc.desc=[bd] Seasonal differencing order"
+    })
     private EnhancedPropertyDescriptor bdDesc() {
         if (core.isUsingAutoModel()) {
             return null;
@@ -320,7 +346,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("BD", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BD_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(BD_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_bdDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_bdDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -329,6 +356,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.bqDesc.name=BQ",
+        "arimaSpecUI.bqDesc.desc=[bq] Seasonal moving average order"
+    })
     private EnhancedPropertyDescriptor bqDesc() {
         if (core.isUsingAutoModel()) {
             return null;
@@ -337,7 +368,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("BQ", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BQ_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(BQ_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_bqDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_bqDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -346,6 +378,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.phiDesc.name=phi",
+        "arimaSpecUI.phiDesc.desc=[phi, jpr] Coefficients of the regular auto-regressive polynomial (true signs)"
+    })
     private EnhancedPropertyDescriptor phiDesc() {
         if (core.isUsingAutoModel() || arima().getP() == 0) {
             return null;
@@ -354,8 +390,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("Phi", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, PHI_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName("phi");
-            desc.setShortDescription(PHI_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_phiDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_phiDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -364,6 +400,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.thetaDesc.name=theta",
+        "arimaSpecUI.thetaDesc.desc=[th, jqr] Coefficients of the regular moving average polynomial (true signs)"
+    })
     private EnhancedPropertyDescriptor thetaDesc() {
         if (core.isUsingAutoModel() || arima().getQ() == 0) {
             return null;
@@ -372,8 +412,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("Theta", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, THETA_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName("theta");
-            desc.setShortDescription(THETA_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_thetaDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_thetaDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -382,6 +422,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.bphiDesc.name=bphi",
+        "arimaSpecUI.bphiDesc.desc=[bphi, jqr] Coefficients of the seasonal auto-regressive polynomial (true signs)"
+    })
     private EnhancedPropertyDescriptor bphiDesc() {
         if (core.isUsingAutoModel() || arima().getBP() == 0) {
             return null;
@@ -390,8 +434,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("BPhi", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BPHI_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName("bphi");
-            desc.setShortDescription(BPHI_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_bphiDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_bphiDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -400,6 +444,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.bthetaDesc.name=btheta",
+        "arimaSpecUI.bthetaDesc.desc=[bth, jqs] Coefficients of the seasonal moving average polynomial (true signs)"
+    })
     private EnhancedPropertyDescriptor bthetaDesc() {
         if (core.isUsingAutoModel() || arima().getBQ() == 0) {
             return null;
@@ -408,8 +456,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("BTheta", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BTHETA_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName("btheta");
-            desc.setShortDescription(BTHETA_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_bthetaDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_bthetaDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -418,6 +466,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.meanDesc.name=Mean",
+        "arimaSpecUI.meanDesc.desc=[imean] Mean correction"
+    })
     private EnhancedPropertyDescriptor meanDesc() {
         if (core.isUsingAutoModel()) {
             return null;
@@ -426,7 +478,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("Mean", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, MEAN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(MEAN_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_meanDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_meanDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -547,13 +600,17 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         ami().setPercentRSE(value);
     }
 
+    @Messages({
+        "arimaSpecUI.enabledDesc.name=Automatic",
+        "arimaSpecUI.enabledDesc.desc=Enables automatic modelling."
+    })
     private EnhancedPropertyDescriptor enabledDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Enabled", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ENABLED_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(ENABLED_NAME);
-            desc.setShortDescription(ENABLED_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_enabledDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_enabledDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -562,6 +619,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.accdefDesc.name=Accept Default",
+        "arimaSpecUI.accdefDesc.desc=[acceptdefault] Controls whether the default model is acceptable."
+    })
     private EnhancedPropertyDescriptor accdefDesc() {
         if (!core.isUsingAutoModel()) {
             return null;
@@ -570,8 +631,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("AcceptDefault", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ACCDEF_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(ACCDEF_NAME);
-            desc.setShortDescription(ACCDEF_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_accdefDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_accdefDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -580,6 +641,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.balancedDesc.name=Balanced",
+        "arimaSpecUI.balancedDesc.desc=[balanced] Controls whether the automatic model procedure will have a preference for balanced models."
+    })
     private EnhancedPropertyDescriptor balancedDesc() {
         if (!core.isUsingAutoModel()) {
             return null;
@@ -588,8 +653,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("Balanced", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BALANCED_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(BALANCED_NAME);
-            desc.setShortDescription(BALANCED_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_balancedDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_balancedDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -598,6 +663,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.mixedDesc.name=Mixed",
+        "arimaSpecUI.mixedDesc.desc=[mixed] Controls whether ARIMA models with nonseasonal AR and MA terms or seasonal AR and MA terms will be considered in the automatic model identification procedure."
+    })
     private EnhancedPropertyDescriptor mixedDesc() {
         if (!core.isUsingAutoModel()) {
             return null;
@@ -606,8 +675,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("Mixed", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, MIXED_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(MIXED_NAME);
-            desc.setShortDescription(MIXED_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_mixedDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_mixedDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -616,6 +685,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.checkmuDesc.name=CheckMu",
+        "arimaSpecUI.checkmuDesc.desc=[checkmu] Controls whether the automatic model selection procedure will check for the significance of a constant term."
+    })
     private EnhancedPropertyDescriptor checkmuDesc() {
         if (!core.isUsingAutoModel()) {
             return null;
@@ -624,8 +697,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("CheckMu", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, CHECKMU_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(CHECKMU_NAME);
-            desc.setShortDescription(CHECKMU_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_checkmuDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_checkmuDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -634,6 +707,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.hrinitialDesc.name=HR initial",
+        "arimaSpecUI.hrinitialDesc.desc=[hrinitial] Controls whether Hannan-Rissanen estimation is done before exact maximum likelihood estimation to provide initial values."
+    })
     private EnhancedPropertyDescriptor hrinitialDesc() {
         if (!core.isUsingAutoModel()) {
             return null;
@@ -642,8 +719,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("HannanRissannen", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, HRINITIAL_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(HRINITIAL_NAME);
-            desc.setShortDescription(HRINITIAL_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_hrinitialDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_hrinitialDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -652,6 +729,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.urlimitDesc.name=Unit root limit",
+        "arimaSpecUI.urlimitDesc.desc=[urfinal] Unit root limit for final model. Should be > 1."
+    })
     private EnhancedPropertyDescriptor urlimitDesc() {
         if (!core.isUsingAutoModel()) {
             return null;
@@ -660,8 +741,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("UbFinal", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, URLIMIT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(URLIMIT_NAME);
-            desc.setShortDescription(URLIMIT_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_urlimitDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_urlimitDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -670,6 +751,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.iurlimitDesc.name=Initial unit root limit",
+        "arimaSpecUI.iurlimitDesc.desc=Initial unit root limit in the automatic differencing procedure."
+    })
     private EnhancedPropertyDescriptor iurlimitDesc() {
         if (!core.isUsingAutoModel()) {
             return null;
@@ -678,8 +763,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("Ub1", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, IURLIMIT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(IURLIMIT_NAME);
-            desc.setShortDescription(IURLIMIT_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_iurlimitDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_iurlimitDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -688,6 +773,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.furlimitDesc.name=Final unit root limit",
+        "arimaSpecUI.furlimitDesc.desc=Final unit root limit in the automatic differencing procedure."
+    })
     private EnhancedPropertyDescriptor furlimitDesc() {
         if (!core.isUsingAutoModel()) {
             return null;
@@ -696,8 +785,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("Ub2", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FURLIMIT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(FURLIMIT_NAME);
-            desc.setShortDescription(FURLIMIT_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_furlimitDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_furlimitDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -706,6 +795,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.cancelDesc.name=Cancelation limit",
+        "arimaSpecUI.cancelDesc.desc=Cancelation limit for AR and MA roots."
+    })
     private EnhancedPropertyDescriptor cancelDesc() {
         if (!core.isUsingAutoModel()) {
             return null;
@@ -714,8 +807,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("Cancel", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, CANCELLIMIT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(CANCELLIMIT_NAME);
-            desc.setShortDescription(CANCELLIMIT_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_cancelDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_cancelDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -724,6 +817,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.ljungboxDesc.name=LjungBox limit",
+        "arimaSpecUI.ljungboxDesc.desc=[ljungboxlimit] Ljung-Box Q statistic limit for the acceptance of a model."
+    })
     private EnhancedPropertyDescriptor ljungboxDesc() {
         if (!core.isUsingAutoModel()) {
             return null;
@@ -732,8 +829,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("Pcr", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, LJUNGBOXLIMIT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(LJUNGBOXLIMIT_NAME);
-            desc.setShortDescription(LJUNGBOXLIMIT_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_ljungboxDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_ljungboxDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -742,6 +839,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.armaDesc.name=ArmaLimit",
+        "arimaSpecUI.armaDesc.desc=[armalimit] Threshold value for t-statistics of ARMA coefficients used for final test of model parsimony."
+    })
     private EnhancedPropertyDescriptor armaDesc() {
         if (!core.isUsingAutoModel()) {
             return null;
@@ -750,8 +851,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("Tsig", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ARMALIMIT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(ARMALIMIT_NAME);
-            desc.setShortDescription(ARMALIMIT_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_armaDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_armaDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -760,6 +861,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.reducecvDesc.name=Reduce CV",
+        "arimaSpecUI.reducecvDesc.desc=[reducecv] The percentage by which the outlier critical value will be reduced when an identified model is found to have a Ljung-Box Q statistic with an unacceptable confidence coefficient."
+    })
     private EnhancedPropertyDescriptor reducecvDesc() {
         if (!core.isUsingAutoModel()) {
             return null;
@@ -768,8 +873,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("PredCV", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, REDUCECV_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(REDUCECV_NAME);
-            desc.setShortDescription(REDUCECV_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_reducecvDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_reducecvDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -778,6 +883,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "arimaSpecUI.reduceseDesc.name=Reduce SE",
+        "arimaSpecUI.reduceseDesc.desc=Percent reduction of SE."
+    })
     private EnhancedPropertyDescriptor reduceseDesc() {
         if (!core.isUsingAutoModel()) {
             return null;
@@ -786,8 +895,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("PredSE", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, REDUCESE_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(REDUCESE_NAME);
-            desc.setShortDescription(REDUCESE_DESC);
+            desc.setDisplayName(Bundle.arimaSpecUI_reduceseDesc_name());
+            desc.setShortDescription(Bundle.arimaSpecUI_reduceseDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         }
@@ -801,43 +910,4 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             CHECKMU_ID = 4, HRINITIAL_ID = 5, URLIMIT_ID = 6, IURLIMIT_ID = 7, FURLIMIT_ID = 8,
             CANCELLIMIT_ID = 9, LJUNGBOXLIMIT_ID = 10, ARMALIMIT_ID = 11, REDUCECV_ID = 12,
             REDUCESE_ID = 13;
-    private static final String P_DESC = "[p] Regular auto-regresssive order",
-            D_DESC = "[d] Regular differencing order",
-            Q_DESC = "[q] Regular moving average order",
-            BP_DESC = "[bp] Seasonal auto-regressive order",
-            BD_DESC = "[bd] Seasonal differencing order",
-            BQ_DESC = "[bq] Seasonal moving average order",
-            PHI_DESC = "[phi, jpr] Coefficients of the regular auto-regressive polynomial (true signs)",
-            THETA_DESC = "[th, jqr] Coefficients of the regular moving average polynomial (true signs)",
-            BPHI_DESC = "[bphi, jqr] Coefficients of the seasonal auto-regressive polynomial (true signs)",
-            BTHETA_DESC = "[bth, jqs] Coefficients of the seasonal moving average polynomial (true signs)",
-            MEAN_DESC = "[imean] Mean correction";
-    private static final String ENABLED_NAME = "Automatic",
-            ACCDEF_NAME = "Accept Default",
-            BALANCED_NAME = "Balanced",
-            MIXED_NAME = "Mixed",
-            CHECKMU_NAME = "CheckMu",
-            HRINITIAL_NAME = "HR initial",
-            URLIMIT_NAME = "Unit root limit",
-            IURLIMIT_NAME = "Initial unit root limit",
-            FURLIMIT_NAME = "Final unit root limit",
-            CANCELLIMIT_NAME = "Cancelation limit",
-            LJUNGBOXLIMIT_NAME = "LjungBox limit",
-            ARMALIMIT_NAME = "ArmaLimit",
-            REDUCECV_NAME = "Reduce CV",
-            REDUCESE_NAME = "Reduce SE";
-    private static final String ENABLED_DESC = "Enables automatic modelling.",
-            ACCDEF_DESC = "[acceptdefault] Controls whether the default model is acceptable.",
-            BALANCED_DESC = "[balanced] Controls whether the automatic model procedure will have a preference for balanced models.",
-            MIXED_DESC = "[mixed] Controls whether ARIMA models with nonseasonal AR and MA terms or seasonal AR and MA terms will be considered in the automatic model identification procedure.",
-            CHECKMU_DESC = "[checkmu] Controls whether the automatic model selection procedure will check for the significance of a constant term.",
-            HRINITIAL_DESC = "[hrinitial] Controls whether Hannan-Rissanen estimation is done before exact maximum likelihood estimation to provide initial values.",
-            URLIMIT_DESC = "[urfinal] Unit root limit for final model. Should be > 1.",
-            IURLIMIT_DESC = "Initial unit root limit in the automatic differencing procedure.",
-            FURLIMIT_DESC = "Final unit root limit in the automatic differencing procedure.",
-            CANCELLIMIT_DESC = "Cancelation limit for AR and MA roots.",
-            LJUNGBOXLIMIT_DESC = "[ljungboxlimit] Ljung-Box Q statistic limit for the acceptance of a model.",
-            ARMALIMIT_DESC = "[armalimit] Threshold value for t-statistics of ARMA coefficients used for final test of model parsimony.",
-            REDUCECV_DESC = "[reducecv] The percentage by which the outlier critical value will be reduced when an identified model is found to have a Ljung-Box Q statistic with an unacceptable confidence coefficient.",
-            REDUCESE_DESC = "Percent reduction of SE.";
 }
