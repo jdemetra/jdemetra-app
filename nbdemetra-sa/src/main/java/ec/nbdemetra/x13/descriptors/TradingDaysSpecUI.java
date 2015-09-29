@@ -60,6 +60,10 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = stdDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         desc = testDesc();
         if (desc != null) {
             descs.add(desc);
@@ -83,7 +87,9 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
 
     public TradingDaysSpecType getOption() {
         TradingDaysSpec spec = inner();
-        if (spec.getHolidays() != null) {
+        if (spec.isStockTradingDays()) {
+            return TradingDaysSpecType.Stock;
+        } else if (spec.getHolidays() != null) {
             return TradingDaysSpecType.Holidays;
         } else if (spec.getUserVariables() != null) {
             return TradingDaysSpecType.UserDefined;
@@ -118,6 +124,11 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
             case UserDefined:
                 spec.disable();
                 spec.setUserVariables(new String[]{});
+                spec.setTest(RegressionTestSpec.Remove);
+                break;
+            case Stock:
+                spec.disable();
+                spec.setStockTradingDays(31);
                 spec.setTest(RegressionTestSpec.Remove);
                 break;
             default:
@@ -173,6 +184,34 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
 
     public void setUserVariables(UserVariables vars) {
         inner().setUserVariables(vars.getNames());
+    }
+
+    public int getW() {
+        return inner().getStockTradingDays();
+    }
+
+    public void setW(int w) {
+        inner().setStockTradingDays(w);
+    }
+
+    @Messages({
+        "tradingDaysSpecUI.stdDesc.name=W",
+        "tradingDaysSpecUI.stdDesc.desc=Position of the day in the month. 31 for last day."
+    })
+    private EnhancedPropertyDescriptor stdDesc() {
+        if (getOption() != TradingDaysSpecType.Stock) {
+            return null;
+        }
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("w", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, STOCK_ID);
+            desc.setDisplayName(Bundle.tradingDaysSpecUI_stdDesc_name());
+            desc.setShortDescription(Bundle.tradingDaysSpecUI_stdDesc_desc());
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
     }
 
     private EnhancedPropertyDescriptor userDesc() {
