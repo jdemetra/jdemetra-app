@@ -152,7 +152,7 @@ public abstract class ATsCollectionView extends ATsControl implements
         InputMap im = getInputMap();
         KeyStrokes.putAll(im, KeyStrokes.COPY, COPY_ACTION);
         KeyStrokes.putAll(im, KeyStrokes.PASTE, PASTE_ACTION);
-        KeyStrokes.putAll(im, KeyStrokes.DELETE, COPY_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.DELETE, DELETE_ACTION);
         KeyStrokes.putAll(im, KeyStrokes.SELECT_ALL, SELECT_ALL_ACTION);
         KeyStrokes.putAll(im, KeyStrokes.OPEN, OPEN_ACTION);
         KeyStrokes.putAll(im, KeyStrokes.CLEAR, CLEAR_ACTION);
