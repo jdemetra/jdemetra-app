@@ -38,6 +38,7 @@ import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.chart.TsSparklineCellRenderer;
+import ec.ui.interfaces.ITsActionAble;
 import ec.util.chart.swing.Charts;
 import ec.util.grid.swing.XTable;
 import ec.util.various.swing.JCommand;
@@ -74,9 +75,7 @@ import org.openide.NotifyDescriptor;
  *
  * @author Jean Palate
  */
-public class JTsVariableList extends JComponent {
-
-    public static final String TS_ACTION_PROPERTY = "tsAction";
+public class JTsVariableList extends JComponent implements ITsActionAble {
 
     public static final String DELETE_ACTION = "delete";
     public static final String CLEAR_ACTION = "clear";
@@ -103,10 +102,12 @@ public class JTsVariableList extends JComponent {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
+    @Override
     public ITsAction getTsAction() {
         return tsAction;
     }
 
+    @Override
     public void setTsAction(ITsAction tsAction) {
         ITsAction old = this.tsAction;
         this.tsAction = tsAction;

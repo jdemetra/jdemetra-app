@@ -49,7 +49,7 @@ public class MultiTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocu
         toolBar.add(new JToolBar.Separator(), 3);
         toolBar.add(specLabel, 4);
         
-        tsList.addPropertyChangeListener(JTsList.COLLECTION_PROPERTY, new PropertyChangeListener() {
+        tsList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (!quietRefresh) {

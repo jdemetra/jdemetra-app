@@ -16,10 +16,17 @@
  */
 package ec.ui.interfaces;
 
+import ec.tstoolkit.timeseries.simplets.TsData;
+
 /**
  *
  * @author Philippe Charles
  */
-public interface ITsDataView extends ITsControl, ITsDataAble {
+public interface ITsDataAble {
 
+    public static final String TS_DATA_PROPERTY = "tsData";
+
+    void setTsData(TsData tsData);
+
+    TsData getTsData();
 }

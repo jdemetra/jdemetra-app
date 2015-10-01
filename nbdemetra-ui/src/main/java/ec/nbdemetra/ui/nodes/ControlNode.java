@@ -66,7 +66,7 @@ public class ControlNode {
                 }
             }
         });
-        view.addPropertyChangeListener(ITsCollectionView.COLLECTION_PROPERTY, new PropertyChangeListener() {
+        view.addPropertyChangeListener(ITsCollectionView.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 mgr.setRootContext(new TsCollectionNode(view.getTsCollection()));

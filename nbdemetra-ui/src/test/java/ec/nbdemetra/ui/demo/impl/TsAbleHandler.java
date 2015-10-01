@@ -18,8 +18,7 @@ package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.tss.TsCollection;
-import ec.tstoolkit.data.ReadDataBlock;
-import ec.ui.interfaces.IReadDataBlockView;
+import ec.ui.interfaces.ITsAble;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.ext.FontAwesomeUtils;
@@ -33,48 +32,48 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = DemoComponentHandler.class)
-public final class ReadDataBlockViewHandler extends DemoComponentHandler.InstanceOf<IReadDataBlockView> {
+public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<ITsAble> {
 
     private final RandomCommand randomCommand;
-    private final ResetCommand resetCommand;
+    private final ClearCommand clearCommand;
 
-    public ReadDataBlockViewHandler() {
-        super(IReadDataBlockView.class);
+    public TsAbleHandler() {
+        super(ITsAble.class);
         this.randomCommand = new RandomCommand();
-        resetCommand = new ResetCommand();
+        this.clearCommand = new ClearCommand();
     }
 
     @Override
-    public void doConfigure(IReadDataBlockView c) {
+    public void doConfigure(ITsAble c) {
         randomCommand.executeSafely(c);
     }
 
     @Override
-    public void doFillToolBar(JToolBar toolBar, IReadDataBlockView c) {
+    public void doFillToolBar(JToolBar toolBar, ITsAble c) {
         JButton item;
 
         toolBar.add(randomCommand.toButton(c));
 
-        item = toolBar.add(resetCommand.toAction(c));
+        item = toolBar.add(clearCommand.toAction(c));
         item.setIcon(FontAwesomeUtils.getIcon(FA_ERASER, ICON_COLOR_16x16));
 
         toolBar.addSeparator();
     }
 
     //<editor-fold defaultstate="collapsed" desc="Commands">
-    private static final class RandomCommand extends RandomTsCollectionCommand<IReadDataBlockView> {
+    private static final class RandomCommand extends RandomTsCollectionCommand<ITsAble> {
 
         @Override
-        protected void apply(IReadDataBlockView c, TsCollection col) {
-            c.setDataBlock(new ReadDataBlock(col.get(0).getTsData().getValues().internalStorage()));
+        protected void apply(ITsAble c, TsCollection col) {
+            c.setTs(col.get(0));
         }
     }
 
-    private static final class ResetCommand extends JCommand<IReadDataBlockView> {
+    private static final class ClearCommand extends JCommand<ITsAble> {
 
         @Override
-        public void execute(IReadDataBlockView component) throws Exception {
-            component.reset();
+        public void execute(ITsAble c) throws Exception {
+            c.setTs(null);
         }
     }
     //</editor-fold>

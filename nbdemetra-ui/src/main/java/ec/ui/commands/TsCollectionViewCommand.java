@@ -33,8 +33,8 @@ import ec.tss.tsproviders.TsProviders;
 import ec.tstoolkit.design.UtilityClass;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.utilities.Arrays2;
+import static ec.ui.interfaces.ITsCollectionAble.TS_COLLECTION_PROPERTY;
 import ec.ui.interfaces.ITsCollectionView;
-import static ec.ui.interfaces.ITsCollectionView.COLLECTION_PROPERTY;
 import static ec.ui.interfaces.ITsCollectionView.SELECTION_PROPERTY;
 import static ec.ui.interfaces.ITsCollectionView.UDPATE_MODE_PROPERTY;
 import ec.util.various.swing.JCommand;
@@ -153,7 +153,7 @@ public final class TsCollectionViewCommand {
     private static abstract class AnyDataCommand extends ComponentCommand<ITsCollectionView> {
 
         public AnyDataCommand() {
-            super(COLLECTION_PROPERTY);
+            super(TS_COLLECTION_PROPERTY);
         }
 
         @Override
@@ -349,7 +349,7 @@ public final class TsCollectionViewCommand {
         public static final ClearCommand INSTANCE = new ClearCommand();
 
         public ClearCommand() {
-            super(COLLECTION_PROPERTY, UDPATE_MODE_PROPERTY);
+            super(TS_COLLECTION_PROPERTY, UDPATE_MODE_PROPERTY);
         }
 
         @Override
@@ -368,7 +368,7 @@ public final class TsCollectionViewCommand {
         public static final SelectAllCommand INSTANCE = new SelectAllCommand();
 
         public SelectAllCommand() {
-            super(SELECTION_PROPERTY, COLLECTION_PROPERTY);
+            super(SELECTION_PROPERTY, TS_COLLECTION_PROPERTY);
         }
 
         @Override

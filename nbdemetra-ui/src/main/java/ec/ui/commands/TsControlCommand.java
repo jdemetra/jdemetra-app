@@ -16,7 +16,9 @@
  */
 package ec.ui.commands;
 
+import com.google.common.base.Objects;
 import ec.nbdemetra.ui.properties.DataFormatComponent2;
+import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.design.UtilityClass;
 import ec.ui.interfaces.ITsControl;
 import ec.ui.interfaces.ITsPrinter;
@@ -26,6 +28,7 @@ import java.awt.FlowLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -49,6 +52,11 @@ public final class TsControlCommand {
     }
 
     @Nonnull
+    public static JCommand<ITsControl> applyDataFormat(@Nullable DataFormat dataFormat) {
+        return new ApplyDataFormatCommand(dataFormat);
+    }
+
+    @Nonnull
     public static JCommand<ITsControl> editDataFormat() {
         return EditDataFormatCommand.INSTANCE;
     }
@@ -67,13 +75,23 @@ public final class TsControlCommand {
         }
     }
 
-    private static final class DefaultDataFormatCommand extends JCommand<ITsControl> {
+    private static final class ApplyDataFormatCommand extends ComponentCommand<ITsControl> {
 
-        public static final DefaultDataFormatCommand INSTANCE = new DefaultDataFormatCommand();
+        private final DataFormat dataFormat;
+
+        public ApplyDataFormatCommand(DataFormat dataFormat) {
+            super(ITsControl.DATA_FORMAT_PROPERTY);
+            this.dataFormat = dataFormat;
+        }
 
         @Override
-        public void execute(ITsControl component) {
-            component.setDataFormat(null);
+        public void execute(ITsControl component) throws Exception {
+            component.setDataFormat(dataFormat);
+        }
+
+        @Override
+        public boolean isSelected(ITsControl component) {
+            return Objects.equal(dataFormat, component.getDataFormat());
         }
     }
 
@@ -101,7 +119,7 @@ public final class TsControlCommand {
             });
             editor.setDataFormat(component.getDataFormat());
             if (component.getDataFormat() != null) {
-                JButton b = new JButton(DefaultDataFormatCommand.INSTANCE.toAction(component));
+                JButton b = new JButton(new ApplyDataFormatCommand(null).toAction(component));
                 b.setText("Restore");
                 descriptor.setAdditionalOptions(new Object[]{b});
             }

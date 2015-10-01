@@ -103,7 +103,7 @@ public class JTsAnomalyGrid extends JComponent {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 switch (evt.getPropertyName()) {
-                    case JTsGrid.COLLECTION_PROPERTY:
+                    case JTsGrid.TS_COLLECTION_PROPERTY:
                         onCollectionChange((TsCollection) evt.getNewValue());
                         break;
                     case ITsGrid.ZOOM_PROPERTY:

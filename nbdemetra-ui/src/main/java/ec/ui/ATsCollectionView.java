@@ -37,6 +37,7 @@ import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.ui.commands.ColorSchemeCommand;
 import ec.ui.commands.TsCollectionViewCommand;
 import ec.ui.interfaces.IColorSchemeAble;
+import static ec.ui.interfaces.ITsCollectionAble.TS_COLLECTION_PROPERTY;
 import ec.ui.interfaces.ITsCollectionView;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.Charts;
@@ -155,7 +156,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 switch (evt.getPropertyName()) {
-                    case COLLECTION_PROPERTY:
+                    case TS_COLLECTION_PROPERTY:
                         onCollectionChange();
                         break;
                     case SELECTION_PROPERTY:
@@ -200,7 +201,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         // update selection to reflect changes in collection
         Ts[] oldSelection = this.selection;
         this.selection = retainTsCollection(selection);
-        firePropertyChange(COLLECTION_PROPERTY, old, this.collection);
+        firePropertyChange(TS_COLLECTION_PROPERTY, old, this.collection);
         firePropertyChange(SELECTION_PROPERTY, oldSelection, selection);
     }
 
@@ -491,7 +492,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
                                 dirty.set(false);
                                 Ts[] oldSelection = selection;
                                 selection = retainTsCollection(selection);
-                                firePropertyChange(COLLECTION_PROPERTY, null, collection);
+                                firePropertyChange(TS_COLLECTION_PROPERTY, null, collection);
                                 firePropertyChange(SELECTION_PROPERTY, oldSelection, selection);
 //                            }
                             }

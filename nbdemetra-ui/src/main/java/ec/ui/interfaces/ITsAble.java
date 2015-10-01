@@ -16,10 +16,18 @@
  */
 package ec.ui.interfaces;
 
+import ec.tss.Ts;
+
 /**
  *
  * @author Philippe Charles
  */
-public interface ITsDataView extends ITsControl, ITsDataAble {
+public interface ITsAble {
+
+    public static final String TS_PROPERTY = "ts";
+
+    Ts getTs();
+
+    void setTs(Ts ts);
 
 }

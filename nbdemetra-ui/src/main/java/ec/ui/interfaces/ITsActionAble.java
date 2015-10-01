@@ -16,10 +16,20 @@
  */
 package ec.ui.interfaces;
 
+import ec.nbdemetra.ui.tsaction.ITsAction;
+import javax.annotation.Nullable;
+
 /**
  *
  * @author Philippe Charles
  */
-public interface ITsDataView extends ITsControl, ITsDataAble {
+public interface ITsActionAble {
+
+    public static final String TS_ACTION_PROPERTY = "tsAction";
+
+    void setTsAction(@Nullable ITsAction tsAction);
+
+    @Nullable
+    ITsAction getTsAction();
 
 }
