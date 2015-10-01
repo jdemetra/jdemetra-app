@@ -20,6 +20,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
+import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.KeyStrokes;
 import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.nbdemetra.ui.tssave.ITsSave;
@@ -38,6 +39,7 @@ import ec.ui.commands.TsCollectionViewCommand;
 import ec.ui.interfaces.IColorSchemeAble;
 import ec.ui.interfaces.ITsCollectionView;
 import ec.util.chart.ColorScheme;
+import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.ColorSchemeIcon;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
@@ -73,11 +75,11 @@ import javax.swing.event.ListSelectionListener;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 
-public abstract class ATsCollectionView extends ATsControl implements
-        ITsCollectionView {
+public abstract class ATsCollectionView extends ATsControl implements ITsCollectionView {
 
     // PROPERTIES DEFINITION
     public static final String DROP_CONTENT_PROPERTY = "dropContent";
+
     // ACTIONS KEYS
     public static final String FREEZE_ACTION = "freeze";
     public static final String COPY_ACTION = "copy";
@@ -89,16 +91,19 @@ public abstract class ATsCollectionView extends ATsControl implements
     public static final String SELECT_ALL_ACTION = "selectAll";
     public static final String RENAME_ACTION = "rename";
     public static final String DEFAULT_COLOR_SCHEME_ACTION = "defaultColorScheme";
+
     // DEFAULT PROPERTIES
     protected static final TsUpdateMode DEFAULT_UPDATEMODE = TsUpdateMode.Append;
     protected static final Ts[] DEFAULT_SELECTION = new Ts[0];
     protected static final Ts[] DEFAULT_DROP_CONTENT = new Ts[0];
+
     // PROPERTIES
     protected TsCollection collection;
     protected TsUpdateMode updateMode;
     protected ITsAction tsAction;
     protected Ts[] selection;
     protected Ts[] dropContent;
+
     // OTHER
     protected final TsFactoryObserver tsFactoryObserver;
 
@@ -112,6 +117,40 @@ public abstract class ATsCollectionView extends ATsControl implements
         this.dropContent = DEFAULT_DROP_CONTENT;
         this.tsFactoryObserver = new TsFactoryObserver();
 
+        registerActions();
+        registerInputs();
+        enableProperties();
+
+        TsFactory.instance.addObserver(tsFactoryObserver);
+    }
+
+    private void registerActions() {
+        ActionMap am = getActionMap();
+        am.put(FREEZE_ACTION, TsCollectionViewCommand.freeze().toAction(this));
+        am.put(COPY_ACTION, TsCollectionViewCommand.copy().toAction(this));
+        am.put(COPY_ALL_ACTION, TsCollectionViewCommand.copyAll().toAction(this));
+        am.put(DELETE_ACTION, TsCollectionViewCommand.delete().toAction(this));
+        am.put(CLEAR_ACTION, TsCollectionViewCommand.clear().toAction(this));
+        am.put(PASTE_ACTION, TsCollectionViewCommand.paste().toAction(this));
+        am.put(OPEN_ACTION, TsCollectionViewCommand.open().toAction(this));
+        am.put(SELECT_ALL_ACTION, TsCollectionViewCommand.selectAll().toAction(this));
+        am.put(RENAME_ACTION, TsCollectionViewCommand.rename().toAction(this));
+        if (this instanceof IColorSchemeAble) {
+            am.put(DEFAULT_COLOR_SCHEME_ACTION, ColorSchemeCommand.applyColorScheme(null).toAction((IColorSchemeAble) this));
+        }
+    }
+
+    private void registerInputs() {
+        InputMap im = getInputMap();
+        KeyStrokes.putAll(im, KeyStrokes.COPY, COPY_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.PASTE, PASTE_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.DELETE, DELETE_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.SELECT_ALL, SELECT_ALL_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.OPEN, OPEN_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.CLEAR, CLEAR_ACTION);
+    }
+
+    private void enableProperties() {
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -134,30 +173,6 @@ public abstract class ATsCollectionView extends ATsControl implements
                 }
             }
         });
-
-        ActionMap am = getActionMap();
-        am.put(FREEZE_ACTION, TsCollectionViewCommand.freeze().toAction(this));
-        am.put(COPY_ACTION, TsCollectionViewCommand.copy().toAction(this));
-        am.put(COPY_ALL_ACTION, TsCollectionViewCommand.copyAll().toAction(this));
-        am.put(DELETE_ACTION, TsCollectionViewCommand.delete().toAction(this));
-        am.put(CLEAR_ACTION, TsCollectionViewCommand.clear().toAction(this));
-        am.put(PASTE_ACTION, TsCollectionViewCommand.paste().toAction(this));
-        am.put(OPEN_ACTION, TsCollectionViewCommand.open().toAction(this));
-        am.put(SELECT_ALL_ACTION, TsCollectionViewCommand.selectAll().toAction(this));
-        am.put(RENAME_ACTION, TsCollectionViewCommand.rename().toAction(this));
-        if (this instanceof IColorSchemeAble) {
-            am.put(DEFAULT_COLOR_SCHEME_ACTION, ColorSchemeCommand.applyColorScheme(null).toAction((IColorSchemeAble) this));
-        }
-
-        InputMap im = getInputMap();
-        KeyStrokes.putAll(im, KeyStrokes.COPY, COPY_ACTION);
-        KeyStrokes.putAll(im, KeyStrokes.PASTE, PASTE_ACTION);
-        KeyStrokes.putAll(im, KeyStrokes.DELETE, DELETE_ACTION);
-        KeyStrokes.putAll(im, KeyStrokes.SELECT_ALL, SELECT_ALL_ACTION);
-        KeyStrokes.putAll(im, KeyStrokes.OPEN, OPEN_ACTION);
-        KeyStrokes.putAll(im, KeyStrokes.CLEAR, CLEAR_ACTION);
-
-        TsFactory.instance.addObserver(tsFactoryObserver);
     }
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
@@ -238,7 +253,6 @@ public abstract class ATsCollectionView extends ATsControl implements
     }
     //</editor-fold>
 
-    // OTHER >
     @Override
     public void dispose() {
         TsFactory.instance.deleteObserver(tsFactoryObserver);
@@ -267,6 +281,7 @@ public abstract class ATsCollectionView extends ATsControl implements
         return Iterables.toArray(tmp, Ts.class);
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Menus">
     public JMenu buildColorSchemeMenu() {
         ActionMap am = getActionMap();
         JMenu result = new JMenu("Color scheme");
@@ -409,7 +424,7 @@ public abstract class ATsCollectionView extends ATsControl implements
         }
         return result;
     }
-// < OTHER
+    //</editor-fold>
 
     private static final class OpenWithCommand extends JCommand<ATsCollectionView> {
 
@@ -451,8 +466,8 @@ public abstract class ATsCollectionView extends ATsControl implements
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() > 1 && selection.length > 0) {
-                (tsAction != null ? tsAction : DemetraUI.getDefault().getTsAction()).open(selection[0]);
+            if (!Charts.isPopup(e) && Charts.isDoubleClick(e)) {
+                ActionMaps.performAction(getActionMap(), OPEN_ACTION, e);
             }
         }
     }

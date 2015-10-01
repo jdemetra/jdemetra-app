@@ -18,6 +18,8 @@ package ec.ui.grid;
 
 import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
+import ec.nbdemetra.ui.awt.ActionMaps;
+import ec.nbdemetra.ui.awt.InputMaps;
 import ec.tss.Ts;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.Formatters.Formatter;
@@ -409,8 +411,8 @@ public class JTsGrid extends ATsGrid {
         result.addMouseListener(new TsActionMouseAdapter());
         result.setOddBackground(null);
 
-        fillActionMap(result.getActionMap());
-        fillInputMap(result.getInputMap(WHEN_IN_FOCUSED_WINDOW));
+        ActionMaps.copyEntries(getActionMap(), false, result.getActionMap());
+        InputMaps.copyEntries(getInputMap(), false, result.getInputMap(WHEN_IN_FOCUSED_WINDOW));
 
         return result;
     }

@@ -19,6 +19,8 @@ package ec.ui.list;
 import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
+import ec.nbdemetra.ui.awt.ActionMaps;
+import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.awt.TableColumnModelAdapter;
 import ec.tss.*;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
@@ -191,8 +193,8 @@ public class JTsList extends ATsList {
         result.setModel(new CustomTableModel());
         XTable.setWidthAsPercentages(result, .4, .1, .1, .1, .3);
 
-        fillActionMap(result.getActionMap());
-        fillInputMap(result.getInputMap());
+        ActionMaps.copyEntries(getActionMap(), false, result.getActionMap());
+        InputMaps.copyEntries(getInputMap(), false, result.getInputMap());
         result.addMouseListener(new TsActionMouseAdapter());
         result.setDragEnabled(true);
         result.setTransferHandler(new TsCollectionTransferHandler());

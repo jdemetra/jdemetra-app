@@ -38,12 +38,14 @@ public abstract class ATsChart extends ATsCollectionView implements ITsChart {
     public static final String THICK_LINE_ACTION = "thickLine";
     public static final String SHOW_ALL_ACTION = "showAll";
     public static final String SPLIT_ACTION = "splitIntoYearlyComponents";
+    
     // DEFAULT PROPERTIES
     protected static final boolean DEFAULT_LEGENDVISIBLE = true;
     protected static final boolean DEFAULT_TITLEVISIBLE = true;
     protected static final boolean DEFAULT_AXISVISIBLE = true;
     protected static final String DEFAULT_TITLE = "";
     protected static final LinesThickness DEFAULT_LINES_THICKNESS = LinesThickness.Thin;
+
     // PROPERTIES
     protected boolean legendVisible;
     protected boolean titleVisible;
@@ -58,6 +60,21 @@ public abstract class ATsChart extends ATsCollectionView implements ITsChart {
         this.title = DEFAULT_TITLE;
         this.linesThickness = DEFAULT_LINES_THICKNESS;
 
+        enableProperties();
+        registerActions();
+    }
+
+    private void registerActions() {
+        ActionMap am = getActionMap();
+        am.put(TITLE_VISIBLE_ACTION, TsChartCommand.toggleTitleVisibility().toAction(this));
+        am.put(LEGEND_VISIBLE_ACTION, TsChartCommand.toggleLegendVisibility().toAction(this));
+        am.put(THIN_LINE_ACTION, TsChartCommand.applyLineThickNess(LinesThickness.Thin).toAction(this));
+        am.put(THICK_LINE_ACTION, TsChartCommand.applyLineThickNess(LinesThickness.Thick).toAction(this));
+        am.put(SHOW_ALL_ACTION, TsChartCommand.showAll().toAction(this));
+        am.put(SPLIT_ACTION, TsChartCommand.splitIntoYearlyComponents().toAction(this));
+    }
+
+    private void enableProperties() {
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -80,14 +97,6 @@ public abstract class ATsChart extends ATsCollectionView implements ITsChart {
                 }
             }
         });
-
-        ActionMap am = getActionMap();
-        am.put(TITLE_VISIBLE_ACTION, TsChartCommand.toggleTitleVisibility().toAction(this));
-        am.put(LEGEND_VISIBLE_ACTION, TsChartCommand.toggleLegendVisibility().toAction(this));
-        am.put(THIN_LINE_ACTION, TsChartCommand.applyLineThickNess(LinesThickness.Thin).toAction(this));
-        am.put(THICK_LINE_ACTION, TsChartCommand.applyLineThickNess(LinesThickness.Thick).toAction(this));
-        am.put(SHOW_ALL_ACTION, TsChartCommand.showAll().toAction(this));
-        am.put(SPLIT_ACTION, TsChartCommand.splitIntoYearlyComponents().toAction(this));
     }
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
@@ -174,83 +183,85 @@ public abstract class ATsChart extends ATsCollectionView implements ITsChart {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Menus">
     protected JMenu buildLinesThicknessMenu() {
         ActionMap am = getActionMap();
         JMenu result = new JMenu("Lines thickness");
-
+        
         JMenuItem item;
-
+        
         item = new JCheckBoxMenuItem(am.get(THIN_LINE_ACTION));
         item.setText("Thin");
         result.add(item);
-
+        
         item = new JCheckBoxMenuItem(am.get(THICK_LINE_ACTION));
         item.setText("Thick");
         result.add(item);
-
+        
         return result;
     }
-
+    
     protected JMenu buildExportImageMenu() {
         ActionMap am = getActionMap();
         JMenu result = new JMenu("Export image to");
-
+        
         JMenuItem item;
-
+        
         item = new JMenuItem(am.get(PRINT_ACTION));
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_PRINT));
         item.setText("Printer...");
         result.add(item);
-
+        
         return result;
     }
-
+    
     protected JMenu buildChartMenu() {
         ActionMap am = getActionMap();
         JMenu result = buildMenu();
-
+        
         int index = 0;
         JMenuItem item;
-
+        
         index += 7;
         item = new JMenuItem(am.get(SPLIT_ACTION));
         item.setText("Split into yearly components");
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_CHAIN_BROKEN));
         ExtAction.hideWhenDisabled(item);
         result.add(item, index++);
-
+        
         index += 3;
         result.insertSeparator(index++);
-
+        
         item = new JCheckBoxMenuItem(am.get(TITLE_VISIBLE_ACTION));
         item.setText("Show title");
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_FONT));
         result.add(item, index++);
-
+        
         item = new JCheckBoxMenuItem(am.get(LEGEND_VISIBLE_ACTION));
         item.setText("Show legend");
         result.add(item, index++);
-
+        
         item = new JMenuItem(getActionMap().get(FORMAT_ACTION));
         item.setText("Edit format...");
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_GLOBE));
         result.add(item, index++);
-
+        
         result.add(buildColorSchemeMenu(), index++);
         result.add(buildLinesThicknessMenu(), index++);
-
+        
         if (!(this instanceof IConfigurable)) {
             result.insertSeparator(index);
         }
         index++;
-
+        
         item = new JMenuItem(am.get(SHOW_ALL_ACTION));
         item.setText("Show all");
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_EYE));
         result.add(item, index++);
-
+        
         result.add(buildExportImageMenu(), index++);
-
+        
         return result;
     }
+    //</editor-fold>
 }

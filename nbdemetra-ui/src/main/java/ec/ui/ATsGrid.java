@@ -41,12 +41,14 @@ public abstract class ATsGrid extends ATsCollectionView implements ITsGrid {
     public static final String SINGLE_TS_ACTION = "singleTs";
     public static final String MULTI_TS_ACTION = "multiTs";
     public static final String TOGGLE_MODE_ACTION = "toggleMode";
+
     // DEFAULT PROPERTIES
     protected static final Orientation DEFAULT_ORIENTATION = Orientation.NORMAL;
     protected static final Chronology DEFAULT_CHRONOLOGY = Chronology.ASCENDING;
     protected static final Mode DEFAULT_MODE = Mode.MULTIPLETS;
     protected static final int DEFAULT_SINGLE_SERIES_INDEX = 0;
     protected static final int DEFAULT_ZOOM_RATIO = 100;
+
     // PROPERTIES
     protected Orientation orientation;
     protected Chronology chronology;
@@ -61,6 +63,20 @@ public abstract class ATsGrid extends ATsCollectionView implements ITsGrid {
         this.singleTsIndex = DEFAULT_SINGLE_SERIES_INDEX;
         this.zoomRatio = DEFAULT_ZOOM_RATIO;
 
+        enableProperties();
+        registerActions();
+    }
+
+    private void registerActions() {
+        ActionMap am = getActionMap();
+        am.put(TRANSPOSE_ACTION, TsGridCommand.transpose().toAction(this));
+        am.put(REVERSE_ACTION, TsGridCommand.reverseChronology().toAction(this));
+        am.put(SINGLE_TS_ACTION, TsGridCommand.applyMode(ITsGrid.Mode.SINGLETS).toAction(this));
+        am.put(MULTI_TS_ACTION, TsGridCommand.applyMode(ITsGrid.Mode.MULTIPLETS).toAction(this));
+        am.put(TOGGLE_MODE_ACTION, TsGridCommand.toggleMode().toAction(this));
+    }
+
+    private void enableProperties() {
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -83,13 +99,6 @@ public abstract class ATsGrid extends ATsCollectionView implements ITsGrid {
                 }
             }
         });
-
-        ActionMap am = getActionMap();
-        am.put(TRANSPOSE_ACTION, TsGridCommand.transpose().toAction(this));
-        am.put(REVERSE_ACTION, TsGridCommand.reverseChronology().toAction(this));
-        am.put(SINGLE_TS_ACTION, TsGridCommand.applyMode(ITsGrid.Mode.SINGLETS).toAction(this));
-        am.put(MULTI_TS_ACTION, TsGridCommand.applyMode(ITsGrid.Mode.MULTIPLETS).toAction(this));
-        am.put(TOGGLE_MODE_ACTION, TsGridCommand.toggleMode().toAction(this));
     }
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
@@ -182,6 +191,7 @@ public abstract class ATsGrid extends ATsCollectionView implements ITsGrid {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Menus">
     protected JMenu buildModeMenu() {
         ActionMap am = getActionMap();
         JMenu result = new JMenu("Mode");
@@ -225,4 +235,5 @@ public abstract class ATsGrid extends ATsCollectionView implements ITsGrid {
 
         return result;
     }
+    //</editor-fold>
 }
