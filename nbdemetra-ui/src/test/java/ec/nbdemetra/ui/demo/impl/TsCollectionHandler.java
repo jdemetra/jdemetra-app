@@ -175,7 +175,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
 
         @Override
         public ActionAdapter toAction(ITsCollectionView component) {
-            return super.toAction(component).withWeakPropertyChangeListener((Component) component, ITsCollectionView.COLLECTION_PROPERTY);
+            return super.toAction(component).withWeakPropertyChangeListener((Component) component, ITsCollectionView.TS_COLLECTION_PROPERTY);
         }
 
         @Override

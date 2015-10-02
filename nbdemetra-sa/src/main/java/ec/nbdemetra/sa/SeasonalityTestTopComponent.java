@@ -79,7 +79,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
         ((JHtmlPane) jEditorPane1).setStyleSheet(ss);
 
         node = new InternalNode();
-        jTsChart1.addPropertyChangeListener(JTsChart.COLLECTION_PROPERTY, new PropertyChangeListener() {
+        jTsChart1.addPropertyChangeListener(JTsChart.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 showTests();

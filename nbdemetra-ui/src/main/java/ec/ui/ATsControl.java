@@ -27,27 +27,25 @@ import ec.ui.interfaces.IColorSchemeAble;
 import ec.ui.interfaces.ITsControl;
 import ec.ui.interfaces.ITsHelper;
 import ec.ui.interfaces.ITsPrinter;
+import ec.util.various.swing.JCommand;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Map.Entry;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
-import javax.swing.KeyStroke;
 
 public abstract class ATsControl extends JComponent2 implements ITsControl, ClipboardOwner {
 
     private static final long serialVersionUID = 3804565526142589316L;
+
     // KEY ACTIONS
     public static final String PRINT_ACTION = "print";
     public static final String CONFIGURE_ACTION = "configure";
     public static final String FORMAT_ACTION = "format";
+
     // TODO: implements default behavior
     protected TooltipType m_tooltip = TooltipType.None;
     protected boolean m_toolwindow = false;
@@ -65,6 +63,23 @@ public abstract class ATsControl extends JComponent2 implements ITsControl, Clip
                 ATsControl.this.firePropertyChange(IColorSchemeAble.COLOR_SCHEME_PROPERTY, null, getColorScheme());
             }
         };
+
+        enableProperties();
+        // DEBUG
+        //this.addPropertyChangeListener(new OuputPropertyChangeListener());
+
+        themeSupport.register();
+        registerActions();
+    }
+
+    private void registerActions() {
+        ActionMap am = getActionMap();
+        am.put(PRINT_ACTION, TsControlCommand.printPreview().toAction(this));
+        am.put(CONFIGURE_ACTION, ConfigureCommand.INSTANCE.toAction(this));
+        am.put(FORMAT_ACTION, TsControlCommand.editDataFormat().toAction(this));
+    }
+
+    private void enableProperties() {
         this.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -78,15 +93,6 @@ public abstract class ATsControl extends JComponent2 implements ITsControl, Clip
                 }
             }
         });
-        // DEBUG
-        //this.addPropertyChangeListener(new OuputPropertyChangeListener());
-
-        themeSupport.register();
-
-        ActionMap am = getActionMap();
-        am.put(PRINT_ACTION, TsControlCommand.printPreview().toAction(this));
-        am.put(CONFIGURE_ACTION, new ConfigureAction());
-        am.put(FORMAT_ACTION, TsControlCommand.editDataFormat().toAction(this));
     }
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
@@ -146,39 +152,37 @@ public abstract class ATsControl extends JComponent2 implements ITsControl, Clip
         // Do nothing
     }
 
+    @Deprecated
     protected Transferable getClipboardContents() {
         Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
         return cb.getContents(this);
     }
 
+    @Deprecated
     protected void setClipboardContents(Transferable transferable) {
         Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
         cb.setContents(transferable, this);
     }
 
+    @Deprecated
     protected void fillActionMap(ActionMap am) {
-        for (Entry<Object, Action> o : ActionMaps.asMap(getActionMap(), false).entrySet()) {
-            am.put(o.getKey(), o.getValue());
-        }
+        ActionMaps.copyEntries(getActionMap(), false, am);
     }
 
+    @Deprecated
     protected void fillInputMap(InputMap im) {
-        for (Entry<KeyStroke, Object> o : InputMaps.asMap(getInputMap(), false).entrySet()) {
-            im.put(o.getKey(), o.getValue());
-        }
+        InputMaps.copyEntries(getInputMap(), false, im);
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Actions">
-    private class ConfigureAction extends AbstractAction {
+    //<editor-fold defaultstate="collapsed" desc="Commands">
+    private static final class ConfigureCommand extends JCommand<ATsControl> {
 
-        public ConfigureAction() {
-            super(CONFIGURE_ACTION);
-        }
+        public static final ConfigureCommand INSTANCE = new ConfigureCommand();
 
         @Override
-        public void actionPerformed(ActionEvent e) {
-            if (ATsControl.this instanceof IConfigurable) {
-                IConfigurable configurable = (IConfigurable) ATsControl.this;
+        public void execute(ATsControl c) throws Exception {
+            if (c instanceof IConfigurable) {
+                IConfigurable configurable = (IConfigurable) c;
                 configurable.setConfig(configurable.editConfig(configurable.getConfig()));
             }
         }

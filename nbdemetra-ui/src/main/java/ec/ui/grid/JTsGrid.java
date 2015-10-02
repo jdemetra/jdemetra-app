@@ -18,6 +18,8 @@ package ec.ui.grid;
 
 import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
+import ec.nbdemetra.ui.awt.ActionMaps;
+import ec.nbdemetra.ui.awt.InputMaps;
 import ec.tss.Ts;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.Formatters.Formatter;
@@ -54,6 +56,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.JToolTip;
@@ -122,7 +125,8 @@ public class JTsGrid extends ATsGrid {
         updateComboModel();
         updateSelectionBehavior();
         updateComboCellRenderer();
-
+        onComponentPopupMenuChange();
+        
         setLayout(new BorderLayout());
         add(grid, BorderLayout.CENTER);
         add(combo, BorderLayout.NORTH);
@@ -142,6 +146,9 @@ public class JTsGrid extends ATsGrid {
                         break;
                     case CROSSHAIR_VISIBLE_PROPERTY:
                         onCrosshairVisibleChange();
+                        break;
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
                         break;
                 }
             }
@@ -267,6 +274,11 @@ public class JTsGrid extends ATsGrid {
         }
 
         grid.setFont(font);
+    }
+    
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        grid.setComponentPopupMenu(popupMenu != null ? popupMenu : buildGridMenu().getPopupMenu());
     }
     //</editor-fold>
 
@@ -405,12 +417,11 @@ public class JTsGrid extends ATsGrid {
         result.setColumnRenderer(new ColumnRenderer(result));
         result.setCornerRenderer(new CornerRenderer());
         result.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        result.setComponentPopupMenu(buildGridMenu().getPopupMenu());
         result.addMouseListener(new TsActionMouseAdapter());
         result.setOddBackground(null);
 
-        fillActionMap(result.getActionMap());
-        fillInputMap(result.getInputMap(WHEN_IN_FOCUSED_WINDOW));
+        ActionMaps.copyEntries(getActionMap(), false, result.getActionMap());
+        InputMaps.copyEntries(getInputMap(), false, result.getInputMap(WHEN_IN_FOCUSED_WINDOW));
 
         return result;
     }

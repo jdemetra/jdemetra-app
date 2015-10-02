@@ -146,7 +146,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 switch (evt.getPropertyName()) {
-                    case JTsList.COLLECTION_PROPERTY:
+                    case JTsList.TS_COLLECTION_PROPERTY:
                         onCollectionChange();
                         break;
                 }

@@ -180,7 +180,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     }
 
     private void initList() {
-        inputList.addPropertyChangeListener(JTsList.COLLECTION_PROPERTY, new PropertyChangeListener() {
+        inputList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
 

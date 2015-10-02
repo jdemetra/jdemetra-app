@@ -16,10 +16,18 @@
  */
 package ec.ui.interfaces;
 
+import ec.tss.TsCollection;
+
 /**
  *
  * @author Philippe Charles
  */
-public interface ITsDataView extends ITsControl, ITsDataAble {
+public interface ITsCollectionAble {
+
+    public static final String TS_COLLECTION_PROPERTY = "tsCollection";
+
+    TsCollection getTsCollection();
+
+    void setTsCollection(TsCollection collection);
 
 }

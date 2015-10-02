@@ -38,6 +38,7 @@ import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.chart.TsSparklineCellRenderer;
+import ec.ui.interfaces.ITsActionAble;
 import ec.util.chart.swing.Charts;
 import ec.util.grid.swing.XTable;
 import ec.util.various.swing.JCommand;
@@ -51,9 +52,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
 import javax.annotation.Nonnull;
-import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.InputVerifier;
@@ -64,7 +63,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -77,9 +75,7 @@ import org.openide.NotifyDescriptor;
  *
  * @author Jean Palate
  */
-public class JTsVariableList extends JComponent {
-
-    public static final String TS_ACTION_PROPERTY = "tsAction";
+public class JTsVariableList extends JComponent implements ITsActionAble {
 
     public static final String DELETE_ACTION = "delete";
     public static final String CLEAR_ACTION = "clear";
@@ -106,10 +102,12 @@ public class JTsVariableList extends JComponent {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
+    @Override
     public ITsAction getTsAction() {
         return tsAction;
     }
 
+    @Override
     public void setTsAction(ITsAction tsAction) {
         ITsAction old = this.tsAction;
         this.tsAction = tsAction;
@@ -392,9 +390,7 @@ public class JTsVariableList extends JComponent {
         am.put(RENAME_ACTION, RenameCommand.INSTANCE.toAction(this));
         am.put(DELETE_ACTION, DeleteCommand.INSTANCE.toAction(this));
         am.put(CLEAR_ACTION, ClearCommand.INSTANCE.toAction(this));
-        for (Entry<Object, Action> o : ActionMaps.asMap(am, false).entrySet()) {
-            table.getActionMap().put(o.getKey(), o.getValue());
-        }
+        ActionMaps.copyEntries(am, false, table.getActionMap());
     }
 
     private void registerInputs() {
@@ -402,9 +398,7 @@ public class JTsVariableList extends JComponent {
         KeyStrokes.putAll(im, KeyStrokes.OPEN, OPEN_ACTION);
         KeyStrokes.putAll(im, KeyStrokes.DELETE, DELETE_ACTION);
         KeyStrokes.putAll(im, KeyStrokes.CLEAR, CLEAR_ACTION);
-        for (Entry<KeyStroke, Object> o : InputMaps.asMap(im, false).entrySet()) {
-            table.getInputMap().put(o.getKey(), o.getValue());
-        }
+        InputMaps.copyEntries(im, false, table.getInputMap());
     }
 
     private void enableOpenOnDoubleClick() {
@@ -412,10 +406,7 @@ public class JTsVariableList extends JComponent {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (!Charts.isPopup(e) && Charts.isDoubleClick(e)) {
-                    Action openAction = getActionMap().get(OPEN_ACTION);
-                    if (openAction != null && openAction.isEnabled()) {
-                        openAction.actionPerformed(null);
-                    }
+                    ActionMaps.performAction(getActionMap(), OPEN_ACTION, e);
                 }
             }
         });

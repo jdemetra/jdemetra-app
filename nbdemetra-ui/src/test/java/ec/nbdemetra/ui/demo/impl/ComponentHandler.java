@@ -19,15 +19,25 @@ package ec.nbdemetra.ui.demo.impl;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.util.grid.swing.XTable;
+import ec.util.various.swing.FontAwesome;
+import static ec.util.various.swing.FontAwesome.FA_HAND_O_UP;
+import ec.util.various.swing.JCommand;
+import ec.util.various.swing.ext.FontAwesomeUtils;
+import static ec.util.various.swing.ext.FontAwesomeUtils.toSize;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
-import java.awt.event.ActionEvent;
+import static java.beans.BeanInfo.ICON_MONO_16x16;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Array;
-import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -43,18 +53,66 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemoComponentHandler.class, position = 100)
 public final class ComponentHandler extends DemoComponentHandler {
 
+    private final WatchCommand watchCommand;
+    private final PopupMenuCommand popupMenuCommand;
+
+    public ComponentHandler() {
+        this.watchCommand = new WatchCommand();
+        this.popupMenuCommand = new PopupMenuCommand();
+    }
+
     @Override
-    public void fillToolBar(JToolBar toolBar, final Component c) {
-        toolBar.add(new AbstractAction("Watch", ImageUtilities.loadImageIcon("eye.png", false)) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JTable table = new JTable(new PropertyChangeModel(c));
-                XTable.setWidthAsPercentages(table, .2, .4, .4);
-                table.setDefaultRenderer(Object.class, new DefaultTableCellRendererImpl());
-                showInDialog("Watching " + c.getClass().getName(), table);
-            }
-        });
+    public void fillToolBar(JToolBar toolBar, Component c) {
+        AbstractButton item;
+
+        item = toolBar.add(watchCommand.toAction(c));
+        item.setToolTipText("Watch");
+        item.setIcon(ImageUtilities.loadImageIcon("eye.png", false));
+
+        if (c instanceof JComponent) {
+            item = new JToggleButton(popupMenuCommand.toAction((JComponent) c));
+            item.setIcon(FontAwesomeUtils.getIcon(FA_HAND_O_UP, ICON_MONO_16x16));
+            item.setSelectedIcon(FA_HAND_O_UP.getIcon(Color.RED, toSize(ICON_MONO_16x16)));
+            item.setToolTipText("Override popup menu");
+            toolBar.add(item);
+        }
+
         toolBar.addSeparator();
+    }
+
+    private static final class WatchCommand extends JCommand<Component> {
+
+        @Override
+        public void execute(Component c) throws Exception {
+            JTable table = new JTable(new PropertyChangeModel(c));
+            XTable.setWidthAsPercentages(table, .2, .4, .4);
+            table.setDefaultRenderer(Object.class, new DefaultTableCellRendererImpl());
+            showInDialog("Watching " + c.getClass().getName(), table);
+        }
+    }
+
+    private static final class PopupMenuCommand extends JCommand<JComponent> {
+
+        private final JPopupMenu popupMenu;
+        private boolean toggled;
+
+        public PopupMenuCommand() {
+            this.popupMenu = new JPopupMenu();
+            JLabel label = new JLabel(FontAwesome.FA_LOCK.getIcon(Color.RED, 40f));
+            popupMenu.add(label);
+            this.toggled = false;
+        }
+
+        @Override
+        public void execute(JComponent component) throws Exception {
+            component.setComponentPopupMenu(toggled ? null : popupMenu);
+            toggled = !toggled;
+        }
+
+        @Override
+        public boolean isSelected(JComponent component) {
+            return toggled;
+        }
     }
 
     static class PropertyChangeModel extends DefaultTableModel implements PropertyChangeListener {

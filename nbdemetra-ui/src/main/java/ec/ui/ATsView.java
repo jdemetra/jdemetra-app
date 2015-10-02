@@ -1,3 +1,19 @@
+/*
+ * Copyright 2013 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
+ */
 package ec.ui;
 
 import ec.tss.Ts;
@@ -7,6 +23,7 @@ import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.ui.interfaces.IColorSchemeAble;
 import ec.ui.interfaces.ITsView;
+import static ec.ui.interfaces.ITsView.TS_PROPERTY;
 import ec.util.chart.ColorScheme;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -24,6 +41,7 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
 
     // PROPERTIES
     protected Ts m_ts;
+
     // OTHER
     protected final TsFactoryObserver tsFactoryObserver;
 
@@ -31,25 +49,28 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
         this.m_ts = null;
         this.tsFactoryObserver = new TsFactoryObserver();
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String p = evt.getPropertyName();
-                if (p.equals(TS_PROPERTY)) {
-                    onTsChange();
-                }
-            }
-        });
-
+        enableProperties();
         TsFactory.instance.addObserver(tsFactoryObserver);
     }
 
-    // EVENT HANDLERS > 
-    abstract protected void onTsChange();
-    // < EVENT HANDLERS 
+    private void enableProperties() {
+        addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case TS_PROPERTY:
+                        onTsChange();
+                        break;
+                }
+            }
+        });
+    }
 
-    // GETTERS/SETTERS >
+    //<editor-fold defaultstate="collapsed" desc="Event handlers">
+    abstract protected void onTsChange();
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
     @Override
     public Ts getTs() {
         return m_ts;
@@ -71,7 +92,7 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
     public void setColorScheme(ColorScheme theme) {
         themeSupport.setLocalColorScheme(theme);
     }
-    // < GETTERS/SETTERS 
+    //</editor-fold>
 
     @Override
     public void dispose() {
@@ -90,7 +111,6 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
                 if (event.isSeries() && event.ts.equals(m_ts)) {
                     dirty.set(true);
                     SwingUtilities.invokeLater(new Runnable() {
-
                         @Override
                         public void run() {
                             if (dirty.getAndSet(false)) {

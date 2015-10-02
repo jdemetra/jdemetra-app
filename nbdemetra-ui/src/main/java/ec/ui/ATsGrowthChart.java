@@ -44,14 +44,17 @@ public abstract class ATsGrowthChart extends ATsChart implements ITsGrowthChart 
     // ACTION KEYS
     public static final String PREVIOUS_PERIOD_ACTION = "previousPeriod";
     public static final String PREVIOUS_YEAR_ACTION = "previousYear";
+
     // DEFAULT PROPERTIES
     protected static final GrowthKind DEFAULT_GROWTH_KIND = GrowthKind.PreviousPeriod;
     public static final int DEFAULT_LAST_YEARS = 4;
     protected static final boolean DEFAULT_USE_TOOL_LAYOUT = false;
+
     // PROPERTIES
     protected GrowthKind growthKind;
     protected int lastYears;
     protected boolean useToolLayout;
+
     // OTHER
     protected final TsCollection growthCollection = TsFactory.instance.createTsCollection();
 
@@ -60,6 +63,17 @@ public abstract class ATsGrowthChart extends ATsChart implements ITsGrowthChart 
         this.lastYears = demetraUI.getGrowthLastYears();
         this.useToolLayout = DEFAULT_USE_TOOL_LAYOUT;
 
+        enableProperties();
+        registerActions();
+    }
+
+    private void registerActions() {
+        ActionMap am = getActionMap();
+        am.put(PREVIOUS_PERIOD_ACTION, TsGrowthChartCommand.applyGrowthKind(GrowthKind.PreviousPeriod).toAction(this));
+        am.put(PREVIOUS_YEAR_ACTION, TsGrowthChartCommand.applyGrowthKind(GrowthKind.PreviousYear).toAction(this));
+    }
+
+    private void enableProperties() {
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -76,10 +90,6 @@ public abstract class ATsGrowthChart extends ATsChart implements ITsGrowthChart 
                 }
             }
         });
-
-        ActionMap am = getActionMap();
-        am.put(PREVIOUS_PERIOD_ACTION, TsGrowthChartCommand.applyGrowthKind(GrowthKind.PreviousPeriod).toAction(this));
-        am.put(PREVIOUS_YEAR_ACTION, TsGrowthChartCommand.applyGrowthKind(GrowthKind.PreviousYear).toAction(this));
     }
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
@@ -177,6 +187,7 @@ public abstract class ATsGrowthChart extends ATsChart implements ITsGrowthChart 
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Menus">
     protected JMenu buildKindMenu() {
         ActionMap am = getActionMap();
         JMenu result = new JMenu("Kind");
@@ -206,7 +217,7 @@ public abstract class ATsGrowthChart extends ATsChart implements ITsGrowthChart 
         item.setText("Copy growth data");
         ExtAction.hideWhenDisabled(item);
         result.add(item, index++);
-        
+
         index += 6;
         result.insert(buildKindMenu(), index++);
 
@@ -215,8 +226,9 @@ public abstract class ATsGrowthChart extends ATsChart implements ITsGrowthChart 
         result.insert(item, index++);
 
         index += 5;
-        result.remove(index); // linesThickness        
+        result.remove(index); // linesThickness
 
         return result;
     }
+    //</editor-fold>
 }

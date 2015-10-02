@@ -1,3 +1,19 @@
+/*
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
+ */
 package ec.ui.chart;
 
 import com.google.common.base.Converter;
@@ -12,6 +28,8 @@ import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.Jdk6Functions;
+import ec.nbdemetra.ui.awt.ActionMaps;
+import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.completion.JAutoCompletionService;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
@@ -48,11 +66,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.Beans;
 import java.beans.IntrospectionException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.TooManyListenersException;
-import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
 import org.jfree.data.xy.IntervalXYDataset;
 import org.openide.nodes.Sheet;
@@ -68,9 +88,9 @@ import org.openide.util.Exceptions;
 public class JTsChart extends ATsChart implements IConfigurable {
 
     private static final long serialVersionUID = -4816158139844033936L;
-    //
+
     private static final Configurator<JTsChart> CONFIGURATOR = createConfigurator();
-    // OTHER
+
     protected final JTimeSeriesChart chartPanel;
     protected final ITsPrinter printer;
     protected final DataFeatureModel dataFeatureModel;
@@ -78,34 +98,10 @@ public class JTsChart extends ATsChart implements IConfigurable {
     private final IntList savedSelection;
 
     public JTsChart() {
-        setLayout(new BorderLayout());
-
         this.chartPanel = new JTimeSeriesChart();
 
         chartPanel.setTransferHandler(new TsCollectionTransferHandler());
-        try {
-            chartPanel.getDropTarget().addDropTargetListener(new DropTargetAdapter() {
-                @Override
-                public void dragEnter(DropTargetDragEvent dtde) {
-                    if (!getTsUpdateMode().isReadOnly() && TssTransferSupport.getDefault().canImport(dtde.getCurrentDataFlavors())) {
-                        TsCollection col = TssTransferSupport.getDefault().toTsCollection(dtde.getTransferable());
-                        setDropContent(col != null ? col.toArray() : null);
-                    }
-                }
-
-                @Override
-                public void dragExit(DropTargetEvent dte) {
-                    setDropContent(null);
-                }
-
-                @Override
-                public void drop(DropTargetDropEvent dtde) {
-                    dragExit(dtde);
-                }
-            });
-        } catch (TooManyListenersException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        enableDropContent();
 
         this.printer = new ITsPrinter() {
             @Override
@@ -125,20 +121,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
 
         chartPanel.getSeriesSelectionModel().addListSelectionListener(selectionListener);
 
-        this.add(chartPanel, BorderLayout.CENTER);
-
-        chartPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (Charts.isPopup(e) || !Charts.isDoubleClick(e)) {
-                    return;
-                }
-                Action a = getActionMap().get(OPEN_ACTION);
-                if (a.isEnabled()) {
-                    a.actionPerformed(null);
-                }
-            }
-        });
+        enableOpenOnDoubleClick();
 
         onAxisVisibleChange();
         onColorSchemeChange();
@@ -146,11 +129,10 @@ public class JTsChart extends ATsChart implements IConfigurable {
         onTitleChange();
         onUpdateModeChange();
         onDataFormatChange();
+        onComponentPopupMenuChange();
 
-        chartPanel.setComponentPopupMenu(buildChartMenu().getPopupMenu());
-
-        fillActionMap(chartPanel.getActionMap());
-        fillInputMap(chartPanel.getInputMap());
+        ActionMaps.copyEntries(getActionMap(), false, chartPanel.getActionMap());
+        InputMaps.copyEntries(getInputMap(), false, chartPanel.getInputMap());
 
         chartPanel.setSeriesFormatter(new SeriesFunction<String>() {
             @Override
@@ -185,12 +167,67 @@ public class JTsChart extends ATsChart implements IConfigurable {
             }
         });
 
+        enableProperties();
+
+        setLayout(new BorderLayout());
+        add(chartPanel, BorderLayout.CENTER);
+
         if (Beans.isDesignTime()) {
             setTsCollection(DemoUtils.randomTsCollection(3));
             setTsUpdateMode(ITsCollectionView.TsUpdateMode.None);
             setPreferredSize(new Dimension(200, 150));
             setTitle("Chart preview");
         }
+    }
+
+    private void enableDropContent() {
+        try {
+            chartPanel.getDropTarget().addDropTargetListener(new DropTargetAdapter() {
+                @Override
+                public void dragEnter(DropTargetDragEvent dtde) {
+                    if (!getTsUpdateMode().isReadOnly() && TssTransferSupport.getDefault().canImport(dtde.getCurrentDataFlavors())) {
+                        TsCollection col = TssTransferSupport.getDefault().toTsCollection(dtde.getTransferable());
+                        setDropContent(col != null ? col.toArray() : null);
+                    }
+                }
+
+                @Override
+                public void dragExit(DropTargetEvent dte) {
+                    setDropContent(null);
+                }
+
+                @Override
+                public void drop(DropTargetDropEvent dtde) {
+                    dragExit(dtde);
+                }
+            });
+        } catch (TooManyListenersException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    private void enableOpenOnDoubleClick() {
+        chartPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (!Charts.isPopup(e) && Charts.isDoubleClick(e)) {
+                    ActionMaps.performAction(getActionMap(), OPEN_ACTION, e);
+                }
+            }
+        });
+    }
+
+    private void enableProperties() {
+        this.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
+                }
+            }
+        });
     }
 
     //<editor-fold defaultstate="collapsed" desc="Event Handlers">
@@ -285,6 +322,11 @@ public class JTsChart extends ATsChart implements IConfigurable {
     @Override
     protected void onLinesThicknessChange() {
         chartPanel.setLineThickness(linesThickness == LinesThickness.Thin ? 1f : 2f);
+    }
+
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildChartMenu().getPopupMenu());
     }
     //</editor-fold>
 

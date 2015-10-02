@@ -1,14 +1,11 @@
 package ec.nbdemetra.ui.tsaction;
 
-import ec.tss.Ts;
+import ec.ui.interfaces.ITsAble;
 
 /**
- * TODO: merge with a refactored ITsView
  * @author Demortier Jeremy
  */
-public interface ITsView2 {
+@Deprecated
+public interface ITsView2 extends ITsAble {
 
-    Ts getTs();
-
-    void setTs(Ts ts);
 }

@@ -1,9 +1,23 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.ui.chart;
 
+import ec.nbdemetra.ui.awt.ActionMaps;
+import ec.nbdemetra.ui.awt.InputMaps;
 import ec.tss.*;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
@@ -27,6 +41,8 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.Beans;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -53,30 +69,7 @@ public class JTsGrowthChart extends ATsGrowthChart {
         this.chartPanel = new JTimeSeriesChart();
 
         chartPanel.setTransferHandler(new TsCollectionTransferHandler());
-        try {
-            chartPanel.getDropTarget().addDropTargetListener(new DropTargetAdapter() {
-                @Override
-                public void dragEnter(DropTargetDragEvent dtde) {
-                    if (!getTsUpdateMode().isReadOnly() && TssTransferSupport.getDefault().canImport(dtde.getCurrentDataFlavors())) {
-                        TsCollection col = TssTransferSupport.getDefault().toTsCollection(dtde.getTransferable());
-                        setDropContent(col != null ? col.toArray() : null);
-                    }
-                }
-
-                @Override
-                public void dragExit(DropTargetEvent dte) {
-                    setDropContent(null);
-
-                }
-
-                @Override
-                public void drop(DropTargetDropEvent dtde) {
-                    dragExit(dtde);
-                }
-            });
-        } catch (TooManyListenersException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        enableDropContent();
 
         this.printer = new ITsPrinter() {
             @Override
@@ -99,18 +92,7 @@ public class JTsGrowthChart extends ATsGrowthChart {
 
         chartPanel.addMouseListener(new SelectionMouseListener(selectionModel, true));
 
-        chartPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (Charts.isPopup(e) || !Charts.isDoubleClick(e)) {
-                    return;
-                }
-                Action a = getActionMap().get(OPEN_ACTION);
-                if (a.isEnabled()) {
-                    a.actionPerformed(null);
-                }
-            }
-        });
+        enableOpenOnDoubleClick();
 
         onAxisVisibleChange();
         onColorSchemeChange();
@@ -118,11 +100,10 @@ public class JTsGrowthChart extends ATsGrowthChart {
         onTitleChange();
         onUpdateModeChange();
         onDataFormatChange();
+        onComponentPopupMenuChange();
 
-        chartPanel.setComponentPopupMenu(buildChartMenu().getPopupMenu());
-
-        fillActionMap(chartPanel.getActionMap());
-        fillInputMap(chartPanel.getInputMap());
+        ActionMaps.copyEntries(getActionMap(), false, chartPanel.getActionMap());
+        InputMaps.copyEntries(getInputMap(), false, chartPanel.getInputMap());
         NumberFormat percent = NumberFormat.getPercentInstance();
         percent.setMaximumFractionDigits(1);
         chartPanel.setValueFormat(percent);
@@ -151,6 +132,8 @@ public class JTsGrowthChart extends ATsGrowthChart {
         });
         chartPanel.setSeriesRenderer(SeriesFunction.always(TimeSeriesChart.RendererType.COLUMN));
 
+        enableProperties();
+        
         if (Beans.isDesignTime()) {
             setTsCollection(DemoUtils.randomTsCollection(3));
             setTsUpdateMode(TsUpdateMode.None);
@@ -159,7 +142,58 @@ public class JTsGrowthChart extends ATsGrowthChart {
         }
     }
 
-    // EVENT HANDLERS > 
+    private void enableDropContent() {
+        try {
+            chartPanel.getDropTarget().addDropTargetListener(new DropTargetAdapter() {
+                @Override
+                public void dragEnter(DropTargetDragEvent dtde) {
+                    if (!getTsUpdateMode().isReadOnly() && TssTransferSupport.getDefault().canImport(dtde.getCurrentDataFlavors())) {
+                        TsCollection col = TssTransferSupport.getDefault().toTsCollection(dtde.getTransferable());
+                        setDropContent(col != null ? col.toArray() : null);
+                    }
+                }
+
+                @Override
+                public void dragExit(DropTargetEvent dte) {
+                    setDropContent(null);
+
+                }
+
+                @Override
+                public void drop(DropTargetDropEvent dtde) {
+                    dragExit(dtde);
+                }
+            });
+        } catch (TooManyListenersException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    private void enableOpenOnDoubleClick() {
+        chartPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (!Charts.isPopup(e) && Charts.isDoubleClick(e)) {
+                    ActionMaps.performAction(getActionMap(), OPEN_ACTION, e);
+                }
+            }
+        });
+    }
+    
+    private void enableProperties() {
+        this.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
+                }
+            }
+        });
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Event handlers">
     @Override
     protected void onDataFormatChange() {
         try {
@@ -253,7 +287,12 @@ public class JTsGrowthChart extends ATsGrowthChart {
     protected void onUseToolLayoutChange() {
         // do nothing?
     }
-    // < EVENT HANDLERS 
+
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildChartMenu().getPopupMenu());
+    }
+    //</editor-fold>
 
 //    protected Range calcRange(TsCollection coll) {
 //        double min = Double.NEGATIVE_INFINITY, max = -Double.POSITIVE_INFINITY;
