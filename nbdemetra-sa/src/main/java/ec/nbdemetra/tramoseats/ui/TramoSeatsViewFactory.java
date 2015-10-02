@@ -11,11 +11,13 @@ import ec.ui.view.tsprocessing.WkComponentsUI;
 import ec.ui.view.tsprocessing.UcarimaUI;
 import ec.ui.view.tsprocessing.EstimationUI;
 import ec.satoolkit.ComponentDescriptor;
+import ec.satoolkit.diagnostics.StationaryVarianceDecomposition;
 import ec.satoolkit.seats.SeatsResults;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.tss.documents.DocumentManager;
 import ec.tss.html.IHtmlElement;
 import ec.tss.html.implementation.HtmlModelBasedRevisionsAnalysis;
+import ec.tss.html.implementation.HtmlStationaryVarianceDecomposition;
 import ec.tss.html.implementation.HtmlTramoSeatsGrowthRates;
 import ec.tss.sa.documents.TramoSeatsDocument;
 import ec.tstoolkit.algorithm.CompositeResults;
@@ -70,7 +72,8 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             WK_FINALS = "Final estimators",
             WK_PRELIMINARY = "Preliminary estimators",
             WK_ERRORS = "Errors analysis",
-            WK_RATES = "Growth rates";
+            WK_RATES = "Growth rates",
+            STVAR="Stationary variance decomposition";
     public static final Id DECOMPOSITION_SUMMARY = new LinearId(DECOMPOSITION);
     public static final Id DECOMPOSITION_STOCH_TREND = new LinearId(DECOMPOSITION, STOCHASTIC, STOCHASTIC_TREND);
     public static final Id DECOMPOSITION_STOCH_SEAS = new LinearId(DECOMPOSITION, STOCHASTIC, STOCHASTIC_SEAS);
@@ -83,6 +86,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
     public static final Id DECOMPOSITION_ERRORS = new LinearId(DECOMPOSITION, WK_ERRORS);
     public static final Id DECOMPOSITION_RATES = new LinearId(DECOMPOSITION, WK_RATES);
     public static final Id DECOMPOSITION_TESTS = new LinearId(DECOMPOSITION, MODELBASED);
+    public static final Id DECOMPOSITION_VAR = new LinearId(DECOMPOSITION, STVAR);
     private static final AtomicReference<IProcDocumentViewFactory<TramoSeatsDocument>> INSTANCE = new AtomicReference(new TramoSeatsViewFactory());
 
     public static IProcDocumentViewFactory<TramoSeatsDocument> getDefault() {
@@ -507,6 +511,15 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             }, new ModelBasedUI());
         }
     }
+    
+        @ServiceProvider(service = ProcDocumentItemFactory.class, position = 403010)
+    public static class StationaryVarianceDecompositionFactory extends ItemFactory<StationaryVarianceDecomposition> {
+
+        public StationaryVarianceDecompositionFactory() {
+            super(DECOMPOSITION_VAR, stvarExtractor(), new StvarUI());
+        }
+    }
+
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER BENCHMARKING VIEW">
@@ -766,7 +779,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public void flush(TramoSeatsDocument source) {
         }
     }
-
+    
     private static class WkExtractor extends DefaultInformationExtractor<TramoSeatsDocument, WkInformation> {
 
         private static final WkExtractor INSTANCE = new WkExtractor();
@@ -792,6 +805,14 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         protected IHtmlElement getHtmlElement(V host, WkInformation information) {
             return new HtmlModelBasedRevisionsAnalysis(information.frequency.intValue(), information.estimators,
                     information.descriptors);
+        }
+    }
+
+    public static class StvarUI<V extends IProcDocumentView<?>> extends HtmlItemUI<V, StationaryVarianceDecomposition> {
+
+        @Override
+        protected IHtmlElement getHtmlElement(V host, StationaryVarianceDecomposition information) {
+            return new HtmlStationaryVarianceDecomposition(information);
         }
     }
 

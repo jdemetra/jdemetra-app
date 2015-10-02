@@ -22,6 +22,7 @@ import ec.nbdemetra.ui.chart3d.functions.SurfacePlotterUI.Functions;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.ISeriesDecomposition;
+import ec.satoolkit.diagnostics.StationaryVarianceDecomposition;
 import ec.tss.documents.DocumentManager;
 import ec.tss.documents.TsDocumentProcessing;
 import ec.tss.html.IHtmlElement;
@@ -85,6 +86,8 @@ import javax.swing.JComponent;
 /**
  *
  * @author Jean Palate, Philippe Charles, Mats Maggi
+ * @param <S> Specification
+ * @param <D> Document
  */
 public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extends SaDocument<S>> extends ProcDocumentViewFactory<D> {
     // main nodes
@@ -253,6 +256,10 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
 
     public static InformationExtractor<SaDocument<? extends ISaSpecification>, Functions> likelihoodExtractor() {
         return LikelihoodExtractor.INSTANCE;
+    }
+
+    public static InformationExtractor<SaDocument<? extends ISaSpecification>, StationaryVarianceDecomposition> stvarExtractor() {
+        return StvarExtractor.INSTANCE;
     }
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SPEC">
@@ -920,6 +927,21 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
                 return null;
             } else {
                 return Functions.create(preprocessingPart.likelihoodFunction(), source.getPreprocessingPart().maxLikelihoodFunction());
+            }
+        }
+    };
+
+    private static class StvarExtractor extends DefaultInformationExtractor<SaDocument<? extends ISaSpecification>, StationaryVarianceDecomposition> {
+
+        private static final StvarExtractor INSTANCE = new StvarExtractor();
+
+        @Override
+        public StationaryVarianceDecomposition retrieve(SaDocument source) {
+            StationaryVarianceDecomposition decomp=new StationaryVarianceDecomposition();
+            if (decomp.process(source.getResults())){
+                return decomp;
+            } else {
+                return null;
             }
         }
     };
