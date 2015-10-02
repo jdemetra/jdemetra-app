@@ -17,7 +17,6 @@ public class JTsDualChart extends JTsChart {
 
     public JTsDualChart() {
         subTss_ = new IntList();
-        chartPanel.setComponentPopupMenu(buildChartMenu().getPopupMenu());
 
         chartPanel.setPlotWeights(new int[]{2, 1});
         chartPanel.setPlotDispatcher(new SeriesFunction<Integer>() {

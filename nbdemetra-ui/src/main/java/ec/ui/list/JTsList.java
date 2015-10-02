@@ -70,24 +70,41 @@ public class JTsList extends ATsList {
     private final ETable table;
     private final ListTableSelectionListener selectionListener;
     private final JTableHeader tableHeader;
+    private final DropUI dropUI;
 
     public JTsList() {
         this.table = buildTable();
         this.selectionListener = new ListTableSelectionListener();
         table.getSelectionModel().addListSelectionListener(selectionListener);
-        table.setComponentPopupMenu(buildPopupMenu());
         this.tableHeader = table.getTableHeader();
-
-        setLayout(new BorderLayout());
-        add(new JLayer<>(NbComponents.newJScrollPane(table), new DropUI()), BorderLayout.CENTER);
+        this.dropUI = new DropUI();
 
         onUpdateModeChange();
+        onComponentPopupMenuChange();
+
+        enableProperties();
+
+        setLayout(new BorderLayout());
+        add(new JLayer<>(NbComponents.newJScrollPane(table), dropUI), BorderLayout.CENTER);
 
         if (Beans.isDesignTime()) {
             setTsCollection(DemoUtils.randomTsCollection(3));
             setTsUpdateMode(TsUpdateMode.None);
             setPreferredSize(new Dimension(200, 150));
         }
+    }
+
+    private void enableProperties() {
+        this.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
+                }
+            }
+        });
     }
 
     //<editor-fold defaultstate="collapsed" desc="Events handlers">
@@ -119,8 +136,8 @@ public class JTsList extends ATsList {
     @Override
     protected void onUpdateModeChange() {
         String message = getTsUpdateMode().isReadOnly() ? "No data" : "Drop data here";
-        ((DropUI) ((JLayer<?>) getComponent(0)).getUI()).setMessage(message);
-        ((DropUI) ((JLayer<?>) getComponent(0)).getUI()).setOnDropMessage(message);
+        dropUI.setMessage(message);
+        dropUI.setOnDropMessage(message);
     }
 
     @Override
@@ -156,6 +173,11 @@ public class JTsList extends ATsList {
     @Override
     protected void onSortInfoChange() {
         // do nothing ?
+    }
+
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        table.setComponentPopupMenu(popupMenu != null ? popupMenu : buildPopupMenu());
     }
     //</editor-fold>
 

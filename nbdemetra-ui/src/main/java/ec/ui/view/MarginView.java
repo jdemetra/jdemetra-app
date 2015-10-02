@@ -55,6 +55,7 @@ import java.util.Date;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -86,6 +87,7 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
     // PROPERTIES
     private static final String DATA_PROPERTY = "data";
     private static final String PRECISION_MARKERS_VISIBLE_PROPERTY = "precisionMarkersVisible";
+
     // CONSTANTS
     private static final int MAIN_INDEX = 1;
     private static final int DIFFERENCE_INDEX = 0;
@@ -94,6 +96,7 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
     private static final KnownColor MAIN_COLOR = KnownColor.RED;
     private static final KnownColor DIFFERENCE_COLOR = KnownColor.BLUE;
     private static final KnownColor DATE_MARKER_COLOR = KnownColor.ORANGE;
+
     // OTHER
     private final ChartPanel chartPanel;
     private MarginData data;
@@ -110,9 +113,20 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
 
         Charts.avoidScaling(chartPanel);
         Charts.enableFocusOnClick(chartPanel);
+
+        chartPanel.addChartMouseListener(new HighlightChartMouseListener2());
+        chartPanel.addKeyListener(revealObs);
+
+        onDataFormatChange();
+        onColorSchemeChange();
+        onComponentPopupMenuChange();
+        enableProperties();
+
         setLayout(new BorderLayout());
         add(chartPanel, BorderLayout.CENTER);
+    }
 
+    private void enableProperties() {
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -123,17 +137,12 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
                     case PRECISION_MARKERS_VISIBLE_PROPERTY:
                         onPrecisionMarkersVisible();
                         break;
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
                 }
             }
         });
-        
-        chartPanel.addChartMouseListener(new HighlightChartMouseListener2());
-        chartPanel.addKeyListener(revealObs);
-
-        onDataFormatChange();
-        onColorSchemeChange();
-
-        chartPanel.setPopupMenu(buildMenu().getPopupMenu());
     }
 
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
@@ -203,6 +212,11 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
             addPrecisionMarkers();
         }
         onColorSchemeChange();
+    }
+
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        chartPanel.setPopupMenu(popupMenu != null ? popupMenu : buildMenu().getPopupMenu());
     }
     //</editor-fold>
 
@@ -348,7 +362,7 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
             this.multiplicative = multiplicative;
         }
     }
-    
+
     private final class HighlightChartMouseListener2 implements ChartMouseListener {
 
         @Override
@@ -407,9 +421,9 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
             return enabled;
         }
     }
-    
+
     private static final Shape ITEM_SHAPE = new Ellipse2D.Double(-3, -3, 6, 6);
-    
+
     private class LineRenderer extends XYLineAndShapeRenderer {
 
         public LineRenderer() {

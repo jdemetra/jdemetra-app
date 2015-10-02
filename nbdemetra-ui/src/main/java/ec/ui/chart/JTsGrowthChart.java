@@ -41,6 +41,8 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.Beans;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -98,8 +100,7 @@ public class JTsGrowthChart extends ATsGrowthChart {
         onTitleChange();
         onUpdateModeChange();
         onDataFormatChange();
-
-        chartPanel.setComponentPopupMenu(buildChartMenu().getPopupMenu());
+        onComponentPopupMenuChange();
 
         ActionMaps.copyEntries(getActionMap(), false, chartPanel.getActionMap());
         InputMaps.copyEntries(getInputMap(), false, chartPanel.getInputMap());
@@ -131,6 +132,8 @@ public class JTsGrowthChart extends ATsGrowthChart {
         });
         chartPanel.setSeriesRenderer(SeriesFunction.always(TimeSeriesChart.RendererType.COLUMN));
 
+        enableProperties();
+        
         if (Beans.isDesignTime()) {
             setTsCollection(DemoUtils.randomTsCollection(3));
             setTsUpdateMode(TsUpdateMode.None);
@@ -172,6 +175,19 @@ public class JTsGrowthChart extends ATsGrowthChart {
             public void mousePressed(MouseEvent e) {
                 if (!Charts.isPopup(e) && Charts.isDoubleClick(e)) {
                     ActionMaps.performAction(getActionMap(), OPEN_ACTION, e);
+                }
+            }
+        });
+    }
+    
+    private void enableProperties() {
+        this.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
                 }
             }
         });
@@ -270,6 +286,11 @@ public class JTsGrowthChart extends ATsGrowthChart {
     @Override
     protected void onUseToolLayoutChange() {
         // do nothing?
+    }
+
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildChartMenu().getPopupMenu());
     }
     //</editor-fold>
 

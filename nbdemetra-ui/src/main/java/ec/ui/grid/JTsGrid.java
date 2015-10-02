@@ -56,6 +56,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.JToolTip;
@@ -124,7 +125,8 @@ public class JTsGrid extends ATsGrid {
         updateComboModel();
         updateSelectionBehavior();
         updateComboCellRenderer();
-
+        onComponentPopupMenuChange();
+        
         setLayout(new BorderLayout());
         add(grid, BorderLayout.CENTER);
         add(combo, BorderLayout.NORTH);
@@ -144,6 +146,9 @@ public class JTsGrid extends ATsGrid {
                         break;
                     case CROSSHAIR_VISIBLE_PROPERTY:
                         onCrosshairVisibleChange();
+                        break;
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
                         break;
                 }
             }
@@ -269,6 +274,11 @@ public class JTsGrid extends ATsGrid {
         }
 
         grid.setFont(font);
+    }
+    
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        grid.setComponentPopupMenu(popupMenu != null ? popupMenu : buildGridMenu().getPopupMenu());
     }
     //</editor-fold>
 
@@ -407,7 +417,6 @@ public class JTsGrid extends ATsGrid {
         result.setColumnRenderer(new ColumnRenderer(result));
         result.setCornerRenderer(new CornerRenderer());
         result.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        result.setComponentPopupMenu(buildGridMenu().getPopupMenu());
         result.addMouseListener(new TsActionMouseAdapter());
         result.setOddBackground(null);
 

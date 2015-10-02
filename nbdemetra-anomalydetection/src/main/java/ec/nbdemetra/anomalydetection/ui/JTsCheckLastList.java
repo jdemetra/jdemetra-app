@@ -41,6 +41,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.beans.Beans;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -99,9 +101,11 @@ public class JTsCheckLastList extends ATsList {
         spec = TramoSpecification.TRfull.clone();
         this.selectionListener = new ListTableSelectionListener();
         table.getSelectionModel().addListSelectionListener(selectionListener);
-        table.setComponentPopupMenu(buildPopupMenu());
 
         checkLast = new CheckLast(spec.build());
+
+        onComponentPopupMenuChange();
+        enableProperties();
 
         setLayout(new BorderLayout());
         add(NbComponents.newJScrollPane(table), BorderLayout.CENTER);
@@ -111,6 +115,19 @@ public class JTsCheckLastList extends ATsList {
             setTsUpdateMode(TsUpdateMode.None);
             setPreferredSize(new Dimension(200, 150));
         }
+    }
+
+    private void enableProperties() {
+        this.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
+                }
+            }
+        });
     }
 
     public double getOrangeCells() {
@@ -475,6 +492,11 @@ public class JTsCheckLastList extends ATsList {
     @Override
     protected void onSortInfoChange() {
         // Do nothing
+    }
+
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        table.setComponentPopupMenu(popupMenu != null ? popupMenu : buildPopupMenu());
     }
 
     public Map<String, AnomalyItem> getMap() {

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
+ */
 package ec.ui.view;
 
 import ec.tstoolkit.data.IReadDataBlock;
@@ -20,6 +36,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -43,27 +60,32 @@ public class AutoCorrelationsView extends ATsControl implements IReadDataBlockVi
 
         Normal, Partial
     };
+
     // CONSTANTS
     protected static final Stroke MARKER_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.0f, new float[]{6.0f, 6.0f}, 0.0f);
     protected static final float MARKER_ALPHA = 0.8f;
     protected static final KnownColor NORMAL_COLOR = KnownColor.BLUE;
     protected static final KnownColor PARTIAL_COLOR = KnownColor.BROWN;
     protected static final KnownColor MARKER_COLOR = KnownColor.GREEN;
+
     // PROPERTIES DEFINITIONS
     public static final String LENGTH_PROPERTY = "length";
     public static final String KIND_PROPERTY = "kind";
     public static final String MEAN_CORRECTION_PROPERTY = "meanCorrection";
     public static final String AUTO_CORRELATIONS_PROPERTY = "autoCorrelations";
+
     // DEFAULT PROPERTIES
     protected static final int DEFAULT_LENGTH = 36;
     protected static final ACKind DEFAULT_KIND = ACKind.Normal;
     protected static final boolean DEFAULT_MEAN_CORRECTION = false;
     protected static final AutoCorrelations DEFAULT_AUTO_CORRELATIONS = null;
+
     // PROPERTIES
     protected int length;
     protected ACKind kind;
     protected boolean meanCorrection;
     protected AutoCorrelations ac;
+
     // OTHER
     protected final ChartPanel chartPanel;
 
@@ -74,13 +96,18 @@ public class AutoCorrelationsView extends ATsControl implements IReadDataBlockVi
         this.ac = DEFAULT_AUTO_CORRELATIONS;
 
         this.chartPanel = new ChartPanel(createAutoCorrelationsViewChart());
-        setLayout(new BorderLayout());
         Charts.avoidScaling(chartPanel);
-        add(chartPanel, BorderLayout.CENTER);
 
         onDataFormatChange();
         onColorSchemeChange();
+        onComponentPopupMenuChange();
+        enableProperties();
 
+        setLayout(new BorderLayout());
+        add(chartPanel, BorderLayout.CENTER);
+    }
+
+    private void enableProperties() {
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -97,11 +124,12 @@ public class AutoCorrelationsView extends ATsControl implements IReadDataBlockVi
                     case AUTO_CORRELATIONS_PROPERTY:
                         onDataChange();
                         break;
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
                 }
             }
         });
-
-        chartPanel.setPopupMenu(buildMenu(chartPanel).getPopupMenu());
     }
 
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
@@ -164,6 +192,11 @@ public class AutoCorrelationsView extends ATsControl implements IReadDataBlockVi
 
             onColorSchemeChange();
         }
+    }
+
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildMenu(chartPanel).getPopupMenu());
     }
     //</editor-fold>
 

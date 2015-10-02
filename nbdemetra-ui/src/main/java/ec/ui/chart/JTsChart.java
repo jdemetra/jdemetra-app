@@ -66,10 +66,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.Beans;
 import java.beans.IntrospectionException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.TooManyListenersException;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
 import org.jfree.data.xy.IntervalXYDataset;
 import org.openide.nodes.Sheet;
@@ -95,8 +98,6 @@ public class JTsChart extends ATsChart implements IConfigurable {
     private final IntList savedSelection;
 
     public JTsChart() {
-        setLayout(new BorderLayout());
-
         this.chartPanel = new JTimeSeriesChart();
 
         chartPanel.setTransferHandler(new TsCollectionTransferHandler());
@@ -120,8 +121,6 @@ public class JTsChart extends ATsChart implements IConfigurable {
 
         chartPanel.getSeriesSelectionModel().addListSelectionListener(selectionListener);
 
-        this.add(chartPanel, BorderLayout.CENTER);
-
         enableOpenOnDoubleClick();
 
         onAxisVisibleChange();
@@ -130,8 +129,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
         onTitleChange();
         onUpdateModeChange();
         onDataFormatChange();
-
-        chartPanel.setComponentPopupMenu(buildChartMenu().getPopupMenu());
+        onComponentPopupMenuChange();
 
         ActionMaps.copyEntries(getActionMap(), false, chartPanel.getActionMap());
         InputMaps.copyEntries(getInputMap(), false, chartPanel.getInputMap());
@@ -168,6 +166,11 @@ public class JTsChart extends ATsChart implements IConfigurable {
                 return series < collection.getCount();
             }
         });
+
+        enableProperties();
+
+        setLayout(new BorderLayout());
+        add(chartPanel, BorderLayout.CENTER);
 
         if (Beans.isDesignTime()) {
             setTsCollection(DemoUtils.randomTsCollection(3));
@@ -209,6 +212,19 @@ public class JTsChart extends ATsChart implements IConfigurable {
             public void mousePressed(MouseEvent e) {
                 if (!Charts.isPopup(e) && Charts.isDoubleClick(e)) {
                     ActionMaps.performAction(getActionMap(), OPEN_ACTION, e);
+                }
+            }
+        });
+    }
+
+    private void enableProperties() {
+        this.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
                 }
             }
         });
@@ -306,6 +322,11 @@ public class JTsChart extends ATsChart implements IConfigurable {
     @Override
     protected void onLinesThicknessChange() {
         chartPanel.setLineThickness(linesThickness == LinesThickness.Thin ? 1f : 2f);
+    }
+
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildChartMenu().getPopupMenu());
     }
     //</editor-fold>
 
