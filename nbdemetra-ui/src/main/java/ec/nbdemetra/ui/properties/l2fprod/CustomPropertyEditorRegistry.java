@@ -26,6 +26,7 @@ import ec.tstoolkit.timeseries.calendars.LengthOfPeriodType;
 import ec.tstoolkit.timeseries.calendars.TradingDaysType;
 import ec.tstoolkit.timeseries.regression.InterventionVariable;
 import ec.tstoolkit.timeseries.regression.OutlierDefinition;
+import ec.tstoolkit.timeseries.regression.OutlierType;
 import ec.tstoolkit.timeseries.regression.Ramp;
 import ec.tstoolkit.timeseries.regression.Sequence;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
@@ -86,6 +87,7 @@ public enum CustomPropertyEditorRegistry {
         register(InterventionVariable[].class, new InterventionVariablesEditor());
         register(Sequence[].class, new SequencesEditor());
         register(OutlierDefinition[].class, new OutlierDefinitionsEditor());
+        register(OutlierType.class, new OutlierTypeSelector());
         register(String[].class, new StringCollectionEditor());
         register(Holidays.class, new HolidaysSelector());
         register(UserVariable.class, new UserVariableSelector());
