@@ -425,7 +425,19 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             StringBuilder i = new StringBuilder();
             i.append(DocumentManager.COMPOSITE).append("Irregular (cmp)=,").append(ModellingDictionary.I_CMP)
                     .append(',').append(ModellingDictionary.I_CMP).append(SeriesInfo.F_SUFFIX);
-            return new String[]{y.toString(), sa.toString(), t.toString(), s.toString(), i.toString()};
+            StringBuilder te = new StringBuilder();
+            te.append(DocumentManager.COMPOSITE).append("Trend stdev(cmp)=,").append(ModellingDictionary.T_CMP).append(SeriesInfo.E_SUFFIX)
+                    .append(',').append(ModellingDictionary.T_CMP).append(SeriesInfo.EF_SUFFIX);
+            StringBuilder sae = new StringBuilder();
+            sae.append(DocumentManager.COMPOSITE).append("Seasonally adjusted stdev(cmp)=,").append(ModellingDictionary.SA_CMP).append(SeriesInfo.E_SUFFIX)
+                    .append(',').append(ModellingDictionary.SA_CMP).append(SeriesInfo.EF_SUFFIX);
+            StringBuilder se = new StringBuilder();
+            se.append(DocumentManager.COMPOSITE).append("Seasonal stdev (cmp)=,").append(ModellingDictionary.S_CMP).append(SeriesInfo.E_SUFFIX)
+                    .append(',').append(ModellingDictionary.S_CMP).append(SeriesInfo.EF_SUFFIX);
+            StringBuilder ie = new StringBuilder();
+            ie.append(DocumentManager.COMPOSITE).append("Irregular stdev(cmp)=,").append(ModellingDictionary.I_CMP).append(SeriesInfo.E_SUFFIX)
+                    .append(',').append(ModellingDictionary.I_CMP).append(SeriesInfo.EF_SUFFIX);
+           return new String[]{y.toString(), sa.toString(), t.toString(), s.toString(), i.toString(), sae.toString(), te.toString(), se.toString(), ie.toString()};
         }
 
         public ComponentsSeriesFactory() {
