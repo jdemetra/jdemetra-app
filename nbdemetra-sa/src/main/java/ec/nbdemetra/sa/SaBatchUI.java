@@ -11,6 +11,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
+import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IActiveView;
@@ -20,6 +21,8 @@ import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.awt.ListTableModel;
 import ec.nbdemetra.ui.awt.PopupMenuAdapter;
+import ec.nbdemetra.ui.notification.MessageType;
+import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.ui.SpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
@@ -93,6 +96,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.DropDownButtonFactory;
 import org.openide.nodes.Node;
+import org.openide.util.Cancellable;
 import org.openide.util.ImageUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,14 +125,12 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     @Override
     public void componentOpened() {
-//        ActiveViewManager.getInstance().register(id, this);
         super.componentOpened();
     }
 
     @Override
     public void componentClosed() {
         controller.dispose();
-//        ActiveViewManager.getInstance().unregister(this);
         stop();
         detail.dispose();
         for (PropertyChangeListener listener : this.getPropertyChangeListeners()) {
@@ -143,6 +145,20 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     @Override
     public void componentHidden() {
+    }
+
+    @Override
+    public void componentActivated() {
+        super.componentActivated();
+        ActiveViewManager.getInstance().set(this);
+        active = true;
+    }
+
+    @Override
+    public void componentDeactivated() {
+        super.componentDeactivated();
+        ActiveViewManager.getInstance().set(null);
+        active = false;
     }
 
     @Override
@@ -179,7 +195,6 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     // PROPERTIES DEFINITIONS
     public static final String DEFAULT_SPECIFICATION_PROPERTY = "specificationProperty";
     public static final String PROCESSING_PROPERTY = "processing";
-//    public static final String STATE_PROPERTY = "state";
     public static final String SELECTION_PROPERTY = "itemSelection";
     // PROPERTIES
     private ISaSpecification defaultSpecification;
@@ -198,6 +213,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     private final TsProcessingViewer detail;
     // a trier
     private ProgressHandle progressHandle;
+    private boolean active;
     private SwingWorker<Void, SaItem> worker;
     private final SaProcessingModel model;
     private final ListTableSelectionListener listTableListener;
@@ -342,6 +358,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         switch (controller.getState()) {
             case DONE:
                 runButton.setEnabled(true);
+                makeBusy(false);
+
                 if (progressHandle != null) {
                     progressHandle.finish();
                 }
@@ -351,7 +369,13 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 break;
             case STARTED:
                 runButton.setEnabled(false);
-                progressHandle = ProgressHandleFactory.createHandle(getDocument().getDisplayName());
+                progressHandle = ProgressHandleFactory.createHandle(getDocument().getDisplayName(), new Cancellable() {
+                    @Override
+                    public boolean cancel() {
+                        return worker.cancel(true);
+                    }
+                }
+                );
                 progressHandle.start(getCurrentProcessing().size());
                 break;
         }
@@ -404,13 +428,19 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     // < GETTERS/SETTERS
 
     public boolean start(boolean local) {
+        makeBusy(true);
         worker = new SwingWorkerImpl(local);
         worker.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 switch (worker.getState()) {
                     case DONE:
-                        controller.setState(SaProcessingState.DONE);
+                        if (progressHandle != null) {
+                            progressHandle.finish();
+                        }
+                        if (controller != null) {
+                            controller.setState(SaProcessingState.DONE);
+                        }
                         break;
                     case PENDING:
                         controller.setState(SaProcessingState.PENDING);
@@ -937,25 +967,6 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             }
             throw new RuntimeException();
         }
-//        Icon getIcon(ProcQuality quality) {
-//            switch (quality) {
-//                case Error:
-//                    return DemetraIcon.WEATHER_RAIN;
-//                case Severe:
-//                    return DemetraIcon.WEATHER_LIGHTNING;
-//                case Bad:
-//                    return DemetraIcon.WEATHER_SNOW;
-//                case Uncertain:
-//                    return DemetraIcon.WEATHER_CLOUD;
-//                case Good:
-//                    return DemetraIcon.WEATHER;
-//                case Accepted:
-//                    return DemetraIcon.WEATHER_CLOUDY;
-//                case Undefined:
-//                    return null;
-//            }
-//            throw new RuntimeException();
-//        }
     }
 
     static class WarningsRenderer extends DefaultTableCellRenderer {
@@ -1026,6 +1037,17 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 Thread.currentThread().interrupt();
                 LOGGER.info("While processing SaItems", ex);
             }
+
+            if (tasks.size() > 0) {
+                if (worker != null && !worker.isCancelled()) {
+                    NotifyUtil.show("SA Processing done !", "Processed " + tasks.size() + " items in " + stopwatch.stop().toString(), MessageType.SUCCESS, null, null, null);
+                }
+
+                if (!active) {
+                    requestAttention(false);
+                }
+            }
+
             LOGGER.info("Task: {} items in {} by {} executors with priority {}", new Object[]{tasks.size(), stopwatch.stop().toString(), nThread, priority});
             executorService.shutdown();
             return null;
