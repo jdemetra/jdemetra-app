@@ -11,16 +11,19 @@ import ec.ui.view.tsprocessing.WkComponentsUI;
 import ec.ui.view.tsprocessing.UcarimaUI;
 import ec.ui.view.tsprocessing.EstimationUI;
 import ec.satoolkit.ComponentDescriptor;
+import ec.satoolkit.diagnostics.SignificantSeasonalityTest;
 import ec.satoolkit.diagnostics.StationaryVarianceDecomposition;
 import ec.satoolkit.seats.SeatsResults;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.tss.documents.DocumentManager;
 import ec.tss.html.IHtmlElement;
 import ec.tss.html.implementation.HtmlModelBasedRevisionsAnalysis;
+import ec.tss.html.implementation.HtmlSignificantSeasons;
 import ec.tss.html.implementation.HtmlStationaryVarianceDecomposition;
 import ec.tss.html.implementation.HtmlTramoSeatsGrowthRates;
 import ec.tss.sa.documents.TramoSeatsDocument;
 import ec.tstoolkit.algorithm.CompositeResults;
+import ec.tstoolkit.algorithm.IProcResults;
 import ec.tstoolkit.arima.ArimaModel;
 import ec.tstoolkit.arima.IArimaModel;
 import ec.tstoolkit.modelling.ComponentInformation;
@@ -73,7 +76,8 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             WK_PRELIMINARY = "Preliminary estimators",
             WK_ERRORS = "Errors analysis",
             WK_RATES = "Growth rates",
-            STVAR="Stationary variance decomposition";
+            SIGSEAS = "Significant seasonality",
+            STVAR = "Stationary variance decomposition";
     public static final Id DECOMPOSITION_SUMMARY = new LinearId(DECOMPOSITION);
     public static final Id DECOMPOSITION_STOCH_TREND = new LinearId(DECOMPOSITION, STOCHASTIC, STOCHASTIC_TREND);
     public static final Id DECOMPOSITION_STOCH_SEAS = new LinearId(DECOMPOSITION, STOCHASTIC, STOCHASTIC_SEAS);
@@ -87,6 +91,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
     public static final Id DECOMPOSITION_RATES = new LinearId(DECOMPOSITION, WK_RATES);
     public static final Id DECOMPOSITION_TESTS = new LinearId(DECOMPOSITION, MODELBASED);
     public static final Id DECOMPOSITION_VAR = new LinearId(DECOMPOSITION, STVAR);
+    public static final Id DECOMPOSITION_SIGSEAS = new LinearId(DECOMPOSITION, SIGSEAS);
     private static final AtomicReference<IProcDocumentViewFactory<TramoSeatsDocument>> INSTANCE = new AtomicReference(new TramoSeatsViewFactory());
 
     public static IProcDocumentViewFactory<TramoSeatsDocument> getDefault() {
@@ -207,7 +212,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             super(TramoSeatsDocument.class);
         }
     }
-    
+
 //    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 204000)
     public static class ProcessingLogFactory extends SaDocumentViewFactory.ProcessingLogFactory<TramoSeatsDocument> {
 
@@ -437,7 +442,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             StringBuilder ie = new StringBuilder();
             ie.append(DocumentManager.COMPOSITE).append("Irregular stdev(cmp)=,").append(ModellingDictionary.I_CMP).append(SeriesInfo.E_SUFFIX)
                     .append(',').append(ModellingDictionary.I_CMP).append(SeriesInfo.EF_SUFFIX);
-           return new String[]{y.toString(), sa.toString(), t.toString(), s.toString(), i.toString(), sae.toString(), te.toString(), se.toString(), ie.toString()};
+            return new String[]{y.toString(), sa.toString(), t.toString(), s.toString(), i.toString(), sae.toString(), te.toString(), se.toString(), ie.toString()};
         }
 
         public ComponentsSeriesFactory() {
@@ -523,8 +528,8 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             }, new ModelBasedUI());
         }
     }
-    
-        @ServiceProvider(service = ProcDocumentItemFactory.class, position = 403010)
+
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 403010)
     public static class StationaryVarianceDecompositionFactory extends ItemFactory<StationaryVarianceDecomposition> {
 
         public StationaryVarianceDecompositionFactory() {
@@ -532,6 +537,13 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         }
     }
 
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 403005)
+    public static class SignificantSeasonalityFactory extends ItemFactory<CompositeResults> {
+
+        public SignificantSeasonalityFactory() {
+            super(DECOMPOSITION_SIGSEAS, saExtractor(), new SigSeasUI());
+        }
+    }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER BENCHMARKING VIEW">
@@ -791,7 +803,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public void flush(TramoSeatsDocument source) {
         }
     }
-    
+
     private static class WkExtractor extends DefaultInformationExtractor<TramoSeatsDocument, WkInformation> {
 
         private static final WkExtractor INSTANCE = new WkExtractor();
@@ -825,6 +837,16 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         @Override
         protected IHtmlElement getHtmlElement(V host, StationaryVarianceDecomposition information) {
             return new HtmlStationaryVarianceDecomposition(information);
+        }
+    }
+
+    public static class SigSeasUI<V extends IProcDocumentView<?>> extends HtmlItemUI<V, CompositeResults> {
+
+        @Override
+        protected IHtmlElement getHtmlElement(V host, CompositeResults information) {
+            int[] p99 = SignificantSeasonalityTest.test(information, .01);
+            int[] p95 = SignificantSeasonalityTest.test(information, .05);
+            return new HtmlSignificantSeasons(p99, p95);
         }
     }
 
