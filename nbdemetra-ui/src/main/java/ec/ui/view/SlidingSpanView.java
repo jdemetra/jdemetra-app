@@ -31,8 +31,6 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import javax.swing.Box;
@@ -282,19 +280,6 @@ public class SlidingSpanView extends JComponent implements IColorSchemeAble {
 
         XYPlot plot = seriesPanel.getChart().getXYPlot();
         plot.setDataset(TsXYDatasets.from(infoName, data));
-
-        NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
-        switch (mode) {
-            case Multiplicative:
-                NumberFormat nf = new DecimalFormat("0.##");
-                yAxis.setNumberFormatOverride(nf);
-                yAxis.setTickUnit(new NumberTickUnit(0.01));
-                break;
-            case Additive:
-                Range rng = calcRange(data.getValues().internalStorage());
-                yAxis.setTickUnit(new NumberTickUnit(calcTick(rng)));
-                break;
-        }
     }
 
     private void clear() {
