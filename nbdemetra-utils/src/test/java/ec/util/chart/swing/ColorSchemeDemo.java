@@ -35,6 +35,7 @@ import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import javax.swing.AbstractListModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -66,6 +67,7 @@ public final class ColorSchemeDemo extends JPanel {
 
     public ColorSchemeDemo() {
         JComboBox<ColorScheme> colorScheme = new JComboBox<>(getColorSchemes());
+        colorScheme.setRenderer(new ColorSchemeRenderer());
 
         final JList<Integer> colors = new JList<>();
         colors.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -149,6 +151,18 @@ public final class ColorSchemeDemo extends JPanel {
         @Override
         public int getIconHeight() {
             return size;
+        }
+    }
+
+    private static final class ColorSchemeRenderer implements ListCellRenderer<ColorScheme> {
+
+        private final DefaultListCellRenderer renderer = new DefaultListCellRenderer();
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends ColorScheme> list, ColorScheme value, int index, boolean isSelected, boolean cellHasFocus) {
+            renderer.getListCellRendererComponent(list, value.getDisplayName(), index, isSelected, cellHasFocus);
+            renderer.setToolTipText(value.getName());
+            return renderer;
         }
     }
 }
