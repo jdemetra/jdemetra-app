@@ -16,6 +16,8 @@
  */
 package ec.nbdemetra.ui;
 
+import ec.nbdemetra.ui.ns.NamedServiceNode;
+import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.nbdemetra.ws.ui.SpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
@@ -23,10 +25,16 @@ import ec.tss.sa.EstimationPolicyType;
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import org.openide.awt.DropDownButtonFactory;
+import org.openide.explorer.ExplorerManager;
+import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -49,6 +57,18 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         this.controller = controller;
         initComponents();
         initSpecButton();
+
+        diagnosticsView.getOutline().setRootVisible(false);
+        editDiagnostic.setEnabled(false);
+        getDiagnosticsExplorerManager().addVetoableChangeListener(new VetoableChangeListener() {
+            @Override
+            public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
+                if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
+                    Node[] nodes = (Node[]) evt.getNewValue();
+                    editDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IConfigurable.class) != null);
+                }
+            }
+        });
     }
 
     void load() {
@@ -59,9 +79,11 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         estimationPolicyComboBox.setSelectedItem(demetraUI.getEstimationPolicyType());
 
         stabilityLength.setValue(demetraUI.getStabilityLength());
-        
+
         specComponent.setSpecification(demetraUI.getDefaultSASpec());
         selectedSpecLabel.setText(demetraUI.getDefaultSASpec().toLongString());
+
+        NamedServiceNode.loadAll(getDiagnosticsExplorerManager(), Lookup.getDefault().lookupAll(SaDiagnosticsFactoryBuddy.class));
     }
 
     void store() {
@@ -69,13 +91,14 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         demetraUI.setSpectralLastYears((Integer) spectralLastYears.getValue());
         demetraUI.setEstimationPolicyType((EstimationPolicyType) estimationPolicyComboBox.getSelectedItem());
         demetraUI.setStabilityLength((Integer) stabilityLength.getValue());
-        
+
         if (specComponent.getSpecification() instanceof TramoSeatsSpecification) {
             demetraUI.setDefaultSASpec("tramoseats." + specComponent.getSpecification().toString());
         } else {
             demetraUI.setDefaultSASpec("x13." + specComponent.getSpecification().toString());
         }
-        
+
+        NamedServiceNode.storeAll(getDiagnosticsExplorerManager());
     }
 
     boolean valid() {
@@ -104,6 +127,10 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         revisionHistoryPanel = new javax.swing.JPanel();
         estimationLabel = new javax.swing.JLabel();
         estimationPolicyComboBox = new javax.swing.JComboBox();
+        diagnosticsPanel = new ExtPanel();
+        jToolBar1 = new javax.swing.JToolBar();
+        editDiagnostic = new javax.swing.JButton();
+        diagnosticsView = new org.openide.explorer.view.OutlineView("Diagnostics");
 
         lastYearsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(DemetraStatsPanel.class, "DemetraStatsPanel.lastYearsPanel.border.title"))); // NOI18N
 
@@ -186,13 +213,53 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
                 .addComponent(estimationLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(estimationPolicyComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(119, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         revisionHistoryPanelLayout.setVerticalGroup(
             revisionHistoryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(revisionHistoryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(estimationLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
                 .addComponent(estimationPolicyComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        diagnosticsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(DemetraStatsPanel.class, "DemetraStatsPanel.diagnosticsPanel.border.title"))); // NOI18N
+
+        jToolBar1.setFloatable(false);
+        jToolBar1.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        jToolBar1.setRollover(true);
+
+        editDiagnostic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/preferences-system_16x16.png"))); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(editDiagnostic, org.openide.util.NbBundle.getMessage(DemetraStatsPanel.class, "DemetraStatsPanel.editDiagnostic.text")); // NOI18N
+        editDiagnostic.setFocusable(false);
+        editDiagnostic.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        editDiagnostic.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        editDiagnostic.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editDiagnosticActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(editDiagnostic);
+
+        javax.swing.GroupLayout diagnosticsPanelLayout = new javax.swing.GroupLayout(diagnosticsPanel);
+        diagnosticsPanel.setLayout(diagnosticsPanelLayout);
+        diagnosticsPanelLayout.setHorizontalGroup(
+            diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(diagnosticsPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(diagnosticsView, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        diagnosticsPanelLayout.setVerticalGroup(
+            diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(diagnosticsPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(diagnosticsPanelLayout.createSequentialGroup()
+                        .addComponent(diagnosticsView, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -202,6 +269,7 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
             .addComponent(lastYearsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(saPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(revisionHistoryPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(diagnosticsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -211,15 +279,25 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
                 .addComponent(saPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(revisionHistoryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 26, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(diagnosticsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 32, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void editDiagnosticActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDiagnosticActionPerformed
+        getDiagnosticsExplorerManager().getSelectedNodes()[0].getPreferredAction().actionPerformed(evt);
+    }//GEN-LAST:event_editDiagnosticActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel defaultSpecLabel;
+    private javax.swing.JPanel diagnosticsPanel;
+    private org.openide.explorer.view.OutlineView diagnosticsView;
+    private javax.swing.JButton editDiagnostic;
     private javax.swing.JLabel estimationLabel;
     private javax.swing.JComboBox estimationPolicyComboBox;
+    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel lastYearsPanel;
     private javax.swing.JPanel revisionHistoryPanel;
     private javax.swing.JPanel saPanel;
@@ -244,5 +322,19 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
                 }
             }
         });
+    }
+
+    private ExplorerManager getDiagnosticsExplorerManager() {
+        return ((ExplorerManager.Provider) diagnosticsPanel).getExplorerManager();
+    }
+
+    private static final class ExtPanel extends JPanel implements ExplorerManager.Provider {
+
+        private final ExplorerManager em = new ExplorerManager();
+
+        @Override
+        public ExplorerManager getExplorerManager() {
+            return em;
+        }
     }
 }

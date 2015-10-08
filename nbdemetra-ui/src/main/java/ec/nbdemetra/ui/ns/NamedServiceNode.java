@@ -4,14 +4,19 @@
  */
 package ec.nbdemetra.ui.ns;
 
+import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
+import static ec.nbdemetra.ui.Jdk6Functions.namedServiceToNode;
+import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
+import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.Lookups;
 
@@ -47,7 +52,7 @@ public class NamedServiceNode extends AbstractNode {
     protected Sheet createSheet() {
         return getNamedService().createSheet();
     }
-    //
+
     Config latestConfig;
 
     public void applyConfig() {
@@ -66,5 +71,18 @@ public class NamedServiceNode extends AbstractNode {
                 latestConfig = service.editConfig(latestConfig != null ? latestConfig : service.getConfig());
             }
         } : super.getPreferredAction();
+    }
+
+    public static void loadAll(ExplorerManager em, Iterable<? extends INamedService> items) {
+        Iterable<NamedServiceNode> nodes = Iterables.transform(items, namedServiceToNode());
+        em.setRootContext(new AbstractNodeBuilder().add(nodes).build());
+    }
+
+    public static void storeAll(ExplorerManager em) {
+        for (Node o : em.getRootContext().getChildren().getNodes()) {
+            if (o instanceof NamedServiceNode) {
+                ((NamedServiceNode) o).applyConfig();
+            }
+        }
     }
 }
