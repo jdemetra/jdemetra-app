@@ -30,8 +30,10 @@ import ec.tss.sa.diagnostics.CoherenceDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.CoherenceDiagnosticsFactory;
 import ec.tss.tsproviders.utils.IParam;
 import ec.tss.tsproviders.utils.Params;
+import ec.tstoolkit.BaseException;
 import java.awt.Image;
 import java.beans.IntrospectionException;
+import javax.swing.JOptionPane;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
@@ -145,6 +147,7 @@ public final class CoherenceDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
                 .select(config, "uncertain")
                 .display(Bundle.coherenceDiagnostics_uncertain_display())
                 .description(Bundle.coherenceDiagnostics_uncertain_description())
+                .min(0.0)
                 .add();
         sheet.put(b.build());
 
@@ -219,12 +222,28 @@ public final class CoherenceDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
 
     private static final class ConfigEditor implements IBeanEditor {
 
-        @Messages("coherenceDiagnostics.edit.title=Edit basic checks")
+        @Messages({"coherenceDiagnostics.edit.title=Edit basic checks",
+            "coherenceDiagnostics.edit.errorTitle=Invalid Input",
+            "coherenceDiagnostics.edit.errorMessage=\nWould you like to modify your choice?"
+        })
         @Override
         public boolean editBean(Object bean) throws IntrospectionException {
             Sheet sheet = createSheet((CoherenceDiagnosticsConfiguration) bean);
             String title = Bundle.coherenceDiagnostics_edit_title();
-            return OpenIdePropertySheetBeanEditor.editSheet(sheet, title, getIcon());
+            while (true) {
+                if (!OpenIdePropertySheetBeanEditor.editSheet(sheet, title, getIcon())) {
+                    return false;
+                }
+                try {
+                    ((CoherenceDiagnosticsConfiguration)bean).check();
+                    return true;
+                } catch (BaseException ex) {
+                    String message = ex.getMessage() + Bundle.coherenceDiagnostics_edit_errorMessage();
+                    if(JOptionPane.showConfirmDialog(null, message , Bundle.coherenceDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION){
+                        return false;
+                    }
+                }
+            }
         }
     }
     //</editor-fold>

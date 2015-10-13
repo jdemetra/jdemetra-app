@@ -286,7 +286,9 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void editDiagnosticActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDiagnosticActionPerformed
-        getDiagnosticsExplorerManager().getSelectedNodes()[0].getPreferredAction().actionPerformed(evt);
+        if (getDiagnosticsExplorerManager().getSelectedNodes() != null && getDiagnosticsExplorerManager().getSelectedNodes().length != 0) {
+            getDiagnosticsExplorerManager().getSelectedNodes()[0].getPreferredAction().actionPerformed(evt);
+        }
     }//GEN-LAST:event_editDiagnosticActionPerformed
 
 
