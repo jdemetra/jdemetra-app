@@ -12,7 +12,7 @@
     <name>NbDemetra - Utilities</name>
 
     <properties>
-        <jna.version>3.5.2</jna.version>
+        <jna.version>4.2.0</jna.version>
         <jfreechart.version>1.0.19</jfreechart.version>
         <jfreesvg.version>3.0</jfreesvg.version>
     </properties>
@@ -46,7 +46,7 @@
             </dependency>
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
-                <artifactId>platform</artifactId>
+                <artifactId>jna-platform</artifactId>
                 <version>${jna.version}</version>
             </dependency>
         </dependencies>
@@ -63,7 +63,7 @@
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
-            <artifactId>platform</artifactId>
+            <artifactId>jna-platform</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
