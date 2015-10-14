@@ -102,7 +102,7 @@ public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
         "residualsDiagnostics.uncertain.display=Uncertain",
         "residualsDiagnostics.uncertain.description=Uncertain",
         "residualsDiagnostics.appearance.display=Appearance",
-        "residualsDiagnostics.niddTestCategory.display=Relative number of residuals",
+        "residualsDiagnostics.niddTestCategory.display=NIID tests",
         "residualsDiagnostics.specTDTestCategory.display=Spectral test on trading days frequencies",
         "residualsDiagnostics.specSeasTestCategory.display=Spectral test on seasonal frequencies"
     })

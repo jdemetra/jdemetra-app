@@ -102,7 +102,7 @@ public final class OutOfSampleDiagnosticsFactoryBuddy extends SaDiagnosticsFacto
         "outOfSampleDiagnostics.uncertain.display=Uncertain",
         "outOfSampleDiagnostics.uncertain.description=Uncertain",
         "outOfSampleDiagnostics.length.display=Forecasting length",
-        "outOfSampleDiagnostics.length.description=Forecasting length",
+        "outOfSampleDiagnostics.length.description=Forecasting length (in years)",
         "outOfSampleDiagnostics.appearance.display=Appearance",
         "outOfSampleDiagnostics.test.display=Test options"
     })
