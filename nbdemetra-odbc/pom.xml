@@ -77,7 +77,7 @@
                 </exclusion>
                 <exclusion>
                     <groupId>net.java.dev.jna</groupId>
-                    <artifactId>platform</artifactId>
+                    <artifactId>jna-platform</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
