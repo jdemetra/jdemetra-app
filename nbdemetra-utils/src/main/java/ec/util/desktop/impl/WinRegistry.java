@@ -165,25 +165,6 @@ public abstract class WinRegistry {
         }
     }
 
-    private static final class VbsRegistry extends WinRegistry {
-
-        @Override
-        public boolean keyExists(Root root, String key) throws IOException {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public Object getValue(Root root, String key, String value) throws IOException {
-            String param = root.name() + "\\" + key + "\\" + value;
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public SortedMap<String, Object> getValues(Root root, String key) throws IOException {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-    }
-
     private static final SortedMap<String, Object> EMPTY_SORTED_MAP = Collections.unmodifiableSortedMap(new TreeMap<String, Object>());
     //</editor-fold>
 }
