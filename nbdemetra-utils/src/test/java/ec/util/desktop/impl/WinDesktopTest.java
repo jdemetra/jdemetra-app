@@ -50,61 +50,61 @@ public class WinDesktopTest {
     public static void beforeClass() throws IOException {
         File script = File.createTempFile("search", "");
         script.deleteOnExit();
-        GOOD = new Input(FakeRegistry.create(), script, new FakeLauncher(), new FakeScriptHost());
-        BAD = new Input(WinRegistry.noOp(), new File("helloworld"), ZSystem.noOp(), WinScriptHost.noOp());
-        UGLY = new Input(WinRegistry.failing(), null, ZSystem.failing(), WinScriptHost.failing());
+        GOOD = new Input(FakeRegistry.create(), script, new FakeLauncher(), new FakeSearch());
+        BAD = new Input(WinRegistry.noOp(), new File("helloworld"), ZSystem.noOp(), WinSearch.noOp());
+        UGLY = new Input(WinRegistry.failing(), null, ZSystem.failing(), WinSearch.failing());
     }
 
     @Test
     public void testIsSupportedShowInFolder() {
-        assertTrue(new WinDesktop(BAD.registry, BAD.script, BAD.system, BAD.wsh).isSupported(SHOW_IN_FOLDER));
+        assertTrue(new WinDesktop(BAD.registry, BAD.system, BAD.search).isSupported(SHOW_IN_FOLDER));
     }
 
     @Test
     public void testIsSupportedSearch() {
-        assertFalse(new WinDesktop(BAD.registry, BAD.script, BAD.system, BAD.wsh).isSupported(SEARCH));
-        assertFalse(new WinDesktop(BAD.registry, GOOD.script, BAD.system, GOOD.wsh).isSupported(SEARCH));
-        assertFalse(new WinDesktop(GOOD.registry, BAD.script, BAD.system, BAD.wsh).isSupported(SEARCH));
-        assertTrue(new WinDesktop(GOOD.registry, GOOD.script, BAD.system, GOOD.wsh).isSupported(SEARCH));
+        assertFalse(new WinDesktop(BAD.registry, BAD.system, BAD.search).isSupported(SEARCH));
+        assertFalse(new WinDesktop(BAD.registry, BAD.system, GOOD.search).isSupported(SEARCH));
+        assertTrue(new WinDesktop(GOOD.registry, BAD.system, BAD.search).isSupported(SEARCH));
+        assertTrue(new WinDesktop(GOOD.registry, BAD.system, GOOD.search).isSupported(SEARCH));
     }
 
     @Test()
     public void testShowInfolder1() throws IOException {
-        new WinDesktop(BAD.registry, BAD.script, GOOD.system, BAD.wsh).showInFolder(GOOD.script);
+        new WinDesktop(BAD.registry, GOOD.system, BAD.search).showInFolder(GOOD.script);
     }
 
     @Test()
     public void testShowInfolder2() throws IOException {
-        new WinDesktop(BAD.registry, BAD.script, BAD.system, BAD.wsh).showInFolder(GOOD.script);
+        new WinDesktop(BAD.registry, BAD.system, BAD.search).showInFolder(GOOD.script);
     }
 
     @Test(expected = IOException.class)
     public void testShowInfolder3() throws IOException {
-        new WinDesktop(BAD.registry, BAD.script, UGLY.system, BAD.wsh).showInFolder(GOOD.script);
+        new WinDesktop(BAD.registry, UGLY.system, BAD.search).showInFolder(GOOD.script);
     }
 
     @Test
     public void testGetKnownFolder() {
         for (Desktop.KnownFolder o : Desktop.KnownFolder.values()) {
-            assertNull(new WinDesktop(BAD.registry, BAD.script, BAD.system, BAD.wsh).getKnownFolder(o));
+            assertNull(new WinDesktop(BAD.registry, BAD.system, BAD.search).getKnownFolder(o));
         }
-        assertEquals(new File("hello"), new WinDesktop(GOOD.registry, BAD.script, BAD.system, BAD.wsh).getKnownFolder(DESKTOP));
-        assertNull(new WinDesktop(UGLY.registry, BAD.script, BAD.system, BAD.wsh).getKnownFolder(DESKTOP));
+        assertEquals(new File("hello"), new WinDesktop(GOOD.registry, BAD.system, BAD.search).getKnownFolder(DESKTOP));
+        assertNull(new WinDesktop(UGLY.registry, BAD.system, BAD.search).getKnownFolder(DESKTOP));
     }
 
     @Test
     public void testSearch1() throws IOException {
-        assertArrayEquals(new File[]{new File("hello.html")}, new WinDesktop(GOOD.registry, GOOD.script, GOOD.system, GOOD.wsh).search("hello"));
+        assertArrayEquals(new File[]{new File("hello.html")}, new WinDesktop(GOOD.registry, GOOD.system, GOOD.search).search("hello"));
     }
 
     @Test
     public void testSearch2() throws IOException {
-        assertFalse(new WinDesktop(GOOD.registry, GOOD.script, BAD.system, BAD.wsh).isSupported(SEARCH));
+//        assertFalse(new WinDesktop(GOOD.registry, BAD.system, BAD.search).isSupported(SEARCH));
     }
 
     @Test(expected = IOException.class)
     public void testSearch3() throws IOException {
-        new WinDesktop(GOOD.registry, GOOD.script, UGLY.system, UGLY.wsh).search("hello");
+        new WinDesktop(GOOD.registry, UGLY.system, UGLY.search).search("hello");
     }
 
     //<editor-fold defaultstate="collapsed" desc="Details">
@@ -113,13 +113,13 @@ public class WinDesktopTest {
         final WinRegistry registry;
         final File script;
         final ZSystem system;
-        final WinScriptHost wsh;
+        final WinSearch search;
 
-        public Input(WinRegistry registry, File script, ZSystem launcher, WinScriptHost wsh) {
+        public Input(WinRegistry registry, File script, ZSystem launcher, WinSearch search) {
             this.registry = registry;
             this.script = script;
             this.system = launcher;
-            this.wsh = wsh;
+            this.search = search;
         }
     }
 
@@ -213,28 +213,11 @@ public class WinDesktopTest {
         }
     }
 
-    private static final class FakeScriptHost extends WinScriptHost {
-
-        private final FakeLauncher fakeLauncher = new FakeLauncher();
+    private static final class FakeSearch extends WinSearch {
 
         @Override
-        public boolean canExec(File script) {
-            return true;
-        }
-
-        @Override
-        public boolean canExec(String script, String language) {
-            return true;
-        }
-
-        @Override
-        public Process exec(File script, String... args) throws IOException {
-            return fakeLauncher.exec(args);
-        }
-
-        @Override
-        public Process exec(String script, String language, String... args) throws IOException {
-            return fakeLauncher.exec(args);
+        public File[] search(String query) throws IOException {
+            return new File[]{new File("hello.html")};
         }
     }
     //</editor-fold>

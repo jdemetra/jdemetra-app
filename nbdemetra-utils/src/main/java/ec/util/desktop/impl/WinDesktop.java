@@ -19,12 +19,10 @@ package ec.util.desktop.impl;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.Desktop.Action;
 import ec.util.desktop.Desktop.KnownFolder;
-import static ec.util.desktop.impl.AwtDesktop.extractResource;
 import static ec.util.desktop.impl.WinRegistry.Root.HKEY_CURRENT_USER;
 import static ec.util.desktop.impl.WinRegistry.Root.HKEY_LOCAL_MACHINE;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
@@ -60,18 +58,15 @@ public class WinDesktop extends AwtDesktop {
     @Nonnull
     private final WinRegistry registry;
     @Nonnull
-    private final File searchScript;
-    @Nonnull
     private final ZSystem system;
     @Nonnull
-    private final WinScriptHost wsh;
+    private final WinSearch search;
 
     // VisibleForTesting
-    WinDesktop(WinRegistry registry, File searchScript, ZSystem launcher, WinScriptHost wsh) {
+    WinDesktop(WinRegistry registry, ZSystem launcher, WinSearch search) {
         this.registry = registry;
-        this.searchScript = searchScript;
+        this.search = search;
         this.system = launcher;
-        this.wsh = wsh;
     }
 
     @Override
@@ -80,7 +75,7 @@ public class WinDesktop extends AwtDesktop {
             case SHOW_IN_FOLDER:
                 return true;
             case SEARCH:
-                return wsh.canExec(searchScript) && isSearchEngineInstalled(registry);
+                return isSearchEngineInstalled(registry);
         }
         return super.isSupported(action);
     }
@@ -129,7 +124,7 @@ public class WinDesktop extends AwtDesktop {
         if (!isSupported(Action.SEARCH)) {
             throw new UnsupportedOperationException(Action.SEARCH.name());
         }
-        return search(wsh, searchScript, query);
+        return search.search(query);
     }
 
     public static class Factory implements Desktop.Factory {
@@ -142,26 +137,15 @@ public class WinDesktop extends AwtDesktop {
         @Override
         public Desktop create(String osArch, String osName, String osVersion) {
             WinRegistry registry = WinRegistry.getDefault();
-            File searchScript = extractSearchScript();
             ZSystem launcher = ZSystem.getDefault();
-            WinScriptHost wsh = WinScriptHost.getDefault();
-            return new WinDesktop(registry, searchScript, launcher, wsh);
+            WinSearch search = WinSearch.getDefault();
+            return new WinDesktop(registry, launcher, search);
         }
     }
 
     private static void showInFolder(@Nonnull ZSystem system, @Nonnull File file) throws IOException {
         // http://support.microsoft.com/kb/152457
         system.exec("explorer.exe", "/select,", quote(file.getAbsolutePath()));
-    }
-
-    @Nullable
-    private static File extractSearchScript() {
-        try {
-            return extractResource("winsearch.vbs", "winsearch", ".vbs");
-        } catch (IOException ex) {
-            LOGGER.log(Level.INFO, "Cannot load search script", ex);
-            return null;
-        }
     }
 
     private static boolean isSearchEngineInstalled(@Nonnull WinRegistry registry) {
@@ -171,14 +155,6 @@ public class WinDesktop extends AwtDesktop {
             LOGGER.log(Level.INFO, "While checking desktop search existence", ex);
             return false;
         }
-    }
-
-    @Nonnull
-    private static File[] search(@Nonnull WinScriptHost wsh, @Nonnull File searchScript, @Nonnull String query) throws IOException {
-        // http://en.wikipedia.org/wiki/Windows_Search
-        String quotedQuery = quote(query.replace(QUOTE, ""));
-        Process p = wsh.exec(searchScript, quotedQuery);
-        return toFiles(p, Charset.defaultCharset());
     }
 
     @Nullable
