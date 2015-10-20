@@ -72,14 +72,12 @@ public abstract class WinRegistry {
         private static final WinRegistry INSTANCE = createInstance();
 
         private static WinRegistry createInstance() {
-            try {
-                Class.forName("com.sun.jna.platform.win32.Advapi32Util");
+            if (Util.isClassAvailable("com.sun.jna.platform.win32.Advapi32Util")) {
                 return new JnaRegistry();
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(WinRegistry.class.getName()).log(Level.SEVERE, "Cannot load JNA Platform");
-                // fallback
-                return noOp();
             }
+            Logger.getLogger(WinRegistry.class.getName()).log(Level.SEVERE, "Cannot load JNA Platform");
+            // fallback
+            return noOp();
         }
     }
 

@@ -18,18 +18,11 @@ package ec.util.desktop.impl;
 
 import com.sun.jna.platform.FileUtils;
 import ec.util.desktop.Desktop;
-import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
@@ -62,7 +55,7 @@ public class AwtDesktop implements Desktop {
             case SHOW_IN_FOLDER:
                 return awt.isSupported(java.awt.Desktop.Action.OPEN);
             case MOVE_TO_TRASH:
-                return isJnaPlatformAvailable() && FileUtils.getInstance().hasTrash();
+                return Util.isClassAvailable("com.sun.jna.platform.FileUtils") && FileUtils.getInstance().hasTrash();
             case SEARCH:
                 return false;
             case KNOWN_FOLDER_LOOKUP:
@@ -118,7 +111,7 @@ public class AwtDesktop implements Desktop {
     public File getKnownFolderPath(KnownFolder knownFolder) throws IOException {
         return getKnownFolder(knownFolder);
     }
-    
+
     @Override
     public File getKnownFolder(Desktop.KnownFolder userDir) {
         return null;
@@ -142,27 +135,10 @@ public class AwtDesktop implements Desktop {
         }
     }
 
-    /**
-     * Checks if the file is a valid file and readable.
-     *
-     * @param file the file to check
-     * @return the validated file
-     * @throws SecurityException If a security manager exists and its
-     * {@link SecurityManager#checkRead(java.lang.String)} method denies read
-     * access to the file
-     * @throws NullPointerException if file is null
-     * @throws IllegalArgumentException if file doesn't exist
-     */
+    @Deprecated
     @Nonnull
     protected static File checkFile(File file) throws NullPointerException, IllegalArgumentException {
-        if (file == null) {
-            throw new NullPointerException("File must not be null");
-        }
-        if (!file.exists()) {
-            throw new IllegalArgumentException("The file: " + file.getPath() + " doesn't exist.");
-        }
-        file.canRead();
-        return file;
+        return Util.checkFile(file);
     }
 
     @Deprecated
@@ -176,42 +152,15 @@ public class AwtDesktop implements Desktop {
         }
     }
 
+    @Deprecated
     @Nonnull
     protected static File extractResource(@Nonnull String resourceName, @Nonnull String filePrefix, @Nonnull String fileSuffix) throws IOException {
-        File result = File.createTempFile(filePrefix, fileSuffix);
-        result.deleteOnExit();
-        try (InputStream in = AwtDesktop.class.getResourceAsStream(resourceName)) {
-            Files.copy(in, result.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        }
-        return result;
+        return Util.extractResource(resourceName, filePrefix, fileSuffix);
     }
 
+    @Deprecated
     @Nonnull
     protected static File[] toFiles(@Nonnull Process p, @Nonnull Charset charset) throws IOException {
-        List<File> result = new ArrayList<>();
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), charset))) {
-            // we need the process to end, else we'll get an illegal Thread State Exception
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.add(new File(line));
-            }
-            try {
-                p.waitFor();
-            } catch (InterruptedException ex) {
-                // do nothing?
-            }
-        }
-
-        return result.toArray(new File[result.size()]);
-    }
-
-    private static boolean isJnaPlatformAvailable() {
-        try {
-            Class.forName("com.sun.jna.platform.FileUtils");
-            return true;
-        } catch (ClassNotFoundException ex) {
-            return false;
-        }
+        return Util.toFiles(p, charset);
     }
 }
