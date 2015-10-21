@@ -65,7 +65,7 @@ public class MacDesktop extends AwtDesktop {
 
     @Override
     public void showInFolder(File file) throws IOException {
-        checkFile(file);
+        Util.checkFile(file);
         // https://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man1/open.1.html
         system.exec("open", "-R", "'" + file.getAbsolutePath() + "'");
     }
@@ -99,7 +99,7 @@ public class MacDesktop extends AwtDesktop {
         // https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/mdfind.1.html
         String quotedQuery = "\"" + query.replace("\"", "") + "\"";
         Process p = system.exec("mdfind", quotedQuery);
-        return toFiles(p, Charset.defaultCharset());
+        return Util.toFiles(p, Charset.defaultCharset());
     }
 
     public static class Factory implements Desktop.Factory {

@@ -18,19 +18,19 @@ package ec.util.desktop.impl;
 
 import com.sun.jna.platform.win32.COM.COMException;
 import com.sun.jna.platform.win32.COM.util.Factory;
-import com.sun.jna.platform.win32.COM.util.IConnectionPoint;
-import com.sun.jna.platform.win32.COM.util.IUnknown;
 import com.sun.jna.platform.win32.COM.util.annotation.ComInterface;
 import com.sun.jna.platform.win32.COM.util.annotation.ComMethod;
 import com.sun.jna.platform.win32.COM.util.annotation.ComObject;
 import com.sun.jna.platform.win32.COM.util.annotation.ComProperty;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * http://en.wikipedia.org/wiki/Windows_Search
@@ -58,6 +58,8 @@ abstract class WinSearch {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
+    private static final Logger LOGGER = Logger.getLogger(WinSearch.class.getName());
+
     /**
      * http://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom
      */
@@ -66,13 +68,26 @@ abstract class WinSearch {
         private static final WinSearch INSTANCE = createInstance();
 
         private static WinSearch createInstance() {
-            try {
-                Class.forName("com.sun.jna.platform.win32.COM.util.Factory");
+            if (Util.is64bit() && Util.isClassAvailable("com.sun.jna.platform.win32.COM.util.Factory")) {
+                LOGGER.log(Level.INFO, "Using Jna Platform");
                 return new JnaSearch();
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(WinSearch.class.getName()).log(Level.SEVERE, "Cannot load JNA Platform");
-                // fallback
-                return noOp();
+            }
+            File searchScript = extractSearchScript();
+            if (searchScript != null) {
+                LOGGER.log(Level.INFO, "Using WinScriptHost");
+                return new VbsSearch(WinScriptHost.getDefault(), searchScript);
+            }
+            // fallback
+            return noOp();
+        }
+
+        @Nullable
+        private static File extractSearchScript() {
+            try {
+                return Util.extractResource("winsearch.vbs", "winsearch", ".vbs");
+            } catch (IOException ex) {
+                LOGGER.log(Level.INFO, "Cannot load search script", ex);
+                return null;
             }
         }
     }
@@ -135,7 +150,7 @@ abstract class WinSearch {
         }
 
         @ComObject(progId = "ADODB.Connection")
-        private interface Connection extends IUnknown, IConnectionPoint {
+        private interface Connection {
 
             @ComMethod
             void Open(String connectionString);
@@ -181,6 +196,31 @@ abstract class WinSearch {
 
             @ComProperty
             Object getValue();
+        }
+    }
+
+    private static final class VbsSearch extends WinSearch {
+
+        private static final String QUOTE = "\"";
+
+        private final WinScriptHost wsh;
+        private final File searchScript;
+
+        public VbsSearch(@Nonnull WinScriptHost wsh, @Nonnull File searchScript) {
+            this.wsh = wsh;
+            this.searchScript = searchScript;
+        }
+
+        @Override
+        public File[] search(String query) throws IOException {
+            String quotedQuery = quote(query.replace(QUOTE, ""));
+            Process p = wsh.exec(searchScript, quotedQuery);
+            return Util.toFiles(p, Charset.defaultCharset());
+        }
+
+        @Nonnull
+        private static String quote(@Nonnull String input) {
+            return QUOTE + input + QUOTE;
         }
     }
     //</editor-fold>
