@@ -48,6 +48,10 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = smodDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         desc = wkDesc();
         if (desc != null) {
             descs.add(desc);
@@ -69,6 +73,14 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
         core.setTrendBoundary(value);
     }
 
+    public double getSMod() {
+        return core.getSeasBoundary();
+    }
+
+    public void setSMod(double value) {
+        core.setSeasBoundary(value);
+    }
+    
     public double getEpsPhi() {
         return core.getSeasTolerance();
     }
@@ -100,7 +112,7 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
     public void setMethod(EstimationMethod value) {
         core.setMethod(value);
     }
-    private static final int RMOD_ID = 0, EPSPHI_ID = 1, NOADMISS_ID = 2, XL_ID = 3, WK_ID = 4;
+    private static final int RMOD_ID = 0, EPSPHI_ID = 1, SMOD_ID=2, NOADMISS_ID = 3, XL_ID = 4, WK_ID = 5;
 
     @Messages({
         "seatsSpecUI.rmodDesc.name=Trend boundary",
@@ -120,6 +132,24 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
         }
     }
     
+    @Messages({
+        "seatsSpecUI.smodDesc.name=Seasonal boundary",
+        "seatsSpecUI.smodDesc.desc=[smod] Boundary from which an AR root is integrated in the seasonal component."
+    })
+    private EnhancedPropertyDescriptor smodDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("SMod", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SMOD_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.seatsSpecUI_smodDesc_name());
+            desc.setShortDescription(Bundle.seatsSpecUI_smodDesc_desc());
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
     @Messages({
         "seatsSpecUI.wkDesc.name=Method",
         "seatsSpecUI.wkDesc.desc=Estimation method of the component"
