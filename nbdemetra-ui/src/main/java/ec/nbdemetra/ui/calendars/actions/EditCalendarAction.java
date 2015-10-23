@@ -84,6 +84,7 @@ public final class EditCalendarAction extends SingleNodeAction<ItemWsNode> {
         NationalCalendarPanel panel = new NationalCalendarPanel();
         panel.setCalendarName(oldName);
         panel.setMeanCorrection(p.isLongTermMeanCorrection());
+        panel.setJulianCalendar(p.isJulianCalendar());
         panel.setSpecialDayEvents(ImmutableList.copyOf(p.events()));
 
         DialogDescriptor dd = panel.createDialogDescriptor(Bundle.editNationalCalendar_dialog_title());
@@ -92,6 +93,8 @@ public final class EditCalendarAction extends SingleNodeAction<ItemWsNode> {
             Collection<SpecialDayEvent> events = panel.getSpecialDayEvents();
             NationalCalendarProvider np = new NationalCalendarProvider(events);
             np.setLongTermMeanCorrection(panel.isMeanCorrection());
+            np.setJulianCalendar(panel.isJulianCalendar());
+            np.modifyToJulianCalendarDays(events, panel.isJulianCalendar());
             replace(manager, oldName, name, np, node);
         }
     }

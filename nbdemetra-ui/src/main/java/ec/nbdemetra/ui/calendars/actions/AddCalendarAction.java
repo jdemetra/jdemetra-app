@@ -102,6 +102,8 @@ public final class AddCalendarAction extends AbstractAction implements Presenter
             Collection<SpecialDayEvent> events = panel.getSpecialDayEvents();
             NationalCalendarProvider np = new NationalCalendarProvider(events);
             np.setLongTermMeanCorrection(panel.isMeanCorrection());
+            np.setJulianCalendar(panel.isJulianCalendar());
+            np.modifyToJulianCalendarDays(events, panel.isJulianCalendar());
             add(manager, panel.getCalendarName(), np);
         }
     }

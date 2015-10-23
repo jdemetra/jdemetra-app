@@ -56,16 +56,19 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
     public static final String CALENDAR_NAME_PROPERTY = "calendarName";
     public static final String MEAN_CORRECTION_PROPERTY = "meanCorrection";
     public static final String SPECIAL_DAY_EVENTS_PROPERTY = "specialDayEvents";
+    public static final String JULIAN_CALENDAR_PROPERTY = "julianCalendar";
     // PROPERTIES
     protected final JProperty<String> calendarName;
     protected final JProperty<ImmutableList<SpecialDayEvent>> specialDayEvents;
     protected final JProperty<Boolean> meanCorrection;
+    protected final JProperty<Boolean> julianCalendar;
     // OTHER
     final ExplorerManager em;
     final ListOfSpecialDayEvent childFactory;
     final JPopupMenu addPopupMenu;
     final NameTextFieldListener nameTextFieldListener;
     final MeanCheckBoxListener meanListener;
+    final JulianCheckBoxListener julianListener;
     Action lastUsedAction;
 
     /**
@@ -75,6 +78,7 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
         this.calendarName = newProperty(CALENDAR_NAME_PROPERTY, JProperty.nullTo(""), null);
         this.specialDayEvents = newProperty(SPECIAL_DAY_EVENTS_PROPERTY, JProperty.nullTo(ImmutableList.<SpecialDayEvent>of()), null);
         this.meanCorrection = newProperty(MEAN_CORRECTION_PROPERTY, true);
+        this.julianCalendar = newProperty(JULIAN_CALENDAR_PROPERTY, false);
 
         this.em = new ExplorerManager();
         this.childFactory = new ListOfSpecialDayEvent();
@@ -137,11 +141,13 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
 
         this.nameTextFieldListener = new NameTextFieldListener();
         this.meanListener = new MeanCheckBoxListener();
+        this.julianListener = new JulianCheckBoxListener();
 
         listView1.setShowParentNode(false);
         listView1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         nameTextField.getDocument().addDocumentListener(nameTextFieldListener);
         meanCB.addActionListener(meanListener);
+        julianCB.addActionListener(julianListener);
         removeButton.setEnabled(false);
 
         addPropertyChangeListener(new PropertyChangeListener() {
@@ -156,6 +162,9 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
                         break;
                     case NationalCalendarPanel.MEAN_CORRECTION_PROPERTY:
                         onMeanChange();
+                        break;
+                    case NationalCalendarPanel.JULIAN_CALENDAR_PROPERTY:
+                        onJulianChange();
                         break;
                 }
             }
@@ -181,6 +190,7 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
         listView1 = new org.openide.explorer.view.ListView();
         propertySheetView1 = new org.openide.explorer.propertysheet.PropertySheetView();
         meanCB = new javax.swing.JCheckBox();
+        julianCB = new javax.swing.JCheckBox();
 
         jLabel1.setText("Name:");
 
@@ -215,6 +225,8 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
         meanCB.setSelected(true);
         meanCB.setText("Long term mean correction");
 
+        julianCB.setLabel("Julian Calendar");
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -227,10 +239,12 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
                     .add(layout.createSequentialGroup()
                         .add(jLabel1)
                         .add(0, 0, Short.MAX_VALUE))
-                    .add(layout.createSequentialGroup()
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                         .add(nameTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 242, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(meanCB, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 163, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(julianCB)
+                            .add(meanCB, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 163, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -242,10 +256,12 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(nameTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(meanCB))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(julianCB)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
+                .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -262,6 +278,7 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
     private javax.swing.JLabel jLabel2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JCheckBox julianCB;
     private org.openide.explorer.view.ListView listView1;
     private javax.swing.JCheckBox meanCB;
     private javax.swing.JTextField nameTextField;
@@ -283,6 +300,14 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
             meanListener.state = ListenerState.SUSPENDED;
             meanCB.setSelected(meanCorrection.get());
             meanListener.state = ListenerState.READY;
+        }
+    }
+    
+    protected void onJulianChange() {
+        if(julianListener.state == ListenerState.READY){
+            julianListener.state = ListenerState.SUSPENDED;
+            julianCB.setSelected(julianCalendar.get());
+            julianListener.state = ListenerState.READY;
         }
     }
 
@@ -322,6 +347,14 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
 
     public void setMeanCorrection(boolean mean) {
         this.meanCorrection.set(mean);
+    }
+
+    public boolean isJulianCalendar() {
+        return julianCalendar.get();
+    }
+
+    public void setJulianCalendar(boolean julian) {
+        this.julianCalendar.set(julian);
     }
 
     public ImmutableList<SpecialDayEvent> getSpecialDayEvents() {
@@ -454,6 +487,24 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
         }
     }
 
+    private class JulianCheckBoxListener implements ActionListener {
+
+        ListenerState state = ListenerState.READY;
+
+        void update() {
+            if (state == ListenerState.READY) {
+                state = ListenerState.SENDING;
+                setJulianCalendar(julianCB.isSelected());
+                state = ListenerState.READY;
+            }
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            update();
+        }
+    }
+
     @Override
     public DialogDescriptor createDialogDescriptor(String title) {
         return new NationalDialogDescriptor(this, title);
@@ -495,27 +546,27 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
     private enum NationalConstraints implements IConstraint<NationalConstraintData> {
 
         CALENDAR_NAME {
-            @Override
-            public String check(NationalConstraintData t) {
-                String name = t.panel.getCalendarName();
-                if (name.isEmpty()) {
-                    return "The name of the calendar cannot be empty";
-                }
-                if (!t.originalName.equals(name) && t.manager.contains(name)) {
-                    return "The name of the calendar is already used";
-                }
-                return null;
-            }
-        },
+                    @Override
+                    public String check(NationalConstraintData t) {
+                        String name = t.panel.getCalendarName();
+                        if (name.isEmpty()) {
+                            return "The name of the calendar cannot be empty";
+                        }
+                        if (!t.originalName.equals(name) && t.manager.contains(name)) {
+                            return "The name of the calendar is already used";
+                        }
+                        return null;
+                    }
+                },
         SPECIAL_DAY_EVENTS {
-            @Override
-            public String check(NationalConstraintData t) {
-                ImmutableList<SpecialDayEvent> events = t.panel.getSpecialDayEvents();
-                if (Sets.newHashSet(events).size() != events.size()) {
-                    return "There are duplicated events";
+                    @Override
+                    public String check(NationalConstraintData t) {
+                        ImmutableList<SpecialDayEvent> events = t.panel.getSpecialDayEvents();
+                        if (Sets.newHashSet(events).size() != events.size()) {
+                            return "There are duplicated events";
+                        }
+                        return null;
+                    }
                 }
-                return null;
-            }
-        }
     }
 }

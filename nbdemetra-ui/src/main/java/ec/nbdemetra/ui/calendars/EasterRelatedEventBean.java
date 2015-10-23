@@ -33,7 +33,7 @@ public class EasterRelatedEventBean extends AbstractEventBean {
         super(start, end, weight);
         this.offset = offset;
     }
-
+    
     public int getOffset() {
         return offset;
     }
@@ -43,7 +43,7 @@ public class EasterRelatedEventBean extends AbstractEventBean {
         this.offset = offset;
         firePropertyChange(OFFSET_PROPERTY, old, this.offset);
     }
-
+    
     @Override
     protected ISpecialDay toSpecialDay() {
         return new EasterRelatedDay(offset, weight);
