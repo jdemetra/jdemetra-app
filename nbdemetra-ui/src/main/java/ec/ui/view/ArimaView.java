@@ -11,6 +11,7 @@ import ec.tss.html.implementation.HtmlArima;
 import ec.tss.html.implementation.HtmlSarimaPolynomials;
 import ec.tstoolkit.arima.AutoRegressiveDistance;
 import ec.tstoolkit.arima.IArimaModel;
+import ec.tstoolkit.arima.MovingAverageDistance;
 import ec.tstoolkit.sarima.SarimaModel;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.uihelper.ModelInformationProvider;
@@ -90,6 +91,8 @@ public class ArimaView extends JComponent {
                     stream.newLine();
                     double d=AutoRegressiveDistance.compute(m[0], m[1], 200);
                     stream.write(HtmlTag.HEADER4, "AR-Distance between the two models = " + new Formatter().format("%g4", d)).newLine();
+                    double md=MovingAverageDistance.compute2(m[0], m[1], 200);
+                    stream.write(HtmlTag.HEADER4, "MA-Distance between the two models = " + new Formatter().format("%g4", md)).newLine();
                 
             }
         }
