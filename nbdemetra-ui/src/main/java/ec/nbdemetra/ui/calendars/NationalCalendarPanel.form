@@ -140,7 +140,7 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="julianCB">
       <Properties>
-        <Property name="label" type="java.lang.String" value="Julian Calendar"/>
+        <Property name="text" type="java.lang.String" value="Julian Easter"/>
       </Properties>
     </Component>
   </SubComponents>

@@ -17,6 +17,7 @@ import ec.tstoolkit.timeseries.calendars.EasterRelatedDay;
 import ec.tstoolkit.timeseries.calendars.FixedDay;
 import ec.tstoolkit.timeseries.calendars.FixedWeekDay;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
+import ec.tstoolkit.timeseries.calendars.ISpecialDay;
 import ec.tstoolkit.timeseries.calendars.SpecialCalendarDay;
 import ec.tstoolkit.timeseries.calendars.SpecialDayEvent;
 import java.awt.event.ActionEvent;
@@ -56,12 +57,12 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
     public static final String CALENDAR_NAME_PROPERTY = "calendarName";
     public static final String MEAN_CORRECTION_PROPERTY = "meanCorrection";
     public static final String SPECIAL_DAY_EVENTS_PROPERTY = "specialDayEvents";
-    public static final String JULIAN_CALENDAR_PROPERTY = "julianCalendar";
+    public static final String JULIAN_EASTER_PROPERTY = "julianEaster";
     // PROPERTIES
     protected final JProperty<String> calendarName;
     protected final JProperty<ImmutableList<SpecialDayEvent>> specialDayEvents;
     protected final JProperty<Boolean> meanCorrection;
-    protected final JProperty<Boolean> julianCalendar;
+    protected final JProperty<Boolean> julianEaster;
     // OTHER
     final ExplorerManager em;
     final ListOfSpecialDayEvent childFactory;
@@ -78,7 +79,7 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
         this.calendarName = newProperty(CALENDAR_NAME_PROPERTY, JProperty.nullTo(""), null);
         this.specialDayEvents = newProperty(SPECIAL_DAY_EVENTS_PROPERTY, JProperty.nullTo(ImmutableList.<SpecialDayEvent>of()), null);
         this.meanCorrection = newProperty(MEAN_CORRECTION_PROPERTY, true);
-        this.julianCalendar = newProperty(JULIAN_CALENDAR_PROPERTY, false);
+        this.julianEaster = newProperty(JULIAN_EASTER_PROPERTY, false);
 
         this.em = new ExplorerManager();
         this.childFactory = new ListOfSpecialDayEvent();
@@ -163,12 +164,22 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
                     case NationalCalendarPanel.MEAN_CORRECTION_PROPERTY:
                         onMeanChange();
                         break;
-                    case NationalCalendarPanel.JULIAN_CALENDAR_PROPERTY:
+                    case NationalCalendarPanel.JULIAN_EASTER_PROPERTY:
                         onJulianChange();
                         break;
                 }
             }
         });
+    }
+
+    private void updateFromBeans() {
+        ImmutableList.Builder<SpecialDayEvent> tmp = ImmutableList.builder();
+        ISpecialDay.Context context = new ISpecialDay.Context(meanCB.isSelected(), julianCB.isSelected());
+        for (AbstractEventBean o : this.childFactory.beans) {
+            tmp.add(o.toEvent(context));
+        }
+        setSpecialDayEvents(tmp.build());
+
     }
 
     /**
@@ -225,7 +236,7 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
         meanCB.setSelected(true);
         meanCB.setText("Long term mean correction");
 
-        julianCB.setLabel("Julian Calendar");
+        julianCB.setText("Julian Easter");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
@@ -302,11 +313,11 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
             meanListener.state = ListenerState.READY;
         }
     }
-    
+
     protected void onJulianChange() {
-        if(julianListener.state == ListenerState.READY){
+        if (julianListener.state == ListenerState.READY) {
             julianListener.state = ListenerState.SUSPENDED;
-            julianCB.setSelected(julianCalendar.get());
+            julianCB.setSelected(julianEaster.get());
             julianListener.state = ListenerState.READY;
         }
     }
@@ -350,11 +361,11 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
     }
 
     public boolean isJulianCalendar() {
-        return julianCalendar.get();
+        return julianEaster.get();
     }
 
-    public void setJulianCalendar(boolean julian) {
-        this.julianCalendar.set(julian);
+    public void setJulianEaster(boolean julian) {
+        this.julianEaster.set(julian);
     }
 
     public ImmutableList<SpecialDayEvent> getSpecialDayEvents() {
@@ -384,11 +395,7 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
         void fireDataChange() {
             if (state == ListenerState.READY) {
                 state = ListenerState.SENDING;
-                ImmutableList.Builder<SpecialDayEvent> tmp = ImmutableList.builder();
-                for (AbstractEventBean o : beans) {
-                    tmp.add(o.toEvent());
-                }
-                setSpecialDayEvents(tmp.build());
+                updateFromBeans();
                 state = ListenerState.READY;
             }
         }
@@ -494,7 +501,8 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
         void update() {
             if (state == ListenerState.READY) {
                 state = ListenerState.SENDING;
-                setJulianCalendar(julianCB.isSelected());
+                setJulianEaster(julianCB.isSelected());
+                updateFromBeans();
                 state = ListenerState.READY;
             }
         }
