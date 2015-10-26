@@ -8,6 +8,7 @@ import ec.nbdemetra.ui.awt.ListenableBean;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.ValidityPeriod;
 import ec.tstoolkit.timeseries.calendars.ISpecialDay;
+import ec.tstoolkit.timeseries.calendars.ISpecialDay.Context;
 import ec.tstoolkit.timeseries.calendars.SpecialDayEvent;
 
 /**
@@ -15,7 +16,7 @@ import ec.tstoolkit.timeseries.calendars.SpecialDayEvent;
  * @author Philippe Charles
  */
 public abstract class AbstractEventBean extends ListenableBean {
-
+    
     // PROPERTIES DEFINITIONS
     public static final String START_PROPERTY = "start";
     public static final String END_PROPERTY = "end";
@@ -61,11 +62,11 @@ public abstract class AbstractEventBean extends ListenableBean {
         firePropertyChange(WEIGHT_PROPERTY, old, this.weight);
     }
 
-    public SpecialDayEvent toEvent() {
-        SpecialDayEvent result = new SpecialDayEvent(toSpecialDay());
+    public SpecialDayEvent toEvent(Context context) {
+        SpecialDayEvent result = new SpecialDayEvent(toSpecialDay(context));
         result.setValidityPeriod(start == null && end == null ? null : new ValidityPeriod(start == null ? Day.BEG : start, end == null ? Day.END : end));
         return result;
     }
 
-    abstract protected ISpecialDay toSpecialDay();
+    abstract protected ISpecialDay toSpecialDay(Context context);
 }

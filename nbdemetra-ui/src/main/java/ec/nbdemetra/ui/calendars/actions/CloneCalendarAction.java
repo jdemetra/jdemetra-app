@@ -71,11 +71,13 @@ public final class CloneCalendarAction extends SingleNodeAction<ItemWsNode> {
         NationalCalendarPanel panel = new NationalCalendarPanel();
         panel.setSpecialDayEvents(ImmutableList.copyOf(p.events()));
         panel.setMeanCorrection(p.isLongTermMeanCorrection());
+        panel.setJulianEaster(p.isJulianEaster());
 
         DialogDescriptor dd = panel.createDialogDescriptor(Bundle.cloneNationalCalendar_dialog_title());
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
-            NationalCalendarProvider newObject = new NationalCalendarProvider(panel.getSpecialDayEvents());
-            newObject.setLongTermMeanCorrection(panel.isMeanCorrection());
+            boolean mean=panel.isMeanCorrection();
+            boolean julian=panel.isJulianCalendar();
+            NationalCalendarProvider newObject = new NationalCalendarProvider(panel.getSpecialDayEvents(), mean, julian);
             AddCalendarAction.add(manager, panel.getCalendarName(), newObject);
         }
     }
