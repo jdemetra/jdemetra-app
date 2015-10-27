@@ -41,7 +41,7 @@ public class JdbcColumnAutoCompletionSource extends JdbcAutoCompletionSource<Jdb
     protected Iterable<JdbcColumn> getAllValues(Connection c) throws SQLException, IOException {
         SqlIdentifierQuoter quoter = SqlIdentifierQuoter.create(c.getMetaData());
         try (Statement st = c.createStatement()) {
-            try (ResultSet rs = st.executeQuery("select * from " + quoter.quote(bean.getTableName(), false))) {
+            try (ResultSet rs = st.executeQuery("select * from " + quoter.quote(bean.getTableName(), false) + " where 1 = 0")) {
                 return JdbcColumn.ofAll(rs.getMetaData());
             }
         }
