@@ -9,7 +9,7 @@ import javax.swing.Icon;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class AbstractWorkspaceItemManager<D> implements IWorkspaceItemManager<D> {
 

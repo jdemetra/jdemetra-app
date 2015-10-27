@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class TramoSpecUI extends BaseTramoSpecUI implements IObjectDescriptor<TramoSpecification> {
 

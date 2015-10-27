@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class ListSelectionDialog<T> extends JDialog {
 

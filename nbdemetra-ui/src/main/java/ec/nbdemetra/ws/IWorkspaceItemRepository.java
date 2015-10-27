@@ -6,7 +6,7 @@ package ec.nbdemetra.ws;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public interface IWorkspaceItemRepository<D> {
     

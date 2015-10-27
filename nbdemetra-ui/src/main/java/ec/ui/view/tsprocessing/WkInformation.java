@@ -11,7 +11,7 @@ import ec.tstoolkit.ucarima.WienerKolmogorovEstimators;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class WkInformation {
     public WienerKolmogorovEstimators estimators;

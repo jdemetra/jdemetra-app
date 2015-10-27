@@ -9,7 +9,7 @@ import java.util.Collection;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public interface IWorkspaceRepository {
     

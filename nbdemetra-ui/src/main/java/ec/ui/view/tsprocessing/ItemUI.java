@@ -11,7 +11,7 @@ import javax.swing.JMenu;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public interface ItemUI<H, I> {
 

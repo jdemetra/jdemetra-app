@@ -14,7 +14,7 @@ import org.openide.nodes.Sheet;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class ExcelNode extends AbstractOutputNode<SpreadsheetOutputConfiguration> {
 

@@ -13,7 +13,7 @@ import java.io.IOException;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class DirectIndirectSummary extends AbstractHtmlElement {
 

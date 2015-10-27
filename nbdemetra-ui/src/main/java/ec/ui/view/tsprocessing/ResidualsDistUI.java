@@ -10,7 +10,7 @@ import javax.swing.JComponent;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class ResidualsDistUI<V extends IProcDocumentView<?>> extends DefaultItemUI<V, TsData> {
 

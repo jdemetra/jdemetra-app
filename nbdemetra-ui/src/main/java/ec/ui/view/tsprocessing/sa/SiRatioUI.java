@@ -11,7 +11,7 @@ import ec.ui.view.tsprocessing.PooledItemUI;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class SiRatioUI<V extends IProcDocumentView<?>> extends PooledItemUI<V, TsData[], SIView> {
 

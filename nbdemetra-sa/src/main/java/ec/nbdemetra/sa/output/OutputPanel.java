@@ -25,7 +25,7 @@ import org.openide.nodes.Node;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class OutputPanel extends javax.swing.JPanel implements ExplorerManager.Provider {
 

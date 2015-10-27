@@ -19,7 +19,7 @@ import java.util.Date;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 class TsCollectionAnalyser {
 

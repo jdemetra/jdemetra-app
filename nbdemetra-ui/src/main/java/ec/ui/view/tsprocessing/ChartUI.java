@@ -15,7 +15,7 @@ import javax.swing.JComponent;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class ChartUI<D extends IProcDocument<?, ?, ?>> extends DefaultItemUI<IProcDocumentView<D>, IProcResults> {
 

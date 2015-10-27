@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class SequenceDescriptor implements IObjectDescriptor<Sequence> {
     

@@ -18,7 +18,7 @@ import javax.swing.JComponent;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class SaTableUI <D extends TsDocument<?,?> >extends DefaultItemUI<IProcDocumentView<D>, IProcResults> {
 

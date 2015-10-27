@@ -48,7 +48,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13Document> {
 

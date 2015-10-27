@@ -6,7 +6,7 @@ package ec.nbdemetra.sa.advanced.ui;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class GeneralizedAirlineModelView {// extends SeasonalAdjustmentView {
 //

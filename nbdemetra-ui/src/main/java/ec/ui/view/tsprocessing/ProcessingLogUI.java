@@ -11,7 +11,7 @@ import ec.tstoolkit.algorithm.IProcResults;
 
 /**
  *
- * @author PCUser
+ * @author Jean Palate
  * @param <V>
  */
 public class ProcessingLogUI<V extends IProcDocumentView<?>> extends HtmlItemUI<V, IProcResults> {

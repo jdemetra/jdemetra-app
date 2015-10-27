@@ -59,7 +59,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpecification, TramoSeatsDocument> {
 

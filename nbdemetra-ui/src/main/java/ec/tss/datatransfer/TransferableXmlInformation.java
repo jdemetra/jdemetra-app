@@ -21,7 +21,7 @@ import javax.xml.bind.Unmarshaller;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class TransferableXmlInformation<T extends InformationSetSerializable> implements Transferable {
 

@@ -18,7 +18,7 @@ import ec.ui.view.tsprocessing.IProcDocumentView;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class ModelBasedUI< V extends IProcDocumentView<?>> extends HtmlItemUI<V, ModelBasedUI.Information> {
 

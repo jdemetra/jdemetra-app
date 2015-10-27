@@ -33,7 +33,7 @@ import javax.swing.JComponent;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class PreprocessingViewFactory<S extends IProcSpecification, D extends TsDocument<S, PreprocessingModel>> extends ProcDocumentViewFactory<D> {
 

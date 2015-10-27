@@ -7,7 +7,7 @@ package ec.tstoolkit.uihelper;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public interface IContinuousInformationProvider {
 
