@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2015 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ui.star;
 
@@ -14,10 +26,14 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "File", id = "ec.nbdemetra.ui.star.StarAction")
-@ActionRegistration(lazy = false, displayName = "NOT-USED")
+@ActionRegistration(lazy = false, displayName = "#starAction.add")
 @ActionReferences({
     @ActionReference(path = "Menu/File", position = 800, separatorBefore = 799),
     @ActionReference(path = DataSourceNode.ACTION_PATH, position = 1210, separatorBefore = 1200)
+})
+@Messages({
+    "starAction.add=Add star",
+    "starAction.remove=Remove star"
 })
 public final class StarAction extends SingleNodeAction<DataSourceNode> {
 
@@ -25,24 +41,25 @@ public final class StarAction extends SingleNodeAction<DataSourceNode> {
         super(DataSourceNode.class);
     }
 
-    @Messages({
-        "starAction.add=Add star",
-        "starAction.remove=Remove star"
-    })
     @Override
     protected boolean enable(DataSourceNode activatedNode) {
-        putValue(NAME, StarList.getInstance().isStarred(activatedNode.getLookup().lookup(DataSource.class)) ? Bundle.starAction_remove() : Bundle.starAction_add());
-        activatedNode.refreshAnnotation();
+        updateDisplayName(activatedNode);
         return true;
     }
 
     @Override
     protected void performAction(DataSourceNode activatedNode) {
         StarList.getInstance().toggle(activatedNode.getLookup().lookup(DataSource.class));
+        updateDisplayName(activatedNode);
     }
 
     @Override
     public String getName() {
-        return StarAction.class.getName();
+        return Bundle.starAction_add();
+    }
+
+    private void updateDisplayName(DataSourceNode activatedNode) {
+        putValue(NAME, StarList.getInstance().isStarred(activatedNode.getLookup().lookup(DataSource.class)) ? Bundle.starAction_remove() : Bundle.starAction_add());
+        activatedNode.refreshAnnotation();
     }
 }
