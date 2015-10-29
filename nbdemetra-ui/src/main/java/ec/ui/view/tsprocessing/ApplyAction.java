@@ -9,7 +9,7 @@ import javax.swing.AbstractAction;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  * @deprecated use {@link AbstractAction} instead
  */
 @Deprecated

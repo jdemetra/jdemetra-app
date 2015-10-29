@@ -11,7 +11,7 @@ import javax.swing.JComponent;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class ResidualsUI<V extends IProcDocumentView<?>> extends DefaultItemUI<V, TsData>{
 

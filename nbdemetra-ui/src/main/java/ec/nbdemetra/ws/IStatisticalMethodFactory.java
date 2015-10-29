@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public interface IStatisticalMethodFactory {
     

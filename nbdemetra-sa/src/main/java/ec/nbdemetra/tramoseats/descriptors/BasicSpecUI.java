@@ -16,7 +16,7 @@ import org.openide.util.NbBundle.Messages;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class BasicSpecUI extends BaseTramoSpecUI {
 

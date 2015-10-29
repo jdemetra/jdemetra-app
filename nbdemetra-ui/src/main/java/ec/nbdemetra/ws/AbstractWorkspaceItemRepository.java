@@ -6,7 +6,7 @@ package ec.nbdemetra.ws;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class AbstractWorkspaceItemRepository<D> implements IWorkspaceItemRepository<D> {
 

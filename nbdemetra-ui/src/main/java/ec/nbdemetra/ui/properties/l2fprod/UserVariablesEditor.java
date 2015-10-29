@@ -15,7 +15,7 @@ import javax.swing.SwingUtilities;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class UserVariablesEditor extends AbstractPropertyEditor{
      private String[] vars_;

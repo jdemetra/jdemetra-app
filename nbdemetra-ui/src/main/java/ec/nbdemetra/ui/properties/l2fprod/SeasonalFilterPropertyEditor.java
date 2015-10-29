@@ -30,7 +30,7 @@ import javax.swing.table.TableCellEditor;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class SeasonalFilterPropertyEditor extends AbstractPropertyEditor {
 

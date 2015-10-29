@@ -7,7 +7,7 @@ package ec.tstoolkit.uihelper;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class DiscreteDisplayDomain {
     public DiscreteDisplayDomain(int beg, int end)

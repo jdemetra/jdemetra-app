@@ -31,7 +31,7 @@ import org.openide.windows.WindowManager;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 @ConvertAsProperties(dtd = "-//ec.nbdemetra.ws.ui//Workspace//EN",
         autostore = false)

@@ -14,7 +14,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecification, TramoDocument> {
 

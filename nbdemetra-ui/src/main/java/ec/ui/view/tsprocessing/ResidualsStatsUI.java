@@ -10,7 +10,7 @@ import ec.tstoolkit.stats.NiidTests;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class ResidualsStatsUI<V extends IProcDocumentView<?>> extends HtmlItemUI<V, NiidTests> {
 

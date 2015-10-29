@@ -9,7 +9,7 @@ import org.openide.nodes.Node;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public interface IActiveView {
     String getName();

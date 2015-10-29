@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public interface IProcDocumentViewFactory<D extends IProcDocument> {
 

@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  * @param <D>
  * @param <I>
  */

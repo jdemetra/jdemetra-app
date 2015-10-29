@@ -16,7 +16,7 @@ import javax.swing.JComponent;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public interface IProcDocumentView<D extends IProcDocument> extends IDisposable {
 

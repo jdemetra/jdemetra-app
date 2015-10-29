@@ -41,7 +41,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 @ServiceProvider(service = IWorkspaceRepository.class,
         position = 10)

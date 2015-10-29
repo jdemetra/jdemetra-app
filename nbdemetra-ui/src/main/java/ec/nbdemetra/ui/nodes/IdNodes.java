@@ -23,7 +23,7 @@ import org.openide.util.lookup.Lookups;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public final class IdNodes {
 

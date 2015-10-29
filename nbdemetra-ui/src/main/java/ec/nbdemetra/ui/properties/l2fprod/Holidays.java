@@ -8,7 +8,7 @@ import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class Holidays {
 

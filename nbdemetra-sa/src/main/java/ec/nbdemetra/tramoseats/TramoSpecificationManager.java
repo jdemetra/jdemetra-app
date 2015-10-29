@@ -24,7 +24,7 @@ import org.openide.windows.WindowManager;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 @ServiceProvider(service = IWorkspaceItemManager.class,
         position = 10)

@@ -17,7 +17,7 @@ import ec.tstoolkit.ucarima.WienerKolmogorovPreliminaryEstimatorProperties;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class WienerKolmogorovUcarimaEstimators
         implements IContinuousInformationProvider, IDiscreteInformationProvider {

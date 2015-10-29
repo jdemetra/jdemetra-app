@@ -11,7 +11,7 @@ import java.awt.Component;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class HolidaysSelector extends ComboBoxPropertyEditor {
 

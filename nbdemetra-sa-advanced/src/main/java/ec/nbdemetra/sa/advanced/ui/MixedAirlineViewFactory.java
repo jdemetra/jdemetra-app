@@ -35,7 +35,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class MixedAirlineViewFactory extends SaDocumentViewFactory<MixedAirlineSpecification, MixedAirlineDocument> {
 

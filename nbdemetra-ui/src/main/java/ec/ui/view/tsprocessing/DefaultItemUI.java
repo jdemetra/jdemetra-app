@@ -9,7 +9,7 @@ import javax.swing.JMenu;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class DefaultItemUI<H, I> implements ItemUI<H, I> {
 

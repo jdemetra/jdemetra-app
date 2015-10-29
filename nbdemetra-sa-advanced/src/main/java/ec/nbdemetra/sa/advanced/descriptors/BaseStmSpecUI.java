@@ -10,7 +10,7 @@ import ec.tstoolkit.descriptors.IPropertyDescriptors;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class BaseStmSpecUI implements IPropertyDescriptors {
 

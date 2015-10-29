@@ -13,7 +13,7 @@ import javax.swing.Action;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class AbstractWorkspaceTsItemManager<S extends IProcSpecification, D extends TsDocument<S,?>> extends AbstractWorkspaceItemManager<D>{
 

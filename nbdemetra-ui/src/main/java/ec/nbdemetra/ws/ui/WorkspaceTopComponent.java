@@ -24,7 +24,7 @@ import org.openide.windows.TopComponent;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class WorkspaceTopComponent<T> extends TopComponent implements ExplorerManager.Provider, IActiveView, LookupListener {
 

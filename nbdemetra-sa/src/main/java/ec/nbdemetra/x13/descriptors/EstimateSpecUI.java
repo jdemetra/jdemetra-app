@@ -16,7 +16,7 @@ import org.openide.util.NbBundle.Messages;
 
 /**
  *
- * @author pcuser & BAYENSK
+ * @author Jean Palate & BAYENSK
  */
 public class EstimateSpecUI extends BaseRegArimaSpecUI {
 

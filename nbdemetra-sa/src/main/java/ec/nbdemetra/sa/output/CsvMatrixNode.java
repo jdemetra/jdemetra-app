@@ -13,7 +13,7 @@ import org.openide.nodes.Sheet;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class CsvMatrixNode extends AbstractOutputNode<CsvMatrixOutputConfiguration> {
 

@@ -13,7 +13,7 @@ import org.openide.util.lookup.Lookups;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class AbstractOutputNode<T> extends AbstractNode {
 

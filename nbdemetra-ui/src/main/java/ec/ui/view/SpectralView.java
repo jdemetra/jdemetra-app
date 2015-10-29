@@ -13,7 +13,7 @@ import javax.swing.JSplitPane;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class SpectralView extends JComponent implements IDisposable {
 

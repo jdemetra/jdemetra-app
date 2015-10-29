@@ -19,7 +19,7 @@ import org.openide.util.NbBundle.Messages;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class RegressionSpecUI extends BaseTramoSpecUI {
 
