@@ -20,17 +20,28 @@ import ec.nbdemetra.ui.NbComponents;
 import ec.tstoolkit.utilities.StackTracePrinter;
 import static ec.util.chart.ColorSchemeSupport.toHex;
 import ec.util.chart.impl.TangoColorScheme;
+import ec.util.desktop.Desktop;
+import ec.util.desktop.DesktopManager;
+import ec.util.various.swing.JCommand;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
+import javax.swing.JMenu;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 import org.openide.DialogDescriptor;
 import static org.openide.DialogDescriptor.DEFAULT_ALIGN;
 import static org.openide.NotifyDescriptor.DEFAULT_OPTION;
 import static org.openide.NotifyDescriptor.OK_OPTION;
+import org.openide.util.Exceptions;
+import org.openide.util.Utilities;
 
 /**
  *
@@ -58,6 +69,23 @@ public class ExceptionPanel extends JComponent implements IDialogDescriptorProvi
         editorPane.setEditorKit(editor);
         editorPane.setCaretPosition(0);
         editorPane.setEditable(false);
+        editorPane.addHyperlinkListener(new HyperlinkListener() {
+            @Override
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                    Desktop desktop = DesktopManager.get();
+                    if (desktop.isSupported(Desktop.Action.SHOW_IN_FOLDER)) {
+                        try {
+                            File file = Utilities.toFile(e.getURL().toURI());
+                            DesktopManager.get().showInFolder(file);
+                        } catch (URISyntaxException | IOException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                    }
+                }
+            }
+        });
+        editorPane.setComponentPopupMenu(createMenu().getPopupMenu());
 
         setLayout(new BorderLayout());
         add(NbComponents.newJScrollPane(editorPane), BorderLayout.CENTER);
@@ -100,6 +128,7 @@ public class ExceptionPanel extends JComponent implements IDialogDescriptorProvi
         ss.addRule("body { font-family: Courier; font-size : 10px monaco;}");
         ss.addRule(createColorRule(StackTracePrinter.NAME_CSS, TangoColorScheme.DARK_SKY_BLUE));
         ss.addRule(createColorRule(StackTracePrinter.MESSAGE_CSS, TangoColorScheme.CHOCOLATE));
+        ss.addRule("a.message { text-decoration: underline; color: " + toHex(TangoColorScheme.CHOCOLATE) + "; }");
         ss.addRule(createColorRule(StackTracePrinter.KEYWORD_CSS, TangoColorScheme.ALUMINIUM6));
         ss.addRule(createColorRule(StackTracePrinter.ELEMENT_NAME_CSS, TangoColorScheme.ALUMINIUM5));
         ss.addRule(createColorRule(StackTracePrinter.ELEMENT_SOURCE_CSS, TangoColorScheme.DARK_BUTTER));
@@ -108,6 +137,28 @@ public class ExceptionPanel extends JComponent implements IDialogDescriptorProvi
 
     private static String createColorRule(String className, int color) {
         return "." + className + " {color: " + toHex(color) + ";}";
+    }
+
+    private JMenu createMenu() {
+        JMenu result = new JMenu();
+        result.add(CopyCmd.INSTANCE.toAction(editorPane)).setText("Copy");
+        return result;
+    }
+
+    private static final class CopyCmd extends JCommand<JEditorPane> {
+
+        private static final CopyCmd INSTANCE = new CopyCmd();
+
+        @Override
+        public void execute(JEditorPane c) throws Exception {
+            if (c.getSelectedText() != null) {
+                c.copy();
+            } else {
+                c.selectAll();
+                c.copy();
+                c.select(0, 0);
+            }
+        }
     }
 
     @Override

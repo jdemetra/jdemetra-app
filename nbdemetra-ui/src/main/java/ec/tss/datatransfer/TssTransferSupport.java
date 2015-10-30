@@ -38,6 +38,8 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.openide.util.Lookup;
+import org.openide.util.datatransfer.ExTransferable;
+import org.openide.util.datatransfer.MultiTransferObject;
 import org.openide.util.lookup.ServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +130,8 @@ public class TssTransferSupport extends ListenableBean {
     }
 
     public boolean canImport(@Nonnull DataFlavor... dataFlavors) {
-        return all().anyMatch(onDataFlavors(dataFlavors));
+        // multiFlavor means "maybe", not "yes"
+        return isMultiFlavor(dataFlavors) || all().anyMatch(onDataFlavors(dataFlavors));
     }
 
     /**
@@ -241,18 +244,35 @@ public class TssTransferSupport extends ListenableBean {
     @Nullable
     public TsCollection toTsCollection(@Nonnull Transferable transferable) {
         Preconditions.checkNotNull(transferable);
-        for (TssTransferHandler o : all().filter(onDataFlavors(transferable.getTransferDataFlavors()))) {
+        if (isMultiFlavor(transferable.getTransferDataFlavors())) {
             try {
-                Object transferData = transferable.getTransferData(o.getDataFlavor());
-                if (o.canImportTsCollection(transferData)) {
-                    LOGGER.debug("Getting collection using '{}'", o.getName());
-                    return o.importTsCollection(transferData);
+                MultiTransferObject multi = (MultiTransferObject) transferable.getTransferData(ExTransferable.multiFlavor);
+                TsCollection result = TsFactory.instance.createTsCollection();
+                for (int i = 0; i < multi.getCount(); i++) {
+                    TsCollection item = toTsCollection(multi.getTransferableAt(i));
+                    if (item != null) {
+                        result.append(item);
+                    }
                 }
+                return result;
             } catch (UnsupportedFlavorException | IOException ex) {
-                LOGGER.error("While getting collection using '" + o.getName() + "'", ex);
+                LOGGER.error("While getting multiFlavor", ex);
             }
+            return null;
+        } else {
+            for (TssTransferHandler o : all().filter(onDataFlavors(transferable.getTransferDataFlavors()))) {
+                try {
+                    Object transferData = transferable.getTransferData(o.getDataFlavor());
+                    if (o.canImportTsCollection(transferData)) {
+                        LOGGER.debug("Getting collection using '{}'", o.getName());
+                        return o.importTsCollection(transferData);
+                    }
+                } catch (UnsupportedFlavorException | IOException ex) {
+                    LOGGER.error("While getting collection using '" + o.getName() + "'", ex);
+                }
+            }
+            return null;
         }
-        return null;
     }
 
     /**
@@ -299,6 +319,10 @@ public class TssTransferSupport extends ListenableBean {
             }
         }
         return null;
+    }
+
+    public static boolean isMultiFlavor(DataFlavor[] dataFlavors) {
+        return dataFlavors.length == 1 && dataFlavors[0] == ExTransferable.multiFlavor;
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">

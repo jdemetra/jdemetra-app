@@ -55,12 +55,15 @@ import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -75,6 +78,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
+import org.openide.util.datatransfer.ExTransferable;
+import org.openide.util.datatransfer.MultiTransferObject;
 
 public abstract class ATsCollectionView extends ATsControl implements ITsCollectionView {
 
@@ -557,26 +562,41 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     public class TsCollectionTransferHandler extends TransferHandler {
 
         @Nullable
-        private TsCollection peekCollection(TransferSupport support) {
-            TssTransferHandler localObjectHandler = Lookup.getDefault().lookup(LocalObjectTssTransferHandler.class);
-            if (localObjectHandler != null) {
-                DataFlavor dataFlavor = localObjectHandler.getDataFlavor();
-                if (support.isDataFlavorSupported(dataFlavor)) {
-                    try {
-                        Object data = support.getTransferable().getTransferData(dataFlavor);
-                        if (localObjectHandler.canImportTsCollection(data)) {
-                            return localObjectHandler.importTsCollection(data);
+        private List<Ts> peekCollection(@Nonnull Transferable transferable) {
+            if (TssTransferSupport.isMultiFlavor(transferable.getTransferDataFlavors())) {
+                try {
+                    MultiTransferObject multi = (MultiTransferObject) transferable.getTransferData(ExTransferable.multiFlavor);
+                    List<Ts> result = new ArrayList<>();
+                    for (int i = 0; i < multi.getCount(); i++) {
+                        List<Ts> item = peekCollection(multi.getTransferableAt(i));
+                        if (item != null) {
+                            result.addAll(item);
                         }
-                    } catch (UnsupportedFlavorException | IOException ex) {
                     }
-                    return null;
+                    return result;
+                } catch (UnsupportedFlavorException | IOException ex) {
                 }
+                return null;
+            } else {
+                TssTransferHandler handler = Lookup.getDefault().lookup(LocalObjectTssTransferHandler.class);
+                if (handler != null) {
+                    DataFlavor dataFlavor = handler.getDataFlavor();
+                    if (transferable.isDataFlavorSupported(dataFlavor)) {
+                        try {
+                            Object data = transferable.getTransferData(dataFlavor);
+                            if (handler.canImportTsCollection(data)) {
+                                return Lists.newArrayList(handler.importTsCollection(data));
+                            }
+                        } catch (UnsupportedFlavorException | IOException ex) {
+                        }
+                    }
+                }
+                return null;
             }
-            return null;
         }
 
         private boolean mayChangeContent(TransferSupport support) {
-            TsCollection newContent = peekCollection(support);
+            List<Ts> newContent = peekCollection(support.getTransferable());
             if (newContent != null) {
                 for (Ts o : newContent) {
                     if (!collection.contains(o)) {

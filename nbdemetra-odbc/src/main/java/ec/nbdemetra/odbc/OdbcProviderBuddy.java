@@ -17,6 +17,8 @@
 package ec.nbdemetra.odbc;
 
 import com.google.common.base.Preconditions;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import ec.nbdemetra.jdbc.JdbcProviderBuddy;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
@@ -32,6 +34,7 @@ import ec.util.completion.ext.QuickAutoCompletionSource;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 import javax.swing.ListCellRenderer;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
@@ -103,6 +106,8 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
 
     private static class DbSource extends QuickAutoCompletionSource<OdbcDataSource> {
 
+        private final Cache<String, Iterable<OdbcDataSource>> cache = CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
+
         @Override
         public Behavior getBehavior(String term) {
             return Behavior.ASYNC;
@@ -115,10 +120,15 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
 
         @Override
         protected Iterable<OdbcDataSource> getAllValues() throws Exception {
-            IOdbcRegistry odbcRegistry = Lookup.getDefault().lookup(IOdbcRegistry.class);
-            return odbcRegistry != null
-                    ? odbcRegistry.getDataSources(OdbcDataSource.Type.SYSTEM, OdbcDataSource.Type.USER)
-                    : Collections.<OdbcDataSource>emptyList();
+            Iterable<OdbcDataSource> result = cache.getIfPresent("");
+            if (result == null) {
+                IOdbcRegistry odbcRegistry = Lookup.getDefault().lookup(IOdbcRegistry.class);
+                result = odbcRegistry != null
+                        ? odbcRegistry.getDataSources(OdbcDataSource.Type.SYSTEM, OdbcDataSource.Type.USER)
+                        : Collections.<OdbcDataSource>emptyList();
+                cache.put("", result);
+            }
+            return result;
         }
 
         @Override
