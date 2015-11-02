@@ -10,8 +10,9 @@ import java.util.List;
  * source by overriding a few methods.
  *
  * @author Philippe Charles
+ * @param <T>
  */
-public abstract class AbstractAutoCompletionSource<T> implements AutoCompletionSource, Comparator<T> {
+public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionSource implements Comparator<T> {
 
     //<editor-fold defaultstate="collapsed" desc="AutoCompletionSource">
     @Override
@@ -26,18 +27,12 @@ public abstract class AbstractAutoCompletionSource<T> implements AutoCompletionS
 
     @Override
     public List<?> getValues(String term) throws Exception {
-        TermMatcher termFilter = createTermMatcher(term);
-        List<T> result = new ArrayList<>();
-        for (T value : getAllValues()) {
-            if (matches(termFilter, value)) {
-                result.add(value);
-                if (result.size() >= getLimitSize()) {
-                    break;
-                }
-            }
-        }
-        Collections.sort(result, this);
-        return result;
+        return getValues(term, getAllValues());
+    }
+
+    @Override
+    public Request getRequest(String term) {
+        return wrap(this, term);
     }
     //</editor-fold>
 
@@ -117,6 +112,40 @@ public abstract class AbstractAutoCompletionSource<T> implements AutoCompletionS
     @Override
     public int compare(T left, T right) {
         return getValueAsString(left).compareTo(getValueAsString(right));
+    }
+
+    protected List<?> getValues(String term, Iterable<T> allValues) {
+        TermMatcher termFilter = createTermMatcher(term);
+        List<T> result = new ArrayList<>();
+        for (T value : allValues) {
+            if (matches(termFilter, value)) {
+                result.add(value);
+                if (result.size() >= getLimitSize()) {
+                    break;
+                }
+            }
+        }
+        Collections.sort(result, this);
+        return result;
+    }
+
+    protected Request createCachedRequest(final String term, final Iterable<T> allValues) {
+        return new Request() {
+            @Override
+            public String getTerm() {
+                return term;
+            }
+
+            @Override
+            public Behavior getBehavior() {
+                return Behavior.SYNC;
+            }
+
+            @Override
+            public List<?> call() throws Exception {
+                return getValues(term, allValues);
+            }
+        };
     }
 
     protected TermMatcher createTermMatcher(final String term) {

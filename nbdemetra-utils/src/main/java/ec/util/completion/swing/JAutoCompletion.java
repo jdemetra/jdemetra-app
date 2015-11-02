@@ -1,7 +1,24 @@
+/*
+ * Copyright 2015 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
+ */
 package ec.util.completion.swing;
 
 import ec.util.completion.AbstractAutoCompletion;
-import ec.util.completion.AutoCompletionSource;
+import ec.util.completion.ExtAutoCompletionSource;
+import ec.util.completion.ExtAutoCompletionSource.Request;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
@@ -121,27 +138,36 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
     }
 
     @Override
-    public void search(final String term) {
+    public void search(String term) {
         if (!enabled || term.length() < minLength) {
             close();
             return;
         }
-        switch (source.getBehavior(term)) {
+        search(getRequest(term));
+    }
+
+    private Request getRequest(String term) {
+        return source instanceof ExtAutoCompletionSource
+                ? ((ExtAutoCompletionSource) source).getRequest(term)
+                : ExtAutoCompletionSource.wrap(source, term);
+    }
+
+    private void search(final ExtAutoCompletionSource.Request request) {
+        switch (request.getBehavior()) {
             case ASYNC:
                 new SwingWorker<List<?>, String>() {
                     final long id = ++latestId;
-                    final AutoCompletionSource x = source;
 
                     @Override
                     protected List<?> doInBackground() throws Exception {
                         publish("STARTED");
-                        return x.getValues(term);
+                        return request.call();
                     }
 
                     @Override
                     protected void process(List<String> chunks) {
                         // should be called once
-                        searchView.onSearchStarted(term);
+                        searchView.onSearchStarted(request.getTerm());
                     }
 
                     @Override
@@ -150,9 +176,9 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
                             return;
                         }
                         try {
-                            searchView.onSearchDone(term, get());
+                            searchView.onSearchDone(request.getTerm(), get());
                         } catch (InterruptedException | ExecutionException ex) {
-                            searchView.onSearchFailed(term, ex);
+                            searchView.onSearchFailed(request.getTerm(), ex);
                         }
                     }
                 }.execute();
@@ -162,9 +188,9 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
                     return;
                 }
                 try {
-                    searchView.onSearchDone(term, source.getValues(term));
+                    searchView.onSearchDone(request.getTerm(), request.call());
                 } catch (Exception ex) {
-                    searchView.onSearchFailed(term, ex);
+                    searchView.onSearchFailed(request.getTerm(), ex);
                 }
                 break;
             case NONE:

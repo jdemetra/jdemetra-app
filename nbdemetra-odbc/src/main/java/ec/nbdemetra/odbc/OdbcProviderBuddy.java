@@ -54,7 +54,7 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
 
     public OdbcProviderBuddy() {
         super(TsProviders.lookup(OdbcProvider.class, OdbcProvider.SOURCE).get().getConnectionSupplier());
-        this.dbSource = new DbSource();
+        this.dbSource = new OdbcDsnSource();
         this.dbRenderer = new DbRenderer();
     }
 
@@ -104,13 +104,28 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
         return dbRenderer;
     }
 
-    private static class DbSource extends QuickAutoCompletionSource<OdbcDataSource> {
+    private static final class OdbcDsnSource extends QuickAutoCompletionSource<OdbcDataSource> {
 
         private final Cache<String, Iterable<OdbcDataSource>> cache = CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
 
+        private String getKey() {
+            return "";
+        }
+
+        private boolean isValid() {
+            return true;
+        }
+
+        @Override
+        public Request getRequest(String term) {
+            String key = getKey();
+            Iterable<OdbcDataSource> result = cache.getIfPresent(key);
+            return result != null ? createCachedRequest(term, result) : super.getRequest(term);
+        }
+
         @Override
         public Behavior getBehavior(String term) {
-            return Behavior.ASYNC;
+            return isValid() ? Behavior.ASYNC : Behavior.NONE;
         }
 
         @Override
@@ -120,13 +135,14 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
 
         @Override
         protected Iterable<OdbcDataSource> getAllValues() throws Exception {
-            Iterable<OdbcDataSource> result = cache.getIfPresent("");
+            String key = getKey();
+            Iterable<OdbcDataSource> result = cache.getIfPresent(key);
             if (result == null) {
                 IOdbcRegistry odbcRegistry = Lookup.getDefault().lookup(IOdbcRegistry.class);
                 result = odbcRegistry != null
                         ? odbcRegistry.getDataSources(OdbcDataSource.Type.SYSTEM, OdbcDataSource.Type.USER)
                         : Collections.<OdbcDataSource>emptyList();
-                cache.put("", result);
+                cache.put(key, result);
             }
             return result;
         }

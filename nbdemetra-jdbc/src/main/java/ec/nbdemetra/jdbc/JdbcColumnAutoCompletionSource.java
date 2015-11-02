@@ -43,11 +43,24 @@ public class JdbcColumnAutoCompletionSource extends JdbcAutoCompletionSource<Jdb
         this.cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
     }
 
+    private String getKey() {
+        return bean.getDbName() + "/" + bean.getTableName();
+    }
+
+    private boolean isValid() {
+        return !Strings.isNullOrEmpty(bean.getDbName()) && !Strings.isNullOrEmpty(bean.getTableName());
+    }
+
+    @Override
+    public Request getRequest(String term) {
+        String key = getKey();
+        Iterable<JdbcColumn> result = cache.getIfPresent(key);
+        return result != null ? createCachedRequest(term, result) : super.getRequest(term);
+    }
+
     @Override
     public Behavior getBehavior(String term) {
-        return !Strings.isNullOrEmpty(bean.getDbName()) && !Strings.isNullOrEmpty(bean.getTableName())
-                ? Behavior.ASYNC
-                : Behavior.NONE;
+        return isValid() ? Behavior.ASYNC : Behavior.NONE;
     }
 
     @Override
@@ -57,7 +70,7 @@ public class JdbcColumnAutoCompletionSource extends JdbcAutoCompletionSource<Jdb
 
     @Override
     protected Iterable<JdbcColumn> getAllValues() throws Exception {
-        String key = bean.getDbName() + "/" + bean.getTableName();
+        String key = getKey();
         Iterable<JdbcColumn> result = cache.getIfPresent(key);
         if (result == null) {
             result = super.getAllValues();
