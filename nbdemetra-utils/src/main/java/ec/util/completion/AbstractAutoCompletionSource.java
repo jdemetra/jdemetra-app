@@ -1,9 +1,27 @@
+/*
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
+ */
 package ec.util.completion;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
 
 /**
  * An implementation of AutoCompletionSource that allows to quickly construct a
@@ -43,6 +61,7 @@ public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionS
      * @return
      * @throws Exception
      */
+    @Nonnull
     abstract protected Iterable<T> getAllValues() throws Exception;
 
     /**
@@ -52,7 +71,8 @@ public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionS
      * @param value the value to be formatted
      * @return
      */
-    protected String getValueAsString(T value) {
+    @Nonnull
+    protected String getValueAsString(@Nonnull T value) {
         return value.toString();
     }
 
@@ -63,7 +83,8 @@ public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionS
      * @param input the string to be normalized
      * @return a normalized string
      */
-    protected String getNormalizedString(String input) {
+    @Nonnull
+    protected String getNormalizedString(@Nonnull String input) {
         return AutoCompletionSources.normalize(input);
     }
 
@@ -75,7 +96,7 @@ public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionS
      * @param normalizedInput
      * @return true if the input matches the term
      */
-    protected boolean matches(String normalizedTerm, String normalizedInput) {
+    protected boolean matches(@Nonnull String normalizedTerm, @Nonnull String normalizedInput) {
         return normalizedInput.contains(normalizedTerm);
     }
 
@@ -87,7 +108,7 @@ public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionS
      * @param input
      * @return true if the input matches the term matcher
      */
-    protected boolean matches(TermMatcher termMatcher, T input) {
+    protected boolean matches(@Nonnull TermMatcher termMatcher, @Nonnull T input) {
         return termMatcher.matches(getValueAsString(input));
     }
 
@@ -97,6 +118,7 @@ public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionS
      *
      * @return
      */
+    @Nonnegative
     protected int getLimitSize() {
         return Integer.MAX_VALUE;
     }
@@ -114,7 +136,8 @@ public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionS
         return getValueAsString(left).compareTo(getValueAsString(right));
     }
 
-    protected List<?> getValues(String term, Iterable<T> allValues) {
+    @Nonnull
+    protected List<?> getValues(@Nonnull String term, @Nonnull Iterable<T> allValues) {
         TermMatcher termFilter = createTermMatcher(term);
         List<T> result = new ArrayList<>();
         for (T value : allValues) {
@@ -129,7 +152,8 @@ public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionS
         return result;
     }
 
-    protected Request createCachedRequest(final String term, final Iterable<T> allValues) {
+    @Nonnull
+    protected Request createCachedRequest(@Nonnull final String term, @Nonnull final Iterable<T> allValues) {
         return new Request() {
             @Override
             public String getTerm() {
@@ -148,7 +172,8 @@ public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionS
         };
     }
 
-    protected TermMatcher createTermMatcher(final String term) {
+    @Nonnull
+    protected TermMatcher createTermMatcher(@Nonnull final String term) {
         return new TermMatcher() {
             final String normalizedTerm = getNormalizedString(term);
 
@@ -161,6 +186,6 @@ public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionS
 
     public interface TermMatcher {
 
-        boolean matches(String input);
+        boolean matches(@Nonnull String input);
     }
 }

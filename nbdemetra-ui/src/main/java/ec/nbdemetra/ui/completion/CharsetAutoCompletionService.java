@@ -34,8 +34,8 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = JAutoCompletionService.class, path = JAutoCompletionService.CHARSET_PATH)
 public class CharsetAutoCompletionService extends JAutoCompletionService {
 
-    private final AutoCompletionSource source = new LocaleSource();
-    private final ListCellRenderer renderer = new LocaleRenderer();
+    private final AutoCompletionSource source = new CharsetSource();
+    private final ListCellRenderer renderer = new CharsetRenderer();
 
     @Override
     public JAutoCompletion bind(JTextComponent textComponent) {
@@ -46,7 +46,7 @@ public class CharsetAutoCompletionService extends JAutoCompletionService {
         return result;
     }
 
-    private static class LocaleSource extends QuickAutoCompletionSource<Charset> {
+    private static final class CharsetSource extends QuickAutoCompletionSource<Charset> {
 
 //        final List<Charset> locales = Arrays.asList(Charsets.ISO_8859_1, Charsets.US_ASCII, Charsets.UTF_16, Charsets.UTF_16BE, Charsets.UTF_16LE, Charsets.UTF_8);
         final Collection<Charset> charsets = Charset.availableCharsets().values();
@@ -62,7 +62,7 @@ public class CharsetAutoCompletionService extends JAutoCompletionService {
         }
     }
 
-    private static class LocaleRenderer extends CustomListCellRenderer<Charset> {
+    private static final class CharsetRenderer extends CustomListCellRenderer<Charset> {
 
         @Override
         protected String getValueAsString(Charset value) {

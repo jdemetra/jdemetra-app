@@ -33,6 +33,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -59,17 +60,17 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
     protected static final String INSERT_CURRENT_ACTION = "INSERT_CURRENT";
     protected static final String SELECT_PREV_ACTION = "SELECT_PREV";
     protected static final String SELECT_NEXT_ACTION = "SELECT_NEXT";
-    //
+
     protected final InputView<JTextComponent> inputView;
     protected final SearchView<JList> searchView;
     protected final Timer timer;
     protected long latestId;
 
-    public JAutoCompletion(JTextComponent input) {
+    public JAutoCompletion(@Nonnull JTextComponent input) {
         this(input, new JList());
     }
 
-    public JAutoCompletion(JTextComponent input, JList list) {
+    public JAutoCompletion(@Nonnull JTextComponent input, @Nonnull JList list) {
         this.inputView = new JTextComponentInputView(input);
         this.searchView = new JListSearchView(list);
         this.timer = new Timer(delay, new AbstractAction() {
@@ -125,11 +126,12 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false), SELECT_NEXT_ACTION);
     }
 
-    // GETTERS/SETTERS >
+    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
+    @Nonnull
     public JList getList() {
         return searchView.getComponent();
     }
-    // < GETTERS/SETTERS
+    //</editor-fold>
 
     @Override
     public void close() {
@@ -208,9 +210,9 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
         return searchView;
     }
 
-    private class JTextComponentInputView implements InputView<JTextComponent> {
+    private final class JTextComponentInputView implements InputView<JTextComponent> {
 
-        final JTextComponent input;
+        private final JTextComponent input;
 
         public JTextComponentInputView(JTextComponent input) {
             this.input = input;
@@ -317,13 +319,13 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
         }
     }
 
-    private class JListSearchView implements SearchView<JList> {
+    private final class JListSearchView implements SearchView<JList> {
 
-        final JList list;
-        final CustomListModel model;
-        final JScrollPane scrollPane;
-        final JLabel message;
-        final XPopup popup;
+        private final JList list;
+        private final CustomListModel model;
+        private final JScrollPane scrollPane;
+        private final JLabel message;
+        private final XPopup popup;
 
         JListSearchView(JList view) {
             this.list = view;

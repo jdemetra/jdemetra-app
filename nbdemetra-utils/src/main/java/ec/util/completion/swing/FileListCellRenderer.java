@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.util.completion.swing;
 
@@ -14,6 +26,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
@@ -26,15 +40,15 @@ import javax.swing.Timer;
 @SuppressWarnings("serial")
 public class FileListCellRenderer extends CustomListCellRenderer<File> {
 
-    final Icon defaultIcon;
-    final FailSafeFactory iconFactory;
-    final File[] paths;
+    private final Icon defaultIcon;
+    private final FailSafeFactory iconFactory;
+    private final File[] paths;
 
-    public FileListCellRenderer(ExecutorService executor) {
+    public FileListCellRenderer(@Nonnull ExecutorService executor) {
         this(null, executor, new File[0]);
     }
 
-    public FileListCellRenderer(Icon defaultIcon, ExecutorService executor, File[] paths) {
+    public FileListCellRenderer(@Nullable Icon defaultIcon, @Nonnull ExecutorService executor, @Nonnull File[] paths) {
         super(false);
         this.defaultIcon = defaultIcon;
         FailSafeFactory wellTimed = new WellTimedFactory(executor, 20, TimeUnit.MILLISECONDS);
