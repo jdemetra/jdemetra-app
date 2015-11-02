@@ -463,6 +463,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
         sorter.setComparator(SaProcessingModel.SERIES, SaItemComparer.Name);
         sorter.setComparator(SaProcessingModel.METHOD, SaItemComparer.Method);
+        sorter.setComparator(SaProcessingModel.STATUS, SaItemComparer.Status);
         sorter.setComparator(SaProcessingModel.PRIORITY, SaItemComparer.Priority);
         sorter.setComparator(SaProcessingModel.QUALITY, SaItemComparer.Quality);
         master.setRowSorter(sorter);
@@ -625,6 +626,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(result.getModel());
         sorter.setComparator(SaProcessingModel.SERIES, SaItemComparer.Name);
         sorter.setComparator(SaProcessingModel.METHOD, SaItemComparer.Method);
+        sorter.setComparator(SaProcessingModel.STATUS, SaItemComparer.Status);
         sorter.setComparator(SaProcessingModel.PRIORITY, SaItemComparer.Priority);
         sorter.setComparator(SaProcessingModel.QUALITY, SaItemComparer.Quality);
         result.setRowSorter(sorter);
