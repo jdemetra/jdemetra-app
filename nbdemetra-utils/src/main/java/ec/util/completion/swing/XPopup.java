@@ -1,3 +1,19 @@
+/*
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
+ */
 package ec.util.completion.swing;
 
 import java.awt.Component;
@@ -7,6 +23,8 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
 
@@ -23,7 +41,7 @@ public final class XPopup {
         TOP_TRAILING,
         BOTTOM_TRAILING;
     }
-    //
+
     private Popup popup;
 
     public XPopup() {
@@ -37,7 +55,7 @@ public final class XPopup {
         }
     }
 
-    public void show(Component owner, Component content, Anchor anchor, Dimension gap) {
+    public void show(@Nullable Component owner, @Nonnull Component content, @Nonnull Anchor anchor, @Nonnull Dimension gap) {
         if (owner == null || !owner.isShowing()) {
             return;
         }
@@ -47,6 +65,7 @@ public final class XPopup {
         popup.show();
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Implementation details">
     private static Rectangle getScreenBounds(GraphicsConfiguration gc) {
         Rectangle result = gc.getBounds();
         // Take into account screen insets, decrease viewport
@@ -89,4 +108,5 @@ public final class XPopup {
         }
         return result;
     }
+    //</editor-fold>
 }

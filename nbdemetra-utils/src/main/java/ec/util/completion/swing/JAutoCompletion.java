@@ -1,7 +1,24 @@
+/*
+ * Copyright 2015 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
+ */
 package ec.util.completion.swing;
 
 import ec.util.completion.AbstractAutoCompletion;
-import ec.util.completion.AutoCompletionSource;
+import ec.util.completion.ExtAutoCompletionSource;
+import ec.util.completion.ExtAutoCompletionSource.Request;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
@@ -16,6 +33,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -42,17 +60,17 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
     protected static final String INSERT_CURRENT_ACTION = "INSERT_CURRENT";
     protected static final String SELECT_PREV_ACTION = "SELECT_PREV";
     protected static final String SELECT_NEXT_ACTION = "SELECT_NEXT";
-    //
+
     protected final InputView<JTextComponent> inputView;
     protected final SearchView<JList> searchView;
     protected final Timer timer;
     protected long latestId;
 
-    public JAutoCompletion(JTextComponent input) {
+    public JAutoCompletion(@Nonnull JTextComponent input) {
         this(input, new JList());
     }
 
-    public JAutoCompletion(JTextComponent input, JList list) {
+    public JAutoCompletion(@Nonnull JTextComponent input, @Nonnull JList list) {
         this.inputView = new JTextComponentInputView(input);
         this.searchView = new JListSearchView(list);
         this.timer = new Timer(delay, new AbstractAction() {
@@ -108,11 +126,12 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false), SELECT_NEXT_ACTION);
     }
 
-    // GETTERS/SETTERS >
+    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
+    @Nonnull
     public JList getList() {
         return searchView.getComponent();
     }
-    // < GETTERS/SETTERS
+    //</editor-fold>
 
     @Override
     public void close() {
@@ -121,27 +140,36 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
     }
 
     @Override
-    public void search(final String term) {
+    public void search(String term) {
         if (!enabled || term.length() < minLength) {
             close();
             return;
         }
-        switch (source.getBehavior(term)) {
+        search(getRequest(term));
+    }
+
+    private Request getRequest(String term) {
+        return source instanceof ExtAutoCompletionSource
+                ? ((ExtAutoCompletionSource) source).getRequest(term)
+                : ExtAutoCompletionSource.wrap(source, term);
+    }
+
+    private void search(final ExtAutoCompletionSource.Request request) {
+        switch (request.getBehavior()) {
             case ASYNC:
                 new SwingWorker<List<?>, String>() {
                     final long id = ++latestId;
-                    final AutoCompletionSource x = source;
 
                     @Override
                     protected List<?> doInBackground() throws Exception {
                         publish("STARTED");
-                        return x.getValues(term);
+                        return request.call();
                     }
 
                     @Override
                     protected void process(List<String> chunks) {
                         // should be called once
-                        searchView.onSearchStarted(term);
+                        searchView.onSearchStarted(request.getTerm());
                     }
 
                     @Override
@@ -150,9 +178,9 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
                             return;
                         }
                         try {
-                            searchView.onSearchDone(term, get());
+                            searchView.onSearchDone(request.getTerm(), get());
                         } catch (InterruptedException | ExecutionException ex) {
-                            searchView.onSearchFailed(term, ex);
+                            searchView.onSearchFailed(request.getTerm(), ex);
                         }
                     }
                 }.execute();
@@ -162,9 +190,9 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
                     return;
                 }
                 try {
-                    searchView.onSearchDone(term, source.getValues(term));
+                    searchView.onSearchDone(request.getTerm(), request.call());
                 } catch (Exception ex) {
-                    searchView.onSearchFailed(term, ex);
+                    searchView.onSearchFailed(request.getTerm(), ex);
                 }
                 break;
             case NONE:
@@ -182,9 +210,9 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
         return searchView;
     }
 
-    private class JTextComponentInputView implements InputView<JTextComponent> {
+    private final class JTextComponentInputView implements InputView<JTextComponent> {
 
-        final JTextComponent input;
+        private final JTextComponent input;
 
         public JTextComponentInputView(JTextComponent input) {
             this.input = input;
@@ -291,13 +319,13 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
         }
     }
 
-    private class JListSearchView implements SearchView<JList> {
+    private final class JListSearchView implements SearchView<JList> {
 
-        final JList list;
-        final CustomListModel model;
-        final JScrollPane scrollPane;
-        final JLabel message;
-        final XPopup popup;
+        private final JList list;
+        private final CustomListModel model;
+        private final JScrollPane scrollPane;
+        private final JLabel message;
+        private final XPopup popup;
 
         JListSearchView(JList view) {
             this.list = view;
