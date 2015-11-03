@@ -20,7 +20,6 @@ import com.google.common.base.Predicates;
 import ec.nbdemetra.ui.Jdk6Functions;
 import ec.nbdemetra.ui.actions.AbilityAction;
 import ec.nbdemetra.ui.nodes.Nodes;
-import ec.nbdemetra.ui.tsproviders.DataSourceNode;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.List;
@@ -29,8 +28,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
@@ -44,9 +41,6 @@ import org.openide.util.actions.Presenter;
  */
 @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ExportAction")
 @ActionRegistration(displayName = "#CTL_ExportAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = DataSourceNode.ACTION_PATH, position = 1430, separatorBefore = 1400)
-})
 @Messages("CTL_ExportAction=Export to")
 public final class ExportAction extends AbilityAction<Exportable> implements Presenter.Popup {
 

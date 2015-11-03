@@ -24,6 +24,7 @@ import ec.nbdemetra.ui.IReloadable;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
+import static ec.nbdemetra.ui.tsproviders.DataSourceNode.ACTION_PATH;
 import ec.nbdemetra.ui.tssave.ITsSavable;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -52,6 +53,9 @@ import org.netbeans.api.actions.Closable;
 import org.netbeans.api.actions.Editable;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -68,6 +72,17 @@ import org.openide.util.lookup.ProxyLookup;
  *
  * @author Philippe Charles
  */
+@ActionReferences({
+    @ActionReference(path = ACTION_PATH, position = 1210, separatorBefore = 1200, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.star.StarAction")),
+    @ActionReference(path = ACTION_PATH, position = 1310, separatorBefore = 1300, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.EditSourceAction")),
+    @ActionReference(path = ACTION_PATH, position = 1320, separatorBefore = 1300, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.actions.CloneSourceAction")),
+    @ActionReference(path = ACTION_PATH, position = 1330, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ReloadAction")),
+    @ActionReference(path = ACTION_PATH, position = 1340, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ReloadAction")),
+    @ActionReference(path = ACTION_PATH, position = 1350, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.RenameAction")),
+    @ActionReference(path = ACTION_PATH, position = 1410, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "org.openide.actions.CopyAction")),
+    @ActionReference(path = ACTION_PATH, position = 1415, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction")),
+    @ActionReference(path = ACTION_PATH, position = 1430, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ExportAction"))
+})
 public final class DataSourceNode extends AbstractNode {
 
     public static final String ACTION_PATH = "SourceNode";

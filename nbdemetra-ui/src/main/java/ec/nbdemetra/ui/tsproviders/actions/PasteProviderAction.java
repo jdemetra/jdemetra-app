@@ -13,16 +13,11 @@ import ec.tss.tsproviders.IDataSourceLoader;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.actions.PasteProviderAction")
 @ActionRegistration(displayName = "#CTL_PasteProviderAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = ProviderNode.ACTION_PATH, position = 1420, separatorBefore = 1400)
-})
 @Messages("CTL_PasteProviderAction=Paste")
 public final class PasteProviderAction extends SingleNodeAction<ProviderNode> {
 

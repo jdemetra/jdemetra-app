@@ -17,20 +17,14 @@
 package ec.nbdemetra.ui.tsproviders.actions;
 
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
-import ec.nbdemetra.ui.tsproviders.DataSourceNode;
 import org.netbeans.api.actions.Editable;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.EditSourceAction")
 @ActionRegistration(displayName = "#CTL_EditSourceAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = DataSourceNode.ACTION_PATH, position = 1310, separatorBefore = 1300)
-})
 @Messages("CTL_EditSourceAction=Edit")
 public final class EditSourceAction extends SingleNodeAction<Node> {
 

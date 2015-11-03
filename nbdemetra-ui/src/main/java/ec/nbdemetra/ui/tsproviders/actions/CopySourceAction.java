@@ -17,23 +17,14 @@
 package ec.nbdemetra.ui.tsproviders.actions;
 
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
-import ec.nbdemetra.ui.tsproviders.DataSourceNode;
 import java.awt.Toolkit;
 import java.io.IOException;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
-import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 
 import org.openide.util.NbBundle.Messages;
 
-@ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.actions.CopySourceAction")
-@ActionRegistration(displayName = "#CTL_CopySourceAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = DataSourceNode.ACTION_PATH, position = 1410, separatorBefore = 1400)
-})
+@Deprecated
 @Messages("CTL_CopySourceAction=Copy")
 public final class CopySourceAction extends SingleNodeAction<Node> {
 

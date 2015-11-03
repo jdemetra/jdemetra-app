@@ -24,6 +24,7 @@ import com.google.common.collect.Ordering;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.interchange.Importable;
+import static ec.nbdemetra.ui.tsproviders.ProviderNode.ACTION_PATH;
 import ec.tss.datatransfer.DataSourceTransferSupport;
 import ec.tss.tsproviders.*;
 import java.awt.Image;
@@ -34,6 +35,9 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.swing.Action;
 import org.netbeans.api.actions.Openable;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
@@ -50,6 +54,12 @@ import org.openide.util.lookup.ProxyLookup;
  *
  * @author Philippe Charles
  */
+@ActionReferences({
+    @ActionReference(path = ACTION_PATH, position = 1310, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.OpenAction")),
+    @ActionReference(path = ACTION_PATH, position = 1420, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.actions.PasteProviderAction")),
+    @ActionReference(path = ACTION_PATH, position = 1430, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ImportAction")),
+    @ActionReference(path = ACTION_PATH, position = 1520, separatorBefore = 1500, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ConfigureAction"))
+})
 public final class ProviderNode extends AbstractNode {
 
     public static final String ACTION_PATH = "ProviderNode";

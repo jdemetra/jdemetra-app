@@ -19,7 +19,6 @@ package ec.nbdemetra.ui.tsproviders.actions;
 import com.google.common.base.Optional;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.tsaction.ITsAction;
-import ec.nbdemetra.ui.tsproviders.SeriesNode;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
@@ -29,8 +28,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.NbBundle;
@@ -43,9 +40,6 @@ import org.openide.util.actions.Presenter;
  */
 @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.actions.OpenWithSetAction")
 @ActionRegistration(displayName = "#CTL_OpenWithSetAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = SeriesNode.ACTION_PATH, position = 1320, separatorBefore = 1300)
-})
 @NbBundle.Messages("CTL_OpenWithSetAction=Open with")
 public final class OpenWithSetAction extends AbstractAction implements Presenter.Popup {
 

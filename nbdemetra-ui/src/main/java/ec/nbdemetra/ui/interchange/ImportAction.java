@@ -20,7 +20,6 @@ import com.google.common.base.Predicates;
 import ec.nbdemetra.ui.Jdk6Functions;
 import ec.nbdemetra.ui.actions.AbilityAction;
 import ec.nbdemetra.ui.nodes.Nodes;
-import ec.nbdemetra.ui.tsproviders.ProviderNode;
 import ec.nbdemetra.ui.tsproviders.ProvidersNode;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -30,8 +29,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
@@ -45,10 +42,6 @@ import org.openide.util.actions.Presenter;
  */
 @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ImportAction")
 @ActionRegistration(displayName = "#CTL_ImportAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = ProvidersNode.ACTION_PATH, position = 1430, separatorBefore = 1400),
-    @ActionReference(path = ProviderNode.ACTION_PATH, position = 1430, separatorBefore = 1400)
-})
 @Messages("CTL_ImportAction=Import from")
 public final class ImportAction extends AbilityAction<Importable> implements Presenter.Popup {
 

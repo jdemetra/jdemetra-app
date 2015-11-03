@@ -20,9 +20,6 @@ import com.google.common.base.Predicates;
 import ec.nbdemetra.ui.Jdk6Functions;
 import ec.nbdemetra.ui.actions.AbilityAction;
 import ec.nbdemetra.ui.nodes.Nodes;
-import ec.nbdemetra.ui.tsproviders.CollectionNode;
-import ec.nbdemetra.ui.tsproviders.DataSourceNode;
-import ec.nbdemetra.ui.tsproviders.SeriesNode;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
 import java.awt.event.ActionEvent;
@@ -33,8 +30,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -47,11 +42,6 @@ import org.openide.util.actions.Presenter;
  */
 @ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction")
 @ActionRegistration(displayName = "#CTL_TsSaveAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = DataSourceNode.ACTION_PATH, position = 1415, separatorBefore = 1400),
-    @ActionReference(path = CollectionNode.ACTION_PATH, position = 1425, separatorBefore = 1400),
-    @ActionReference(path = SeriesNode.ACTION_PATH, position = 1425, separatorBefore = 1400)
-})
 @Messages("CTL_TsSaveAction=Save")
 public final class TsSaveAction extends AbilityAction<ITsSavable> implements Presenter.Popup {
 
