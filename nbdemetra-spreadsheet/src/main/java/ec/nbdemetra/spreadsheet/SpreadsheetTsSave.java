@@ -16,6 +16,8 @@
  */
 package ec.nbdemetra.spreadsheet;
 
+import ec.nbdemetra.ui.notification.MessageType;
+import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
@@ -27,13 +29,21 @@ import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
 import ec.tss.tsproviders.spreadsheet.engine.TsExportOptions;
+import ec.util.desktop.Desktop;
+import ec.util.desktop.DesktopManager;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.helpers.ArraySheet;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileChooserBuilder;
@@ -81,27 +91,70 @@ public final class SpreadsheetTsSave extends AbstractNamedService implements ITs
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    private void save(Ts[] data, File file, Book.Factory bookFactory, TsExportOptions options) {
-        TsCollectionInformation col = new TsCollectionInformation();
-        for (Ts o : data) {
-            col.items.add(new TsInformation(o, TsInformationType.All));
-        }
-        ArraySheet sheet = SpreadSheetFactory.getDefault().fromTsCollectionInfo(col, options);
-        try {
-            bookFactory.store(file, sheet.toBook());
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+    private void save(final Ts[] data, final File file, final Book.Factory bookFactory, final TsExportOptions options) {
+        new SwingWorker<Void, String>() {
+            final ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Saving to spreadsheet");
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                progressHandle.start();
+                progressHandle.progress("Initializing content");
+                TsCollectionInformation col = new TsCollectionInformation();
+                for (Ts o : data) {
+                    col.items.add(new TsInformation(o, TsInformationType.All));
+                }
+                progressHandle.progress("Creating content");
+                ArraySheet sheet = SpreadSheetFactory.getDefault().fromTsCollectionInfo(col, options);
+                progressHandle.progress("Writing content");
+                bookFactory.store(file, sheet.toBook());
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                progressHandle.finish();
+                try {
+                    get();
+                    NotifyUtil.show("Spreadsheet saved", "Show in folder", MessageType.SUCCESS, new ShowInFolderActionListener(file), null, null);
+                } catch (InterruptedException | ExecutionException ex) {
+                    NotifyUtil.error("Saving to spreadsheet failed", ex.getMessage(), ex);
+                }
+            }
+        }.execute();
     }
 
     @Nullable
     private static Book.Factory getFactoryByFile(@Nonnull File file) {
-        for (Book.Factory o : Lookup.getDefault().lookupAll(Book.Factory.class)) {
-            if (o.canStore() && o.accept(file)) {
+        for (Book.Factory o : Lookup.getDefault().lookupAll(Book.Factory.class
+        )) {
+            if (o.canStore()
+                    && o.accept(file)) {
                 return o;
             }
         }
         return null;
+
+    }
+
+    private static final class ShowInFolderActionListener implements ActionListener {
+
+        private final File file;
+
+        public ShowInFolderActionListener(File file) {
+            this.file = file;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Desktop desktop = DesktopManager.get();
+            if (desktop.isSupported(Desktop.Action.SHOW_IN_FOLDER)) {
+                try {
+                    desktop.showInFolder(file);
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+        }
     }
 
     private static final class SaveFileFilter extends FileFilter {
