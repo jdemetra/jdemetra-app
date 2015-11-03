@@ -24,6 +24,8 @@ import ec.nbdemetra.ui.IReloadable;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
+import ec.nbdemetra.ui.tssave.ITsSavable;
+import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.DataTransfers;
@@ -84,6 +86,7 @@ public final class DataSourceNode extends AbstractNode {
             abilities.add(new ReloadableImpl());
             abilities.add(NodeAnnotator.Support.getDefault());
             abilities.add(new NameableImpl());
+            abilities.add(new TsSavableImpl());
             if (TsProviders.lookup(IDataSourceLoader.class, dataSource).isPresent()) {
                 abilities.add(new EditableImpl());
                 abilities.add(new ClosableImpl());
@@ -243,6 +246,15 @@ public final class DataSourceNode extends AbstractNode {
         public Config exportConfig() {
             DataSource dataSource = getLookup().lookup(DataSource.class);
             return ProvidersUtil.getConfig(dataSource, getDisplayName());
+        }
+    }
+
+    private final class TsSavableImpl implements ITsSavable {
+
+        @Override
+        public Ts[] getAllTs() {
+            Optional<TsCollection> result = TsProviders.getTsCollection(getLookup().lookup(DataSource.class), TsInformationType.All);
+            return result.isPresent() ? result.get().toArray() : new Ts[0];
         }
     }
 
