@@ -28,8 +28,7 @@ import org.openide.util.NbBundle.Messages;
 @ActionID(category = "File", id = "ec.nbdemetra.ui.star.StarAction")
 @ActionRegistration(lazy = false, displayName = "#starAction.add")
 @ActionReferences({
-    @ActionReference(path = "Menu/File", position = 800, separatorBefore = 799),
-    @ActionReference(path = DataSourceNode.ACTION_PATH, position = 1210, separatorBefore = 1200)
+    @ActionReference(path = "Menu/File", position = 800, separatorBefore = 799)
 })
 @Messages({
     "starAction.add=Add star",

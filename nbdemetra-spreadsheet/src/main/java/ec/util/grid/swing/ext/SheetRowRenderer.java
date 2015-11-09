@@ -26,6 +26,7 @@ import javax.swing.table.TableCellRenderer;
  *
  * @author Philippe Charles
  */
+@Deprecated
 public final class SheetRowRenderer implements TableCellRenderer {
 
     private final GridRowHeaderRenderer delegate = new GridRowHeaderRenderer();

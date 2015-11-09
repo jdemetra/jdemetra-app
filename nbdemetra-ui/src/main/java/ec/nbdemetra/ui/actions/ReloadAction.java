@@ -5,11 +5,7 @@
 package ec.nbdemetra.ui.actions;
 
 import ec.nbdemetra.ui.IReloadable;
-import ec.nbdemetra.ui.tsproviders.CollectionNode;
-import ec.nbdemetra.ui.tsproviders.DataSourceNode;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
@@ -19,10 +15,6 @@ import org.openide.util.NbBundle;
  */
 @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ReloadAction")
 @ActionRegistration(displayName = "#ReloadAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = DataSourceNode.ACTION_PATH, position = 1340, separatorBefore = 1300),
-    @ActionReference(path = CollectionNode.ACTION_PATH, position = 1340, separatorBefore = 1300)
-})
 @NbBundle.Messages({"ReloadAction=Reload"})
 public final class ReloadAction extends AbilityAction<IReloadable> {
 

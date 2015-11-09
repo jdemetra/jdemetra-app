@@ -36,6 +36,7 @@ abstract class AGrid extends JComponent {
     public static final String COLUMN_SELECTION_ALLOWED_PROPERTY = "columnSelectionAllowed";
     public static final String HOVERED_CELL_PROPERTY = "hoveredCell";
     public static final String SELECTED_CELL_PROPERTY = "selectedCell";
+    public static final String CROSSHAIR_VISIBLE_PROPERTY = "crosshairVisible";
 
     public static final String DRAG_ENABLED_PROPERTY = "dragEnabled";
     public static final String GRID_COLOR_PROPERTY = "gridColor";
@@ -48,6 +49,7 @@ abstract class AGrid extends JComponent {
     private static final boolean DEFAULT_COLUMN_SELECTION_ALLOWED = false;
     private static final CellIndex DEFAULT_HOVERED_CELL = CellIndex.NULL;
     private static final CellIndex DEFAULT_SELECTED_CELL = CellIndex.NULL;
+    private static final boolean DEFAULT_CROSSHAIR_VISIBLE = false;
 
     private static final boolean DEFAULT_DRAG_ENABLED = false;
     private static final XTable.NoDataRenderer DEFAULT_NO_DATA_RENDERER = new XTable.DefaultNoDataRenderer();
@@ -57,6 +59,7 @@ abstract class AGrid extends JComponent {
     protected boolean columnSelectionAllowed;
     protected CellIndex hoveredCell;
     protected CellIndex selectedCell;
+    protected boolean crosshairVisible;
 
     protected boolean dragEnabled;
     protected Color gridColor;
@@ -70,6 +73,7 @@ abstract class AGrid extends JComponent {
         this.columnSelectionAllowed = DEFAULT_COLUMN_SELECTION_ALLOWED;
         this.hoveredCell = DEFAULT_HOVERED_CELL;
         this.selectedCell = DEFAULT_SELECTED_CELL;
+        this.crosshairVisible = DEFAULT_CROSSHAIR_VISIBLE;
 
         this.dragEnabled = DEFAULT_DRAG_ENABLED;
         this.gridColor = StandardSwingColor.CONTROL.or(Color.LIGHT_GRAY);
@@ -130,6 +134,16 @@ abstract class AGrid extends JComponent {
         CellIndex old = this.selectedCell;
         this.selectedCell = selectedCell != null ? selectedCell : DEFAULT_SELECTED_CELL;
         firePropertyChange(SELECTED_CELL_PROPERTY, old, this.selectedCell);
+    }
+
+    public boolean isCrosshairVisible() {
+        return crosshairVisible;
+    }
+
+    public void setCrosshairVisible(boolean crosshairVisible) {
+        boolean old = this.crosshairVisible;
+        this.crosshairVisible = crosshairVisible;
+        firePropertyChange(CROSSHAIR_VISIBLE_PROPERTY, old, this.crosshairVisible);
     }
 
     public boolean isDragEnabled() {

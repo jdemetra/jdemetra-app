@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.tsproviders;
 
 import com.google.common.base.Optional;
+import static ec.nbdemetra.ui.tsproviders.SeriesNode.ACTION_PATH;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferSupport;
@@ -29,12 +30,21 @@ import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.netbeans.api.actions.Openable;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 
 /**
  * A node that represents a DataSet of type series.
  *
  * @author Philippe Charles
  */
+@ActionReferences({
+    @ActionReference(path = ACTION_PATH, position = 1310, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.OpenAction")),
+    @ActionReference(path = ACTION_PATH, position = 1320, separatorBefore = 1300, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.actions.OpenWithSetAction")),
+    @ActionReference(path = ACTION_PATH, position = 1420, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "org.openide.actions.CopyAction")),
+    @ActionReference(path = ACTION_PATH, position = 1425, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction"))
+})
 public final class SeriesNode extends DataSetNode {
 
     public static final String ACTION_PATH = "SeriesNode";

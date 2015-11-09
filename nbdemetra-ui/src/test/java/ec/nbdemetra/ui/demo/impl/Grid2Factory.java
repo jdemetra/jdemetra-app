@@ -22,12 +22,9 @@ import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.Formatters.Formatter;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
-import static ec.util.chart.swing.SwingColorSchemeSupport.withAlpha;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.GridModel;
-import ec.util.grid.swing.GridRowHeaderRenderer;
 import ec.util.grid.swing.JGrid;
-import java.awt.Color;
 import java.awt.Component;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,8 +32,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service = DemoComponentFactory.class)
@@ -53,12 +49,10 @@ public final class Grid2Factory extends DemoComponentFactory {
             public Component call() throws Exception {
                 JGrid result = new JGrid();
                 result.setModel(new ExcelModel());
-                result.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                result.setRowSelectionAllowed(true);
                 result.setColumnSelectionAllowed(true);
                 result.setDragEnabled(true);
-                result.setDefaultRenderer(Object.class, new ExcelCellRenderer());
-                result.setRowRenderer(new ExcelRowRenderer());
-                result.setOddBackground(Color.WHITE);
+                result.setDefaultRenderer(Object.class, new ExcelCellRenderer(result));
                 return result;
             }
         };
@@ -104,14 +98,19 @@ public final class Grid2Factory extends DemoComponentFactory {
         }
     }
 
-    private static final class ExcelCellRenderer extends DefaultTableCellRenderer {
+    private static final class ExcelCellRenderer implements TableCellRenderer {
 
+        final TableCellRenderer delegate;
         final Formatter<Number> numberFormatter = DataFormat.DEFAULT.numberFormatter();
         final Formatter<Date> dateFormatter = DataFormat.DEFAULT.dateFormatter();
 
+        public ExcelCellRenderer(JGrid grid) {
+            this.delegate = grid.getDefaultRenderer(Object.class);
+        }
+
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            JLabel result = (JLabel) delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             if (value instanceof Number) {
                 result.setText(numberFormatter.formatAsString((Number) value));
                 result.setHorizontalAlignment(JLabel.TRAILING);
@@ -124,18 +123,6 @@ public final class Grid2Factory extends DemoComponentFactory {
                 result.setText(((Boolean) value) ? "TRUE" : "FALSE");
                 result.setHorizontalAlignment(JLabel.CENTER);
             }
-            result.setForeground(table.getForeground());
-            result.setBackground(withAlpha(result.getBackground(), 100));
-            return result;
-        }
-    }
-
-    private static final class ExcelRowRenderer extends GridRowHeaderRenderer {
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            result.setHorizontalAlignment(JLabel.CENTER);
             return result;
         }
     }

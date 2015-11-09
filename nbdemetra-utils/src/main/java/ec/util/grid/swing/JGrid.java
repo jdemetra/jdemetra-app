@@ -16,9 +16,17 @@
  */
 package ec.util.grid.swing;
 
+import static ec.util.chart.swing.SwingColorSchemeSupport.withAlpha;
 import ec.util.grid.CellIndex;
 import static ec.util.grid.swing.AGrid.HOVERED_CELL_PROPERTY;
+import ec.util.various.swing.LineBorder2;
 import static ec.util.various.swing.ModernUI.withEmptyBorders;
+import static ec.util.various.swing.StandardSwingColor.TABLE_BACKGROUND;
+import static ec.util.various.swing.StandardSwingColor.TABLE_FOREGROUND;
+import static ec.util.various.swing.StandardSwingColor.TABLE_HEADER_BACKGROUND;
+import static ec.util.various.swing.StandardSwingColor.TABLE_HEADER_FOREGROUND;
+import static ec.util.various.swing.StandardSwingColor.TABLE_SELECTION_BACKGROUND;
+import static ec.util.various.swing.StandardSwingColor.TABLE_SELECTION_FOREGROUND;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -43,21 +51,26 @@ import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import javax.swing.JLabel;
 import javax.swing.JLayer;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
+import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.plaf.LayerUI;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -100,6 +113,7 @@ public final class JGrid extends AGrid {
 
         this.main = new XTable();
         main.setModel(internalModel);
+        main.setOddBackground(null);
 
         // This makes sure user can drop on all component and not only on present cell
         main.setFillsViewportHeight(true);
@@ -134,7 +148,10 @@ public final class JGrid extends AGrid {
         this.initialRowHeight = main.getRowHeight();
         this.zoomRatio = 1f;
 
-        setRowRenderer(new GridRowHeaderRenderer());
+        setRowRenderer(new RowRenderer(this));
+        setColumnRenderer(new ColumnRenderer(this));
+        setCornerRenderer(new CornerRenderer());
+        setDefaultRenderer(Object.class, new GridCellRenderer(this));
 
         onModelChange();
         onRowSelectionAllowedChange();
@@ -171,6 +188,10 @@ public final class JGrid extends AGrid {
         main.getTableHeader().setDefaultRenderer(renderer);
     }
 
+    public TableCellRenderer getRowRenderer() {
+        return fct.getFixedTable().getDefaultRenderer(Object.class);
+    }
+
     public void setRowRenderer(TableCellRenderer renderer) {
         fct.getFixedTable().setDefaultRenderer(Object.class, renderer);
     }
@@ -179,6 +200,7 @@ public final class JGrid extends AGrid {
         fct.getFixedTable().getTableHeader().setDefaultRenderer(renderer);
     }
 
+    @Deprecated
     public void setOddBackground(@Nullable Color oddBackground) {
         main.setOddBackground(oddBackground);
     }
@@ -262,6 +284,10 @@ public final class JGrid extends AGrid {
             cellSelectionListener.enabled = true;
         }
         scrollPane.repaint();
+    }
+    
+    private void onCrosshairVisibleChange() {
+        repaint();
     }
 
     private void onDragEnabledChange() {
@@ -347,6 +373,9 @@ public final class JGrid extends AGrid {
                         break;
                     case SELECTED_CELL_PROPERTY:
                         onSelectedCellChange();
+                        break;
+                    case CROSSHAIR_VISIBLE_PROPERTY:
+                        onCrosshairVisibleChange();
                         break;
                     case DRAG_ENABLED_PROPERTY:
                         onDragEnabledChange();
@@ -672,6 +701,230 @@ public final class JGrid extends AGrid {
             if (dt != null) {
                 dt.drop(dtde);
             }
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Renderers">
+    private abstract static class HeaderRenderer implements TableCellRenderer {
+
+        protected final JLabel renderer;
+        protected final GridUIResource gridResource;
+
+        public HeaderRenderer() {
+            this.renderer = new DefaultTableCellRenderer();
+            this.gridResource = GridUIResource.getDefault();
+            renderer.setOpaque(true);
+        }
+
+        abstract protected boolean isHeaderSelected(JTable table, int row, int column);
+
+        abstract protected boolean isHeaderHovered(JTable table, int row, int column);
+
+        @Override
+        public JLabel getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            String text = value != null ? value.toString() : "";
+            if (text.isEmpty()) {
+                renderer.setText(" ");
+                renderer.setToolTipText(null);
+            } else if (text.startsWith("<html>")) {
+                renderer.setText(text);
+                renderer.setToolTipText(text);
+            } else {
+                renderer.setText(text);
+                renderer.setToolTipText(text);
+            }
+            renderer.setFont(table.getFont());
+            CellUIResource cellResource = gridResource.getHeader(isHeaderSelected(table, row, column), isHeaderHovered(table, row, column));
+            renderer.setBackground(cellResource.getBackground());
+            renderer.setForeground(cellResource.getForeground());
+            renderer.setBorder(cellResource.getBorder());
+            int preferredHeight = table.getRowHeight() + 1;
+            if (renderer.getPreferredSize().height != preferredHeight) {
+                renderer.setPreferredSize(new Dimension(10, preferredHeight));
+            }
+            return renderer;
+        }
+    }
+
+    private static final class RowRenderer extends HeaderRenderer {
+
+        private final JGrid grid;
+
+        public RowRenderer(JGrid grid) {
+            this.grid = grid;
+            renderer.setHorizontalAlignment(JLabel.CENTER);
+        }
+
+        @Override
+        protected boolean isHeaderSelected(JTable table, int row, int column) {
+            return table.getRowSelectionAllowed() && table.isRowSelected(row);
+        }
+
+        @Override
+        protected boolean isHeaderHovered(JTable table, int row, int column) {
+            return grid.getHoveredCell().getRow() == row;
+        }
+    }
+
+    private static final class ColumnRenderer extends HeaderRenderer {
+
+        private final JGrid grid;
+
+        public ColumnRenderer(JGrid grid) {
+            this.grid = grid;
+            renderer.setHorizontalAlignment(JLabel.CENTER);
+        }
+
+        @Override
+        protected boolean isHeaderSelected(JTable table, int row, int column) {
+            return table.getColumnSelectionAllowed() && table.isColumnSelected(column);
+        }
+
+        @Override
+        protected boolean isHeaderHovered(JTable table, int row, int column) {
+            return grid.getHoveredCell().getColumn() == column;
+        }
+    }
+
+    private static final class CornerRenderer extends HeaderRenderer {
+
+        @Override
+        protected boolean isHeaderSelected(JTable table, int row, int column) {
+            return false;
+        }
+
+        @Override
+        protected boolean isHeaderHovered(JTable table, int row, int column) {
+            return false;
+        }
+    }
+
+    private static final class GridCellRenderer implements TableCellRenderer {
+
+        private final JGrid grid;
+        protected final JLabel renderer;
+        private final GridUIResource gridResource;
+
+        public GridCellRenderer(@Nonnull JGrid grid) {
+            this.grid = grid;
+            this.renderer = new DefaultTableCellRenderer();
+            this.gridResource = GridUIResource.getDefault();
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            renderer.setFont(table.getFont());
+
+            CellIndex hoveredCell = grid.getHoveredCell();
+            boolean focused = !grid.isCrosshairVisible()
+                    ? hoveredCell.equals(row, column)
+                    : (hoveredCell.getRow() == row || hoveredCell.getColumn() == column);
+
+            CellUIResource resource = gridResource.getCell(isSelected, focused);
+            renderer.setBorder(resource.getBorder());
+
+            renderer.setBackground(resource.getBackground());
+            renderer.setForeground(resource.getForeground());
+            renderer.setText(value != null ? value.toString() : null);
+
+            return renderer;
+        }
+    }
+
+    private static abstract class GridUIResource {
+
+        @Nonnull
+        abstract public CellUIResource getHeader(boolean selected, boolean hovered);
+
+        @Nonnull
+        abstract public CellUIResource getCell(boolean selected, boolean hovered);
+
+        @Nonnull
+        public static GridUIResource getDefault() {
+            return GridColorsImpl.INSTANCE;
+        }
+
+        //<editor-fold defaultstate="collapsed" desc="Implementation details">
+        private static final class GridColorsImpl extends GridUIResource {
+
+            private static final GridColorsImpl INSTANCE = new GridColorsImpl();
+
+            private final CellUIResource header;
+            private final CellUIResource headerSelection;
+            private final CellUIResource headerFocus;
+            private final CellUIResource headerBoth;
+            private final CellUIResource cell;
+            private final CellUIResource cellSelection;
+            private final CellUIResource cellFocus;
+            private final CellUIResource cellBoth;
+
+            private GridColorsImpl() {
+                Color headerBackground = TABLE_HEADER_BACKGROUND.or(new Color(240, 240, 240));
+                Color headerForeground = TABLE_HEADER_FOREGROUND.or(Color.BLACK);
+                Color background = TABLE_BACKGROUND.or(Color.WHITE);
+                Color foreground = TABLE_FOREGROUND.or(Color.BLACK);
+                Color selectionBackground = TABLE_SELECTION_BACKGROUND.or(new Color(51, 153, 255));
+                Color selectionForeground = TABLE_SELECTION_FOREGROUND.or(new Color(255, 255, 255));
+
+                Border headerBorder = BorderFactory.createCompoundBorder(
+                        new LineBorder2(headerBackground.brighter(), 0, 0, 1, 1),
+                        BorderFactory.createEmptyBorder(0, 4, 0, 4));
+                Border noBorder = BorderFactory.createEmptyBorder();
+
+                this.header = CellUIResource.of(headerBackground, headerForeground, headerBorder);
+                this.headerSelection = CellUIResource.of(selectionBackground.darker(), selectionForeground, headerBorder);
+                this.headerFocus = CellUIResource.of(selectionBackground, selectionForeground, headerBorder);
+                this.headerBoth = CellUIResource.of(selectionBackground, selectionForeground, headerBorder);
+
+                this.cell = CellUIResource.of(background, foreground, noBorder);
+                this.cellSelection = CellUIResource.of(selectionBackground, selectionForeground, noBorder);
+                this.cellFocus = CellUIResource.of(withAlpha(selectionBackground, 200), selectionForeground, noBorder);
+                this.cellBoth = CellUIResource.of(withAlpha(selectionBackground, 200), selectionForeground, noBorder);
+            }
+
+            @Override
+            public CellUIResource getHeader(boolean selected, boolean hovered) {
+                return selected ? (hovered ? headerBoth : headerSelection) : (hovered ? headerFocus : header);
+            }
+
+            @Override
+            public CellUIResource getCell(boolean selected, boolean hovered) {
+                return selected ? (hovered ? cellBoth : cellSelection) : (hovered ? cellFocus : cell);
+            }
+        }
+        //</editor-fold>
+    }
+
+    private static abstract class CellUIResource {
+
+        @Nonnull
+        abstract public Color getBackground();
+
+        @Nonnull
+        abstract public Color getForeground();
+
+        @Nonnull
+        abstract public Border getBorder();
+
+        @Nonnull
+        public static CellUIResource of(final Color background, final Color foreground, final Border border) {
+            return new CellUIResource() {
+                @Override
+                public Color getBackground() {
+                    return background;
+                }
+
+                @Override
+                public Color getForeground() {
+                    return foreground;
+                }
+
+                @Override
+                public Border getBorder() {
+                    return border;
+                }
+            };
         }
     }
     //</editor-fold>

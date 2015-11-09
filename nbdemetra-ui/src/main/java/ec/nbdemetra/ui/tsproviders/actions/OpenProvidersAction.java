@@ -22,7 +22,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import ec.nbdemetra.ui.tsproviders.ProvidersNode;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.IFileLoader;
@@ -46,8 +45,6 @@ import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
@@ -60,9 +57,6 @@ import org.openide.util.actions.Presenter;
  */
 @ActionID(category = "File", id = "ec.nbdemetra.ui.tsproviders.actions.OpenProvidersAction")
 @ActionRegistration(displayName = "#CTL_OpenProvidersAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = ProvidersNode.ACTION_PATH, position = 1310, separatorBefore = 1300)
-})
 @Messages("CTL_OpenProvidersAction=Open")
 public final class OpenProvidersAction extends AbstractAction implements Presenter.Popup {
 

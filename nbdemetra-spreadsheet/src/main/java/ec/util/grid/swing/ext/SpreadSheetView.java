@@ -36,7 +36,6 @@ import java.util.AbstractList;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.JTabbedPane;
-import javax.swing.ListSelectionModel;
 
 /**
  *
@@ -223,11 +222,8 @@ public final class SpreadSheetView extends javax.swing.JPanel implements IColorS
         @Override
         public JGrid create() {
             JGrid result = new JGrid();
-            result.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+            result.setRowSelectionAllowed(true);
             result.setColumnSelectionAllowed(true);
-            result.setRowRenderer(new SheetRowRenderer());
-            result.setColumnRenderer(new SheetColumnRenderer());
-            result.setOddBackground(null);
             result.getActionMap().put("copy", copy.toAction(result));
             return result;
         }

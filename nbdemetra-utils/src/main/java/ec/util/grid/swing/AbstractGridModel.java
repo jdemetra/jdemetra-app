@@ -15,6 +15,6 @@ public abstract class AbstractGridModel extends AbstractTableModel implements Gr
 
     @Override
     public String getRowName(int rowIndex) {
-        return Integer.toString(rowIndex);
+        return Integer.toString(rowIndex + 1);
     }
 }

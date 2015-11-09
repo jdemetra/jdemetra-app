@@ -19,12 +19,9 @@ package ec.nbdemetra.ui.actions;
 import com.google.common.collect.Lists;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.tsproviders.ProviderNode;
 import ec.nbdemetra.ui.tsproviders.ProvidersNode;
 import java.util.List;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.NbBundle;
@@ -35,10 +32,6 @@ import org.openide.util.NbBundle;
  */
 @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ConfigureAction")
 @ActionRegistration(displayName = "#ConfigureAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = ProviderNode.ACTION_PATH, position = 1520, separatorBefore = 1500),
-    @ActionReference(path = ProvidersNode.ACTION_PATH, position = 1520, separatorBefore = 1500)
-})
 @NbBundle.Messages("ConfigureAction=Configure")
 public class ConfigureAction extends AbilityAction<IConfigurable> {
 
