@@ -26,11 +26,8 @@ import static ec.util.grid.swing.AGrid.MODEL_PROPERTY;
 import static ec.util.grid.swing.AGrid.ROW_SELECTION_ALLOWED_PROPERTY;
 import ec.util.various.swing.BasicSwingLauncher;
 import ec.util.various.swing.JCommand;
-import ec.util.various.swing.LineBorder2;
 import ec.util.various.swing.ModernUI;
-import ec.util.various.swing.StandardSwingColor;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -55,9 +52,7 @@ import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import org.jfree.data.time.Month;
 import org.jfree.data.time.TimePeriodAnchor;
 import org.jfree.data.time.TimeSeries;
@@ -92,11 +87,7 @@ public final class JGridDemo extends JPanel {
         grid.setPreferredSize(new Dimension(350, 10));
         grid.setRowSelectionAllowed(true);
         grid.setColumnSelectionAllowed(true);
-        grid.setRowRenderer(new RowRenderer());
-        grid.setColumnRenderer(new ColumnRenderer());
-        grid.setCornerRenderer(new CornerRenderer());
-        grid.setDefaultRenderer(Object.class, new CellRenderer(grid));
-        grid.setOddBackground(null);
+        grid.setDefaultRenderer(Object.class, new CustomCellRenderer(grid));
         grid.setComponentPopupMenu(createGridMenu().getPopupMenu());
 
         chart.setPreferredSize(new Dimension(350, 10));
@@ -246,78 +237,26 @@ public final class JGridDemo extends JPanel {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Renderers">
-    private abstract static class HeaderRenderer extends DefaultTableCellRenderer {
-
-        private final Color background;
-        private final Border padding;
-
-        public HeaderRenderer() {
-            this.background = StandardSwingColor.CONTROL.or(Color.LIGHT_GRAY);
-            this.padding = new LineBorder2(background.brighter(), 0, 0, 1, 1);
-        }
-
-        abstract protected boolean isSelected(JTable table, int row, int column);
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-
-            boolean x = isSelected(table, row, column);
-
-            JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, x, hasFocus, row, column);
-
-            result.setBorder(padding);
-            result.setBackground(x ? table.getSelectionBackground().darker() : background);
-            result.setHorizontalAlignment(JLabel.CENTER);
-            result.setPreferredSize(new Dimension(10, table.getRowHeight() + 1));
-            return result;
-        }
-
-    }
-
-    private static final class RowRenderer extends HeaderRenderer {
-
-        @Override
-        protected boolean isSelected(JTable table, int row, int column) {
-            return table.getRowSelectionAllowed() && table.isRowSelected(row);
-        }
-    }
-
-    private static final class ColumnRenderer extends HeaderRenderer {
-
-        @Override
-        protected boolean isSelected(JTable table, int row, int column) {
-            return table.getColumnSelectionAllowed() && table.isColumnSelected(column);
-        }
-    }
-
-    private static final class CornerRenderer extends HeaderRenderer {
-
-        @Override
-        protected boolean isSelected(JTable table, int row, int column) {
-            return false;
-        }
-    }
-
-    private static final class CellRenderer extends DefaultTableCellRenderer {
+    private static final class CustomCellRenderer implements TableCellRenderer {
 
         private final NumberFormat format;
-        private final JGrid grid;
+        private final TableCellRenderer delegate;
 
-        public CellRenderer(JGrid grid) {
+        public CustomCellRenderer(JGrid grid) {
             this.format = new DecimalFormat("#.00");
-            this.grid = grid;
-            setHorizontalAlignment(JLabel.TRAILING);
+            this.delegate = grid.getDefaultRenderer(Object.class);
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             String formattedValue = format.format(value);
-            super.getTableCellRendererComponent(table, formattedValue, isSelected, hasFocus, row, column);
-            setToolTipText(formattedValue);
-            if (grid.getHoveredCell().equals(row, column)) {
-                setBorder(new LineBorder(table.getSelectionBackground().darker()));
+            Component result = delegate.getTableCellRendererComponent(table, formattedValue, isSelected, hasFocus, row, column);
+            if (result instanceof JLabel) {
+                JLabel label = (JLabel) result;
+                label.setToolTipText(formattedValue);
+                label.setHorizontalAlignment(JLabel.TRAILING);
             }
-            return this;
+            return result;
         }
     }
     //</editor-fold>

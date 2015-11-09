@@ -31,6 +31,7 @@ import javax.swing.table.DefaultTableCellRenderer;
  *
  * @author Philippe Charles
  */
+@Deprecated
 public class GridRowHeaderRenderer extends DefaultTableCellRenderer {
 
     private final Color background;
