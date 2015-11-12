@@ -32,6 +32,7 @@ import static ec.tstoolkit.timeseries.simplets.TsDataTableInfo.Valid;
 import ec.ui.grid.JTsGrid;
 import ec.ui.grid.TsGridObs;
 import ec.ui.interfaces.ITsGrid;
+import ec.util.chart.ObsIndex;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
@@ -39,6 +40,8 @@ import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -68,6 +71,8 @@ public class JTsAnomalyGrid extends JComponent {
     public static final String STATE_PROPERTY = "State Property";
     public static final String TYPES_PROPERTY = "Types Displayed";
     public static final String TRANSFORMATION_PROPERTY = "Transformation Change";
+    public static final String HOVERED_OBS_PROPERTY = JTsGrid.HOVERED_OBS_PROPERTY;
+
     private final JTsGrid grid;
     private List<OutlierEstimation[]> outliers;
     private IPreprocessor preprocessor;
@@ -110,6 +115,9 @@ public class JTsAnomalyGrid extends JComponent {
                     case ITsGrid.SELECTION_PROPERTY:
                         firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
                         break;
+                    case JTsGrid.HOVERED_OBS_PROPERTY:
+                        firePropertyChange(HOVERED_OBS_PROPERTY, evt.getOldValue(), evt.getNewValue());
+                        break;
                 }
             }
         });
@@ -130,8 +138,8 @@ public class JTsAnomalyGrid extends JComponent {
         preprocessor = spec.build();
         transformation = DefaultTransformationType.None;
     }
-
     // </editor-fold>
+
     // <editor-fold defaultstate="collapsed" desc="Getters / Setters">
     public void setDefaultCritical(boolean def) {
         defaultCritical = def;
@@ -252,6 +260,15 @@ public class JTsAnomalyGrid extends JComponent {
 
     public TsCollection getTsCollection() {
         return grid.getTsCollection();
+    }
+
+    @Nonnull
+    public ObsIndex getHoveredObs() {
+        return grid.getHoveredObs();
+    }
+
+    public void setHoveredObs(@Nullable ObsIndex hoveredObs) {
+        grid.setHoveredObs(hoveredObs);
     }
     // </editor-fold>
 

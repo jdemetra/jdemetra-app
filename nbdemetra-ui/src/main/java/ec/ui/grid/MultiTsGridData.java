@@ -27,6 +27,8 @@ import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.chart.DataFeatureModel;
+import ec.util.chart.ObsIndex;
+import ec.util.grid.CellIndex;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnegative;
@@ -106,20 +108,27 @@ final class MultiTsGridData extends TsGridData implements Supplier<DescriptiveSt
         return dataTable.getSeriesCount();
     }
 
+    @Override
+    public CellIndex toCellIndex(ObsIndex index) {
+        if (ObsIndex.NULL.equals(index)) {
+            return CellIndex.NULL;
+        }
+        return CellIndex.valueOf(cursor.seriesInfo[index.getSeries()].convertRowIndexToView(index.getObs()), index.getSeries());
+    }
+
     private static final class TsDataTableCursor {
 
-        private final int tableFirstPosition;
         private final SeriesInfo[] seriesInfo;
         private SeriesInfo currentSeries;
         private int obsIndex;
 
         public TsDataTableCursor(TsDataTable dataTable) {
-            this.tableFirstPosition = dataTable.getDomain().getStart().getPosition();
+            TsPeriod tableFirstPeriod = dataTable.getDomain().getStart();
             this.seriesInfo = new SeriesInfo[dataTable.getSeriesCount()];
             for (int i = 0; i < seriesInfo.length; i++) {
                 TsData data = dataTable.series(i);
                 if (data != null) {
-                    seriesInfo[i] = new SeriesInfo(dataTable.getDomain().getFrequency(), data.getStart());
+                    seriesInfo[i] = new SeriesInfo(tableFirstPeriod, dataTable.getDomain().getFrequency(), data.getStart());
                 }
             }
             currentSeries = null;
@@ -128,7 +137,7 @@ final class MultiTsGridData extends TsGridData implements Supplier<DescriptiveSt
 
         public void moveTo(int periodId, int seriesId) {
             currentSeries = seriesInfo[seriesId];
-            obsIndex = currentSeries.computeObsIndex(tableFirstPosition, periodId);
+            obsIndex = currentSeries.convertRowIndexToModel(periodId);
         }
 
         @Nonnegative
@@ -144,20 +153,28 @@ final class MultiTsGridData extends TsGridData implements Supplier<DescriptiveSt
 
     private static final class SeriesInfo {
 
+        private final int tableFirstPosition;
         private final int ratio;
         private final int firstPosition;
         private final TsPeriod firstPeriod;
         private final TsPeriod period;
+        private final int startIndex;
 
-        public SeriesInfo(TsFrequency tableFreq, TsPeriod seriesStart) {
+        public SeriesInfo(TsPeriod tableFirstPeriod, TsFrequency tableFreq, TsPeriod seriesStart) {
+            this.tableFirstPosition = tableFirstPeriod.getPosition();
             this.ratio = tableFreq.ratio(seriesStart.getFrequency());
             this.firstPosition = seriesStart.getPosition();
             this.firstPeriod = seriesStart;
             this.period = seriesStart.clone();
+            this.startIndex = firstPeriod.firstPeriod(tableFreq).minus(tableFirstPeriod);
         }
 
-        public int computeObsIndex(int tableFirstPosition, int periodId) {
-            return ((periodId + tableFirstPosition) - (ratio - 1)) / ratio - firstPosition;
+        public int convertRowIndexToModel(int viewRowIndex) {
+            return ((viewRowIndex + tableFirstPosition) - (ratio - 1)) / ratio - firstPosition;
+        }
+
+        public int convertRowIndexToView(int modelRowIndex) {
+            return startIndex + modelRowIndex * ratio;
         }
 
         public TsPeriod getPeriod(int obsIndex) {
