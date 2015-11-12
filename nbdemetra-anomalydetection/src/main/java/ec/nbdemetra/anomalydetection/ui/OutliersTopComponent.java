@@ -27,6 +27,7 @@ import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.ui.interfaces.ITsGrid;
+import ec.util.chart.ObsIndex;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -129,11 +130,36 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
                     case STATE_CHANGED:
                         onStateChanged((SwingWorker.StateValue) evt.getNewValue());
                         break;
+                    case JTsAnomalyGrid.HOVERED_OBS_PROPERTY:
+                        ObsIndex obs = (ObsIndex) evt.getNewValue();
+                        AnomalyDetectionChart.Model model = chart.getModel();
+                        if (obs.getObs() == -1 || model == null || !grid.getTsCollection().get(obs.getSeries()).equals(model.getTs())) {
+                            chart.setHoveredObs(-1);
+                        } else {
+                            chart.setHoveredObs(obs.getObs());
+                        }
+                        break;
                 }
             }
         });
 
         chart = new AnomalyDetectionChart();
+        chart.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case AnomalyDetectionChart.HOVERED_OBS_PROPERTY:
+                        int obs = (Integer) evt.getNewValue();
+                        AnomalyDetectionChart.Model model = chart.getModel();
+                        if (obs == -1 || model == null) {
+                            grid.setHoveredObs(ObsIndex.NULL);
+                        } else {
+                            grid.setHoveredObs(ObsIndex.valueOf(grid.getTsCollection().indexOf(model.getTs()), obs));
+                        }
+                        break;
+                }
+            }
+        });
 
         tsInformation = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, summary, chart);
         tsInformation.setResizeWeight(0.7);

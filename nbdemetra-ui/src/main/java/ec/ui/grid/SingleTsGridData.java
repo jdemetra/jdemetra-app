@@ -23,6 +23,8 @@ import ec.tstoolkit.data.Values;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.chart.DataFeatureModel;
+import ec.util.chart.ObsIndex;
+import ec.util.grid.CellIndex;
 
 /**
  *
@@ -90,5 +92,14 @@ final class SingleTsGridData extends TsGridData implements Supplier<DescriptiveS
     @Override
     public int getColumnCount() {
         return domain.getFrequency().intValue();
+    }
+
+    @Override
+    public CellIndex toCellIndex(ObsIndex index) {
+        if (index.getSeries() != seriesIndex) {
+            return CellIndex.NULL;
+        }
+        int tmp = index.getObs() + startPosition;
+        return CellIndex.valueOf(tmp / getColumnCount(), tmp % getColumnCount());
     }
 }

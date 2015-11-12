@@ -18,9 +18,12 @@ package ec.ui.grid;
 
 import ec.tss.TsCollection;
 import ec.tss.TsStatus;
+import ec.tstoolkit.timeseries.simplets.TsDataTableInfo;
 import ec.ui.chart.DataFeatureModel;
 import ec.ui.interfaces.ITsGrid.Chronology;
 import ec.ui.interfaces.ITsGrid.Orientation;
+import ec.util.chart.ObsIndex;
+import ec.util.grid.CellIndex;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
@@ -59,6 +62,21 @@ abstract class TsGridData {
     public TsGridData flipVerticaly() {
         return new FlippedVerticaly(this);
     }
+
+    @Nonnull
+    public ObsIndex toObsIndex(@Nonnull CellIndex index) {
+        if (CellIndex.NULL.equals(index)) {
+            return ObsIndex.NULL;
+        }
+        TsGridObs obs = getObs(index.getRow(), index.getColumn());
+        if (TsDataTableInfo.Empty.equals(obs.getInfo())) {
+            return ObsIndex.NULL;
+        }
+        return ObsIndex.valueOf(obs.getSeriesIndex(), obs.getIndex());
+    }
+
+    @Nonnull
+    abstract public CellIndex toCellIndex(@Nonnull ObsIndex index);
 
     @Nonnull
     public static TsGridData empty() {
@@ -120,6 +138,11 @@ abstract class TsGridData {
         public TsGridData flipVerticaly() {
             return this;
         }
+
+        @Override
+        public CellIndex toCellIndex(ObsIndex index) {
+            return CellIndex.NULL;
+        }
     }
 
     private static final class Transposed extends TsGridData {
@@ -158,6 +181,12 @@ abstract class TsGridData {
         @Override
         public TsGridData transpose() {
             return data;
+        }
+
+        @Override
+        public CellIndex toCellIndex(ObsIndex index) {
+            CellIndex tmp = data.toCellIndex(index);
+            return CellIndex.valueOf(tmp.getColumn(), tmp.getRow());
         }
     }
 
@@ -202,6 +231,12 @@ abstract class TsGridData {
         public TsGridData flipHorizontaly() {
             return data;
         }
+
+        @Override
+        public CellIndex toCellIndex(ObsIndex index) {
+            CellIndex tmp = data.toCellIndex(index);
+            return CellIndex.valueOf(tmp.getRow(), flipColumn(tmp.getColumn()));
+        }
     }
 
     private static final class FlippedVerticaly extends TsGridData {
@@ -244,6 +279,12 @@ abstract class TsGridData {
         @Override
         public TsGridData flipVerticaly() {
             return data;
+        }
+
+        @Override
+        public CellIndex toCellIndex(ObsIndex index) {
+            CellIndex tmp = data.toCellIndex(index);
+            return CellIndex.valueOf(flipRow(tmp.getRow()), tmp.getColumn());
         }
     }
     //</editor-fold>

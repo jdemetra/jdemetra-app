@@ -33,6 +33,7 @@ import static ec.ui.chart.JTimeSeriesChartUtil.setSeriesColorist;
 import ec.ui.chart.TsXYDatasets;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.ObsFunction;
+import ec.util.chart.ObsIndex;
 import ec.util.chart.ObsPredicate;
 import ec.util.chart.SeriesFunction;
 import ec.util.chart.SeriesPredicate;
@@ -57,14 +58,20 @@ import javax.swing.JMenu;
 final class AnomalyDetectionChart extends JComponent {
 
     public static final String MODEL_PROPERTY = "model";
+    public static final String HOVERED_OBS_PROPERTY = "hoveredObs";
 
     private final JTimeSeriesChart chart;
+    private final ChartHandler chartHandler;
     private final ThemeSupport themeSupport;
     private Model model;
+    private int hoveredObs;
 
     public AnomalyDetectionChart() {
         this.chart = new JTimeSeriesChart();
+        this.chartHandler = new ChartHandler();
         this.themeSupport = newThemeSupport(chart);
+        this.model = null;
+        this.hoveredObs = -1;
 
         chart.setLegendVisibilityPredicate(SeriesPredicate.alwaysFalse());
         setSeriesColorist(chart, SeriesFunction.always(ColorScheme.KnownColor.GRAY));
@@ -120,15 +127,23 @@ final class AnomalyDetectionChart extends JComponent {
                     case MODEL_PROPERTY:
                         onModelChange();
                         break;
+                    case HOVERED_OBS_PROPERTY:
+                        onHoveredObsChange();
+                        break;
                 }
             }
         });
+        chart.addPropertyChangeListener(chartHandler);
         themeSupport.register();
     }
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
     private void onModelChange() {
         chart.setDataset(model != null ? TsXYDatasets.from(model.getTs()) : null);
+    }
+
+    private void onHoveredObsChange() {
+        chartHandler.applyHoveredObs(hoveredObs);
     }
     //</editor-fold>
 
@@ -142,6 +157,16 @@ final class AnomalyDetectionChart extends JComponent {
         Model old = this.model;
         this.model = model;
         firePropertyChange(MODEL_PROPERTY, old, this.model);
+    }
+
+    public int getHoveredObs() {
+        return hoveredObs;
+    }
+
+    public void setHoveredObs(int hoveredObs) {
+        int old = this.hoveredObs;
+        this.hoveredObs = hoveredObs;
+        firePropertyChange(HOVERED_OBS_PROPERTY, old, this.hoveredObs);
     }
     //</editor-fold>
 
@@ -168,6 +193,30 @@ final class AnomalyDetectionChart extends JComponent {
         @Nonnull
         public OutlierEstimation[] getOutliers() {
             return outliers;
+        }
+    }
+
+    private final class ChartHandler implements PropertyChangeListener {
+
+        private boolean updating = false;
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if (!updating) {
+                updating = true;
+                switch (evt.getPropertyName()) {
+                    case JTimeSeriesChart.HOVERED_OBS_PROPERTY:
+                        setHoveredObs(chart.getHoveredObs().getObs());
+                        break;
+                }
+                updating = false;
+            }
+        }
+
+        public void applyHoveredObs(int obs) {
+            if (!updating) {
+                chart.setHoveredObs(hoveredObs != -1 && model != null ? ObsIndex.valueOf(0, hoveredObs) : ObsIndex.NULL);
+            }
         }
     }
 

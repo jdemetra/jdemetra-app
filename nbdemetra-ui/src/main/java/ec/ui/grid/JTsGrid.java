@@ -30,7 +30,9 @@ import ec.ui.ATsGrid;
 import ec.ui.DemoUtils;
 import ec.ui.chart.DataFeatureModel;
 import ec.ui.commands.TsGridCommand;
+import ec.util.chart.ObsIndex;
 import ec.util.chart.swing.SwingColorSchemeSupport;
+import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
 import ec.util.grid.swing.XTable;
 import ec.util.various.swing.FontAwesome;
@@ -78,20 +80,24 @@ public class JTsGrid extends ATsGrid {
     public static final String SHOW_BARS_PROPERTY = "showBars";
     public static final String CELL_RENDERER_PROPERTY = "cellRenderer";
     public static final String CROSSHAIR_VISIBLE_PROPERTY = "crosshairVisible";
+    public static final String HOVERED_OBS_PROPERTY = "hoveredObs";
 
     private static final boolean DEFAULT_USE_COLOR_SCHEME = false;
     private static final boolean DEFAULT_SHOW_BARS = false;
     private static final boolean DEFAULT_CROSSHAIR_VISIBLE = false;
+    private static final ObsIndex DEFAULT_HOVERED_OBS = ObsIndex.NULL;
 
     private boolean useColorScheme;
     private boolean showBars;
     private TableCellRenderer cellRenderer;
     private boolean crosshairVisible;
+    private ObsIndex hoveredObs;
     //</editor-fold>
 
     protected final JGrid grid;
     private final JComboBox combo;
     private final GridSelectionListener selectionListener;
+    private final GridHandler gridHandler;
     private final CustomCellRenderer defaultCellRenderer;
     protected final DataFeatureModel dataFeatureModel;
     private Font originalFont;
@@ -100,8 +106,10 @@ public class JTsGrid extends ATsGrid {
         this.useColorScheme = DEFAULT_USE_COLOR_SCHEME;
         this.showBars = DEFAULT_SHOW_BARS;
         this.crosshairVisible = DEFAULT_CROSSHAIR_VISIBLE;
+        this.hoveredObs = DEFAULT_HOVERED_OBS;
 
         this.selectionListener = new GridSelectionListener();
+        this.gridHandler = new GridHandler();
 
         this.grid = buildGrid();
         this.defaultCellRenderer = new CustomCellRenderer(grid.getDefaultRenderer(Object.class));
@@ -130,6 +138,8 @@ public class JTsGrid extends ATsGrid {
         add(grid, BorderLayout.CENTER);
         add(combo, BorderLayout.NORTH);
 
+        grid.addPropertyChangeListener(gridHandler);
+
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -145,6 +155,9 @@ public class JTsGrid extends ATsGrid {
                         break;
                     case CROSSHAIR_VISIBLE_PROPERTY:
                         onCrosshairVisibleChange();
+                        break;
+                    case HOVERED_OBS_PROPERTY:
+                        onHoveredObsChange();
                         break;
                     case "componentPopupMenu":
                         onComponentPopupMenuChange();
@@ -258,6 +271,10 @@ public class JTsGrid extends ATsGrid {
         grid.setCrosshairVisible(crosshairVisible);
     }
 
+    private void onHoveredObsChange() {
+        gridHandler.applyHoveredCell(hoveredObs);
+    }
+
     @Override
     protected void onZoomChange() {
         if (originalFont == null) {
@@ -326,6 +343,17 @@ public class JTsGrid extends ATsGrid {
         boolean old = this.crosshairVisible;
         this.crosshairVisible = crosshairVisible;
         firePropertyChange(CROSSHAIR_VISIBLE_PROPERTY, old, this.crosshairVisible);
+    }
+
+    @Nonnull
+    public ObsIndex getHoveredObs() {
+        return hoveredObs;
+    }
+
+    public void setHoveredObs(@Nullable ObsIndex hoveredObs) {
+        ObsIndex old = this.hoveredObs;
+        this.hoveredObs = hoveredObs != null ? hoveredObs : DEFAULT_HOVERED_OBS;
+        firePropertyChange(HOVERED_OBS_PROPERTY, old, this.hoveredObs);
     }
     //</editor-fold>
 
@@ -495,6 +523,30 @@ public class JTsGrid extends ATsGrid {
         }
     }
 
+    private final class GridHandler implements PropertyChangeListener {
+
+        private boolean updating = false;
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if (!updating) {
+                updating = true;
+                switch (evt.getPropertyName()) {
+                    case JGrid.HOVERED_CELL_PROPERTY:
+                        setHoveredObs(((GridModelAdapter) grid.getModel()).data.toObsIndex(grid.getHoveredCell()));
+                        break;
+                }
+                updating = false;
+            }
+        }
+
+        private void applyHoveredCell(ObsIndex hoveredObs) {
+            if (!updating) {
+                grid.setHoveredCell(((GridModelAdapter) grid.getModel()).data.toCellIndex(hoveredObs));
+            }
+        }
+    }
+
     //<editor-fold defaultstate="collapsed" desc="Renderers">
     private static final class CustomRowRenderer implements TableCellRenderer {
 
@@ -554,7 +606,7 @@ public class JTsGrid extends ATsGrid {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             Component resource = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             setFont(resource.getFont());
-            
+
             TsGridObs obs = (TsGridObs) value;
 
             if (colorSchemeSupport != null) {
@@ -632,6 +684,45 @@ public class JTsGrid extends ATsGrid {
         }
     }
     //</editor-fold>
+
+    private static final class GridModelAdapter extends AbstractTableModel implements GridModel {
+
+        private final TsGridData data;
+
+        public GridModelAdapter(TsGridData data) {
+            this.data = data;
+        }
+
+        @Override
+        public int getRowCount() {
+            return data.getRowCount();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return data.getColumnCount();
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            return data.getObs(rowIndex, columnIndex);
+        }
+
+        @Override
+        public String getRowName(int rowIndex) {
+            return data.getRowName(rowIndex);
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return data.getColumnName(column);
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            return TsGridObs.class;
+        }
+    }
 
     private static final class TsPeriodFormatter extends Formatter<TsPeriod> {
 
