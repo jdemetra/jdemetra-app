@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module-Localizing-Bundle: ec/nbdemetra/sa/advanced/Bundle.properties
-OpenIDE-Module-Layer: ec/nbdemetra/sa/advanced/layer.xml
-OpenIDE-Module-Requires: org.openide.windows.WindowManager
-OpenIDE-Module-Display-Category: Seasonal Adjustment

@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module-Localizing-Bundle: be/nbb/nbdemetra/sa/ext/Bundle.properties
-OpenIDE-Module-Display-Category: Seasonal Adjustment
