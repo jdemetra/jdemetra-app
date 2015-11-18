@@ -61,6 +61,7 @@ import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.JToolTip;
 import javax.swing.ListSelectionModel;
+import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
@@ -110,21 +111,32 @@ public class JTsGrid extends ATsGrid {
 
         this.selectionListener = new GridSelectionListener();
         this.gridHandler = new GridHandler();
-
-        this.grid = buildGrid();
+        this.grid = new JGrid();
         this.defaultCellRenderer = new CustomCellRenderer(grid.getDefaultRenderer(Object.class));
         this.cellRenderer = defaultCellRenderer;
-
         this.combo = new JComboBox();
-        combo.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setSingleTsIndex(combo.getSelectedIndex());
-            }
-        });
-
         this.dataFeatureModel = new DataFeatureModel();
 
+        initGrid();
+
+        ActionMaps.copyEntries(getActionMap(), false, grid.getActionMap());
+        InputMaps.copyEntries(getInputMap(), false, grid.getInputMap(WHEN_IN_FOCUSED_WINDOW));
+
+        enableSingleTsSelection();
+        enableOpenOnDoubleClick();
+        enableObsHovering();
+        enableProperties();
+
+        setLayout(new BorderLayout());
+        add(grid, BorderLayout.CENTER);
+        add(combo, BorderLayout.NORTH);
+
+        if (Beans.isDesignTime()) {
+            applyDesignTimeProperties();
+        }
+    }
+
+    private void initGrid() {
         onColorSchemeChange();
         onDataFormatChange();
         onUpdateModeChange();
@@ -132,14 +144,38 @@ public class JTsGrid extends ATsGrid {
         updateComboModel();
         updateSelectionBehavior();
         updateComboCellRenderer();
+        onTransferHandlerChange();
         onComponentPopupMenuChange();
+        grid.setDragEnabled(true);
+        grid.setRowRenderer(new CustomRowRenderer(grid));
+        grid.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+    }
 
-        setLayout(new BorderLayout());
-        add(grid, BorderLayout.CENTER);
-        add(combo, BorderLayout.NORTH);
+    private void applyDesignTimeProperties() {
+        setTsCollection(DemoUtils.randomTsCollection(3));
+        setTsUpdateMode(TsUpdateMode.None);
+        setPreferredSize(new Dimension(200, 150));
+    }
 
+    //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
+    private void enableSingleTsSelection() {
+        combo.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                setSingleTsIndex(combo.getSelectedIndex());
+            }
+        });
+    }
+
+    private void enableOpenOnDoubleClick() {
+        grid.addMouseListener(new TsActionMouseAdapter());
+    }
+
+    private void enableObsHovering() {
         grid.addPropertyChangeListener(gridHandler);
+    }
 
+    private void enableProperties() {
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -159,19 +195,17 @@ public class JTsGrid extends ATsGrid {
                     case HOVERED_OBS_PROPERTY:
                         onHoveredObsChange();
                         break;
+                    case "transferHandler":
+                        onTransferHandlerChange();
+                        break;
                     case "componentPopupMenu":
                         onComponentPopupMenuChange();
                         break;
                 }
             }
         });
-
-        if (Beans.isDesignTime()) {
-            setTsCollection(DemoUtils.randomTsCollection(3));
-            setTsUpdateMode(TsUpdateMode.None);
-            setPreferredSize(new Dimension(200, 150));
-        }
     }
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
     @Override
@@ -292,6 +326,11 @@ public class JTsGrid extends ATsGrid {
         grid.setFont(font);
     }
 
+    private void onTransferHandlerChange() {
+        TransferHandler th = getTransferHandler();
+        grid.setTransferHandler(th != null ? th : new TsCollectionTransferHandler());
+    }
+
     private void onComponentPopupMenuChange() {
         JPopupMenu popupMenu = getComponentPopupMenu();
         grid.setComponentPopupMenu(popupMenu != null ? popupMenu : buildGridMenu().getPopupMenu());
@@ -406,14 +445,12 @@ public class JTsGrid extends ATsGrid {
     private void updateSelection() {
         if (mode == Mode.MULTIPLETS) {
             selectionListener.changeSelection(orientation == Orientation.NORMAL ? grid.getColumnSelectionModel() : grid.getRowSelectionModel());
-        } else {
-            if (!collection.isEmpty()) {
-                int index = Math.min(singleTsIndex, collection.getCount() - 1);
-                if (combo.isVisible()) {
-                    combo.setSelectedIndex(index);
-                }
-                setSelection(new Ts[]{collection.get(index)});
+        } else if (!collection.isEmpty()) {
+            int index = Math.min(singleTsIndex, collection.getCount() - 1);
+            if (combo.isVisible()) {
+                combo.setSelectedIndex(index);
             }
+            setSelection(new Ts[]{collection.get(index)});
         }
     }
 
@@ -436,6 +473,7 @@ public class JTsGrid extends ATsGrid {
         combo.setRenderer(new ComboCellRenderer(useColorScheme ? themeSupport : null));
     }
 
+    @Deprecated
     protected JGrid buildGrid() {
         final JGrid result = new JGrid();
 
@@ -513,12 +551,10 @@ public class JTsGrid extends ATsGrid {
         protected void selectionChanged(ListSelectionModel model) {
             if (mode == Mode.MULTIPLETS) {
                 super.selectionChanged(model);
+            } else if (collection.getCount() > singleTsIndex) {
+                setSelection(new Ts[]{collection.get(singleTsIndex)});
             } else {
-                if (collection.getCount() > singleTsIndex) {
-                    setSelection(new Ts[]{collection.get(singleTsIndex)});
-                } else {
-                    setSelection(null);
-                }
+                setSelection(null);
             }
         }
     }

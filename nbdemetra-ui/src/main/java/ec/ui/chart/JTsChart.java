@@ -48,11 +48,11 @@ import ec.ui.interfaces.ITsCollectionView;
 import ec.ui.interfaces.ITsPrinter;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.ObsFunction;
+import ec.util.chart.ObsIndex;
 import ec.util.chart.ObsPredicate;
 import ec.util.chart.SeriesFunction;
 import ec.util.chart.SeriesPredicate;
 import ec.util.chart.TimeSeriesChart.Element;
-import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.JTimeSeriesChart;
 import ec.util.chart.swing.JTimeSeriesChartCommand;
 import ec.util.various.swing.FontAwesome;
@@ -62,18 +62,19 @@ import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.Beans;
 import java.beans.IntrospectionException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.TooManyListenersException;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
+import javax.swing.TransferHandler;
 import org.jfree.data.xy.IntervalXYDataset;
 import org.openide.nodes.Sheet;
 import org.openide.util.Exceptions;
@@ -88,52 +89,61 @@ import org.openide.util.Exceptions;
 public class JTsChart extends ATsChart implements IConfigurable {
 
     private static final long serialVersionUID = -4816158139844033936L;
-
     private static final Configurator<JTsChart> CONFIGURATOR = createConfigurator();
 
+    //<editor-fold defaultstate="collapsed" desc="Properties">
+    public static final String HOVERED_OBS_PROPERTY = "hoveredObs";
+
+    private static final ObsIndex DEFAULT_HOVERED_OBS = ObsIndex.NULL;
+
+    private ObsIndex hoveredObs;
+    //</editor-fold>
+
     protected final JTimeSeriesChart chartPanel;
+    private final ChartHandler chartHandler;
     protected final ITsPrinter printer;
     protected final DataFeatureModel dataFeatureModel;
     private final TsCollectionSelectionListener selectionListener;
     private final IntList savedSelection;
 
     public JTsChart() {
+        this.hoveredObs = DEFAULT_HOVERED_OBS;
+
         this.chartPanel = new JTimeSeriesChart();
-
-        chartPanel.setTransferHandler(new TsCollectionTransferHandler());
-        enableDropContent();
-
-        this.printer = new ITsPrinter() {
-            @Override
-            public boolean printPreview() {
-                chartPanel.printImage();
-                return true;
-            }
-
-            @Override
-            public boolean print() {
-                return printPreview();
-            }
-        };
+        this.chartHandler = new ChartHandler();
+        this.printer = JTimeSeriesChartUtil.newTsPrinter(chartPanel);
         this.dataFeatureModel = new DataFeatureModel();
         this.selectionListener = new TsCollectionSelectionListener();
         this.savedSelection = new IntList();
 
-        chartPanel.getSeriesSelectionModel().addListSelectionListener(selectionListener);
+        initChart();
 
+        ActionMaps.copyEntries(getActionMap(), false, chartPanel.getActionMap());
+        InputMaps.copyEntries(getInputMap(), false, chartPanel.getInputMap());
+
+        enableSeriesSelection();
+        enableDropPreview();
         enableOpenOnDoubleClick();
+        enableObsHovering();
+        enableProperties();
 
+        setLayout(new BorderLayout());
+        add(chartPanel, BorderLayout.CENTER);
+
+        if (Beans.isDesignTime()) {
+            applyDesignTimeProperties();
+        }
+    }
+
+    private void initChart() {
         onAxisVisibleChange();
         onColorSchemeChange();
         onLegendVisibleChange();
         onTitleChange();
         onUpdateModeChange();
         onDataFormatChange();
+        onTransferHandlerChange();
         onComponentPopupMenuChange();
-
-        ActionMaps.copyEntries(getActionMap(), false, chartPanel.getActionMap());
-        InputMaps.copyEntries(getInputMap(), false, chartPanel.getInputMap());
-
         chartPanel.setSeriesFormatter(new SeriesFunction<String>() {
             @Override
             public String apply(int series) {
@@ -166,21 +176,21 @@ public class JTsChart extends ATsChart implements IConfigurable {
                 return series < collection.getCount();
             }
         });
-
-        enableProperties();
-
-        setLayout(new BorderLayout());
-        add(chartPanel, BorderLayout.CENTER);
-
-        if (Beans.isDesignTime()) {
-            setTsCollection(DemoUtils.randomTsCollection(3));
-            setTsUpdateMode(ITsCollectionView.TsUpdateMode.None);
-            setPreferredSize(new Dimension(200, 150));
-            setTitle("Chart preview");
-        }
     }
 
-    private void enableDropContent() {
+    private void applyDesignTimeProperties() {
+        setTsCollection(DemoUtils.randomTsCollection(3));
+        setTsUpdateMode(ITsCollectionView.TsUpdateMode.None);
+        setPreferredSize(new Dimension(200, 150));
+        setTitle("Chart preview");
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
+    private void enableSeriesSelection() {
+        chartPanel.getSeriesSelectionModel().addListSelectionListener(selectionListener);
+    }
+
+    private void enableDropPreview() {
         try {
             chartPanel.getDropTarget().addDropTargetListener(new DropTargetAdapter() {
                 @Override
@@ -207,14 +217,11 @@ public class JTsChart extends ATsChart implements IConfigurable {
     }
 
     private void enableOpenOnDoubleClick() {
-        chartPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (!Charts.isPopup(e) && Charts.isDoubleClick(e)) {
-                    ActionMaps.performAction(getActionMap(), OPEN_ACTION, e);
-                }
-            }
-        });
+        chartPanel.addMouseListener(new TsActionMouseAdapter());
+    }
+
+    private void enableObsHovering() {
+        chartPanel.addPropertyChangeListener(chartHandler);
     }
 
     private void enableProperties() {
@@ -222,6 +229,12 @@ public class JTsChart extends ATsChart implements IConfigurable {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 switch (evt.getPropertyName()) {
+                    case HOVERED_OBS_PROPERTY:
+                        onHoveredObsChange();
+                        break;
+                    case "transferHandler":
+                        onTransferHandlerChange();
+                        break;
                     case "componentPopupMenu":
                         onComponentPopupMenuChange();
                         break;
@@ -229,6 +242,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
             }
         });
     }
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Event Handlers">
     @Override
@@ -324,9 +338,31 @@ public class JTsChart extends ATsChart implements IConfigurable {
         chartPanel.setLineThickness(linesThickness == LinesThickness.Thin ? 1f : 2f);
     }
 
+    private void onTransferHandlerChange() {
+        TransferHandler th = getTransferHandler();
+        chartPanel.setTransferHandler(th != null ? th : new TsCollectionTransferHandler());
+    }
+
     private void onComponentPopupMenuChange() {
         JPopupMenu popupMenu = getComponentPopupMenu();
         chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildChartMenu().getPopupMenu());
+    }
+
+    private void onHoveredObsChange() {
+        chartHandler.applyHoveredCell(hoveredObs);
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
+    @Nonnull
+    public ObsIndex getHoveredObs() {
+        return hoveredObs;
+    }
+
+    public void setHoveredObs(@Nullable ObsIndex hoveredObs) {
+        ObsIndex old = this.hoveredObs;
+        this.hoveredObs = hoveredObs != null ? hoveredObs : DEFAULT_HOVERED_OBS;
+        firePropertyChange(HOVERED_OBS_PROPERTY, old, this.hoveredObs);
     }
     //</editor-fold>
 
@@ -405,7 +441,31 @@ public class JTsChart extends ATsChart implements IConfigurable {
         }
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Internal implementation">
+    private final class ChartHandler implements PropertyChangeListener {
+
+        private boolean updating = false;
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if (!updating) {
+                updating = true;
+                switch (evt.getPropertyName()) {
+                    case JTimeSeriesChart.HOVERED_OBS_PROPERTY:
+                        setHoveredObs(chartPanel.getHoveredObs());
+                        break;
+                }
+                updating = false;
+            }
+        }
+
+        private void applyHoveredCell(ObsIndex hoveredObs) {
+            if (!updating) {
+                chartPanel.setHoveredObs(hoveredObs);
+            }
+        }
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Configuration details">
     private static Configurator<JTsChart> createConfigurator() {
         return new InternalConfigHandler().toConfigurator(new InternalConfigConverter(), new InternalConfigEditor());
     }

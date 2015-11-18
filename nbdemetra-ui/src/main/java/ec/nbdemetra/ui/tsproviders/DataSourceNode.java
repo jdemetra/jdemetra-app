@@ -73,15 +73,15 @@ import org.openide.util.lookup.ProxyLookup;
  * @author Philippe Charles
  */
 @ActionReferences({
-    @ActionReference(path = ACTION_PATH, position = 1210, separatorBefore = 1200, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.star.StarAction")),
-    @ActionReference(path = ACTION_PATH, position = 1310, separatorBefore = 1300, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.EditSourceAction")),
-    @ActionReference(path = ACTION_PATH, position = 1320, separatorBefore = 1300, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.actions.CloneSourceAction")),
-    @ActionReference(path = ACTION_PATH, position = 1330, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ReloadAction")),
-    @ActionReference(path = ACTION_PATH, position = 1340, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ReloadAction")),
-    @ActionReference(path = ACTION_PATH, position = 1350, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.RenameAction")),
-    @ActionReference(path = ACTION_PATH, position = 1410, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "org.openide.actions.CopyAction")),
-    @ActionReference(path = ACTION_PATH, position = 1415, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction")),
-    @ActionReference(path = ACTION_PATH, position = 1430, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ExportAction"))
+    @ActionReference(path = ACTION_PATH, position = 1210, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.star.StarAction"), separatorBefore = 1200),
+    @ActionReference(path = ACTION_PATH, position = 1310, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.EditSourceAction"), separatorBefore = 1300),
+    @ActionReference(path = ACTION_PATH, position = 1320, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.actions.CloneSourceAction")),
+    @ActionReference(path = ACTION_PATH, position = 1330, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.CloseAction")),
+    @ActionReference(path = ACTION_PATH, position = 1340, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ReloadAction")),
+    @ActionReference(path = ACTION_PATH, position = 1350, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.RenameAction")),
+    @ActionReference(path = ACTION_PATH, position = 1410, id = @ActionID(category = "Edit", id = "org.openide.actions.CopyAction"), separatorBefore = 1400),
+    @ActionReference(path = ACTION_PATH, position = 1415, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction")),
+    @ActionReference(path = ACTION_PATH, position = 1430, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ExportAction"))
 })
 public final class DataSourceNode extends AbstractNode {
 
