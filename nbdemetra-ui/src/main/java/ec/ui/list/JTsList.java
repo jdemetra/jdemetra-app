@@ -73,25 +73,83 @@ public class JTsList extends ATsList {
     private final DropUI dropUI;
 
     public JTsList() {
-        this.table = buildTable();
+        this.table = new ETable();
         this.selectionListener = new ListTableSelectionListener();
-        table.getSelectionModel().addListSelectionListener(selectionListener);
         this.tableHeader = table.getTableHeader();
         this.dropUI = new DropUI();
 
-        onUpdateModeChange();
-        onComponentPopupMenuChange();
+        initTable();
 
+        ActionMaps.copyEntries(getActionMap(), false, table.getActionMap());
+        InputMaps.copyEntries(getInputMap(), false, table.getInputMap());
+
+        enableSeriesSelection();
+        enableOpenOnDoubleClick();
         enableProperties();
 
         setLayout(new BorderLayout());
         add(new JLayer<>(NbComponents.newJScrollPane(table), dropUI), BorderLayout.CENTER);
 
         if (Beans.isDesignTime()) {
-            setTsCollection(DemoUtils.randomTsCollection(3));
-            setTsUpdateMode(TsUpdateMode.None);
-            setPreferredSize(new Dimension(200, 150));
+            applyDesignTimeProperties();
         }
+    }
+
+    private void initTable() {
+        onUpdateModeChange();
+        onTransferHandlerChange();
+        onComponentPopupMenuChange();
+
+        int cellPaddingHeight = 2;
+        table.setRowHeight(table.getFontMetrics(table.getFont()).getHeight() + cellPaddingHeight * 2 + 1);
+//        table.setRowMargin(cellPaddingHeight);
+
+        table.setFullyNonEditable(true);
+        table.setShowHorizontalLines(true);
+        table.setBorder(null);
+        Color newGridColor = StandardSwingColor.CONTROL.value();
+        if (newGridColor != null) {
+            table.setGridColor(newGridColor);
+        }
+
+        table.setDefaultRenderer(TsData.class, new TsDataTableCellRenderer());
+        table.setDefaultRenderer(TsPeriod.class, new TsPeriodTableCellRenderer());
+        table.setDefaultRenderer(TsFrequency.class, new TsFrequencyTableCellRenderer());
+        table.setDefaultRenderer(TsIdentifier.class, new TsIdentifierTableCellRenderer());
+
+        table.getColumnModel().addColumnModelListener(new TableColumnModelAdapter() {
+            @Override
+            public void columnAdded(TableColumnModelEvent e) {
+                ETableColumnModel columnModel = (ETableColumnModel) e.getSource();
+                for (int i = e.getFromIndex(); i < e.getToIndex(); i++) {
+                    final ETableColumn column = (ETableColumn) columnModel.getColumn(i);
+                    column.setNestedComparator(new InformationComparator(i));
+                }
+            }
+        });
+
+        table.setModel(new CustomTableModel());
+        XTable.setWidthAsPercentages(table, .4, .1, .1, .1, .3);
+
+        table.setDragEnabled(true);
+        table.setTransferHandler(new TsCollectionTransferHandler());
+        table.setFillsViewportHeight(true);
+        table.setSelectionMode(multiSelection ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION : ListSelectionModel.SINGLE_SELECTION);
+    }
+
+    private void applyDesignTimeProperties() {
+        setTsCollection(DemoUtils.randomTsCollection(3));
+        setTsUpdateMode(TsUpdateMode.None);
+        setPreferredSize(new Dimension(200, 150));
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
+    private void enableSeriesSelection() {
+        table.getSelectionModel().addListSelectionListener(selectionListener);
+    }
+
+    private void enableOpenOnDoubleClick() {
+        table.addMouseListener(new TsActionMouseAdapter());
     }
 
     private void enableProperties() {
@@ -99,6 +157,9 @@ public class JTsList extends ATsList {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 switch (evt.getPropertyName()) {
+                    case "transferHandler":
+                        onTransferHandlerChange();
+                        break;
                     case "componentPopupMenu":
                         onComponentPopupMenuChange();
                         break;
@@ -106,6 +167,7 @@ public class JTsList extends ATsList {
             }
         });
     }
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Events handlers">
     @Override
@@ -175,56 +237,16 @@ public class JTsList extends ATsList {
         // do nothing ?
     }
 
+    private void onTransferHandlerChange() {
+        TransferHandler th = getTransferHandler();
+        table.setTransferHandler(th != null ? th : new TsCollectionTransferHandler());
+    }
+
     private void onComponentPopupMenuChange() {
         JPopupMenu popupMenu = getComponentPopupMenu();
         table.setComponentPopupMenu(popupMenu != null ? popupMenu : buildPopupMenu());
     }
     //</editor-fold>
-
-    private ETable buildTable() {
-        final ETable result = new ETable();
-
-        int cellPaddingHeight = 2;
-        result.setRowHeight(result.getFontMetrics(result.getFont()).getHeight() + cellPaddingHeight * 2 + 1);
-//        result.setRowMargin(cellPaddingHeight);
-
-        result.setFullyNonEditable(true);
-        result.setShowHorizontalLines(true);
-        result.setBorder(null);
-        Color newGridColor = StandardSwingColor.CONTROL.value();
-        if (newGridColor != null) {
-            result.setGridColor(newGridColor);
-        }
-
-        result.setDefaultRenderer(TsData.class, new TsDataTableCellRenderer());
-        result.setDefaultRenderer(TsPeriod.class, new TsPeriodTableCellRenderer());
-        result.setDefaultRenderer(TsFrequency.class, new TsFrequencyTableCellRenderer());
-        result.setDefaultRenderer(TsIdentifier.class, new TsIdentifierTableCellRenderer());
-
-        result.getColumnModel().addColumnModelListener(new TableColumnModelAdapter() {
-            @Override
-            public void columnAdded(TableColumnModelEvent e) {
-                ETableColumnModel columnModel = (ETableColumnModel) e.getSource();
-                for (int i = e.getFromIndex(); i < e.getToIndex(); i++) {
-                    final ETableColumn column = (ETableColumn) columnModel.getColumn(i);
-                    column.setNestedComparator(new InformationComparator(i));
-                }
-            }
-        });
-
-        result.setModel(new CustomTableModel());
-        XTable.setWidthAsPercentages(result, .4, .1, .1, .1, .3);
-
-        ActionMaps.copyEntries(getActionMap(), false, result.getActionMap());
-        InputMaps.copyEntries(getInputMap(), false, result.getInputMap());
-        result.addMouseListener(new TsActionMouseAdapter());
-        result.setDragEnabled(true);
-        result.setTransferHandler(new TsCollectionTransferHandler());
-        result.setFillsViewportHeight(true);
-        result.setSelectionMode(multiSelection ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION : ListSelectionModel.SINGLE_SELECTION);
-
-        return result;
-    }
 
     protected JPopupMenu buildPopupMenu() {
         ActionMap am = getActionMap();

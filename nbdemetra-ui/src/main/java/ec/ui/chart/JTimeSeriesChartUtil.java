@@ -18,6 +18,7 @@ package ec.ui.chart;
 
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.tsproviders.utils.DataFormat;
+import ec.ui.interfaces.ITsPrinter;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.SeriesFunction;
 import ec.util.chart.swing.JTimeSeriesChart;
@@ -80,6 +81,11 @@ public final class JTimeSeriesChartUtil {
         return result;
     }
 
+    @Nonnull
+    public static ITsPrinter newTsPrinter(@Nonnull JTimeSeriesChart chart) {
+        return new TsPrinterImpl(chart);
+    }
+
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
     private static final class ThemeSupportImpl extends ThemeSupport {
 
@@ -104,6 +110,26 @@ public final class JTimeSeriesChartUtil {
             colorSchemeChanged();
             dataFormatChanged();
             super.register();
+        }
+    }
+
+    private static final class TsPrinterImpl implements ITsPrinter {
+
+        private final JTimeSeriesChart chart;
+
+        public TsPrinterImpl(JTimeSeriesChart chart) {
+            this.chart = chart;
+        }
+
+        @Override
+        public boolean printPreview() {
+            chart.printImage();
+            return true;
+        }
+
+        @Override
+        public boolean print() {
+            return printPreview();
         }
     }
     //</editor-fold>
