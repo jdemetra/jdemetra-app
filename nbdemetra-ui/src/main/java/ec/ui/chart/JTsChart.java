@@ -48,6 +48,7 @@ import ec.ui.interfaces.ITsCollectionView;
 import ec.ui.interfaces.ITsPrinter;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.ObsFunction;
+import ec.util.chart.ObsIndex;
 import ec.util.chart.ObsPredicate;
 import ec.util.chart.SeriesFunction;
 import ec.util.chart.SeriesPredicate;
@@ -70,6 +71,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.TooManyListenersException;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -89,16 +92,28 @@ public class JTsChart extends ATsChart implements IConfigurable {
 
     private static final long serialVersionUID = -4816158139844033936L;
 
+    //<editor-fold defaultstate="collapsed" desc="Properties">
+    public static final String HOVERED_OBS_PROPERTY = "hoveredObs";
+
+    private static final ObsIndex DEFAULT_HOVERED_OBS = ObsIndex.NULL;
+
+    private ObsIndex hoveredObs;
+    //</editor-fold>
+
     private static final Configurator<JTsChart> CONFIGURATOR = createConfigurator();
 
     protected final JTimeSeriesChart chartPanel;
+    private final ChartHandler chartHandler;
     protected final ITsPrinter printer;
     protected final DataFeatureModel dataFeatureModel;
     private final TsCollectionSelectionListener selectionListener;
     private final IntList savedSelection;
 
     public JTsChart() {
+        this.hoveredObs = DEFAULT_HOVERED_OBS;
+
         this.chartPanel = new JTimeSeriesChart();
+        this.chartHandler = new ChartHandler();
 
         chartPanel.setTransferHandler(new TsCollectionTransferHandler());
         enableDropContent();
@@ -167,6 +182,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
             }
         });
 
+        chartPanel.addPropertyChangeListener(chartHandler);
         enableProperties();
 
         setLayout(new BorderLayout());
@@ -222,6 +238,9 @@ public class JTsChart extends ATsChart implements IConfigurable {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 switch (evt.getPropertyName()) {
+                    case HOVERED_OBS_PROPERTY:
+                        onHoveredObsChange();
+                        break;
                     case "componentPopupMenu":
                         onComponentPopupMenuChange();
                         break;
@@ -328,6 +347,23 @@ public class JTsChart extends ATsChart implements IConfigurable {
         JPopupMenu popupMenu = getComponentPopupMenu();
         chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildChartMenu().getPopupMenu());
     }
+
+    private void onHoveredObsChange() {
+        chartHandler.applyHoveredCell(hoveredObs);
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
+    @Nonnull
+    public ObsIndex getHoveredObs() {
+        return hoveredObs;
+    }
+
+    public void setHoveredObs(@Nullable ObsIndex hoveredObs) {
+        ObsIndex old = this.hoveredObs;
+        this.hoveredObs = hoveredObs != null ? hoveredObs : DEFAULT_HOVERED_OBS;
+        firePropertyChange(HOVERED_OBS_PROPERTY, old, this.hoveredObs);
+    }
     //</editor-fold>
 
     private void updateNoDataMessage() {
@@ -402,6 +438,30 @@ public class JTsChart extends ATsChart implements IConfigurable {
             }
             Predicate<ColorScheme> predicate = Predicates.compose(Predicates.equalTo(colorSchemeName), Jdk6Functions.colorSchemeName());
             return Iterables.tryFind(DemetraUI.getDefault().getColorSchemes(), predicate).orNull();
+        }
+    }
+
+    private final class ChartHandler implements PropertyChangeListener {
+
+        private boolean updating = false;
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if (!updating) {
+                updating = true;
+                switch (evt.getPropertyName()) {
+                    case JTimeSeriesChart.HOVERED_OBS_PROPERTY:
+                        setHoveredObs(chartPanel.getHoveredObs());
+                        break;
+                }
+                updating = false;
+            }
+        }
+
+        private void applyHoveredCell(ObsIndex hoveredObs) {
+            if (!updating) {
+                chartPanel.setHoveredObs(hoveredObs);
+            }
         }
     }
 
