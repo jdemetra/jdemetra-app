@@ -81,6 +81,11 @@ public class X11SpecUI extends BaseX11SpecUI {
         if (desc != null) {
             descs.add(desc);
         }
+
+        desc = excludefcstDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         return descs;
     }
 
@@ -230,8 +235,17 @@ public class X11SpecUI extends BaseX11SpecUI {
         core.setSigmavec(sigmavec);
     }
 
+
+    public void setExcludefcst(boolean value) {
+        core.setExcludefcst(value);
+    }
+
+    public boolean isExcludefcst() {
+        return core.isExcludefcst();
+    }
+
     private static final int MODE_ID = 0, SEAS_ID = 1, FORECAST_ID = 2, LSIGMA_ID = 3, USIGMA_ID = 4, AUTOTREND_ID = 5,
-            TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8, CALENDARSIGMA_ID = 9, SIGMAVEC_ID = 10;
+            TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8, CALENDARSIGMA_ID = 9, SIGMAVEC_ID = 10, EXCLUDEFCST_ID = 11;
 
     @Messages({
         "x11SpecUI.calendarsigmaDesc.name=Calendarsigma",
@@ -247,6 +261,24 @@ public class X11SpecUI extends BaseX11SpecUI {
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(Bundle.x11SpecUI_calendarsigmaDesc_name());
             desc.setShortDescription(Bundle.x11SpecUI_calendarsigmaDesc_desc());
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "x11SpecUI.excludefcstDesc.name=Excludeforecast",
+        "x11SpecUI.excludefcstDesc.desc=[excludefcst] If excludefcst=yes, forecasts and backcasts from the regARIMA model are not used in the generation of extreme values in the seasonal adjustment routines. The default is excludefcst=no, which allows the full forecast and backcast extended series to be used in the extreme value process."
+    })
+    private EnhancedPropertyDescriptor excludefcstDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("excludefcst", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, EXCLUDEFCST_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.x11SpecUI_excludefcstDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_excludefcstDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
