@@ -41,6 +41,13 @@ public class CsvMatrixNode extends AbstractOutputNode<CsvMatrixOutputConfigurati
         builder.reset("Content");
         builder.with(List.class).select(config, "Items").editor(Matrix.class).add();
         sheet.put(builder.build());
+
+        builder.reset("Layout");
+        builder.withBoolean().select(config, "FullName").display("Full series name")
+                .description("If true, the fully qualified name of the series will be used. "
+                        + "If false, only the name of the series will be displayed.").add();
+        sheet.put(builder.build());
+
         return sheet;
     }
 

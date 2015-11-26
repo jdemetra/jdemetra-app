@@ -42,6 +42,9 @@ public class CsvNode extends AbstractOutputNode<CsvOutputConfiguration> {
  
         builder.reset("Layout");
         builder.withEnum(CsvLayout.class).select(config, "Presentation").add();
+        builder.withBoolean().select(config, "FullName").display("Full series name")
+                .description("If true, the fully qualified name of the series will be used. "
+                        + "If false, only the name of the series will be displayed.").add();
         sheet.put(builder.build());
         
         builder.reset("Content");
