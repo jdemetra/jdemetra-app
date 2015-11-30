@@ -92,8 +92,8 @@ public class EstimateSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("span", this.getClass(), "getSpan", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SPAN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(Bundle.estimateSpecUI_spanDesc_name());
-            desc.setDisplayName(Bundle.estimateSpecUI_spanDesc_desc());
+            desc.setShortDescription(Bundle.estimateSpecUI_spanDesc_desc());
+            desc.setDisplayName(Bundle.estimateSpecUI_spanDesc_name());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
