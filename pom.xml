@@ -404,10 +404,6 @@
     </build>
 
     <repositories>
-        <repository>
-            <id>joinup-thirdparty</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/repositories/thirdparty/</url>
-        </repository>
         <!-- Repository hosting NetBeans modules -->
         <repository>
             <id>netbeans</id>
