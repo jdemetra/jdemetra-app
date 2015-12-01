@@ -53,7 +53,7 @@ public class EasterSpecUI extends BaseTramoSpecUI {
         inner().setDuration(value);
     }
 
-    public boolean getTest() {
+    public boolean isTest() {
         EasterSpec spec = inner();
         if (!spec.isUsed()) {
             return false;
@@ -66,11 +66,28 @@ public class EasterSpecUI extends BaseTramoSpecUI {
         inner().setTest(value);
     }
 
+    public boolean isJulian() {
+        EasterSpec spec = inner();
+        if (!spec.isUsed()) {
+            return false;
+        } else {
+            return spec.isJulian();
+        }
+    }
+
+    public void setJulian(boolean value) {
+        inner().setJulian(value);
+    }
+
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         // regression
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
         EnhancedPropertyDescriptor desc = optionDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = julianDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -85,13 +102,15 @@ public class EasterSpecUI extends BaseTramoSpecUI {
         return descs;
     }
     ///////////////////////////////////////////////////////////////////////////
-    private static final int OPTION_ID = 1, DUR_ID = 2, TEST_ID = 3;
+    private static final int OPTION_ID = 1, DUR_ID = 2, TEST_ID = 3, JULIAN_ID=4;
 
     @Messages({
         "easterSpecUI.optionDesc.name=Option",
         "easterSpecUI.optionDesc.desc=Option"
     })
     private EnhancedPropertyDescriptor optionDesc() {
+        if (isJulian())
+            return null;
         try {
             PropertyDescriptor desc = new PropertyDescriptor("option", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OPTION_ID);
@@ -134,6 +153,25 @@ public class EasterSpecUI extends BaseTramoSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TEST_ID);
             desc.setDisplayName(Bundle.easterSpecUI_testDesc_name());
             desc.setShortDescription(Bundle.easterSpecUI_testDesc_desc());
+            if (ro_ || getOption() == EasterSpec.Type.Unused) {
+                edesc.setReadOnly(true);
+            }
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "easterSpecUI.julianDesc.name=Use Julian Easter (expressed in Gregorian calendar)",
+        "easterSpecUI.julianDesc.desc=Julian",
+    })
+    private EnhancedPropertyDescriptor julianDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("julian", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, JULIAN_ID);
+            desc.setDisplayName(Bundle.easterSpecUI_julianDesc_name());
+            desc.setShortDescription(Bundle.easterSpecUI_julianDesc_desc());
             if (ro_ || getOption() == EasterSpec.Type.Unused) {
                 edesc.setReadOnly(true);
             }
