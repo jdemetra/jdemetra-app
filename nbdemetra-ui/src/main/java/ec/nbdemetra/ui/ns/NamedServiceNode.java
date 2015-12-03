@@ -1,16 +1,30 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ui.ns;
 
 import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
+import ec.nbdemetra.ui.IResetable;
 import static ec.nbdemetra.ui.Jdk6Functions.namedServiceToNode;
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.explorer.ExplorerManager;
@@ -18,7 +32,8 @@ import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
-import org.openide.util.lookup.Lookups;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 
 /**
  *
@@ -26,8 +41,21 @@ import org.openide.util.lookup.Lookups;
  */
 public class NamedServiceNode extends AbstractNode {
 
-    public NamedServiceNode(INamedService namedService) {
-        super(Children.LEAF, Lookups.singleton(namedService));
+    public NamedServiceNode(@Nonnull INamedService namedService) {
+        this(namedService, new InstanceContent());
+    }
+
+    private NamedServiceNode(INamedService namedService, InstanceContent abilities) {
+        super(Children.LEAF, new AbstractLookup(abilities));
+        // order matters !
+        if (namedService instanceof IConfigurable) {
+            if (namedService instanceof IResetable) {
+                abilities.add(new LateConfigurableAndResetable((IConfigurable) namedService, (IResetable) namedService));
+            } else {
+                abilities.add(new LateConfigurable((IConfigurable) namedService));
+            }
+        }
+        abilities.add(namedService);
         setName(namedService.getName());
         setDisplayName(namedService.getDisplayName());
     }
@@ -53,22 +81,20 @@ public class NamedServiceNode extends AbstractNode {
         return getNamedService().createSheet();
     }
 
-    Config latestConfig;
-
     public void applyConfig() {
-        if (latestConfig != null) {
-            getLookup().lookup(IConfigurable.class).setConfig(latestConfig);
-            latestConfig = null;
+        LateConfigurable c = getLookup().lookup(LateConfigurable.class);
+        if (c != null) {
+            c.apply();
         }
     }
 
     @Override
     public Action getPreferredAction() {
-        final IConfigurable service = getLookup().lookup(IConfigurable.class);
-        return service != null ? new AbstractAction() {
+        final IConfigurable configurable = getLookup().lookup(IConfigurable.class);
+        return configurable != null ? new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                latestConfig = service.editConfig(latestConfig != null ? latestConfig : service.getConfig());
+                configurable.setConfig(configurable.editConfig(configurable.getConfig()));
             }
         } : super.getPreferredAction();
     }
@@ -85,4 +111,54 @@ public class NamedServiceNode extends AbstractNode {
             }
         }
     }
+
+    //<editor-fold defaultstate="collapsed" desc="Implementation details">
+    private static class LateConfigurable implements IConfigurable {
+
+        protected final IConfigurable configurable;
+        protected Config latestConfig;
+
+        public LateConfigurable(IConfigurable configurable) {
+            this.configurable = configurable;
+            this.latestConfig = configurable.getConfig();
+        }
+
+        @Override
+        public Config getConfig() {
+            return latestConfig;
+        }
+
+        @Override
+        public void setConfig(Config config) throws IllegalArgumentException {
+            latestConfig = config;
+        }
+
+        @Override
+        public Config editConfig(Config config) throws IllegalArgumentException {
+            return configurable.editConfig(config);
+        }
+
+        void apply() {
+            configurable.setConfig(latestConfig);
+        }
+    }
+
+    private static final class LateConfigurableAndResetable extends LateConfigurable implements IResetable {
+
+        private final IResetable resetable;
+
+        public LateConfigurableAndResetable(IConfigurable configurable, IResetable resetable) {
+            super(configurable);
+            this.resetable = resetable;
+        }
+
+        @Override
+        public void reset() {
+            Config tmp = configurable.getConfig();
+            resetable.reset();
+            latestConfig = configurable.getConfig();
+            configurable.setConfig(tmp);
+        }
+    }
+    //</editor-fold>
 }
