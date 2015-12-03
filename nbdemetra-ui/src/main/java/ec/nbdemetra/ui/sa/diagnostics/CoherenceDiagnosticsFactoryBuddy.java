@@ -22,6 +22,7 @@ import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IConfigurable;
+import ec.nbdemetra.ui.IResetable;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
@@ -45,7 +46,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
-public final class CoherenceDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable {
+public final class CoherenceDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, IResetable {
 
     private static final String NAME = "CoherenceDiagnostics";
 
@@ -80,6 +81,11 @@ public final class CoherenceDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
     @Override
     public Config editConfig(Config config) throws IllegalArgumentException {
         return configurator.editConfig(config);
+    }
+
+    @Override
+    public void reset() {
+        lookup().setProperties(new CoherenceDiagnosticsConfiguration());
     }
 
     @Override
@@ -235,11 +241,11 @@ public final class CoherenceDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
                     return false;
                 }
                 try {
-                    ((CoherenceDiagnosticsConfiguration)bean).check();
+                    ((CoherenceDiagnosticsConfiguration) bean).check();
                     return true;
                 } catch (BaseException ex) {
                     String message = ex.getMessage() + Bundle.coherenceDiagnostics_edit_errorMessage();
-                    if(JOptionPane.showConfirmDialog(null, message , Bundle.coherenceDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION){
+                    if (JOptionPane.showConfirmDialog(null, message, Bundle.coherenceDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
                         return false;
                     }
                 }
