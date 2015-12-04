@@ -75,6 +75,11 @@
             <artifactId>jfreesvg</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-lookup</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
 </project>

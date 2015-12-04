@@ -47,7 +47,6 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
-import java.util.zip.GZIPOutputStream;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -58,7 +57,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartTransferable;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.LegendItemEntity;
@@ -75,6 +73,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.TextAnchor;
+import org.openide.util.Lookup;
 
 /**
  * Utility class for charts.
@@ -421,24 +420,12 @@ public final class Charts {
     }
 
     public static void writeChart(@Nonnull String mediaType, @Nonnull OutputStream stream, @Nonnull JFreeChart chart, @Nonnegative int width, @Nonnegative int height) throws IOException {
-        switch (mediaType) {
-            case SVG_MEDIA_TYPE:
-                Charts.writeChartAsSVG(stream, chart, width, height);
-                break;
-            case SVG_COMP_MEDIA_TYPE:
-                try (GZIPOutputStream gzip = new GZIPOutputStream(stream)) {
-                    Charts.writeChartAsSVG(gzip, chart, width, height);
-                }
-                break;
-            case JPEG_MEDIA_TYPE:
-                ChartUtilities.writeChartAsJPEG(stream, chart, width, height);
-                break;
-            case PNG_MEDIA_TYPE:
-                ChartUtilities.writeChartAsPNG(stream, chart, width, height);
-                break;
-            default:
-                throw new IOException("Media type '" + mediaType + "' not supported");
+        for (JFreeChartWriter writer : Lookup.getDefault().lookupAll(JFreeChartWriter.class)) {
+            if (mediaType.equals(writer.getMediaType())) {
+                writer.writeChart(stream, chart, width, height);
+            }
         }
+        throw new IOException("Media type '" + mediaType + "' not supported");
     }
 
     public static void writeChartAsSVG(@Nonnull OutputStream stream, @Nonnull JFreeChart chart, @Nonnegative int width, @Nonnegative int height) throws IOException {
