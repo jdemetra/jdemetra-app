@@ -37,8 +37,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
     public String toString() {
         if (core == null) {
             return "";
-        }
-        else {
+        } else {
             StringBuilder builder = new StringBuilder();
             builder.append('(').append(core.getArima().getP()).append(", ").append(core.getArima().getD()).append(", ").append(core.getArima().getQ()).append(")(").append(core.getArima().getBP()).append(", ").append(core.getArima().getBD()).append(", ").append(core.getArima().getBQ()).append(')');
             return builder.toString();
@@ -248,7 +247,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
 
     @Messages({
         "arimaSpecUI.pDesc.name=P",
-        "arimaSpecUI.pDesc.desc=[p] Regular auto-regresssive order"
+        "arimaSpecUI.pDesc.desc=[p] Regular auto-regressive order"
     })
     private EnhancedPropertyDescriptor pDesc() {
         if (core.isUsingAutoModel()) {
@@ -262,16 +261,14 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_pDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
 
     @Messages({
         "arimaSpecUI.dDesc.name=D",
-        "arimaSpecUI.dDesc.desc=[d] Regular differencing order",
-    })
+        "arimaSpecUI.dDesc.desc=[d] Regular differencing order",})
     private EnhancedPropertyDescriptor dDesc() {
         if (core.isUsingAutoModel()) {
             return null;
@@ -284,8 +281,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_dDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -306,8 +302,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_qDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -328,8 +323,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_bpDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -350,8 +344,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_bdDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -372,8 +365,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_bqDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -394,8 +386,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_phiDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -416,8 +407,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_thetaDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -438,8 +428,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_bphiDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -460,8 +449,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_bthetaDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -482,8 +470,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_meanDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -613,8 +600,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_enabledDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -635,8 +621,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_accdefDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -657,8 +642,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_balancedDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -679,8 +663,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_mixedDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -701,8 +684,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_checkmuDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -723,8 +705,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_hrinitialDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -745,8 +726,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_urlimitDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -767,8 +747,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_iurlimitDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -789,8 +768,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_furlimitDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -811,8 +789,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_cancelDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -833,8 +810,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_ljungboxDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -855,8 +831,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_armaDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -877,8 +852,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_reducecvDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -899,8 +873,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_reduceseDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }

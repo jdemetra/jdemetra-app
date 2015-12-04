@@ -5,10 +5,10 @@
 package ec.nbdemetra.tramoseats.descriptors;
 
 import ec.tstoolkit.Parameter;
-import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.modelling.arima.tramo.ArimaSpec;
 import ec.tstoolkit.modelling.arima.tramo.AutoModelSpec;
+import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -481,7 +481,7 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
     }
 
     @Messages({
-        "arimaSpecUI.pDesc.desc=[p] Regular auto-regresssive order"
+        "arimaSpecUI.pDesc.desc=[p] Regular auto-regressive order"
     })
     private EnhancedPropertyDescriptor pDesc() {
         if (core.isUsingAutoModel()) {

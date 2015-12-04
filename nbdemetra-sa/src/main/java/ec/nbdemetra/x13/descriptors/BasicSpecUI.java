@@ -4,8 +4,8 @@
  */
 package ec.nbdemetra.x13.descriptors;
 
-import ec.tstoolkit.modelling.arima.x13.RegArimaSpecification;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
+import ec.tstoolkit.modelling.arima.x13.RegArimaSpecification;
 import ec.ui.descriptors.TsPeriodSelectorUI;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -66,8 +66,8 @@ public class BasicSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("span", this.getClass(), "getSpan", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SPAN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(Bundle.basicSpecUI_spanDesc_name());
-            desc.setDisplayName(Bundle.basicSpecUI_spanDesc_desc());
+            desc.setDisplayName(Bundle.basicSpecUI_spanDesc_name());
+            desc.setShortDescription(Bundle.basicSpecUI_spanDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
