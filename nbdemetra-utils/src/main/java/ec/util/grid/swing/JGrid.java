@@ -104,9 +104,8 @@ public final class JGrid extends AGrid {
         internalModel.addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent e) {
-                // Adding resize support of newly added columns
                 if (e.getType() == TableModelEvent.UPDATE) {
-                    applyZoomRatioOnColumns(zoomRatio, main);
+                    applyZoomRatioOnColumnsWidth();
                 }
             }
         });
@@ -285,7 +284,7 @@ public final class JGrid extends AGrid {
         }
         scrollPane.repaint();
     }
-    
+
     private void onCrosshairVisibleChange() {
         repaint();
     }
@@ -304,15 +303,7 @@ public final class JGrid extends AGrid {
         main.setRowHeight(rowHeight);
         fct.getFixedTable().setRowHeight(rowHeight);
 
-        int columnWidth = (int) (COLUMN_WIDTH * zoomRatio);
-
-        // Resize of data columns according to the zoom ratio
-        applyZoomRatioOnColumns(zoomRatio, main);
-
-        // Resize of row headers according to the zoom ratio
-        JTable j = fct.getFixedTable();
-        j.setPreferredScrollableViewportSize(new Dimension(columnWidth, rowHeight));
-        applyZoomRatioOnColumns(zoomRatio, j);
+        applyZoomRatioOnColumnsWidth();
 
         // Resize of the fonts according to the zoom ratio
         main.setFont(font);
@@ -573,9 +564,19 @@ public final class JGrid extends AGrid {
         return !m.isSelectionEmpty() ? (m.getMaxSelectionIndex() - m.getMinSelectionIndex() + 1) : 0;
     }
 
-    private static void applyZoomRatioOnColumns(float zoomRatio, JTable table) {
+    private void applyZoomRatioOnColumnsWidth() {
         int columnWidth = (int) (COLUMN_WIDTH * zoomRatio);
 
+        // Resize of data columns according to the zoom ratio
+        applyColumnsWidth(columnWidth, main);
+
+        // Resize of row headers according to the zoom ratio
+        JTable j = fct.getFixedTable();
+        j.setPreferredScrollableViewportSize(new Dimension(columnWidth, main.getRowHeight()));
+        applyColumnsWidth(columnWidth, j);
+    }
+
+    private static void applyColumnsWidth(int columnWidth, JTable table) {
         // Resize of data columns according to the zoom ratio
         Enumeration<TableColumn> cols = table.getTableHeader().getColumnModel().getColumns();
         while (cols.hasMoreElements()) {
