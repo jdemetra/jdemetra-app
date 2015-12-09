@@ -423,6 +423,7 @@ public final class Charts {
         for (JFreeChartWriter writer : Lookup.getDefault().lookupAll(JFreeChartWriter.class)) {
             if (mediaType.equals(writer.getMediaType())) {
                 writer.writeChart(stream, chart, width, height);
+                return;
             }
         }
         throw new IOException("Media type '" + mediaType + "' not supported");
