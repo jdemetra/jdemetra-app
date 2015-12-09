@@ -88,8 +88,8 @@ public final class JGrid extends AGrid {
     // Setting constants used to implement zoom
     private static final int COLUMN_WIDTH = new TableColumn().getPreferredWidth();
 
-    private final JScrollPane scrollPane;
     private final XTable main;
+    private final JScrollPane scrollPane;
     private final FixedColumnTable fct;
     private final InternalTableModel internalModel;
     private final CellSelectionListener cellSelectionListener;
@@ -98,20 +98,40 @@ public final class JGrid extends AGrid {
     private float zoomRatio;
 
     public JGrid() {
-        this.scrollPane = withEmptyBorders(new JScrollPane());
-
-        this.internalModel = new InternalTableModel();
-        internalModel.addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                // Adding resize support of newly added columns
-                if (e.getType() == TableModelEvent.UPDATE) {
-                    applyZoomRatioOnColumns(zoomRatio, main);
-                }
-            }
-        });
-
         this.main = new XTable();
+        this.scrollPane = withEmptyBorders(new JScrollPane(main));
+        // This splits the original table into two distinct tables. The first
+        // one has only one column used for the headers,
+        // while the other has all the remaining columns. They share the same
+        // model but not the columns model!
+        this.fct = new FixedColumnTable(1, scrollPane);
+        this.internalModel = new InternalTableModel();
+        this.cellSelectionListener = new CellSelectionListener();
+        this.initialFontSize = main.getFont().getSize2D();
+        this.initialRowHeight = main.getRowHeight();
+        this.zoomRatio = 1f;
+
+        initComponents();
+
+        // InputMap and ActionMap
+        setInputMap(WHEN_FOCUSED, main.getInputMap(WHEN_FOCUSED));
+        setInputMap(WHEN_IN_FOCUSED_WINDOW, main.getInputMap(WHEN_IN_FOCUSED_WINDOW));
+        setInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, main.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT));
+
+        enableSelectColumnOnHeader();
+        // we have to split enableDragOnHeader to prevent event nigthmare
+        enableDragOnHeader(main.getTableHeader());
+        enableSelectAllOnHeader();
+        enableDragOnHeader(fct.getFixedTable().getTableHeader());
+        enableCellHovering();
+        enableCellSelection();
+        enableProperties();
+
+        setLayout(new BorderLayout());
+        add(new JLayer<>(scrollPane, new NoDataUI()), BorderLayout.CENTER);
+    }
+
+    private void initComponents() {
         main.setModel(internalModel);
         main.setOddBackground(null);
 
@@ -127,26 +147,20 @@ public final class JGrid extends AGrid {
         // http://www.jroller.com/santhosh/date/20050524#jtable_becomes_uglier_with_auto
         scrollPane.getViewport().setBackground(main.getBackground());
 
-        // This splits the original table into two distinct tables. The first
-        // one has only one column used for the headers,
-        // while the other has all the remaining columns. They share the same
-        // model but not the columns model!
-        fct = new FixedColumnTable(1, scrollPane);
         fct.getFixedTable().getTableHeader().setReorderingAllowed(false);
         fct.getFixedTable().setFillsViewportHeight(true);
         fct.getFixedTable().setIntercellSpacing(new Dimension(0, 0));
         fct.getFixedTable().setShowGrid(false);
 
-        // InputMap and ActionMap
-        //setActionMap(main.getActionMap());
-        setInputMap(WHEN_FOCUSED, main.getInputMap(WHEN_FOCUSED));
-        setInputMap(WHEN_IN_FOCUSED_WINDOW, main.getInputMap(WHEN_IN_FOCUSED_WINDOW));
-        setInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, main.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT));
-
-        this.cellSelectionListener = new CellSelectionListener();
-        this.initialFontSize = main.getFont().getSize2D();
-        this.initialRowHeight = main.getRowHeight();
-        this.zoomRatio = 1f;
+        // FixedColumnTable#makeColumns(int) doesn't use zoomRatio, so we have to apply it afterwards
+        internalModel.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                if (e.getType() == TableModelEvent.UPDATE) {
+                    applyZoomRatioOnColumnsWidth();
+                }
+            }
+        });
 
         setRowRenderer(new RowRenderer(this));
         setColumnRenderer(new ColumnRenderer(this));
@@ -163,17 +177,6 @@ public final class JGrid extends AGrid {
         onRowSelectionModelChange();
         onColumnSelectionModelChange();
         onComponentPopupMenuChange();
-
-        enableSelectColumnOnHeader();
-        enableDragOnHeader(main.getTableHeader());
-        enableSelectAllOnHeader();
-        enableDragOnHeader(fct.getFixedTable().getTableHeader());
-        enableCellHovering();
-        enableCellSelection();
-        enableProperties();
-
-        setLayout(new BorderLayout());
-        add(new JLayer<>(scrollPane, new NoDataUI()), BorderLayout.CENTER);
     }
 
     public TableCellRenderer getDefaultRenderer(Class<?> aClass) {
@@ -285,7 +288,7 @@ public final class JGrid extends AGrid {
         }
         scrollPane.repaint();
     }
-    
+
     private void onCrosshairVisibleChange() {
         repaint();
     }
@@ -304,15 +307,7 @@ public final class JGrid extends AGrid {
         main.setRowHeight(rowHeight);
         fct.getFixedTable().setRowHeight(rowHeight);
 
-        int columnWidth = (int) (COLUMN_WIDTH * zoomRatio);
-
-        // Resize of data columns according to the zoom ratio
-        applyZoomRatioOnColumns(zoomRatio, main);
-
-        // Resize of row headers according to the zoom ratio
-        JTable j = fct.getFixedTable();
-        j.setPreferredScrollableViewportSize(new Dimension(columnWidth, rowHeight));
-        applyZoomRatioOnColumns(zoomRatio, j);
+        applyZoomRatioOnColumnsWidth();
 
         // Resize of the fonts according to the zoom ratio
         main.setFont(font);
@@ -573,9 +568,19 @@ public final class JGrid extends AGrid {
         return !m.isSelectionEmpty() ? (m.getMaxSelectionIndex() - m.getMinSelectionIndex() + 1) : 0;
     }
 
-    private static void applyZoomRatioOnColumns(float zoomRatio, JTable table) {
+    private void applyZoomRatioOnColumnsWidth() {
         int columnWidth = (int) (COLUMN_WIDTH * zoomRatio);
 
+        // Resize of data columns according to the zoom ratio
+        applyColumnsWidth(columnWidth, main);
+
+        // Resize of row headers according to the zoom ratio
+        JTable j = fct.getFixedTable();
+        j.setPreferredScrollableViewportSize(new Dimension(columnWidth, main.getRowHeight()));
+        applyColumnsWidth(columnWidth, j);
+    }
+
+    private static void applyColumnsWidth(int columnWidth, JTable table) {
         // Resize of data columns according to the zoom ratio
         Enumeration<TableColumn> cols = table.getTableHeader().getColumnModel().getColumns();
         while (cols.hasMoreElements()) {
