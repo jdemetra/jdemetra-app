@@ -167,7 +167,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="DropDownButtonFactory.createDropDownButton(ImageUtilities.loadImageIcon(&quot;ec/nbdemetra/sa/blog_16x16.png&quot;, false), specPopup)"/>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="DropDownButtonFactory.createDropDownButton(DemetraUiIcon.BLOG_16, specPopup)"/>
           </AuxValues>
         </Component>
         <Component class="javax.swing.JLabel" name="selectedSpecLabel">
