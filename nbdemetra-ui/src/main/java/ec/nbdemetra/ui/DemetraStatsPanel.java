@@ -122,7 +122,7 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         stabilityLength = new javax.swing.JSpinner();
         saPanel = new javax.swing.JPanel();
         defaultSpecLabel = new javax.swing.JLabel();
-        specButton = DropDownButtonFactory.createDropDownButton(ImageUtilities.loadImageIcon("ec/nbdemetra/sa/blog_16x16.png", false), specPopup);
+        specButton = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.BLOG_16, specPopup);
         selectedSpecLabel = new javax.swing.JLabel();
         revisionHistoryPanel = new javax.swing.JPanel();
         estimationLabel = new javax.swing.JLabel();
@@ -134,13 +134,13 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
 
         lastYearsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(DemetraStatsPanel.class, "DemetraStatsPanel.lastYearsPanel.border.title"))); // NOI18N
 
-        spectralLastYears.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+        spectralLastYears.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
 
         org.openide.awt.Mnemonics.setLocalizedText(spectralLabel, org.openide.util.NbBundle.getMessage(DemetraStatsPanel.class, "DemetraStatsPanel.spectralLabel.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(stabilityLabel, org.openide.util.NbBundle.getMessage(DemetraStatsPanel.class, "DemetraStatsPanel.stabilityLabel.text")); // NOI18N
 
-        stabilityLength.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(8), Integer.valueOf(1), null, Integer.valueOf(1)));
+        stabilityLength.setModel(new javax.swing.SpinnerNumberModel(8, 1, null, 1));
 
         javax.swing.GroupLayout lastYearsPanelLayout = new javax.swing.GroupLayout(lastYearsPanel);
         lastYearsPanel.setLayout(lastYearsPanelLayout);

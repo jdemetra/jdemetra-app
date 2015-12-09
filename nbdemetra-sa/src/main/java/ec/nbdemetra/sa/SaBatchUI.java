@@ -241,7 +241,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         toolBarRepresentation.addSeparator();
 
         JPopupMenu specPopup = new JPopupMenu();
-        final JButton specButton = (JButton) toolBarRepresentation.add(DropDownButtonFactory.createDropDownButton(ImageUtilities.loadImageIcon("ec/nbdemetra/sa/blog_16x16.png", false), specPopup));
+        final JButton specButton = (JButton) toolBarRepresentation.add(DropDownButtonFactory.createDropDownButton(DemetraUiIcon.BLOG_16, specPopup));
         specPopup.add(new SpecSelectionComponent()).addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
