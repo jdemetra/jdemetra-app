@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.border.Border;
+import org.openide.awt.Toolbar;
 import org.openide.windows.TopComponent;
 
 /**
@@ -39,12 +40,12 @@ public final class NbComponents {
 
     public static boolean isXPTheme() {
         Boolean isXP = (Boolean) Toolkit.getDefaultToolkit().getDesktopProperty("win.xpstyle.themeActive"); //NOI18N
-        return isXP == null ? false : isXP.booleanValue();
+        return isXP == null ? false : isXP;
     }
 
     @Nonnull
     public static JToolBar newInnerToolbar() {
-        JToolBar result = new JToolBar();
+        JToolBar result = new Toolbar();
         Border b = (Border) UIManager.get("Nb.Editor.Toolbar.border"); //NOI18N
         result.setBorder(b);
         result.setFloatable(false);
