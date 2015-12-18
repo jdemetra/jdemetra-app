@@ -155,7 +155,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
 
         toolBarRepresentation.addSeparator();
         JPopupMenu specPopup = new JPopupMenu();
-        final JButton specButton = (JButton) toolBarRepresentation.add(DropDownButtonFactory.createDropDownButton(ImageUtilities.loadImageIcon("ec/nbdemetra/sa/blog_16x16.png", false), specPopup));
+        final JButton specButton = (JButton) toolBarRepresentation.add(DropDownButtonFactory.createDropDownButton(DemetraUiIcon.BLOG_16, specPopup));
         specButton.setFocusPainted(false);
         specPopup.add(new ec.nbdemetra.ws.ui.SpecSelectionComponent()).addPropertyChangeListener(new PropertyChangeListener() {
             @Override

@@ -35,6 +35,14 @@ public class BasicSpecUI extends BaseRegArimaSpecUI {
         core.getBasic().setPreprocessing(value);
     }
 
+    public boolean isPreliminaryCheck() {
+        return core.getBasic().isPreliminaryCheck();
+    }
+
+    public void setPreliminaryCheck(boolean value) {
+        core.getBasic().setPreliminaryCheck(value);
+    }
+
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
@@ -46,6 +54,10 @@ public class BasicSpecUI extends BaseRegArimaSpecUI {
 //        if (desc != null) {
 //            descs.add(desc);
 //        }
+        desc = pcDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         return descs;
     }
 
@@ -55,7 +67,7 @@ public class BasicSpecUI extends BaseRegArimaSpecUI {
         return Bundle.basicSpecUI_getDisplayName();
     }
     ///////////////////////////////////////////////////////////////////////////
-    private static final int SPAN_ID = 1, PREPROCESSING_ID = 2;
+    private static final int SPAN_ID = 1, PREPROCESSING_ID = 2, PRELIMINARYCHECK_ID = 3;
 
     @Messages({
         "basicSpecUI.spanDesc.name=Series span",
@@ -66,8 +78,8 @@ public class BasicSpecUI extends BaseRegArimaSpecUI {
             PropertyDescriptor desc = new PropertyDescriptor("span", this.getClass(), "getSpan", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SPAN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(Bundle.basicSpecUI_spanDesc_name());
-            desc.setDisplayName(Bundle.basicSpecUI_spanDesc_desc());
+            desc.setShortDescription(Bundle.basicSpecUI_spanDesc_desc());
+            desc.setDisplayName(Bundle.basicSpecUI_spanDesc_name());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -93,4 +105,21 @@ public class BasicSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "basicSpecUI.pcDesc.name=Preliminary Check",
+        "basicSpecUI.pcDesc.desc="
+    })
+    private EnhancedPropertyDescriptor pcDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("preliminaryCheck", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, PRELIMINARYCHECK_ID);
+            desc.setDisplayName(Bundle.basicSpecUI_pcDesc_name());
+            desc.setShortDescription(Bundle.basicSpecUI_pcDesc_desc());
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
 }

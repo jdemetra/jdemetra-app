@@ -6,6 +6,7 @@ package ec.nbdemetra.x13.descriptors;
 
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.modelling.RegressionTestSpec;
+import ec.tstoolkit.modelling.arima.tramo.EasterSpec;
 import ec.tstoolkit.modelling.arima.x13.MovingHolidaySpec;
 import ec.tstoolkit.modelling.arima.x13.RegArimaSpecification;
 import ec.tstoolkit.modelling.arima.x13.RegressionSpec;
@@ -45,7 +46,7 @@ public class EasterSpecUI extends BaseRegArimaSpecUI {
         MovingHolidaySpec easter = core.getRegression().getEaster();
 
         if (easter == null) {
-            easter = MovingHolidaySpec.easterSpec(true);
+            easter = MovingHolidaySpec.easterSpec(true, isJulian());
             core.getRegression().add(easter);
         }
         return easter;
@@ -91,11 +92,28 @@ public class EasterSpecUI extends BaseRegArimaSpecUI {
         inner().setW(value);
     }
 
+    public boolean isJulian() {
+        MovingHolidaySpec spec = getInner();
+        if (spec == null) {
+            return false;
+        } else {
+            return spec.getType() == MovingHolidaySpec.Type.JulianEaster;
+        }
+    }
+
+    public void setJulian(boolean value) {
+        inner().setType(value ? MovingHolidaySpec.Type.JulianEaster : MovingHolidaySpec.Type.Easter);
+    }
+
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         // regression
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
         EnhancedPropertyDescriptor desc = enabledDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = julianDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -110,7 +128,7 @@ public class EasterSpecUI extends BaseRegArimaSpecUI {
         return descs;
     }
     ///////////////////////////////////////////////////////////////////////////
-    private static final int ENABLED_ID = 1, TEST_ID = 2, DUR_ID = 3;
+    private static final int ENABLED_ID = 1, TEST_ID = 2, DUR_ID = 3, JULIAN_ID = 4;
 
     @Messages({
         "easterSpecUI.enabledDesc.name=Is enabled",
@@ -144,6 +162,24 @@ public class EasterSpecUI extends BaseRegArimaSpecUI {
             desc.setDisplayName(Bundle.easterSpecUI_durationDesc_name());
             desc.setShortDescription(Bundle.easterSpecUI_durationDesc_desc());
             edesc.setReadOnly(ro_ || getTest() == RegressionTestSpec.Add);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "easterSpecUI.julianDesc.name=Use Julian Easter (expressed in Gregorian calendar)",
+        "easterSpecUI.julianDesc.desc=Julian",})
+    private EnhancedPropertyDescriptor julianDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("julian", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, JULIAN_ID);
+            desc.setDisplayName(Bundle.easterSpecUI_julianDesc_name());
+            desc.setShortDescription(Bundle.easterSpecUI_julianDesc_desc());
+            if (ro_ || !isEnabled()) {
+                edesc.setReadOnly(true);
+            }
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

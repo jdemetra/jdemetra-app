@@ -22,6 +22,7 @@ import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IConfigurable;
+import ec.nbdemetra.ui.IResetable;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
@@ -45,7 +46,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Laurent Jadoul
  */
 @ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
-public final class SpectralDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable {
+public final class SpectralDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, IResetable {
 
     private static final String NAME = "SpectralDiagnostics";
 
@@ -82,6 +83,11 @@ public final class SpectralDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryB
         return configurator.editConfig(config);
     }
 
+    @Override
+    public void reset() {
+        lookup().setProperties(new SpectralDiagnosticsConfiguration());
+    }
+    
     @Override
     public Sheet createSheet() {
         return createSheet(lookup().getConfiguration());

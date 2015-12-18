@@ -14,7 +14,7 @@
 
     <properties>
         <miglayout.version>3.7.4</miglayout.version>
-        <l2fprod.version>7.3</l2fprod.version>
+        <l2fprod.version>1.0.2</l2fprod.version>
         <jcalendar.version>1.4</jcalendar.version>
         <swinglayout.version>1.0.3</swinglayout.version>
     </properties>
@@ -34,8 +34,8 @@
                 <version>${miglayout.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.l2fprod.common</groupId>
-                <artifactId>l2fprod-common-all</artifactId>
+                <groupId>org.tros</groupId>
+                <artifactId>l2fprod-properties-editor</artifactId>
                 <version>${l2fprod.version}</version>
             </dependency>
             <dependency>
@@ -142,8 +142,8 @@
             <artifactId>miglayout</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.l2fprod.common</groupId>
-            <artifactId>l2fprod-common-all</artifactId>
+            <groupId>org.tros</groupId>
+            <artifactId>l2fprod-properties-editor</artifactId>
         </dependency>
         <dependency>
             <groupId>com.toedter</groupId>

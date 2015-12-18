@@ -6,5 +6,4 @@ and open the template in the editor.
 <!DOCTYPE map PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 2.0//EN" "http://java.sun.com/products/javahelp/map_2_0.dtd">
 <map version="2.0">
     <mapID target="ec.nbdemetra.ui.about" url="ui-about.html"/>
-    <mapID target="ec.nbdemetra.ui.datasources" url="ui-datasources.html"/>
 </map>

@@ -30,6 +30,8 @@ import ec.tss.tsproviders.db.DbBean;
 import ec.tss.tsproviders.jdbc.ConnectionSupplier;
 import ec.tss.tsproviders.jdbc.JdbcBean;
 import ec.tss.tsproviders.jdbc.jndi.JndiJdbcProvider;
+import ec.tss.tsproviders.utils.Formatters;
+import ec.tss.tsproviders.utils.Parsers;
 import static ec.util.chart.impl.TangoColorScheme.DARK_ORANGE;
 import static ec.util.chart.impl.TangoColorScheme.DARK_SCARLET_RED;
 import static ec.util.chart.swing.SwingColorSchemeSupport.rgbToColor;
@@ -46,17 +48,26 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.RunnableFuture;
 import javax.annotation.Nonnull;
 import javax.swing.Action;
+import javax.swing.JCheckBox;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import org.netbeans.api.db.explorer.ConnectionManager;
 import org.netbeans.api.db.explorer.DatabaseConnection;
 import org.netbeans.api.db.explorer.DatabaseException;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileUtil;
 import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
+import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -205,33 +216,46 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
         }
     }
 
+    @NbBundle.Messages({
+        "# {0} - dbName",
+        "dbexplorer.missingConnection=Cannot find connection named ''{0}''",
+        "# {0} - dbName",
+        "dbexplorer.noConnection=Not connected to the database ''{0}''",
+        "# {0} - dbName",
+        "dbexplorer.failedConnection=Failed to connect to the database ''{0}''",
+        "# {0} - dbName",
+        "dbexplorer.requestConnection=A process request a connection to the database ''{0}''.\nDo you want to open the connection dialog?",
+        "dbexplorer.skip=Don't ask again"
+    })
     private static final class DbExplorerConnectionSupplier implements ConnectionSupplier {
+
+        private final Properties map = new Properties();
 
         @Override
         public Connection getConnection(JdbcBean bean) throws SQLException {
-            return getJDBCConnection(bean.getDbName());
+            return getConnectionByName(bean.getDbName());
         }
 
-        private Connection getJDBCConnection(String dbName) throws SQLException {
+        private Connection getConnectionByName(String dbName) throws SQLException {
             Optional<DatabaseConnection> o = DbExplorerUtil.getConnectionByDisplayName(dbName);
             if (o.isPresent()) {
                 return getJDBCConnection(o.get());
             }
-            throw new SQLException("Cannot find connection named '" + dbName + "'");
+            throw new SQLException(Bundle.dbexplorer_missingConnection(dbName));
         }
 
-        private Connection getJDBCConnection(DatabaseConnection o) throws SQLException {
+        private FailSafeConnection getJDBCConnection(DatabaseConnection o) throws SQLException {
             Connection conn = o.getJDBCConnection();
             if (conn != null) {
                 return new FailSafeConnection(conn, o.getSchema());
             }
-            if (openJDBCConnection(o)) {
+            if (connect(o) || connectWithDialog(o)) {
                 return new FailSafeConnection(o.getJDBCConnection(), o.getSchema());
             }
-            throw new SQLException("Not connected to the database");
+            throw new SQLException(Bundle.dbexplorer_noConnection(o.getDisplayName()));
         }
 
-        private boolean openJDBCConnection(DatabaseConnection o) throws SQLException {
+        private boolean connect(DatabaseConnection o) throws SQLException {
             // let's try to connect without opening any dialog
             // must be done outside EDT
             if (!SwingUtilities.isEventDispatchThread()) {
@@ -240,10 +264,53 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
                     // this behavior prevents some connections but it might be fixed in further versions
                     return ConnectionManager.getDefault().connect(o);
                 } catch (DatabaseException ex) {
-                    throw new SQLException("Failed to connect to the database", ex);
+                    throw new SQLException(Bundle.dbexplorer_failedConnection(o.getDisplayName()), ex);
                 }
             }
             return false;
+        }
+
+        private boolean connectWithDialog(final DatabaseConnection o) {
+            try {
+                return execInEDT(new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() throws Exception {
+                        String dbName = o.getDisplayName();
+                        if (!isSkip(dbName)) {
+                            JCheckBox checkBox = new JCheckBox(Bundle.dbexplorer_skip(), false);
+                            Object[] msg = {Bundle.dbexplorer_requestConnection(dbName), checkBox};
+                            Object option = DialogDisplayer.getDefault().notify(new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION));
+                            setSkip(dbName, checkBox.isSelected());
+                            if (option == NotifyDescriptor.YES_OPTION) {
+                                ConnectionManager.getDefault().showConnectionDialog(o);
+                                return o.getJDBCConnection() != null;
+                            }
+                        }
+                        return false;
+                    }
+                });
+            } catch (Exception ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            return false;
+        }
+
+        boolean isSkip(String dbName) {
+            return Parsers.boolParser().parse(map.getProperty(dbName, Boolean.FALSE.toString()));
+        }
+
+        void setSkip(String dbName, boolean remember) {
+            map.setProperty(dbName, Formatters.boolFormatter().formatAsString(remember));
+        }
+    }
+
+    private static <T> T execInEDT(Callable<T> callable) throws Exception {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            RunnableFuture<T> x = new FutureTask(callable);
+            SwingUtilities.invokeAndWait(x);
+            return x.get();
+        } else {
+            return callable.call();
         }
     }
 

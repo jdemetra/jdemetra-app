@@ -28,10 +28,22 @@ public class BasicSpecUI extends BaseTramoSpecUI {
         return new TsPeriodSelectorUI(core.getTransform().getSpan(), UserInterfaceContext.INSTANCE.getDomain(), ro_);
     }
 
+    public boolean isPreliminaryCheck() {
+        return core.getTransform().isPreliminaryCheck();
+    }
+
+    public void setPreliminaryCheck(boolean value) {
+        core.getTransform().setPreliminaryCheck(value);
+    }
+
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
         EnhancedPropertyDescriptor desc = spanDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = pcDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -48,7 +60,7 @@ public class BasicSpecUI extends BaseTramoSpecUI {
         return Bundle.basicSpecUI_getDislayName();
     }
     ///////////////////////////////////////////////////////////////////////////
-    private static final int SPAN_ID = 1, AUTOMDL_ID = 2;
+    private static final int SPAN_ID = 1, AUTOMDL_ID = 2, PRELIMINARYCHECK_ID = 3;
 
     @Messages({
         "basicSpecUI.spanDesc.name=Series span",
@@ -78,6 +90,24 @@ public class BasicSpecUI extends BaseTramoSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AUTOMDL_ID);
             desc.setDisplayName(Bundle.basicSpecUI_automdlDesc_name());
             desc.setShortDescription(Bundle.basicSpecUI_automdlDesc_desc());
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "basicSpecUI.pcDesc.name=Preliminary Check",
+        "basicSpecUI.pcDesc.desc="
+    })
+    private EnhancedPropertyDescriptor pcDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("preliminaryCheck", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, PRELIMINARYCHECK_ID);
+            desc.setDisplayName(Bundle.basicSpecUI_pcDesc_name());
+            desc.setShortDescription(Bundle.basicSpecUI_pcDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(ro_);
             return edesc;

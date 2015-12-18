@@ -37,14 +37,11 @@
         <module>nbdemetra-jdbc</module>
         <module>nbdemetra-common</module>
         <module>nbdemetra-spreadsheet</module>
-        <module>nbdemetra-sa-advanced</module>
         <module>nbdemetra-businesscycle</module>
-        <module>nbdemetra-benchmarking</module>
         <module>nbdemetra-sa</module>
         <module>nbdemetra-sdmx</module>
         <module>nbdemetra-utils</module>
         <module>nbdemetra-anomalydetection</module>
-        <module>nbdemetra-sa-ext</module>
         <module>nbdemetra-chainlinking</module>
     </modules>
 
@@ -407,10 +404,6 @@
     </build>
 
     <repositories>
-        <repository>
-            <id>joinup-thirdparty</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/repositories/thirdparty/</url>
-        </repository>
         <!-- Repository hosting NetBeans modules -->
         <repository>
             <id>netbeans</id>
