@@ -1057,7 +1057,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             }
             if (nlast != 0) {
                 TsPeriodSelector selector = new TsPeriodSelector();
-                selector.last(nlast * info.s.getFrequency().intValue());
+                selector.last(nlast * info.s.getFrequency().intValue()+info.del);
                 info.s = info.s.select(selector);
             }
             if (info.s.getLength() < 4 * info.s.getFrequency().intValue()) {
