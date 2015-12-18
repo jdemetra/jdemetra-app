@@ -180,8 +180,9 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
         if (lastYears > 0) {
             int nmax = lastYears * s.getFrequency().intValue();
             int nbeg = s.getLength() - nmax;
+            nbeg-=diffOrder;
             if (nbeg > 0) {
-                s = s.drop(nbeg, 0);
+                s = s.drop(nbeg,0);
             }
         }
 
