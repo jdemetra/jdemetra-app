@@ -33,7 +33,8 @@ import org.openide.util.Exceptions;
  */
 public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JComponent implements IDisposable, ExplorerManager.Provider {
 
-    public static final String BUTTONS = "Buttons", BUTTON_APPLY = "Apply", BUTTON_RESTORE = "Restore", BUTTON_SAVE = "Save";
+    public static final String BUTTONS = "Buttons", BUTTON_APPLY = "Apply", BUTTON_RESTORE = "Restore", BUTTON_SAVE = "Save",
+            DIRTY_SPEC_PROPERTY = "dirtySpecProperty";
 
     public static enum Type {
 
@@ -55,9 +56,13 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
     // other
     protected int specWidth_ = 300;
 
+    private boolean dirty;
+
     protected DefaultProcessingViewer(Type type) {
         this.type_ = type;
         this.m_identifier = UUID.randomUUID();
+
+        this.dirty = false;
 
         this.specPanel = new JPanel(new BorderLayout());
         specPanel.setVisible(false);
@@ -125,6 +130,8 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
     }
 
     public void setDocument(D doc) {
+        dirty = false;
+        
         try {
             if (m_procView != null) {
                 m_procView.dispose();
@@ -167,6 +174,14 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
     public void setSpecificationsVisible(boolean visible) {
         specPanel.setVisible(visible);
     }
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
+    }
     // < GETTERS/SETTERS
 
     public void initSpecView() {
@@ -202,7 +217,7 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
                     IActiveProcDocument doc = getDocument();
                     IProcSpecification pspec = specDescriptor.getCore();
                     doc.setSpecification(pspec.clone());
-                    setDirty(null, false);
+                    setDirty(BUTTON_APPLY);
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
                     refreshView();
                     if (isHeaderVisible()) {
@@ -222,9 +237,7 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
                 public void actionPerformed(ActionEvent e) {
                     IProcSpecification pspec = specDescriptor.getCore();
                     doc.setSpecification(pspec.clone());
-                    setDirty(BUTTON_APPLY, false);
-                    setDirty(BUTTON_RESTORE, true);
-                    setDirty(BUTTON_SAVE, true);
+                    setDirty(BUTTON_APPLY);
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
                     refreshView();
                     if (isHeaderVisible()) {
@@ -236,9 +249,7 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     doc.setSpecification(originalSpec);
-                    setDirty(BUTTON_APPLY, false);
-                    setDirty(BUTTON_RESTORE, false);
-                    setDirty(BUTTON_SAVE, false);
+                    setDirty(BUTTON_RESTORE);
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_RESTORE, null, null);
                     refreshView();
                     if (isHeaderVisible()) {
@@ -249,9 +260,10 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
             new AbstractAction(BUTTON_SAVE) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    setDirty(BUTTON_APPLY, false);
-                    setDirty(BUTTON_RESTORE, false);
-                    setDirty(BUTTON_SAVE, false);
+                    // Apply & Save
+                    IProcSpecification pspec = specDescriptor.getCore();
+                    doc.setSpecification(pspec.clone());
+                    setDirty(BUTTON_SAVE);
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_SAVE, null, null);
                 }
             }};
@@ -267,8 +279,7 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
         pane.addPropertyChangeListener(DocumentUIServices.SPEC_PROPERTY, new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                setDirty(BUTTON_APPLY, true);
-                setDirty(BUTTON_RESTORE, true);
+                setDirty(null);
             }
         });
 
@@ -277,7 +288,7 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         for (int i = 0; i < commands.length; ++i) {
             JButton applyButton = new JButton(commands[i]);
-            applyButton.setForeground(Color.GRAY);
+            applyButton.setEnabled(false);
             buttonPanel.add(applyButton);
             if (i < commands.length - 1) {
                 buttonPanel.add(Box.createRigidArea(new Dimension(2, 0)));
@@ -390,24 +401,33 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
         removeAll();
     }
 
-    public void setDirty(String cmd, boolean b) {
-        setDirty(specPanel, cmd, b);
+    public void setDirty(String sourceButton) {
+        setDirty(specPanel, sourceButton);
     }
 
-    private static void setDirty(Container container, String cmd, boolean dirty) {
-        for (Component o : container.getComponents()) {
+    private void setDirty(Container c, String sourceButton) {
+        for (Component o : c.getComponents()) {
             if (o instanceof JButton) {
-                JButton bn = (JButton) o;
-                String bncmd = bn.getActionCommand();
-                if (cmd == null || cmd.equals(bncmd)) {
-                    bn.setEnabled(dirty);
-                    bn.setForeground(dirty ? Color.BLUE : Color.GRAY);
-                    if (cmd != null) {
-                        return;
+                JButton button = (JButton) o;
+                String command = button.getActionCommand();
+                if (sourceButton == null) {
+                    // In case of change
+                    button.setEnabled(true);
+                } else {
+                    switch (sourceButton) {
+                        case BUTTON_APPLY:
+                            button.setEnabled(command.equals(BUTTON_RESTORE) || command.equals(BUTTON_SAVE));
+                            dirty = true;
+                            break;
+                        case BUTTON_RESTORE:
+                        case BUTTON_SAVE:
+                            button.setEnabled(false);
+                            dirty = false;
+                            break;
                     }
                 }
             } else if (o instanceof Container && BUTTONS.equals(o.getName())) {
-                setDirty((Container) o, cmd, dirty);
+                setDirty((Container) o, sourceButton);
             }
         }
     }

@@ -61,13 +61,13 @@ public class TsProcessingViewer extends DefaultProcessingViewer<TsDocument> {
     @Override
     public void refreshHeader() {
         TsDocument doc = getDocument();
-        if (doc == null || doc.getTs() == null) {
+        if (doc == null || doc.getInput() == null) {
             dropDataLabel.setVisible(true);
             tsLabel.setVisible(false);
             specLabel.setVisible(false);
         } else {
             dropDataLabel.setVisible(false);
-            String displayName = doc.getTs().getName();
+            String displayName = ((Ts)doc.getInput()).getName();
             tsLabel.setText(MultiLineNameUtil.lastWithMax(displayName, 70));
             tsLabel.setToolTipText(!Strings.isNullOrEmpty(displayName) ? MultiLineNameUtil.toHtml(displayName) : null);
             TsMoniker moniker = doc.getMoniker();
@@ -90,7 +90,7 @@ public class TsProcessingViewer extends DefaultProcessingViewer<TsDocument> {
         public boolean importData(TransferHandler.TransferSupport support) {
             Ts ts = TssTransferSupport.getDefault().toTs(support.getTransferable());
             if (ts != null) {
-                getDocument().setTs(ts);
+                getDocument().setInput(ts);
                 refreshAll();
                 return true;
             }
