@@ -52,6 +52,10 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = stsmodDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         desc = wkDesc();
         if (desc != null) {
             descs.add(desc);
@@ -79,6 +83,14 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
 
     public void setSMod(double value) {
         core.setSeasBoundary(value);
+    }
+    
+    public double getStSMod() {
+        return core.getStationarySeasBoundary();
+    }
+
+    public void setStSMod(double value) {
+        core.setStationarySeasBoundary(value);
     }
     
     public double getEpsPhi() {
@@ -112,7 +124,7 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
     public void setMethod(EstimationMethod value) {
         core.setMethod(value);
     }
-    private static final int RMOD_ID = 0, EPSPHI_ID = 1, SMOD_ID=2, NOADMISS_ID = 3, XL_ID = 4, WK_ID = 5;
+    private static final int RMOD_ID = 0, EPSPHI_ID = 1, SMOD_ID=2, STSMOD_ID=3, NOADMISS_ID = 4, XL_ID = 5, WK_ID = 6;
 
     @Messages({
         "seatsSpecUI.rmodDesc.name=Trend boundary",
@@ -143,6 +155,24 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(Bundle.seatsSpecUI_smodDesc_name());
             desc.setShortDescription(Bundle.seatsSpecUI_smodDesc_desc());
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "seatsSpecUI.stsmodDesc.name=Seas. boundary (st.model)",
+        "seatsSpecUI.stsmodDesc.desc=[smod] Boundary from which an AR root is integrated in the seasonal component when the seasonal part is stationary."
+    })
+    private EnhancedPropertyDescriptor stsmodDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("stSMod", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, STSMOD_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.seatsSpecUI_stsmodDesc_name());
+            desc.setShortDescription(Bundle.seatsSpecUI_stsmodDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
