@@ -87,11 +87,12 @@ public enum CustomPropertyEditorRegistry {
         register(InterventionVariable[].class, new InterventionVariablesEditor());
         register(Sequence[].class, new SequencesEditor());
         register(OutlierDefinition[].class, new OutlierDefinitionsEditor());
-        register(OutlierType.class, new OutlierTypeSelector());
         register(String[].class, new StringCollectionEditor());
         register(Holidays.class, new HolidaysSelector());
         register(UserVariable.class, new UserVariableSelector());
         register(UserVariables.class, new UserVariablesEditor());
+        
+        registerEnumEditor(OutlierType.class, new OutlierTypeSelector());
     }
 
     public PropertyEditorRegistry getRegistry() {
@@ -110,6 +111,17 @@ public enum CustomPropertyEditorRegistry {
             editor.setAvailableValues(values);
             m_registry.registerEditor(type, editor);
         }
+    }
+
+    /**
+     * Used to register a custom enum editor. Then, the default
+     * EnumPropertyEditor is not used for the given property type.
+     *
+     * @param type Type of the property
+     * @param editor New editor for the property
+     */
+    public void registerEnumEditor(Class<? extends Enum<?>> type, PropertyEditor editor) {
+        m_registry.registerEditor(type, editor);
     }
 
     public void registerCompositeEditor(Class type) {
