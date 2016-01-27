@@ -169,8 +169,8 @@ public class EasterSpecUI extends BaseRegArimaSpecUI {
     }
 
     @Messages({
-        "easterSpecUI.julianDesc.name=Use Julian Easter (expressed in Gregorian calendar)",
-        "easterSpecUI.julianDesc.desc=Julian",})
+        "easterSpecUI.julianDesc.desc=Use Julian Easter (expressed in Gregorian calendar)",
+        "easterSpecUI.julianDesc.name=Julian",})
     private EnhancedPropertyDescriptor julianDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("julian", this.getClass());

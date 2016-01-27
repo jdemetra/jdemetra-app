@@ -51,6 +51,10 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = accdefDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         desc = cancelDesc();
         if (desc != null) {
             descs.add(desc);
@@ -63,19 +67,15 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
-        desc = pcDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
         desc = tsigDesc();
         if (desc != null) {
             descs.add(desc);
         }
-        desc = pcrDesc();
+        desc = pcDesc();
         if (desc != null) {
             descs.add(desc);
         }
-        desc = accdefDesc();
+        desc = pcrDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -270,7 +270,7 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
     }
 
     @Messages({
-        "arimaSpecUI.ub1Desc.name=First unit root limit",
+        "arimaSpecUI.ub1Desc.name=Initial UR (Diff.)",
         "arimaSpecUI.ub1Desc.desc=[ub1] Unit root limit in the first step of the automatic differencing procedure [(2 0)(1 0) ARMA models]."
     })
     private EnhancedPropertyDescriptor ub1Desc() {
@@ -291,7 +291,7 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
     }
 
     @Messages({
-        "arimaSpecUI.ub2Desc.name=Second unit root limit",
+        "arimaSpecUI.ub2Desc.name=Final UR (Diff.)",
         "arimaSpecUI.ub2Desc.desc=[ub2] Unit root limit in the first step of the automatic differencing procedure [(1 1)(1 1) ARMA models]."
     })
     private EnhancedPropertyDescriptor ub2Desc() {
