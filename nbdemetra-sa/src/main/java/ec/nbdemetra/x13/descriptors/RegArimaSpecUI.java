@@ -79,11 +79,11 @@ public class RegArimaSpecUI implements IObjectDescriptor<RegArimaSpecification> 
         if (desc != null) {
             descs.add(desc);
         }
-        desc = arimaDesc();
+        desc = outlierDesc();
         if (desc != null) {
             descs.add(desc);
         }
-        desc = outlierDesc();
+        desc = arimaDesc();
         if (desc != null) {
             descs.add(desc);
         }

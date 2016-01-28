@@ -60,27 +60,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
 //        if (desc != null) {
 //            descs.add(desc);
 //        }
-        desc = ljungboxDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = mixedDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = armaDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = balancedDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
         desc = cancelDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = furlimitDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -92,6 +72,22 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = furlimitDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = mixedDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = balancedDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = armaDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         desc = reducecvDesc();
         if (desc != null) {
             descs.add(desc);
@@ -100,6 +96,10 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
 //        if (desc != null) {
 //            descs.add(desc);
 //        }
+        desc = ljungboxDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         desc = urlimitDesc();
         if (desc != null) {
             descs.add(desc);
@@ -752,7 +752,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
     }
 
     @Messages({
-        "arimaSpecUI.iurlimitDesc.name=Initial unit root limit",
+        "arimaSpecUI.iurlimitDesc.name=Initial UR (Diff.)",
         "arimaSpecUI.iurlimitDesc.desc=Initial unit root limit in the automatic differencing procedure."
     })
     private EnhancedPropertyDescriptor iurlimitDesc() {
@@ -774,7 +774,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
     }
 
     @Messages({
-        "arimaSpecUI.furlimitDesc.name=Final unit root limit",
+        "arimaSpecUI.furlimitDesc.name=Final UR (Diff.)",
         "arimaSpecUI.furlimitDesc.desc=Final unit root limit in the automatic differencing procedure."
     })
     private EnhancedPropertyDescriptor furlimitDesc() {

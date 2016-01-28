@@ -89,11 +89,11 @@ public class X13SpecUI implements IObjectDescriptor<X13Specification> {
         if (desc != null) {
             descs.add(desc);
         }
-        desc = arimaDesc();
+        desc = outlierDesc();
         if (desc != null) {
             descs.add(desc);
         }
-        desc = outlierDesc();
+        desc = arimaDesc();
         if (desc != null) {
             descs.add(desc);
         }
