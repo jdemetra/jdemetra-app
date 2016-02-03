@@ -88,7 +88,7 @@ public class TssTransferSupport extends ListenableBean {
             public void flavorsChanged(FlavorEvent e) {
                 try {
                     boolean old = validClipboard;
-                    validClipboard = canImport(((Clipboard) e.getSource()).getContents(this).getTransferDataFlavors());
+                    validClipboard = canImport(((Clipboard) e.getSource()).getAvailableDataFlavors());
                     firePropertyChange(VALID_CLIPBOARD_PROPERTY, old, validClipboard);
                 } catch (Exception ex) {
                     LOGGER.debug("While getting content from clipboard", ex);
