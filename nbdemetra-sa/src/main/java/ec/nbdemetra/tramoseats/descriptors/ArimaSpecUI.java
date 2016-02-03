@@ -295,6 +295,9 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
         "arimaSpecUI.ub2Desc.desc=[ub2] Unit root limit in the first step of the automatic differencing procedure [(1 1)(1 1) ARMA models]."
     })
     private EnhancedPropertyDescriptor ub2Desc() {
+        if (!core.isUsingAutoModel()) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Ub2", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, UB2_ID);
