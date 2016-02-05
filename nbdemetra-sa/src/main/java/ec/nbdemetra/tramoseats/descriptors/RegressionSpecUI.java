@@ -171,7 +171,7 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
 
     @Messages({
         "regressionSpecUI.calendarDesc.name=Calendar",
-        "regressionSpecUI.calendarDesc.desc=Calendar"
+        "regressionSpecUI.calendarDesc.desc=Calendar effects"
     })
     private EnhancedPropertyDescriptor calendarDesc() {
         try {
