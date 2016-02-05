@@ -15,6 +15,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle;
 
 /**
  *
@@ -182,11 +183,17 @@ public class TsPeriodSelectorUI implements IPropertyDescriptors {
     ///////////////////////////////////////////////////////////////////////////
     private static final int TYPE_ID = 1, D0_ID = 2, D1_ID = 3, N0_ID = 4, N1_ID = 5;
 
+    @NbBundle.Messages({
+        "tsPeriodSelectorUI.typeDesc.name=Type",
+        "tsPeriodSelectorUI.typeDesc.desc=Specify the way the time span is defined"
+    })
     private EnhancedPropertyDescriptor typeDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("type", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TYPE_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.tsPeriodSelectorUI_typeDesc_name());
+            desc.setShortDescription(Bundle.tsPeriodSelectorUI_typeDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -194,6 +201,10 @@ public class TsPeriodSelectorUI implements IPropertyDescriptors {
         }
     }
 
+    @NbBundle.Messages({
+        "tsPeriodSelectorUI.startDesc.name=Start",
+        "tsPeriodSelectorUI.startDesc.desc=Start of the time span. Only complete periods will be taken into account"
+    })
     private EnhancedPropertyDescriptor startDesc() {
         PeriodSelectorType type = core_.getType();
         if (type != PeriodSelectorType.Between && type != PeriodSelectorType.From) {
@@ -203,6 +214,8 @@ public class TsPeriodSelectorUI implements IPropertyDescriptors {
             PropertyDescriptor desc = new PropertyDescriptor("start", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TYPE_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.tsPeriodSelectorUI_startDesc_name());
+            desc.setShortDescription(Bundle.tsPeriodSelectorUI_startDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -210,6 +223,10 @@ public class TsPeriodSelectorUI implements IPropertyDescriptors {
         }
     }
 
+    @NbBundle.Messages({
+        "tsPeriodSelectorUI.endDesc.name=End",
+        "tsPeriodSelectorUI.endDesc.desc=End of the time span. Only complete periods will be taken into account"
+    })
     private EnhancedPropertyDescriptor endDesc() {
         PeriodSelectorType type = core_.getType();
         if (type != PeriodSelectorType.Between && type != PeriodSelectorType.To) {
@@ -219,6 +236,8 @@ public class TsPeriodSelectorUI implements IPropertyDescriptors {
             PropertyDescriptor desc = new PropertyDescriptor("end", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TYPE_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.tsPeriodSelectorUI_endDesc_name());
+            desc.setShortDescription(Bundle.tsPeriodSelectorUI_endDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -226,6 +245,10 @@ public class TsPeriodSelectorUI implements IPropertyDescriptors {
         }
     }
 
+    @NbBundle.Messages({
+        "tsPeriodSelectorUI.firstDesc.name=First",
+        "tsPeriodSelectorUI.firstDesc.desc=Number of periods considered at the beginning of the series"
+    })
     private EnhancedPropertyDescriptor firstDesc() {
         PeriodSelectorType type = core_.getType();
         if (type != PeriodSelectorType.Excluding && type != PeriodSelectorType.First) {
@@ -235,6 +258,8 @@ public class TsPeriodSelectorUI implements IPropertyDescriptors {
             PropertyDescriptor desc = new PropertyDescriptor("first", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TYPE_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.tsPeriodSelectorUI_firstDesc_name());
+            desc.setShortDescription(Bundle.tsPeriodSelectorUI_firstDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -242,6 +267,10 @@ public class TsPeriodSelectorUI implements IPropertyDescriptors {
         }
     }
 
+    @NbBundle.Messages({
+        "tsPeriodSelectorUI.lastDesc.name=Last",
+        "tsPeriodSelectorUI.lastDesc.desc=Number of periods considered at the end of the series"
+    })
     private EnhancedPropertyDescriptor lastDesc() {
         PeriodSelectorType type = core_.getType();
         if (type != PeriodSelectorType.Excluding && type != PeriodSelectorType.Last) {
@@ -250,6 +279,8 @@ public class TsPeriodSelectorUI implements IPropertyDescriptors {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("last", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TYPE_ID);
+            desc.setDisplayName(Bundle.tsPeriodSelectorUI_lastDesc_name());
+            desc.setShortDescription(Bundle.tsPeriodSelectorUI_lastDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(ro_);
             return edesc;

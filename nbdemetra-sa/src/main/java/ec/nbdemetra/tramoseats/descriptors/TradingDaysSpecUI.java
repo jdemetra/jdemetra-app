@@ -247,7 +247,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
     }
 
     @Messages({"tradingDaysSpecUI.holidaysDesc.name=holidays",
-        "tradingDaysSpecUI.holidaysDesc.desc="
+        "tradingDaysSpecUI.holidaysDesc.desc=holidays"
     })
     private EnhancedPropertyDescriptor holidaysDesc() {
         if (inner().getHolidays() == null) {
