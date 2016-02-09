@@ -199,6 +199,7 @@ public class SIView extends ATsView implements ClipboardOwner {
                         if (g == null) {
                             return;
                         }
+
                         showDetail(g, fb);
                     } else if (detailchart_.equals(chartpanel_.getChart())) {
                         showMain();
@@ -332,11 +333,10 @@ public class SIView extends ATsView implements ClipboardOwner {
         final double xstep = 0.8 / np;
         int il = 0;
         while (speriods.hasMoreElements()) {
-            int startyear = start.getYear();
-            int endyear = end.getYear() - 1;
-
             TsDataBlock datablock = speriods.nextElement();
             DataBlock src = datablock.data;
+            int startyear = datablock.start.getYear();
+            int endyear = startyear + datablock.data.getLength() - 1;
 
             String key = "p" + Integer.toString(il);
 
@@ -352,7 +352,7 @@ public class SIView extends ATsView implements ClipboardOwner {
                 double[] sY = new double[n];
                 double[] siY = new double[n];
 
-                double x = xstart + xstep * (datablock.start.getYear() - start.getYear());
+                double x = xstart + xstep * (startyear - start.getYear());
                 for (int i = 0; i < n; ++i, x += xstep, startyear++) {
                     sX[i] = x;
                     sX2[i] = startyear;
