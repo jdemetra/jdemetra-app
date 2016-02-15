@@ -260,7 +260,7 @@ public class SIView extends ATsView implements ClipboardOwner {
 
         NumberAxis xAxis = new NumberAxis();
         xAxis.setTickLabelPaint(Color.GRAY);
-        xAxis.setTickUnit(new NumberTickUnit(1));
+        xAxis.setTickUnit(new NumberTickUnit(1), true, false);
         xAxis.setNumberFormatOverride(new DecimalFormat("0000"));
         xAxis.setRange(g.getMinYear() - 1, g.getMaxYear() + 1);
         plot.setDomainAxis(xAxis);

@@ -103,7 +103,7 @@ public class ResidualsView extends ATsDataView {
         chartPanel.getChart().getXYPlot().setDataset(TsXYDatasets.from("", tsData));
         if (tsData != DEFAULT_TS_DATA) {
             Range rng = calcRange(tsData.getValues().internalStorage());
-            ((NumberAxis) chartPanel.getChart().getXYPlot().getRangeAxis()).setTickUnit(new NumberTickUnit(calcTick(rng)));
+            ((NumberAxis) chartPanel.getChart().getXYPlot().getRangeAxis()).setTickUnit(new NumberTickUnit(calcTick(rng)),true, false);
 
             grid.getTsCollection().replace(TsFactory.instance.createTs("Residuals", new MetaData(), tsData));
         } else {
