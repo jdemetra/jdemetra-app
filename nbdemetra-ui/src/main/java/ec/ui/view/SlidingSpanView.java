@@ -256,14 +256,14 @@ public class SlidingSpanView extends JComponent implements IColorSchemeAble {
         NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
         switch (mode) {
             case Multiplicative:
-                xAxis.setTickUnit(new NumberTickUnit(0.02));
+                xAxis.setTickUnit(new NumberTickUnit(0.02), true, false);
                 xAxis.setRange(0, 0.1);
-                yAxis.setTickUnit(new PercentageTickUnit(0.05));
+                yAxis.setTickUnit(new PercentageTickUnit(0.05), true, false);
                 break;
             case Additive:
                 Range rng = calcRange(xvalues);
-                xAxis.setTickUnit(new NumberTickUnit(calcTick(rng)));
-                yAxis.setTickUnit(new PercentageTickUnit(0.05));
+                xAxis.setTickUnit(new NumberTickUnit(calcTick(rng)), true, false);
+                yAxis.setTickUnit(new PercentageTickUnit(0.05), true, false);
                 break;
         }
     }
@@ -347,7 +347,7 @@ public class SlidingSpanView extends JComponent implements IColorSchemeAble {
 
         DateAxis domainAxis = new DateAxis();
         //dateAxis.setTickMarkPosition(DateTickMarkPosition.MIDDLE);
-        domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.YEAR, 1));
+        domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.YEAR, 1), true, false);
         domainAxis.setDateFormatOverride(new SimpleDateFormat("yyyy-MM"));
         domainAxis.setTickLabelPaint(TsCharts.CHART_TICK_LABEL_COLOR);
         plot.setDomainAxis(domainAxis);

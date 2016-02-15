@@ -92,6 +92,7 @@ public class ScatterView extends AChartView {
         chartPanel.getChart().getLegend().setVisible(seriesCollection.getSeriesCount() > 1);
 
         configureAxis();
+        chartPanel.getChart().getXYPlot().getDomainAxis().setAutoTickUnitSelection(true);
         onColorSchemeChange();
         onFocusChange();
     }

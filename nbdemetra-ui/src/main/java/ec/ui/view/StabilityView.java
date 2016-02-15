@@ -193,7 +193,7 @@ public class StabilityView extends ATsView {
 
         NumberAxis xAxis = new NumberAxis();
         xAxis.setTickLabelPaint(Color.GRAY);
-        xAxis.setTickUnit(new NumberTickUnit(1));
+        xAxis.setTickUnit(new NumberTickUnit(1), true, false);
         xAxis.setRange(-0.5, ((double) g.getMaxElements()) - 0.5);
         plot.setDomainAxis(xAxis);
 
