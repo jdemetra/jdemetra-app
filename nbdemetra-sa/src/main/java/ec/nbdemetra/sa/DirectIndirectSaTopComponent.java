@@ -77,9 +77,7 @@ persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_DirectIndirectSaAction",
 preferredID = "DirectIndirectSaTopComponent")
 @Messages({
-    "CTL_DirectIndirectSaAction=Direct-Indirect Seasonal Adjustment",
-    "CTL_DirectIndirectSaTopComponent=Direct-Indirect Seasonal Adjustment Window",
-    "HINT_DirectIndirectSaTopComponent=This is a Direct-Indirect Seasonal Adjustment window"
+    "CTL_DirectIndirectSaAction=Direct-Indirect Seasonal Adjustment"
 })
 public final class DirectIndirectSaTopComponent extends TopComponent implements IActiveView, ExplorerManager.Provider {
 
@@ -105,11 +103,14 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     private MultiSaDocumentView diView;
     private MultiSaSpecification curSpec;
     private SwingWorker worker;
-
+    @Messages({
+        "directIndirectSaTopComponent.setName=Direct-Indirect Seasonal Adjustment Window",
+        "directIndirectSaTopComponent.setToolTipText=This is a Direct-Indirect Seasonal Adjustment window"
+    })
     public DirectIndirectSaTopComponent() {
         initComponents();
-        setName(NbBundle.getMessage(DirectIndirectSaTopComponent.class, "CTL_DirectIndirectSaTopComponent"));
-        setToolTipText(NbBundle.getMessage(DirectIndirectSaTopComponent.class, "HINT_DirectIndirectSaTopComponent"));
+        setName(Bundle.directIndirectSaTopComponent_setName());
+        setToolTipText(Bundle.directIndirectSaTopComponent_setToolTipText());
 
         curSpec = new MultiSaSpecification();
         curSpec.setDefaultSpecification(TramoSeatsSpecification.RSAfull);
@@ -330,18 +331,32 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     }
 
     class InternalNode extends AbstractNode {
-
+        @Messages({
+            "directIndirectSaTopComponent.internalNode.setDisplayName=Direct-Indirect SA"
+        })
         InternalNode() {
             super(Children.LEAF);
-            setDisplayName("Direct-Indirect SA");
+            setDisplayName(Bundle.directIndirectSaTopComponent_internalNode_setDisplayName());
         }
 
         @Override
+        @Messages({
+            "directIndirectSaTopComponent.benchmarking.setName=Benchmarking",
+            "directIndirectSaTopComponent.benchmarking.displayName=Benchmarking",
+            "directIndirectSaTopComponent.rho.name=Rho",
+            "directIndirectSaTopComponent.rho.desc=The value of the AR(1) parameter (set between 0 and 1). The default value of 1 is equivalent to Denton Benchmarking.",
+            "directIndirectSaTopComponent.lambda.name=Lambda",
+            "directIndirectSaTopComponent.lambda.desc=A parameter in the function used for benchmarking that relates to the weights in the regression equation; it is typically equal to 0, 1/2 or 1.",
+            "directIndirectSaTopComponent.contemporaneousConstraints.name=Contemporaneous constraints",
+            "directIndirectSaTopComponent.contemporaneousConstraints.desc=A constraint imposed for each period when comparing the sum of seasonally adjusted series (indirect SA) with the SA of the sum (direct SA) (None- no constraint; Fixed – the seasonally adjusted components are modified so that their sum is equal to the direct SA; Free – the sum of the benchmarked SA series is equal to the benchmarked direct SA series, which implies that all the SA series, including the direct SA, may be modified).",
+            "directIndirectSaTopComponent.annualConstraints.name=Annual constraint",
+            "directIndirectSaTopComponent.annualConstraints.desc=Each SA series is benchmarked on its annual totals computed on the raw data."
+        })
         protected Sheet createSheet() {
             Sheet sheet = super.createSheet();
             Set bench = Sheet.createPropertiesSet();
-            bench.setName("Benchmarking");
-            bench.setDisplayName("Benchmarking");
+            bench.setName(Bundle.directIndirectSaTopComponent_benchmarking_setName());
+            bench.setDisplayName(Bundle.directIndirectSaTopComponent_benchmarking_displayName());
             Property<Double> rho = new Property(Double.class) {
                 @Override
                 public boolean canRead() {
@@ -365,7 +380,8 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
                     clear();
                 }
             };
-            rho.setName("Rho");
+            rho.setName(Bundle.directIndirectSaTopComponent_rho_name());
+            rho.setShortDescription(Bundle.directIndirectSaTopComponent_rho_desc());
             bench.put(rho);
 
             Property<Double> lambda = new Property(Double.class) {
@@ -391,7 +407,8 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
                     clear();
                 }
             };
-            lambda.setName("Lambda");
+            lambda.setName(Bundle.directIndirectSaTopComponent_lambda_name());
+            lambda.setShortDescription(Bundle.directIndirectSaTopComponent_lambda_desc());
             bench.put(lambda);
 
             Property<MultiSaBenchmarkingSpec.ConstraintType> ctype = new Property(MultiSaBenchmarkingSpec.ConstraintType.class) {
@@ -418,7 +435,8 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
                 }
             };
 
-            ctype.setName("Contemporaneous constraint");
+            ctype.setName(Bundle.directIndirectSaTopComponent_contemporaneousConstraints_name());
+            ctype.setShortDescription(Bundle.directIndirectSaTopComponent_contemporaneousConstraints_desc());
             bench.put(ctype);
 
             Property<Boolean> annual = new Property(Boolean.class) {
@@ -444,7 +462,8 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
                     clear();
                 }
             };
-            annual.setName("Annual constraint");
+            annual.setName(Bundle.directIndirectSaTopComponent_annualConstraints_name());
+            annual.setShortDescription(Bundle.directIndirectSaTopComponent_annualConstraints_desc());
             bench.put(annual);
 
             sheet.put(bench);
