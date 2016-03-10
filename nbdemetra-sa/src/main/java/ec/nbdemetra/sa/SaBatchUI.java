@@ -684,14 +684,13 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             return;
         }
         SaItem item = selection[0];
-        SaItem nitem = new SaItem(doc.getSpecification().clone(), EstimationPolicyType.Interactive, null, doc.getTs());
+        SaItem nitem = new SaItem(doc.getSpecification().clone(), EstimationPolicyType.Interactive, null, doc.getInput());
         nitem.unsafeFill(doc.getResults());
         selection[0] = nitem;
         getCurrentProcessing().replace(item, nitem);
         int idx = getCurrentProcessing().indexOf(nitem);
         model.fireTableRowsUpdated(idx, idx);
         refreshInfo();
-
     }
 
     public void clearPriority(List<SaItem> items) {
@@ -810,8 +809,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                             + "\nDo you want to save them ?", "Unsaved changes", NotifyDescriptor.YES_NO_OPTION);
                     if (DialogDisplayer.getDefault().notify(nd) == NotifyDescriptor.YES_OPTION) {
                         save((SaDocument) detail.getDocument());
-                        detail.setDirty(false);
                     }
+                    detail.setDirty(false);
                 }
 
                 setSelection(Iterables.toArray(selected, SaItem.class));

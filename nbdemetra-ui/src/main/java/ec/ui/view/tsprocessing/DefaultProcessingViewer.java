@@ -265,6 +265,10 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
                     doc.setSpecification(pspec.clone());
                     setDirty(BUTTON_SAVE);
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_SAVE, null, null);
+                    refreshView();
+                    if (isHeaderVisible()) {
+                        refreshHeader();
+                    }
                 }
             }};
 
