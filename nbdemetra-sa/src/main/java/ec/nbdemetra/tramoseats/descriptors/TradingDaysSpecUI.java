@@ -4,16 +4,15 @@
  */
 package ec.nbdemetra.tramoseats.descriptors;
 
-import ec.nbdemetra.ui.properties.l2fprod.CustomPropertyEditorRegistry;
 import ec.nbdemetra.ui.properties.l2fprod.Holidays;
 import ec.nbdemetra.ui.properties.l2fprod.UserVariables;
+import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
+import ec.tstoolkit.modelling.RegressionTestType;
 import ec.tstoolkit.modelling.TradingDaysSpecType;
 import ec.tstoolkit.modelling.arima.tramo.TradingDaysSpec;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
-import ec.tstoolkit.timeseries.calendars.TradingDaysType;
-import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
-import ec.tstoolkit.modelling.RegressionTestType;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
+import ec.tstoolkit.timeseries.calendars.TradingDaysType;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -25,11 +24,6 @@ import org.openide.util.NbBundle.Messages;
  * @author Jean Palate
  */
 public class TradingDaysSpecUI extends BaseTramoSpecUI {
-
-    static {
-        CustomPropertyEditorRegistry.INSTANCE.registerEnumEditor(RegressionTestType.class);
-        CustomPropertyEditorRegistry.INSTANCE.registerEnumEditor(TradingDaysSpec.AutoMethod.class);
-    }
 
     @Override
     public String toString() {

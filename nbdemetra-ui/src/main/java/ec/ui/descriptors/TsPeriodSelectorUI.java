@@ -4,7 +4,6 @@
  */
 package ec.ui.descriptors;
 
-import ec.nbdemetra.ui.properties.l2fprod.CustomPropertyEditorRegistry;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.descriptors.IPropertyDescriptors;
 import ec.tstoolkit.timeseries.Day;
@@ -21,11 +20,7 @@ import org.openide.util.NbBundle;
  *
  * @author Jean Palate
  */
-public class TsPeriodSelectorUI implements IPropertyDescriptors {
-
-    static {
-        CustomPropertyEditorRegistry.INSTANCE.registerEnumEditor(Type.class);
-    }
+public class TsPeriodSelectorUI implements IPropertyDescriptors {    
 
     public static enum Type {
 

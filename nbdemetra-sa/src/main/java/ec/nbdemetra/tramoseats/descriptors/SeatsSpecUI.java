@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.tramoseats.descriptors;
 
-import ec.nbdemetra.ui.properties.l2fprod.CustomPropertyEditorRegistry;
 import ec.satoolkit.seats.SeatsSpecification;
 import ec.satoolkit.seats.SeatsSpecification.EstimationMethod;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
@@ -19,11 +18,6 @@ import org.openide.util.NbBundle.Messages;
  * @author Kristof Bayens
  */
 public class SeatsSpecUI extends BaseSeatsSpecUI {
-    
-    static{
-        CustomPropertyEditorRegistry.INSTANCE.registerEnumEditor(SeatsSpecification.ApproximationMode.class);
-        CustomPropertyEditorRegistry.INSTANCE.registerEnumEditor(SeatsSpecification.EstimationMethod.class);
-    }
 
     public SeatsSpecUI(SeatsSpecification spec, boolean ro) {
         super(spec, ro);
