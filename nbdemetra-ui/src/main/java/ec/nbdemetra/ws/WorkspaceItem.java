@@ -183,7 +183,7 @@ public class WorkspaceItem<T> implements IModifiable, Comparable<WorkspaceItem> 
         if (!name_.equals(value)) {
             name_ = value;
             if (view_ != null) {
-                view_.setDisplayName(value);
+                view_.setName(value);
             }
             dirty_ = true;
         }
