@@ -44,6 +44,11 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements E
     }
 
     @Override
+    public String getName(){
+        return doc == null ? super.getName() : doc.getDisplayName();
+    }
+
+    @Override
     public boolean hasContextMenu() {
         return true;
     }
