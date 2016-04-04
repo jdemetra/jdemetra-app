@@ -9,7 +9,7 @@ import javax.swing.Icon;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class AbstractWorkspaceItemManager<D> implements IWorkspaceItemManager<D> {
 
@@ -18,7 +18,10 @@ public abstract class AbstractWorkspaceItemManager<D> implements IWorkspaceItemM
     protected boolean isUsed(String name) {
         if (null != WorkspaceFactory.getInstance().getActiveWorkspace().searchDocument(getId(), name)) {
             return true;
-       }
+        }
+        if (null != WorkspaceFactory.getInstance().getActiveWorkspace().searchDocumentByName(getId(), name)) {
+            return true;
+        }
         return false;
     }
 

@@ -91,6 +91,8 @@ public final class GridFactory extends DemoComponentFactory {
 
         grid.setModel(model);
         grid.setNoDataRenderer(new XTable.DefaultNoDataRenderer("Drag anything here"));
+        grid.setRowSelectionAllowed(true);
+        grid.setColumnSelectionAllowed(true);
         grid.setTransferHandler(new TransferHandler() {
             Random r = new Random();
 

@@ -21,7 +21,6 @@ import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.awt.ListTableModel;
-import ec.nbdemetra.ui.awt.PopupListener;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
@@ -42,6 +41,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.beans.Beans;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -56,6 +57,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -96,12 +98,14 @@ public class JTsCheckLastList extends ATsList {
         table = buildTable();
         setColumnsWidths();
 
-        spec = TramoSpecification.TR4.clone();
+        spec = TramoSpecification.TRfull.clone();
         this.selectionListener = new ListTableSelectionListener();
         table.getSelectionModel().addListSelectionListener(selectionListener);
-        table.addMouseListener(new PopupListener.PopupAdapter(buildPopupMenu()));
 
         checkLast = new CheckLast(spec.build());
+
+        onComponentPopupMenuChange();
+        enableProperties();
 
         setLayout(new BorderLayout());
         add(NbComponents.newJScrollPane(table), BorderLayout.CENTER);
@@ -111,6 +115,19 @@ public class JTsCheckLastList extends ATsList {
             setTsUpdateMode(TsUpdateMode.None);
             setPreferredSize(new Dimension(200, 150));
         }
+    }
+
+    private void enableProperties() {
+        this.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
+                }
+            }
+        });
     }
 
     public double getOrangeCells() {
@@ -318,6 +335,7 @@ public class JTsCheckLastList extends ATsList {
         result.setNoDataRenderer(new XTable.DefaultNoDataRenderer("Drop data here", "Drop data here"));
         result.setDefaultRenderer(TsPeriod.class, new TsPeriodTableCellRenderer());
         result.setDefaultRenderer(Ts.class, new TsIdentifierTableCellRenderer());
+        ((JLabel) result.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         model = new AnomalyModel();
         result.setModel(model);
 
@@ -476,6 +494,11 @@ public class JTsCheckLastList extends ATsList {
         // Do nothing
     }
 
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        table.setComponentPopupMenu(popupMenu != null ? popupMenu : buildPopupMenu());
+    }
+
     public Map<String, AnomalyItem> getMap() {
         return map;
     }
@@ -490,19 +513,18 @@ public class JTsCheckLastList extends ATsList {
                 ABSOLUTE_ERROR1 = 2, RELATIVE_ERROR1 = 3,
                 ABSOLUTE_ERROR2 = 4, RELATIVE_ERROR2 = 5,
                 ABSOLUTE_ERROR3 = 6, RELATIVE_ERROR3 = 7;
-        private String col1 = "<html><p style=\"text-align:center\">Series<br>Name</p></html>";
-        private String col2 = "<html><p style=\"text-align:center\">Last<br>Period</p></html>";
-        private String col3 = "<html><p style=\"text-align:center\">Abs. Error<br>N-";
-        private String col4 = "<html><p style=\"text-align:center\">Rel. Error<br>N-";
-        private String html = "</p><html>";
-        final List<String> columnNames1 = Arrays.asList(col1, col2, col3 + 1 + html, col4 + 1 + html);
-        final List<String> columnNames2 = Arrays.asList(col1, col2,
-                col3 + 1 + html, col4 + 1 + html,
-                col3 + 2 + html, col4 + 2 + html);
-        final List<String> columnNames3 = Arrays.asList(col1, col2,
-                col3 + 1 + html, col4 + 1 + html,
-                col3 + 2 + html, col4 + 2 + html,
-                col3 + 3 + html, col4 + 3 + html);
+        private final String COL1 = "<html><center>&nbsp;<br>Series Name<br>&nbsp;";
+        private final String COL2 = "<html><center>&nbsp;Last<br>Period<br>&nbsp;";
+        private final String COL3 = "<html><center>Abs.<br>Error<br>N-";
+        private final String COL4 = "<html><center>Rel.<br>Error<br>N-";
+        final List<String> columnNames1 = Arrays.asList(COL1, COL2, COL3 + 1, COL4 + 1);
+        final List<String> columnNames2 = Arrays.asList(COL1, COL2,
+                COL3 + 1, COL4 + 1,
+                COL3 + 2, COL4 + 2);
+        final List<String> columnNames3 = Arrays.asList(COL1, COL2,
+                COL3 + 1, COL4 + 1,
+                COL3 + 2, COL4 + 2,
+                COL3 + 3, COL4 + 3);
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {

@@ -12,10 +12,11 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class EstimateSpecUI extends BaseTramoSpecUI {
 
@@ -69,13 +70,17 @@ public class EstimateSpecUI extends BaseTramoSpecUI {
         inner().setUbp(u);
     }
 
+    @Messages({
+        "estimateSpecUI.urlimitDesc.name=Unit root limit",
+        "estimateSpecUI.urlimitDesc.desc=[urfinal] Unit root limit for final model. Should be > 1."
+    })
     private EnhancedPropertyDescriptor urlimitDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Ubp", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, UBP_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(URLIMIT_NAME);
-            desc.setShortDescription(URLIMIT_NAME);
+            desc.setDisplayName(Bundle.estimateSpecUI_urlimitDesc_name());
+            desc.setShortDescription(Bundle.estimateSpecUI_urlimitDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -105,18 +110,18 @@ public class EstimateSpecUI extends BaseTramoSpecUI {
         return descs;
     }
     private static final int SPAN_ID = 0, TOL_ID = 1, EML_ID = 2, XL_ID = 3, UBP_ID = 4;
-    private static final String TOL_NAME = "Tolerance", EML_NAME = "Exact ML", SPAN_NAME = "Model span";
-    private static final String TOL_DESC = "Precision of the estimation procedure",
-            EML_DESC = "Use exact maximum likelihood in optimization procedure",
-            SPAN_DESC = "Span used for the estimation of the pre-processing model";
 
+    @Messages({
+        "estimateSpecUI.spanDesc.name=Model span",
+        "estimateSpecUI.spanDesc.desc=Span used for the estimation of the pre-processing model"
+    })
     private EnhancedPropertyDescriptor spanDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("span", this.getClass(), "getSpan", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SPAN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(SPAN_DESC);
-            desc.setDisplayName(SPAN_NAME);
+            desc.setShortDescription(Bundle.estimateSpecUI_spanDesc_desc());
+            desc.setDisplayName(Bundle.estimateSpecUI_spanDesc_name());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -124,13 +129,17 @@ public class EstimateSpecUI extends BaseTramoSpecUI {
         }
     }
 
+    @Messages({
+        "estimateSpecUI.tolDesc.name=Tolerance",
+        "estimateSpecUI.tolDesc.desc=Precision of the estimation procedure"
+    })
     private EnhancedPropertyDescriptor tolDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Tol", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TOL_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(TOL_NAME);
-            desc.setShortDescription(TOL_DESC);
+            desc.setDisplayName(Bundle.estimateSpecUI_tolDesc_name());
+            desc.setShortDescription(Bundle.estimateSpecUI_tolDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -138,13 +147,17 @@ public class EstimateSpecUI extends BaseTramoSpecUI {
         }
     }
 
+    @Messages({
+        "estimateSpecUI.emlDesc.name=Exact ML",
+        "estimateSpecUI.emlDesc.desc=Use exact maximum likelihood in optimization procedure"
+    })
     private EnhancedPropertyDescriptor emlDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Eml", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, EML_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(EML_NAME);
-            desc.setShortDescription(EML_DESC);
+            desc.setDisplayName(Bundle.estimateSpecUI_emlDesc_name());
+            desc.setShortDescription(Bundle.estimateSpecUI_emlDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -153,8 +166,8 @@ public class EstimateSpecUI extends BaseTramoSpecUI {
     }
 
     @Override
+    @Messages("estimateSpecUI.getDisplayName=Estimate")
     public String getDisplayName() {
-        return "Estimate";
+        return Bundle.estimateSpecUI_getDisplayName();
     }
-    private static final String URLIMIT_NAME = "Unit root limit", URLIMIT_DESC = "[urfinal] Unit root limit for final model. Should be > 1.";
 }

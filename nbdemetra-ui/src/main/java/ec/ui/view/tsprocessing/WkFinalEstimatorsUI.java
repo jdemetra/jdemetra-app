@@ -9,7 +9,7 @@ import javax.swing.JComponent;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class WkFinalEstimatorsUI<V extends IProcDocumentView<?>> extends DefaultItemUI<V, WkInformation> {
 

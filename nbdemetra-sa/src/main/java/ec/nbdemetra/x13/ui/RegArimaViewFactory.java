@@ -24,7 +24,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecification, RegArimaDocument> {
 
@@ -76,6 +76,15 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
     public static class ModelFCastsFactory extends PreprocessingViewFactory.ModelFCastsFactory<RegArimaDocument> {
 
         public ModelFCastsFactory() {
+            super(RegArimaDocument.class);
+        }
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="REGISTER FORECASTS">
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000 + 500)
+    public static class ModelFCastsTableFactory extends PreprocessingViewFactory.PreprocessingFCastsTableFactory<RegArimaDocument> {
+
+        public ModelFCastsTableFactory() {
             super(RegArimaDocument.class);
         }
     }

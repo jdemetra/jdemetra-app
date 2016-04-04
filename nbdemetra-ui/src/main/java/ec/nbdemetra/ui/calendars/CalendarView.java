@@ -53,7 +53,7 @@ public class CalendarView extends JComponent {
 
     public CalendarView() {
         this.calendarProvider = null;
-        this.domain = newDomain(TsFrequency.Monthly, 1980, 28 * 5);
+        this.domain = newDomain(TsFrequency.Monthly, 1960, 28 * 5);
         this.dtype = TradingDaysType.TradingDays;
         this.ltype = LengthOfPeriodType.LeapYear;
 

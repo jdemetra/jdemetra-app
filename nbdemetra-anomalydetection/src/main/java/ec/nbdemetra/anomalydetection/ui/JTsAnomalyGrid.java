@@ -26,12 +26,13 @@ import ec.tstoolkit.modelling.arima.tramo.TramoException;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import ec.tstoolkit.timeseries.regression.OutlierEstimation;
 import ec.tstoolkit.timeseries.regression.OutlierType;
-import ec.ui.grid.JTsGrid;
-import ec.ui.grid.TsGridObs;
 import static ec.tstoolkit.timeseries.simplets.TsDataTableInfo.Empty;
 import static ec.tstoolkit.timeseries.simplets.TsDataTableInfo.Missing;
 import static ec.tstoolkit.timeseries.simplets.TsDataTableInfo.Valid;
+import ec.ui.grid.JTsGrid;
+import ec.ui.grid.TsGridObs;
 import ec.ui.interfaces.ITsGrid;
+import ec.util.chart.ObsIndex;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
@@ -39,7 +40,10 @@ import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JToolTip;
 import static javax.swing.SwingConstants.TRAILING;
@@ -48,11 +52,10 @@ import static javax.swing.SwingWorker.StateValue.DONE;
 import static javax.swing.SwingWorker.StateValue.PENDING;
 import static javax.swing.SwingWorker.StateValue.STARTED;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.util.Cancellable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A grid component used to display outliers found in time series. The outliers
@@ -62,21 +65,22 @@ import org.slf4j.LoggerFactory;
  */
 public class JTsAnomalyGrid extends JComponent {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JTsAnomalyGrid.class);
     public static final String SPEC_CHANGE_PROPERTY = "Spec Change";
     public static final String CRITICAL_VALUE_PROPERTY = "Critical Value Change";
     public static final String COLLECTION_PROPERTY = "Collection Change";
     public static final String STATE_PROPERTY = "State Property";
     public static final String TYPES_PROPERTY = "Types Displayed";
     public static final String TRANSFORMATION_PROPERTY = "Transformation Change";
-    private JTsGrid grid;
+    public static final String HOVERED_OBS_PROPERTY = JTsGrid.HOVERED_OBS_PROPERTY;
+
+    private final JTsGrid grid;
     private List<OutlierEstimation[]> outliers;
     private IPreprocessor preprocessor;
     private PreprocessingModel model;
     private DefaultTransformationType transformation;
     private TsCollection tsCollection;
-    private TramoSpecification defaultSpec = TramoSpecification.TR4.clone();
-    private TramoSpecification spec = TramoSpecification.TR4.clone();
+    private TramoSpecification defaultSpec = TramoSpecification.TRfull.clone();
+    private TramoSpecification spec = TramoSpecification.TRfull.clone();
     private double criticalValue = .0;
     private boolean defaultCritical = true;
     private ProgressHandle progressHandle;
@@ -95,15 +99,14 @@ public class JTsAnomalyGrid extends JComponent {
         setLayout(new BorderLayout());
         grid = new JTsGrid();
         outliers = new ArrayList<>();
-        grid.setUseColorScheme(true);
-        grid.setCellRenderer(new AnomalyCellRenderer());
+        grid.setCellRenderer(new AnomalyCellRenderer(grid.getCellRenderer()));
 
         // Listening to a data change to calculate the new outliers
         grid.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 switch (evt.getPropertyName()) {
-                    case JTsGrid.COLLECTION_PROPERTY:
+                    case JTsGrid.TS_COLLECTION_PROPERTY:
                         onCollectionChange((TsCollection) evt.getNewValue());
                         break;
                     case ITsGrid.ZOOM_PROPERTY:
@@ -111,6 +114,9 @@ public class JTsAnomalyGrid extends JComponent {
                         break;
                     case ITsGrid.SELECTION_PROPERTY:
                         firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+                        break;
+                    case JTsGrid.HOVERED_OBS_PROPERTY:
+                        firePropertyChange(HOVERED_OBS_PROPERTY, evt.getOldValue(), evt.getNewValue());
                         break;
                 }
             }
@@ -132,8 +138,8 @@ public class JTsAnomalyGrid extends JComponent {
         preprocessor = spec.build();
         transformation = DefaultTransformationType.None;
     }
-
     // </editor-fold>
+
     // <editor-fold defaultstate="collapsed" desc="Getters / Setters">
     public void setDefaultCritical(boolean def) {
         defaultCritical = def;
@@ -154,7 +160,7 @@ public class JTsAnomalyGrid extends JComponent {
     }
 
     public void setZoomPercentage(int percentage) {
-        grid.zoom(percentage);
+        grid.setZoomRatio(percentage);
     }
 
     public int getZoomPercentage() {
@@ -255,6 +261,15 @@ public class JTsAnomalyGrid extends JComponent {
     public TsCollection getTsCollection() {
         return grid.getTsCollection();
     }
+
+    @Nonnull
+    public ObsIndex getHoveredObs() {
+        return grid.getHoveredObs();
+    }
+
+    public void setHoveredObs(@Nullable ObsIndex hoveredObs) {
+        grid.setHoveredObs(hoveredObs);
+    }
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Event Handlers">
@@ -348,8 +363,14 @@ public class JTsAnomalyGrid extends JComponent {
                 if (tsCollection.get(i).getTsData().getLength() == 0) {
                     outliers.add(i, null);
                 } else {
+                    OutlierEstimation[] o;
                     model = preprocessor.process(tsCollection.get(i).getTsData(), null);
-                    OutlierEstimation[] o = model.outliersEstimation(true, false);
+                    if (model != null) {
+                        o = model.outliersEstimation(true, false);
+                    } else {
+                        o = null;
+                    }
+
                     if (o != null && o.length > 0) {
                         outliers.add(i, o);
                     } else {
@@ -395,33 +416,44 @@ public class JTsAnomalyGrid extends JComponent {
      */
     private class AnomalyCellRenderer extends DefaultTableCellRenderer {
 
-        private JToolTip tooltip;
-        private DecimalFormat df = new DecimalFormat("0.0000");
+        private final TableCellRenderer delegate;
+        private final DecimalFormat df = new DecimalFormat("0.0000");
+        private final JToolTip toolTip;
+        private OutlierEstimation currentOutlier;
 
-        public AnomalyCellRenderer() {
+        public AnomalyCellRenderer(TableCellRenderer delegate) {
+            this.delegate = delegate;
+            this.toolTip = super.createToolTip();
+            this.currentOutlier = null;
             setHorizontalAlignment(TRAILING);
-            setOpaque(true);
-
-            tooltip = super.createToolTip();
         }
 
         @Override
         public JToolTip createToolTip() {
-            tooltip.setBackground(getBackground());
-            tooltip.setForeground(getForeground());
-            return tooltip;
+            if (currentOutlier != null) {
+                toolTip.setBackground(getBackground());
+                toolTip.setForeground(getForeground());
+            } else {
+                toolTip.setBackground(null);
+                toolTip.setForeground(null);
+            }
+            return toolTip;
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setForeground(null);
-            setBackground(null);
-            setToolTipText(null);
-            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            Component resource = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (resource instanceof JLabel) {
+                JLabel label = (JLabel) resource;
+                setBackground(resource.getBackground());
+                setForeground(resource.getForeground());
+                setBorder(label.getBorder());
+                setFont(resource.getFont());
+            }
 
             if (value instanceof TsGridObs) {
                 TsGridObs obs = (TsGridObs) value;
-
+                currentOutlier = null;
                 switch (obs.getInfo()) {
                     case Empty:
                         setText("");
@@ -440,27 +472,24 @@ public class JTsAnomalyGrid extends JComponent {
                                     + "Value : " + df.format(obs.getValue()));
                         } else {
                             OutlierEstimation[] est = outliers.get(obs.getSeriesIndex());
-                            boolean found = false;
                             int i = 0;
-                            OutlierEstimation outlier = null;
-                            while (!found && i < est.length) {
+                            while (currentOutlier == null && i < est.length) {
                                 if (est[i].getPosition().equals(obs.getPeriod())) {
-                                    found = true;
-                                    outlier = est[i];
+                                    currentOutlier = est[i];
                                 }
                                 i++;
                             }
 
                             setText(String.valueOf(obs.getValue()));
-                            if (found) {
+                            if (currentOutlier != null) {
                                 setToolTipText("<html>Period : " + obs.getPeriod().toString() + "<br>"
                                         + "Value : " + df.format(obs.getValue()) + "<br>"
-                                        + "Outlier Value : " + df.format(outlier.getValue()) + "<br>"
-                                        + "Std Err : " + df.format(outlier.getStdev()) + "<br>"
-                                        + "TStat : " + df.format(outlier.getTStat()) + "<br>"
-                                        + "Outlier type : " + outlier.getCode().toString());
-                                setBackground(ColorChooser.getColor(outlier.getCode()));
-                                setForeground(ColorChooser.getForeColor(outlier.getCode()));
+                                        + "Outlier Value : " + df.format(currentOutlier.getValue()) + "<br>"
+                                        + "Std Err : " + df.format(currentOutlier.getStdev()) + "<br>"
+                                        + "TStat : " + df.format(currentOutlier.getTStat()) + "<br>"
+                                        + "Outlier type : " + currentOutlier.getCode().toString());
+                                setBackground(ColorChooser.getColor(currentOutlier.getCode()));
+                                setForeground(ColorChooser.getForeColor(currentOutlier.getCode()));
                             } else {
                                 setToolTipText("<html>Period : " + obs.getPeriod().toString() + "<br>"
                                         + "Value : " + df.format(obs.getValue()));
@@ -472,5 +501,5 @@ public class JTsAnomalyGrid extends JComponent {
             return this;
         }
     }
-// </editor-fold>
+    // </editor-fold>
 }

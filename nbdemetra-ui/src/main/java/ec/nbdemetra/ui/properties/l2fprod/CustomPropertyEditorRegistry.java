@@ -4,17 +4,22 @@ import com.l2fprod.common.beans.editor.ComboBoxPropertyEditor;
 import com.l2fprod.common.propertysheet.PropertyEditorRegistry;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.benchmarking.SaBenchmarkingSpec.Target;
+import ec.satoolkit.seats.SeatsSpecification;
+import ec.satoolkit.x11.CalendarSigma;
 import ec.satoolkit.x11.SeasonalFilterOption;
+import ec.satoolkit.x11.SigmavecOption;
 import ec.tss.sa.output.CsvLayout;
 import ec.tstoolkit.Parameter;
 import ec.tstoolkit.modelling.ComponentType;
 import ec.tstoolkit.modelling.DefaultTransformationType;
 import ec.tstoolkit.modelling.RegressionTestSpec;
+import ec.tstoolkit.modelling.RegressionTestType;
 import ec.tstoolkit.modelling.TradingDaysSpecType;
 import ec.tstoolkit.modelling.TsVariableDescriptor;
 import ec.tstoolkit.modelling.TsVariableDescriptor.UserComponentType;
 import ec.tstoolkit.modelling.arima.Method;
 import ec.tstoolkit.modelling.arima.tramo.EasterSpec;
+import ec.tstoolkit.modelling.arima.tramo.TradingDaysSpec;
 import ec.tstoolkit.modelling.arima.tramo.TramoChoice;
 import ec.tstoolkit.structural.ComponentUse;
 import ec.tstoolkit.structural.SeasonalModel;
@@ -24,10 +29,12 @@ import ec.tstoolkit.timeseries.calendars.LengthOfPeriodType;
 import ec.tstoolkit.timeseries.calendars.TradingDaysType;
 import ec.tstoolkit.timeseries.regression.InterventionVariable;
 import ec.tstoolkit.timeseries.regression.OutlierDefinition;
+import ec.tstoolkit.timeseries.regression.OutlierType;
 import ec.tstoolkit.timeseries.regression.Ramp;
 import ec.tstoolkit.timeseries.regression.Sequence;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.utilities.Directory;
+import ec.ui.descriptors.TsPeriodSelectorUI;
 import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
 import ec.ui.interfaces.ITsControl.TooltipType;
 import ec.ui.interfaces.ITsGrid;
@@ -44,7 +51,7 @@ public enum CustomPropertyEditorRegistry {
     private final PropertyEditorRegistry m_registry;
 
     private CustomPropertyEditorRegistry() {
-        m_registry = new PropertyEditorRegistry();
+        m_registry = PropertyEditorRegistry.Instance;
 
         registerEnumEditor(ITsGrid.Chronology.class);
         registerEnumEditor(ITsGrid.Orientation.class);
@@ -66,17 +73,24 @@ public enum CustomPropertyEditorRegistry {
         registerEnumEditor(SeasonalModel.class);
         registerEnumEditor(Method.class);
         registerEnumEditor(DecompositionMode.class);
+        registerEnumEditor(CalendarSigma.class);
         registerEnumEditor(CsvLayout.class);
         registerEnumEditor(Target.class);
         registerEnumEditor(EasterSpec.Type.class);
         registerEnumEditor(TsFrequency.class);
         //registerEnumEditor(SpreadsheetLayout.class);
         //registerCompositeEditor(SeasonalFilterOption[].class);
+        registerEnumEditor(TsPeriodSelectorUI.Type.class);
+        registerEnumEditor(SeatsSpecification.ApproximationMode.class);
+        registerEnumEditor(SeatsSpecification.EstimationMethod.class);
+        registerEnumEditor(RegressionTestType.class);
+        registerEnumEditor(TradingDaysSpec.AutoMethod.class);
 
         register(Directory.class, new DirectoryEditor());
         register(Day.class, new JDayPropertyEditor());
         register(Parameter[].class, new ParametersPropertyEditor());
         register(SeasonalFilterOption[].class, new SeasonalFilterPropertyEditor());
+        register(SigmavecOption[].class, new SigmavecPropertyEditor());
         register(Ramp[].class, new RampsEditor());
         register(TsVariableDescriptor[].class, new TsVariableDescriptorsEditor());
         register(InterventionVariable[].class, new InterventionVariablesEditor());
@@ -86,6 +100,8 @@ public enum CustomPropertyEditorRegistry {
         register(Holidays.class, new HolidaysSelector());
         register(UserVariable.class, new UserVariableSelector());
         register(UserVariables.class, new UserVariablesEditor());
+
+        registerEnumEditor(OutlierType.class, new OutlierTypeSelector());
     }
 
     public PropertyEditorRegistry getRegistry() {
@@ -93,17 +109,26 @@ public enum CustomPropertyEditorRegistry {
     }
 
     public void registerEnumEditor(Class<? extends Enum<?>> type) {
-        if (m_registry.getEditor(type) == null) {
-            Enum<?>[] enumConstants = type.getEnumConstants();
-            ComboBoxPropertyEditor.Value[] values = new ComboBoxPropertyEditor.Value[enumConstants.length];
-            for (int i = 0; i < values.length; i++) {
-                values[i] = new ComboBoxPropertyEditor.Value(enumConstants[i], enumConstants[i].name());
-            }
-
-            ComboBoxPropertyEditor editor = new ComboBoxPropertyEditor();
-            editor.setAvailableValues(values);
-            m_registry.registerEditor(type, editor);
+        Enum<?>[] enumConstants = type.getEnumConstants();
+        ComboBoxPropertyEditor.Value[] values = new ComboBoxPropertyEditor.Value[enumConstants.length];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = new ComboBoxPropertyEditor.Value(enumConstants[i], enumConstants[i].name());
         }
+
+        ComboBoxPropertyEditor editor = new ComboBoxPropertyEditor();
+        editor.setAvailableValues(values);
+        m_registry.registerEditor(type, editor);
+    }
+
+    /**
+     * Used to register a custom enum editor. Then, the default
+     * EnumPropertyEditor is not used for the given property type.
+     *
+     * @param type Type of the property
+     * @param editor New editor for the property
+     */
+    public void registerEnumEditor(Class<? extends Enum<?>> type, PropertyEditor editor) {
+        m_registry.registerEditor(type, editor);
     }
 
     public void registerCompositeEditor(Class type) {
@@ -118,7 +143,7 @@ public enum CustomPropertyEditorRegistry {
             m_registry.registerEditor(c, editor);
         }
     }
-    
+
     public void unregister(Class c) {
         if (null != m_registry.getEditor(c)) {
             m_registry.unregisterEditor(c);

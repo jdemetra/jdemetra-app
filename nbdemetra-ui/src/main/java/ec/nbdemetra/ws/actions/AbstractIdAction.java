@@ -11,7 +11,7 @@ import org.openide.windows.TopComponent;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class AbstractIdAction<T extends TopComponent> extends AbstractAction implements ContextAwareAction {
 

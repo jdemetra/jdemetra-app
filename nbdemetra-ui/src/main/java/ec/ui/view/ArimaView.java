@@ -9,7 +9,9 @@ import ec.tss.html.HtmlStream;
 import ec.tss.html.HtmlTag;
 import ec.tss.html.implementation.HtmlArima;
 import ec.tss.html.implementation.HtmlSarimaPolynomials;
+import ec.tstoolkit.arima.AutoRegressiveDistance;
 import ec.tstoolkit.arima.IArimaModel;
+import ec.tstoolkit.arima.MovingAverageDistance;
 import ec.tstoolkit.sarima.SarimaModel;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.uihelper.ModelInformationProvider;
@@ -17,6 +19,7 @@ import ec.ui.html.JHtmlPane;
 import java.awt.BorderLayout;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Formatter;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.swing.JComponent;
@@ -29,8 +32,8 @@ import javax.swing.text.html.StyleSheet;
  */
 public class ArimaView extends JComponent {
 
-    private PiView spectrumPanel_;
-    private JHtmlPane documentPanel_;
+    private final PiView spectrumPanel_;
+    private final JHtmlPane documentPanel_;
 
     public ArimaView(Map<String, ? extends IArimaModel> models) {
         setLayout(new BorderLayout());
@@ -64,8 +67,11 @@ public class ArimaView extends JComponent {
         StringWriter writer = new StringWriter();
         try (HtmlStream stream = new HtmlStream(writer)) {
             stream.open();
+            IArimaModel[] m=new IArimaModel[models.size()];
+            int cur=0;
             for (Entry<String, ? extends IArimaModel> o : models.entrySet()) {
                 IArimaModel model = o.getValue();
+                m[cur++]=model;
                 if (model instanceof SarimaModel) {
                     SarimaModel sarima = (SarimaModel) model;
                     HtmlSarimaPolynomials document = new HtmlSarimaPolynomials(sarima);
@@ -81,6 +87,14 @@ public class ArimaView extends JComponent {
                 }
                 stream.newLine();
             }
+//            if (m.length == 2){
+//                    stream.newLine();
+//                    double d=AutoRegressiveDistance.compute(m[0], m[1], 200);
+//                    stream.write(HtmlTag.HEADER4, "AR-Distance between the two models = " + new Formatter().format("%g4", d)).newLine();
+//                    double md=MovingAverageDistance.compute2(m[0], m[1], 200);
+//                    stream.write(HtmlTag.HEADER4, "MA-Distance between the two models = " + new Formatter().format("%g4", md)).newLine();
+//                
+//            }
         }
         catch (IOException ex) {
         }

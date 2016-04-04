@@ -12,7 +12,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 @ServiceProvider(service = IWorkspaceItemRepository.class)
 public class TramoSpecFileRepository extends AbstractFileItemRepository<TramoSpecification> {

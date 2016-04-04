@@ -42,6 +42,7 @@ public final class RemoveCalendarAction extends SingleNodeAction<ItemWsNode> {
         } else if (o instanceof ChainedGregorianCalendarProvider) {
             removeChainedCalendar((ChainedGregorianCalendarProvider) o, activatedNode);
         } else if (o instanceof CompositeGregorianCalendarProvider) {
+            removeCompositeCalendar((CompositeGregorianCalendarProvider) o, activatedNode);
         }
     }
 

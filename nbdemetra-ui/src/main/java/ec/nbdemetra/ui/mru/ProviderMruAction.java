@@ -18,7 +18,6 @@ package ec.nbdemetra.ui.mru;
 
 import com.google.common.base.Optional;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import ec.nbdemetra.ui.tsproviders.ProvidersNode;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.TsProviders;
@@ -42,12 +41,10 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.WeakListeners;
 import org.openide.util.actions.Presenter;
 
-@ActionID(category = "File",
-        id = "ec.nbdemetra.ui.mru.ProviderMruAction")
+@ActionID(category = "File", id = "ec.nbdemetra.ui.mru.ProviderMruAction")
 @ActionRegistration(displayName = "#CTL_ProviderMruAction", lazy = false)
 @ActionReferences({
-    @ActionReference(path = "Menu/File", position = 810),
-    @ActionReference(path = ProvidersNode.ACTION_PATH, position = 1320, separatorBefore = 1300)
+    @ActionReference(path = "Menu/File", position = 810)
 })
 @Messages("CTL_ProviderMruAction=Open recent")
 public final class ProviderMruAction extends AbstractAction implements Presenter.Popup, Presenter.Menu {

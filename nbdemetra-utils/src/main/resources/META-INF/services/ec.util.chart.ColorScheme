@@ -6,3 +6,4 @@ ec.util.chart.impl.SolarizedColorScheme$SolarizedDarkColorScheme
 ec.util.chart.impl.SolarizedColorScheme$SolarizedLightColorScheme
 ec.util.chart.impl.TangoColorScheme
 ec.util.chart.impl.LollipopColorScheme
+ec.util.chart.impl.ColorBlindColorScheme

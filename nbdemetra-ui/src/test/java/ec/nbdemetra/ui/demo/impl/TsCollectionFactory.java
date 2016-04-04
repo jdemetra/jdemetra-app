@@ -29,9 +29,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import static javax.swing.SwingConstants.TRAILING;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -61,37 +62,46 @@ public final class TsCollectionFactory extends DemoComponentFactory {
             @Override
             public Component call() throws Exception {
                 JTsGrid result = new JTsGrid();
-                result.setCellRenderer(new CustomCellRenderer());
+                result.setCellRenderer(new CustomCellRenderer(result.getCellRenderer()));
                 return result;
             }
         };
     }
 
-    private static final class CustomCellRenderer extends DefaultTableCellRenderer {
+    private static final class CustomCellRenderer implements TableCellRenderer {
+
+        private final TableCellRenderer delegate;
+
+        public CustomCellRenderer(TableCellRenderer delegate) {
+            this.delegate = delegate;
+        }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setForeground(null);
-            setHorizontalAlignment(TRAILING);
-            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            Component result = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-            if (value instanceof TsGridObs) {
+            if (value instanceof TsGridObs && result instanceof JLabel) {
                 TsGridObs obs = (TsGridObs) value;
+                JLabel label = (JLabel) result;
+                label.setHorizontalAlignment(TRAILING);
                 switch (obs.getInfo()) {
                     case Empty:
-                        setText("Empty");
+                        label.setText("Empty");
+                        break;
                     case Missing:
-                        setText("Missing");
+                        label.setText("Missing");
+                        break;
                     case Valid:
                         long longValue = (long) obs.getValue();
-                        setText(Long.toString(longValue));
+                        label.setText(Long.toString(longValue));
                         if (longValue % 2 != 0) {
-                            setForeground(Color.RED);
+                            label.setForeground(Color.RED);
                         }
+                        break;
                 }
             }
 
-            return this;
+            return result;
         }
     }
 }

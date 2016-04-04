@@ -1,3 +1,19 @@
+/*
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
+ */
 package ec.ui.view;
 
 import ec.tstoolkit.data.DataBlock;
@@ -20,6 +36,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -48,6 +65,7 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
     protected static final int DISTRIBUTION_INDEX = 0;
     protected static final KnownColor HISTOGRAM_COLOR = KnownColor.BLUE;
     protected static final KnownColor DISTRIBUTION_COLOR = KnownColor.RED;
+
     // PROPERTIES DEFINITION
     public static final String L_BOUND_PROPERTY = "lBound";
     public static final String R_BOUND_PROPERTY = "rBound";
@@ -55,6 +73,7 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
     public static final String ADJUST_DISTRIBUTION_PROPERTY = "adjustDistribution";
     public static final String H_COUNT_PROPERTY = "hCount";
     public static final String DATA_PROPERTY = "data";
+
     // DEFAULT PROPERTIES
     protected static final double DEFAULT_L_BOUND = 0;
     protected static final double DEFAULT_R_BOUND = 0;
@@ -62,6 +81,7 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
     protected static final boolean DEFAULT_ADJUST_DISTRIBUTION = true;
     protected static final int DEFAULT_H_COUNT = 0;
     protected static final double[] DEFAULT_DATA = null;
+
     // PROPERTIES
     protected double lBound;
     protected double rBound;
@@ -69,6 +89,7 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
     protected boolean adjustDistribution;
     protected int hCount;
     protected double[] data;
+
     // OTHER
     protected final ChartPanel chartPanel;
 
@@ -80,14 +101,19 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
         this.hCount = DEFAULT_H_COUNT;
         this.data = DEFAULT_DATA;
 
-        setLayout(new BorderLayout());
         this.chartPanel = new ChartPanel(createDistributionViewChart());
         Charts.avoidScaling(chartPanel);
-        add(chartPanel, BorderLayout.CENTER);
 
         onDataFormatChange();
         onColorSchemeChange();
+        onComponentPopupMenuChange();
+        enableProperties();
 
+        setLayout(new BorderLayout());
+        add(chartPanel, BorderLayout.CENTER);
+    }
+
+    private void enableProperties() {
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -110,11 +136,12 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
                     case DATA_PROPERTY:
                         onDataChange();
                         break;
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
                 }
             }
         });
-
-        chartPanel.setPopupMenu(buildMenu(chartPanel).getPopupMenu());
     }
 
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
@@ -196,6 +223,11 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
         }
 
         onColorSchemeChange();
+    }
+
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildMenu(chartPanel).getPopupMenu());
     }
     //</editor-fold>
 

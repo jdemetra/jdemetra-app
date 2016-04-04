@@ -14,7 +14,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecification, TramoDocument> {
 
@@ -60,6 +60,15 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
         }
     }
     //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="REGISTER FORECASTS">
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000 + 500)
+    public static class ModelFCastsTableFactory extends PreprocessingViewFactory.PreprocessingFCastsTableFactory<TramoDocument> {
+
+        public ModelFCastsTableFactory() {
+            super(TramoDocument.class);
+        }
+    }
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER FORECASTS">
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000 + 1000)

@@ -31,7 +31,7 @@ import org.openide.windows.WindowManager;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 @ConvertAsProperties(dtd = "-//ec.nbdemetra.ws.ui//Workspace//EN",
         autostore = false)
@@ -98,6 +98,7 @@ public class DemetraWsUI extends TopComponent implements ExplorerManager.Provide
 
     @Override
     public void componentClosed() {
+        result.removeLookupListener(this);
         mgr.setRootContext(new AbstractNode(Children.LEAF));
     }
 

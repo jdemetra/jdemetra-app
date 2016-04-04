@@ -11,6 +11,7 @@ import ec.tstoolkit.timeseries.Month;
 import ec.tstoolkit.timeseries.ValidityPeriod;
 import ec.tstoolkit.timeseries.calendars.FixedWeekDay;
 import ec.tstoolkit.timeseries.calendars.ISpecialDay;
+import ec.tstoolkit.timeseries.calendars.ISpecialDay.Context;
 
 /**
  *
@@ -73,7 +74,7 @@ public class FixedWeekEventBean extends AbstractEventBean {
     }
 
     @Override
-    protected ISpecialDay toSpecialDay() {
+    protected ISpecialDay toSpecialDay(Context context) {
         return new FixedWeekDay(week, dayOfWeek, month, weight);
     }
 

@@ -99,9 +99,10 @@ public final class AddCalendarAction extends AbstractAction implements Presenter
 
         DialogDescriptor dd = panel.createDialogDescriptor(Bundle.addNationalCalendar_dialog_title());
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
+            boolean mean=panel.isMeanCorrection();
+            boolean julian=panel.isJulianCalendar();
             Collection<SpecialDayEvent> events = panel.getSpecialDayEvents();
-            NationalCalendarProvider np = new NationalCalendarProvider(events);
-            np.setLongTermMeanCorrection(panel.isMeanCorrection());
+            NationalCalendarProvider np = new NationalCalendarProvider(events, mean, julian);
             add(manager, panel.getCalendarName(), np);
         }
     }

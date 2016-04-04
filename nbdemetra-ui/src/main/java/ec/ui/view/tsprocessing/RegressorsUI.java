@@ -18,7 +18,7 @@ import javax.swing.JComponent;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class RegressorsUI<V extends IProcDocumentView<?>> extends DefaultItemUI<V, PreprocessingModel> {
 

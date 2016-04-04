@@ -17,6 +17,7 @@
 package ec.ui.grid;
 
 import ec.tstoolkit.design.UtilityClass;
+import static ec.ui.grid.JTsGrid.CROSSHAIR_VISIBLE_PROPERTY;
 import static ec.ui.grid.JTsGrid.SHOW_BARS_PROPERTY;
 import static ec.ui.grid.JTsGrid.USE_COLOR_SCHEME_PROPERTY;
 import ec.util.various.swing.JCommand;
@@ -42,6 +43,11 @@ public final class JTsGridCommand {
     @Nonnull
     public static JCommand<JTsGrid> toggleShowBars() {
         return ToggleShowBarsCommand.INSTANCE;
+    }
+
+    @Nonnull
+    public static JCommand<JTsGrid> toggleCrosshairVisibility() {
+        return ToggleCrosshairVisibilityCommand.INSTANCE;
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation">
@@ -84,6 +90,27 @@ public final class JTsGridCommand {
         public JCommand.ActionAdapter toAction(JTsGrid c) {
             JCommand.ActionAdapter result = super.toAction(c);
             return c instanceof Component ? result.withWeakPropertyChangeListener((Component) c, SHOW_BARS_PROPERTY) : result;
+        }
+    }
+
+    private static final class ToggleCrosshairVisibilityCommand extends JCommand<JTsGrid> {
+
+        public static final ToggleCrosshairVisibilityCommand INSTANCE = new ToggleCrosshairVisibilityCommand();
+
+        @Override
+        public void execute(JTsGrid component) throws Exception {
+            component.setCrosshairVisible(!component.isCrosshairVisible());
+        }
+
+        @Override
+        public boolean isSelected(JTsGrid component) {
+            return component.isCrosshairVisible();
+        }
+
+        @Override
+        public JCommand.ActionAdapter toAction(JTsGrid c) {
+            JCommand.ActionAdapter result = super.toAction(c);
+            return c instanceof Component ? result.withWeakPropertyChangeListener((Component) c, CROSSHAIR_VISIBLE_PROPERTY) : result;
         }
     }
     //</editor-fold>

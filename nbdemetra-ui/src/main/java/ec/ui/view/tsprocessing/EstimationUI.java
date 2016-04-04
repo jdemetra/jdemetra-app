@@ -16,7 +16,7 @@ import javax.swing.JComponent;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  * @param <V>
  */
 public class EstimationUI<V extends IProcDocumentView<?>> extends DefaultItemUI<V, EstimationUI.Information> {

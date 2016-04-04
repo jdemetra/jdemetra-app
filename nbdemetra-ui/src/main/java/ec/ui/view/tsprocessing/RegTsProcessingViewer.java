@@ -69,7 +69,7 @@ public class RegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocume
 
         toolBar.setVisible(true);
 
-        xList.addPropertyChangeListener(JTsList.COLLECTION_PROPERTY, new PropertyChangeListener() {
+        xList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (!quietRefresh) {
@@ -77,7 +77,7 @@ public class RegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocume
                 }
             }
         });
-        yList.addPropertyChangeListener(JTsList.COLLECTION_PROPERTY, new PropertyChangeListener() {
+        yList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (!quietRefresh) {

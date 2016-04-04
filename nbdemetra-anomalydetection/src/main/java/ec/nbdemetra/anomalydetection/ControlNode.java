@@ -29,6 +29,7 @@ import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.Lookups;
+import org.openide.util.NbBundle.Messages;
 
 /**
  * Nodes used for property sheets of anomaly detection's components
@@ -65,43 +66,66 @@ public class ControlNode {
      */
     static class OutliersNode extends AbstractNode {
 
+        @Messages({
+            "controlNode.OutliersNode.setDisplayName=Outliers Detection"
+        })
         OutliersNode(JTsAnomalyGrid col) {
             super(Children.LEAF, Lookups.singleton(col));
-            setDisplayName("Outliers Detection");
+            setDisplayName(Bundle.controlNode_OutliersNode_setDisplayName());
         }
 
         @Override
+        @Messages({
+            "controlNode.Outliers.Specification.displayName=Specification",
+            "controlNode.Outliers.Specification.name=Default Specification",
+            "controlNode.Outliers.Specification.desc=Specification used in the checking procedure",
+            "controlNode.Outliers.defaultCriticalValue.name=Use default critical value",
+            "controlNode.Outliers.defaultCriticalValue.desc=[va] The critical value is automatically determined. It depends on the number of observations considered in the outliers detection procedure",
+            "controlNode.Outliers.criticalValue.name=Critical Value",
+            "controlNode.Outliers.criticalValue.desc=Critical value defining the sensibility of the detection",
+            "controlNode.Outliers.transformation.name=Transformation",
+            "controlNode.Outliers.transformation.desc=Transformation type",
+            "controlNode.Outliers.outliers.displayName=Outliers to display",
+            "controlNode.Outliers.AO.name=AO",
+            "controlNode.Outliers.AO.desc=Additive Outlier",
+            "controlNode.Outliers.LS.name=LS",
+            "controlNode.Outliers.LS.desc=Level Shift",
+            "controlNode.Outliers.TC.name=TC",
+            "controlNode.Outliers.TC.desc=Transitory Change",
+            "controlNode.Outliers.SO.name=SO",
+            "controlNode.Outliers.SO.desc=Seasonal Outlier",
+        })
         protected Sheet createSheet() {
             JTsAnomalyGrid ui = getLookup().lookup(JTsAnomalyGrid.class);
             Sheet result = new Sheet();
             NodePropertySetBuilder b = new NodePropertySetBuilder();
 
             try {
-                b.reset("Specification");
+                b.reset(Bundle.controlNode_Outliers_Specification_displayName());
                 PropertySupport.Reflection<TramoSpecification> specProp = new PropertySupport.Reflection<>(ui, TramoSpecification.class, "defaultSpec");
                 specProp.setPropertyEditorClass(TramoSpecPropertyEditor.class);
-                specProp.setName("Default Specification");
-                specProp.setShortDescription("Default specification used");
+                specProp.setName(Bundle.controlNode_Outliers_Specification_name());
+                specProp.setShortDescription(Bundle.controlNode_Outliers_Specification_desc());
                 b.add(specProp);
                 
                 b.withBoolean().select(ui, "isDefaultCritical", "setDefaultCritical")
-                        .display("Use default critical value")
-                        .description("[va] The critical value is automatically determined. It depends on the number of observations considered in the outliers detection procedure")
+                        .display(Bundle.controlNode_Outliers_defaultCriticalValue_name())
+                        .description(Bundle.controlNode_Outliers_defaultCriticalValue_desc())
                         .add();
                 
-                b.withDouble().select(ui, "getCriticalValue", "setCriticalValue").display("Critical Value").description("Critical value defining the sensibility of the detection").add();
-                b.withEnum(DefaultTransformationType.class).select(ui, "getTransformation", "setTransformation").display("Transformation").description("Transformation type").add();
+                b.withDouble().select(ui, "getCriticalValue", "setCriticalValue").display(Bundle.controlNode_Outliers_criticalValue_name()).description(Bundle.controlNode_Outliers_criticalValue_desc()).add();
+                b.withEnum(DefaultTransformationType.class).select(ui, "getTransformation", "setTransformation").display(Bundle.controlNode_Outliers_transformation_name()).description(Bundle.controlNode_Outliers_transformation_desc()).add();
                 
                 result.put(b.build());
             } catch (NoSuchMethodException ex) {
                 Exceptions.printStackTrace(ex);
             }
 
-            b.reset("Outliers to display");
-            b.withBoolean().select(ui, "isShowAO", "setShowAO").display("AO").description("Additive Outlier").add();
-            b.withBoolean().select(ui, "isShowLS", "setShowLS").display("LS").description("Level Shift").add();
-            b.withBoolean().select(ui, "isShowTC", "setShowTC").display("TC").description("Transitory Change").add();
-            b.withBoolean().select(ui, "isShowSO", "setShowSO").display("SO").description("Seasonal Outlier").add();
+            b.reset(Bundle.controlNode_Outliers_outliers_displayName());
+            b.withBoolean().select(ui, "isShowAO", "setShowAO").display(Bundle.controlNode_Outliers_AO_name()).description(Bundle.controlNode_Outliers_AO_desc()).add();
+            b.withBoolean().select(ui, "isShowLS", "setShowLS").display(Bundle.controlNode_Outliers_LS_name()).description(Bundle.controlNode_Outliers_LS_desc()).add();
+            b.withBoolean().select(ui, "isShowTC", "setShowTC").display(Bundle.controlNode_Outliers_TC_name()).description(Bundle.controlNode_Outliers_TC_desc()).add();
+            b.withBoolean().select(ui, "isShowSO", "setShowSO").display(Bundle.controlNode_Outliers_SO_name()).description(Bundle.controlNode_Outliers_SO_desc()).add();
             result.put(b.build());
             
             return result;
@@ -113,27 +137,43 @@ public class ControlNode {
      */
     static class CheckLastNode extends AbstractNode {
 
+        @Messages({
+            "controlNode.CheckLastNode.setDisplayName=Check Last"
+        })
         CheckLastNode(JTsCheckLastList col) {
             super(Children.LEAF, Lookups.singleton(col));
-            setDisplayName("Check Last");
+            setDisplayName(Bundle.controlNode_CheckLastNode_setDisplayName());
         }
 
         @Override
+        @Messages({
+            "controlNode.CheckLast.displayName=Check Last",
+            "controlNode.CheckLast.name=Number Last Check",
+            "controlNode.CheckLast.desc=Number of observations in the end of time series that will be forecasted and compared with the actual values.",
+            "controlNode.CheckLast.Specification.displayName=Specification",
+            "controlNode.CheckLast.Specification.name=Default Specification",
+            "controlNode.CheckLast.Specification.desc=Specification used in the checking procedure",
+            "controlNode.CheckLast.ColoringOption.displayName=Coloring Options",
+            "controlNode.CheckLast.ColoringOption.red.name=Red Rows from",
+            "controlNode.CheckLast.ColoringOption.red.desc=Value from which the rows are colored in red",
+            "controlNode.CheckLast.ColoringOption.orange.name=Orange Rows from",
+            "controlNode.CheckLast.ColoringOption.orange.desc=Value from which the rows are colored in orange"
+        })
         protected Sheet createSheet() {
             JTsCheckLastList ui = getLookup().lookup(JTsCheckLastList.class);
             Sheet result = new Sheet();
             NodePropertySetBuilder b = new NodePropertySetBuilder();
 
-            b.reset("Check Last");
-            b.withInt().select(ui, "getLastChecks", "setLastChecks").display("Number Last Check").description("Number of last observations to check").add();
+            b.reset(Bundle.controlNode_CheckLast_displayName());
+            b.withInt().select(ui, "getLastChecks", "setLastChecks").display(Bundle.controlNode_CheckLast_name()).description(Bundle.controlNode_CheckLast_desc()).add();
             result.put(b.build());
 
             try {
-                b.reset("Specification");
+                b.reset(Bundle.controlNode_CheckLast_Specification_displayName());
                 PropertySupport.Reflection<TramoSpecification> specProp = new PropertySupport.Reflection<>(ui, TramoSpecification.class, "spec");
                 specProp.setPropertyEditorClass(TramoSpecPropertyEditor.class);
-                specProp.setName("Default Specification");
-                specProp.setShortDescription("Default specification used");
+                specProp.setName(Bundle.controlNode_CheckLast_Specification_name());
+                specProp.setShortDescription(Bundle.controlNode_CheckLast_Specification_desc());
                 b.add(specProp);
                 
                 result.put(b.build());
@@ -141,9 +181,9 @@ public class ControlNode {
                 Exceptions.printStackTrace(ex);
             }
 
-            b.reset("Coloring Options");
-            b.withDouble().select(ui, "getRedCells", "setRedCells").display("Red Rows from").description("Value from which the rows are colored in red").add();
-            b.withDouble().select(ui, "getOrangeCells", "setOrangeCells").display("Orange Rows from").description("Value from which the rows are colored in orange").add();
+            b.reset(Bundle.controlNode_CheckLast_ColoringOption_displayName());
+            b.withDouble().select(ui, "getRedCells", "setRedCells").display(Bundle.controlNode_CheckLast_ColoringOption_red_name()).description(Bundle.controlNode_CheckLast_ColoringOption_red_desc()).add();
+            b.withDouble().select(ui, "getOrangeCells", "setOrangeCells").display(Bundle.controlNode_CheckLast_ColoringOption_orange_name()).description(Bundle.controlNode_CheckLast_ColoringOption_orange_desc()).add();
             result.put(b.build());
 
             return result;

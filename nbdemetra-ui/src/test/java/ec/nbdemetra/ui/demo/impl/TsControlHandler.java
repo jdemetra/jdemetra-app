@@ -19,11 +19,12 @@ package ec.nbdemetra.ui.demo.impl;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.tss.tsproviders.utils.DataFormat;
+import ec.ui.commands.TsControlCommand;
 import ec.ui.interfaces.ITsControl;
-import java.awt.event.ActionEvent;
+import ec.util.various.swing.JCommand;
 import java.util.Locale;
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import org.openide.awt.DropDownButtonFactory;
@@ -36,35 +37,55 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemoComponentHandler.class, position = 100)
 public final class TsControlHandler extends DemoComponentHandler.InstanceOf<ITsControl> {
 
+    private final DataFormatCommand dataFormatCommand;
+
     public TsControlHandler() {
         super(ITsControl.class);
-    }
-
-    @Override
-    public void doFillToolBar(JToolBar toolBar, final ITsControl c) {
-        JPopupMenu dataFormatPopup = new JPopupMenu();
-
         DataFormat[] dataFormats = {
             new DataFormat(Locale.FRENCH, "YYYY-MM", null),
             new DataFormat(Locale.US, "MM/YY", "0 $"),
             new DataFormat(Locale.GERMAN, "(yyyy)MMM", "0.00 €"),};
+        this.dataFormatCommand = new DataFormatCommand(dataFormats);
+    }
 
-        for (final DataFormat o : dataFormats) {
-            dataFormatPopup.add(new AbstractAction(o.toString()) {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    c.setDataFormat(o);
-                }
-            });
-        }
-        JButton dataFormatButton = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LOCALE_ALTERNATE_16, dataFormatPopup);
-        dataFormatButton.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                c.setDataFormat(null);
-            }
-        });
-        toolBar.add(dataFormatButton);
+    @Override
+    public void doFillToolBar(JToolBar toolBar, final ITsControl c) {
+        toolBar.add(dataFormatCommand.toButton(c));
         toolBar.addSeparator();
     }
+
+    private static final class DataFormatCommand extends JCommand<ITsControl> {
+
+        private final DataFormat[] dataFormats;
+        private int position;
+
+        public DataFormatCommand(DataFormat[] dataFormats) {
+            this.dataFormats = dataFormats;
+            this.position = 0;
+        }
+
+        @Override
+        public void execute(ITsControl component) throws Exception {
+            component.setDataFormat(dataFormats[position]);
+            position = (position + 1) % dataFormats.length;
+        }
+
+        @Override
+        public boolean isEnabled(ITsControl component) {
+            return dataFormats.length > 0;
+        }
+
+        public JButton toButton(final ITsControl c) {
+            JPopupMenu popup = new JPopupMenu();
+            popup.add(new JCheckBoxMenuItem(TsControlCommand.applyDataFormat(null).toAction(c))).setText("Default");
+            popup.addSeparator();
+            for (DataFormat o : dataFormats) {
+                popup.add(new JCheckBoxMenuItem(TsControlCommand.applyDataFormat(o).toAction(c))).setText(o.toString());
+            }
+            JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LOCALE_ALTERNATE_16, popup);
+            result.addActionListener(toAction(c));
+            return result;
+        }
+    }
+
 }

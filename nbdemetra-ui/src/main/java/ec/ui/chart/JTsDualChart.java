@@ -6,7 +6,6 @@ package ec.ui.chart;
 
 import ec.tstoolkit.utilities.IntList;
 import ec.util.chart.SeriesFunction;
-import ec.util.chart.TimeSeriesChart;
 
 /**
  *
@@ -18,7 +17,6 @@ public class JTsDualChart extends JTsChart {
 
     public JTsDualChart() {
         subTss_ = new IntList();
-        chartPanel.setPopupMenu(buildChartMenu().getPopupMenu());
 
         chartPanel.setPlotWeights(new int[]{2, 1});
         chartPanel.setPlotDispatcher(new SeriesFunction<Integer>() {

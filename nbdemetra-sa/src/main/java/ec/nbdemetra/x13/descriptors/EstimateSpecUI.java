@@ -12,10 +12,11 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
- * @author pcuser & BAYENSK
+ * @author Jean Palate & BAYENSK
  */
 public class EstimateSpecUI extends BaseRegArimaSpecUI {
 
@@ -49,9 +50,10 @@ public class EstimateSpecUI extends BaseRegArimaSpecUI {
         return descs;
     }
 
+    @Messages("estimateSpecUI.getDisplayName=Estimate")
     @Override
     public String getDisplayName() {
-        return "Estimate";
+        return Bundle.estimateSpecUI_getDisplayName();
     }
 
     public double getTol() {
@@ -63,13 +65,17 @@ public class EstimateSpecUI extends BaseRegArimaSpecUI {
         inner().setTol(value);
     }
 
+    @Messages({
+        "estimateSpecUI.tolDesc.name=Tolerance",
+        "estimateSpecUI.tolDesc.desc=[tol] Precision used in the optimization procedure."
+    })
     private EnhancedPropertyDescriptor tolDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Tol", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TOL_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(TOL_NAME);
-            desc.setShortDescription(TOL_DESC);
+            desc.setDisplayName(Bundle.estimateSpecUI_tolDesc_name());
+            desc.setShortDescription(Bundle.estimateSpecUI_tolDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -77,13 +83,17 @@ public class EstimateSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "estimateSpecUI.spanDesc.name=Model span",
+        "estimateSpecUI.spanDesc.desc=Span used for the estimation of the pre-processing model"
+    })
     private EnhancedPropertyDescriptor spanDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("span", this.getClass(), "getSpan", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SPAN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(SPAN_DESC);
-            desc.setDisplayName(SPAN_NAME);
+            desc.setShortDescription(Bundle.estimateSpecUI_spanDesc_desc());
+            desc.setDisplayName(Bundle.estimateSpecUI_spanDesc_name());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -91,7 +101,4 @@ public class EstimateSpecUI extends BaseRegArimaSpecUI {
         }
     }
     private static final int SPAN_ID = 0, TOL_ID = 1;
-    private static final String TOL_NAME = "Tolerance", EML_NAME = "Exact ML", SPAN_NAME = "Model span";
-    private static final String TOL_DESC = "[tol] Precision used in the optimization procedure.",
-            SPAN_DESC = "Span used for the estimation of the pre-processing model";
 }

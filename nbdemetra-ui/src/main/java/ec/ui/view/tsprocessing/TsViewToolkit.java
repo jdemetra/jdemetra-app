@@ -40,7 +40,7 @@ import javax.swing.text.html.StyleSheet;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public final class TsViewToolkit implements ITsViewToolkit {
 

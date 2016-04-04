@@ -22,7 +22,7 @@ import javax.xml.bind.Unmarshaller;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceItemRepository<D> {
 

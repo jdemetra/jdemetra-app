@@ -6,13 +6,11 @@ package ec.nbdemetra.sa;
 
 import com.google.common.collect.Maps;
 import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.awt.PopupListener;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.satoolkit.algorithm.implementation.X13ProcessingFactory;
 import ec.satoolkit.x11.Mstatistics;
 import ec.tss.ITsIdentified;
 import ec.tss.formatters.TableFormatter;
-import ec.tss.sa.RegArimaReport;
 import ec.tss.sa.SaItem;
 import ec.tss.sa.SaProcessing;
 import ec.tss.sa.diagnostics.*;
@@ -21,7 +19,6 @@ import ec.tstoolkit.algorithm.IProcResults;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.information.InformationSet;
 import ec.util.grid.swing.AbstractGridModel;
-import ec.util.grid.swing.GridRowHeaderRenderer;
 import ec.util.grid.swing.JGrid;
 import ec.util.grid.swing.ext.TableGridCommand;
 import java.awt.BorderLayout;
@@ -32,19 +29,17 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
-import org.openide.windows.TopComponent;
 
 /**
  *
@@ -128,21 +123,23 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
     private static JGrid createMatrix() {
         final JGrid result = new JGrid();
-        result.setRowRenderer(new GridRowHeaderRenderer() {
+        result.setDefaultRenderer(Object.class, new TableCellRenderer() {
+
+            final TableCellRenderer delegate = result.getDefaultRenderer(Object.class);
+
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                result.setToolTipText(result.getText());
+                Component result = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (result instanceof JLabel) {
+                    ((JLabel) result).setHorizontalAlignment(JLabel.CENTER);
+                }
                 return result;
             }
         });
-        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
-        cellRenderer.setHorizontalAlignment(JLabel.CENTER);
-        result.setDefaultRenderer(Object.class, cellRenderer);
 
         JMenu menu = new JMenu();
         menu.add(TableGridCommand.copyAll(true, true).toAction(result)).setText("Copy");
-        result.addMouseListener(new PopupListener.PopupAdapter(menu.getPopupMenu()));
+        result.setComponentPopupMenu(menu.getPopupMenu());
 
         return result;
     }

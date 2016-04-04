@@ -45,7 +45,6 @@ public class ArrayEditorDialog<T> extends JDialog {
         c_ = c;
         elementsList_ = Lists.newArrayList(elements);
 
-
         final JPanel pane = new JPanel(new BorderLayout());
         pane.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
@@ -72,8 +71,7 @@ public class ArrayEditorDialog<T> extends JDialog {
                 if (list.getSelectedValue() != null) {
                     model.setProperties(PropertiesPanelFactory.INSTANCE.createProperties(list.getSelectedValue()));
                     cur_ = (T) list.getSelectedValue();
-                }
-                else {
+                } else {
                     cur_ = null;
                     model.setProperties(new Property[]{});
                 }
@@ -100,14 +98,16 @@ public class ArrayEditorDialog<T> extends JDialog {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 dirty_ = true;
-//                SwingUtilities.invokeLater(new Runnable() {
-//
-//                    @Override
-//                    public void run() {
-//                        list.setModel(new ArrayEditorListModel(elementsList_));
-//                        list.invalidate();
-//                    }
-//                });
+                try {
+                    Object o = list.getSelectedValue();
+                    if (o != null) {
+                        model.setProperties(PropertiesPanelFactory.INSTANCE.createProperties(o));
+                    }
+                } catch (RuntimeException err) {
+                    String msg = err.getMessage();
+                } finally {
+                    model.fireTableStructureChanged();
+                }
             }
         });
 
@@ -136,8 +136,7 @@ public class ArrayEditorDialog<T> extends JDialog {
                         }
                     });
 
-                }
-                catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                     System.err.println(ex.getMessage());
                 }
             }
@@ -165,8 +164,7 @@ public class ArrayEditorDialog<T> extends JDialog {
                         }
                     });
 
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     System.err.println(ex.getMessage());
                 }
             }

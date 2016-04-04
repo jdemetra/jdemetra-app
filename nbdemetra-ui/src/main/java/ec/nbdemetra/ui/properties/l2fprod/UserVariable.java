@@ -6,7 +6,7 @@ package ec.nbdemetra.ui.properties.l2fprod;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class UserVariable {
         private final String var_;

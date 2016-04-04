@@ -16,7 +16,7 @@ import org.openide.util.NbCollections;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class IdsTree {
 

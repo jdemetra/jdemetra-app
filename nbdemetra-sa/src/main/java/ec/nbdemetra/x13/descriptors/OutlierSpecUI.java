@@ -7,13 +7,13 @@ package ec.nbdemetra.x13.descriptors;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.modelling.arima.x13.OutlierSpec;
 import ec.tstoolkit.modelling.arima.x13.RegArimaSpecification;
-import ec.tstoolkit.timeseries.TsPeriodSelector;
 import ec.tstoolkit.timeseries.regression.OutlierType;
 import ec.ui.descriptors.TsPeriodSelectorUI;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -77,16 +77,18 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
-        desc = lsrunDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
+        // Not implemented !
+//        desc = lsrunDesc();
+//        if (desc != null) {
+//            descs.add(desc);
+//        }
         return descs;
     }
 
+    @Messages("outlierSpecUI.getDisplayName=Outliers")
     @Override
     public String getDisplayName() {
-        return "Outliers";
+        return Bundle.outlierSpecUI_getDisplayName();
     }
 
     public boolean isEnabled() {
@@ -208,13 +210,17 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
     private static final int ENABLED_ID = 0, SPAN_ID = 1, AO_ID = 2, LS_ID = 3, TC_ID = 4, SO_ID = 5,
             DEFAULTVA_ID = 6, VA_ID = 7, TCRATE_ID = 8, METHOD_ID = 9, LSRUN_ID = 10;
 
+    @Messages({
+        "outlierSpecUI.enabledDesc.name=Is enabled",
+        "outlierSpecUI.enabledDesc.desc=Is automatic outliers detection enabled"
+    })
     private EnhancedPropertyDescriptor enabledDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("enabled", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ENABLED_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(ENABLED_NAME);
-            desc.setShortDescription(ENABLED_DESC);
+            desc.setDisplayName(Bundle.outlierSpecUI_enabledDesc_name());
+            desc.setShortDescription(Bundle.outlierSpecUI_enabledDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -222,13 +228,17 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "outlierSpecUI.spanDesc.name=Detection span",
+        "outlierSpecUI.spanDesc.desc=[int1, int2] Time span used for the automatic outliers detection. Encompasses the int1 and int2 parameters."
+    })
     private EnhancedPropertyDescriptor spanDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Span", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SPAN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(SPAN_NAME);
-            desc.setShortDescription(SPAN_DESC);
+            desc.setDisplayName(Bundle.outlierSpecUI_spanDesc_name());
+            desc.setShortDescription(Bundle.outlierSpecUI_spanDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -236,12 +246,16 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "outlierSpecUI.aoDesc.name=Additive",
+        "outlierSpecUI.aoDesc.desc=[ao] Additive outlier"
+    })
     private EnhancedPropertyDescriptor aoDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("AO", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AO_ID);
-            desc.setDisplayName(AO_NAME);
-            desc.setShortDescription(AO_DESC);
+            desc.setDisplayName(Bundle.outlierSpecUI_aoDesc_name());
+            desc.setShortDescription(Bundle.outlierSpecUI_aoDesc_desc());
             edesc.setReadOnly(ro_ || !isEnabled());
             return edesc;
         } catch (IntrospectionException ex) {
@@ -249,12 +263,16 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "outlierSpecUI.lsDesc.name=Level shift",
+        "outlierSpecUI.lsDesc.desc=[ls] Level shift"
+    })
     private EnhancedPropertyDescriptor lsDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("LS", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, LS_ID);
-            desc.setDisplayName(LS_NAME);
-            desc.setShortDescription(LS_DESC);
+            desc.setDisplayName(Bundle.outlierSpecUI_lsDesc_name());
+            desc.setShortDescription(Bundle.outlierSpecUI_lsDesc_desc());
             edesc.setReadOnly(ro_ || !isEnabled());
             return edesc;
         } catch (IntrospectionException ex) {
@@ -262,12 +280,16 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "outlierSpecUI.tcDesc.name=Transitory",
+        "outlierSpecUI.tcDesc.desc=[tc] Transitory change"
+    })
     private EnhancedPropertyDescriptor tcDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("TC", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TC_ID);
-            desc.setDisplayName(TC_NAME);
-            desc.setShortDescription(TC_DESC);
+            desc.setDisplayName(Bundle.outlierSpecUI_tcDesc_name());
+            desc.setShortDescription(Bundle.outlierSpecUI_tcDesc_desc());
             edesc.setReadOnly(ro_ || !isEnabled());
             return edesc;
         } catch (IntrospectionException ex) {
@@ -275,12 +297,16 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "outlierSpecUI.soDesc.name=Seasonal",
+        "outlierSpecUI.soDesc.desc=[so] Seasonal outlier"
+    })
     private EnhancedPropertyDescriptor soDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("SO", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SO_ID);
-            desc.setDisplayName(SO_NAME);
-            desc.setShortDescription(SO_DESC);
+            desc.setDisplayName(Bundle.outlierSpecUI_soDesc_name());
+            desc.setShortDescription(Bundle.outlierSpecUI_soDesc_desc());
             edesc.setReadOnly(ro_ || !isEnabled());
             return edesc;
         } catch (IntrospectionException ex) {
@@ -288,13 +314,17 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "outlierSpecUI.defaultvaDesc.name=Use default critical value",
+        "outlierSpecUI.defaultvaDesc.desc=[critical] The critical value is automatically determined. It depends on the number of observations considered in the outliers detection procedure."
+    })
     private EnhancedPropertyDescriptor defaultvaDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("DefaultVa", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DEFAULTVA_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(DEFAULTVA_NAME);
-            desc.setShortDescription(DEFAULTVA_DESC);
+            desc.setDisplayName(Bundle.outlierSpecUI_defaultvaDesc_name());
+            desc.setShortDescription(Bundle.outlierSpecUI_defaultvaDesc_desc());
             edesc.setReadOnly(ro_ || !isEnabled());
             return edesc;
         } catch (IntrospectionException ex) {
@@ -302,13 +332,17 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "outlierSpecUI.vaDesc.name=Critical value",
+        "outlierSpecUI.vaDesc.desc=[critical] The critical value used in the outliers detection procedure."
+    })
     private EnhancedPropertyDescriptor vaDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Va", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, VA_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(VA_NAME);
-            desc.setShortDescription(VA_DESC);
+            desc.setDisplayName(Bundle.outlierSpecUI_vaDesc_name());
+            desc.setShortDescription(Bundle.outlierSpecUI_vaDesc_desc());
             edesc.setReadOnly(ro_ || (!isEnabled() && isDefaultVa()));
             return edesc;
         } catch (IntrospectionException ex) {
@@ -316,13 +350,17 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "outlierSpecUI.tcrateDesc.name=TC rate",
+        "outlierSpecUI.tcrateDesc.desc=[tcrate] Rate of decay for the temporary change outlier regressor."
+    })
     private EnhancedPropertyDescriptor tcrateDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("TCRate", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TCRATE_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(TCRATE_NAME);
-            desc.setShortDescription(TCRATE_DESC);
+            desc.setDisplayName(Bundle.outlierSpecUI_tcrateDesc_name());
+            desc.setShortDescription(Bundle.outlierSpecUI_tcrateDesc_desc());
             edesc.setReadOnly(ro_ || !isEnabled());
             return edesc;
         } catch (IntrospectionException ex) {
@@ -330,13 +368,17 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "outlierSpecUI.methodDesc.name=Method",
+        "outlierSpecUI.methodDesc.desc=[method] Determines how the program successively adds detected outliers to the model."
+    })
     private EnhancedPropertyDescriptor methodDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Method", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, METHOD_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(METHOD_NAME);
-            desc.setShortDescription(METHOD_DESC);
+            desc.setDisplayName(Bundle.outlierSpecUI_methodDesc_name());
+            desc.setShortDescription(Bundle.outlierSpecUI_methodDesc_desc());
             edesc.setReadOnly(ro_ || !isEnabled());
             return edesc;
         } catch (IntrospectionException ex) {
@@ -344,39 +386,21 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    @Messages({
+        "outlierSpecUI.lsrunDesc.name=LS Run",
+        "outlierSpecUI.lsrunDesc.desc=[lsrun] Compute t-statistics to test null hypotheses that each run of n lsrun successive level shifts cancels to form a temporary level shift."
+    })
     private EnhancedPropertyDescriptor lsrunDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("LSRun", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, LSRUN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(LSRUN_NAME);
-            desc.setShortDescription(LSRUN_DESC);
+            desc.setDisplayName(Bundle.outlierSpecUI_lsrunDesc_name());
+            desc.setShortDescription(Bundle.outlierSpecUI_lsrunDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
-    private static final String ENABLED_NAME = "Is enabled",
-            SPAN_NAME = "Detection span",
-            AO_NAME = "Additive",
-            LS_NAME = "Level shift",
-            TC_NAME = "Transitory",
-            SO_NAME = "Seasonal",
-            DEFAULTVA_NAME = "Use default critical value",
-            VA_NAME = "Critical value",
-            TCRATE_NAME = "TC rate",
-            METHOD_NAME = "Method",
-            LSRUN_NAME = "LS Run";
-    private static final String ENABLED_DESC = "Is automatic outliers detection enabled",
-            SPAN_DESC = "[int1, int2] Time span used for the automatic outliers detection. Encompasses the int1 and int2 parameters.",
-            AO_DESC = "[ao] Additive outlier",
-            LS_DESC = "[ls] Level shift",
-            TC_DESC = "[tc] Transitory change",
-            SO_DESC = "[so] Seasonal outlier",
-            DEFAULTVA_DESC = "[critical] The critical value is automatically determined. It depends on the number of observations considered in the outliers detection procedure.",
-            VA_DESC = "[critical] The critical value used in the outliers detection procedure.",
-            TCRATE_DESC = "[tcrate] Rate of decay for the temporary change outlier regressor.",
-            METHOD_DESC = "[method] Determines how the program successively adds detected outliers to the model.",
-            LSRUN_DESC = "[lsrun] Compute t-statistics to test null hypotheses that each run of n lsrun successive level shifts cancels to form a temporary level shift.";
 }

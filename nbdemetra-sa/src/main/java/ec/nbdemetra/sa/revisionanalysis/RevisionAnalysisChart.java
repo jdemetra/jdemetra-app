@@ -24,11 +24,9 @@ import ec.ui.chart.BasicXYDataset;
 import ec.ui.chart.TsCharts;
 import ec.ui.interfaces.ITsChart;
 import ec.ui.view.JChartPanel;
+import ec.util.chart.swing.ChartCommand;
 import ec.util.various.swing.FontAwesome;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.io.IOException;
-import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import org.jfree.chart.JFreeChart;
@@ -36,7 +34,6 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.ui.action.ActionMenuItem;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -47,7 +44,6 @@ public class RevisionAnalysisChart extends ATsControl {
     private final CompositeResults results;
     private JChartPanel chartPanel;
     private JFreeChart chart;
-    private DemetraUI demetraUI = DemetraUI.getDefault();
 
     public RevisionAnalysisChart(IProcResults rslts) {
         setLayout(new BorderLayout());
@@ -85,29 +81,16 @@ public class RevisionAnalysisChart extends ATsControl {
     }
 
     private JMenu newExportMenu() {
+        DemetraUI demetraUI = DemetraUI.getDefault();
+
         JMenu result = new JMenu("Export image to");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_FLOPPY_O));
-        JMenuItem copy = new ActionMenuItem(new AbstractAction() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                chartPanel.doCopy();
-            }
-        });
+        JMenuItem copy = new ActionMenuItem(ChartCommand.copyImage().toAction(chartPanel));
         copy.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
         copy.setText("Clipboard");
 
-        JMenuItem file = new ActionMenuItem(new AbstractAction() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    chartPanel.doSaveAs();
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
-        });
+        JMenuItem file = new ActionMenuItem(ChartCommand.saveImage().toAction(chartPanel));
         file.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_PICTURE_O));
         file.setText("File...");
 

@@ -6,8 +6,6 @@ package ec.util.chart.swing;
 
 import ec.util.various.swing.JCommand;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.event.ChartChangeEvent;
@@ -49,7 +47,13 @@ public abstract class ChartCommand extends JCommand<ChartPanel> {
 
         @Override
         public void execute(ChartPanel chartPanel) {
-            chartPanel.doCopy();
+            Charts.copyChart(chartPanel);
+        }
+
+        @Override
+        public ActionAdapter toAction(ChartPanel chartPanel) {
+            // don't need to register changes
+            return new ChartActionAdapter(chartPanel);
         }
     }
 
@@ -58,12 +62,14 @@ public abstract class ChartCommand extends JCommand<ChartPanel> {
         static final SaveImage INSTANCE = new SaveImage();
 
         @Override
-        public void execute(ChartPanel chartPanel) {
-            try {
-                chartPanel.doSaveAs();
-            } catch (IOException ex) {
-                Logger.getLogger(ChartCommand.class.getName()).log(Level.WARNING, "Cannot save image", ex);
-            }
+        public void execute(ChartPanel chartPanel) throws IOException {
+            Charts.saveChart(chartPanel);
+        }
+
+        @Override
+        public ActionAdapter toAction(ChartPanel chartPanel) {
+            // don't need to register changes
+            return new ChartActionAdapter(chartPanel);
         }
     }
 
@@ -75,6 +81,12 @@ public abstract class ChartCommand extends JCommand<ChartPanel> {
         public void execute(ChartPanel chartPanel) {
             chartPanel.createChartPrintJob();
         }
+
+        @Override
+        public ActionAdapter toAction(ChartPanel chartPanel) {
+            // don't need to register changes
+            return new ChartActionAdapter(chartPanel);
+        }
     }
 
     private static class ResetZoom extends ChartCommand {
@@ -84,6 +96,12 @@ public abstract class ChartCommand extends JCommand<ChartPanel> {
         @Override
         public void execute(ChartPanel chartPanel) {
             chartPanel.restoreAutoBounds();
+        }
+
+        @Override
+        public ActionAdapter toAction(ChartPanel chartPanel) {
+            // don't need to register changes
+            return new ChartActionAdapter(chartPanel);
         }
     }
     //</editor-fold>

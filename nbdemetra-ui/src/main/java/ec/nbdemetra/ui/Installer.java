@@ -23,6 +23,7 @@ import ec.nbdemetra.core.InstallerStep;
 import ec.nbdemetra.ui.interchange.InterchangeBroker;
 import ec.nbdemetra.ui.mru.MruProvidersStep;
 import ec.nbdemetra.ui.mru.MruWorkspacesStep;
+import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.nbdemetra.ui.star.StarHelper;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.nbdemetra.ws.WorkspaceFactory;
@@ -63,7 +64,8 @@ public final class Installer extends ModuleInstall {
             new DemetraUIStep(),
             new PersistOpenedDataSourcesStep(),
             new InterchangeStep(),
-            new ProviderBuddiesStep());
+            new ProviderBuddiesStep(),
+            new DiagnosticsBuddiesStep());
 
     @Override
     public void restored() {
@@ -189,6 +191,13 @@ public final class Installer extends ModuleInstall {
 
         ProviderBuddiesStep() {
             super(IDataSourceProviderBuddy.class);
+        }
+    }
+
+    private static final class DiagnosticsBuddiesStep extends ConfigStep<SaDiagnosticsFactoryBuddy> {
+
+        DiagnosticsBuddiesStep() {
+            super(SaDiagnosticsFactoryBuddy.class);
         }
     }
 

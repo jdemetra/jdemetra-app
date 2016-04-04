@@ -22,11 +22,14 @@ import ec.nbdemetra.ui.IReloadable;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
+import ec.nbdemetra.ui.tssave.ITsSavable;
 import ec.tss.Ts;
+import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.TsProviders;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.List;
@@ -89,9 +92,10 @@ abstract public class DataSetNode extends AbstractNode {
                     break;
             }
             abilities.add(NodeAnnotator.Support.getDefault());
+            abilities.add(new TsSavableImpl());
         }
         // 3. Name and display name
-        setDisplayName(TsProviders.lookup(IDataSourceProvider.class, dataSet).get().getDisplayNodeName(dataSet));
+        applyText(TsProviders.lookup(IDataSourceProvider.class, dataSet).get().getDisplayNodeName(dataSet));
     }
 
     @Override
@@ -165,6 +169,28 @@ abstract public class DataSetNode extends AbstractNode {
             if (data.isPresent()) {
                 DemetraUI.getDefault().getTsAction().open(data.get());
             }
+        }
+    }
+
+    private final class TsSavableImpl implements ITsSavable {
+
+        @Override
+        public Ts[] getAllTs() {
+            Optional<TsCollection> result = TsProviders.getTsCollection(getLookup().lookup(DataSet.class), TsInformationType.All);
+            return result.isPresent() ? result.get().toArray() : new Ts[0];
+        }
+    }
+
+    private void applyText(String text) {
+        if (text.isEmpty()) {
+            setDisplayName(" ");
+            setShortDescription(null);
+        } else if (text.startsWith("<html>")) {
+            setDisplayName(text);
+            setShortDescription(text);
+        } else {
+            setDisplayName(MultiLineNameUtil.join(text));
+            setShortDescription(MultiLineNameUtil.toHtml(text));
         }
     }
 }

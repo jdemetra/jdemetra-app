@@ -16,11 +16,14 @@
  */
 package ec.ui.list;
 
+import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.awt.PopupListener.PopupAdapter;
+import ec.nbdemetra.ui.awt.ActionMaps;
+import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.awt.TableColumnModelAdapter;
 import ec.tss.*;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
@@ -30,6 +33,7 @@ import ec.ui.chart.TsSparklineCellRenderer;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.grid.swing.XTable;
 import ec.util.various.swing.FontAwesome;
+import ec.util.various.swing.StandardSwingColor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -66,25 +70,104 @@ public class JTsList extends ATsList {
     private final ETable table;
     private final ListTableSelectionListener selectionListener;
     private final JTableHeader tableHeader;
+    private final DropUI dropUI;
 
     public JTsList() {
-        this.table = buildTable();
+        this.table = new ETable();
         this.selectionListener = new ListTableSelectionListener();
-        table.getSelectionModel().addListSelectionListener(selectionListener);
-        table.addMouseListener(new PopupAdapter(buildPopupMenu()));
         this.tableHeader = table.getTableHeader();
+        this.dropUI = new DropUI();
+
+        initTable();
+
+        ActionMaps.copyEntries(getActionMap(), false, table.getActionMap());
+        InputMaps.copyEntries(getInputMap(), false, table.getInputMap());
+
+        enableSeriesSelection();
+        enableOpenOnDoubleClick();
+        enableProperties();
 
         setLayout(new BorderLayout());
-        add(new JLayer<>(NbComponents.newJScrollPane(table), new DropUI()), BorderLayout.CENTER);
-
-        onUpdateModeChange();
+        add(new JLayer<>(NbComponents.newJScrollPane(table), dropUI), BorderLayout.CENTER);
 
         if (Beans.isDesignTime()) {
-            setTsCollection(DemoUtils.randomTsCollection(3));
-            setTsUpdateMode(TsUpdateMode.None);
-            setPreferredSize(new Dimension(200, 150));
+            applyDesignTimeProperties();
         }
     }
+
+    private void initTable() {
+        onUpdateModeChange();
+        onTransferHandlerChange();
+        onComponentPopupMenuChange();
+
+        int cellPaddingHeight = 2;
+        table.setRowHeight(table.getFontMetrics(table.getFont()).getHeight() + cellPaddingHeight * 2 + 1);
+//        table.setRowMargin(cellPaddingHeight);
+
+        table.setFullyNonEditable(true);
+        table.setShowHorizontalLines(true);
+        table.setBorder(null);
+        Color newGridColor = StandardSwingColor.CONTROL.value();
+        if (newGridColor != null) {
+            table.setGridColor(newGridColor);
+        }
+
+        table.setDefaultRenderer(TsData.class, new TsDataTableCellRenderer());
+        table.setDefaultRenderer(TsPeriod.class, new TsPeriodTableCellRenderer());
+        table.setDefaultRenderer(TsFrequency.class, new TsFrequencyTableCellRenderer());
+        table.setDefaultRenderer(TsIdentifier.class, new TsIdentifierTableCellRenderer());
+
+        table.getColumnModel().addColumnModelListener(new TableColumnModelAdapter() {
+            @Override
+            public void columnAdded(TableColumnModelEvent e) {
+                ETableColumnModel columnModel = (ETableColumnModel) e.getSource();
+                for (int i = e.getFromIndex(); i < e.getToIndex(); i++) {
+                    final ETableColumn column = (ETableColumn) columnModel.getColumn(i);
+                    column.setNestedComparator(new InformationComparator(i));
+                }
+            }
+        });
+
+        table.setModel(new CustomTableModel());
+        XTable.setWidthAsPercentages(table, .4, .1, .1, .1, .3);
+
+        table.setDragEnabled(true);
+        table.setTransferHandler(new TsCollectionTransferHandler());
+        table.setFillsViewportHeight(true);
+        table.setSelectionMode(multiSelection ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION : ListSelectionModel.SINGLE_SELECTION);
+    }
+
+    private void applyDesignTimeProperties() {
+        setTsCollection(DemoUtils.randomTsCollection(3));
+        setTsUpdateMode(TsUpdateMode.None);
+        setPreferredSize(new Dimension(200, 150));
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
+    private void enableSeriesSelection() {
+        table.getSelectionModel().addListSelectionListener(selectionListener);
+    }
+
+    private void enableOpenOnDoubleClick() {
+        table.addMouseListener(new TsActionMouseAdapter());
+    }
+
+    private void enableProperties() {
+        this.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case "transferHandler":
+                        onTransferHandlerChange();
+                        break;
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
+                }
+            }
+        });
+    }
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Events handlers">
     @Override
@@ -115,8 +198,8 @@ public class JTsList extends ATsList {
     @Override
     protected void onUpdateModeChange() {
         String message = getTsUpdateMode().isReadOnly() ? "No data" : "Drop data here";
-        ((DropUI) ((JLayer<?>) getComponent(0)).getUI()).setMessage(message);
-        ((DropUI) ((JLayer<?>) getComponent(0)).getUI()).setOnDropMessage(message);
+        dropUI.setMessage(message);
+        dropUI.setOnDropMessage(message);
     }
 
     @Override
@@ -153,52 +236,17 @@ public class JTsList extends ATsList {
     protected void onSortInfoChange() {
         // do nothing ?
     }
-    //</editor-fold>
 
-    private ETable buildTable() {
-        final ETable result = new ETable();
-
-        int cellPaddingHeight = 2;
-        result.setRowHeight(result.getFontMetrics(result.getFont()).getHeight() + cellPaddingHeight * 2 + 1);
-//        result.setRowMargin(cellPaddingHeight);
-
-        result.setFullyNonEditable(true);
-        result.setShowHorizontalLines(true);
-        result.setBorder(null);
-        Color newGridColor = UIManager.getColor("control");
-        if (newGridColor != null) {
-            result.setGridColor(newGridColor);
-        }
-
-        result.setDefaultRenderer(TsData.class, new TsSparklineCellRenderer());
-        result.setDefaultRenderer(TsPeriod.class, new TsPeriodTableCellRenderer());
-        result.setDefaultRenderer(TsFrequency.class, new TsFrequencyTableCellRenderer());
-        result.setDefaultRenderer(TsIdentifier.class, new TsIdentifierTableCellRenderer());
-
-        result.getColumnModel().addColumnModelListener(new TableColumnModelAdapter() {
-            @Override
-            public void columnAdded(TableColumnModelEvent e) {
-                ETableColumnModel columnModel = (ETableColumnModel) e.getSource();
-                for (int i = e.getFromIndex(); i < e.getToIndex(); i++) {
-                    final ETableColumn column = (ETableColumn) columnModel.getColumn(i);
-                    column.setNestedComparator(new InformationComparator(i));
-                }
-            }
-        });
-
-        result.setModel(new CustomTableModel());
-        XTable.setWidthAsPercentages(result, .4, .1, .1, .1, .3);
-
-        fillActionMap(result.getActionMap());
-        fillInputMap(result.getInputMap());
-        result.addMouseListener(new TsActionMouseAdapter());
-        result.setDragEnabled(true);
-        result.setTransferHandler(new TsCollectionTransferHandler());
-        result.setFillsViewportHeight(true);
-        result.setSelectionMode(multiSelection ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION : ListSelectionModel.SINGLE_SELECTION);
-
-        return result;
+    private void onTransferHandlerChange() {
+        TransferHandler th = getTransferHandler();
+        table.setTransferHandler(th != null ? th : new TsCollectionTransferHandler());
     }
+
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        table.setComponentPopupMenu(popupMenu != null ? popupMenu : buildPopupMenu());
+    }
+    //</editor-fold>
 
     protected JPopupMenu buildPopupMenu() {
         ActionMap am = getActionMap();
@@ -310,7 +358,17 @@ public class JTsList extends ATsList {
                 case Length:
                     return ts.hasData().equals(TsStatus.Valid) ? ts.getTsData().getLength() : null;
                 case Data:
-                    return ts.hasData().equals(TsStatus.Valid) ? ts.getTsData() : null;
+                    switch (ts.hasData()) {
+                        case Valid:
+                            return ts.getTsData();
+                        case Invalid:
+                            String cause = ts.getInvalidDataCause();
+                            return !Strings.isNullOrEmpty(cause) ? cause : "Invalid";
+                        case Undefined:
+                            return "loading";
+                        default:
+                            return "Unknown error";
+                    }
                 case TsIdentifier:
                     return new TsIdentifier(ts.getName(), ts.getMoniker());
             }
@@ -363,10 +421,43 @@ public class JTsList extends ATsList {
             JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             if (value != null) {
                 TsIdentifier id = (TsIdentifier) value;
-                result.setText(id.getName());
+                String text = id.getName();
+                if (text.isEmpty()) {
+                    result.setText(" ");
+                    result.setToolTipText(null);
+                } else if (text.startsWith("<html>")) {
+                    result.setText(text);
+                    result.setToolTipText(text);
+                } else {
+                    result.setText(MultiLineNameUtil.join(text));
+                    result.setToolTipText(MultiLineNameUtil.toHtml(text));
+                }
                 result.setIcon(monikerUI.getIcon(id.getMoniker()));
             }
             return result;
+        }
+    }
+
+    private static final class TsDataTableCellRenderer implements TableCellRenderer {
+
+        private final TsSparklineCellRenderer dataRenderer;
+        private final DefaultTableCellRenderer labelRenderer;
+
+        public TsDataTableCellRenderer() {
+            this.dataRenderer = new TsSparklineCellRenderer();
+            this.labelRenderer = new DefaultTableCellRenderer();
+            labelRenderer.setForeground(StandardSwingColor.TEXT_FIELD_INACTIVE_FOREGROUND.value());
+            labelRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            if (value instanceof TsData) {
+                return dataRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            }
+            labelRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            labelRenderer.setToolTipText(labelRenderer.getText());
+            return labelRenderer;
         }
     }
 

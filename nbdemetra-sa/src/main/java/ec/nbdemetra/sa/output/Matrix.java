@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class Matrix extends ListSelectionEditor<String> {
 

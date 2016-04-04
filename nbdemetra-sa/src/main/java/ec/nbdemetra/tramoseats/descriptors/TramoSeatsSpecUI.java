@@ -7,12 +7,12 @@ package ec.nbdemetra.tramoseats.descriptors;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.descriptors.IObjectDescriptor;
-import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.ui.descriptors.benchmarking.SaBenchmarkingSpecUI;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -114,11 +114,15 @@ public class TramoSeatsSpecUI implements IObjectDescriptor<TramoSeatsSpecificati
             SEATS_ID = 8,
             BENCH_ID = 9;
 
+    @Messages({"tramoSeatsSpecUI.regressionDesc.name=REGRESSION",
+        "tramoSeatsSpecUI.regressionDesc.desc="
+    })
     private EnhancedPropertyDescriptor regressionDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("regression", this.getClass(), "getRegression", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, REGRESSION_ID);
-            desc.setDisplayName("REGRESSION");
+            desc.setDisplayName(Bundle.tramoSeatsSpecUI_regressionDesc_name());
+            desc.setShortDescription(Bundle.tramoSeatsSpecUI_regressionDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -126,11 +130,15 @@ public class TramoSeatsSpecUI implements IObjectDescriptor<TramoSeatsSpecificati
         }
     }
 
+    @Messages({"tramoSeatsSpecUI.transformDesc.name=TRANSFORMATION",
+        "tramoSeatsSpecUI.transformDesc.desc="
+    })
     private EnhancedPropertyDescriptor transformDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("transform", this.getClass(), "getTransform", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TRANSFORM_ID);
-            desc.setDisplayName("TRANSFORMATION");
+            desc.setDisplayName(Bundle.tramoSeatsSpecUI_transformDesc_name());
+            desc.setShortDescription(Bundle.tramoSeatsSpecUI_transformDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -138,22 +146,30 @@ public class TramoSeatsSpecUI implements IObjectDescriptor<TramoSeatsSpecificati
         }
     }
 
+    @Messages({"tramoSeatsSpecUI.basicDesc.name=SERIES",
+        "tramoSeatsSpecUI.basicDesc.desc="
+    })
     private EnhancedPropertyDescriptor basicDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("basic", this.getClass(), "getBasic", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BASIC_ID);
-            desc.setDisplayName("SERIES");
+            desc.setDisplayName(Bundle.tramoSeatsSpecUI_basicDesc_name());
+            desc.setShortDescription(Bundle.tramoSeatsSpecUI_basicDesc_desc());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @Messages({"tramoSeatsSpecUI.outlierDesc.name=OUTLIERS",
+        "tramoSeatsSpecUI.outlierDesc.desc="
+    })
     private EnhancedPropertyDescriptor outlierDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("outlier", this.getClass(), "getOutlier", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OUTLIER_ID);
-            desc.setDisplayName("OUTLIERS");
+            desc.setDisplayName(Bundle.tramoSeatsSpecUI_outlierDesc_name());
+            desc.setShortDescription(Bundle.tramoSeatsSpecUI_outlierDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -161,11 +177,15 @@ public class TramoSeatsSpecUI implements IObjectDescriptor<TramoSeatsSpecificati
         }
     }
 
+    @Messages({"tramoSeatsSpecUI.arimaDesc.name=ARIMA",
+        "tramoSeatsSpecUI.arimaDesc.desc="
+    })
     private EnhancedPropertyDescriptor arimaDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("arima", this.getClass(), "getArima", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ARIMA_ID);
-            desc.setDisplayName("ARIMA");
+            desc.setDisplayName(Bundle.tramoSeatsSpecUI_arimaDesc_name());
+            desc.setShortDescription(Bundle.tramoSeatsSpecUI_arimaDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -173,11 +193,15 @@ public class TramoSeatsSpecUI implements IObjectDescriptor<TramoSeatsSpecificati
         }
     }
 
+    @Messages({"tramoSeatsSpecUI.estimateDesc.name=ESTIMATE",
+        "tramoSeatsSpecUI.estimateDesc.desc="
+    })
     private EnhancedPropertyDescriptor estimateDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("estimate", this.getClass(), "getEstimate", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ESTIMATE_ID);
-            desc.setDisplayName("ESTIMATE");
+            desc.setDisplayName(Bundle.tramoSeatsSpecUI_estimateDesc_name());
+            desc.setShortDescription(Bundle.tramoSeatsSpecUI_estimateDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -185,30 +209,39 @@ public class TramoSeatsSpecUI implements IObjectDescriptor<TramoSeatsSpecificati
         }
     }
 
+    @Messages({"tramoSeatsSpecUI.seatsDesc.name=SEATS",
+        "tramoSeatsSpecUI.seatsDesc.desc=Includes the settings relevant to the decomposition step, performed by the SEATS algorithm."
+    })
     private EnhancedPropertyDescriptor seatsDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("seats", this.getClass(), "getSeats", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SEATS_ID);
-            desc.setDisplayName("SEATS");
+            desc.setDisplayName(Bundle.tramoSeatsSpecUI_seatsDesc_name());
+            desc.setShortDescription(Bundle.tramoSeatsSpecUI_seatsDesc_desc());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @Messages({"tramoSeatsSpecUI.benchDesc.name=BENCHMARKING",
+        "tramoSeatsSpecUI.benchDesc.desc="
+    })
     private EnhancedPropertyDescriptor benchDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("benchmarking", this.getClass(), "getBenchmarking", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BENCH_ID);
-            desc.setDisplayName("BENCHMARKING");
+            desc.setDisplayName(Bundle.tramoSeatsSpecUI_benchDesc_name());
+            desc.setShortDescription(Bundle.tramoSeatsSpecUI_benchDesc_desc());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @Messages("tramoSeatsSpecUI.getDisplayName=TramoSeats")
     @Override
     public String getDisplayName() {
-        return "TramoSeats";
+        return Bundle.tramoSeatsSpecUI_getDisplayName();
     }
 }

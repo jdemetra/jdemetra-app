@@ -11,7 +11,7 @@ import ec.tstoolkit.arima.IArimaModel;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class UcarimaUI< V extends IProcDocumentView<?>> extends HtmlItemUI<V, UcarimaUI.Information> {
 

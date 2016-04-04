@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.ui;
 
@@ -25,6 +37,7 @@ public abstract class ATsList extends ATsCollectionView implements ITsList {
     protected static final boolean DEFAULT_SORTABLE = false;
     protected static final List<InfoType> DEFAULT_INFORMATION = Arrays2.unmodifiableList(InfoType.TsIdentifier, InfoType.Start, InfoType.End, InfoType.Length, InfoType.Data);
     protected static final InfoType DEFAULT_SORT_INFO = InfoType.TsIdentifier;
+
     // PROPERTIES
     protected boolean multiSelection;
     protected boolean showHeader;
@@ -39,6 +52,10 @@ public abstract class ATsList extends ATsCollectionView implements ITsList {
         this.information = DEFAULT_INFORMATION;
         this.sortInfo = DEFAULT_SORT_INFO;
 
+        enableProperties();
+    }
+
+    private void enableProperties() {
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -63,7 +80,7 @@ public abstract class ATsList extends ATsCollectionView implements ITsList {
         });
     }
 
-    // EVENT HANDLERS > 
+    //<editor-fold defaultstate="collapsed" desc="Event handlers">
     abstract protected void onMultiSelectionChange();
 
     abstract protected void onShowHeaderChange();
@@ -73,9 +90,9 @@ public abstract class ATsList extends ATsCollectionView implements ITsList {
     abstract protected void onInformationChange();
 
     abstract protected void onSortInfoChange();
-    // < EVENT HANDLERS 
+    //</editor-fold>
 
-    // GETTERS/SETTERS >
+    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
     @Override
     public InfoType[] getInformation() {
         return Iterables.toArray(information, InfoType.class);
@@ -135,16 +152,16 @@ public abstract class ATsList extends ATsCollectionView implements ITsList {
         this.sortable = sortable;
         firePropertyChange(SORTABLE_PROPERTY, old, this.sortable);
     }
-    // < GETTERS/SETTERS
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Menus">
     protected JMenu buildListMenu() {
         JMenu result = buildMenu();
-        
+
         int index = 8;
         result.add(buildSelectByFreqMenu(), index++);
 
         return result;
     }
-    // REUSABLE ACTIONS >
-    // < REUSABLE ACTIONS    
+    //</editor-fold>
 }

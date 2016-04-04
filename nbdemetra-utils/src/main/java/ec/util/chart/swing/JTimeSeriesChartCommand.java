@@ -22,6 +22,8 @@ import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorSchemeSupport;
 import ec.util.chart.ObsPredicate;
 import ec.util.chart.SeriesPredicate;
+import ec.util.chart.TimeSeriesChart.CrosshairOrientation;
+import ec.util.chart.TimeSeriesChart.DisplayTrigger;
 import ec.util.chart.TimeSeriesChart.Element;
 import ec.util.chart.TimeSeriesChartCommand;
 import ec.util.various.swing.JCommand;
@@ -32,6 +34,8 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JOptionPane;
 import org.jfree.data.time.Month;
 import org.jfree.data.time.TimePeriodAnchor;
@@ -127,6 +131,26 @@ public abstract class JTimeSeriesChartCommand extends JCommand<JTimeSeriesChart>
 
     public static JTimeSeriesChartCommand applyTitle(String title) {
         return new Adapter(TimeSeriesChartCommand.applyTitle(title));
+    }
+
+    @Nonnull
+    public static JTimeSeriesChartCommand applyCrosshairOrientation(CrosshairOrientation crosshairOrientation) {
+        return new Adapter(TimeSeriesChartCommand.applyCrosshairOrientation(crosshairOrientation));
+    }
+
+    @Nonnull
+    public static JTimeSeriesChartCommand applyObsHighlighter(@Nullable ObsPredicate obsHighlighter) {
+        return new Adapter(TimeSeriesChartCommand.applyObsHighlighter(obsHighlighter));
+    }
+
+    @Nonnull
+    public static JTimeSeriesChartCommand applyTooltipTrigger(@Nonnull DisplayTrigger tooltipTrigger) {
+        return new Adapter(TimeSeriesChartCommand.applyTooltipTrigger(tooltipTrigger));
+    }
+
+    @Nonnull
+    public static JTimeSeriesChartCommand applyCrosshairTrigger(@Nonnull DisplayTrigger crosshairTrigger) {
+        return new Adapter(TimeSeriesChartCommand.applyCrosshairTrigger(crosshairTrigger));
     }
 
     public static JTimeSeriesChartCommand copyImage() {

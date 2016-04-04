@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.spreadsheet;
 
-import ec.nbdemetra.spreadsheet.SpreadSheetBasicFileHandler;
 import ec.util.various.swing.BasicFileViewer;
 import ec.util.various.swing.BasicSwingLauncher;
 import java.awt.Component;

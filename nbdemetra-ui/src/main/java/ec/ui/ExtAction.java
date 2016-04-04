@@ -1,12 +1,25 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.ui;
 
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -100,12 +113,13 @@ public abstract class ExtAction extends AbstractAction {
         abstract protected boolean canSelect();
     }
 
-    public static <C extends AbstractButton> C hideWhenDisabled(C c) {
+    @Nonnull
+    public static <C extends AbstractButton> C hideWhenDisabled(@Nonnull C c) {
         c.setVisible(c.isEnabled());
         c.addPropertyChangeListener(HIDE);
         return c;
     }
-    //
+
     private static final PropertyChangeListener HIDE = new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {

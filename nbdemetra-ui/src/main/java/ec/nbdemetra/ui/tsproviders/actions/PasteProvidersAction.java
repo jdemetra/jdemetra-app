@@ -17,7 +17,6 @@
 package ec.nbdemetra.ui.tsproviders.actions;
 
 import com.google.common.base.Optional;
-import ec.nbdemetra.ui.tsproviders.ProvidersNode;
 import ec.tss.datatransfer.DataSourceTransferSupport;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
@@ -25,8 +24,6 @@ import ec.tss.tsproviders.TsProviders;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
@@ -35,9 +32,6 @@ import org.openide.util.actions.NodeAction;
 
 @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.PasteProvidersAction")
 @ActionRegistration(displayName = "#CTL_PasteProvidersAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = ProvidersNode.ACTION_PATH, position = 1410, separatorBefore = 1400)
-})
 @Messages("CTL_PasteProvidersAction=Paste")
 public final class PasteProvidersAction extends NodeAction {
 

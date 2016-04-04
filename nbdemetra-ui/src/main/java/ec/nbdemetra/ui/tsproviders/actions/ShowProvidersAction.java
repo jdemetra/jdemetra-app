@@ -17,7 +17,6 @@
 package ec.nbdemetra.ui.tsproviders.actions;
 
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.tsproviders.ProvidersNode;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -25,8 +24,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.WeakListeners;
@@ -34,9 +31,6 @@ import org.openide.util.actions.Presenter;
 
 @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.ShowProvidersAction")
 @ActionRegistration(displayName = "#CTL_ShowProvidersAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = ProvidersNode.ACTION_PATH, position = 1460, separatorBefore = 1450)
-})
 @Messages("CTL_ShowProvidersAction=Show provider nodes")
 public final class ShowProvidersAction extends AbstractAction implements Presenter.Popup, PropertyChangeListener {
 

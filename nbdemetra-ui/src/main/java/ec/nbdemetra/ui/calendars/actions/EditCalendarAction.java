@@ -84,14 +84,16 @@ public final class EditCalendarAction extends SingleNodeAction<ItemWsNode> {
         NationalCalendarPanel panel = new NationalCalendarPanel();
         panel.setCalendarName(oldName);
         panel.setMeanCorrection(p.isLongTermMeanCorrection());
+        panel.setJulianEaster(p.isJulianEaster());
         panel.setSpecialDayEvents(ImmutableList.copyOf(p.events()));
 
         DialogDescriptor dd = panel.createDialogDescriptor(Bundle.editNationalCalendar_dialog_title());
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
             String name = panel.getCalendarName();
+            boolean mean=panel.isMeanCorrection();
+            boolean julian=panel.isJulianCalendar();
             Collection<SpecialDayEvent> events = panel.getSpecialDayEvents();
-            NationalCalendarProvider np = new NationalCalendarProvider(events);
-            np.setLongTermMeanCorrection(panel.isMeanCorrection());
+            NationalCalendarProvider np = new NationalCalendarProvider(events, mean, julian);
             replace(manager, oldName, name, np, node);
         }
     }

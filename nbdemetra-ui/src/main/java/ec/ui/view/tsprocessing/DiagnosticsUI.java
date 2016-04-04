@@ -12,7 +12,7 @@ import ec.tstoolkit.information.InformationSet;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class DiagnosticsUI<V extends IProcDocumentView<?>> extends HtmlItemUI<V, CompositeResults> {
 

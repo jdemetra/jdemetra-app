@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.ui.view.res;
 
@@ -20,8 +32,11 @@ import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
 import java.awt.BorderLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -50,8 +65,6 @@ public class ResidualsView extends ATsDataView {
     protected final JTsGrid grid;
 
     public ResidualsView() {
-        setLayout(new BorderLayout());
-
         this.chartPanel = new ChartPanel(buildResidualViewChart());
         Charts.avoidScaling(chartPanel);
         this.grid = new JTsGrid();
@@ -60,13 +73,28 @@ public class ResidualsView extends ATsDataView {
 
         onDataFormatChange();
         onColorSchemeChange();
+        onComponentPopupMenuChange();
+
+        enableProperties();
 
         JSplitPane splitPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, chartPanel, grid);
         splitPane.setDividerLocation(0.5);
         splitPane.setResizeWeight(.5);
+        setLayout(new BorderLayout());
         add(splitPane, BorderLayout.CENTER);
+    }
 
-        chartPanel.setPopupMenu(buildMenu().getPopupMenu());
+    private void enableProperties() {
+        this.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
+                }
+            }
+        });
     }
 
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
@@ -106,6 +134,11 @@ public class ResidualsView extends ATsDataView {
         XYItemRenderer renderer = plot.getRenderer();
         renderer.setBasePaint(themeSupport.getAreaColor(MAIN_COLOR));
         renderer.setBaseOutlinePaint(themeSupport.getLineColor(MAIN_COLOR));
+    }
+
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildMenu().getPopupMenu());
     }
     //</editor-fold>
 

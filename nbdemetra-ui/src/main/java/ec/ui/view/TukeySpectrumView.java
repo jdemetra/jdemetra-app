@@ -1,3 +1,19 @@
+/*
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
+ */
 package ec.ui.view;
 
 import ec.nbdemetra.ui.DemetraUI;
@@ -8,6 +24,7 @@ import ec.tstoolkit.data.Values;
 import ec.tstoolkit.data.WindowType;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.JPopupMenu;
 import org.jfree.data.xy.XYSeries;
 
 /**
@@ -24,6 +41,7 @@ public class TukeySpectrumView extends ARPView {
     public static final String DIFF_PROPERTY = "differencing";
     public static final String DIFF_LAG_PROPERTY = "differencingLag";
     public static final String LASTYEARS_PROPERTY = "lastYears";
+
     // DEFAULT PROPERTIES
     private static final int DEFAULT_WINDOW_LENGTH = 0; // use default
     private static final WindowType DEFAULT_WINDOW_TYPE = WindowType.Tukey;
@@ -31,20 +49,30 @@ public class TukeySpectrumView extends ARPView {
     private static final boolean DEFAULT_LOG = false; // no log
     private static final int DEFAULT_DIFF = 1; // no log
     private static final int DEFAULT_DIFF_LAG = 1; // no log
+
     // PROPERTIES
     protected int windowLength;
-    protected WindowType windowType = DEFAULT_WINDOW_TYPE;
-    protected double taperPart = DEFAULT_TAPER_PART;
-    private int del = DEFAULT_DIFF, lag = DEFAULT_DIFF_LAG;
-    private boolean log = DEFAULT_LOG;
+    protected WindowType windowType;
+    protected double taperPart;
+    private int del;
+    private int lag;
+    private boolean log;
     private int lastYears;
 
     public TukeySpectrumView() {
-        DemetraUI demetraUI = DemetraUI.getDefault();
-        lastYears = demetraUI.getSpectralLastYears();
-
         this.windowLength = DEFAULT_WINDOW_LENGTH;
+        this.windowType = DEFAULT_WINDOW_TYPE;
+        this.taperPart = DEFAULT_TAPER_PART;
+        this.del = DEFAULT_DIFF;
+        this.lag = DEFAULT_DIFF_LAG;
+        this.log = DEFAULT_LOG;
+        this.lastYears = DemetraUI.getDefault().getSpectralLastYears();
 
+        onComponentPopupMenuChange();
+        enableProperties();
+    }
+
+    private void enableProperties() {
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -70,11 +98,15 @@ public class TukeySpectrumView extends ARPView {
                     case LASTYEARS_PROPERTY:
                         onLastYearsChange();
                         break;
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
                 }
             }
         });
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Event handlers">
     protected void onWindowLengthChange() {
         onARPDataChange();
     }
@@ -107,8 +139,14 @@ public class TukeySpectrumView extends ARPView {
         }
         onColorSchemeChange();
     }
-    // < EVENT HANDLERS 
 
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildMenu().getPopupMenu());
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
     public int getWindowLength() {
         return windowLength;
     }
@@ -191,6 +229,7 @@ public class TukeySpectrumView extends ARPView {
         lastYears = length;
         firePropertyChange(DIFF_PROPERTY, old, lastYears);
     }
+    //</editor-fold>
 
     @Override
     protected XYSeries computeSeries() {
@@ -218,12 +257,19 @@ public class TukeySpectrumView extends ARPView {
         }
 
         BlackmanTukeySpectrum tukey = new BlackmanTukeySpectrum();
-        tukey.setTaper(new TukeyHanningTaper(taperPart));
+        if (taperPart != 0) {
+            tukey.setTaper(new TukeyHanningTaper(taperPart));
+        }
         tukey.setWindowType(windowType);
-        if (this.windowLength == 0 || this.windowLength >= val.getLength() - 1) {
-            tukey.setWindowLength(((val.getLength() * 3 / 4) / data.freq) * data.freq);
-        } else {
+        if (this.windowLength != 0 && this.windowLength < val.getLength() - 1) {
             tukey.setWindowLength(this.windowLength);
+        } else {
+            int len = defWindowLength(val.getLength(), data.freq);
+            if (len > 0) {
+                tukey.setWindowLength(len);
+            } else {
+                return result;
+            }
         }
         tukey.setData(val.internalStorage());
         double[] yp = tukey.getSpectrum();
@@ -233,4 +279,17 @@ public class TukeySpectrumView extends ARPView {
 
         return result;
     }
+
+    private int defWindowLength(int ndata, int freq) {
+        if (freq != 12 && ndata >= 45) {
+            return 44;
+        } else if (freq == 12 && ndata >= 120) {
+            return 112;
+        } else if (freq == 12 && ndata >= 80) {
+            return 79;
+        } else {
+            return -1;
+        }
+    }
+
 }

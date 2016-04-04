@@ -16,12 +16,8 @@
  */
 package ec.nbdemetra.ui.actions;
 
-import ec.nbdemetra.ui.tsproviders.ProviderNode;
-import ec.nbdemetra.ui.tsproviders.SeriesNode;
 import org.netbeans.api.actions.Openable;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
@@ -31,10 +27,6 @@ import org.openide.util.NbBundle.Messages;
  */
 @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.OpenAction")
 @ActionRegistration(displayName = "#OpenAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = ProviderNode.ACTION_PATH, position = 1310, separatorBefore = 1300),
-    @ActionReference(path = SeriesNode.ACTION_PATH, position = 1310, separatorBefore = 1300)
-})
 @Messages("OpenAction=Open")
 public final class OpenAction extends AbilityAction<Openable> {
 

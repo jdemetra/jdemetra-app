@@ -13,7 +13,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 @ServiceProvider(service = IWorkspaceItemRepository.class)
 public class X13SpecFileRepository extends AbstractFileItemRepository<X13Specification>{

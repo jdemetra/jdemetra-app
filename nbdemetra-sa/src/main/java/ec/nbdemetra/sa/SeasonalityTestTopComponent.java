@@ -64,8 +64,8 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
 
     public SeasonalityTestTopComponent() {
         initComponents();
-        setName(NbBundle.getMessage(SeasonalityTestTopComponent.class, "CTL_SeasonalityTestTopComponent"));
-        setToolTipText(NbBundle.getMessage(SeasonalityTestTopComponent.class, "HINT_SeasonalityTestTopComponent"));
+        setName(Bundle.CTL_SeasonalityTestTopComponent());
+        setToolTipText(Bundle.HINT_SeasonalityTestTopComponent());
         jTsChart1.setTsUpdateMode(TsUpdateMode.Single);
 
         jEditorPane1 = new JHtmlPane();
@@ -79,7 +79,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
         ((JHtmlPane) jEditorPane1).setStyleSheet(ss);
 
         node = new InternalNode();
-        jTsChart1.addPropertyChangeListener(JTsChart.COLLECTION_PROPERTY, new PropertyChangeListener() {
+        jTsChart1.addPropertyChangeListener(JTsChart.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 showTests();
@@ -180,8 +180,9 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
         if (lastYears > 0) {
             int nmax = lastYears * s.getFrequency().intValue();
             int nbeg = s.getLength() - nmax;
+            nbeg-=diffOrder;
             if (nbeg > 0) {
-                s = s.drop(nbeg, 0);
+                s = s.drop(nbeg,0);
             }
         }
 
@@ -241,18 +242,30 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
     }
 
     class InternalNode extends AbstractNode {
-
+        @Messages({
+            "seasonalityTestTopComponent.internalNode.displayName=Seasonality tests"
+        })
         InternalNode() {
             super(Children.LEAF);
-            setDisplayName("Seasonality tests");
+            setDisplayName(Bundle.seasonalityTestTopComponent_internalNode_displayName());
         }
 
         @Override
+        @Messages({
+            "seasonalityTestTopComponent.transform.name=Transform",
+            "seasonalityTestTopComponent.transform.displayName=Transformation",
+            "seasonalityTestTopComponent.log.name=Log",
+            "seasonalityTestTopComponent.log.desc=When marked, logarithmic transformation is used.",
+            "seasonalityTestTopComponent.differencing.name=Differencing",
+            "seasonalityTestTopComponent.differencing.desc=An order of a regular differencing of the series.",
+            "seasonalityTestTopComponent.lastYears.name=Last years",
+            "seasonalityTestTopComponent.lastYears.desc=Number of years at the end of the series taken into account (0 = whole series)."
+        })
         protected Sheet createSheet() {
             Sheet sheet = super.createSheet();
             Set transform = Sheet.createPropertiesSet();
-            transform.setName("Transform");
-            transform.setDisplayName("Transformation");
+            transform.setName(Bundle.seasonalityTestTopComponent_transform_name());
+            transform.setDisplayName(Bundle.seasonalityTestTopComponent_transform_displayName());
             Property<Boolean> log = new Property(Boolean.class) {
                 @Override
                 public boolean canRead() {
@@ -276,7 +289,8 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
                 }
             };
 
-            log.setName("Log");
+            log.setName(Bundle.seasonalityTestTopComponent_log_name());
+            log.setShortDescription(Bundle.seasonalityTestTopComponent_log_desc());
             transform.put(log);
             Property<Integer> diff = new Property(Integer.class) {
                 @Override
@@ -301,7 +315,8 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
                 }
             };
 
-            diff.setName("Differencing");
+            diff.setName(Bundle.seasonalityTestTopComponent_differencing_name());
+            diff.setShortDescription(Bundle.seasonalityTestTopComponent_differencing_desc());
             transform.put(diff);
             Node.Property<Integer> length = new Node.Property(Integer.class) {
                 @Override
@@ -325,8 +340,8 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
                     showTests();
                 }
             };
-            length.setName("Last years");
-            length.setShortDescription("Number of years at the end of the series taken into account (0 = whole series)");
+            length.setName(Bundle.seasonalityTestTopComponent_lastYears_name());
+            length.setShortDescription(Bundle.seasonalityTestTopComponent_lastYears_desc());
             transform.put(length);
             sheet.put(transform);
             return sheet;

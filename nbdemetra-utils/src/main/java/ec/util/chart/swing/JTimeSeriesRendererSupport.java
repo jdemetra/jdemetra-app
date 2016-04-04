@@ -39,10 +39,13 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.block.LabelBlock;
 import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.labels.XYSeriesLabelGenerator;
+import org.jfree.chart.plot.CrosshairState;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.xy.StackedXYAreaRenderer2;
@@ -50,6 +53,7 @@ import org.jfree.chart.renderer.xy.StackedXYBarRenderer;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYAreaRenderer2;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYItemRendererState;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.Range;
@@ -211,7 +215,31 @@ abstract class JTimeSeriesRendererSupport implements XYItemLabelGenerator, XYSer
 
         @Override
         protected void drawItemLabel(Graphics2D g2, PlotOrientation orientation, XYDataset dataset, int series, int item, double x, double y, boolean negative) {
-            support.drawItemLabel(g2, dataset, series, item, x, y);
+            // drawn in third pass
+        }
+
+        @Override
+        protected void drawFirstPassShape(Graphics2D g2, int pass, int series, int item, Shape shape) {
+            g2.setStroke(getItemStroke(series, item));
+            g2.setPaint(getSeriesPaint(series));
+            g2.draw(shape);
+        }
+
+        @Override
+        public void drawItem(Graphics2D g2, XYItemRendererState state, Rectangle2D dataArea, PlotRenderingInfo info, XYPlot plot, ValueAxis domainAxis, ValueAxis rangeAxis, XYDataset dataset, int series, int item, CrosshairState crosshairState, int pass) {
+            super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis, dataset, series, item, crosshairState, pass);
+            if (pass == 2 && getItemVisible(series, item) && isItemLabelVisible(series, item)) {
+                double x1 = dataset.getXValue(series, item);
+                double y1 = dataset.getYValue(series, item);
+                double transX1 = domainAxis.valueToJava2D(x1, dataArea, plot.getDomainAxisEdge());
+                double transY1 = rangeAxis.valueToJava2D(y1, dataArea, plot.getRangeAxisEdge());
+                support.drawItemLabel(g2, dataset, series, item, transX1, transY1);
+            }
+        }
+
+        @Override
+        public int getPassCount() {
+            return 3;
         }
     };
 
@@ -569,7 +597,7 @@ abstract class JTimeSeriesRendererSupport implements XYItemLabelGenerator, XYSer
 
         block.draw(g2, hotspot);
     }
-    
+
     private static Color getForegroundColor(double luminance) {
         return (luminance > 127) ? Color.BLACK : Color.WHITE;
     }

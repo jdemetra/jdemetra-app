@@ -17,11 +17,10 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
+import ec.tss.TsCollection;
 import ec.tstoolkit.data.ReadDataBlock;
-import ec.ui.DemoUtils;
 import ec.ui.interfaces.IReadDataBlockView;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
-import static ec.util.various.swing.FontAwesome.FA_RANDOM;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.ext.FontAwesomeUtils;
 import static java.beans.BeanInfo.ICON_COLOR_16x16;
@@ -51,12 +50,10 @@ public final class ReadDataBlockViewHandler extends DemoComponentHandler.Instanc
     }
 
     @Override
-    public void doFillToolBar(JToolBar toolBar, final IReadDataBlockView c) {
-
+    public void doFillToolBar(JToolBar toolBar, IReadDataBlockView c) {
         JButton item;
 
-        item = toolBar.add(randomCommand.toAction(c));
-        item.setIcon(FontAwesomeUtils.getIcon(FA_RANDOM, ICON_COLOR_16x16));
+        toolBar.add(randomCommand.toButton(c));
 
         item = toolBar.add(resetCommand.toAction(c));
         item.setIcon(FontAwesomeUtils.getIcon(FA_ERASER, ICON_COLOR_16x16));
@@ -64,12 +61,12 @@ public final class ReadDataBlockViewHandler extends DemoComponentHandler.Instanc
         toolBar.addSeparator();
     }
 
-    private static final class RandomCommand extends JCommand<IReadDataBlockView> {
+    //<editor-fold defaultstate="collapsed" desc="Commands">
+    private static final class RandomCommand extends RandomTsCollectionCommand<IReadDataBlockView> {
 
         @Override
-        public void execute(IReadDataBlockView component) throws Exception {
-            ReadDataBlock dataBlock = new ReadDataBlock(DemoUtils.randomTsCollection(1).get(0).getTsData().getValues().internalStorage());
-            component.setDataBlock(dataBlock);
+        protected void apply(IReadDataBlockView c, TsCollection col) {
+            c.setDataBlock(new ReadDataBlock(col.get(0).getTsData().getValues().internalStorage()));
         }
     }
 
@@ -80,4 +77,5 @@ public final class ReadDataBlockViewHandler extends DemoComponentHandler.Instanc
             component.reset();
         }
     }
+    //</editor-fold>
 }

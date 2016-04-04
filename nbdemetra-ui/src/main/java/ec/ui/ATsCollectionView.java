@@ -1,17 +1,17 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.ui;
@@ -20,38 +20,51 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
+import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.KeyStrokes;
 import ec.nbdemetra.ui.tsaction.ITsAction;
+import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsEvent;
 import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TsDragRenderer;
+import ec.tss.datatransfer.TssTransferHandler;
 import ec.tss.datatransfer.TssTransferSupport;
+import ec.tss.datatransfer.impl.LocalObjectTssTransferHandler;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.ui.commands.ColorSchemeCommand;
 import ec.ui.commands.TsCollectionViewCommand;
 import ec.ui.interfaces.IColorSchemeAble;
+import static ec.ui.interfaces.ITsCollectionAble.TS_COLLECTION_PROPERTY;
 import ec.ui.interfaces.ITsCollectionView;
 import ec.util.chart.ColorScheme;
+import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.ColorSchemeIcon;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JCheckBoxMenuItem;
@@ -64,11 +77,15 @@ import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
+import org.openide.util.datatransfer.ExTransferable;
+import org.openide.util.datatransfer.MultiTransferObject;
 
 public abstract class ATsCollectionView extends ATsControl implements ITsCollectionView {
 
     // PROPERTIES DEFINITION
     public static final String DROP_CONTENT_PROPERTY = "dropContent";
+
     // ACTIONS KEYS
     public static final String FREEZE_ACTION = "freeze";
     public static final String COPY_ACTION = "copy";
@@ -80,20 +97,23 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     public static final String SELECT_ALL_ACTION = "selectAll";
     public static final String RENAME_ACTION = "rename";
     public static final String DEFAULT_COLOR_SCHEME_ACTION = "defaultColorScheme";
+
     // DEFAULT PROPERTIES
     protected static final TsUpdateMode DEFAULT_UPDATEMODE = TsUpdateMode.Append;
     protected static final Ts[] DEFAULT_SELECTION = new Ts[0];
     protected static final Ts[] DEFAULT_DROP_CONTENT = new Ts[0];
+
     // PROPERTIES
     protected TsCollection collection;
     protected TsUpdateMode updateMode;
     protected ITsAction tsAction;
     protected Ts[] selection;
     protected Ts[] dropContent;
+
     // OTHER
     protected final TsFactoryObserver tsFactoryObserver;
-    
-    protected DemetraUI demetraUI = DemetraUI.getDefault();
+
+    protected final DemetraUI demetraUI = DemetraUI.getDefault();
 
     public ATsCollectionView() {
         this.collection = TsFactory.instance.createTsCollection();
@@ -103,11 +123,45 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         this.dropContent = DEFAULT_DROP_CONTENT;
         this.tsFactoryObserver = new TsFactoryObserver();
 
+        registerActions();
+        registerInputs();
+        enableProperties();
+
+        TsFactory.instance.addObserver(tsFactoryObserver);
+    }
+
+    private void registerActions() {
+        ActionMap am = getActionMap();
+        am.put(FREEZE_ACTION, TsCollectionViewCommand.freeze().toAction(this));
+        am.put(COPY_ACTION, TsCollectionViewCommand.copy().toAction(this));
+        am.put(COPY_ALL_ACTION, TsCollectionViewCommand.copyAll().toAction(this));
+        am.put(DELETE_ACTION, TsCollectionViewCommand.delete().toAction(this));
+        am.put(CLEAR_ACTION, TsCollectionViewCommand.clear().toAction(this));
+        am.put(PASTE_ACTION, TsCollectionViewCommand.paste().toAction(this));
+        am.put(OPEN_ACTION, TsCollectionViewCommand.open().toAction(this));
+        am.put(SELECT_ALL_ACTION, TsCollectionViewCommand.selectAll().toAction(this));
+        am.put(RENAME_ACTION, TsCollectionViewCommand.rename().toAction(this));
+        if (this instanceof IColorSchemeAble) {
+            am.put(DEFAULT_COLOR_SCHEME_ACTION, ColorSchemeCommand.applyColorScheme(null).toAction((IColorSchemeAble) this));
+        }
+    }
+
+    private void registerInputs() {
+        InputMap im = getInputMap();
+        KeyStrokes.putAll(im, KeyStrokes.COPY, COPY_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.PASTE, PASTE_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.DELETE, DELETE_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.SELECT_ALL, SELECT_ALL_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.OPEN, OPEN_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.CLEAR, CLEAR_ACTION);
+    }
+
+    private void enableProperties() {
         addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 switch (evt.getPropertyName()) {
-                    case COLLECTION_PROPERTY:
+                    case TS_COLLECTION_PROPERTY:
                         onCollectionChange();
                         break;
                     case SELECTION_PROPERTY:
@@ -125,30 +179,6 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
                 }
             }
         });
-
-        ActionMap am = getActionMap();
-        am.put(FREEZE_ACTION, TsCollectionViewCommand.freeze().toAction(this));
-        am.put(COPY_ACTION, TsCollectionViewCommand.copy().toAction(this));
-        am.put(COPY_ALL_ACTION, TsCollectionViewCommand.copyAll().toAction(this));
-        am.put(DELETE_ACTION, TsCollectionViewCommand.delete().toAction(this));
-        am.put(CLEAR_ACTION, TsCollectionViewCommand.clear().toAction(this));
-        am.put(PASTE_ACTION, TsCollectionViewCommand.paste().toAction(this));
-        am.put(OPEN_ACTION, TsCollectionViewCommand.open().toAction(this));
-        am.put(SELECT_ALL_ACTION, TsCollectionViewCommand.selectAll().toAction(this));
-        am.put(RENAME_ACTION, TsCollectionViewCommand.rename().toAction(this));
-        if (this instanceof IColorSchemeAble) {
-            am.put(DEFAULT_COLOR_SCHEME_ACTION, ColorSchemeCommand.applyColorScheme(null).toAction((IColorSchemeAble) this));
-        }
-
-        InputMap im = getInputMap();
-        KeyStrokes.putAll(im, KeyStrokes.COPY, COPY_ACTION);
-        KeyStrokes.putAll(im, KeyStrokes.PASTE, PASTE_ACTION);
-        KeyStrokes.putAll(im, KeyStrokes.DELETE, COPY_ACTION);
-        KeyStrokes.putAll(im, KeyStrokes.SELECT_ALL, SELECT_ALL_ACTION);
-        KeyStrokes.putAll(im, KeyStrokes.OPEN, OPEN_ACTION);
-        KeyStrokes.putAll(im, KeyStrokes.CLEAR, CLEAR_ACTION);
-
-        TsFactory.instance.addObserver(tsFactoryObserver);
     }
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
@@ -176,7 +206,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         // update selection to reflect changes in collection
         Ts[] oldSelection = this.selection;
         this.selection = retainTsCollection(selection);
-        firePropertyChange(COLLECTION_PROPERTY, old, this.collection);
+        firePropertyChange(TS_COLLECTION_PROPERTY, old, this.collection);
         firePropertyChange(SELECTION_PROPERTY, oldSelection, selection);
     }
 
@@ -229,7 +259,6 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     }
     //</editor-fold>
 
-    // OTHER >
     @Override
     public void dispose() {
         TsFactory.instance.deleteObserver(tsFactoryObserver);
@@ -258,6 +287,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         return Iterables.toArray(tmp, Ts.class);
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Menus">
     public JMenu buildColorSchemeMenu() {
         ActionMap am = getActionMap();
         JMenu result = new JMenu("Color scheme");
@@ -295,6 +325,11 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         result.add(item);
 
         result.add(buildOpenWithMenu());
+
+        JMenu menu = buildSaveMenu();
+        if (menu.getSubElements().length > 0) {
+            result.add(buildSaveMenu());
+        }
 
         item = new JMenuItem(am.get(RENAME_ACTION));
         item.setText("Rename");
@@ -381,7 +416,21 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
 
         return result;
     }
-    // < OTHER
+
+    protected JMenu buildSaveMenu() {
+        JMenu result = new JMenu(new SaveCommand().toAction(this));
+        result.setText("Save");
+        ExtAction.hideWhenDisabled(result);
+        for (ITsSave o : DemetraUI.getDefault().getTsSave()) {
+            JMenuItem item = new JMenuItem(TsCollectionViewCommand.save(o).toAction(this));
+            item.setName(o.getName());
+            item.setText(o.getDisplayName());
+            item.setIcon(demetraUI.getPopupMenuIcon(ImageUtilities.image2Icon(o.getIcon(BeanInfo.ICON_COLOR_16x16, false))));
+            result.add(item);
+        }
+        return result;
+    }
+    //</editor-fold>
 
     private static final class OpenWithCommand extends JCommand<ATsCollectionView> {
 
@@ -401,12 +450,30 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         }
     }
 
+    private static final class SaveCommand extends JCommand<ATsCollectionView> {
+
+        @Override
+        public void execute(ATsCollectionView component) throws Exception {
+            // do nothing
+        }
+
+        @Override
+        public boolean isEnabled(ATsCollectionView component) {
+            return component.getSelectionSize() >= 1;
+        }
+
+        @Override
+        public JCommand.ActionAdapter toAction(ATsCollectionView component) {
+            return super.toAction(component).withWeakPropertyChangeListener(component, SELECTION_PROPERTY);
+        }
+    }
+
     public class TsActionMouseAdapter extends MouseAdapter {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() > 1 && selection.length > 0) {
-                (tsAction != null ? tsAction : DemetraUI.getDefault().getTsAction()).open(selection[0]);
+            if (!Charts.isPopup(e) && Charts.isDoubleClick(e)) {
+                ActionMaps.performAction(getActionMap(), OPEN_ACTION, e);
             }
         }
     }
@@ -430,7 +497,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
                                 dirty.set(false);
                                 Ts[] oldSelection = selection;
                                 selection = retainTsCollection(selection);
-                                firePropertyChange(COLLECTION_PROPERTY, null, collection);
+                                firePropertyChange(TS_COLLECTION_PROPERTY, null, collection);
                                 firePropertyChange(SELECTION_PROPERTY, oldSelection, selection);
 //                            }
                             }
@@ -494,6 +561,53 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
 
     public class TsCollectionTransferHandler extends TransferHandler {
 
+        @Nullable
+        private List<Ts> peekCollection(@Nonnull Transferable transferable) {
+            if (TssTransferSupport.isMultiFlavor(transferable.getTransferDataFlavors())) {
+                try {
+                    MultiTransferObject multi = (MultiTransferObject) transferable.getTransferData(ExTransferable.multiFlavor);
+                    List<Ts> result = new ArrayList<>();
+                    for (int i = 0; i < multi.getCount(); i++) {
+                        List<Ts> item = peekCollection(multi.getTransferableAt(i));
+                        if (item != null) {
+                            result.addAll(item);
+                        }
+                    }
+                    return result;
+                } catch (UnsupportedFlavorException | IOException ex) {
+                }
+                return null;
+            } else {
+                TssTransferHandler handler = Lookup.getDefault().lookup(LocalObjectTssTransferHandler.class);
+                if (handler != null) {
+                    DataFlavor dataFlavor = handler.getDataFlavor();
+                    if (transferable.isDataFlavorSupported(dataFlavor)) {
+                        try {
+                            Object data = transferable.getTransferData(dataFlavor);
+                            if (handler.canImportTsCollection(data)) {
+                                return Lists.newArrayList(handler.importTsCollection(data));
+                            }
+                        } catch (UnsupportedFlavorException | IOException ex) {
+                        }
+                    }
+                }
+                return null;
+            }
+        }
+
+        private boolean mayChangeContent(TransferSupport support) {
+            List<Ts> newContent = peekCollection(support.getTransferable());
+            if (newContent != null) {
+                for (Ts o : newContent) {
+                    if (!collection.contains(o)) {
+                        return true; // YES
+                    }
+                }
+                return false; // NO
+            }
+            return true; // MAYBE
+        }
+
         @Override
         public int getSourceActions(JComponent c) {
             TsDragRenderer r = selection.length < 10 ? TsDragRenderer.asChart() : TsDragRenderer.asCount();
@@ -510,7 +624,8 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         @Override
         public boolean canImport(TransferSupport support) {
             boolean result = !ATsCollectionView.this.getTsUpdateMode().isReadOnly()
-                    && TssTransferSupport.getDefault().canImport(support.getDataFlavors());
+                    && TssTransferSupport.getDefault().canImport(support.getDataFlavors())
+                    && mayChangeContent(support);
             if (result && support.isDrop()) {
                 support.setDropAction(COPY);
             }

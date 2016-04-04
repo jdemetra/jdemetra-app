@@ -17,7 +17,7 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="21" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="lotrLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Component id="lotrLabel" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -35,11 +35,11 @@
                   <Component id="file" max="32767" attributes="0"/>
                   <Component id="systemProperty" max="32767" attributes="0"/>
                   <Component id="multipleLocale" max="32767" attributes="0"/>
-                  <Component id="singleLocale" max="32767" attributes="0"/>
                   <Component id="exception" max="32767" attributes="0"/>
                   <Component id="custom" alignment="0" max="32767" attributes="0"/>
+                  <Component id="singleLocale" max="32767" attributes="0"/>
               </Group>
-              <EmptySpace pref="13" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>

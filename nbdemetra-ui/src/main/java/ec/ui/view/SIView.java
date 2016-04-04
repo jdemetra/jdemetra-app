@@ -15,6 +15,7 @@ import ec.ui.ATsView;
 import ec.ui.chart.BasicXYDataset;
 import ec.ui.chart.TsCharts;
 import ec.util.chart.ColorScheme.KnownColor;
+import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -26,10 +27,16 @@ import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.AbstractAction;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
@@ -127,8 +134,6 @@ public class SIView extends ATsView implements ClipboardOwner {
     }
 
     public SIView() {
-        setLayout(new BorderLayout());
-
         this.graphs_ = new HashMap<>();
 
         this.sRenderer = new XYLineAndShapeRenderer(true, false);
@@ -180,28 +185,73 @@ public class SIView extends ATsView implements ClipboardOwner {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-                    double x = chartpanel_.getChartX(e.getX());
-                    Graphs g = null;
-                    Bornes fb = Bornes.ZERO;
-                    for (Bornes b : graphs_.keySet()) {
-                        if (x >= b.min_ && x <= b.max_) {
-                            g = graphs_.get(b);
-                            fb = b;
-                            break;
+                    if (mainchart_.equals(chartpanel_.getChart())) {
+                        double x = chartpanel_.getChartX(e.getX());
+                        Graphs g = null;
+                        Bornes fb = Bornes.ZERO;
+                        for (Bornes b : graphs_.keySet()) {
+                            if (x >= b.min_ && x <= b.max_) {
+                                g = graphs_.get(b);
+                                fb = b;
+                                break;
+                            }
                         }
-                    }
-                    if (g == null) {
-                        return;
-                    }
+                        if (g == null) {
+                            return;
+                        }
 
-                    showDetail(g, fb);
-                } else if (e.getButton() == MouseEvent.BUTTON3) {
-                    showMain();
+                        showDetail(g, fb);
+                    } else if (detailchart_.equals(chartpanel_.getChart())) {
+                        showMain();
+                    }
                 }
             }
         });
 
+        onComponentPopupMenuChange();
+        enableProperties();
+
+        setLayout(new BorderLayout());
         add(chartpanel_, BorderLayout.CENTER);
+    }
+
+    private void enableProperties() {
+        addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
+                }
+            }
+        });
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Event handlers">
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        chartpanel_.setComponentPopupMenu(popupMenu != null ? popupMenu : buildMenu().getPopupMenu());
+    }
+    //</editor-fold>
+
+    private JMenu buildMenu() {
+        JMenu result = new JMenu();
+
+        result.add(new JMenuItem(new AbstractAction("Show main") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showMain();
+            }
+        }));
+
+        JMenu export = new JMenu("Export image to");
+        export.add(ChartCommand.printImage().toAction(chartpanel_)).setText("Printer...");
+        export.add(ChartCommand.copyImage().toAction(chartpanel_)).setText("Clipboard");
+        export.add(ChartCommand.saveImage().toAction(chartpanel_)).setText("File...");
+        result.add(export);
+
+        return result;
     }
 
     private void showMain() {
@@ -283,11 +333,10 @@ public class SIView extends ATsView implements ClipboardOwner {
         final double xstep = 0.8 / np;
         int il = 0;
         while (speriods.hasMoreElements()) {
-            int startyear = start.getYear();
-            int endyear = end.getYear() - 1;
-
             TsDataBlock datablock = speriods.nextElement();
             DataBlock src = datablock.data;
+            int startyear = datablock.start.getYear();
+            int endyear = startyear + datablock.data.getLength() - 1;
 
             String key = "p" + Integer.toString(il);
 
@@ -303,7 +352,7 @@ public class SIView extends ATsView implements ClipboardOwner {
                 double[] sY = new double[n];
                 double[] siY = new double[n];
 
-                double x = xstart + xstep * (datablock.start.getYear() - start.getYear());
+                double x = xstart + xstep * (startyear - start.getYear());
                 for (int i = 0; i < n; ++i, x += xstep, startyear++) {
                     sX[i] = x;
                     sX2[i] = startyear;
@@ -356,7 +405,7 @@ public class SIView extends ATsView implements ClipboardOwner {
         showMain();
     }
 
-    static void configureAxis(XYPlot plot, TsFrequency freq) {        
+    static void configureAxis(XYPlot plot, TsFrequency freq) {
         NumberAxis yAxis = new NumberAxis();
         yAxis.setTickLabelPaint(Color.GRAY);
         rescaleAxis(yAxis);

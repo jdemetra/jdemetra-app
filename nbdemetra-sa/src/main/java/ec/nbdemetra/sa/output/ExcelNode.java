@@ -14,7 +14,7 @@ import org.openide.nodes.Sheet;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class ExcelNode extends AbstractOutputNode<SpreadsheetOutputConfiguration> {
 
@@ -42,6 +42,9 @@ public class ExcelNode extends AbstractOutputNode<SpreadsheetOutputConfiguration
         builder.reset("Layout");
         builder.withEnum(SpreadsheetLayout.class).select(config, "Layout").add();
         builder.withBoolean().select(config, "VerticalOrientation").add();
+        builder.withBoolean().select(config, "FullName").display("Full series name")
+                .description("If true, the fully qualified name of the series will be used (workbook + sheet + name). "
+                        + "If false, only the name of the series will be displayed.").add();
         sheet.put(builder.build());
 
         builder.reset("Content");

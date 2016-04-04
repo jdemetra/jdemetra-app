@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class InterventionVariableDescriptor implements IObjectDescriptor<InterventionVariable> {
     
@@ -82,7 +82,7 @@ public class InterventionVariableDescriptor implements IObjectDescriptor<Interve
             PropertyDescriptor desc = new PropertyDescriptor("delta", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DELTA_ID);
             desc.setDisplayName("Delta");
-            //edesc.setReadOnly(true);
+            edesc.setReadOnly(core_.getD1DS() );
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -94,7 +94,7 @@ public class InterventionVariableDescriptor implements IObjectDescriptor<Interve
             PropertyDescriptor desc = new PropertyDescriptor("deltaS", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DELTAS_ID);
             desc.setDisplayName("Seasonal delta");
-            //edesc.setReadOnly(true);
+            edesc.setReadOnly(core_.getD1DS() );
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

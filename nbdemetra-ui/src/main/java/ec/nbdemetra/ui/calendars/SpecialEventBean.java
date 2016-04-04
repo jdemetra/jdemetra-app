@@ -7,6 +7,7 @@ package ec.nbdemetra.ui.calendars;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.ValidityPeriod;
 import ec.tstoolkit.timeseries.calendars.DayEvent;
+import ec.tstoolkit.timeseries.calendars.ISpecialDay.Context;
 import ec.tstoolkit.timeseries.calendars.SpecialCalendarDay;
 
 /**
@@ -57,7 +58,7 @@ public class SpecialEventBean extends AbstractEventBean {
     }
 
     @Override
-    protected SpecialCalendarDay toSpecialDay() {
-        return new SpecialCalendarDay(dayEvent, offset, weight);
+    protected SpecialCalendarDay toSpecialDay(Context context) {
+        return new SpecialCalendarDay(dayEvent, offset, weight, context.isJulianEaster());
     }
 }

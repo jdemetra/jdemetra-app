@@ -1,18 +1,34 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.ui.list;
 
-import ec.nbdemetra.ui.MonikerUI;
+import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.awt.PopupListener;
+import ec.nbdemetra.ui.awt.ActionMaps;
+import ec.nbdemetra.ui.awt.InputMaps;
+import ec.nbdemetra.ui.awt.KeyStrokes;
+import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.tss.DynamicTsVariable;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsIdentifier;
+import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferSupport;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.timeseries.regression.ITsVariable;
 import ec.tstoolkit.timeseries.regression.TsVariable;
@@ -22,16 +38,23 @@ import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.chart.TsSparklineCellRenderer;
+import ec.ui.interfaces.ITsActionAble;
+import ec.util.chart.swing.Charts;
 import ec.util.grid.swing.XTable;
+import ec.util.various.swing.JCommand;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
-import javax.swing.AbstractAction;
+import javax.annotation.Nonnull;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -40,10 +63,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
@@ -55,50 +75,77 @@ import org.openide.NotifyDescriptor;
  *
  * @author Jean Palate
  */
-public class JTsVariableList extends JComponent {
+public class JTsVariableList extends JComponent implements ITsActionAble {
 
     public static final String DELETE_ACTION = "delete";
     public static final String CLEAR_ACTION = "clear";
     public static final String SELECT_ALL_ACTION = "selectAll";
     public static final String RENAME_ACTION = "rename";
-    private final ListTableSelectionListener listTableListener;
+    private static final String OPEN_ACTION = "open";
+
     private final XTable table;
     private final TsVariables variables;
-    private final RenameAction rename;
-    private final ClearAction clear;
-    private final DeleteAction remove;
+    private ITsAction tsAction;
 
     public JTsVariableList(TsVariables vars) {
         this.variables = vars;
         this.table = buildTable();
-        rename = new RenameAction();
-        remove = new DeleteAction();
-        clear = new ClearAction();
-        this.listTableListener = new ListTableSelectionListener();
-        table.getSelectionModel().addListSelectionListener(listTableListener);
-        table.addMouseListener(new PopupListener.PopupAdapter(buildPopupMenu()));
+        this.tsAction = null;
+
+        registerActions();
+        registerInputs();
+        enableOpenOnDoubleClick();
+        enablePopupMenu();
 
         setLayout(new BorderLayout());
         add(NbComponents.newJScrollPane(table), BorderLayout.CENTER);
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
+    @Override
+    public ITsAction getTsAction() {
+        return tsAction;
+    }
+
+    @Override
+    public void setTsAction(ITsAction tsAction) {
+        ITsAction old = this.tsAction;
+        this.tsAction = tsAction;
+        firePropertyChange(TS_ACTION_PROPERTY, old, this.tsAction);
+    }
+    //</editor-fold>
+
     protected JPopupMenu buildPopupMenu() {
+        ActionMap actionMap = getActionMap();
+
         JMenu result = new JMenu();
 
         JMenuItem item;
 
-        item = new JMenuItem(rename);
+        item = new JMenuItem(actionMap.get(OPEN_ACTION));
+        item.setText("Open");
+        item.setAccelerator(KeyStrokes.OPEN.get(0));
+        item.setFont(item.getFont().deriveFont(Font.BOLD));
+        result.add(item);
+
+        item = buildOpenWithMenu();
+        item.setText("Open with");
+        result.add(item);
+
+        item = new JMenuItem(actionMap.get(RENAME_ACTION));
         item.setText("Rename");
         result.add(item);
 
         result.addSeparator();
 
-        item = new JMenuItem(remove);
+        item = new JMenuItem(actionMap.get(DELETE_ACTION));
         item.setText("Remove");
+        item.setAccelerator(KeyStrokes.DELETE.get(0));
         result.add(item);
 
-        item = new JMenuItem(clear);
+        item = new JMenuItem(actionMap.get(CLEAR_ACTION));
         item.setText("Clear");
+        item.setAccelerator(KeyStrokes.CLEAR.get(0));
         result.add(item);
 
         return result.getPopupMenu();
@@ -113,83 +160,6 @@ public class JTsVariableList extends JComponent {
         return n;
     }
 
-    private class RenameAction extends AbstractAction {
-
-        public static final String RENAME_TITLE = "Please enter the new name",
-                NAME_MESSAGE = "New name:";
-
-        public RenameAction() {
-            super(RENAME_ACTION);
-            enabled = false;
-
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            int[] sel = table.getSelectedRows();
-            if (sel.length != 1) {
-                return;
-            }
-
-            String oldName = names(sel)[0], newName;
-            VarName nd = new VarName(variables, NAME_MESSAGE, RENAME_TITLE, oldName);
-            if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
-                return;
-            }
-            newName = nd.getInputText();
-            if (newName.equals(oldName)) {
-                return;
-            }
-            variables.rename(oldName, newName);
-            ((CustomTableModel) table.getModel()).fireTableStructureChanged();
-            JTsVariableList.this.firePropertyChange(RENAME_ACTION, oldName, newName);
-        }
-    }
-
-    private class DeleteAction extends AbstractAction {
-
-        public static final String DELETE_MESSAGE = "Are you sure you want to delete the selected items?";
-
-        public DeleteAction() {
-            super(DELETE_ACTION);
-            enabled = false;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            int[] sel = table.getSelectedRows();
-            if (sel.length == 0) {
-                return;
-            }
-            NotifyDescriptor nd = new NotifyDescriptor.Confirmation(DELETE_MESSAGE, NotifyDescriptor.OK_CANCEL_OPTION);
-            if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
-                return;
-            }
-
-            String[] n = names(sel);
-            for (int i = 0; i < n.length; ++i) {
-                variables.remove(n[i]);
-            }
-            ((CustomTableModel) table.getModel()).fireTableStructureChanged();
-            JTsVariableList.this.firePropertyChange(DELETE_ACTION, null, null);
-        }
-    }
-
-    private class ClearAction extends AbstractAction {
-
-        public ClearAction() {
-            super(CLEAR_ACTION);
-            enabled = false;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            variables.clear();
-            ((CustomTableModel) table.getModel()).fireTableStructureChanged();
-            JTsVariableList.this.firePropertyChange(CLEAR_ACTION, null, null);
-        }
-    }
-
     private XTable buildTable() {
         final XTable result = new XTable();
         result.setNoDataRenderer(new XTable.DefaultNoDataRenderer("Drop data here", "Drop data here"));
@@ -197,7 +167,7 @@ public class JTsVariableList extends JComponent {
         result.setDefaultRenderer(TsData.class, new TsSparklineCellRenderer());
         result.setDefaultRenderer(TsPeriod.class, new TsPeriodTableCellRenderer());
         result.setDefaultRenderer(TsFrequency.class, new TsFrequencyTableCellRenderer());
-        result.setDefaultRenderer(TsIdentifier.class, new TsIdentifierTableCellRenderer());
+        result.setDefaultRenderer(String.class, new MultiLineNameTableCellRenderer());
 
         result.setModel(new CustomTableModel());
         XTable.setWidthAsPercentages(result, .1, .2, .1, .1, .1, .1, .3);
@@ -208,24 +178,10 @@ public class JTsVariableList extends JComponent {
         result.setDragEnabled(true);
         result.setTransferHandler(new TsVariableTransferHandler());
         result.setFillsViewportHeight(true);
-//        fillActionMap(result.getActionMap());
-//        fillInputMap(result.getInputMap());
 
         return result;
     }
 
-//    protected void fillActionMap(ActionMap am) {
-//        for (Object o : getActionMap().keys()) {
-//            am.put(o, getActionMap().get(o));
-//        }
-//    }
-//
-//    protected void fillInputMap(InputMap im) {
-//        for (KeyStroke o : getInputMap().keys()) {
-//            im.put(o, getInputMap().get(o));
-//        }
-//    }
-//    
     public class TsVariableTransferHandler extends TransferHandler {
 
         @Override
@@ -272,16 +228,22 @@ public class JTsVariableList extends JComponent {
         ((CustomTableModel) table.getModel()).fireTableStructureChanged();
     }
 
-    private static class TsIdentifierTableCellRenderer extends DefaultTableCellRenderer {
-
-        final MonikerUI monikerUI = MonikerUI.getDefault();
+    private static final class MultiLineNameTableCellRenderer extends DefaultTableCellRenderer {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            TsIdentifier identifier = (TsIdentifier) value;
-            result.setText(identifier.getName());
-            result.setIcon(monikerUI.getIcon(identifier.getMoniker()));
+            String text = (String) value;
+            if (text.isEmpty()) {
+                result.setText(" ");
+                result.setToolTipText(null);
+            } else if (text.startsWith("<html>")) {
+                result.setText(text);
+                result.setToolTipText(text);
+            } else {
+                result.setText(MultiLineNameUtil.join(text));
+                result.setToolTipText(MultiLineNameUtil.toHtml(text));
+            }
             return result;
         }
     }
@@ -295,7 +257,6 @@ public class JTsVariableList extends JComponent {
         public void fireTableStructureChanged() {
             names = variables.getNames();
             super.fireTableStructureChanged();
-            updateMenus();
         }
 
         public CustomTableModel() {
@@ -362,6 +323,8 @@ public class JTsVariableList extends JComponent {
         @Override
         public Class<?> getColumnClass(int columnIndex) {
             switch (columnIndex) {
+                case 1:
+                    return String.class;
                 case 4:
                     return TsPeriod.class;
                 case 5:
@@ -374,47 +337,29 @@ public class JTsVariableList extends JComponent {
         }
     }
 
-    private void updateMenus() {
-        clear.setEnabled(!variables.isEmpty());
-        int selectedRows = table.getSelectedRowCount();
-        rename.setEnabled(selectedRows == 1);
-        remove.setEnabled(selectedRows > 0);
-    }
-
-    private class ListTableSelectionListener implements ListSelectionListener {
-
-        @Override
-        public void valueChanged(ListSelectionEvent e) {
-            if (!e.getValueIsAdjusting()) {
-                ListSelectionModel model = (ListSelectionModel) e.getSource();
-                updateMenus();
-            }
-        }
-    }
-
-    private class VarName extends NotifyDescriptor.InputLine {
+    private static final class VarName extends NotifyDescriptor.InputLine {
 
         VarName(final TsVariables vars, String title, String text, final String oldname) {
             super(title, text, NotifyDescriptor.QUESTION_MESSAGE, NotifyDescriptor.OK_CANCEL_OPTION);
 
             setInputText(oldname);
-        textField.addKeyListener(new KeyListener() {
+            textField.addKeyListener(new KeyListener() {
                 // To handle VK_ENTER !!!
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER && ! textField.getInputVerifier().verify(textField)){
-                    e.consume();
+                @Override
+                public void keyTyped(KeyEvent e) {
                 }
-            }
 
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-        });
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER && !textField.getInputVerifier().verify(textField)) {
+                        e.consume();
+                    }
+                }
+
+                @Override
+                public void keyReleased(KeyEvent e) {
+                }
+            });
             textField.setInputVerifier(new InputVerifier() {
                 @Override
                 public boolean verify(JComponent input) {
@@ -438,4 +383,203 @@ public class JTsVariableList extends JComponent {
             });
         }
     }
+
+    private void registerActions() {
+        ActionMap am = getActionMap();
+        am.put(OPEN_ACTION, OpenCommand.INSTANCE.toAction(this));
+        am.put(RENAME_ACTION, RenameCommand.INSTANCE.toAction(this));
+        am.put(DELETE_ACTION, DeleteCommand.INSTANCE.toAction(this));
+        am.put(CLEAR_ACTION, ClearCommand.INSTANCE.toAction(this));
+        ActionMaps.copyEntries(am, false, table.getActionMap());
+    }
+
+    private void registerInputs() {
+        InputMap im = getInputMap();
+        KeyStrokes.putAll(im, KeyStrokes.OPEN, OPEN_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.DELETE, DELETE_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.CLEAR, CLEAR_ACTION);
+        InputMaps.copyEntries(im, false, table.getInputMap());
+    }
+
+    private void enableOpenOnDoubleClick() {
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (!Charts.isPopup(e) && Charts.isDoubleClick(e)) {
+                    ActionMaps.performAction(getActionMap(), OPEN_ACTION, e);
+                }
+            }
+        });
+    }
+
+    private void enablePopupMenu() {
+        table.setComponentPopupMenu(buildPopupMenu());
+    }
+
+    private JMenu buildOpenWithMenu() {
+        JMenu result = new JMenu(OpenWithCommand.INSTANCE.toAction(this));
+
+        for (ITsAction o : DemetraUI.getDefault().getTsActions()) {
+            JMenuItem item = new JMenuItem(new OpenWithItemCommand(o).toAction(this));
+            item.setName(o.getName());
+            item.setText(o.getDisplayName());
+            result.add(item);
+        }
+
+        return result;
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Commands">
+    private static TsVariable getSelectedVariable(JTsVariableList c) {
+        if (c.table.getSelectedRowCount() == 1) {
+            int idx = c.table.convertRowIndexToModel(c.table.getSelectedRow());
+            ITsVariable result = c.variables.get(c.variables.getNames()[idx]);
+            if (result instanceof TsVariable) {
+                return (TsVariable) result;
+            }
+        }
+        return null;
+    }
+
+    private static Ts toTs(TsVariable variable) {
+        return variable instanceof DynamicTsVariable
+                ? TsFactory.instance.getTs(((DynamicTsVariable) variable).getMoniker())
+                : TsFactory.instance.createTs(variable.getDescription(), null, variable.getTsData());
+    }
+
+    private static final class OpenCommand extends JCommand<JTsVariableList> {
+
+        public static final OpenCommand INSTANCE = new OpenCommand();
+
+        @Override
+        public void execute(JTsVariableList c) throws Exception {
+            TsVariable variable = getSelectedVariable(c);
+            ITsAction tsAction = c.tsAction != null ? c.tsAction : DemetraUI.getDefault().getTsAction();
+            tsAction.open(toTs(variable));
+        }
+
+        @Override
+        public boolean isEnabled(JTsVariableList c) {
+            return getSelectedVariable(c) != null;
+        }
+
+        @Override
+        public ActionAdapter toAction(JTsVariableList c) {
+            return super.toAction(c).withWeakListSelectionListener(c.table.getSelectionModel());
+        }
+    }
+
+    private static final class OpenWithCommand extends JCommand<JTsVariableList> {
+
+        public static final OpenWithCommand INSTANCE = new OpenWithCommand();
+
+        @Override
+        public void execute(JTsVariableList c) throws Exception {
+            // do nothing
+        }
+
+        @Override
+        public boolean isEnabled(JTsVariableList c) {
+            return c.table.getSelectedRowCount() == 1;
+        }
+
+        @Override
+        public JCommand.ActionAdapter toAction(JTsVariableList c) {
+            return super.toAction(c).withWeakListSelectionListener(c.table.getSelectionModel());
+        }
+    }
+
+    private static final class OpenWithItemCommand extends JCommand<JTsVariableList> {
+
+        private final ITsAction tsAction;
+
+        public OpenWithItemCommand(@Nonnull ITsAction tsAction) {
+            this.tsAction = tsAction;
+        }
+
+        @Override
+        public void execute(JTsVariableList c) throws Exception {
+            tsAction.open(toTs(getSelectedVariable(c)));
+        }
+    }
+
+    private static final class RenameCommand extends JCommand<JTsVariableList> {
+
+        public static final RenameCommand INSTANCE = new RenameCommand();
+
+        @Override
+        public void execute(JTsVariableList c) throws java.lang.Exception {
+            int[] sel = c.table.getSelectedRows();
+            if (sel.length != 1) {
+                return;
+            }
+
+            String oldName = c.names(sel)[0], newName;
+            VarName nd = new VarName(c.variables, "New name:", "Please enter the new name", oldName);
+            if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
+                return;
+            }
+            newName = nd.getInputText();
+            if (newName.equals(oldName)) {
+                return;
+            }
+            c.variables.rename(oldName, newName);
+            ((CustomTableModel) c.table.getModel()).fireTableStructureChanged();
+        }
+
+        @Override
+        public boolean isEnabled(JTsVariableList c) {
+            return c.table.getSelectedRowCount() == 1;
+        }
+
+        @Override
+        public ActionAdapter toAction(JTsVariableList c) {
+            return super.toAction(c).withWeakListSelectionListener(c.table.getSelectionModel());
+        }
+    }
+
+    private static final class DeleteCommand extends JCommand<JTsVariableList> {
+
+        public static final DeleteCommand INSTANCE = new DeleteCommand();
+
+        @Override
+        public void execute(JTsVariableList c) throws java.lang.Exception {
+            int[] sel = c.table.getSelectedRows();
+            if (sel.length == 0) {
+                return;
+            }
+            NotifyDescriptor nd = new NotifyDescriptor.Confirmation("Are you sure you want to delete the selected items?", NotifyDescriptor.OK_CANCEL_OPTION);
+            if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
+                return;
+            }
+
+            String[] n = c.names(sel);
+            for (int i = 0; i < n.length; ++i) {
+                c.variables.remove(n[i]);
+            }
+            ((CustomTableModel) c.table.getModel()).fireTableStructureChanged();
+        }
+
+        @Override
+        public boolean isEnabled(JTsVariableList c) {
+            return c.table.getSelectedRowCount() > 0;
+        }
+
+        @Override
+        public ActionAdapter toAction(JTsVariableList c) {
+            return super.toAction(c).withWeakListSelectionListener(c.table.getSelectionModel());
+        }
+    }
+
+    private static final class ClearCommand extends JCommand<JTsVariableList> {
+
+        public static final ClearCommand INSTANCE = new ClearCommand();
+
+        @Override
+        public void execute(JTsVariableList c) throws java.lang.Exception {
+            c.variables.clear();
+            ((CustomTableModel) c.table.getModel()).fireTableStructureChanged();
+        }
+    }
+    //</editor-fold>
 }

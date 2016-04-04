@@ -14,6 +14,7 @@ import ec.tss.sa.documents.SaDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import ec.tstoolkit.arima.IArimaModel;
 import ec.tstoolkit.modelling.ModellingDictionary;
+import ec.tstoolkit.modelling.SeriesInfo;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.tstoolkit.modelling.arima.diagnostics.IOneStepAheadForecastingTest;
 import ec.tstoolkit.modelling.arima.diagnostics.OneStepAheadForecastingTest;
@@ -32,7 +33,7 @@ import javax.swing.JComponent;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class PreprocessingViewFactory<S extends IProcSpecification, D extends TsDocument<S, PreprocessingModel>> extends ProcDocumentViewFactory<D> {
 
@@ -47,6 +48,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
             FCASTS = "Forecasts",
             OSAMPLE = "Out-of-sample test",
             DETAILS = "Details",
+            TABLE = "Table",
             STEPS = "Steps",
             PREADJUSTMENT = "Pre-adjustment series",
             ARIMA = "Arima",
@@ -63,6 +65,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
             INPUT_SERIES = new LinearId(INPUT, SERIES), MODEL_SUMMARY = new LinearId(MODEL),
             MODEL_DET = new LinearId(MODEL, PREADJUSTMENT),
             MODEL_FCASTS = new LinearId(MODEL, FCASTS),
+            MODEL_FCASTS_TABLE = new LinearId(MODEL, FCASTS, TABLE),
             MODEL_FCASTS_OUTOFSAMPLE = new LinearId(MODEL, FCASTS, OSAMPLE),
             MODEL_REGS = new LinearId(MODEL, REGRESSORS),
             MODEL_ARIMA = new LinearId(MODEL, ARIMA),
@@ -173,6 +176,18 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
                             1.96);
                 }
             }, new EstimationUI());
+        }
+    }
+
+    protected static class PreprocessingFCastsTableFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+            extends ItemFactory<D, PreprocessingModel> {
+
+        private static String[] generateItems() {
+            return new String[]{ModellingDictionary.Y + SeriesInfo.F_SUFFIX, ModellingDictionary.Y + SeriesInfo.EF_SUFFIX};
+        }
+
+        protected PreprocessingFCastsTableFactory(Class<D> documentType) {
+            super(documentType, MODEL_FCASTS_TABLE, PmExtractor.INSTANCE, new GenericTableUI(false, generateItems()));
         }
     }
 

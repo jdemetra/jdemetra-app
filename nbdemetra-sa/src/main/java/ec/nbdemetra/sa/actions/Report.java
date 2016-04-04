@@ -12,11 +12,10 @@ import ec.nbdemetra.sa.SaReportManager;
 import ec.nbdemetra.ws.actions.AbstractViewAction;
 import ec.tss.sa.SaProcessing;
 import java.util.List;
-
-import org.openide.awt.ActionRegistration;
+import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
-import org.openide.awt.ActionID;
+import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
@@ -58,8 +57,8 @@ public final class Report extends AbstractViewAction<SaBatchUI> {
             factories.get(0).createReport(processing);
         } else {
             ReportSelectionDialog dlg = new ReportSelectionDialog();
+            dlg.setLocationRelativeTo(ui);
             dlg.setVisible(true);
-            dlg.setLocationRelativeTo(null);
             
             ISaReportFactory reportFactory = dlg.getReportFactory();
 

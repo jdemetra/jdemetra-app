@@ -12,8 +12,6 @@ import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.TsProviders;
 import java.beans.IntrospectionException;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
@@ -21,9 +19,6 @@ import org.slf4j.LoggerFactory;
 
 @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.actions.CloneSourceAction")
 @ActionRegistration(displayName = "#CTL_CloneSourceAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = DataSourceNode.ACTION_PATH, position = 1320, separatorBefore = 1300)
-})
 @Messages("CTL_CloneSourceAction=Clone")
 public final class CloneSourceAction extends SingleNodeAction<DataSourceNode> {
 

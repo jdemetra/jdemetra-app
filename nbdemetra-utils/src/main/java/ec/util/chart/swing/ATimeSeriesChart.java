@@ -1,11 +1,24 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or â€“ as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.util.chart.swing;
 
 import ec.util.chart.ColorSchemeSupport;
 import ec.util.chart.ObsFunction;
+import ec.util.chart.ObsIndex;
 import ec.util.chart.ObsPredicate;
 import ec.util.chart.SeriesFunction;
 import ec.util.chart.SeriesPredicate;
@@ -21,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 import org.jfree.data.xy.IntervalXYDataset;
 
@@ -28,7 +42,7 @@ import org.jfree.data.xy.IntervalXYDataset;
  *
  * @author Philippe Charles
  */
-abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<IntervalXYDataset, ColorSchemeSupport<? extends Color>> {
+abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<IntervalXYDataset, Color> {
 
     // PROPERTIES DEFINITION
     public static final String COLOR_SCHEME_SUPPORT_PROPERTY = "colorSchemeSupport";
@@ -37,7 +51,9 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     public static final String VALUE_FORMAT_PROPERTY = "valueFormat";
     public static final String SERIES_RENDERER_PROPERTY = "seriesRenderer";
     public static final String SERIES_FORMATTER_PROPERTY = "seriesFormatter";
+    public static final String SERIES_COLORIST_PROPERTY = "seriesColorist";
     public static final String OBS_FORMATTER_PROPERTY = "obsFormatter";
+    public static final String OBS_COLORIST_PROPERTY = "obsColorist";
     public static final String DASH_PREDICATE_PROPERTY = "dashPredicate";
     public static final String LEGEND_VISIBILITY_PREDICATE_PROPERTY = "legendVisibilityPredicate";
     public static final String PLOT_DISPATCHER_PROPERTY = "plotDispatcher";
@@ -46,6 +62,12 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     public static final String NO_DATA_MESSAGE_PROPERTY = "noDataMessage";
     public static final String PLOT_WEIGHTS_PROPERTY = "plotWeights";
     public static final String ELEMENT_VISIBLE_PROPERTY = "elementVisible";
+    public static final String CROSSHAIR_ORIENTATION_PROPERTY = "crosshairOrientation";
+    public static final String HOVERED_OBS_PROPERTY = "hoveredObs";
+    public static final String SELECTED_OBS_PROPERTY = "selectedObs";
+    public static final String OBS_HIGHLIGHTER_PROPERTY = "obsHighlighter";
+    public static final String TOOLTIP_TRIGGER_PROPERTY = "tooltipTrigger";
+    public static final String CROSSHAIR_TRIGGER_PROPERTY = "crosshairTrigger";
     // DEFAULT PROPERTIES
     private static final ColorSchemeSupport<? extends Color> DEFAULT_COLOR_SCHEME_SUPPORT = SwingColorSchemeSupport.from(new SmartColorScheme());
     private static final LineStrokes DEFAULT_LINE_STROKES = new LineStrokes(1f);
@@ -61,6 +83,16 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     private static final String DEFAULT_TITLE = "";
     private static final String DEFAULT_NO_DATA_MESSAGE = "No data";
     private static final int[] DEFAULT_PLOT_WEIGHTS = new int[]{1};
+    private static final CrosshairOrientation DEFAULT_CROSSHAIR_ORIENTATION = CrosshairOrientation.BOTH;
+    private static final ObsIndex DEFAULT_HOVERED_OBS = ObsIndex.NULL;
+    private static final ObsIndex DEFAULT_SELECTED_OBS = ObsIndex.NULL;
+    private static final DisplayTrigger DEFAULT_TOOLTIP_TRIGGER = DisplayTrigger.HOVERING;
+    private static final DisplayTrigger DEFAULT_CROSSHAIR_TRIGGER = DisplayTrigger.HOVERING;
+    // RESOURCES
+    protected final ObsPredicate existPredicate;
+    protected final ObsPredicate defaultObsHighlighter;
+    protected final ObsFunction<String> valueFormatter;
+    protected final ObsFunction<String> periodFormatter;
     // PROPERTIES
     protected ColorSchemeSupport<? extends Color> colorSchemeSupport;
     protected LineStrokes lineStrokes;
@@ -68,7 +100,9 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     protected NumberFormat valueFormat;
     protected SeriesFunction<RendererType> seriesRenderer;
     protected SeriesFunction<String> seriesFormatter;
+    protected SeriesFunction<Color> seriesColorist;
     protected ObsFunction<String> obsFormatter;
+    protected ObsFunction<Color> obsColorist;
     protected ObsPredicate dashPredicate;
     protected SeriesPredicate legendVisibilityPredicate;
     protected SeriesFunction<Integer> plotDispatcher;
@@ -78,15 +112,28 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     protected int[] plotWeights;
     protected final boolean[] elementVisible;
     protected final List<RendererType> supportedRendererTypes;
+    protected CrosshairOrientation crosshairOrientation;
+    protected ObsIndex hoveredObs;
+    protected ObsIndex selectedObs;
+    protected ObsPredicate obsHighlighter;
+    protected DisplayTrigger tooltipTrigger;
+    protected DisplayTrigger crosshairTrigger;
 
-    public ATimeSeriesChart(List<RendererType> supportedRendererTypes) {
+    protected ATimeSeriesChart(List<RendererType> supportedRendererTypes) {
+        this.existPredicate = new ExistPredicate();
+        this.defaultObsHighlighter = new DefaultObsHighlighter();
+        this.valueFormatter = new ValueFormatter();
+        this.periodFormatter = new PeriodFormatter();
+
         this.colorSchemeSupport = DEFAULT_COLOR_SCHEME_SUPPORT;
         this.lineStrokes = DEFAULT_LINE_STROKES;
         this.periodFormat = new SimpleDateFormat(DEFAULT_PERIOD_FORMAT);
         this.valueFormat = new DecimalFormat(DEFAULT_VALUE_FORMAT);
         this.seriesRenderer = DEFAULT_SERIES_RENDERER;
         this.seriesFormatter = DEFAULT_SERIES_FORMATTER;
+        this.seriesColorist = seriesColoristUsingColorScheme();
         this.obsFormatter = DEFAULT_OBS_FORMATTER;
+        this.obsColorist = obsColoristUsingSeriesColorist();
         this.dashPredicate = DEFAULT_DASH_PREDICATE;
         this.legendVisibilityPredicate = DEFAULT_LEGEND_VISIBILITY_PREDICATE;
         this.plotDispatcher = DEFAULT_PLOT_DISPATCHER;
@@ -96,7 +143,15 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
         this.plotWeights = DEFAULT_PLOT_WEIGHTS.clone();
         this.elementVisible = new boolean[Element.values().length];
         this.supportedRendererTypes = supportedRendererTypes;
+        this.crosshairOrientation = DEFAULT_CROSSHAIR_ORIENTATION;
+        this.hoveredObs = DEFAULT_HOVERED_OBS;
+        this.selectedObs = DEFAULT_SELECTED_OBS;
+        this.obsHighlighter = defaultObsHighlighter;
+        this.tooltipTrigger = DEFAULT_TOOLTIP_TRIGGER;
+        this.crosshairTrigger = DEFAULT_CROSSHAIR_TRIGGER;
+
         Arrays.fill(elementVisible, true);
+        elementVisible[Element.CROSSHAIR.ordinal()] = false;
     }
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
@@ -235,6 +290,18 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
     }
 
     @Override
+    public SeriesFunction<Color> getSeriesColorist() {
+        return seriesColorist;
+    }
+
+    @Override
+    public void setSeriesColorist(SeriesFunction<Color> seriesColorist) {
+        SeriesFunction<Color> old = this.seriesColorist;
+        this.seriesColorist = seriesColorist != null ? seriesColorist : seriesColoristUsingColorScheme();
+        firePropertyChange(SERIES_COLORIST_PROPERTY, old, this.seriesColorist);
+    }
+
+    @Override
     public ObsFunction<String> getObsFormatter() {
         return obsFormatter;
     }
@@ -244,6 +311,18 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
         ObsFunction<String> old = this.obsFormatter;
         this.obsFormatter = obsFormatter != null ? obsFormatter : DEFAULT_OBS_FORMATTER;
         firePropertyChange(OBS_FORMATTER_PROPERTY, old, this.obsFormatter);
+    }
+
+    @Override
+    public ObsFunction<Color> getObsColorist() {
+        return obsColorist;
+    }
+
+    @Override
+    public void setObsColorist(ObsFunction<Color> obsColorist) {
+        ObsFunction<Color> old = this.obsColorist;
+        this.obsColorist = obsColorist != null ? obsColorist : obsColoristUsingSeriesColorist();
+        firePropertyChange(OBS_COLORIST_PROPERTY, old, this.obsColorist);
     }
 
     @Override
@@ -281,11 +360,99 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
         elementVisible[element.ordinal()] = visible;
         firePropertyChange(ELEMENT_VISIBLE_PROPERTY, old, visible);
     }
+
+    @Override
+    public CrosshairOrientation getCrosshairOrientation() {
+        return crosshairOrientation;
+    }
+
+    @Override
+    public void setCrosshairOrientation(CrosshairOrientation crosshairOrientation) {
+        CrosshairOrientation old = this.crosshairOrientation;
+        this.crosshairOrientation = crosshairOrientation != null ? crosshairOrientation : DEFAULT_CROSSHAIR_ORIENTATION;
+        firePropertyChange(CROSSHAIR_ORIENTATION_PROPERTY, old, this.crosshairOrientation);
+    }
+
+    @Override
+    public ObsIndex getHoveredObs() {
+        return hoveredObs;
+    }
+
+    @Override
+    public void setHoveredObs(ObsIndex hoveredObs) {
+        ObsIndex old = this.hoveredObs;
+        this.hoveredObs = hoveredObs != null ? hoveredObs : DEFAULT_HOVERED_OBS;
+        firePropertyChange(HOVERED_OBS_PROPERTY, old, this.hoveredObs);
+    }
+
+    @Override
+    public ObsIndex getSelectedObs() {
+        return selectedObs;
+    }
+
+    @Override
+    public void setSelectedObs(ObsIndex selectedObs) {
+        ObsIndex old = this.selectedObs;
+        this.selectedObs = selectedObs != null ? selectedObs : DEFAULT_SELECTED_OBS;
+        firePropertyChange(SELECTED_OBS_PROPERTY, old, this.selectedObs);
+    }
+
+    @Override
+    public ObsPredicate getObsHighlighter() {
+        return obsHighlighter;
+    }
+
+    @Override
+    public void setObsHighlighter(ObsPredicate obsHighlighter) {
+        ObsPredicate old = this.obsHighlighter;
+        this.obsHighlighter = obsHighlighter != null ? obsHighlighter : defaultObsHighlighter;
+        firePropertyChange(OBS_HIGHLIGHTER_PROPERTY, old, this.obsHighlighter);
+
+    }
+
+    @Override
+    public DisplayTrigger getTooltipTrigger() {
+        return tooltipTrigger;
+    }
+
+    @Override
+    public void setTooltipTrigger(DisplayTrigger tooltipTrigger) {
+        DisplayTrigger old = this.tooltipTrigger;
+        this.tooltipTrigger = tooltipTrigger != null ? tooltipTrigger : DEFAULT_TOOLTIP_TRIGGER;
+        firePropertyChange(TOOLTIP_TRIGGER_PROPERTY, old, this.tooltipTrigger);
+    }
+
+    @Override
+    public DisplayTrigger getCrosshairTrigger() {
+        return crosshairTrigger;
+    }
+
+    @Override
+    public void setCrosshairTrigger(DisplayTrigger crosshairTrigger) {
+        DisplayTrigger old = this.crosshairTrigger;
+        this.crosshairTrigger = crosshairTrigger != null ? crosshairTrigger : DEFAULT_CROSSHAIR_TRIGGER;
+        firePropertyChange(CROSSHAIR_TRIGGER_PROPERTY, old, this.crosshairTrigger);
+    }
     //</editor-fold>
 
     @Override
     public EnumSet<RendererType> getSupportedRendererTypes() {
         return EnumSet.copyOf(supportedRendererTypes);
+    }
+
+    @Nonnull
+    public ObsPredicate getObsExistPredicate() {
+        return existPredicate;
+    }
+
+    @Nonnull
+    public ObsFunction<String> getValueFormatter() {
+        return valueFormatter;
+    }
+
+    @Nonnull
+    public ObsFunction<String> getPeriodFormatter() {
+        return periodFormatter;
     }
 
     static final class LineStrokes {
@@ -309,5 +476,56 @@ abstract class ATimeSeriesChart extends JComponent implements TimeSeriesChart<In
         public Stroke getStroke(boolean strong, boolean dash) {
             return strokes[(strong ? 1 : 0) * 2 + (dash ? 1 : 0)];
         }
+    }
+
+    private final class DefaultObsHighlighter extends ObsPredicate {
+
+        @Override
+        public boolean apply(int series, int obs) {
+            return hoveredObs.equals(series, obs);
+        }
+    }
+
+    private final class ExistPredicate extends ObsPredicate {
+
+        @Override
+        public boolean apply(int series, int obs) {
+            return 0 <= series && series < dataset.getSeriesCount()
+                    && 0 <= obs && obs < dataset.getItemCount(series);
+        }
+    }
+
+    private final class ValueFormatter extends ObsFunction<String> {
+
+        @Override
+        public String apply(int series, int obs) {
+            return valueFormat.format(dataset.getY(series, obs));
+        }
+    }
+
+    private final class PeriodFormatter extends ObsFunction<String> {
+
+        @Override
+        public String apply(int series, int obs) {
+            return periodFormat.format(dataset.getX(series, obs));
+        }
+    }
+
+    private SeriesFunction<Color> seriesColoristUsingColorScheme() {
+        return new SeriesFunction<Color>() {
+            @Override
+            public Color apply(int series) {
+                return colorSchemeSupport.getLineColor(series);
+            }
+        };
+    }
+
+    private ObsFunction<Color> obsColoristUsingSeriesColorist() {
+        return new ObsFunction<Color>() {
+            @Override
+            public Color apply(int series, int obs) {
+                return seriesColorist.apply(series);
+            }
+        };
     }
 }

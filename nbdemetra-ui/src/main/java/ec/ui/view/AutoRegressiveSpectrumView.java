@@ -1,3 +1,19 @@
+/*
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
+ */
 package ec.ui.view;
 
 import ec.nbdemetra.ui.DemetraUI;
@@ -6,6 +22,7 @@ import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.Values;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.JPopupMenu;
 import org.jfree.data.xy.XYSeries;
 
 /**
@@ -21,10 +38,7 @@ public class AutoRegressiveSpectrumView extends ARPView {
     public static final String AR_COUNT_PROPERTY = "arCount";
     public static final String RESOLUTION_PROPERTY = "resolution";
     public static final String LASTYEARS_PROPERTY = "lastYears";
-    //
-    private int del = DEFAULT_DIFF, lag = DEFAULT_DIFF_LAG;
-    private boolean log = DEFAULT_LOG;
-    private int lastYears;
+
     // DEFAULT PROPERTIES
     private static final int DEFAULT_AR_COUNT = 0;
     private static final int DEFAULT_RESOLUTION = 5;
@@ -32,17 +46,29 @@ public class AutoRegressiveSpectrumView extends ARPView {
     private static final int DEFAULT_DIFF = 1;
     private static final int DEFAULT_DIFF_LAG = 1;
     public static final int DEFAULT_LAST = 0;
+
     // PROPERTIES
+    private int del;
+    private int lag;
+    private boolean log;
+    private int lastYears;
     protected int arcount;
     protected int resolution;
 
     public AutoRegressiveSpectrumView() {
-        DemetraUI demetraUI = DemetraUI.getDefault();
-        lastYears = demetraUI.getSpectralLastYears();
-
+        this.del = DEFAULT_DIFF;
+        this.lag = DEFAULT_DIFF_LAG;
+        this.log = DEFAULT_LOG;
+        this.lastYears = DemetraUI.getDefault().getSpectralLastYears();
         this.arcount = DEFAULT_AR_COUNT;
         this.resolution = DEFAULT_RESOLUTION;
-        addPropertyChangeListener(new PropertyChangeListener() {
+
+        onComponentPopupMenuChange();
+        enableProperties();
+    }
+
+    private void enableProperties() {
+        this.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 switch (evt.getPropertyName()) {
@@ -64,11 +90,15 @@ public class AutoRegressiveSpectrumView extends ARPView {
                     case LASTYEARS_PROPERTY:
                         onLastYearsChange();
                         break;
+                    case "componentPopupMenu":
+                        onComponentPopupMenuChange();
+                        break;
                 }
             }
         });
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
     public boolean isLogTransformation() {
         return log;
     }
@@ -143,7 +173,9 @@ public class AutoRegressiveSpectrumView extends ARPView {
         resolution = count;
         firePropertyChange(RESOLUTION_PROPERTY, old, this.resolution);
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Event handlers">
     protected void onArCountChange() {
         onARPDataChange();
     }
@@ -176,6 +208,12 @@ public class AutoRegressiveSpectrumView extends ARPView {
         }
         onColorSchemeChange();
     }
+
+    private void onComponentPopupMenuChange() {
+        JPopupMenu popupMenu = getComponentPopupMenu();
+        chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildMenu().getPopupMenu());
+    }
+    //</editor-fold>
 
     @Override
     protected XYSeries computeSeries() {

@@ -19,6 +19,7 @@ package ec.util.desktop;
 import ec.util.completion.swing.FileListCellRenderer;
 import ec.util.various.swing.BasicSwingLauncher;
 import ec.util.various.swing.FontAwesome;
+import ec.util.various.swing.StandardSwingColor;
 import ec.util.various.swing.TextPrompt;
 import java.awt.Color;
 import java.awt.Component;
@@ -130,7 +131,7 @@ public final class DesktopDemo extends javax.swing.JPanel {
 
         searchField.setEnabled(desktop.isSupported(Desktop.Action.SEARCH));
         new TextPrompt(searchField.isEnabled() ? "type enter to launch search" : "Not supported", searchField)
-                .setForeground(searchField.getDisabledTextColor());
+                .setForeground(StandardSwingColor.TEXT_FIELD_INACTIVE_FOREGROUND.value());
 
         searchResult.setCellRenderer(new FileListCellRenderer(Executors.newSingleThreadExecutor()));
         searchResult.setEnabled(desktop.isSupported(Desktop.Action.SEARCH));

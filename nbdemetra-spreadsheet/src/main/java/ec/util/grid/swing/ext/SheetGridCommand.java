@@ -19,10 +19,10 @@ package ec.util.grid.swing.ext;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import ec.tss.datatransfer.TssTransferSupport;
-import ec.tss.tsproviders.spreadsheet.facade.Cell;
 import ec.tstoolkit.data.Table;
 import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
+import ec.util.spreadsheet.Cell;
 import ec.util.various.swing.JCommand;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
@@ -134,8 +134,8 @@ public abstract class SheetGridCommand extends JCommand<JGrid> {
 
         @Override
         public Table<?> toTable(JGrid grid) {
-            ListSelectionModel r = grid.getSelectionModel();
-            ListSelectionModel c = grid.getColumnModel().getSelectionModel();
+            ListSelectionModel r = grid.getRowSelectionModel();
+            ListSelectionModel c = grid.getColumnSelectionModel();
             return !r.isSelectionEmpty() && !c.isSelectionEmpty()
                     ? copy2(grid.getModel(), Range.closed(r.getMinSelectionIndex(), r.getMaxSelectionIndex()), Range.closed(c.getMinSelectionIndex(), c.getMaxSelectionIndex()), rowHeader, columnHeader)
                     : new Table<>(0, 0);

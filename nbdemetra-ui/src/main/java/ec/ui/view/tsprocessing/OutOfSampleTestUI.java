@@ -10,7 +10,7 @@ import ec.tstoolkit.modelling.arima.diagnostics.IOneStepAheadForecastingTest;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class OutOfSampleTestUI<V extends IProcDocumentView<?>> extends HtmlItemUI<V, IOneStepAheadForecastingTest> {
 

@@ -24,7 +24,7 @@ import org.openide.windows.TopComponent;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class WorkspaceTopComponent<T> extends TopComponent implements ExplorerManager.Provider, IActiveView, LookupListener {
 
@@ -41,6 +41,11 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements E
 
     public WorkspaceItem<T> getDocument() {
         return doc;
+    }
+
+    @Override
+    public String getName(){
+        return doc == null ? super.getName() : doc.getDisplayName();
     }
 
     @Override

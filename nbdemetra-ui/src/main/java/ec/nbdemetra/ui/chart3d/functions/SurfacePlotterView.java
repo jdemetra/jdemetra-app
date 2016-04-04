@@ -86,7 +86,7 @@ public class SurfacePlotterView extends JPanel {
                                     chart.setSteps((Integer) evt.getNewValue());
                                     break;
                                 case ConfigurationToolBar.EPSILON:
-                                    chart.setEpsilon(new Float((Double) evt.getNewValue()));
+                                    chart.setEpsilon(((Double) evt.getNewValue()).floatValue());
                                     break;
                             }
                         }
@@ -133,7 +133,7 @@ public class SurfacePlotterView extends JPanel {
                                         m.setSteps((Integer) evt.getNewValue());
                                         break;
                                     case ConfigurationToolBar.EPSILON:
-                                        m.setEps(new Float((Double) evt.getNewValue()));
+                                        m.setEps(((Double) evt.getNewValue()).floatValue());
                                         break;
                                     case ParameterComboBox.PARAMETERS_CHANGED:
                                         setParameters(config.getParametersComboBoxes().getSelectedIndex1(), config.getParametersComboBoxes().getSelectedIndex2());
@@ -166,5 +166,13 @@ public class SurfacePlotterView extends JPanel {
         } catch (IllegalArgumentException e) {
             add(ExceptionPanel.create(e), BorderLayout.CENTER);
         }
+    }
+    
+    public void setEpsilon(float eps){
+        chart.setEpsilon(eps);
+    }
+
+    public void setSteps(int steps){
+        chart.setSteps(steps);
     }
 }

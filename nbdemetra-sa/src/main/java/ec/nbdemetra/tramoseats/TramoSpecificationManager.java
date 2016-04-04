@@ -24,7 +24,7 @@ import org.openide.windows.WindowManager;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 @ServiceProvider(service = IWorkspaceItemManager.class,
         position = 10)
@@ -98,7 +98,7 @@ public class TramoSpecificationManager extends AbstractWorkspaceItemManager<Tram
         WorkspaceItem<TramoSpecification> rsa5 = WorkspaceItem.system(ID, "TR5", TramoSpecification.TR5);
         defspecs.add(rsa5);
         WorkspaceItem<TramoSpecification> rsafull = WorkspaceItem.system(ID, "TRfull", TramoSpecification.TRfull);
-        defspecs.add(rsa5);
+        defspecs.add(rsafull);
         return defspecs;
     }
 

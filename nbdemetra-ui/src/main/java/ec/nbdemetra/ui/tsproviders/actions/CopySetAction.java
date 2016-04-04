@@ -17,25 +17,14 @@
 package ec.nbdemetra.ui.tsproviders.actions;
 
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
-import ec.nbdemetra.ui.tsproviders.CollectionNode;
-import ec.nbdemetra.ui.tsproviders.SeriesNode;
 import java.awt.Toolkit;
 import java.io.IOException;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
-import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 
 import org.openide.util.NbBundle.Messages;
 
-@ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.actions.CopySetAction")
-@ActionRegistration(displayName = "#CTL_CopySetAction", lazy = false)
-@ActionReferences({
-    @ActionReference(path = CollectionNode.ACTION_PATH, position = 1420, separatorBefore = 1400),
-    @ActionReference(path = SeriesNode.ACTION_PATH, position = 1420, separatorBefore = 1400)
-})
+@Deprecated
 @Messages("CTL_CopySetAction=Copy")
 public final class CopySetAction extends SingleNodeAction<Node> {
 

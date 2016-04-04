@@ -31,6 +31,8 @@ import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.Charts;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
@@ -88,8 +90,8 @@ public class RevisionChartPanel extends ATsControl implements ClipboardOwner {
         
         panel.setPopupMenu(buildMenu().getPopupMenu());
         
-        fillActionMap(getActionMap());
-        fillInputMap(getInputMap());
+//        fillActionMap(getActionMap());
+//        fillInputMap(getInputMap());
         
         add(panel, BorderLayout.CENTER);
         onColorSchemeChange();
@@ -254,7 +256,8 @@ public class RevisionChartPanel extends ATsControl implements ClipboardOwner {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            setClipboardContents(transferableOnSelection());
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            cb.setContents(transferableOnSelection(), RevisionChartPanel.this);
         }
     }
 }

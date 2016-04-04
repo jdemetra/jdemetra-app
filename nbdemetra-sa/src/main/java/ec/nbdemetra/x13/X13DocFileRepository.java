@@ -15,7 +15,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 @ServiceProvider(service = IWorkspaceItemRepository.class)
 public class X13DocFileRepository extends AbstractFileItemRepository<X13Document> {

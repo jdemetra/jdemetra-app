@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2015 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.sa.actions;
 
@@ -8,6 +20,8 @@ import ec.nbdemetra.sa.MultiProcessingDocument;
 import ec.nbdemetra.sa.MultiProcessingManager;
 import ec.nbdemetra.sa.SaBatchUI;
 import ec.nbdemetra.sa.output.OutputPanel;
+import ec.nbdemetra.ui.notification.MessageType;
+import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.actions.AbstractViewAction;
 import ec.satoolkit.ISaSpecification;
@@ -18,6 +32,10 @@ import ec.tss.sa.documents.SaDocument;
 import ec.tstoolkit.algorithm.IOutput;
 import ec.tstoolkit.utilities.LinearId;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -28,7 +46,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "ec.nbdemetra.sa.actions.Output")
+        id = "ec.nbdemetra.sa.actions.Output")
 @ActionRegistration(displayName = "#CTL_Output", lazy = false)
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.CONTEXTPATH, position = 2000, separatorBefore = 1999),
@@ -64,22 +82,42 @@ public final class Output extends AbstractViewAction<SaBatchUI> {
             List<ISaOutputFactory> outputs = panel.getFactories();
             LinearId id = new LinearId(doc.getOwner().getName(), doc.getDisplayName());
             for (ISaOutputFactory output : outputs) {
-                try {
-                    IOutput<SaDocument<ISaSpecification>> sadoc = output.create();
-                    sadoc.start(id);
-                    for (SaItem cur : processing.toArray()) {
-                        SaDocument<ISaSpecification> cdoc = cur.toDocument();
-                        sadoc.process(cdoc);
-                    }
-                    sadoc.end(id);
-                    NotifyDescriptor sdesc=new NotifyDescriptor.Message(output.getName()+" successfully generated");
-                    DialogDisplayer.getDefault().notify(sdesc);
-                } catch (Exception err) {
-                    NotifyDescriptor edesc=new NotifyDescriptor.Message("Can't generate output ("+
-                            output.getName()+"): "+err.getMessage());
-                    DialogDisplayer.getDefault().notify(edesc);
-                }
+                save(output, id, processing);
             }
         }
+    }
+
+    private void save(final ISaOutputFactory output, final LinearId id, final SaProcessing processing) {
+        new SwingWorker<Void, String>() {
+            final ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Saving to " + output.getName());
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                progressHandle.start();
+                progressHandle.progress("Initializing");
+                IOutput<SaDocument<ISaSpecification>> sadoc = output.create();
+                progressHandle.progress("Starting");
+                sadoc.start(id);
+                progressHandle.progress("Processing");
+                for (SaItem cur : processing.toArray()) {
+                    SaDocument<ISaSpecification> cdoc = cur.toDocument();
+                    sadoc.process(cdoc);
+                }
+                progressHandle.progress("Ending");
+                sadoc.end(id);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                progressHandle.finish();
+                try {
+                    get();
+                    NotifyUtil.show(output.getName() + " successfully generated", "", MessageType.SUCCESS);
+                } catch (InterruptedException | ExecutionException ex) {
+                    NotifyUtil.error("Can't generate output (" + output.getName() + ")", ex.getMessage(), ex);
+                }
+            }
+        }.execute();
     }
 }

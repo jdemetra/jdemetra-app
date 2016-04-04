@@ -42,8 +42,8 @@ public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletio
     }
 
     @Override
-    public List<?> getValues(String term) throws Exception {
-        return getSorter().sortedCopy(limit(filter(getAllValues(), getFilter(term)), getLimitSize()));
+    protected List<?> getValues(String term, Iterable<T> allValues) {
+        return getSorter().sortedCopy(limit(filter(allValues, getFilter(term)), getLimitSize()));
     }
 
     /**

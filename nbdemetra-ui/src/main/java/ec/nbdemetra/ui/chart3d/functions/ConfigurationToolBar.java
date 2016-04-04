@@ -57,7 +57,7 @@ public class ConfigurationToolBar extends JMenuBar {
     public static final String EPSILON = "Epsilon";
     private String[] params = {XY_TICKS, Z_TICKS, BOX_GRID, XY_MESH, DRAW_BOX, HIDE_ON_DRAG};
     // Constants
-    public static final int MAX_STEPS = 200;
+    public static final int MAX_STEPS = 1000;
     public static final int MIN_STEPS = 20;
     public static final float MAX_EPS = 1f;
     public static final float MIN_EPS = 0.005f;

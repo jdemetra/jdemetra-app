@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public abstract class DocumentInformationExtractor<D extends IProcDocument<?,?, ?>, I> implements InformationExtractor<D, I> {
 

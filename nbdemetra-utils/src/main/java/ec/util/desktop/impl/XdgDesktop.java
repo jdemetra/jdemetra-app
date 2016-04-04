@@ -115,7 +115,7 @@ public class XdgDesktop extends AwtDesktop {
         // http://wiki.zeitgeist-project.com/UsageFromTerminal
         // man locate !!!
         Process p = system.exec("locate", "-i", query);
-        return toFiles(p, Charset.defaultCharset());
+        return Util.toFiles(p, Charset.defaultCharset());
     }
 
     public static class Factory implements Desktop.Factory {

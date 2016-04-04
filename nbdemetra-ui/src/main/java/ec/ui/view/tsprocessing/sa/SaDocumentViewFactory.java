@@ -22,6 +22,7 @@ import ec.nbdemetra.ui.chart3d.functions.SurfacePlotterUI.Functions;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.ISeriesDecomposition;
+import ec.satoolkit.diagnostics.StationaryVarianceDecomposition;
 import ec.tss.documents.DocumentManager;
 import ec.tss.documents.TsDocumentProcessing;
 import ec.tss.html.IHtmlElement;
@@ -54,6 +55,7 @@ import static ec.tstoolkit.timeseries.simplets.TsFrequency.Quarterly;
 import ec.tstoolkit.utilities.DefaultInformationExtractor;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.InformationExtractor;
+import ec.tstoolkit.utilities.Jdk6;
 import ec.tstoolkit.utilities.LinearId;
 import ec.ui.view.tsprocessing.ArimaUI;
 import ec.ui.view.tsprocessing.BenchmarkingUI;
@@ -79,12 +81,16 @@ import ec.ui.view.tsprocessing.SlidingSpansDetailUI;
 import ec.ui.view.tsprocessing.SpectrumUI;
 import ec.ui.view.tsprocessing.StabilityUI;
 import ec.ui.view.tsprocessing.TsDocumentInformationExtractor;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import javax.swing.JComponent;
 
 /**
  *
  * @author Jean Palate, Philippe Charles, Mats Maggi
+ * @param <S> Specification
+ * @param <D> Document
  */
 public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extends SaDocument<S>> extends ProcDocumentViewFactory<D> {
     // main nodes
@@ -253,6 +259,10 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
 
     public static InformationExtractor<SaDocument<? extends ISaSpecification>, Functions> likelihoodExtractor() {
         return LikelihoodExtractor.INSTANCE;
+    }
+
+    public static InformationExtractor<SaDocument<? extends ISaSpecification>, StationaryVarianceDecomposition> stvarExtractor() {
+        return StvarExtractor.INSTANCE;
     }
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SPEC">
@@ -477,12 +487,28 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             super(documentType, PREPROCESSING_REGS, pmExtractor(), new RegressorsUI());
         }
     }
+    
+    static String[] generateFullItems( List<SeriesInfo> infos){
+        List<String> names=new ArrayList<>();
+        for (SeriesInfo info : infos){
+            if (info.info == ComponentInformation.Value){
+                StringBuilder y = new StringBuilder();
+                y.append(DocumentManager.COMPOSITE).append(info.name).append("=,").append(info.name)
+                    .append(',').append(info.name).append(SeriesInfo.F_SUFFIX);
+                names.add(y.toString());
+            }
+        }
+        return Jdk6.Collections.toArray(names, String.class);
+    } 
 
     protected static class PreprocessingDetFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
+        
 
         protected PreprocessingDetFactory(Class<D> documentType) {
-            super(documentType, PREPROCESSING_DET, saExtractor(), new SaTableUI(ModellingDictionary.getDeterministicSeries(), null));
+            super(documentType, PREPROCESSING_DET, saExtractor(), 
+                new GenericTableUI(false, 
+                    generateFullItems(ModellingDictionary.getDeterministicSeries())));
         }
     }
     //</editor-fold>
@@ -924,6 +950,21 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     };
 
+    private static class StvarExtractor extends DefaultInformationExtractor<SaDocument<? extends ISaSpecification>, StationaryVarianceDecomposition> {
+
+        private static final StvarExtractor INSTANCE = new StvarExtractor();
+
+        @Override
+        public StationaryVarianceDecomposition retrieve(SaDocument source) {
+            StationaryVarianceDecomposition decomp=new StationaryVarianceDecomposition();
+            if (decomp.process(source.getResults())){
+                return decomp;
+            } else {
+                return null;
+            }
+        }
+    };
+
     private static class MovingProcessingExtractor extends TsDocumentInformationExtractor<SaDocument<? extends ISaSpecification>, MovingProcessing> {
 
         private final DemetraUI demetraUI = DemetraUI.getDefault();
@@ -1016,7 +1057,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             }
             if (nlast != 0) {
                 TsPeriodSelector selector = new TsPeriodSelector();
-                selector.last(nlast * info.s.getFrequency().intValue());
+                selector.last(nlast * info.s.getFrequency().intValue()+info.del);
                 info.s = info.s.select(selector);
             }
             if (info.s.getLength() < 4 * info.s.getFrequency().intValue()) {

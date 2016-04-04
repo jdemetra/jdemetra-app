@@ -18,10 +18,12 @@ import ec.tstoolkit.timeseries.calendars.IGregorianCalendarProvider;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.utilities.NameManager;
 import ec.tstoolkit.utilities.Paths;
+import ec.util.desktop.Desktop;
 import ec.util.desktop.Desktop.KnownFolder;
 import ec.util.desktop.DesktopManager;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -39,7 +41,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 @ServiceProvider(service = IWorkspaceRepository.class,
         position = 10)
@@ -92,8 +94,20 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         return null;
     }
 
+    private static File getDocumentsFolder() {
+        Desktop desktop = DesktopManager.get();
+        if (desktop.isSupported(Desktop.Action.KNOWN_FOLDER_LOOKUP)) {
+            try {
+                return desktop.getKnownFolderPath(KnownFolder.DOCUMENTS);
+            } catch (IOException ex) {
+                // log this?
+            }
+        }
+        return null;
+    }
+
     private static String path() {
-        File documents = DesktopManager.get().getKnownFolder(KnownFolder.DOCUMENTS);
+        File documents = getDocumentsFolder();
         if (documents == null) {
             // fallback
             documents = new File(StandardSystemProperty.USER_HOME.value());

@@ -11,14 +11,19 @@ import ec.ui.view.tsprocessing.WkComponentsUI;
 import ec.ui.view.tsprocessing.UcarimaUI;
 import ec.ui.view.tsprocessing.EstimationUI;
 import ec.satoolkit.ComponentDescriptor;
+import ec.satoolkit.diagnostics.SignificantSeasonalityTest;
+import ec.satoolkit.diagnostics.StationaryVarianceDecomposition;
 import ec.satoolkit.seats.SeatsResults;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.tss.documents.DocumentManager;
 import ec.tss.html.IHtmlElement;
 import ec.tss.html.implementation.HtmlModelBasedRevisionsAnalysis;
+import ec.tss.html.implementation.HtmlSignificantSeasons;
+import ec.tss.html.implementation.HtmlStationaryVarianceDecomposition;
 import ec.tss.html.implementation.HtmlTramoSeatsGrowthRates;
 import ec.tss.sa.documents.TramoSeatsDocument;
 import ec.tstoolkit.algorithm.CompositeResults;
+import ec.tstoolkit.algorithm.IProcResults;
 import ec.tstoolkit.arima.ArimaModel;
 import ec.tstoolkit.arima.IArimaModel;
 import ec.tstoolkit.modelling.ComponentInformation;
@@ -54,7 +59,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpecification, TramoSeatsDocument> {
 
@@ -70,7 +75,9 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             WK_FINALS = "Final estimators",
             WK_PRELIMINARY = "Preliminary estimators",
             WK_ERRORS = "Errors analysis",
-            WK_RATES = "Growth rates";
+            WK_RATES = "Growth rates",
+            SIGSEAS = "Significant seasonality",
+            STVAR = "Stationary variance decomposition";
     public static final Id DECOMPOSITION_SUMMARY = new LinearId(DECOMPOSITION);
     public static final Id DECOMPOSITION_STOCH_TREND = new LinearId(DECOMPOSITION, STOCHASTIC, STOCHASTIC_TREND);
     public static final Id DECOMPOSITION_STOCH_SEAS = new LinearId(DECOMPOSITION, STOCHASTIC, STOCHASTIC_SEAS);
@@ -83,6 +90,8 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
     public static final Id DECOMPOSITION_ERRORS = new LinearId(DECOMPOSITION, WK_ERRORS);
     public static final Id DECOMPOSITION_RATES = new LinearId(DECOMPOSITION, WK_RATES);
     public static final Id DECOMPOSITION_TESTS = new LinearId(DECOMPOSITION, MODELBASED);
+    public static final Id DECOMPOSITION_VAR = new LinearId(DECOMPOSITION, STVAR);
+    public static final Id DECOMPOSITION_SIGSEAS = new LinearId(DECOMPOSITION, SIGSEAS);
     private static final AtomicReference<IProcDocumentViewFactory<TramoSeatsDocument>> INSTANCE = new AtomicReference(new TramoSeatsViewFactory());
 
     public static IProcDocumentViewFactory<TramoSeatsDocument> getDefault() {
@@ -203,7 +212,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             super(TramoSeatsDocument.class);
         }
     }
-    
+
 //    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 204000)
     public static class ProcessingLogFactory extends SaDocumentViewFactory.ProcessingLogFactory<TramoSeatsDocument> {
 
@@ -421,7 +430,19 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             StringBuilder i = new StringBuilder();
             i.append(DocumentManager.COMPOSITE).append("Irregular (cmp)=,").append(ModellingDictionary.I_CMP)
                     .append(',').append(ModellingDictionary.I_CMP).append(SeriesInfo.F_SUFFIX);
-            return new String[]{y.toString(), sa.toString(), t.toString(), s.toString(), i.toString()};
+            StringBuilder te = new StringBuilder();
+            te.append(DocumentManager.COMPOSITE).append("Trend stdev(cmp)=,").append(ModellingDictionary.T_CMP).append(SeriesInfo.E_SUFFIX)
+                    .append(',').append(ModellingDictionary.T_CMP).append(SeriesInfo.EF_SUFFIX);
+            StringBuilder sae = new StringBuilder();
+            sae.append(DocumentManager.COMPOSITE).append("Seasonally adjusted stdev(cmp)=,").append(ModellingDictionary.SA_CMP).append(SeriesInfo.E_SUFFIX)
+                    .append(',').append(ModellingDictionary.SA_CMP).append(SeriesInfo.EF_SUFFIX);
+            StringBuilder se = new StringBuilder();
+            se.append(DocumentManager.COMPOSITE).append("Seasonal stdev (cmp)=,").append(ModellingDictionary.S_CMP).append(SeriesInfo.E_SUFFIX)
+                    .append(',').append(ModellingDictionary.S_CMP).append(SeriesInfo.EF_SUFFIX);
+            StringBuilder ie = new StringBuilder();
+            ie.append(DocumentManager.COMPOSITE).append("Irregular stdev(cmp)=,").append(ModellingDictionary.I_CMP).append(SeriesInfo.E_SUFFIX)
+                    .append(',').append(ModellingDictionary.I_CMP).append(SeriesInfo.EF_SUFFIX);
+            return new String[]{y.toString(), sa.toString(), t.toString(), s.toString(), i.toString(), sae.toString(), te.toString(), se.toString(), ie.toString()};
         }
 
         public ComponentsSeriesFactory() {
@@ -505,6 +526,22 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
                     return info;
                 }
             }, new ModelBasedUI());
+        }
+    }
+
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 403010)
+    public static class StationaryVarianceDecompositionFactory extends ItemFactory<StationaryVarianceDecomposition> {
+
+        public StationaryVarianceDecompositionFactory() {
+            super(DECOMPOSITION_VAR, stvarExtractor(), new StvarUI());
+        }
+    }
+
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 403005)
+    public static class SignificantSeasonalityFactory extends ItemFactory<CompositeResults> {
+
+        public SignificantSeasonalityFactory() {
+            super(DECOMPOSITION_SIGSEAS, saExtractor(), new SigSeasUI());
         }
     }
     //</editor-fold>
@@ -792,6 +829,24 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         protected IHtmlElement getHtmlElement(V host, WkInformation information) {
             return new HtmlModelBasedRevisionsAnalysis(information.frequency.intValue(), information.estimators,
                     information.descriptors);
+        }
+    }
+
+    public static class StvarUI<V extends IProcDocumentView<?>> extends HtmlItemUI<V, StationaryVarianceDecomposition> {
+
+        @Override
+        protected IHtmlElement getHtmlElement(V host, StationaryVarianceDecomposition information) {
+            return new HtmlStationaryVarianceDecomposition(information);
+        }
+    }
+
+    public static class SigSeasUI<V extends IProcDocumentView<?>> extends HtmlItemUI<V, CompositeResults> {
+
+        @Override
+        protected IHtmlElement getHtmlElement(V host, CompositeResults information) {
+            int[] p99 = SignificantSeasonalityTest.test(information, .01);
+            int[] p95 = SignificantSeasonalityTest.test(information, .05);
+            return new HtmlSignificantSeasons(p99, p95);
         }
     }
 

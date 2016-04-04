@@ -11,7 +11,7 @@ import ec.tstoolkit.utilities.IModifiable;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class MultiProcessingDocument implements IModifiable {
 

@@ -1,7 +1,7 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or â€“ as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
@@ -25,12 +25,9 @@ import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
-import ec.tss.Ts;
-import ec.tss.TsCollection;
-import ec.tss.TsFactory;
-import ec.ui.chart.JTsChart;
-import ec.ui.interfaces.ITsCollectionView;
+import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.ui.interfaces.ITsGrid;
+import ec.util.chart.ObsIndex;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -63,8 +60,6 @@ import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Top component for the outlier detection of Ts
@@ -84,7 +79,6 @@ import org.slf4j.LoggerFactory;
 })
 public class OutliersTopComponent extends TopComponent implements ExplorerManager.Provider, MultiViewElement, IActiveView {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OutliersTopComponent.class);
     public static final String STATE_CHANGED = "Processing state changed";
     private final JTsAnomalyGrid grid;
     private final AnomalyDetectionSummary summary;
@@ -92,7 +86,7 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
     private Node node;
     private final JSplitPane visualRepresentation;
     private final JSplitPane tsInformation;
-    private final JTsChart chart;
+    private final AnomalyDetectionChart chart;
     private JToolBar toolBar;
     private JButton runButton;
     private JLabel itemsLabel;
@@ -136,13 +130,36 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
                     case STATE_CHANGED:
                         onStateChanged((SwingWorker.StateValue) evt.getNewValue());
                         break;
+                    case JTsAnomalyGrid.HOVERED_OBS_PROPERTY:
+                        ObsIndex obs = (ObsIndex) evt.getNewValue();
+                        AnomalyDetectionChart.Model model = chart.getModel();
+                        if (obs.getObs() == -1 || model == null || !grid.getTsCollection().get(obs.getSeries()).equals(model.getTs())) {
+                            chart.setHoveredObs(-1);
+                        } else {
+                            chart.setHoveredObs(obs.getObs());
+                        }
+                        break;
                 }
             }
         });
 
-        chart = new JTsChart();
-        chart.setTsUpdateMode(ITsCollectionView.TsUpdateMode.None);
-        chart.setLegendVisible(false);
+        chart = new AnomalyDetectionChart();
+        chart.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case AnomalyDetectionChart.HOVERED_OBS_PROPERTY:
+                        int obs = (Integer) evt.getNewValue();
+                        AnomalyDetectionChart.Model model = chart.getModel();
+                        if (obs == -1 || model == null) {
+                            grid.setHoveredObs(ObsIndex.NULL);
+                        } else {
+                            grid.setHoveredObs(ObsIndex.valueOf(grid.getTsCollection().indexOf(model.getTs()), obs));
+                        }
+                        break;
+                }
+            }
+        });
 
         tsInformation = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, summary, chart);
         tsInformation.setResizeWeight(0.7);
@@ -169,21 +186,15 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
 
     // <editor-fold defaultstate="collapsed" desc="Event Handlers">
     private void refreshSummary() {
-        summary.set(grid.getModelOfSelection());
-        refreshChart();
-        summary.repaint();
-    }
-
-    private void refreshChart() {
-        Ts[] selection = grid.getSelection();
-        if (selection != null && selection.length == 1) {
-            TsCollection col = TsFactory.instance.createTsCollection();
-            col.add(selection[0]);
-            chart.setTsCollection(col);
+        PreprocessingModel ppm = grid.getModelOfSelection();
+        if (ppm != null) {
+            summary.set(ppm);
+            chart.setModel(new AnomalyDetectionChart.Model(grid.getSelection()[0], ppm));
         } else {
-            chart.setTsCollection(null);
+            summary.set(null);
+            chart.setModel(null);
         }
-
+        summary.repaint();
     }
 
     private void onStateChanged(SwingWorker.StateValue state) {
@@ -199,13 +210,19 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
                 runButton.setEnabled(false);
                 break;
             case DONE:
-            case PENDING:
                 runButton.setEnabled(!grid.getTsCollection().isEmpty());
                 makeBusy(false);
-                NotifyUtil.show("Done !", "Processed " + grid.getTsCollection().getCount() + " items in " + stopwatch.stop().toString(), MessageType.SUCCESS, null, null, null);
+                try {
+                    NotifyUtil.show("Done !", "Processed " + grid.getTsCollection().getCount() + " items in " + stopwatch.stop().toString(), MessageType.SUCCESS, null, null, null);
+                } catch (IllegalStateException e) {
+                }
+
                 if (!active) {
                     requestAttention(false);
                 }
+                break;
+            case PENDING:
+                runButton.setEnabled(!grid.getTsCollection().isEmpty());
         }
     }
     // </editor-fold>

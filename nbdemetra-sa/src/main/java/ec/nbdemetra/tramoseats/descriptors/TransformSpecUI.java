@@ -13,10 +13,11 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class TransformSpecUI extends BaseTramoSpecUI {
 
@@ -85,12 +86,16 @@ public class TransformSpecUI extends BaseTramoSpecUI {
     ///////////////////////////////////////////////////////////////////////////
     private static final int SPAN_ID = 0, FN_ID = 1, FCT_ID = 2, UNITS_ID = 3;
 
+    @Messages({"transformSpecUI.fnDesc.name=Function",
+        "transformSpecUI.fnDesc.desc=[lam]. None=no transformation of data; Log=takes logs of data; Auto:the program tests for the log-level specification."
+    })
     private EnhancedPropertyDescriptor fnDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("function", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(FN_DESC);
+            desc.setDisplayName(Bundle.transformSpecUI_fnDesc_name());
+            desc.setShortDescription(Bundle.transformSpecUI_fnDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -98,13 +103,17 @@ public class TransformSpecUI extends BaseTramoSpecUI {
         }
     }
 
+    @Messages({"transformSpecUI.fctDesc.name=Fct",
+        "transformSpecUI.fctDesc.desc=[fct] Controls the bias in the log/level pretest: Fct > 1 favors levels, Fct < 1 favors logs."
+    })
     private EnhancedPropertyDescriptor fctDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("fct", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FCT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(ro_ || getFunction() != DefaultTransformationType.Auto);
-            desc.setShortDescription(FCT_DESC);
+            desc.setDisplayName(Bundle.transformSpecUI_fctDesc_name());
+            desc.setShortDescription(Bundle.transformSpecUI_fctDesc_desc());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -124,7 +133,4 @@ public class TransformSpecUI extends BaseTramoSpecUI {
 
 
     }
-    ////////////////////////////////////////////////////////////////////////////
-    private static final String FN_DESC = "[lam]. None=no transformation of data; Log=takes logs of data; Auto:the program tests for the log-level specification.",
-            FCT_DESC = "[fct] Controls the bias in the log/level pretest: Fct > 1 favors levels, Fct < 1 favors logs.";
 }

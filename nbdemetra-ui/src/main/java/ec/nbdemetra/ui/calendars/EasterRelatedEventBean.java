@@ -9,6 +9,7 @@ import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.ValidityPeriod;
 import ec.tstoolkit.timeseries.calendars.EasterRelatedDay;
 import ec.tstoolkit.timeseries.calendars.ISpecialDay;
+import ec.tstoolkit.timeseries.calendars.ISpecialDay.Context;
 
 /**
  *
@@ -33,7 +34,7 @@ public class EasterRelatedEventBean extends AbstractEventBean {
         super(start, end, weight);
         this.offset = offset;
     }
-
+    
     public int getOffset() {
         return offset;
     }
@@ -43,10 +44,10 @@ public class EasterRelatedEventBean extends AbstractEventBean {
         this.offset = offset;
         firePropertyChange(OFFSET_PROPERTY, old, this.offset);
     }
-
+    
     @Override
-    protected ISpecialDay toSpecialDay() {
-        return new EasterRelatedDay(offset, weight);
+    protected ISpecialDay toSpecialDay(Context context) {
+        return new EasterRelatedDay(offset, weight, context.isJulianEaster());
     }
 
     @Override

@@ -14,6 +14,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -61,7 +62,7 @@ public class X13SpecUI implements IObjectDescriptor<X13Specification> {
     }
 
     public X11SpecUI getX11() {
-        return new X11SpecUI(core.getX11Specification(), (domain_ != null ? domain_.getFrequency() : TsFrequency.Undefined), 
+        return new X11SpecUI(core.getX11Specification(), (domain_ != null ? domain_.getFrequency() : TsFrequency.Undefined),
                 core.getRegArimaSpecification().getBasic().isPreprocessing(), ro_);
     }
 
@@ -88,11 +89,11 @@ public class X13SpecUI implements IObjectDescriptor<X13Specification> {
         if (desc != null) {
             descs.add(desc);
         }
-        desc = arimaDesc();
+        desc = outlierDesc();
         if (desc != null) {
             descs.add(desc);
         }
-        desc = outlierDesc();
+        desc = arimaDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -116,6 +117,10 @@ public class X13SpecUI implements IObjectDescriptor<X13Specification> {
             X11_ID = 8,
             BENCH_ID = 9;
 
+    @Messages({
+        "x13SpecUI.regressionDesc.name=REGRESSION",
+        "x13SpecUI.regressionDesc.desc="
+    })
     private EnhancedPropertyDescriptor regressionDesc() {
         try {
             if (!core.getRegArimaSpecification().getBasic().isPreprocessing()) {
@@ -123,15 +128,19 @@ public class X13SpecUI implements IObjectDescriptor<X13Specification> {
             }
             PropertyDescriptor desc = new PropertyDescriptor("regression", this.getClass(), "getRegression", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, REGRESSION_ID);
-            desc.setDisplayName("REGRESSION");
+            desc.setDisplayName(Bundle.x13SpecUI_regressionDesc_name());
+            desc.setShortDescription(Bundle.x13SpecUI_regressionDesc_desc());
             edesc.setReadOnly(true);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @Messages({
+        "x13SpecUI.transformDesc.name=TRANSFORMATION",
+        "x13SpecUI.transformDesc.desc="
+    })
     private EnhancedPropertyDescriptor transformDesc() {
         try {
             if (!core.getRegArimaSpecification().getBasic().isPreprocessing()) {
@@ -139,28 +148,36 @@ public class X13SpecUI implements IObjectDescriptor<X13Specification> {
             }
             PropertyDescriptor desc = new PropertyDescriptor("transform", this.getClass(), "getTransform", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TRANSFORM_ID);
-            desc.setDisplayName("TRANSFORMATION");
+            desc.setDisplayName(Bundle.x13SpecUI_transformDesc_name());
+            desc.setShortDescription(Bundle.x13SpecUI_transformDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @Messages({
+        "x13SpecUI.basicDesc.name=SERIES",
+        "x13SpecUI.basicDesc.desc="
+    })
     private EnhancedPropertyDescriptor basicDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("basic", this.getClass(), "getBasic", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BASIC_ID);
-            desc.setDisplayName("SERIES");
+            desc.setDisplayName(Bundle.x13SpecUI_basicDesc_name());
+            desc.setShortDescription(Bundle.x13SpecUI_basicDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @Messages({
+        "x13SpecUI.arimaDesc.name=ARIMA",
+        "x13SpecUI.arimaDesc.desc="
+    })
     private EnhancedPropertyDescriptor arimaDesc() {
         try {
             if (!core.getRegArimaSpecification().getBasic().isPreprocessing()) {
@@ -168,14 +185,18 @@ public class X13SpecUI implements IObjectDescriptor<X13Specification> {
             }
             PropertyDescriptor desc = new PropertyDescriptor("arima", this.getClass(), "getArima", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ARIMA_ID);
-            desc.setDisplayName("ARIMA");
+            desc.setDisplayName(Bundle.x13SpecUI_arimaDesc_name());
+            desc.setShortDescription(Bundle.x13SpecUI_arimaDesc_desc());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @Messages({
+        "x13SpecUI.outlierDesc.name=OUTLIERS",
+        "x13SpecUI.outlierDesc.desc="
+    })
     private EnhancedPropertyDescriptor outlierDesc() {
         try {
             if (!core.getRegArimaSpecification().getBasic().isPreprocessing()) {
@@ -183,14 +204,18 @@ public class X13SpecUI implements IObjectDescriptor<X13Specification> {
             }
             PropertyDescriptor desc = new PropertyDescriptor("basic", this.getClass(), "getOutliers", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OUTLIER_ID);
-            desc.setDisplayName("OUTLIERS");
+            desc.setDisplayName(Bundle.x13SpecUI_outlierDesc_name());
+            desc.setShortDescription(Bundle.x13SpecUI_outlierDesc_desc());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @Messages({
+        "x13SpecUI.estimateDesc.name=ESTIMATE",
+        "x13SpecUI.estimateDesc.desc="
+    })
     private EnhancedPropertyDescriptor estimateDesc() {
         try {
             if (!core.getRegArimaSpecification().getBasic().isPreprocessing()) {
@@ -198,40 +223,49 @@ public class X13SpecUI implements IObjectDescriptor<X13Specification> {
             }
             PropertyDescriptor desc = new PropertyDescriptor("basic", this.getClass(), "getEstimate", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ESTIMATE_ID);
-            desc.setDisplayName("ESTIMATE");
+            desc.setDisplayName(Bundle.x13SpecUI_estimateDesc_name());
+            desc.setShortDescription(Bundle.x13SpecUI_estimateDesc_desc());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @Messages({
+        "x13SpecUI.x11Desc.name=X11",
+        "x13SpecUI.x11Desc.desc="
+    })
     private EnhancedPropertyDescriptor x11Desc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("basic", this.getClass(), "getX11", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, X11_ID);
-            desc.setDisplayName("X11");
+            desc.setDisplayName(Bundle.x13SpecUI_x11Desc_name());
+            desc.setShortDescription(Bundle.x13SpecUI_x11Desc_desc());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @Messages({
+        "x13SpecUI.benchDesc.name=BENCHMARKING",
+        "x13SpecUI.benchDesc.desc="
+    })
     private EnhancedPropertyDescriptor benchDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("benchmarking", this.getClass(), "getBenchmarking", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BENCH_ID);
-            desc.setDisplayName("BENCHMARKING");
+            desc.setDisplayName(Bundle.x13SpecUI_benchDesc_name());
+            desc.setShortDescription(Bundle.x13SpecUI_benchDesc_desc());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @Messages("x13SpecUI.getDisplayName=X13")
     @Override
     public String getDisplayName() {
-        return "X13";
+        return Bundle.x13SpecUI_getDisplayName();
     }
 }

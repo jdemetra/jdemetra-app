@@ -10,7 +10,7 @@ import ec.tstoolkit.modelling.arima.PreprocessingModel;
 
 /**
  *
- * @author pcuser
+ * @author Jean Palate
  */
 public class PreprocessingUI<V extends IProcDocumentView<?>> extends HtmlItemUI<V, PreprocessingModel> {
 

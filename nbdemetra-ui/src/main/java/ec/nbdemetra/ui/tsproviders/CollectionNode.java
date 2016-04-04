@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.tsproviders;
 
 import com.google.common.base.Optional;
+import static ec.nbdemetra.ui.tsproviders.CollectionNode.ACTION_PATH;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferSupport;
@@ -25,12 +26,20 @@ import ec.tss.tsproviders.TsProviders;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 import javax.annotation.Nonnull;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 
 /**
  * A node that represents a DataSet of type collection.
  *
  * @author Philippe Charles
  */
+@ActionReferences({
+    @ActionReference(path = ACTION_PATH, position = 1340, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ReloadAction")),
+    @ActionReference(path = ACTION_PATH, position = 1420, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "org.openide.actions.CopyAction")),
+    @ActionReference(path = ACTION_PATH, position = 1425, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction"))
+})
 public final class CollectionNode extends DataSetNode {
 
     public static final String ACTION_PATH = "CollectionNode";

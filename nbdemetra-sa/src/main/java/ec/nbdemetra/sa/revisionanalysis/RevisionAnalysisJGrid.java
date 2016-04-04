@@ -16,12 +16,10 @@
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
-import ec.nbdemetra.ui.awt.PopupListener;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.IProcResults;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.GridModel;
-import ec.util.grid.swing.GridRowHeaderRenderer;
 import ec.util.grid.swing.JGrid;
 import ec.util.grid.swing.ext.TableGridCommand;
 import java.awt.BorderLayout;
@@ -34,7 +32,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
 /**
  *
@@ -59,24 +57,25 @@ public class RevisionAnalysisJGrid extends JComponent {
 
     private JGrid createGrid() {
         final JGrid result = new JGrid();
-        result.setRowRenderer(new GridRowHeaderRenderer() {
+        result.setDefaultRenderer(Object.class, new TableCellRenderer() {
+
+            final TableCellRenderer delegate = result.getDefaultRenderer(Object.class);
+
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                result.setHorizontalAlignment(JLabel.CENTER);
+                Component result = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (result instanceof JLabel) {
+                    ((JLabel) result).setHorizontalAlignment(JLabel.RIGHT);
+                }
                 return result;
             }
         });
-
-        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
-        cellRenderer.setHorizontalAlignment(JLabel.RIGHT);
-        result.setDefaultRenderer(Object.class, cellRenderer);
 
         result.setModel(createTableModel(Arrays.asList(MAIN_TITLE), Arrays.asList(MAIN)));
 
         JMenu menu = new JMenu();
         menu.add(TableGridCommand.copyAll(true, true).toAction(result)).setText("Copy All");
-        result.addMouseListener(new PopupListener.PopupAdapter(menu.getPopupMenu()));
+        result.setComponentPopupMenu(menu.getPopupMenu());
 
         return result;
     }

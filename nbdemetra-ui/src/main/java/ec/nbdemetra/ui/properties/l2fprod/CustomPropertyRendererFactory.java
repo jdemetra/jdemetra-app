@@ -3,6 +3,7 @@ package ec.nbdemetra.ui.properties.l2fprod;
 import com.l2fprod.common.propertysheet.PropertyRendererFactory;
 import com.l2fprod.common.propertysheet.PropertyRendererRegistry;
 import ec.satoolkit.x11.SeasonalFilterOption;
+import ec.satoolkit.x11.SigmavecOption;
 import ec.tstoolkit.Parameter;
 import ec.tstoolkit.modelling.TsVariableDescriptor;
 import ec.tstoolkit.timeseries.regression.InterventionVariable;
@@ -17,35 +18,36 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public enum CustomPropertyRendererFactory {
 
-  INSTANCE;
-  private PropertyRendererRegistry registry_;
+    INSTANCE;
+    private PropertyRendererRegistry registry_;
 
-  private CustomPropertyRendererFactory() {
-    registry_ = new PropertyRendererRegistry();
-    registry_.registerRenderer(Parameter[].class, new ArrayRenderer());
-    registry_.registerRenderer(Ramp[].class, new ArrayRenderer());
-    registry_.registerRenderer(TsVariableDescriptor[].class, new ArrayRenderer());
-    registry_.registerRenderer(InterventionVariable[].class, new ArrayRenderer());
-    registry_.registerRenderer(Sequence[].class, new ArrayRenderer());
-    registry_.registerRenderer(OutlierDefinition[].class, new ArrayRenderer());
-    registry_.registerRenderer(SeasonalFilterOption[].class, new ArrayRenderer());
-  }
+    private CustomPropertyRendererFactory() {
+        registry_ = new PropertyRendererRegistry();
+        registry_.registerRenderer(Parameter[].class, new ArrayRenderer());
+        registry_.registerRenderer(Ramp[].class, new ArrayRenderer());
+        registry_.registerRenderer(TsVariableDescriptor[].class, new ArrayRenderer());
+        registry_.registerRenderer(InterventionVariable[].class, new ArrayRenderer());
+        registry_.registerRenderer(Sequence[].class, new ArrayRenderer());
+        registry_.registerRenderer(OutlierDefinition[].class, new ArrayRenderer());
+        registry_.registerRenderer(SeasonalFilterOption[].class, new ArrayRenderer());
+        registry_.registerRenderer(SigmavecOption[].class, new ArrayRenderer());
+    }
 
-  public PropertyRendererFactory getRegistry() {
-    return registry_;
-  }
+    public PropertyRendererFactory getRegistry() {
+        return registry_;
+    }
 }
 
 class ArrayRenderer extends DefaultTableCellRenderer {
-  public ArrayRenderer() {
-    super();
-  }
 
-  @Override
-  protected void setValue(Object value) {
-    //super.setValue(value);
-    setText("");
-  }
+    public ArrayRenderer() {
+        super();
+    }
 
-  
+    @Override
+    protected void setValue(Object value) {
+        //super.setValue(value);
+        setText("");
+    }
+
 }

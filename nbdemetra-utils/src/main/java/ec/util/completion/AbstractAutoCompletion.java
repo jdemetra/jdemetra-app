@@ -1,8 +1,26 @@
+/*
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
+ */
 package ec.util.completion;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public abstract class AbstractAutoCompletion<C> {
 
@@ -30,7 +48,7 @@ public abstract class AbstractAutoCompletion<C> {
     // OTHER
     protected final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-    // GETTERS/SETTERS >
+    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
     public boolean isAutoFocus() {
         return autoFocus;
     }
@@ -90,21 +108,23 @@ public abstract class AbstractAutoCompletion<C> {
         this.separator = separator != null ? separator : DEFAULT_SEPARATOR;
         firePropertyChange(SEPARATOR_PROPERTY, old, this.separator);
     }
-    // < GETTERS/SETTERS
+    //</editor-fold>
 
     abstract public void close();
 
-    abstract public void search(String term);
+    abstract public void search(@Nonnull String term);
 
+    @Nonnull
     abstract protected InputView<? extends C> getInputView();
 
+    @Nonnull
     abstract protected SearchView<? extends C> getSearchView();
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
+    public void addPropertyChangeListener(@Nonnull PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
 
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
+    public void removePropertyChangeListener(@Nonnull PropertyChangeListener listener) {
         support.removePropertyChangeListener(listener);
     }
 
@@ -140,15 +160,17 @@ public abstract class AbstractAutoCompletion<C> {
     }
 
     public interface InputView<C> {
-        
+
         boolean isEditing();
 
         void requestEditing();
 
+        @Nonnull
         String getTerm();
 
-        void setTerm(String term);
+        void setTerm(@Nonnull String term);
 
+        @Nonnull
         C getComponent();
     }
 
@@ -156,16 +178,18 @@ public abstract class AbstractAutoCompletion<C> {
 
         void onClose();
 
-        void onSearchStarted(String term);
+        void onSearchStarted(@Nonnull String term);
 
-        void onSearchFailed(String term, Exception ex);
+        void onSearchFailed(@Nonnull String term, @Nonnull Exception ex);
 
-        void onSearchDone(String term, List<?> values);
+        void onSearchDone(@Nonnull String term, @Nonnull List<?> values);
 
         void moveSelection(int steps, boolean page);
 
+        @Nullable
         Object getSelectedValue();
 
+        @Nonnull
         C getComponent();
     }
 }

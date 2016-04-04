@@ -25,6 +25,7 @@ import javax.swing.table.TableCellRenderer;
  *
  * @author Philippe Charles
  */
+@Deprecated
 public final class SheetColumnRenderer implements TableCellRenderer {
 
     private final TableCellRenderer delegate = new JTable().getTableHeader().getDefaultRenderer();
