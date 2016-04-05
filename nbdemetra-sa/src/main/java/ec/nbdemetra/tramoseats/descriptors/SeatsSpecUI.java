@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.tramoseats.descriptors;
 
-import ec.nbdemetra.ui.properties.l2fprod.CustomPropertyEditorRegistry;
 import ec.satoolkit.seats.SeatsSpecification;
 import ec.satoolkit.seats.SeatsSpecification.EstimationMethod;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
@@ -19,11 +18,6 @@ import org.openide.util.NbBundle.Messages;
  * @author Kristof Bayens
  */
 public class SeatsSpecUI extends BaseSeatsSpecUI {
-    
-    static{
-        CustomPropertyEditorRegistry.INSTANCE.registerEnumEditor(SeatsSpecification.ApproximationMode.class);
-        CustomPropertyEditorRegistry.INSTANCE.registerEnumEditor(SeatsSpecification.EstimationMethod.class);
-    }
 
     public SeatsSpecUI(SeatsSpecification spec, boolean ro) {
         super(spec, ro);
@@ -49,6 +43,10 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
             descs.add(desc);
         }
         desc = smodDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = smod1Desc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -79,6 +77,14 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
 
     public void setSMod(double value) {
         core.setSeasBoundary(value);
+    }
+    
+    public double getSMod1() {
+        return core.getSeasBoundary1();
+    }
+
+    public void setSMod1(double value) {
+        core.setSeasBoundary1(value);
     }
     
     public double getEpsPhi() {
@@ -112,11 +118,11 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
     public void setMethod(EstimationMethod value) {
         core.setMethod(value);
     }
-    private static final int RMOD_ID = 0, EPSPHI_ID = 1, SMOD_ID=2, NOADMISS_ID = 3, XL_ID = 4, WK_ID = 5;
+    private static final int RMOD_ID = 0, EPSPHI_ID = 1, SMOD_ID=2, SMOD1_ID=3, NOADMISS_ID = 4, XL_ID = 5, WK_ID = 6;
 
     @Messages({
         "seatsSpecUI.rmodDesc.name=Trend boundary",
-        "seatsSpecUI.rmodDesc.desc=[rmod] Boundary from which an AR root is integrated in the trend component."
+        "seatsSpecUI.rmodDesc.desc=[rmod] Boundary from which a positive AR root is integrated in the trend component."
     })
     private EnhancedPropertyDescriptor rmodDesc() {
         try {
@@ -134,7 +140,7 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
     
     @Messages({
         "seatsSpecUI.smodDesc.name=Seasonal boundary",
-        "seatsSpecUI.smodDesc.desc=[smod] Boundary from which an AR root is integrated in the seasonal component."
+        "seatsSpecUI.smodDesc.desc=[smod] Boundary from which a negative AR root is integrated in the seasonal component."
     })
     private EnhancedPropertyDescriptor smodDesc() {
         try {
@@ -143,6 +149,24 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(Bundle.seatsSpecUI_smodDesc_name());
             desc.setShortDescription(Bundle.seatsSpecUI_smodDesc_desc());
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "seatsSpecUI.smod1Desc.name=Seas. boundary (unique)",
+        "seatsSpecUI.smod1Desc.desc=[smod] Boundary from which a negative AR root is integrated in the seasonal component when the root is the unique seasonal root."
+    })
+    private EnhancedPropertyDescriptor smod1Desc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("SMod1", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SMOD1_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.seatsSpecUI_smod1Desc_name());
+            desc.setShortDescription(Bundle.seatsSpecUI_smod1Desc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -170,7 +194,7 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
 
     @Messages({
         "seatsSpecUI.epsphiDesc.name=Seasonal tolerance",
-        "seatsSpecUI.epsphiDesc.desc=[epsphi] Tolerance(measured in degrees) to allocate ar roots into the seasonal component."
+        "seatsSpecUI.epsphiDesc.desc=[epsphi] Tolerance(measured in degrees) to allocate complex ar roots into the seasonal component."
     })
     private EnhancedPropertyDescriptor epsphiDesc() {
         try {

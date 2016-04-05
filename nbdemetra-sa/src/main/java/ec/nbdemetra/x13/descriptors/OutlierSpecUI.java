@@ -77,10 +77,11 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
-        desc = lsrunDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
+        // Not implemented !
+//        desc = lsrunDesc();
+//        if (desc != null) {
+//            descs.add(desc);
+//        }
         return descs;
     }
 

@@ -61,7 +61,12 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         if (value == null) {
             definitions_ = new OutlierDefinition[0];
         } else if (value instanceof OutlierDefinition[]) {
-            definitions_ = (OutlierDefinition[]) value;
+            OutlierDefinition[] outs = ((OutlierDefinition[]) value);
+            // makes copies
+            definitions_=new OutlierDefinition[outs.length];
+            for (int i=0; i<definitions_.length; ++i){
+                definitions_[i]=outs[i].clone();
+            }
         }
     }
     

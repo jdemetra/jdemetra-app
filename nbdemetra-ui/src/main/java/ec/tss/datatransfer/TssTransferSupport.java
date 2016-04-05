@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import ec.nbdemetra.core.GlobalService;
 import ec.nbdemetra.ui.awt.ListenableBean;
 import ec.tss.*;
@@ -88,7 +89,7 @@ public class TssTransferSupport extends ListenableBean {
             public void flavorsChanged(FlavorEvent e) {
                 try {
                     boolean old = validClipboard;
-                    validClipboard = canImport(((Clipboard) e.getSource()).getContents(this).getTransferDataFlavors());
+                    validClipboard = canImport(((Clipboard) e.getSource()).getAvailableDataFlavors());
                     firePropertyChange(VALID_CLIPBOARD_PROPERTY, old, validClipboard);
                 } catch (Exception ex) {
                     LOGGER.debug("While getting content from clipboard", ex);
@@ -428,7 +429,7 @@ public class TssTransferSupport extends ListenableBean {
     }
 
     private static Predicate<TssTransferHandler> onDataFlavors(DataFlavor[] dataFlavors) {
-        final List<DataFlavor> list = Arrays.asList(dataFlavors);
+        final Set<DataFlavor> list = Sets.newHashSet(dataFlavors);
         return new Predicate<TssTransferHandler>() {
             @Override
             public boolean apply(TssTransferHandler input) {

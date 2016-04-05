@@ -140,17 +140,34 @@ public final class PeriodogramTopComponent extends TopComponent implements ITsVi
 
     class InternalNode extends AbstractNode {
 
+        @Messages({
+            "periodogramTopComponent.internalNode.displayName=Periodogram"
+        })
         InternalNode() {
             super(Children.LEAF);
-            setDisplayName("Periodogram");
+            setDisplayName(Bundle.periodogramTopComponent_internalNode_displayName());
         }
 
         @Override
+        @Messages({
+            "periodogramTopComponent.transform.name=Transform",
+            "periodogramTopComponent.transform.displayName=Transformation",
+            "periodogramTopComponent.log.name=Log",
+            "periodogramTopComponent.log.desc=When marked, logarithmic transformation is used.",
+            "periodogramTopComponent.differencing.name=Differencing",
+            "periodogramTopComponent.differencing.desc=An order of a regular differencing of the series.",
+            "periodogramTopComponent.differencingLag.name=Differencing lag",
+            "periodogramTopComponent.differencingLag.desc=A number of lags used to take differences. For example, if Differencing lag = 3 then the differencing filter does not apply to the first lag (default) but to the third lag.",
+            "periodogramTopComponent.lastYears.name=Last years",
+            "periodogramTopComponent.lastYears.desc=A number of years of observations at the end of the time series used to produce the autoregressive spectrum (0=the whole time series is considered.",
+            "periodogramTopComponent.fullYears.name=Full years",
+            "periodogramTopComponent.fullYears.desc=Use full years (end of series)",
+        })
         protected Sheet createSheet() {
             Sheet sheet = super.createSheet();
             Set transform = Sheet.createPropertiesSet();
-            transform.setName("Transform");
-            transform.setDisplayName("Transformation");
+            transform.setName(Bundle.periodogramTopComponent_transform_name());
+            transform.setDisplayName(Bundle.periodogramTopComponent_transform_displayName());
             Property<Boolean> log = new Property(Boolean.class) {
                 @Override
                 public boolean canRead() {
@@ -173,7 +190,8 @@ public final class PeriodogramTopComponent extends TopComponent implements ITsVi
                 }
             };
 
-            log.setName("Log");
+            log.setName(Bundle.periodogramTopComponent_log_name());
+            log.setShortDescription(Bundle.periodogramTopComponent_log_desc());
             transform.put(log);
             Property<Integer> diff = new Property(Integer.class) {
                 @Override
@@ -197,7 +215,8 @@ public final class PeriodogramTopComponent extends TopComponent implements ITsVi
                 }
             };
 
-            diff.setName("Differencing");
+            diff.setName(Bundle.periodogramTopComponent_differencing_name());
+            diff.setShortDescription(Bundle.periodogramTopComponent_differencing_desc());
             transform.put(diff);
             Node.Property<Integer> diffLag = new Node.Property(Integer.class) {
                 @Override
@@ -220,7 +239,8 @@ public final class PeriodogramTopComponent extends TopComponent implements ITsVi
                     view.setDifferencingLag((Integer) t);
                 }
             };
-            diffLag.setName("Differencing lag");
+            diffLag.setName(Bundle.periodogramTopComponent_differencingLag_name());
+            diffLag.setShortDescription(Bundle.periodogramTopComponent_differencingLag_desc());
             transform.put(diffLag);
 
             Node.Property<Integer> length = new Node.Property(Integer.class) {
@@ -244,8 +264,8 @@ public final class PeriodogramTopComponent extends TopComponent implements ITsVi
                     view.setLastYears((Integer) t);
                 }
             };
-            length.setName("Last years");
-            length.setShortDescription("Number of years at the end of the series taken into account (0 = whole series)");
+            length.setName(Bundle.periodogramTopComponent_lastYears_name());
+            length.setShortDescription(Bundle.periodogramTopComponent_lastYears_desc());
             transform.put(length);
 
             Node.Property<Integer> full = new Node.Property(Boolean.class) {
@@ -269,8 +289,8 @@ public final class PeriodogramTopComponent extends TopComponent implements ITsVi
                     view.setFullYears((Boolean) t);
                 }
             };
-            full.setName("Full years");
-            full.setShortDescription("Use full years (end of series)");
+            full.setName(Bundle.periodogramTopComponent_fullYears_name());
+            full.setShortDescription(Bundle.periodogramTopComponent_fullYears_desc());
             transform.put(full);
             sheet.put(transform);
             return sheet;

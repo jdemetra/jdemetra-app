@@ -310,9 +310,6 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                     case PROCESSING_PROPERTY:
                         onProcessingChange();
                         break;
-//                    case STATE_PROPERTY:
-//                        onStateChange();
-//                        break;
                     case SELECTION_PROPERTY:
                         onSelectionChange();
                         break;
@@ -687,14 +684,13 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             return;
         }
         SaItem item = selection[0];
-        SaItem nitem = new SaItem(doc.getSpecification().clone(), EstimationPolicyType.Interactive, null, doc.getTs());
+        SaItem nitem = new SaItem(doc.getSpecification().clone(), EstimationPolicyType.Interactive, null, doc.getInput());
         nitem.unsafeFill(doc.getResults());
         selection[0] = nitem;
         getCurrentProcessing().replace(item, nitem);
         int idx = getCurrentProcessing().indexOf(nitem);
         model.fireTableRowsUpdated(idx, idx);
         refreshInfo();
-
     }
 
     public void clearPriority(List<SaItem> items) {
@@ -807,6 +803,16 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 for (int i : selectedRows) {
                     selected.add(getCurrentProcessing().get(master.convertRowIndexToModel(i)));
                 }
+
+                if (detail.isDirty()) {
+                    NotifyDescriptor nd = new NotifyDescriptor.Confirmation("There are unsaved changes in the previously selected item's spec."
+                            + "\nDo you want to save them ?", "Unsaved changes", NotifyDescriptor.YES_NO_OPTION);
+                    if (DialogDisplayer.getDefault().notify(nd) == NotifyDescriptor.YES_OPTION) {
+                        save((SaDocument) detail.getDocument());
+                    }
+                    detail.setDirty(false);
+                }
+
                 setSelection(Iterables.toArray(selected, SaItem.class));
             }
         }

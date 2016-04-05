@@ -98,6 +98,7 @@ public class DemetraWsUI extends TopComponent implements ExplorerManager.Provide
 
     @Override
     public void componentClosed() {
+        result.removeLookupListener(this);
         mgr.setRootContext(new AbstractNode(Children.LEAF));
     }
 

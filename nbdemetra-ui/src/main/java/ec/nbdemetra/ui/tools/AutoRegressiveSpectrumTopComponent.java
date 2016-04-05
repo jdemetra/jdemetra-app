@@ -142,18 +142,38 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
     }
 
     class InternalNode extends AbstractNode {
-
+        @Messages({
+            "autoregressiveSpectrumTopComponent.internalNode.displayName=Auto-regressive spectrum"
+        })
         InternalNode() {
             super(Children.LEAF);
-            setDisplayName("Auto-regressive spectrum");
+            setDisplayName(Bundle.autoregressiveSpectrumTopComponent_internalNode_displayName());
         }
 
         @Override
+        @Messages({
+            "autoregressiveSpectrumTopComponent.transform.name=Transform",
+            "autoregressiveSpectrumTopComponent.transform.displayName=Transformation",
+            "autoregressiveSpectrumTopComponent.log.name=Log",
+            "autoregressiveSpectrumTopComponent.log.desc=When marked, logarithmic transformation is used.",
+            "autoregressiveSpectrumTopComponent.differencing.name=Differencing",
+            "autoregressiveSpectrumTopComponent.differencing.desc=An order of a regular differencing of the series.",
+            "autoregressiveSpectrumTopComponent.differencingLag.name=Differencing lag",
+            "autoregressiveSpectrumTopComponent.differencingLag.desc=A number of lags used to take differences. For example, if Differencing lag = 3 then the differencing filter does not apply to the first lag (default) but to the third lag.",
+            "autoregressiveSpectrumTopComponent.lastYears.name=Last years",
+            "autoregressiveSpectrumTopComponent.lastYears.desc=A number of years of observations at the end of the time series used to produce the autoregressive spectrum (0=the whole time series is considered.",
+            "autoregressiveSpectrumTopComponent.autoRegressiveSpectrum.name=Auto-regressive Spectrum",
+            "autoregressiveSpectrumTopComponent.autoRegressiveSpectrum.displayName=Auto-regressive Spectrum",
+            "autoregressiveSpectrumTopComponent.autoRegressivePolynomialOrder.name=Auto–regressive polynomial order",
+            "autoregressiveSpectrumTopComponent.autoRegressivePolynomialOrder.desc=The number of lags in the AR model that is used to estimate the spectral density.",
+            "autoregressiveSpectrumTopComponent.resolution.name=Resolution",
+            "autoregressiveSpectrumTopComponent.resolution.desc=Parameter to the precision of the spectral density estimate grid."
+        })
         protected Sheet createSheet() {
             Sheet sheet = super.createSheet();
             Sheet.Set transform = Sheet.createPropertiesSet();
-            transform.setName("Transform");
-            transform.setDisplayName("Transformation");
+            transform.setName(Bundle.autoregressiveSpectrumTopComponent_transform_name());
+            transform.setDisplayName(Bundle.autoregressiveSpectrumTopComponent_transform_displayName());
             Node.Property<Boolean> log = new Node.Property(Boolean.class) {
 
                 @Override
@@ -177,7 +197,8 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
                 }
             };
 
-            log.setName("Log");
+            log.setName(Bundle.autoregressiveSpectrumTopComponent_log_name());
+            log.setShortDescription(Bundle.autoregressiveSpectrumTopComponent_log_desc());
             transform.put(log);
 
             Node.Property<Integer> diff = new Node.Property(Integer.class) {
@@ -202,7 +223,8 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
                     view.setDifferencingOrder((Integer) t);
                 }
             };
-            diff.setName("Differencing");
+            diff.setName(Bundle.autoregressiveSpectrumTopComponent_differencing_name());
+            diff.setShortDescription(Bundle.autoregressiveSpectrumTopComponent_differencing_desc());
             transform.put(diff);
 
             Node.Property<Integer> diffLag = new Node.Property(Integer.class) {
@@ -227,7 +249,8 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
                     view.setDifferencingLag((Integer) t);
                 }
             };
-            diffLag.setName("Differencing lag");
+            diffLag.setName(Bundle.autoregressiveSpectrumTopComponent_differencingLag_name());
+            diffLag.setShortDescription(Bundle.autoregressiveSpectrumTopComponent_differencingLag_desc());
             transform.put(diffLag);
 
              Node.Property<Integer> length = new Node.Property(Integer.class) {
@@ -252,13 +275,13 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
                     view.setLastYears((Integer) t);
                 }
             };
-            length.setName("Last years");
-            length.setShortDescription("Number of years at the end of the series taken into account (0 = whole series)");
+            length.setName(Bundle.autoregressiveSpectrumTopComponent_lastYears_name());
+            length.setShortDescription(Bundle.autoregressiveSpectrumTopComponent_lastYears_desc());
             transform.put(length);
 
             Sheet.Set spectrum = Sheet.createPropertiesSet();
-            spectrum.setName("Auto-regressive Spectrum");
-            spectrum.setDisplayName("Auto-regressive Spectrum");
+            spectrum.setName(Bundle.autoregressiveSpectrumTopComponent_autoRegressiveSpectrum_name());
+            spectrum.setDisplayName(Bundle.autoregressiveSpectrumTopComponent_autoRegressiveSpectrum_displayName());
             
             Property<Integer> arcount = new Property(Integer.class) {
 
@@ -282,7 +305,8 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
                     view.setArCount((Integer) t);
                 }
             };
-            arcount.setName("Auto-regressive polynomial order");
+            arcount.setName(Bundle.autoregressiveSpectrumTopComponent_autoRegressivePolynomialOrder_name());
+            arcount.setShortDescription(Bundle.autoregressiveSpectrumTopComponent_autoRegressivePolynomialOrder_desc());
             spectrum.put(arcount);
             
             Property<Integer> resolution = new Property(Integer.class) {
@@ -307,7 +331,8 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
                     view.setResolution((Integer) t);
                 }
             };
-            resolution.setName("Resolution");
+            resolution.setName(Bundle.autoregressiveSpectrumTopComponent_resolution_name());
+            resolution.setShortDescription(Bundle.autoregressiveSpectrumTopComponent_resolution_desc());
             spectrum.put(resolution);
             
             sheet.put(transform);

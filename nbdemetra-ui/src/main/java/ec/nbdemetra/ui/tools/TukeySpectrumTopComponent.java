@@ -146,17 +146,40 @@ public final class TukeySpectrumTopComponent extends TopComponent implements ITs
 
     class InternalNode extends AbstractNode {
 
+        @Messages({
+            "turkeySpectrumTopComponent.internalNode.displayName=Tukey Spectrum"
+        })
         InternalNode() {
             super(Children.LEAF);
-            setDisplayName("Tukey Spectrum");
+            setDisplayName(Bundle.turkeySpectrumTopComponent_internalNode_displayName());
         }
 
         @Override
+        @Messages({
+            "turkeySpectrumTopComponent.transform.name=Transform",
+            "turkeySpectrumTopComponent.transform.displayName=Transformation",
+            "turkeySpectrumTopComponent.log.name=Log",
+            "turkeySpectrumTopComponent.log.desc=when marked, logarithmic transformation is used.",
+            "turkeySpectrumTopComponent.differencing.name=Differencing",
+            "turkeySpectrumTopComponent.differencing.desc=An order of a regular differencing of the series.",
+            "turkeySpectrumTopComponent.differencingLag.name=Differencing lag",
+            "turkeySpectrumTopComponent.differencingLag.desc=A number of lags used to take differences. For example, if Differencing lag = 3 then the differencing filter does not apply to the first lag (default) but to the third lag.",
+            "turkeySpectrumTopComponent.lastYears.name=Last years",
+            "turkeySpectrumTopComponent.lastYears.desc=A number of years of observations at the end of the time series used to produce the autoregressive spectrum (0=the whole time series is considered.",
+            "turkeySpectrumTopComponent.turkeySpectrum.name=Tukey Spectrum",
+            "turkeySpectrumTopComponent.turkeySpectrum.displayName=Tukey Spectrum",
+            "turkeySpectrumTopComponent.taperPart.name=Taper part",
+            "turkeySpectrumTopComponent.taperPart.desc=A parameter larger than 0 and smaller or equal to one that shapes the curvature of the smoothing function that is applied to the auto-covariance function.",
+            "turkeySpectrumTopComponent.windowLenght.name=Window length",
+            "turkeySpectrumTopComponent.windowLenght.desc=The size of the window that is used to smooth the auto-covariance function. The value zero considers the whole series.",
+            "turkeySpectrumTopComponent.windowType.name=Window type",
+            "turkeySpectrumTopComponent.windowType.desc=It refers to the weighting scheme that it is used to smooth the auto-covariance function. The available windows types (Square, Welch, Tukey, Barlett, Hamming, Parzen) are suitable to estimate the spectral density."
+        })
         protected Sheet createSheet() {
             Sheet sheet= super.createSheet();
             Set transform = Sheet.createPropertiesSet();
-            transform.setName("Transform");
-            transform.setDisplayName("Transformation");
+            transform.setName(Bundle.turkeySpectrumTopComponent_transform_name());
+            transform.setDisplayName(Bundle.turkeySpectrumTopComponent_transform_displayName());
             Property<Boolean> log = new Property(Boolean.class) {
 
                 @Override
@@ -180,7 +203,8 @@ public final class TukeySpectrumTopComponent extends TopComponent implements ITs
                 }
             };
 
-            log.setName("Log");
+            log.setName(Bundle.turkeySpectrumTopComponent_log_name());
+            log.setShortDescription(Bundle.turkeySpectrumTopComponent_log_desc());
             transform.put(log);
             Property<Integer> diff = new Property(Integer.class) {
 
@@ -205,7 +229,8 @@ public final class TukeySpectrumTopComponent extends TopComponent implements ITs
                 }
             };
 
-            diff.setName("Differencing");
+            diff.setName(Bundle.turkeySpectrumTopComponent_differencing_name());
+            diff.setShortDescription(Bundle.turkeySpectrumTopComponent_differencing_desc());
             transform.put(diff);
 
             Node.Property<Integer> diffLag = new Node.Property(Integer.class) {
@@ -230,7 +255,8 @@ public final class TukeySpectrumTopComponent extends TopComponent implements ITs
                     view.setDifferencingLag((Integer) t);
                 }
             };
-            diffLag.setName("Differencing lag");
+            diffLag.setName(Bundle.turkeySpectrumTopComponent_differencingLag_name());
+            diffLag.setShortDescription(Bundle.turkeySpectrumTopComponent_differencingLag_desc());
             transform.put(diffLag);
 
             Node.Property<Integer> length = new Node.Property(Integer.class) {
@@ -255,14 +281,14 @@ public final class TukeySpectrumTopComponent extends TopComponent implements ITs
                     view.setLastYears((Integer) t);
                 }
             };
-            length.setName("Last years");
-            length.setShortDescription("Number of years at the end of the series taken into account (0 = whole series)");
+            length.setName(Bundle.turkeySpectrumTopComponent_lastYears_name());
+            length.setShortDescription(Bundle.turkeySpectrumTopComponent_lastYears_desc());
             transform.put(length);
 
             sheet.put(transform);
             Set spectrum = Sheet.createPropertiesSet();
-            spectrum.setName("Tukey Spectrum");
-            spectrum.setDisplayName("Tukey Spectrum");
+            spectrum.setName(Bundle.turkeySpectrumTopComponent_turkeySpectrum_name());
+            spectrum.setDisplayName(Bundle.turkeySpectrumTopComponent_turkeySpectrum_displayName());
             Property<Double> taper = new Property(Double.class) {
 
                 @Override
@@ -289,7 +315,8 @@ public final class TukeySpectrumTopComponent extends TopComponent implements ITs
                     view.setTaperPart(p);
                 }
             };
-            taper.setName("Taper part");
+            taper.setName(Bundle.turkeySpectrumTopComponent_taperPart_name());
+            taper.setShortDescription(Bundle.turkeySpectrumTopComponent_taperPart_desc());
             spectrum.put(taper);
             Property<Integer> wlength = new Property(Integer.class) {
 
@@ -314,7 +341,8 @@ public final class TukeySpectrumTopComponent extends TopComponent implements ITs
                 }
             };
 
-            wlength.setName("Window length");
+            wlength.setName(Bundle.turkeySpectrumTopComponent_windowLenght_name());
+            wlength.setShortDescription(Bundle.turkeySpectrumTopComponent_windowLenght_desc());
             spectrum.put(wlength);
             Property<WindowType> wtype = new Property(WindowType.class) {
 
@@ -339,7 +367,8 @@ public final class TukeySpectrumTopComponent extends TopComponent implements ITs
                 }
             };
 
-            wtype.setName("Window type");
+            wtype.setName(Bundle.turkeySpectrumTopComponent_windowType_name());
+            wtype.setShortDescription(Bundle.turkeySpectrumTopComponent_windowType_desc());
             spectrum.put(wtype);
             sheet.put(spectrum);
             return sheet;
