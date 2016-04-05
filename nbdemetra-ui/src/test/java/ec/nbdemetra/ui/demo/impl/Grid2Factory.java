@@ -44,17 +44,14 @@ public final class Grid2Factory extends DemoComponentFactory {
     }
 
     private static Callable<Component> excelGrid() {
-        return new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                JGrid result = new JGrid();
-                result.setModel(new ExcelModel());
-                result.setRowSelectionAllowed(true);
-                result.setColumnSelectionAllowed(true);
-                result.setDragEnabled(true);
-                result.setDefaultRenderer(Object.class, new ExcelCellRenderer(result));
-                return result;
-            }
+        return () -> {
+            JGrid result = new JGrid();
+            result.setModel(new ExcelModel());
+            result.setRowSelectionAllowed(true);
+            result.setColumnSelectionAllowed(true);
+            result.setDragEnabled(true);
+            result.setDefaultRenderer(Object.class, new ExcelCellRenderer(result));
+            return result;
         };
     }
 

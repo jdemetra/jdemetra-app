@@ -43,8 +43,6 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.BeanInfo;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -281,14 +279,11 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
 
     static JLabel createSizeLabel(final ITsCollectionView view) {
         final JLabel result = new JLabel(" [0/0] ");
-        view.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case ITsCollectionView.SELECTION_PROPERTY:
-                        result.setText(" [" + view.getSelectionSize() + "/" + view.getTsCollection().getCount() + "] ");
-                        break;
-                }
+        view.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case ITsCollectionView.SELECTION_PROPERTY:
+                    result.setText(" [" + view.getSelectionSize() + "/" + view.getTsCollection().getCount() + "] ");
+                    break;
             }
         });
         return result;

@@ -17,7 +17,7 @@ public class BasicXYDataset extends AbstractXYDataset {
     final List<Series> data;
 
     public BasicXYDataset() {
-        this(new ArrayList<Series>());
+        this(new ArrayList<>());
     }
 
     public BasicXYDataset(List<Series> data) {

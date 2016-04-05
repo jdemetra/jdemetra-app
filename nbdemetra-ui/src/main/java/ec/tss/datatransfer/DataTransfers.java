@@ -15,6 +15,11 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import javax.annotation.Nonnull;
+import org.openide.util.datatransfer.ExTransferable;
+import org.openide.util.datatransfer.MultiTransferObject;
 
 /**
  *
@@ -67,5 +72,26 @@ public final class DataTransfers {
         return text != null
                 ? Optional.<Transferable>of(new StringSelection(text))
                 : Optional.<Transferable>absent();
+    }
+
+    public static boolean isMultiFlavor(@Nonnull DataFlavor[] dataFlavors) {
+        return dataFlavors.length == 1 && dataFlavors[0] == ExTransferable.multiFlavor;
+    }
+
+    @Nonnull
+    public static java.util.Optional<MultiTransferObject> getMultiTransferObject(@Nonnull Transferable t) {
+        if (isMultiFlavor(t.getTransferDataFlavors())) {
+            try {
+                return java.util.Optional.of((MultiTransferObject) t.getTransferData(ExTransferable.multiFlavor));
+            } catch (UnsupportedFlavorException | IOException ex) {
+                throw Throwables.propagate(ex);
+            }
+        }
+        return java.util.Optional.empty();
+    }
+
+    @Nonnull
+    public static Stream<Transferable> asTransferableStream(@Nonnull MultiTransferObject multi) {
+        return IntStream.range(0, multi.getCount()).mapToObj(multi::getTransferableAt);
     }
 }

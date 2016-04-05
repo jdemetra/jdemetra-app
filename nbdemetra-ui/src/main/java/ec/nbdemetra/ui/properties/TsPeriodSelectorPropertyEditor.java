@@ -18,8 +18,6 @@ package ec.nbdemetra.ui.properties;
 
 import ec.tstoolkit.timeseries.TsPeriodSelector;
 import java.awt.Component;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditorSupport;
 import org.openide.explorer.propertysheet.ExPropertyEditor;
 import org.openide.explorer.propertysheet.PropertyEnv;
@@ -65,12 +63,9 @@ public final class TsPeriodSelectorPropertyEditor extends PropertyEditorSupport 
 
     private void applyMagicGlue(final TsPeriodSelectorComponent c) {
         env.setState(PropertyEnv.STATE_NEEDS_VALIDATION);
-        env.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (PropertyEnv.PROP_STATE.equals(evt.getPropertyName()) && evt.getNewValue() == PropertyEnv.STATE_VALID) {
-                    setValue(c.getTsPeriodSelector());
-                }
+        env.addPropertyChangeListener(evt -> {
+            if (PropertyEnv.PROP_STATE.equals(evt.getPropertyName()) && evt.getNewValue() == PropertyEnv.STATE_VALID) {
+                setValue(c.getTsPeriodSelector());
             }
         });
     }

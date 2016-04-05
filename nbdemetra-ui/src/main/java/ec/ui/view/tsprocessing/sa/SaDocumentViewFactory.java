@@ -372,7 +372,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             extends ItemFactory<D, D> {
 
         protected InputFactory(Class<D> documentType) {
-            super(documentType, INPUT_SERIES, new ProcDocumentViewFactory.DoNothingExtractor<D>(), new DefaultItemUI<IProcDocumentView<D>, D>() {
+            super(documentType, INPUT_SERIES, new ProcDocumentViewFactory.DoNothingExtractor<>(), new DefaultItemUI<IProcDocumentView<D>, D>() {
                 @Override
                 public JComponent getView(IProcDocumentView<D> host, D information) {
                     return host.getToolkit().getGrid(information.getInput()); //To change body of generated methods, choose Tools | Templates.

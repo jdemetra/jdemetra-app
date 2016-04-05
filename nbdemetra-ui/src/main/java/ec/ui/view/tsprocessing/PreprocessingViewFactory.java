@@ -6,11 +6,9 @@ package ec.ui.view.tsprocessing;
 
 import ec.nbdemetra.ui.chart3d.functions.SurfacePlotterUI;
 import ec.nbdemetra.ui.chart3d.functions.SurfacePlotterUI.Functions;
-import ec.satoolkit.ISaSpecification;
 import ec.tss.documents.TsDocument;
 import ec.tss.html.IHtmlElement;
 import ec.tss.html.implementation.HtmlInformationSet;
-import ec.tss.sa.documents.SaDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import ec.tstoolkit.arima.IArimaModel;
 import ec.tstoolkit.modelling.ModellingDictionary;
@@ -111,7 +109,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
             extends ItemFactory<D, D> {
 
         protected InputFactory(Class<D> documentType) {
-            super(documentType, INPUT_SERIES, new ProcDocumentViewFactory.DoNothingExtractor<D>(), new DefaultItemUI<IProcDocumentView<D>, D>() {
+            super(documentType, INPUT_SERIES, new ProcDocumentViewFactory.DoNothingExtractor<>(), new DefaultItemUI<IProcDocumentView<D>, D>() {
                 @Override
                 public JComponent getView(IProcDocumentView<D> host, D information) {
                     return host.getToolkit().getGrid(information.getInput()); //To change body of generated methods, choose Tools | Templates.

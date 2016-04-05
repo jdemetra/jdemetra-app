@@ -26,8 +26,6 @@ import ec.tss.tsproviders.utils.IParam;
 import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.utilities.ThreadPoolSize;
 import ec.tstoolkit.utilities.ThreadPriority;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -73,17 +71,14 @@ public class DemetraSA extends ListenableBean implements IConfigurable {
             }
         };
 
-        DemetraUI.getDefault().addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case DemetraUI.BATCH_POOL_SIZE_PROPERTY:
-                        firePropertyChange(BATCH_POOL_SIZE_PROPERTY, evt.getOldValue(), evt.getNewValue());
-                        break;
-                    case DemetraUI.BATCH_PRIORITY_PROPERTY:
-                        firePropertyChange(BATCH_PRIORITY_PROPERTY, evt.getOldValue(), evt.getNewValue());
-                        break;
-                }
+        DemetraUI.getDefault().addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case DemetraUI.BATCH_POOL_SIZE_PROPERTY:
+                    firePropertyChange(BATCH_POOL_SIZE_PROPERTY, evt.getOldValue(), evt.getNewValue());
+                    break;
+                case DemetraUI.BATCH_PRIORITY_PROPERTY:
+                    firePropertyChange(BATCH_PRIORITY_PROPERTY, evt.getOldValue(), evt.getNewValue());
+                    break;
             }
         });
     }

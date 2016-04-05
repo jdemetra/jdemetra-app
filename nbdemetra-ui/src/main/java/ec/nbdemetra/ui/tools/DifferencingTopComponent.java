@@ -154,14 +154,11 @@ public final class DifferencingTopComponent extends TopComponent implements ITsV
     @Override
     public void componentOpened() {
         super.componentOpened();
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                splitter2.setDividerLocation(.5);
-                splitter2.setResizeWeight(.5);
-                splitter1.setDividerLocation(.5);
-                splitter1.setResizeWeight(.5);
-            }
+        SwingUtilities.invokeLater(() -> {
+            splitter2.setDividerLocation(.5);
+            splitter2.setResizeWeight(.5);
+            splitter1.setDividerLocation(.5);
+            splitter1.setResizeWeight(.5);
         });
     }
 

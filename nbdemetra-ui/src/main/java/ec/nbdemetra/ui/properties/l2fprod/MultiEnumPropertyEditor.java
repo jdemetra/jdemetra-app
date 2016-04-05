@@ -3,7 +3,6 @@ package ec.nbdemetra.ui.properties.l2fprod;
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -66,10 +65,7 @@ class MultiEnumEditor<T extends Class> extends JPanel {
     add(textField, BorderLayout.CENTER);
 
     final JButton button = new JButton("...");
-    button.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    button.addActionListener(event -> {
         final JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(button));
         JPanel panel = new JPanel(new BorderLayout());
         JPanel choicesPanel = new JPanel();
@@ -78,39 +74,38 @@ class MultiEnumEditor<T extends Class> extends JPanel {
 
         enumValues_ = clazz.getEnumConstants();
         if (null != enumValues_) {
-          checkBoxes_ = new JCheckBox[enumValues_.length];
-
-          for (int i = 0; i < enumValues_.length; i++) {
-            checkBoxes_[i] = new JCheckBox(enumValues_[i].toString());
-            choicesPanel.add(checkBoxes_[i]);
-            if (null != selection_ && selection_.contains(enumValues_[i])) {
-              checkBoxes_[i].setSelected(true);
-            }
-          }
-
-          final JButton applyButton = new JButton(new AbstractAction("OK") {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              selection_ = new ArrayList<>();
-              for (int j = 0; j < checkBoxes_.length; j++) {
-                if (checkBoxes_[j].isSelected()) {
-                  selection_.add(enumValues_[j]);
+            checkBoxes_ = new JCheckBox[enumValues_.length];
+            
+            for (int i = 0; i < enumValues_.length; i++) {
+                checkBoxes_[i] = new JCheckBox(enumValues_[i].toString());
+                choicesPanel.add(checkBoxes_[i]);
+                if (null != selection_ && selection_.contains(enumValues_[i])) {
+                    checkBoxes_[i].setSelected(true);
                 }
-              }
-              dialog.setVisible(false);
             }
-          });
-
-          panel.add(choicesPanel, BorderLayout.CENTER);
-          panel.add(applyButton, BorderLayout.SOUTH);
-
-          dialog.setContentPane(panel);
-          dialog.setModal(true);
-          dialog.pack();
-          dialog.setVisible(true);
+            
+            final JButton applyButton = new JButton(new AbstractAction("OK") {
+                
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    selection_ = new ArrayList<>();
+                    for (int j = 0; j < checkBoxes_.length; j++) {
+                        if (checkBoxes_[j].isSelected()) {
+                            selection_.add(enumValues_[j]);
+                        }
+                    }
+                    dialog.setVisible(false);
+                }
+            });
+            
+            panel.add(choicesPanel, BorderLayout.CENTER);
+            panel.add(applyButton, BorderLayout.SOUTH);
+            
+            dialog.setContentPane(panel);
+            dialog.setModal(true);
+            dialog.pack();
+            dialog.setVisible(true);
         }
-      }
     });
     add(button, BorderLayout.EAST);
   }

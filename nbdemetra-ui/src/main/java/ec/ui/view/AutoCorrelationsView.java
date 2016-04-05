@@ -32,8 +32,6 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Stroke;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
@@ -108,26 +106,23 @@ public class AutoCorrelationsView extends ATsControl implements IReadDataBlockVi
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case LENGTH_PROPERTY:
-                        onDataChange();
-                        break;
-                    case KIND_PROPERTY:
-                        onDataChange();
-                        break;
-                    case MEAN_CORRECTION_PROPERTY:
-                        onDataChange();
-                        break;
-                    case AUTO_CORRELATIONS_PROPERTY:
-                        onDataChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case LENGTH_PROPERTY:
+                    onDataChange();
+                    break;
+                case KIND_PROPERTY:
+                    onDataChange();
+                    break;
+                case MEAN_CORRECTION_PROPERTY:
+                    onDataChange();
+                    break;
+                case AUTO_CORRELATIONS_PROPERTY:
+                    onDataChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }

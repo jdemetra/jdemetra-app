@@ -22,8 +22,8 @@ public final class InstallerSteps {
 
     @Deprecated
     public static void restoreAll(IInstallerStep... steps) {
-        for (int i = 0; i < steps.length; i++) {
-            steps[i].restore();
+        for (IInstallerStep step : steps) {
+            step.restore();
         }
     }
 

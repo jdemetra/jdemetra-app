@@ -156,12 +156,7 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
     private static class DbRenderer extends SimpleHtmlListCellRenderer<OdbcDataSource> {
 
         public DbRenderer() {
-            super(new SimpleHtmlListCellRenderer.HtmlProvider<OdbcDataSource>() {
-                @Override
-                public String getHtmlDisplayName(OdbcDataSource value) {
-                    return "<html><b>" + value.getName() + "</b> - <i>" + value.getServerName() + "</i>";
-                }
-            });
+            super(o -> "<html><b>" + o.getName() + "</b> - <i>" + o.getServerName() + "</i>");
         }
     }
 }

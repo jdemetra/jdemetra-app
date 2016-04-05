@@ -17,11 +17,12 @@
 package ec.util.completion.ext;
 
 import com.google.common.base.Predicate;
-import static com.google.common.collect.Iterables.*;
 import com.google.common.collect.Ordering;
 import ec.util.completion.AbstractAutoCompletionSource;
 import ec.util.completion.AutoCompletionSources;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * An implementation of AutoCompletionSource that allows to quickly construct a
@@ -43,7 +44,11 @@ public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletio
 
     @Override
     protected List<?> getValues(String term, Iterable<T> allValues) {
-        return getSorter().sortedCopy(limit(filter(allValues, getFilter(term)), getLimitSize()));
+        return (List<?>) StreamSupport.stream(allValues.spliterator(), false)
+                .filter(getFilter(term)::apply)
+                .limit(getLimitSize())
+                .sorted(getSorter())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -59,12 +64,7 @@ public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletio
      */
     protected Predicate<T> getFilter(final String term) {
         final TermMatcher termMatcher = createTermMatcher(term);
-        return new Predicate<T>() {
-            @Override
-            public boolean apply(T input) {
-                return matches(termMatcher, input);
-            }
-        };
+        return o -> matches(termMatcher, o);
     }
 
     /**
@@ -98,11 +98,6 @@ public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletio
     @Deprecated
     static protected Predicate<String> getLoosePredicate(String term) {
         final String tmp = AutoCompletionSources.normalize(term);
-        return new Predicate<String>() {
-            @Override
-            public boolean apply(String input) {
-                return input != null && AutoCompletionSources.normalize(input).contains(tmp);
-            }
-        };
+        return o -> o != null && AutoCompletionSources.normalize(o).contains(tmp);
     }
 }

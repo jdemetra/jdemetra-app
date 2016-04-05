@@ -19,8 +19,6 @@ package ec.ui;
 import com.google.common.collect.Iterables;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.ui.interfaces.ITsList;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.JMenu;
@@ -56,26 +54,23 @@ public abstract class ATsList extends ATsCollectionView implements ITsList {
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case MULTI_SELECTION_PROPERTY:
-                        onMultiSelectionChange();
-                        break;
-                    case SHOW_HEADER_PROPERTY:
-                        onShowHeaderChange();
-                        break;
-                    case SORTABLE_PROPERTY:
-                        onSortableChange();
-                        break;
-                    case INFORMATION_PROPERTY:
-                        onInformationChange();
-                        break;
-                    case SORT_INFO_PROPERTY:
-                        onSortInfoChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case MULTI_SELECTION_PROPERTY:
+                    onMultiSelectionChange();
+                    break;
+                case SHOW_HEADER_PROPERTY:
+                    onShowHeaderChange();
+                    break;
+                case SORTABLE_PROPERTY:
+                    onSortableChange();
+                    break;
+                case INFORMATION_PROPERTY:
+                    onInformationChange();
+                    break;
+                case SORT_INFO_PROPERTY:
+                    onSortInfoChange();
+                    break;
             }
         });
     }

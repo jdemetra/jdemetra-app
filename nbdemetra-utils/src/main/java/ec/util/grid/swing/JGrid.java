@@ -35,8 +35,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DragGestureEvent;
-import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
@@ -153,12 +151,9 @@ public final class JGrid extends AGrid {
         fct.getFixedTable().setShowGrid(false);
 
         // FixedColumnTable#makeColumns(int) doesn't use zoomRatio, so we have to apply it afterwards
-        internalModel.addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                if (e.getType() == TableModelEvent.UPDATE) {
-                    applyZoomRatioOnColumnsWidth();
-                }
+        internalModel.addTableModelListener(evt -> {
+            if (evt.getType() == TableModelEvent.UPDATE) {
+                applyZoomRatioOnColumnsWidth();
             }
         });
 
@@ -350,53 +345,50 @@ public final class JGrid extends AGrid {
 
     //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case MODEL_PROPERTY:
-                        onModelChange();
-                        break;
-                    case ROW_SELECTION_ALLOWED_PROPERTY:
-                        onRowSelectionAllowedChange();
-                        break;
-                    case COLUMN_SELECTION_ALLOWED_PROPERTY:
-                        onColumnSelectionAllowedChange();
-                        break;
-                    case HOVERED_CELL_PROPERTY:
-                        onHoveredCellChange();
-                        break;
-                    case SELECTED_CELL_PROPERTY:
-                        onSelectedCellChange();
-                        break;
-                    case CROSSHAIR_VISIBLE_PROPERTY:
-                        onCrosshairVisibleChange();
-                        break;
-                    case DRAG_ENABLED_PROPERTY:
-                        onDragEnabledChange();
-                        break;
-                    case GRID_COLOR_PROPERTY:
-                        onGridColorChange();
-                        break;
-                    case NO_DATA_RENDERER_PROPERTY:
-                        onNoDataRendererChange();
-                        break;
-                    case ROW_SELECTION_MODEL_PROPERTY:
-                        onRowSelectionModelChange();
-                        break;
-                    case COLUMN_SELECTION_MODEL_PROPERTY:
-                        onColumnSelectionModelChange();
-                        break;
-                    case "font":
-                        onFontChange();
-                        break;
-                    case "transferHandler":
-                        onTransferHandlerChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case MODEL_PROPERTY:
+                    onModelChange();
+                    break;
+                case ROW_SELECTION_ALLOWED_PROPERTY:
+                    onRowSelectionAllowedChange();
+                    break;
+                case COLUMN_SELECTION_ALLOWED_PROPERTY:
+                    onColumnSelectionAllowedChange();
+                    break;
+                case HOVERED_CELL_PROPERTY:
+                    onHoveredCellChange();
+                    break;
+                case SELECTED_CELL_PROPERTY:
+                    onSelectedCellChange();
+                    break;
+                case CROSSHAIR_VISIBLE_PROPERTY:
+                    onCrosshairVisibleChange();
+                    break;
+                case DRAG_ENABLED_PROPERTY:
+                    onDragEnabledChange();
+                    break;
+                case GRID_COLOR_PROPERTY:
+                    onGridColorChange();
+                    break;
+                case NO_DATA_RENDERER_PROPERTY:
+                    onNoDataRendererChange();
+                    break;
+                case ROW_SELECTION_MODEL_PROPERTY:
+                    onRowSelectionModelChange();
+                    break;
+                case COLUMN_SELECTION_MODEL_PROPERTY:
+                    onColumnSelectionModelChange();
+                    break;
+                case "font":
+                    onFontChange();
+                    break;
+                case "transferHandler":
+                    onTransferHandlerChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }
@@ -435,14 +427,11 @@ public final class JGrid extends AGrid {
 
     private static void enableDragOnHeader(final JTableHeader tableHeader) {
         DragSource dragSource = DragSource.getDefaultDragSource();
-        dragSource.createDefaultDragGestureRecognizer(tableHeader, DnDConstants.ACTION_COPY_OR_MOVE, new DragGestureListener() {
-            @Override
-            public void dragGestureRecognized(DragGestureEvent dge) {
-                if (tableHeader.getResizingColumn() == null) {
-                    TransferHandler transferHandler = tableHeader.getTransferHandler();
-                    if (transferHandler != null) {
-                        transferHandler.exportAsDrag(tableHeader, dge.getTriggerEvent(), TransferHandler.COPY);
-                    }
+        dragSource.createDefaultDragGestureRecognizer(tableHeader, DnDConstants.ACTION_COPY_OR_MOVE, evt -> {
+            if (tableHeader.getResizingColumn() == null) {
+                TransferHandler transferHandler = tableHeader.getTransferHandler();
+                if (transferHandler != null) {
+                    transferHandler.exportAsDrag(tableHeader, evt.getTriggerEvent(), TransferHandler.COPY);
                 }
             }
         });
@@ -637,15 +626,12 @@ public final class JGrid extends AGrid {
                     setHasDropLocation(false);
                 }
             });
-            PropertyChangeListener listener = new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    switch (evt.getPropertyName()) {
-                        case "dropLocation":
-                            JTable table = (JTable) evt.getSource();
-                            setHasDropLocation(table.getDropLocation() != null);
-                            break;
-                    }
+            PropertyChangeListener listener = evt -> {
+                switch (evt.getPropertyName()) {
+                    case "dropLocation":
+                        JTable table = (JTable) evt.getSource();
+                        setHasDropLocation(table.getDropLocation() != null);
+                        break;
                 }
             };
             main.addPropertyChangeListener(listener);

@@ -15,10 +15,7 @@ import ec.tstoolkit.utilities.Id;
 import ec.ui.interfaces.IDisposable;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 import java.util.UUID;
 import javax.swing.*;
 import javax.swing.tree.TreeSelectionModel;
@@ -72,15 +69,12 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
         m_tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         this.em = new ExplorerManager();
-        em.addVetoableChangeListener(new VetoableChangeListener() {
-            @Override
-            public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-                if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
-                    Node[] nodes = (Node[]) evt.getNewValue();
-                    if (nodes.length > 0) {
-                        Id id = nodes[0].getLookup().lookup(Id.class);
-                        showComponent(id);
-                    }
+        em.addVetoableChangeListener(evt -> {
+            if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
+                Node[] nodes = (Node[]) evt.getNewValue();
+                if (nodes.length > 0) {
+                    Id id = nodes[0].getLookup().lookup(Id.class);
+                    showComponent(id);
                 }
             }
         });
@@ -280,12 +274,7 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
 
         specPanel.removeAll();
         specPanel.add(pane, BorderLayout.CENTER);
-        pane.addPropertyChangeListener(DocumentUIServices.SPEC_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                setDirty(null);
-            }
-        });
+        pane.addPropertyChangeListener(DocumentUIServices.SPEC_PROPERTY, evt -> setDirty(null));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setName(BUTTONS);

@@ -48,8 +48,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Ellipse2D;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Date;
 import javax.swing.AbstractAction;
@@ -127,20 +125,17 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case DATA_PROPERTY:
-                        onDataChange();
-                        break;
-                    case PRECISION_MARKERS_VISIBLE_PROPERTY:
-                        onPrecisionMarkersVisible();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case DATA_PROPERTY:
+                    onDataChange();
+                    break;
+                case PRECISION_MARKERS_VISIBLE_PROPERTY:
+                    onPrecisionMarkersVisible();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }

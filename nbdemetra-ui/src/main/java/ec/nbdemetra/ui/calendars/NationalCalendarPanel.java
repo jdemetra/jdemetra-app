@@ -23,9 +23,6 @@ import ec.tstoolkit.timeseries.calendars.SpecialDayEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -85,13 +82,10 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
         this.childFactory = new ListOfSpecialDayEvent();
 
         em.setRootContext(new AbstractNode(Children.create(childFactory, false)));
-        em.addVetoableChangeListener(new VetoableChangeListener() {
-            @Override
-            public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-                if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
-                    Node[] nodes = (Node[]) evt.getNewValue();
-                    removeButton.setEnabled(nodes.length > 0);
-                }
+        em.addVetoableChangeListener(evt -> {
+            if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
+                Node[] nodes = (Node[]) evt.getNewValue();
+                removeButton.setEnabled(nodes.length > 0);
             }
         });
 
@@ -131,12 +125,9 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
 
         initComponents();
 
-        jButton1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (lastUsedAction != null) {
-                    lastUsedAction.actionPerformed(e);
-                }
+        jButton1.addActionListener(event -> {
+            if (lastUsedAction != null) {
+                lastUsedAction.actionPerformed(event);
             }
         });
 
@@ -151,23 +142,20 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
         julianCB.addActionListener(julianListener);
         removeButton.setEnabled(false);
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case NationalCalendarPanel.CALENDAR_NAME_PROPERTY:
-                        onCalendarNameChange();
-                        break;
-                    case NationalCalendarPanel.SPECIAL_DAY_EVENTS_PROPERTY:
-                        onSpecialDayEventsChange();
-                        break;
-                    case NationalCalendarPanel.MEAN_CORRECTION_PROPERTY:
-                        onMeanChange();
-                        break;
-                    case NationalCalendarPanel.JULIAN_EASTER_PROPERTY:
-                        onJulianChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case NationalCalendarPanel.CALENDAR_NAME_PROPERTY:
+                    onCalendarNameChange();
+                    break;
+                case NationalCalendarPanel.SPECIAL_DAY_EVENTS_PROPERTY:
+                    onSpecialDayEventsChange();
+                    break;
+                case NationalCalendarPanel.MEAN_CORRECTION_PROPERTY:
+                    onMeanChange();
+                    break;
+                case NationalCalendarPanel.JULIAN_EASTER_PROPERTY:
+                    onJulianChange();
+                    break;
             }
         });
     }

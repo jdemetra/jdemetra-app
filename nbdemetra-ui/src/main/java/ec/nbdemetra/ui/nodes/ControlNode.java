@@ -5,7 +5,6 @@
 package ec.nbdemetra.ui.nodes;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -17,9 +16,6 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.interfaces.ITsCollectionView;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -45,32 +41,22 @@ public class ControlNode {
         TsCollectionNode root = new TsCollectionNode(view.getTsCollection());
         mgr.setRootContext(root);
 
-        view.addPropertyChangeListener(ITsCollectionView.SELECTION_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                try {
-                    List<Ts> selection = Arrays.asList(view.getSelection());
-                    if (selection.isEmpty()) {
-                        mgr.setSelectedNodes(new Node[]{mgr.getRootContext()});
-                    } else {
-                        List<Node> nodes = new ArrayList<>();
-                        for (Node o : mgr.getRootContext().getChildren().getNodes()) {
-                            if (selection.contains(o.getLookup().lookup(Ts.class))) {
-                                nodes.add(o);
-                            }
-                        }
-                        mgr.setSelectedNodes(Iterables.toArray(nodes, Node.class));
-                    }
-                } catch (Exception ex) {
-                    Exceptions.printStackTrace(ex);
+        view.addPropertyChangeListener(ITsCollectionView.SELECTION_PROPERTY, evt -> {
+            try {
+                List<Ts> selection = Arrays.asList(view.getSelection());
+                if (selection.isEmpty()) {
+                    mgr.setSelectedNodes(new Node[]{mgr.getRootContext()});
+                } else {
+                    mgr.setSelectedNodes(Arrays.stream(mgr.getRootContext().getChildren().getNodes())
+                            .filter(o -> selection.contains(o.getLookup().lookup(Ts.class)))
+                            .toArray(Node[]::new));
                 }
+            } catch (Exception ex) {
+                Exceptions.printStackTrace(ex);
             }
         });
-        view.addPropertyChangeListener(ITsCollectionView.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                mgr.setRootContext(new TsCollectionNode(view.getTsCollection()));
-            }
+        view.addPropertyChangeListener(ITsCollectionView.TS_COLLECTION_PROPERTY, evt -> {
+            mgr.setRootContext(new TsCollectionNode(view.getTsCollection()));
         });
 
         return root;

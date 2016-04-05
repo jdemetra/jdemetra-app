@@ -135,12 +135,12 @@ public class WinDesktopTest {
         public FakeRegistry() {
             this.data = new HashMap<>();
             for (WinRegistry.Root o : WinRegistry.Root.values()) {
-                data.put(o, new HashMap<String, Map<String, String>>());
+                data.put(o, new HashMap<>());
             }
         }
 
         public FakeRegistry putKey(Root root, String key) {
-            data.get(root).put(key, new HashMap<String, String>());
+            data.get(root).put(key, new HashMap<>());
             return this;
         }
 

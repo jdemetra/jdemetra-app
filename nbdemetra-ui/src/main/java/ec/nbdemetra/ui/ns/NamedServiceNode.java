@@ -20,7 +20,6 @@ import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.IResetable;
-import static ec.nbdemetra.ui.Jdk6Functions.namedServiceToNode;
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -100,7 +99,7 @@ public class NamedServiceNode extends AbstractNode {
     }
 
     public static void loadAll(ExplorerManager em, Iterable<? extends INamedService> items) {
-        Iterable<NamedServiceNode> nodes = Iterables.transform(items, namedServiceToNode());
+        Iterable<NamedServiceNode> nodes = Iterables.transform(items, o -> new NamedServiceNode(o));
         em.setRootContext(new AbstractNodeBuilder().add(nodes).build());
     }
 

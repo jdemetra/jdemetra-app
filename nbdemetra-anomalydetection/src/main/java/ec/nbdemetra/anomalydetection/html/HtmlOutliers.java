@@ -74,10 +74,8 @@ public class HtmlOutliers extends AbstractHtmlElement implements IHtmlElement {
         // Data
         Arrays.sort(outliers_, new OutlierEstimationComparator());
 
-        for (int i = 0; i < outliers_.length; i++) {
+        for (OutlierEstimation e : outliers_) {
             stream.open(HtmlTag.TABLEROW);
-            OutlierEstimation e = outliers_[i];
-
             stream.write(new HtmlTableCell(e.getCode().toString(), 40, HtmlStyle.Center, getForeground(e.getCode())), ColorChooser.getBgHexColor(e.getCode()));
             stream.write(new HtmlTableCell(e.getPosition().toString(), 50));
             stream.write(new HtmlTableCell(df4.format(e.getValue()), 80));
@@ -160,8 +158,8 @@ public class HtmlOutliers extends AbstractHtmlElement implements IHtmlElement {
         map.put(OutlierType.TC, new OutlierPojo());
         map.put(OutlierType.SO, new OutlierPojo());
 
-        for (int i = 0; i < outliers_.length; i++) {
-            map.get(outliers_[i].getCode()).add(outliers_[i]);
+        for (OutlierEstimation e : outliers_) {
+            map.get(e.getCode()).add(e);
         }
     }
 }

@@ -28,9 +28,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Image;
-import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
@@ -54,12 +51,7 @@ public final class XTableDemo extends JPanel {
         new BasicSwingLauncher()
                 .content(XTableDemo.class)
                 .title("XTable Demo")
-                .icons(new Callable<List<? extends Image>>() {
-                    @Override
-                    public List<? extends Image> call() throws Exception {
-                        return FontAwesome.FA_TABLE.getImages(Color.BLACK, 16f, 32f, 64f);
-                    }
-                })
+                .icons(() -> FontAwesome.FA_TABLE.getImages(Color.BLACK, 16f, 32f, 64f))
                 .logLevel(Level.FINE)
                 .launch();
     }

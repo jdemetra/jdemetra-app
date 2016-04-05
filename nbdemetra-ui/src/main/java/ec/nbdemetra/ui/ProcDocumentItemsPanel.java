@@ -4,19 +4,15 @@
  */
 package ec.nbdemetra.ui;
 
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimaps;
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.nodes.IdNodes;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.tstoolkit.utilities.Id;
 import ec.ui.view.tsprocessing.ProcDocumentItemFactory;
 import java.awt.Image;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.util.stream.Collectors;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import org.openide.explorer.ExplorerManager;
@@ -41,12 +37,7 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
         outlineView1.getOutline().setRootVisible(false);
         jComboBox1.setModel(new DefaultComboBoxModel(NodeStrategies.values()));
         jComboBox1.setSelectedIndex(0);
-        jComboBox1.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                load();
-            }
-        });
+        jComboBox1.addItemListener(event -> load());
     }
 
     /**
@@ -108,23 +99,23 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
             public Node getRoot(Iterable<? extends ProcDocumentItemFactory> factories) {
                 return new AbstractNodeBuilder()
                         .name("Items")
-                        .add(Iterables.transform(factories, TO_NODE))
+                        .add(Iterables.transform(factories, o -> new ProcDocumentItemFactoryNode(o)))
                         .build();
             }
 
             @Override
             public String[] getPropertyColumns() {
-                return new String[] { "DocumentType", "Document Type" };
+                return new String[]{"DocumentType", "Document Type"};
             }
         },
         GROUP_BY_DOCUMENT_TYPE {
             @Override
             public Node getRoot(Iterable<? extends ProcDocumentItemFactory> factories) {
-                ImmutableMultimap<Class<?>, ? extends ProcDocumentItemFactory> index = Multimaps.index(factories, TO_DOCUMENT_TYPE);
+                ImmutableMultimap<Class<?>, ? extends ProcDocumentItemFactory> index = Multimaps.index(factories, o -> o.getDocumentType());
 
                 AbstractNodeBuilder result = new AbstractNodeBuilder().name("Items");
                 for (Class<?> o : index.keySet()) {
-                    Iterable<Node> children = Iterables.transform(index.get(o), TO_NODE);
+                    Iterable<Node> children = Iterables.transform(index.get(o), x -> new ProcDocumentItemFactoryNode(x));
                     result.add(new AbstractNodeBuilder().name(o.getName()).add(children).build());
                 }
                 return result.build();
@@ -138,11 +129,11 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
         GROUP_BY_DOCUMENT_TYPE_AND_ID {
             @Override
             public Node getRoot(Iterable<? extends ProcDocumentItemFactory> factories) {
-                ImmutableMultimap<Class<?>, ? extends ProcDocumentItemFactory> index = Multimaps.index(factories, TO_DOCUMENT_TYPE);
+                ImmutableMultimap<Class<?>, ? extends ProcDocumentItemFactory> index = Multimaps.index(factories, o -> o.getDocumentType());
 
                 AbstractNodeBuilder result = new AbstractNodeBuilder().name("Items");
                 for (Class<?> o : index.keySet()) {
-                    Node tmp = IdNodes.getRootNode(FluentIterable.from(index.get(o)).transform(TO_ITEM_ID).toList());
+                    Node tmp = IdNodes.getRootNode(index.get(o).stream().map(x -> x.getItemId()).collect(Collectors.toList()));
                     tmp.setName(o.getName());
                     result.add(tmp);
                 }
@@ -194,24 +185,4 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
             return result;
         }
     }
-    //<editor-fold defaultstate="collapsed" desc="FUNCTIONS">
-    static final Function<ProcDocumentItemFactory, Class<?>> TO_DOCUMENT_TYPE = new Function<ProcDocumentItemFactory, Class<?>>() {
-        @Override
-        public Class<?> apply(ProcDocumentItemFactory input) {
-            return input.getDocumentType();
-        }
-    };
-    static final Function<ProcDocumentItemFactory, Id> TO_ITEM_ID = new Function<ProcDocumentItemFactory, Id>() {
-        @Override
-        public Id apply(ProcDocumentItemFactory input) {
-            return input.getItemId();
-        }
-    };
-    static final Function<ProcDocumentItemFactory, Node> TO_NODE = new Function<ProcDocumentItemFactory, Node>() {
-        @Override
-        public Node apply(ProcDocumentItemFactory input) {
-            return new ProcDocumentItemFactoryNode(input);
-        }
-    };
-    //</editor-fold>
 }

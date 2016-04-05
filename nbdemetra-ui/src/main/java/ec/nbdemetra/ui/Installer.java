@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import java.util.stream.Stream;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.jfree.chart.ChartFactory;
@@ -112,7 +113,7 @@ public final class Installer extends ModuleInstall {
 
         @Override
         protected void onClose(Lookup.Result<TssTransferHandler> lookup) {
-            storeConfig(TssTransferSupport.getDefault().all().toList(), prefs());
+            storeConfig(TssTransferSupport.getDefault().stream(), prefs());
         }
     }
 
@@ -244,12 +245,18 @@ public final class Installer extends ModuleInstall {
     }
 
     public static void storeConfig(Collection<?> list, Preferences root) {
+        storeConfig(list.stream(), root);
+    }
+
+    private static void storeConfig(Stream<?> stream, Preferences root) {
         Formatters.Formatter<Config> formatter = Config.xmlFormatter(false);
-        for (IConfigurable o : Iterables.filter(list, IConfigurable.class)) {
-            Config current = o.getConfig();
-            Preferences domain = root.node(current.getDomain());
-            InstallerStep.tryPut(domain, current.getName(), formatter, current);
-        }
+        stream
+                .filter(IConfigurable.class::isInstance)
+                .forEach(o -> {
+                    Config current = ((IConfigurable) o).getConfig();
+                    Preferences domain = root.node(current.getDomain());
+                    InstallerStep.tryPut(domain, current.getName(), formatter, current);
+                });
         try {
             root.flush();
         } catch (BackingStoreException ex) {

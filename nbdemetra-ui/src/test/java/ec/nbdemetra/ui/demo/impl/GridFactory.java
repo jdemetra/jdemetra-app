@@ -19,8 +19,6 @@ package ec.nbdemetra.ui.demo.impl;
 import com.google.common.collect.ImmutableMap;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Random;
 
 import javax.swing.JLabel;
@@ -49,12 +47,7 @@ public final class GridFactory extends DemoComponentFactory {
     @Override
     public Map<Id, Callable<Component>> getComponents() {
         Id id = new LinearId("(2) Other", "JGrid");
-        Callable<Component> callable = new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                return create();
-            }
-        };
+        Callable<Component> callable = this::create;
         return ImmutableMap.of(id, callable);
     }
 
@@ -64,19 +57,13 @@ public final class GridFactory extends DemoComponentFactory {
 
         final JSpinField rowCount = new JSpinField(0, 1000);
         rowCount.setValue(model.getRowCount());
-        rowCount.addPropertyChangeListener(SwingProperties.SPIN_FIELD_VALUE_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                model.setRowCount(rowCount.getValue());
-            }
+        rowCount.addPropertyChangeListener(SwingProperties.SPIN_FIELD_VALUE_PROPERTY, evt -> {
+            model.setRowCount(rowCount.getValue());
         });
         final JSpinField colCount = new JSpinField(0, 1000);
         colCount.setValue(model.getColumnCount());
-        colCount.addPropertyChangeListener(SwingProperties.SPIN_FIELD_VALUE_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                model.setColCount(colCount.getValue());
-            }
+        colCount.addPropertyChangeListener(SwingProperties.SPIN_FIELD_VALUE_PROPERTY, evt -> {
+            model.setColCount(colCount.getValue());
         });
 
         JPanel north = new JPanel(new FlowLayout());

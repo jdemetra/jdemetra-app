@@ -9,6 +9,7 @@ import com.google.common.base.Supplier;
 /**
  *
  * @author Philippe Charles
+ * @param <T>
  */
 public abstract class JProperty<T> {
 
@@ -39,7 +40,7 @@ public abstract class JProperty<T> {
         this.value = setter.apply(old, value);
         firePropertyChange(old, this.value);
     }
-    
+
     public T getAndSet(T value) {
         T result = get();
         set(value);
@@ -54,38 +55,18 @@ public abstract class JProperty<T> {
     }
 
     public static <T> Setter<T> nullTo(final T defaultValue) {
-        return new Setter<T>() {
-            @Override
-            public T apply(T oldValue, T newValue) {
-                return newValue != null ? newValue : defaultValue;
-            }
-        };
+        return (oldValue, newValue) -> newValue != null ? newValue : defaultValue;
     }
 
     public static <T> Setter<T> nullTo(final Supplier<T> defaultValue) {
-        return new Setter<T>() {
-            @Override
-            public T apply(T oldValue, T newValue) {
-                return newValue != null ? newValue : defaultValue.get();
-            }
-        };
+        return (oldValue, newValue) -> newValue != null ? newValue : defaultValue.get();
     }
 
     public static <T extends Comparable<T>> Setter<T> min(final T min) {
-        return new Setter<T>() {
-            @Override
-            public T apply(T oldValue, T newValue) {
-                return newValue != null && min.compareTo(newValue) <= 0 ? newValue : min;
-            }
-        };
+        return (oldValue, newValue) -> newValue != null && min.compareTo(newValue) <= 0 ? newValue : min;
     }
 
     public static <T> Setter<T> identity() {
-        return new Setter<T>() {
-            @Override
-            public T apply(T oldValue, T newValue) {
-                return newValue;
-            }
-        };
+        return (oldValue, newValue) -> newValue;
     }
 }

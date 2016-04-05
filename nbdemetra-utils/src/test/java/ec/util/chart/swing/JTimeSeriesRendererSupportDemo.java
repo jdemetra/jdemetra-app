@@ -29,14 +29,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.Stroke;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -51,10 +46,6 @@ import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
@@ -82,12 +73,9 @@ public final class JTimeSeriesRendererSupportDemo extends JPanel {
         new BasicSwingLauncher()
                 .content(JTimeSeriesRendererSupportDemo.class)
                 .title("Support Demo")
-                .icons(new Callable<List<Image>>() {
-                    @Override
-                    public List<Image> call() throws Exception {
-                        Color c = new Color(TangoColorScheme.DARK_SKY_BLUE);
-                        return FontAwesome.FA_TACHOMETER.getImages(c, 16f, 32f, 64f);
-                    }
+                .icons(() -> {
+                    Color c = new Color(TangoColorScheme.DARK_SKY_BLUE);
+                    return FontAwesome.FA_TACHOMETER.getImages(c, 16f, 32f, 64f);
                 })
                 .launch();
     }
@@ -142,14 +130,11 @@ public final class JTimeSeriesRendererSupportDemo extends JPanel {
 
         JComboBox<RendererType> types = new JComboBox<>(support.getSupportedRendererTypes().toArray(new RendererType[0]));
         types.setMaximumSize(new Dimension(150, 100));
-        types.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                RendererType type = (RendererType) e.getItem();
-                chart.getXYPlot().setRenderer(support.createRenderer(type));
-                chart.getXYPlot().setBackgroundPaint(support.getPlotColor());
-                chart.setBackgroundPaint(colorSchemeSupport.getBackColor());
-            }
+        types.addItemListener(evt -> {
+            RendererType type = (RendererType) evt.getItem();
+            chart.getXYPlot().setRenderer(support.createRenderer(type));
+            chart.getXYPlot().setBackgroundPaint(support.getPlotColor());
+            chart.setBackgroundPaint(colorSchemeSupport.getBackColor());
         });
         types.setSelectedIndex(1);
         result.add(types);
@@ -186,12 +171,7 @@ public final class JTimeSeriesRendererSupportDemo extends JPanel {
         result.setDefaultEditor(Font.class, new FontCellEditor());
         result.setDefaultRenderer(Stroke.class, StrokeCellRenderer.INSTANCE);
         result.setDefaultEditor(Stroke.class, new StrokeCellEditor());
-        result.getModel().addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                chart.fireChartChanged();
-            }
-        });
+        result.getModel().addTableModelListener(evt -> chart.fireChartChanged());
         return ModernUI.withEmptyBorders(new JScrollPane(result));
     }
 
@@ -204,19 +184,11 @@ public final class JTimeSeriesRendererSupportDemo extends JPanel {
         result.setDefaultEditor(Font.class, new FontCellEditor());
         result.setDefaultRenderer(Stroke.class, StrokeCellRenderer.INSTANCE);
         result.setDefaultEditor(Stroke.class, new StrokeCellEditor());
-        seriesSelectionModel.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    int index = e.getFirstIndex();
-                    result.setModel(index != -1 ? new ObsModel(support.seriesInfos[index].obsInfos) : null);
-                    result.getModel().addTableModelListener(new TableModelListener() {
-                        @Override
-                        public void tableChanged(TableModelEvent e) {
-                            chart.fireChartChanged();
-                        }
-                    });
-                }
+        seriesSelectionModel.addListSelectionListener(evt -> {
+            if (!evt.getValueIsAdjusting()) {
+                int index = evt.getFirstIndex();
+                result.setModel(index != -1 ? new ObsModel(support.seriesInfos[index].obsInfos) : null);
+                result.getModel().addTableModelListener(e -> chart.fireChartChanged());
             }
         });
         return ModernUI.withEmptyBorders(new JScrollPane(result));
@@ -577,14 +549,14 @@ public final class JTimeSeriesRendererSupportDemo extends JPanel {
         }
     }
 
-    private static class ColorCellEditor extends DefaultCellEditor {
+    private static final class ColorCellEditor extends DefaultCellEditor {
 
         public ColorCellEditor(SwingColorSchemeSupport colorSchemeSupport, ColorCellRenderer renderer) {
             super(new JComboBox());
             JComboBox cb = (JComboBox) getComponent();
-            for (Integer o : colorSchemeSupport.getColorScheme().getLineColors()) {
-                ((DefaultComboBoxModel) cb.getModel()).addElement(SwingColorSchemeSupport.rgbToColor(o));
-            }
+            colorSchemeSupport.getColorScheme().getLineColors().stream()
+                    .map(SwingColorSchemeSupport::rgbToColor)
+                    .forEach(o -> ((DefaultComboBoxModel) cb.getModel()).addElement(o));
             cb.setRenderer(renderer);
         }
     }

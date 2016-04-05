@@ -29,8 +29,6 @@ import ec.util.chart.swing.ext.MatrixChartCommand;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import javax.swing.Box;
@@ -112,23 +110,20 @@ public class SlidingSpanView extends JComponent implements IColorSchemeAble {
 
         themeSupport.register();
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case SLIDING_SPANS_PROPERTY:
-                        onSlidingSpansChange();
-                        break;
-                    case INFO_NAME_PROPERTY:
-                        onInfoNameChange();
-                        break;
-                    case THRESHOLD_PROPERTY:
-                        onThresholdChange();
-                        break;
-                    case INFO_PROPERTY:
-                        onInfoChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case SLIDING_SPANS_PROPERTY:
+                    onSlidingSpansChange();
+                    break;
+                case INFO_NAME_PROPERTY:
+                    onInfoNameChange();
+                    break;
+                case THRESHOLD_PROPERTY:
+                    onThresholdChange();
+                    break;
+                case INFO_PROPERTY:
+                    onInfoChange();
+                    break;
             }
         });
 

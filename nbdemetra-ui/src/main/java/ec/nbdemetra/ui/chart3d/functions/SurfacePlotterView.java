@@ -26,8 +26,6 @@ import ec.tstoolkit.maths.realfunctions.IFunction;
 import ec.tstoolkit.maths.realfunctions.IFunctionInstance;
 import ec.tstoolkit.maths.realfunctions.IParametersDomain;
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.JPanel;
 
 /**
@@ -78,17 +76,14 @@ public class SurfacePlotterView extends JPanel {
                     chart = new Functions2DChart(f, maxF, 100);
                     chart.generateData();
                     config = new ConfigurationToolBar(elements, false);
-                    config.addPropertyChangeListener(new PropertyChangeListener() {
-                        @Override
-                        public void propertyChange(PropertyChangeEvent evt) {
-                            switch (evt.getPropertyName()) {
-                                case ConfigurationToolBar.STEPS:
-                                    chart.setSteps((Integer) evt.getNewValue());
-                                    break;
-                                case ConfigurationToolBar.EPSILON:
-                                    chart.setEpsilon(((Double) evt.getNewValue()).floatValue());
-                                    break;
-                            }
+                    config.addPropertyChangeListener(evt -> {
+                        switch (evt.getPropertyName()) {
+                            case ConfigurationToolBar.STEPS:
+                                chart.setSteps((Integer) evt.getNewValue());
+                                break;
+                            case ConfigurationToolBar.EPSILON:
+                                chart.setEpsilon(((Double) evt.getNewValue()).floatValue());
+                                break;
                         }
                     });
 
@@ -98,46 +93,43 @@ public class SurfacePlotterView extends JPanel {
                 default:
                     config = new ConfigurationToolBar(elements, true);
 
-                    config.addPropertyChangeListener(new PropertyChangeListener() {
-                        @Override
-                        public void propertyChange(PropertyChangeEvent evt) {
-                            if (panel.getSurface().getModel() != null
-                                    && panel.getSurface().getModel() instanceof FunctionsSurfaceModel) {
-                                FunctionsSurfaceModel m = (FunctionsSurfaceModel) panel.getSurface().getModel();
-                                switch (evt.getPropertyName()) {
-                                    case ConfigurationToolBar.XY_TICKS:
-                                        m.setDisplayXY((Boolean) evt.getNewValue());
-                                        break;
-                                    case ConfigurationToolBar.Z_TICKS:
-                                        m.setDisplayZ((Boolean) evt.getNewValue());
-                                        break;
-                                    case ConfigurationToolBar.BOX_GRID:
-                                        m.setDisplayGrids((Boolean) evt.getNewValue());
-                                        break;
-                                    case ConfigurationToolBar.XY_MESH:
-                                        m.setMesh((Boolean) evt.getNewValue());
-                                        break;
-                                    case ConfigurationToolBar.DRAW_BOX:
-                                        m.setBoxed((Boolean) evt.getNewValue());
-                                        break;
-                                    case ConfigurationToolBar.HIDE_ON_DRAG:
-                                        m.setExpectDelay((Boolean) evt.getNewValue());
-                                        break;
-                                    case ConfigurationToolBar.PLOT_TYPE:
-                                        m.setPlotType((PlotType) evt.getNewValue());
-                                        break;
-                                    case ConfigurationToolBar.PAINTING_MODE:
-                                        m.setPlotColor((SurfaceModel.PlotColor) evt.getNewValue());
-                                        break;
-                                    case ConfigurationToolBar.STEPS:
-                                        m.setSteps((Integer) evt.getNewValue());
-                                        break;
-                                    case ConfigurationToolBar.EPSILON:
-                                        m.setEps(((Double) evt.getNewValue()).floatValue());
-                                        break;
-                                    case ParameterComboBox.PARAMETERS_CHANGED:
-                                        setParameters(config.getParametersComboBoxes().getSelectedIndex1(), config.getParametersComboBoxes().getSelectedIndex2());
-                                }
+                    config.addPropertyChangeListener(evt -> {
+                        if (panel.getSurface().getModel() != null
+                                && panel.getSurface().getModel() instanceof FunctionsSurfaceModel) {
+                            FunctionsSurfaceModel m1 = (FunctionsSurfaceModel) panel.getSurface().getModel();
+                            switch (evt.getPropertyName()) {
+                                case ConfigurationToolBar.XY_TICKS:
+                                    m1.setDisplayXY((Boolean) evt.getNewValue());
+                                    break;
+                                case ConfigurationToolBar.Z_TICKS:
+                                    m1.setDisplayZ((Boolean) evt.getNewValue());
+                                    break;
+                                case ConfigurationToolBar.BOX_GRID:
+                                    m1.setDisplayGrids((Boolean) evt.getNewValue());
+                                    break;
+                                case ConfigurationToolBar.XY_MESH:
+                                    m1.setMesh((Boolean) evt.getNewValue());
+                                    break;
+                                case ConfigurationToolBar.DRAW_BOX:
+                                    m1.setBoxed((Boolean) evt.getNewValue());
+                                    break;
+                                case ConfigurationToolBar.HIDE_ON_DRAG:
+                                    m1.setExpectDelay((Boolean) evt.getNewValue());
+                                    break;
+                                case ConfigurationToolBar.PLOT_TYPE:
+                                    m1.setPlotType((PlotType) evt.getNewValue());
+                                    break;
+                                case ConfigurationToolBar.PAINTING_MODE:
+                                    m1.setPlotColor((SurfaceModel.PlotColor) evt.getNewValue());
+                                    break;
+                                case ConfigurationToolBar.STEPS:
+                                    m1.setSteps((Integer) evt.getNewValue());
+                                    break;
+                                case ConfigurationToolBar.EPSILON:
+                                    m1.setEps(((Double) evt.getNewValue()).floatValue());
+                                    break;
+                                case ParameterComboBox.PARAMETERS_CHANGED:
+                                    setParameters(config.getParametersComboBoxes().getSelectedIndex1(), config.getParametersComboBoxes().getSelectedIndex2());
                             }
                         }
                     });
@@ -167,12 +159,12 @@ public class SurfacePlotterView extends JPanel {
             add(ExceptionPanel.create(e), BorderLayout.CENTER);
         }
     }
-    
-    public void setEpsilon(float eps){
+
+    public void setEpsilon(float eps) {
         chart.setEpsilon(eps);
     }
 
-    public void setSteps(int steps){
+    public void setSteps(int steps) {
         chart.setSteps(steps);
     }
 }

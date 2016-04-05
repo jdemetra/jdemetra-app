@@ -19,12 +19,12 @@ package ec.util.various.swing;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.net.URL;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.ImageIcon;
@@ -88,7 +88,7 @@ public final class BasicSwingLauncher {
 
     @Nonnull
     public BasicSwingLauncher content(@Nullable Class<? extends Component> contentClass) {
-        return content((Callable<? extends Component>) (contentClass == null ? null : newInstance(contentClass)));
+        return content(contentClass == null ? null : contentClass::newInstance);
     }
 
     @Nonnull
@@ -128,7 +128,7 @@ public final class BasicSwingLauncher {
         launch(lookAndFeelClassName != null ? lookAndFeelClassName : UIManager.getSystemLookAndFeelClassName(),
                 title != null ? title : "SimpleApp",
                 size != null ? size : new Dimension(800, 600),
-                contentSupplier != null ? contentSupplier : newInstance(JPanel.class), iconsSupplier != null ? iconsSupplier : newImageList(),
+                contentSupplier != null ? contentSupplier : JPanel::new, iconsSupplier != null ? iconsSupplier : newImageList(),
                 centerOnScreen, resizable);
     }
 
@@ -152,54 +152,33 @@ public final class BasicSwingLauncher {
             LOGGER.log(Level.WARNING, "Cannot set look&feel", ex);
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    JFrame frame = new JFrame();
-                    frame.setTitle(title);
-                    frame.setIconImages(iconsSupplier.call());
-                    frame.getContentPane().add(contentSupplier.call());
-                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    frame.setSize(size);
-                    frame.setResizable(resizable);
-                    if (centerOnScreen) {
-                        frame.setLocationRelativeTo(null);
-                    }
-                    frame.setVisible(true);
-                } catch (Exception ex) {
-                    LOGGER.log(Level.SEVERE, "Cannot launch app", ex);
+        SwingUtilities.invokeLater(() -> {
+            try {
+                JFrame frame = new JFrame();
+                frame.setTitle(title);
+                frame.setIconImages(iconsSupplier.call());
+                frame.getContentPane().add(contentSupplier.call());
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(size);
+                frame.setResizable(resizable);
+                if (centerOnScreen) {
+                    frame.setLocationRelativeTo(null);
                 }
+                frame.setVisible(true);
+            } catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "Cannot launch app", ex);
             }
         });
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
     @Nonnull
-    private static <X> Callable<X> newInstance(@Nonnull final Class<X> contentClass) {
-        return new Callable<X>() {
-            @Override
-            public X call() throws Exception {
-                return contentClass.newInstance();
-            }
-        };
-    }
-
-    @Nonnull
     private static Callable<List<? extends Image>> newImageList(@Nonnull final String... iconsPaths) {
-        return new Callable<List<? extends Image>>() {
-            @Override
-            public List<? extends Image> call() throws Exception {
-                List<Image> result = new ArrayList<>();
-                for (String o : iconsPaths) {
-                    URL url = BasicSwingLauncher.class.getResource(o);
-                    if (url != null) {
-                        result.add(new ImageIcon(url).getImage());
-                    }
-                }
-                return result;
-            }
-        };
+        return () -> Arrays.stream(iconsPaths)
+                .map(o -> BasicSwingLauncher.class.getResource(o))
+                .filter(o -> o != null)
+                .map(o -> new ImageIcon(o).getImage())
+                .collect(Collectors.toList());
     }
     //</editor-fold>
 }

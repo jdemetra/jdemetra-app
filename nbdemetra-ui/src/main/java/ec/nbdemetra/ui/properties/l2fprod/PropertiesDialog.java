@@ -5,7 +5,6 @@ import ec.ui.view.tsprocessing.IApplyAction;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -47,12 +46,7 @@ public class PropertiesDialog extends JDialog {
         add(PropertiesPanelFactory.INSTANCE.createPanel(clone_), BorderLayout.CENTER);
 
         bApply_ = new JButton(applyAction_);
-        bApply_.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        });
+        bApply_.addActionListener(event -> setVisible(false));
 
         bCancel_ = new JButton(new AbstractAction(isModal() ? "Cancel" : "Close") {
             @Override

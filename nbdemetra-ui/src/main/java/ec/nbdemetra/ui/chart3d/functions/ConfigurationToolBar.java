@@ -18,10 +18,6 @@ package ec.nbdemetra.ui.chart3d.functions;
 
 import ec.nbdemetra.ui.chart3d.SurfaceModel;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.Box;
 import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
@@ -107,12 +103,7 @@ public class ConfigurationToolBar extends JMenuBar {
                 item.setSelected(true);
             }
 
-            item.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    firePropertyChange(PLOT_TYPE, null, t);
-                }
-            });
+            item.addActionListener(event -> firePropertyChange(PLOT_TYPE, null, t));
 
             group.add(item);
             plotTypeMenu.add(item);
@@ -129,12 +120,7 @@ public class ConfigurationToolBar extends JMenuBar {
                 item.setSelected(true);
             }
 
-            item.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    firePropertyChange(PAINTING_MODE, null, c);
-                }
-            });
+            item.addActionListener(event -> firePropertyChange(PAINTING_MODE, null, c));
 
             group.add(item);
             plotColorMenu.add(item);
@@ -146,13 +132,10 @@ public class ConfigurationToolBar extends JMenuBar {
     private void createViewParams() {
         for (final String s : params) {
             JCheckBoxMenuItem item = new JCheckBoxMenuItem(s);
-            item.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (e.getSource() != null && e.getSource() instanceof JCheckBoxMenuItem) {
-                        JCheckBoxMenuItem i = (JCheckBoxMenuItem) e.getSource();
-                        firePropertyChange(s, !i.isSelected(), i.isSelected());
-                    }
+            item.addActionListener(event -> {
+                if (event.getSource() != null && event.getSource() instanceof JCheckBoxMenuItem) {
+                    JCheckBoxMenuItem i = (JCheckBoxMenuItem) event.getSource();
+                    firePropertyChange(s, !i.isSelected(), i.isSelected());
                 }
             });
             item.setSelected(!s.equals(XY_MESH) && !s.equals(HIDE_ON_DRAG));
@@ -173,11 +156,8 @@ public class ConfigurationToolBar extends JMenuBar {
     private void createParamSelection() {
         add(Box.createHorizontalGlue());
         comboboxes = new ParameterComboBox(fnParams);
-        comboboxes.addPropertyChangeListener(ParameterComboBox.PARAMETERS_CHANGED, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                firePropertyChange(ParameterComboBox.PARAMETERS_CHANGED, null, null);
-            }
+        comboboxes.addPropertyChangeListener(ParameterComboBox.PARAMETERS_CHANGED, evt -> {
+            firePropertyChange(ParameterComboBox.PARAMETERS_CHANGED, null, null);
         });
         add(comboboxes);
     }
@@ -211,13 +191,10 @@ public class ConfigurationToolBar extends JMenuBar {
         JButton save = new JButton("OK");
         save.setMaximumSize(new Dimension(50, 18));
 
-        save.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parameters.getPopupMenu().setVisible(false);
-                parameters.setSelected(false);
-                firePropertyChange(STEPS, null, (Integer) spinner.getValue());
-            }
+        save.addActionListener(event -> {
+            parameters.getPopupMenu().setVisible(false);
+            parameters.setSelected(false);
+            firePropertyChange(STEPS, null, (Integer) spinner.getValue());
         });
 
         comp.add(label);
@@ -248,13 +225,10 @@ public class ConfigurationToolBar extends JMenuBar {
         // Save Button
         JButton save = new JButton("OK");
         save.setMaximumSize(new Dimension(50, 18));
-        save.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parameters.getPopupMenu().setVisible(false);
-                parameters.setSelected(false);
-                firePropertyChange(EPSILON, null, (Double) spinner.getValue());
-            }
+        save.addActionListener(event -> {
+            parameters.getPopupMenu().setVisible(false);
+            parameters.setSelected(false);
+            firePropertyChange(EPSILON, null, (Double) spinner.getValue());
         });
 
         comp.add(label);

@@ -17,13 +17,9 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
-import ec.tstoolkit.arima.IArimaModel;
-import ec.tstoolkit.uihelper.IContinuousInformationProvider;
-import ec.tstoolkit.uihelper.IDiscreteInformationProvider;
 import ec.tstoolkit.uihelper.ModelInformationProvider;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
-import ec.tstoolkit.utilities.NamedObject;
 import ec.ui.view.FilterView;
 import ec.ui.view.PiView;
 import ec.ui.view.ScatterView;
@@ -45,39 +41,9 @@ public final class AChartViewFactory extends DemoComponentFactory {
     @Override
     public Map<Id, Callable<Component>> getComponents() {
         return builder()
-                .put(ID.extend("FilterView"), filterView())
-                .put(ID.extend("PiView"), piView())
-                .put(ID.extend("ScatterView"), scatterView())
+                .put(ID.extend("FilterView"), () -> new FilterView(new ModelInformationProvider(new ArrayList<>())))
+                .put(ID.extend("PiView"), () -> new PiView(new ModelInformationProvider(new ArrayList<>())))
+                .put(ID.extend("ScatterView"), () -> new ScatterView(new ModelInformationProvider(new ArrayList<>())))
                 .build();
-    }
-
-    private static Callable<Component> filterView() {
-        return new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                IDiscreteInformationProvider provider = new ModelInformationProvider(new ArrayList<NamedObject<IArimaModel>>());
-                return new FilterView(provider);
-            }
-        };
-    }
-
-    private static Callable<Component> piView() {
-        return new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                IContinuousInformationProvider provider = new ModelInformationProvider(new ArrayList<NamedObject<IArimaModel>>());
-                return new PiView(provider);
-            }
-        };
-    }
-
-    private static Callable<Component> scatterView() {
-        return new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                IDiscreteInformationProvider provider = new ModelInformationProvider(new ArrayList<NamedObject<IArimaModel>>());
-                return new ScatterView(provider);
-            }
-        };
     }
 }

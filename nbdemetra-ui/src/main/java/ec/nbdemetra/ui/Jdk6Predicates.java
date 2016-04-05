@@ -12,18 +12,14 @@ import org.openide.nodes.Node;
  *
  * @author Philippe Charles
  */
+@Deprecated
 public final class Jdk6Predicates {
 
     private Jdk6Predicates() {
         // static class
     }
 
-    public static Predicate<Node> lookupNode(final Class<?> clazz) {
-        return new Predicate<Node>() {
-            @Override
-            public boolean apply(Node input) {
-                return input.getLookup().lookup(clazz) != null;
-            }
-        };
+    public static Predicate<Node> lookupNode(Class<?> clazz) {
+        return o -> o.getLookup().lookup(clazz) != null;
     }
 }

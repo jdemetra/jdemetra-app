@@ -7,19 +7,13 @@ import ec.nbdemetra.ui.NbComponents;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -64,17 +58,13 @@ public class ArrayEditorDialog<T> extends JDialog {
         psp.setPreferredSize(new Dimension(250, 200));
         psp.setBorder(BorderFactory.createEtchedBorder());
 
-        list.addListSelectionListener(new ListSelectionListener() {
-
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (list.getSelectedValue() != null) {
-                    model.setProperties(PropertiesPanelFactory.INSTANCE.createProperties(list.getSelectedValue()));
-                    cur_ = (T) list.getSelectedValue();
-                } else {
-                    cur_ = null;
-                    model.setProperties(new Property[]{});
-                }
+        list.addListSelectionListener(event -> {
+            if (list.getSelectedValue() != null) {
+                model.setProperties(PropertiesPanelFactory.INSTANCE.createProperties(list.getSelectedValue()));
+                cur_ = (T) list.getSelectedValue();
+            } else {
+                cur_ = null;
+                model.setProperties(new Property[]{});
             }
         });
 
@@ -93,21 +83,17 @@ public class ArrayEditorDialog<T> extends JDialog {
             }
         });
 
-        model.addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                dirty_ = true;
-                try {
-                    Object o = list.getSelectedValue();
-                    if (o != null) {
-                        model.setProperties(PropertiesPanelFactory.INSTANCE.createProperties(o));
-                    }
-                } catch (RuntimeException err) {
-                    String msg = err.getMessage();
-                } finally {
-                    model.fireTableStructureChanged();
+        model.addPropertyChangeListener(evt -> {
+            dirty_ = true;
+            try {
+                Object o = list.getSelectedValue();
+                if (o != null) {
+                    model.setProperties(PropertiesPanelFactory.INSTANCE.createProperties(o));
                 }
+            } catch (RuntimeException err) {
+                String msg = err.getMessage();
+            } finally {
+                model.fireTableStructureChanged();
             }
         });
 
@@ -117,56 +103,40 @@ public class ArrayEditorDialog<T> extends JDialog {
         final JButton addButton = new JButton(DemetraUiIcon.LIST_ADD_16);
         addButton.setPreferredSize(new Dimension(30, 30));
         addButton.setFocusPainted(false);
-        addButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dirty_ = true;
-                try {
-                    Constructor<T> constructor = c_.getConstructor(new Class[]{});
-                    final T o = constructor.newInstance(new Object[]{});
-                    elementsList_.add(o);
-                    SwingUtilities.invokeLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            list.setModel(new ArrayEditorListModel(elementsList_));
-                            list.setSelectedValue(o, true);
-                            list.invalidate();
-                        }
-                    });
-
-                } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                    System.err.println(ex.getMessage());
-                }
+        addButton.addActionListener(event -> {
+            dirty_ = true;
+            try {
+                Constructor<T> constructor = c_.getConstructor(new Class[]{});
+                final T o = constructor.newInstance(new Object[]{});
+                elementsList_.add(o);
+                SwingUtilities.invokeLater(() -> {
+                    list.setModel(new ArrayEditorListModel(elementsList_));
+                    list.setSelectedValue(o, true);
+                    list.invalidate();
+                });
+                
+            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                System.err.println(ex.getMessage());
             }
         });
         buttonPane.add(addButton);
         final JButton deleteButton = new JButton(DemetraUiIcon.LIST_REMOVE_16);
         deleteButton.setPreferredSize(new Dimension(30, 30));
         deleteButton.setFocusPainted(false);
-        deleteButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    if (cur_ == null) {
-                        return;
-                    }
-                    dirty_ = true;
-                    elementsList_.remove(cur_);
-                    SwingUtilities.invokeLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            list.setModel(new ArrayEditorListModel(elementsList_));
-                            list.invalidate();
-                        }
-                    });
-
-                } catch (Exception ex) {
-                    System.err.println(ex.getMessage());
+        deleteButton.addActionListener(event -> {
+            try {
+                if (cur_ == null) {
+                    return;
                 }
+                dirty_ = true;
+                elementsList_.remove(cur_);
+                SwingUtilities.invokeLater(() -> {
+                    list.setModel(new ArrayEditorListModel(elementsList_));
+                    list.invalidate();
+                });
+                
+            } catch (Exception ex) {
+                System.err.println(ex.getMessage());
             }
         });
         buttonPane.add(deleteButton);
@@ -174,12 +144,8 @@ public class ArrayEditorDialog<T> extends JDialog {
         final JButton okButton = new JButton("Done");
         okButton.setPreferredSize(new Dimension(60, 27));
         okButton.setFocusPainted(false);
-        okButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ArrayEditorDialog.this.setVisible(false);
-            }
+        okButton.addActionListener(event -> {
+            ArrayEditorDialog.this.setVisible(false);
         });
         buttonPane.add(okButton);
         buttonPane.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));

@@ -8,7 +8,6 @@ import ec.nbdemetra.ui.mru.SourceId;
 import ec.nbdemetra.ws.IWorkspaceItemManager.ItemType;
 import ec.tss.tsproviders.DataSource;
 import ec.tstoolkit.algorithm.ProcessingContext;
-import ec.tstoolkit.information.InformationSet;
 import ec.tstoolkit.utilities.Id;
 import ec.ui.interfaces.IDisposable;
 import java.lang.reflect.InvocationTargetException;
@@ -302,12 +301,7 @@ public class Workspace implements IDisposable {
             if (!SwingUtilities.isEventDispatchThread()) {
                 try {
                     // could happen during the shut down...
-                    SwingUtilities.invokeAndWait(new Runnable() {
-                        @Override
-                        public void run() {
-                            item.closeView();
-                        }
-                    });
+                    SwingUtilities.invokeAndWait(item::closeView);
                 } catch (InterruptedException | InvocationTargetException ex) {
                 Thread.currentThread().interrupt();
                     Exceptions.printStackTrace(ex);

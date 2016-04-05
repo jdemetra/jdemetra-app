@@ -15,9 +15,7 @@ import ec.tstoolkit.utilities.Id;
 import ec.ui.view.tsprocessing.IProcDocumentView;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 import java.util.UUID;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -51,15 +49,12 @@ public abstract class AbstractDocumentViewer<D extends IProcDocument> extends JC
         m_tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         this.em = new ExplorerManager();
-        em.addVetoableChangeListener(new VetoableChangeListener() {
-            @Override
-            public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-                if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
-                    Node[] nodes = (Node[]) evt.getNewValue();
-                    if (nodes.length > 0) {
-                        Id id = nodes[0].getLookup().lookup(Id.class);
-                        showComponent(id);
-                    }
+        em.addVetoableChangeListener(evt -> {
+            if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
+                Node[] nodes = (Node[]) evt.getNewValue();
+                if (nodes.length > 0) {
+                    Id id = nodes[0].getLookup().lookup(Id.class);
+                    showComponent(id);
                 }
             }
         });

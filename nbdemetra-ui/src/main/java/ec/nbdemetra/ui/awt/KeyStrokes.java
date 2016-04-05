@@ -1,11 +1,21 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ui.awt;
 
-import com.google.common.base.Predicates;
-import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Maps;
@@ -15,7 +25,9 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.swing.InputMap;
 import javax.swing.JList;
 import javax.swing.JTextField;
@@ -31,6 +43,7 @@ public final class KeyStrokes {
     private KeyStrokes() {
         // static class
     }
+
     public static final ImmutableList<KeyStroke> COPY;
     public static final ImmutableList<KeyStroke> PASTE;
     public static final ImmutableList<KeyStroke> SELECT_ALL;
@@ -39,11 +52,10 @@ public final class KeyStrokes {
     public static final ImmutableList<KeyStroke> CLEAR;
 
     public static void putAll(InputMap im, Collection<? extends KeyStroke> keyStrokes, Object actionMapKey) {
-        for (KeyStroke o : keyStrokes) {
-            im.put(o, actionMapKey);
-        }
+        keyStrokes.stream().forEach(o -> im.put(o, actionMapKey));
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Implementation details">
     private enum ActionType {
 
         COPY, PASTE, SELECT_ALL, DELETE, OPEN, CLEAR;
@@ -89,7 +101,8 @@ public final class KeyStrokes {
             Map<KeyStroke, Object> keyStrokes = InputMaps.asMap(getInputMap(), true);
             ImmutableListMultimap.Builder<ActionType, KeyStroke> result = ImmutableListMultimap.builder();
             for (ActionType o : ActionType.values()) {
-                Set<KeyStroke> tmp = Maps.filterValues(keyStrokes, Predicates.equalTo(getActionMapKey(o))).keySet();
+                Object actionMapKey = getActionMapKey(o);
+                Set<KeyStroke> tmp = Maps.filterValues(keyStrokes, x -> Objects.equals(x, actionMapKey)).keySet();
                 if (!tmp.isEmpty()) {
                     result.putAll(o, tmp);
                 } else {
@@ -152,4 +165,5 @@ public final class KeyStrokes {
             }
         };
     }
+    //</editor-fold>
 }

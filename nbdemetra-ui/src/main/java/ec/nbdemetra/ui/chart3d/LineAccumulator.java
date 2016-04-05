@@ -40,7 +40,7 @@ public class LineAccumulator {
      * <code>LineAccumulator</code>
      */
     LineAccumulator() {
-        accumulator = new LinkedList<LineRecord>();
+        accumulator = new LinkedList<>();
     }
 
     /**

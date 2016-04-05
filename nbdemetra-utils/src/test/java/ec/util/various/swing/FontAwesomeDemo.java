@@ -19,11 +19,6 @@ package ec.util.various.swing;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Image;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.List;
-import java.util.concurrent.Callable;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
@@ -31,8 +26,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -45,12 +38,7 @@ public final class FontAwesomeDemo extends JPanel {
                 .content(FontAwesomeDemo.class)
                 .title("Font Awesome Demo")
                 .size(300, 200)
-                .icons(new Callable<List<Image>>() {
-                    @Override
-                    public List<Image> call() throws Exception {
-                        return FontAwesome.FA_FONT.getImages(Color.BLUE, 16f, 32f, 64f);
-                    }
-                })
+                .icons(() -> FontAwesome.FA_FONT.getImages(Color.BLUE, 16f, 32f, 64f))
                 .launch();
     }
 
@@ -70,24 +58,15 @@ public final class FontAwesomeDemo extends JPanel {
 
         final JLabel x = new JLabel();
         x.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        cb.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                x.setIcon(((FontAwesome) e.getItem()).getIcon(Color.GREEN.darker(), 100));
-            }
-        });
+        cb.addItemListener(evt -> x.setIcon(((FontAwesome) evt.getItem()).getIcon(Color.GREEN.darker(), 100)));
         add(x);
-        
-        final JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 360, 0);
-        slider.addChangeListener(new ChangeListener() {
 
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                JSlider source = (JSlider)e.getSource();
-                if (!source.getValueIsAdjusting()) {
-                    int angle = source.getValue();
-                    x.setIcon(((FontAwesome) (FontAwesome)cb.getSelectedItem()).getIcon(Color.GREEN.darker(), 100, angle));
-                }
+        final JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 360, 0);
+        slider.addChangeListener(evt -> {
+            JSlider source = (JSlider) evt.getSource();
+            if (!source.getValueIsAdjusting()) {
+                int angle = source.getValue();
+                x.setIcon(((FontAwesome) (FontAwesome) cb.getSelectedItem()).getIcon(Color.GREEN.darker(), 100, angle));
             }
         });
         add(slider);

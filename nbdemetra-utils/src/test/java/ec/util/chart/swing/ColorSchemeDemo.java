@@ -26,13 +26,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
@@ -54,12 +50,7 @@ public final class ColorSchemeDemo extends JPanel {
         new BasicSwingLauncher()
                 .content(ColorSchemeDemo.class)
                 .title("Color Scheme Demo")
-                .icons(new Callable<List<? extends Image>>() {
-                    @Override
-                    public List<? extends Image> call() throws Exception {
-                        return FontAwesome.FA_PAINT_BRUSH.getImages(Color.DARK_GRAY, 16f, 32f, 64f);
-                    }
-                })
+                .icons(() -> FontAwesome.FA_PAINT_BRUSH.getImages(Color.DARK_GRAY, 16f, 32f, 64f))
                 .size(300, 400)
                 .logLevel(Level.FINE)
                 .launch();
@@ -74,12 +65,7 @@ public final class ColorSchemeDemo extends JPanel {
         colors.setVisibleRowCount(-1);
         colors.setCellRenderer(new ColorRenderer());
 
-        colorScheme.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                applyColorScheme((ColorScheme) e.getItem(), colors);
-            }
-        });
+        colorScheme.addItemListener(e -> applyColorScheme((ColorScheme) e.getItem(), colors));
 
         applyColorScheme((ColorScheme) colorScheme.getSelectedItem(), colors);
 

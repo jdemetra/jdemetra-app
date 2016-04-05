@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
@@ -233,10 +232,5 @@ public final class ProviderNode extends AbstractNode {
         }
     }
 
-    private static final Ordering<DataSource> ON_TO_STRING = Ordering.natural().onResultOf(new Function<DataSource, String>() {
-        @Override
-        public String apply(DataSource input) {
-            return input.toString();
-        }
-    });
+    private static final Ordering<DataSource> ON_TO_STRING = Ordering.natural().onResultOf(o -> o.toString());
 }

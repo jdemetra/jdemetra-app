@@ -25,8 +25,6 @@ import ec.ui.interfaces.IColorSchemeAble;
 import ec.ui.interfaces.ITsView;
 import static ec.ui.interfaces.ITsView.TS_PROPERTY;
 import ec.util.chart.ColorScheme;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -54,14 +52,11 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case TS_PROPERTY:
-                        onTsChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case TS_PROPERTY:
+                    onTsChange();
+                    break;
             }
         });
     }
@@ -110,12 +105,9 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
                 TsEvent event = (TsEvent) arg;
                 if (event.isSeries() && event.ts.equals(m_ts)) {
                     dirty.set(true);
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (dirty.getAndSet(false)) {
-                                firePropertyChange(TS_PROPERTY, null, m_ts);
-                            }
+                    SwingUtilities.invokeLater(() -> {
+                        if (dirty.getAndSet(false)) {
+                            firePropertyChange(TS_PROPERTY, null, m_ts);
                         }
                     });
                 }

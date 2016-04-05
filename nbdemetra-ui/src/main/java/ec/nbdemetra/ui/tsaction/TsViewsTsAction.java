@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.tsaction;
 
-import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.tss.Ts;
 import ec.ui.interfaces.ITsAble;
@@ -35,7 +34,7 @@ public class TsViewsTsAction extends AbstractNamedService implements ITsAction {
     public TsViewsTsAction() {
         super(ITsAction.class, NAME);
     }
-    
+
     @Override
     public String getDisplayName() {
         return "All ts views";
@@ -43,8 +42,8 @@ public class TsViewsTsAction extends AbstractNamedService implements ITsAction {
 
     @Override
     public void open(Ts ts) {
-        for (ITsAble o : Iterables.filter(TopComponent.getRegistry().getOpened(), ITsAble.class)) {
-            o.setTs(ts);
-        }
+        TopComponent.getRegistry().getOpened().stream()
+                .filter(ITsAble.class::isInstance)
+                .forEach(o -> ((ITsAble) o).setTs(ts));
     }
 }

@@ -7,10 +7,6 @@ package ec.nbdemetra.sa.output;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.tss.sa.ISaOutputFactory;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,14 +42,10 @@ public class OutputPanel extends javax.swing.JPanel implements ExplorerManager.P
 
         this.em = new ExplorerManager();
 
-        em.addVetoableChangeListener(new VetoableChangeListener() {
-
-            @Override
-            public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-                if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
-                    Node[] nodes = (Node[]) evt.getNewValue();
-                    removeButton.setEnabled(nodes.length > 0);
-                }
+        em.addVetoableChangeListener(evt -> {
+            if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
+                Node[] nodes = (Node[]) evt.getNewValue();
+                removeButton.setEnabled(nodes.length > 0);
             }
         });
 
@@ -67,14 +59,10 @@ public class OutputPanel extends javax.swing.JPanel implements ExplorerManager.P
         outputList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         removeButton.setEnabled(false);
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String p = evt.getPropertyName();
-                if (p.equals(OUTPUT_PROPERTY)) {
-                    onOutputChange();
-                }
+        addPropertyChangeListener(evt -> {
+            String p = evt.getPropertyName();
+            if (p.equals(OUTPUT_PROPERTY)) {
+                onOutputChange();
             }
         });
         refreshNodes();

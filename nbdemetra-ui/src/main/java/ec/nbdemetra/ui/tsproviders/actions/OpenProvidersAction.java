@@ -16,10 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.tsproviders.IDataSourceLoader;
@@ -75,19 +72,14 @@ public final class OpenProvidersAction extends AbstractAction implements Present
     }
 
     public static List<IFileLoader> getLoaders(final File file) {
-        return TsProviders.all().filter(IFileLoader.class).filter(new Predicate<IFileLoader>() {
-            @Override
-            public boolean apply(IFileLoader input) {
-                return input.accept(file);
-            }
-        }).toList();
+        return TsProviders.all().filter(IFileLoader.class).filter(o -> o.accept(file)).toList();
     }
 
     public static <T extends IDataSourceLoader> Optional<T> chooseLoader(List<T> loaders) {
         if (loaders.size() == 1) {
             return Optional.of(loaders.get(0));
         }
-        JComboBox cb = new JComboBox(Iterables.toArray(loaders, IDataSourceLoader.class));
+        JComboBox cb = new JComboBox(loaders.toArray());
         cb.setRenderer(new LoaderRenderer());
         DialogDescriptor dd = new DialogDescriptor(cb, "Choose a loader");
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
@@ -106,13 +98,8 @@ public final class OpenProvidersAction extends AbstractAction implements Present
             return result;
         }
     }
-    //
-    private static final Ordering<IDataSourceProvider> ON_CLASS_SIMPLENAME = Ordering.natural().onResultOf(new Function<IDataSourceProvider, String>() {
-        @Override
-        public String apply(IDataSourceProvider input) {
-            return input.getClass().getSimpleName();
-        }
-    });
+
+    private static final Ordering<IDataSourceProvider> ON_CLASS_SIMPLENAME = Ordering.natural().onResultOf(o -> o.getClass().getSimpleName());
 
     private static final class AbstractActionImpl extends AbstractAction {
 

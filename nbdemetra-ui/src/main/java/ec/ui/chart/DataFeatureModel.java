@@ -4,11 +4,11 @@
  */
 package ec.ui.chart;
 
-import com.google.common.collect.Lists;
 import ec.tss.Ts;
 import ec.tstoolkit.design.Status;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -62,7 +62,7 @@ public class DataFeatureModel {
     }
 
     public EnumSet<Ts.DataFeature> getFeatures(int series, int obs) {
-        List<Ts.DataFeature> result = Lists.newArrayListWithCapacity(features.length);
+        List<Ts.DataFeature> result = new ArrayList(features.length);
         for (int f = 0; f < features.length; f++) {
             if (internalData[f][series] != null && internalData[f][series][obs]) {
                 result.add(features[f]);

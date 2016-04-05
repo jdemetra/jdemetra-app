@@ -41,8 +41,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.beans.Beans;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -118,14 +116,11 @@ public class JTsCheckLastList extends ATsList {
     }
 
     private void enableProperties() {
-        this.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        this.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }
@@ -346,21 +341,13 @@ public class JTsCheckLastList extends ATsList {
         result.setTransferHandler(new TsCollectionTransferHandler());
         result.setFillsViewportHeight(true);
 
-        compDouble = new Comparator<Double>() {
-            @Override
-            public int compare(Double o1, Double o2) {
-                Double d1 = Math.abs(o1);
-                Double d2 = Math.abs(o2);
-                return d1.compareTo(d2);
-            }
+        compDouble = (l, r) -> {
+            Double d1 = Math.abs(l);
+            Double d2 = Math.abs(r);
+            return d1.compareTo(d2);
         };
 
-        compTs = new Comparator<Ts>() {
-            @Override
-            public int compare(Ts o1, Ts o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        };
+        compTs = (l, r) -> l.getName().compareTo(r.getName());
 
         refreshSorter(result);
 
@@ -371,7 +358,7 @@ public class JTsCheckLastList extends ATsList {
 
     private void refreshSorter(XTable t) {
         t.setAutoCreateRowSorter(true);
-        TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
         if (lastChecks >= 1) {
             sorter.setComparator(AnomalyModel.SERIES, compTs);
             sorter.setComparator(AnomalyModel.ABSOLUTE_ERROR1, compDouble);

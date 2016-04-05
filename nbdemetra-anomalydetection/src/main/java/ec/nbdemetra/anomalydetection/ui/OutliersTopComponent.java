@@ -144,20 +144,17 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
         });
 
         chart = new AnomalyDetectionChart();
-        chart.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case AnomalyDetectionChart.HOVERED_OBS_PROPERTY:
-                        int obs = (Integer) evt.getNewValue();
-                        AnomalyDetectionChart.Model model = chart.getModel();
-                        if (obs == -1 || model == null) {
-                            grid.setHoveredObs(ObsIndex.NULL);
-                        } else {
-                            grid.setHoveredObs(ObsIndex.valueOf(grid.getTsCollection().indexOf(model.getTs()), obs));
-                        }
-                        break;
-                }
+        chart.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case AnomalyDetectionChart.HOVERED_OBS_PROPERTY:
+                    int obs = (Integer) evt.getNewValue();
+                    AnomalyDetectionChart.Model model = chart.getModel();
+                    if (obs == -1 || model == null) {
+                        grid.setHoveredObs(ObsIndex.NULL);
+                    } else {
+                        grid.setHoveredObs(ObsIndex.valueOf(grid.getTsCollection().indexOf(model.getTs()), obs));
+                    }
+                    break;
             }
         });
 
@@ -281,14 +278,11 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
             menuItem.setEnabled(i != 1);
             addPopup.add(menuItem);
         }
-        grid.addPropertyChangeListener(ITsGrid.ZOOM_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                for (Component o : addPopup.getComponents()) {
-                    JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
-                    item.setState(grid.getZoomPercentage() == Integer.parseInt(o.getName()));
-                    item.setEnabled(!item.isSelected());
-                }
+        grid.addPropertyChangeListener(ITsGrid.ZOOM_PROPERTY, evt -> {
+            for (Component o : addPopup.getComponents()) {
+                JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
+                item.setState(grid.getZoomPercentage() == Integer.parseInt(o.getName()));
+                item.setEnabled(!item.isSelected());
             }
         });
 

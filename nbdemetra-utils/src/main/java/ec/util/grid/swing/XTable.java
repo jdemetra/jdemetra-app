@@ -19,8 +19,6 @@ package ec.util.grid.swing;
 import ec.util.various.swing.StandardSwingColor;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -79,24 +77,21 @@ public class XTable extends JTable {
 
         onCellPaddingChange();
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case "dropLocation":
-                        hasDropLocation = evt.getNewValue() != null;
-                        onNoDataRendererChange();
-                        break;
-                    case CELL_PADDING_PROPERTY:
-                        onCellPaddingChange();
-                        break;
-                    case ODD_BACKGROUND_PROPERTY:
-                        onOddBackgroundChange();
-                        break;
-                    case NO_DATA_RENDERER_PROPERTY:
-                        onNoDataRendererChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case "dropLocation":
+                    hasDropLocation = evt.getNewValue() != null;
+                    onNoDataRendererChange();
+                    break;
+                case CELL_PADDING_PROPERTY:
+                    onCellPaddingChange();
+                    break;
+                case ODD_BACKGROUND_PROPERTY:
+                    onOddBackgroundChange();
+                    break;
+                case NO_DATA_RENDERER_PROPERTY:
+                    onNoDataRendererChange();
+                    break;
             }
         });
     }

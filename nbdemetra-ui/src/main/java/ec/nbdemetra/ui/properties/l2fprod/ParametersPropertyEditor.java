@@ -7,8 +7,6 @@ import ec.tstoolkit.ParameterType;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.NumberFormat;
@@ -86,112 +84,101 @@ public class ParametersPropertyEditor extends AbstractPropertyEditor {
 
         public ParametersEditor() {
             final JButton button = new JButton("...");
-            button.addActionListener(new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    JPanel pane = new JPanel(new BorderLayout());
-                    final JTable table = new JTable(
-                            new DefaultTableModel() {
-
-                                @Override
-                                public int getColumnCount() {
-                                    return 2;
-                                }
-
-                                @Override
-                                public String getColumnName(int column) {
-                                    switch (column) {
-                                        case 0:
-                                            return "Value";
-                                        case 1:
-                                            return "Fixed";
-                                        default:
-                                            return "";
-                                    }
-                                }
-
-                                @Override
-                                public Class<?> getColumnClass(int columnIndex) {
-                                    if (columnIndex == 0)
-                                        return Double.class;
-                                    else
-                                        return Type.class;
-                                }
-
-                                @Override
-                                public boolean isCellEditable(int row, int column) {
-                                    return true;
-                                }
-
-                                @Override
-                                public int getRowCount() {
-                                    return nparameters_.length;
-                                }
-
-                                @Override
-                                public Object getValueAt(int row, int column) {
-                                    Parameter param = nparameters_[row];
-
-                                    switch (column) {
-                                        case 0:
-                                            return param.getValue();
-                                        case 1:
-                                            return convert(param.getType()) ;//== ParameterType.Fixed;
-                                        default:
-                                            return null;
-                                    }
-                                }
-
-                                @Override
-                                public void setValueAt(Object aValue, int row, int column) {
-                                    Parameter param = nparameters_[row];
-
-                                    switch (column) {
-                                        case 0:
-                                            double val = Double.parseDouble(aValue.toString());
-                                            param.setValue(val);
-                                            break;
-                                        case 1:
-                                            param.setType(convert(aValue.toString()));
-                                            //boolean fixed = Boolean.parseBoolean(aValue.toString());
-                                            //param.setType(fixed ? ParameterType.Fixed : ParameterType.Undefined);
-                                            break;
-                                    }
-
-                                    fireTableCellUpdated(row, column);
-                                }
-                            });
-
-                    //table.getColumnModel().getColumn(0).setCellEditor(new CustomNumberEditor());
-                    JComboBox cb=new JComboBox(Type.values());
-                    table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(cb));
-                    table.setFillsViewportHeight(true);
-                    pane.add(NbComponents.newJScrollPane(table), BorderLayout.CENTER);
-
-                    final JDialog dlg = new JDialog(SwingUtilities.getWindowAncestor(button), Dialog.ModalityType.TOOLKIT_MODAL);
-                    dlg.setContentPane(pane);
-                    dlg.addWindowListener(new WindowAdapter() {
-
-                        @Override
-                        public void windowClosing(WindowEvent e) {
-                            if (table.getCellEditor() != null) {
-                                table.getCellEditor().stopCellEditing();
+            button.addActionListener(event -> {
+                JPanel pane = new JPanel(new BorderLayout());
+                final JTable table = new JTable(
+                        new DefaultTableModel() {
+                            
+                            @Override
+                            public int getColumnCount() {
+                                return 2;
                             }
-                            fireChanged(nparameters_);
+                            
+                            @Override
+                            public String getColumnName(int column) {
+                                switch (column) {
+                                    case 0:
+                                        return "Value";
+                                    case 1:
+                                        return "Fixed";
+                                    default:
+                                        return "";
+                                }
+                            }
+                            
+                            @Override
+                            public Class<?> getColumnClass(int columnIndex) {
+                                if (columnIndex == 0)
+                                    return Double.class;
+                                else
+                                    return Type.class;
+                            }
+                            
+                            @Override
+                            public boolean isCellEditable(int row, int column) {
+                                return true;
+                            }
+                            
+                            @Override
+                            public int getRowCount() {
+                                return nparameters_.length;
+                            }
+                            
+                            @Override
+                            public Object getValueAt(int row, int column) {
+                                Parameter param = nparameters_[row];
+                                
+                                switch (column) {
+                                    case 0:
+                                        return param.getValue();
+                                    case 1:
+                                        return convert(param.getType()) ;//== ParameterType.Fixed;
+                                    default:
+                                        return null;
+                                }
+                            }
+                            
+                            @Override
+                            public void setValueAt(Object aValue, int row, int column) {
+                                Parameter param = nparameters_[row];
+                                
+                                switch (column) {
+                                    case 0:
+                                        double val = Double.parseDouble(aValue.toString());
+                                        param.setValue(val);
+                                        break;
+                                    case 1:
+                                        param.setType(convert(aValue.toString()));
+                                        //boolean fixed = Boolean.parseBoolean(aValue.toString());
+                                        //param.setType(fixed ? ParameterType.Fixed : ParameterType.Undefined);
+                                        break;
+                                }
+                                
+                                fireTableCellUpdated(row, column);
+                            }
+                        });
+                
+                //table.getColumnModel().getColumn(0).setCellEditor(new CustomNumberEditor());
+                JComboBox cb=new JComboBox(Type.values());
+                table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(cb));
+                table.setFillsViewportHeight(true);
+                pane.add(NbComponents.newJScrollPane(table), BorderLayout.CENTER);
+                
+                final JDialog dlg = new JDialog(SwingUtilities.getWindowAncestor(button), Dialog.ModalityType.TOOLKIT_MODAL);
+                dlg.setContentPane(pane);
+                dlg.addWindowListener(new WindowAdapter() {
+                    
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        if (table.getCellEditor() != null) {
+                            table.getCellEditor().stopCellEditing();
                         }
-                    });
-                    dlg.setMinimumSize(new Dimension(300, 300));
-                    dlg.setModal(true);
-                    SwingUtilities.invokeLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            dlg.setVisible(true);
-                        }
-                    });
-
-                }
+                        fireChanged(nparameters_);
+                    }
+                });
+                dlg.setMinimumSize(new Dimension(300, 300));
+                dlg.setModal(true);
+                SwingUtilities.invokeLater(() -> dlg.setVisible(true));
             });
 
             setLayout(new BorderLayout());

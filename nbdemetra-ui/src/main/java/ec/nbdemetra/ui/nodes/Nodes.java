@@ -51,7 +51,7 @@ public final class Nodes {
 
     @Nonnull
     public static FluentIterable<Node> childrenIterable(@Nonnull Node root) {
-        return FluentIterable.from(root.isLeaf() ? Collections.<Node>emptyList() : Arrays.asList(root.getChildren().getNodes()));
+        return FluentIterable.from(root.isLeaf() ? Collections.emptyList() : Arrays.asList(root.getChildren().getNodes()));
     }
 
     @Nonnull

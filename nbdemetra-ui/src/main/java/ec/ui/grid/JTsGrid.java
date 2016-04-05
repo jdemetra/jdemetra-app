@@ -41,8 +41,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -62,8 +60,6 @@ import javax.swing.JTable;
 import javax.swing.JToolTip;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -159,12 +155,7 @@ public class JTsGrid extends ATsGrid {
 
     //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
     private void enableSingleTsSelection() {
-        combo.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setSingleTsIndex(combo.getSelectedIndex());
-            }
-        });
+        combo.addItemListener(event -> setSingleTsIndex(combo.getSelectedIndex()));
     }
 
     private void enableOpenOnDoubleClick() {
@@ -176,32 +167,29 @@ public class JTsGrid extends ATsGrid {
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case USE_COLOR_SCHEME_PROPERTY:
-                        onUseColorSchemeChange();
-                        break;
-                    case SHOW_BARS_PROPERTY:
-                        onShowBarsChange();
-                        break;
-                    case CELL_RENDERER_PROPERTY:
-                        onCellRendererChange();
-                        break;
-                    case CROSSHAIR_VISIBLE_PROPERTY:
-                        onCrosshairVisibleChange();
-                        break;
-                    case HOVERED_OBS_PROPERTY:
-                        onHoveredObsChange();
-                        break;
-                    case "transferHandler":
-                        onTransferHandlerChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case USE_COLOR_SCHEME_PROPERTY:
+                    onUseColorSchemeChange();
+                    break;
+                case SHOW_BARS_PROPERTY:
+                    onShowBarsChange();
+                    break;
+                case CELL_RENDERER_PROPERTY:
+                    onCellRendererChange();
+                    break;
+                case CROSSHAIR_VISIBLE_PROPERTY:
+                    onCrosshairVisibleChange();
+                    break;
+                case HOVERED_OBS_PROPERTY:
+                    onHoveredObsChange();
+                    break;
+                case "transferHandler":
+                    onTransferHandlerChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }
@@ -523,18 +511,8 @@ public class JTsGrid extends ATsGrid {
         final JSlider slider = new JSlider(10, 200, 100);
         {
             slider.setPreferredSize(new Dimension(50, slider.getPreferredSize().height));
-            slider.addChangeListener(new ChangeListener() {
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    setZoomRatio(slider.getValue());
-                }
-            });
-            addPropertyChangeListener(ZOOM_PROPERTY, new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    slider.setValue(getZoomRatio());
-                }
-            });
+            slider.addChangeListener(event -> setZoomRatio(slider.getValue()));
+            addPropertyChangeListener(ZOOM_PROPERTY, evt -> slider.setValue(getZoomRatio()));
         }
         zoom.add(slider);
         for (int o : new int[]{200, 100, 75, 50, 25}) {

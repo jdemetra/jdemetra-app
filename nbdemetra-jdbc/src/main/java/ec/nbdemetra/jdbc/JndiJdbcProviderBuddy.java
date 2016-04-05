@@ -155,12 +155,7 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
     public Config editConfig(Config config) throws IllegalArgumentException {
         final Action openServicesTab = FileUtil.getConfigObject("Actions/Window/org-netbeans-core-ide-ServicesTabAction.instance", Action.class);
         if (openServicesTab != null) {
-            EventQueue.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    openServicesTab.actionPerformed(null);
-                }
-            });
+            EventQueue.invokeLater(() -> openServicesTab.actionPerformed(null));
         }
         return EMPTY;
     }
@@ -207,12 +202,7 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
     private static final class DbExplorerRenderer extends SimpleHtmlListCellRenderer<DatabaseConnection> {
 
         public DbExplorerRenderer() {
-            super(new SimpleHtmlListCellRenderer.HtmlProvider<DatabaseConnection>() {
-                @Override
-                public String getHtmlDisplayName(DatabaseConnection value) {
-                    return "<html><b>" + value.getDisplayName() + "</b> - <i>" + value.getName() + "</i>";
-                }
-            });
+            super(o -> "<html><b>" + o.getDisplayName() + "</b> - <i>" + o.getName() + "</i>");
         }
     }
 
@@ -272,22 +262,19 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
 
         private boolean connectWithDialog(final DatabaseConnection o) {
             try {
-                return execInEDT(new Callable<Boolean>() {
-                    @Override
-                    public Boolean call() throws Exception {
-                        String dbName = o.getDisplayName();
-                        if (!isSkip(dbName)) {
-                            JCheckBox checkBox = new JCheckBox(Bundle.dbexplorer_skip(), false);
-                            Object[] msg = {Bundle.dbexplorer_requestConnection(dbName), checkBox};
-                            Object option = DialogDisplayer.getDefault().notify(new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION));
-                            setSkip(dbName, checkBox.isSelected());
-                            if (option == NotifyDescriptor.YES_OPTION) {
-                                ConnectionManager.getDefault().showConnectionDialog(o);
-                                return o.getJDBCConnection() != null;
-                            }
+                return execInEDT(() -> {
+                    String dbName = o.getDisplayName();
+                    if (!isSkip(dbName)) {
+                        JCheckBox checkBox = new JCheckBox(Bundle.dbexplorer_skip(), false);
+                        Object[] msg = {Bundle.dbexplorer_requestConnection(dbName), checkBox};
+                        Object option = DialogDisplayer.getDefault().notify(new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION));
+                        setSkip(dbName, checkBox.isSelected());
+                        if (option == NotifyDescriptor.YES_OPTION) {
+                            ConnectionManager.getDefault().showConnectionDialog(o);
+                            return o.getJDBCConnection() != null;
                         }
-                        return false;
                     }
+                    return false;
                 });
             } catch (Exception ex) {
                 Exceptions.printStackTrace(ex);

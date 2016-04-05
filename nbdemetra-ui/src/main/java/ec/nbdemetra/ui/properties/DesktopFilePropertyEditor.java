@@ -140,21 +140,11 @@ public class DesktopFilePropertyEditor extends AbstractExPropertyEditor {
         };
     }
 
-    static java.io.FileFilter toFileFilter(final javax.swing.filechooser.FileFilter o) {
-        return new java.io.FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return o.accept(pathname);
-            }
-        };
+    static java.io.FileFilter toFileFilter(javax.swing.filechooser.FileFilter filter) {
+        return filter::accept;
     }
 
-    static java.io.FileFilter toFileFilter(final java.io.FilenameFilter o) {
-        return new java.io.FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return o.accept(pathname.getParentFile(), pathname.getName());
-            }
-        };
+    static java.io.FileFilter toFileFilter(java.io.FilenameFilter filter) {
+        return o -> filter.accept(o.getParentFile(), o.getName());
     }
 }

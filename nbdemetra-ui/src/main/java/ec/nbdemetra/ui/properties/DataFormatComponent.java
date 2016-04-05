@@ -9,8 +9,6 @@ import ec.nbdemetra.ui.awt.SwingProperties;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.util.completion.AutoCompletionSources;
 import java.awt.GridLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
@@ -38,11 +36,8 @@ public class DataFormatComponent extends AutoCompletedComboBox<DataFormat> {
 
         datePattern = (JTextField) add(new JTextField());
         preview = (JLabel) add(new JLabel());
-        preview.addPropertyChangeListener(SwingProperties.LABEL_TEXT_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                firePropertyChange(PREVIEW_PROPERTY, removePrefix((String) evt.getOldValue()), removePrefix((String) evt.getNewValue()));
-            }
+        preview.addPropertyChangeListener(SwingProperties.LABEL_TEXT_PROPERTY, evt -> {
+            firePropertyChange(PREVIEW_PROPERTY, removePrefix((String) evt.getOldValue()), removePrefix((String) evt.getNewValue()));
         });
 
         Previewer previewer = new Previewer();

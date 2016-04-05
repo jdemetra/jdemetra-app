@@ -24,7 +24,6 @@ import ec.util.grid.swing.ext.TableGridCommand;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,15 +76,12 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
                 return result;
             }
         });
-        comboBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED && e.getItem() != null) {
-                    Entry<Integer, AlgorithmDescriptor> item = (Entry<Integer, AlgorithmDescriptor>) e.getItem();
-                    updateMatrix(item.getValue(), item.getKey());
-                } else {
-                    clearMatrices();
-                }
+        comboBox.addItemListener(event -> {
+            if (event.getStateChange() == ItemEvent.SELECTED && event.getItem() != null) {
+                Entry<Integer, AlgorithmDescriptor> item = (Entry<Integer, AlgorithmDescriptor>) event.getItem();
+                updateMatrix(item.getValue(), item.getKey());
+            } else {
+                clearMatrices();
             }
         });
 
