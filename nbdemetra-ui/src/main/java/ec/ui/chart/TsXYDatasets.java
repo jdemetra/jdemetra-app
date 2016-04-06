@@ -340,7 +340,7 @@ public final class TsXYDatasets {
 
         @Nonnull
         static FastTs create(@Nonnull Comparable<?> key, @Nonnull TsData data) {
-            return create(key, data.getStart(), data.getValues().internalStorage());
+            return create(key, data.getStart(), data.internalStorage());
         }
 
         @Nonnull

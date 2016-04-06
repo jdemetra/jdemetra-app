@@ -31,8 +31,8 @@ public class SpectralView extends JComponent implements IDisposable {
     public void set(TsData series, boolean wn) {
         int freq = series.getFrequency().intValue();
         m_pView.setLimitVisible(wn);
-        m_pView.setData("Periodogram", freq, series.getValues());
-        m_arView.setData("Auto-regressive spectrum", freq, series.getValues());
+        m_pView.setData("Periodogram", freq, series);
+        m_arView.setData("Auto-regressive spectrum", freq, series);
     }
     
     public void setDifferencingOrder(int order){

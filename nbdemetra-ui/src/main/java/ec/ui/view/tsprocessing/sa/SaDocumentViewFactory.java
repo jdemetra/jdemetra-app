@@ -611,7 +611,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
                         return null;
                     }
                     TsData res = pp.getFullResiduals();
-                    return new NiidTests(res.getValues(), res.getFrequency().intValue(),
+                    return new NiidTests(res, res.getFrequency().intValue(),
                             pp.description.getArimaComponent().getFreeParametersCount(), true);
                 }
             }, new ResidualsStatsUI());

@@ -95,7 +95,7 @@ public class RevisionHistoryView extends JComponent implements IColorSchemeAble 
     private void addSeries(TimeSeriesCollection chartSeries, TsData data) {
         TimeSeries chartTs = new TimeSeries("");
         for (int i = 0; i < data.getDomain().getLength(); ++i) {
-            if (DescriptiveStatistics.isFinite(data.get(i))) {
+            if (Double.isFinite(data.get(i))) {
                 Day day = new Day(data.getDomain().get(i).middle());
                 chartTs.addOrUpdate(day, data.get(i));
             }

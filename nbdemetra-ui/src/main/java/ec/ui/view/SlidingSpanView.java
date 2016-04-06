@@ -144,11 +144,11 @@ public class SlidingSpanView extends JComponent implements IColorSchemeAble {
 
         clear();
         TsData data = slidingSpans.Statistics(infoName, info);
-        if (data == null || data.getValues().getMissingValuesCount() == data.getValues().getLength()) {
+        if (data == null || data.getMissingValuesCount() == data.getLength()) {
             return;
         }
 
-        DescriptiveStatistics stats = new DescriptiveStatistics(new DataBlock(data.getValues().internalStorage()));
+        DescriptiveStatistics stats = new DescriptiveStatistics(new DataBlock(data.internalStorage()));
         if (stats.isConstant()) {
             return;
         }

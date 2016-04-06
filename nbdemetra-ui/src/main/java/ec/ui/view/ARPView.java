@@ -95,7 +95,7 @@ public abstract class ARPView extends ATsView {
                 setData("Loading " + m_ts.getName(), 0, null);
                 break;
             case Valid:
-                setData(m_ts.getName(), m_ts.getTsData().getFrequency().intValue(), m_ts.getTsData().getValues());
+                setData(m_ts.getName(), m_ts.getTsData().getFrequency().intValue(), m_ts.getTsData());
                 break;
         }
     }

@@ -280,7 +280,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
                 public NiidTests retrieve(D source) {
                     PreprocessingModel rslt = source.getResults();
                     TsData res = rslt.getFullResiduals();
-                    return new NiidTests(res.getValues(), res.getFrequency().intValue(),
+                    return new NiidTests(res, res.getFrequency().intValue(),
                             rslt.description.getArimaComponent().getFreeParametersCount(), true);
                 }
             }, new ResidualsStatsUI());
