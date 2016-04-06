@@ -20,7 +20,7 @@ public class ResidualsDistUI<V extends IProcDocumentView<?>> extends DefaultItem
         if (information != null) {
             int n = information.getFrequency().intValue();
             resdistView.setAutocorrelationsCount(Math.max(8, n * 3));
-            resdistView.setData(information.getValues());
+            resdistView.setData(information);
         }else
             resdistView.reset();
         return resdistView;

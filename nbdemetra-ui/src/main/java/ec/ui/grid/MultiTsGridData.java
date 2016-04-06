@@ -66,7 +66,7 @@ final class MultiTsGridData extends TsGridData implements Supplier<DescriptiveSt
             double[][] allValues = new double[dataTable.getSeriesCount()][];
             for (int i = 0; i < allValues.length; i++) {
                 TsData data = dataTable.series(i);
-                allValues[i] = data != null ? data.getValues().internalStorage() : new double[0];
+                allValues[i] = data != null ? data.internalStorage() : new double[0];
             }
             stats = new DescriptiveStatistics(Doubles.concat(allValues));
         }

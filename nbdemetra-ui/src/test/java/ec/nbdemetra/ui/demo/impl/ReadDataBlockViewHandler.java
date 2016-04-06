@@ -66,7 +66,7 @@ public final class ReadDataBlockViewHandler extends DemoComponentHandler.Instanc
 
         @Override
         protected void apply(IReadDataBlockView c, TsCollection col) {
-            c.setDataBlock(new ReadDataBlock(col.get(0).getTsData().getValues().internalStorage()));
+            c.setDataBlock(new ReadDataBlock(col.get(0).getTsData().internalStorage()));
         }
     }
 

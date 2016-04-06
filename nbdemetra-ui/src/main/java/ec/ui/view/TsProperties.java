@@ -80,7 +80,7 @@ public class TsProperties extends JComponent implements IDisposable {
         labelSeries_.setText(ts.getName());
         labelSource_.setText(ts.getMoniker().getSource());
 
-        DescriptiveStatistics ds = new DescriptiveStatistics(ts.getTsData().getValues());
+        DescriptiveStatistics ds = new DescriptiveStatistics(ts.getTsData());
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode();
         DefaultMutableTreeNode metaNode = new DefaultMutableTreeNode("Metadata");

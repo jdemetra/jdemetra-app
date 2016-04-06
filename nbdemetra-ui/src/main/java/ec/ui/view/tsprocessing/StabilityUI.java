@@ -71,7 +71,7 @@ public class StabilityUI<V extends IProcDocumentView<?>> extends PooledItemUI<V,
         }
 
         for (Map.Entry<TsDomain, Double> d : data.entrySet()) {
-            if (DescriptiveStatistics.isFinite(d.getValue())) {
+            if (Double.isFinite(d.getValue())) {
                 return true;
             }
         }
