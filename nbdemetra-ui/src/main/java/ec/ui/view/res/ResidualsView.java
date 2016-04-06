@@ -83,6 +83,11 @@ public class ResidualsView extends ATsDataView {
         setLayout(new BorderLayout());
         add(splitPane, BorderLayout.CENTER);
     }
+    
+    @Override
+    public void dispose(){
+        grid.dispose();
+    }
 
     private void enableProperties() {
         this.addPropertyChangeListener(new PropertyChangeListener() {
@@ -102,8 +107,8 @@ public class ResidualsView extends ATsDataView {
     protected void onTsDataChange() {
         chartPanel.getChart().getXYPlot().setDataset(TsXYDatasets.from("", tsData));
         if (tsData != DEFAULT_TS_DATA) {
-            Range rng = calcRange(tsData.getValues().internalStorage());
-            ((NumberAxis) chartPanel.getChart().getXYPlot().getRangeAxis()).setTickUnit(new NumberTickUnit(calcTick(rng)),true, false);
+            Range rng = calcRange(tsData.internalStorage());
+            ((NumberAxis) chartPanel.getChart().getXYPlot().getRangeAxis()).setTickUnit(new NumberTickUnit(calcTick(rng)), true, false);
 
             grid.getTsCollection().replace(TsFactory.instance.createTs("Residuals", new MetaData(), tsData));
         } else {
@@ -215,15 +220,31 @@ public class ResidualsView extends ATsDataView {
     private double calcTick(Range rng) {
         double tick = 0;
         double avg = (rng.getUpperBound() - rng.getLowerBound()) / 6;
-        for (int i = 0; i < 10 && tick == 0; i++) {
-            double power = Math.pow(10, i);
-            if (avg > (0.01 * power) && avg <= (0.02 * power)) {
-                tick = (0.02 * power);
-            } else if (avg > (0.02 * power) && avg <= (0.05 * power)) {
-                tick = (0.05 * power);
-            } else if (avg > (0.05 * power) && avg <= (0.1 * power)) {
-                tick = (0.1 * power);
+        if (avg > 1) {
+            for (int i = 0; i < 10 && tick == 0; i++) {
+                double power = Math.pow(10, i);
+                if (avg > (0.01 * power) && avg <= (0.02 * power)) {
+                    tick = (0.02 * power);
+                } else if (avg > (0.02 * power) && avg <= (0.05 * power)) {
+                    tick = (0.05 * power);
+                } else if (avg > (0.05 * power) && avg <= (0.1 * power)) {
+                    tick = (0.1 * power);
+                }
             }
+        } else {
+            for (int i = 0; i < 10 && tick == 0; i++) {
+                double power = Math.pow(.1, i);
+                if (avg > (0.01 * power) && avg <= (0.02 * power)) {
+                    tick = (0.02 * power);
+                } else if (avg > (0.02 * power) && avg <= (0.05 * power)) {
+                    tick = (0.05 * power);
+                } else if (avg > (0.05 * power) && avg <= (0.1 * power)) {
+                    tick = (0.1 * power);
+                }
+            }
+        }
+        if (tick == 0) {
+            tick = avg;
         }
         return tick;
     }
