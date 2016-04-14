@@ -145,7 +145,7 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
                             curIndex = sIndex;
                             col = TsFactory.instance.createTsCollection(source.getInput().get(curIndex).getName());
                         }
-                        col.add(TsFactory.instance.createTs(splitted[1], null, tsData));
+                        col.quietAdd(TsFactory.instance.createTs(splitted[1], null, tsData));
                     }
                 }
                 all.put(source.getInput().get(curIndex), col);

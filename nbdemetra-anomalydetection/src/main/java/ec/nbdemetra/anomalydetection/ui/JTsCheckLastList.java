@@ -245,7 +245,7 @@ public class JTsCheckLastList extends ATsList {
             public void actionPerformed(ActionEvent arg0) {
                 if (collection.isLocked()) {
                     TsCollection ncol = TsFactory.instance.createTsCollection();
-                    ncol.append(collection);
+                    ncol.quietAppend(collection);
                     collection = ncol;
                 }
             }

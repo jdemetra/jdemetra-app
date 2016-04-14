@@ -34,7 +34,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -259,7 +258,7 @@ public class TssTransferSupport extends ListenableBean {
             List<TssTransferHandler> all = stream().collect(Collectors.toList());
             return DataTransfers.asTransferableStream(multi.get())
                     .flatMap(o -> findTsCollection(all.stream(), o).map(TsCollection::stream).orElse(Stream.empty()))
-                    .collect(toTsCollection());
+                    .collect(TsFactory.toTsCollection());
         }
         return findTsCollection(stream(), transferable).orElse(null);
     }
@@ -303,14 +302,6 @@ public class TssTransferSupport extends ListenableBean {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    // TODO: move to specialized class
-    private static Collector<Ts, List<Ts>, TsCollection> toTsCollection() {
-        return Collector.of(ArrayList::new, List::add, (l, r) -> {
-            l.addAll(r);
-            return l;
-        }, o -> TsFactory.instance.createTsCollection(null, null, null, o));
-    }
-
     private static Optional<TsCollection> findTsCollection(Stream<? extends TssTransferHandler> stream, Transferable t) {
         return stream
                 .filter(onDataFlavors(t.getTransferDataFlavors()))

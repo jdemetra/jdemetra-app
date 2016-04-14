@@ -60,7 +60,7 @@ abstract class SpreadSheetTssTransferHandler<T> extends TssTransferHandler {
     abstract protected T fromBook(Book book) throws IOException;
 
     abstract protected boolean isInstance(Object obj);
-    
+
     protected SpreadSheetFactory getFactory() {
         return SpreadSheetFactory.getDefault();
     }
@@ -85,16 +85,14 @@ abstract class SpreadSheetTssTransferHandler<T> extends TssTransferHandler {
     @Override
     public TsCollection importTsCollection(Object obj) throws IOException {
         try (Book book = toBook((T) obj)) {
-            TsCollection result = TsFactory.instance.createTsCollection();
             if (book.getSheetCount() > 0) {
                 TsCollectionInformation info = getFactory().toTsCollectionInfo(book.getSheet(0), getInternalConfig().getTsImportOptions());
-                for (TsInformation o : info.items) {
-                    if (o.hasData()) {
-                        result.add(TsFactory.instance.createTs(o.name, null, o.data));
-                    }
-                }
+                return info.items.stream()
+                        .filter(TsInformation::hasData)
+                        .map(o -> TsFactory.instance.createTs(o.name, null, o.data))
+                        .collect(TsFactory.toTsCollection());
             }
-            return result;
+            return TsFactory.instance.createTsCollection();
         }
     }
 

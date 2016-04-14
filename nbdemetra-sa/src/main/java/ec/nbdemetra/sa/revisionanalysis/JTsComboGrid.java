@@ -81,7 +81,7 @@ public class JTsComboGrid extends JComponent {
         for (Map.Entry<Ts, TsCollection> entry : collections.entrySet()) {
             TsCollection c = entry.getValue();
             for (int i = 0; i < c.getCount(); i++) {
-                coll.add(c.get(i).rename(entry.getKey().getName() + " (" + c.get(i).getName() + ")"));
+                coll.quietAdd(c.get(i).rename(entry.getKey().getName() + " (" + c.get(i).getName() + ")"));
             }
         }
         grid.setTsCollection(coll);

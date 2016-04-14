@@ -540,7 +540,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
             }
 
             TsCollection col = TsFactory.instance.createTsCollection();
-            col.add(a.getTs());
+            col.quietAdd(a.getTs());
             chart.setTsCollection(col);
         }
         summary.repaint();
