@@ -62,14 +62,11 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         editDiagnostic.setEnabled(false);
         resetDiagnostic.setEnabled(false);
         
-        getDiagnosticsExplorerManager().addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
-                    Node[] nodes = (Node[]) evt.getNewValue();
-                    editDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IConfigurable.class) != null);
-                    resetDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IResetable.class) != null);
-                }
+        getDiagnosticsExplorerManager().addPropertyChangeListener(evt -> {
+            if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
+                Node[] nodes = (Node[]) evt.getNewValue();
+                editDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IConfigurable.class) != null);
+                resetDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IResetable.class) != null);
             }
         });
     }

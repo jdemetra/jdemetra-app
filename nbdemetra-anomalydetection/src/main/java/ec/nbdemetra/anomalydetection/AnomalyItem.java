@@ -55,7 +55,7 @@ public class AnomalyItem {
             return this == NotProcessable;
         }
     }
-    private Integer id_ = new Integer(0);
+    private Integer id_ = 0;
     private Ts ts_;
     private int backCount;
     private Double[] absoluteError, relativeError;

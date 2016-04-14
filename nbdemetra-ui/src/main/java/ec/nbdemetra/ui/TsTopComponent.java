@@ -80,24 +80,13 @@ public abstract class TsTopComponent extends TopComponent implements ExplorerMan
                 if (ev.info == WorkspaceFactory.Event.REMOVINGITEM) {
                     WorkspaceItem<?> wdoc = ev.workspace.searchDocument(ev.id);
                     if (wdoc.getElement() == panel.getDocument()) {
-                        SwingUtilities.invokeLater(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                close();
-                            }
-                        });
+                        SwingUtilities.invokeLater(this::close);
                     }
                 } else if (ev.info == WorkspaceFactory.Event.ITEMCHANGED) {
                     if (ev.source != this) {
                         WorkspaceItem<?> wdoc = ev.workspace.searchDocument(ev.id);
                         if (wdoc.getElement() == panel.getDocument()) {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    refresh();
-                                }
-                            });
+                            SwingUtilities.invokeLater(this::refresh);
                         }
                     }
                 }

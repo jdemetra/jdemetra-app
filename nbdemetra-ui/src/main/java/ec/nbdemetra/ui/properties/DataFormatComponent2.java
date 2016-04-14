@@ -22,8 +22,6 @@ import ec.util.completion.swing.XPopup;
 import ec.util.various.swing.TextPrompt;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Date;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -84,17 +82,14 @@ public final class DataFormatComponent2 extends JComponent {
         datePattern.getDocument().addDocumentListener(listener);
         numberPattern.getDocument().addDocumentListener(listener);
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case DATA_FORMAT_PROPERTY:
-                        onDataFormatChange();
-                        break;
-                    case PREVIEW_VISIBLE_PROPERTY:
-                        onPreviewVisibleChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case DATA_FORMAT_PROPERTY:
+                    onDataFormatChange();
+                    break;
+                case PREVIEW_VISIBLE_PROPERTY:
+                    onPreviewVisibleChange();
+                    break;
             }
         });
         addAncestorListener(new AncestorListener() {

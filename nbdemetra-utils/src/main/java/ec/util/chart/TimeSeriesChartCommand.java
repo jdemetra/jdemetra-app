@@ -24,6 +24,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -286,7 +287,7 @@ public abstract class TimeSeriesChartCommand {
         public void execute(TimeSeriesChart chart) {
             try {
                 property.getWriteMethod().invoke(chart, value);
-            } catch (Exception ex) {
+            } catch (IllegalAccessException | InvocationTargetException ex) {
                 throw new RuntimeException(ex);
             }
         }
@@ -295,7 +296,7 @@ public abstract class TimeSeriesChartCommand {
         public boolean isSelected(TimeSeriesChart chart) {
             try {
                 return Objects.equals(property.getReadMethod().invoke(chart), value);
-            } catch (Exception ex) {
+            } catch (IllegalAccessException | InvocationTargetException ex) {
                 throw new RuntimeException(ex);
             }
         }

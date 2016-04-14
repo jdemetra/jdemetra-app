@@ -3,8 +3,6 @@ package ec.nbdemetra.ui.properties.l2fprod;
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import com.toedter.calendar.JTextFieldDateEditor;
 import ec.tstoolkit.timeseries.Day;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Date;
 
 /**
@@ -16,19 +14,15 @@ public class JDayPropertyEditor extends AbstractPropertyEditor {
     private final JTextFieldDateEditor component = new JTextFieldDateEditor("yyyy-MM-dd", "####-##-##", '_');
 
     public JDayPropertyEditor() {
-        component.addPropertyChangeListener("date", new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                Day oday = null, nday = null;
-                if (evt.getOldValue() instanceof Date) {
-                    oday = new Day((Date) evt.getOldValue());
-                }
-                if (evt.getNewValue() instanceof Date) {
-                    nday = new Day((Date) evt.getNewValue());
-                }
-                JDayPropertyEditor.this.firePropertyChange(oday, nday);
+        component.addPropertyChangeListener("date", evt -> {
+            Day oday = null, nday = null;
+            if (evt.getOldValue() instanceof Date) {
+                oday = new Day((Date) evt.getOldValue());
             }
+            if (evt.getNewValue() instanceof Date) {
+                nday = new Day((Date) evt.getNewValue());
+            }
+            JDayPropertyEditor.this.firePropertyChange(oday, nday);
         });
        editor=component;
    }

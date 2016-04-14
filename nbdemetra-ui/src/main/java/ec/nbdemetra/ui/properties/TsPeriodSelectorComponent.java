@@ -8,8 +8,6 @@ package ec.nbdemetra.ui.properties;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.PeriodSelectorType;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  *
@@ -23,12 +21,7 @@ public final class TsPeriodSelectorComponent extends javax.swing.JPanel {
     public TsPeriodSelectorComponent() {
         initComponents();
 
-        type.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                updateType((PeriodSelectorType) e.getItem());
-            }
-        });
+        type.addItemListener(event -> updateType((PeriodSelectorType) event.getItem()));
 
         type.setSelectedItem(PeriodSelectorType.All);
     }

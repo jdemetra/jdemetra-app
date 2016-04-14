@@ -17,12 +17,7 @@ import org.openide.explorer.propertysheet.PropertyEnv;
  */
 public abstract class AbstractExPropertyEditor extends PropertyEditorSupport implements ExPropertyEditor, InplaceEditor.Factory {
 
-    final Supplier<InplaceEditor> supplier = Suppliers.memoize(new Supplier<InplaceEditor>() {
-        @Override
-        public InplaceEditor get() {
-            return createInplaceEditor();
-        }
-    });
+    final Supplier<InplaceEditor> supplier = Suppliers.memoize(() -> createInplaceEditor());
 
     @Override
     public void attachEnv(PropertyEnv env) {

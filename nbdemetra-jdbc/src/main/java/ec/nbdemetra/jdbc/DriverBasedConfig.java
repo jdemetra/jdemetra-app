@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.jdbc;
 
-import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
@@ -221,22 +220,10 @@ public final class DriverBasedConfig implements IConfig {
                 throw Throwables.propagate(ex);
             }
         }
-        final static Function<ConnectionBean, DriverBasedConfig> FROM_BEAN = new Function<ConnectionBean, DriverBasedConfig>() {
-            @Override
-            public DriverBasedConfig apply(ConnectionBean input) {
-                return input.toId();
-            }
-        };
-        final static Function<DriverBasedConfig, ConnectionBean> TO_BEAN = new Function<DriverBasedConfig, ConnectionBean>() {
-            @Override
-            public ConnectionBean apply(DriverBasedConfig input) {
-                return input.toBean();
-            }
-        };
-        //
-        final Parsers.Parser<DriverBasedConfig> defaultParser = Parsers.<ConnectionBean>onJAXB(BEAN_CONTEXT).compose(FROM_BEAN);
-        final Formatters.Formatter<DriverBasedConfig> defaultFormatter = Formatters.<ConnectionBean>onJAXB(BEAN_CONTEXT, false).compose(TO_BEAN);
-        final Formatters.Formatter<DriverBasedConfig> formattedOutputFormatter = Formatters.<ConnectionBean>onJAXB(BEAN_CONTEXT, true).compose(TO_BEAN);
+
+        final Parsers.Parser<DriverBasedConfig> defaultParser = Parsers.<ConnectionBean>onJAXB(BEAN_CONTEXT).compose(o -> o.toId());
+        final Formatters.Formatter<DriverBasedConfig> defaultFormatter = Formatters.<ConnectionBean>onJAXB(BEAN_CONTEXT, false).compose(o -> o.toBean());
+        final Formatters.Formatter<DriverBasedConfig> formattedOutputFormatter = Formatters.<ConnectionBean>onJAXB(BEAN_CONTEXT, true).compose(o -> o.toBean());
     }
     //</editor-fold>
 }

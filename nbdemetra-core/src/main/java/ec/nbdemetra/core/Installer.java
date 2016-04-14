@@ -16,10 +16,7 @@
  */
 package ec.nbdemetra.core;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import ec.tss.DynamicTsVariable;
 import ec.tss.ITsProvider;
@@ -37,10 +34,13 @@ import ec.tstoolkit.timeseries.regression.TsVariable;
 import ec.tstoolkit.utilities.FileXmlAdapter;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -104,8 +104,8 @@ public final class Installer extends ModuleInstall {
     private static final class ProvidersStep extends InstallerStep.LookupStep<ITsProvider> {
 
         final Preferences prefs = prefs();
-        final Parsers.Parser<File[]> pathsParser = Parsers.onJAXB(PathsBean.class).compose(PathsBean.TO_FILE_ARRAY);
-        final Formatters.Formatter<File[]> pathsFormatter = Formatters.onJAXB(PathsBean.class, false).compose(PathsBean.FROM_FILE_ARRAY);
+        final Parsers.Parser<File[]> pathsParser = Parsers.onJAXB(PathsBean.class).compose(o -> o.paths != null ? o.paths : new File[0]);
+        final Formatters.Formatter<File[]> pathsFormatter = Formatters.onJAXB(PathsBean.class, false).compose(PathsBean::create);
 
         ProvidersStep() {
             super(ITsProvider.class);
@@ -135,18 +135,15 @@ public final class Installer extends ModuleInstall {
         }
 
         private static <X> List<X> except(List<X> l, List<X> r) {
-            List<X> result = Lists.newArrayList(l);
+            List<X> result = new ArrayList(l);
             result.removeAll(r);
             return result;
         }
 
         private static String toString(Iterable<? extends ITsProvider> providers) {
-            return Joiner.on(", ").join(Iterables.transform(providers, new Function<ITsProvider, String>() {
-                @Override
-                public String apply(ITsProvider input) {
-                    return input.getSource() + "(" + input.getClass().getName() + ")";
-                }
-            }));
+            return StreamSupport.stream(providers.spliterator(), false)
+                    .map(o -> o.getSource() + "(" + o.getClass().getName() + ")")
+                    .collect(Collectors.joining(", "));
         }
 
         @Override
@@ -180,21 +177,12 @@ public final class Installer extends ModuleInstall {
 
             @XmlElement(name = "path")
             public File[] paths;
-            //
-            static final Function<PathsBean, File[]> TO_FILE_ARRAY = new Function<PathsBean, File[]>() {
-                @Override
-                public File[] apply(PathsBean input) {
-                    return input.paths != null ? input.paths : new File[0];
-                }
-            };
-            static final Function<File[], PathsBean> FROM_FILE_ARRAY = new Function<File[], PathsBean>() {
-                @Override
-                public PathsBean apply(File[] input) {
-                    PathsBean result = new PathsBean();
-                    result.paths = input;
-                    return result;
-                }
-            };
+
+            static PathsBean create(File[] o) {
+                PathsBean result = new PathsBean();
+                result.paths = o;
+                return result;
+            }
         }
     }
 

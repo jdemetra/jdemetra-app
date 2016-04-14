@@ -16,8 +16,6 @@
  */
 package ec.nbdemetra.ui.tssave;
 
-import com.google.common.base.Predicates;
-import ec.nbdemetra.ui.Jdk6Functions;
 import ec.nbdemetra.ui.actions.AbilityAction;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.tss.TsCollection;
@@ -65,8 +63,8 @@ public final class TsSaveAction extends AbilityAction<ITsSavable> implements Pre
 
     private static List<ITsSavable> getAll(Node[] activatedNodes) {
         return Nodes.asIterable(activatedNodes)
-                .transform(Jdk6Functions.lookupNode(ITsSavable.class))
-                .filter(Predicates.notNull())
+                .transform(o -> o.getLookup().lookup(ITsSavable.class))
+                .filter(o -> o != null)
                 .toList();
     }
 

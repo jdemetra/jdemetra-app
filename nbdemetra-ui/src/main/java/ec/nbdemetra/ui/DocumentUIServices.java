@@ -11,8 +11,6 @@ import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import ec.tstoolkit.descriptors.IObjectDescriptor;
 import ec.ui.view.tsprocessing.IProcDocumentView;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -49,12 +47,7 @@ public class DocumentUIServices {
         @Override
         public JComponent getSpecView(IObjectDescriptor<S> desc) {
             final PropertySheetPanel panel = PropertiesPanelFactory.INSTANCE.createPanel(desc);
-            panel.addPropertySheetChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    panel.firePropertyChange(SPEC_PROPERTY, 0, 1);
-                }
-            });
+            panel.addPropertySheetChangeListener(evt -> panel.firePropertyChange(SPEC_PROPERTY, 0, 1));
             return panel;
         }
     }

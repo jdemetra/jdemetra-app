@@ -21,8 +21,6 @@ import ec.util.various.swing.FontAwesome;
 import java.awt.Color;
 import java.util.List;
 import javax.swing.JOptionPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 /**
  * Panel used to add a new product entry in the Chain Linking input data
@@ -41,16 +39,12 @@ public class AddProductPanel extends javax.swing.JPanel {
         addProductButton.setIcon(FontAwesome.FA_PLUS.getIcon(Color.GREEN.darker(), 11f));
         removeButton.setIcon(FontAwesome.FA_MINUS.getIcon(Color.RED, 11f));
 
-        addProductTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    if (addProductTable.getSelectedRowCount() != 0) {
-                        removeButton.setEnabled(true);
-                    } else {
-                        removeButton.setEnabled(false);
-                    }
+        addProductTable.getSelectionModel().addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting()) {
+                if (addProductTable.getSelectedRowCount() != 0) {
+                    removeButton.setEnabled(true);
+                } else {
+                    removeButton.setEnabled(false);
                 }
             }
         });

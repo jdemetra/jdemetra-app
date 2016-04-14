@@ -16,9 +16,7 @@
  */
 package ec.nbdemetra.spreadsheet;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.FluentIterable;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.ui.commands.ColorSchemeCommand;
@@ -40,9 +38,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import static java.beans.BeanInfo.ICON_MONO_16x16;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -53,8 +50,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import static org.openide.awt.DropDownButtonFactory.createDropDownButton;
 import org.openide.util.Lookup;
 
@@ -64,11 +59,11 @@ import org.openide.util.Lookup;
  */
 public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicFileHandler {
 
-    private final FluentIterable<? extends Book.Factory> factories;
+    private final Collection<? extends Book.Factory> factories;
     private final View uniqueView;
 
     public SpreadSheetBasicFileHandler() {
-        this.factories = FluentIterable.from(Lookup.getDefault().lookupAll(Book.Factory.class));
+        this.factories = Lookup.getDefault().lookupAll(Book.Factory.class);
         this.uniqueView = new View();
     }
 
@@ -77,7 +72,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
     public Object asyncLoad(File file, BasicFileViewer.ProgressCallback progress) throws Exception {
         ArrayBook.Builder result = ArrayBook.builder();
         Stopwatch sw = Stopwatch.createStarted();
-        Book.Factory factory = factories.firstMatch(filePredicate(file)).get();
+        Book.Factory factory = factories.stream().filter(o -> o != null && o.accept(file)).findFirst().get();
         try (Book book = factory.load(file)) {
             for (int s = 0; s < book.getSheetCount(); s++) {
                 result.sheet(book.getSheet(s));
@@ -105,7 +100,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
 
     @Override
     public boolean accept(File pathname) {
-        return factories.anyMatch(filePredicate(pathname));
+        return factories.stream().anyMatch(o -> o != null && o.accept(pathname));
     }
     //</editor-fold>
 
@@ -143,14 +138,11 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
             add(view, BorderLayout.CENTER);
             add(createToolbar(), BorderLayout.NORTH);
 
-            addPropertyChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    switch (evt.getPropertyName()) {
-                        case MODEL_PROPERTY:
-                            onModelChange();
-                            break;
-                    }
+            addPropertyChangeListener(evt -> {
+                switch (evt.getPropertyName()) {
+                    case MODEL_PROPERTY:
+                        onModelChange();
+                        break;
                 }
             });
         }
@@ -217,18 +209,8 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
             final JSlider slider = new JSlider(10, 200, 100);
             {
                 slider.setPreferredSize(new Dimension(50, slider.getPreferredSize().height));
-                slider.addChangeListener(new ChangeListener() {
-                    @Override
-                    public void stateChanged(ChangeEvent e) {
-                        view.setZoomRatio(slider.getValue());
-                    }
-                });
-                view.addPropertyChangeListener(SpreadSheetView.ZOOM_RATIO_PROPERTY, new PropertyChangeListener() {
-                    @Override
-                    public void propertyChange(PropertyChangeEvent evt) {
-                        slider.setValue(view.getZoomRatio());
-                    }
-                });
+                slider.addChangeListener(evt -> view.setZoomRatio(slider.getValue()));
+                view.addPropertyChangeListener(SpreadSheetView.ZOOM_RATIO_PROPERTY, evt -> slider.setValue(view.getZoomRatio()));
             }
             result.add(slider);
             for (int o : new int[]{200, 100, 75, 50, 25}) {
@@ -253,15 +235,6 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
     }
 
     //<editor-fold defaultstate="collapsed" desc="Internal implementation">
-    private static Predicate<Book.Factory> filePredicate(final File file) {
-        return new Predicate<Book.Factory>() {
-            @Override
-            public boolean apply(Book.Factory input) {
-                return input != null && input.accept(file);
-            }
-        };
-    }
-
     private static final class ShowInFolderCmd extends JCommand<View> {
 
         @Override

@@ -37,17 +37,12 @@ import ec.util.various.swing.JCommand;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -64,8 +59,6 @@ import javax.swing.JSeparator;
 import javax.swing.ListSelectionModel;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -77,12 +70,7 @@ public final class JTimeSeriesChartDemo extends JPanel {
         new BasicSwingLauncher()
                 .content(JTimeSeriesChartDemo.class)
                 .title("Time Series Chart Demo")
-                .icons(new Callable<List<? extends Image>>() {
-                    @Override
-                    public List<? extends Image> call() throws Exception {
-                        return FontAwesome.FA_LINE_CHART.getImages(Color.BLACK, 16f, 32f, 64f);
-                    }
-                })
+                .icons(() -> FontAwesome.FA_LINE_CHART.getImages(Color.BLACK, 16f, 32f, 64f))
                 .logLevel(Level.FINE)
                 .launch();
     }
@@ -167,32 +155,21 @@ public final class JTimeSeriesChartDemo extends JPanel {
             final JSeparator separator = new JSeparator();
             result.add(separator);
 
-            final Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    boolean hasSelection = !chart.getSeriesSelectionModel().isSelectionEmpty();
-                    moveTo.setVisible(hasSelection && chart.getPlotWeights().length > 1);
-                    renderAs.setVisible(hasSelection);
-                    separator.setVisible(hasSelection);
-                    colorWith.setVisible(hasSelection);
-                }
+            final Runnable r = () -> {
+                boolean hasSelection = !chart.getSeriesSelectionModel().isSelectionEmpty();
+                moveTo.setVisible(hasSelection && chart.getPlotWeights().length > 1);
+                renderAs.setVisible(hasSelection);
+                separator.setVisible(hasSelection);
+                colorWith.setVisible(hasSelection);
             };
             r.run();
-            chart.addPropertyChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    String p = evt.getPropertyName();
-                    if (p.equals(JTimeSeriesChart.PLOT_WEIGHTS_PROPERTY)) {
-                        r.run();
-                    }
-                }
-            });
-            chart.getSeriesSelectionModel().addListSelectionListener(new ListSelectionListener() {
-                @Override
-                public void valueChanged(ListSelectionEvent e) {
+            chart.addPropertyChangeListener(evt -> {
+                String p = evt.getPropertyName();
+                if (p.equals(JTimeSeriesChart.PLOT_WEIGHTS_PROPERTY)) {
                     r.run();
                 }
             });
+            chart.getSeriesSelectionModel().addListSelectionListener(evt -> r.run());
         }
 
         JMenu item;
@@ -265,12 +242,9 @@ public final class JTimeSeriesChartDemo extends JPanel {
         }
         result.add(trigger);
 
-        chart.addPropertyChangeListener(ELEMENT_VISIBLE_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                boolean enabled = chart.isElementVisible(Element.TOOLTIP);
-                trigger.setEnabled(enabled);
-            }
+        chart.addPropertyChangeListener(ELEMENT_VISIBLE_PROPERTY, evt -> {
+            boolean enabled1 = chart.isElementVisible(Element.TOOLTIP);
+            trigger.setEnabled(enabled1);
         });
 
         return result;
@@ -295,13 +269,10 @@ public final class JTimeSeriesChartDemo extends JPanel {
         trigger.setEnabled(false);
         result.add(trigger);
 
-        chart.addPropertyChangeListener(ELEMENT_VISIBLE_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                boolean enabled = chart.isElementVisible(Element.CROSSHAIR);
-                orientation.setEnabled(enabled);
-                trigger.setEnabled(enabled);
-            }
+        chart.addPropertyChangeListener(ELEMENT_VISIBLE_PROPERTY, evt -> {
+            boolean enabled1 = chart.isElementVisible(Element.CROSSHAIR);
+            orientation.setEnabled(enabled1);
+            trigger.setEnabled(enabled1);
         });
 
         return result;
@@ -536,29 +507,26 @@ public final class JTimeSeriesChartDemo extends JPanel {
 
         public void enable(final JTimeSeriesChart chart) {
             updateColors(chart);
-            chart.addPropertyChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    switch (evt.getPropertyName()) {
-                        case JTimeSeriesChart.TOOLTIP_TRIGGER_PROPERTY:
-                            if (popup != null) {
-                                popup.hide();
-                            }
-                            break;
-                        case JTimeSeriesChart.HOVERED_OBS_PROPERTY:
-                            if (isEnabled() && chart.getTooltipTrigger() != DisplayTrigger.SELECTION) {
-                                updateCustomTooltip(chart, chart.getObsExistPredicate().apply(chart.getHoveredObs()));
-                            }
-                            break;
-                        case JTimeSeriesChart.SELECTED_OBS_PROPERTY:
-                            if (isEnabled() && chart.getTooltipTrigger() != DisplayTrigger.HOVERING) {
-                                updateCustomTooltip(chart, chart.getObsExistPredicate().apply(chart.getSelectedObs()));
-                            }
-                            break;
-                        case JTimeSeriesChart.COLOR_SCHEME_SUPPORT_PROPERTY:
-                            updateColors(chart);
-                            break;
-                    }
+            chart.addPropertyChangeListener(evt -> {
+                switch (evt.getPropertyName()) {
+                    case JTimeSeriesChart.TOOLTIP_TRIGGER_PROPERTY:
+                        if (popup != null) {
+                            popup.hide();
+                        }
+                        break;
+                    case JTimeSeriesChart.HOVERED_OBS_PROPERTY:
+                        if (isEnabled() && chart.getTooltipTrigger() != DisplayTrigger.SELECTION) {
+                            updateCustomTooltip(chart, chart.getObsExistPredicate().apply(chart.getHoveredObs()));
+                        }
+                        break;
+                    case JTimeSeriesChart.SELECTED_OBS_PROPERTY:
+                        if (isEnabled() && chart.getTooltipTrigger() != DisplayTrigger.HOVERING) {
+                            updateCustomTooltip(chart, chart.getObsExistPredicate().apply(chart.getSelectedObs()));
+                        }
+                        break;
+                    case JTimeSeriesChart.COLOR_SCHEME_SUPPORT_PROPERTY:
+                        updateColors(chart);
+                        break;
                 }
             });
         }

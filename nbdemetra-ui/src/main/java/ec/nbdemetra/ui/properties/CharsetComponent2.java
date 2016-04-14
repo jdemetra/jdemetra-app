@@ -56,13 +56,10 @@ public class CharsetComponent2 extends JComponent {
 
         textField.getDocument().addDocumentListener(listener);
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String p = evt.getPropertyName();
-                if (p.equals(CHARSET_PROPERTY)) {
-                    onCharsetChange();
-                }
+        addPropertyChangeListener(evt -> {
+            String p = evt.getPropertyName();
+            if (p.equals(CHARSET_PROPERTY)) {
+                onCharsetChange();
             }
         });
 

@@ -16,8 +16,6 @@
  */
 package ec.nbdemetra.anomalydetection.ui;
 
-import com.google.common.base.Predicates;
-import com.google.common.collect.FluentIterable;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.properties.l2fprod.ColorChooser;
 import ec.tss.Ts;
@@ -46,6 +44,7 @@ import java.awt.datatransfer.Transferable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
@@ -120,17 +119,14 @@ final class AnomalyDetectionChart extends JComponent {
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case MODEL_PROPERTY:
-                        onModelChange();
-                        break;
-                    case HOVERED_OBS_PROPERTY:
-                        onHoveredObsChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case MODEL_PROPERTY:
+                    onModelChange();
+                    break;
+                case HOVERED_OBS_PROPERTY:
+                    onHoveredObsChange();
+                    break;
             }
         });
         chart.addPropertyChangeListener(chartHandler);
@@ -265,7 +261,7 @@ final class AnomalyDetectionChart extends JComponent {
         }
 
         private Table<Object> toTable(OutlierEstimation[] input) {
-            OutlierEstimation[] tmp = FluentIterable.of(input).filter(Predicates.notNull()).toArray(OutlierEstimation.class);
+            OutlierEstimation[] tmp = Arrays.stream(input).filter(o -> o != null).toArray(OutlierEstimation[]::new);
             Table<Object> result = new Table<>(tmp.length + 1, 5);
             result.set(0, 0, "");
             result.set(0, 1, "Period");

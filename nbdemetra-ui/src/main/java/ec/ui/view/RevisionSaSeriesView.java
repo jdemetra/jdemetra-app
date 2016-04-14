@@ -20,7 +20,6 @@ import ec.nbdemetra.ui.ComponentFactory;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlRevisionsDocument;
-import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
 import ec.tstoolkit.timeseries.analysis.DiagnosticInfo;
 import ec.tstoolkit.timeseries.analysis.RevisionHistory;
@@ -37,8 +36,6 @@ import java.awt.Point;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -141,12 +138,9 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
             }
         });
 
-        chartpanel_.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals(JChartPanel.ZOOM_SELECTION_CHANGED)) {
-                    showSelectionPopup((Rectangle2D) evt.getNewValue());
-                }
+        chartpanel_.addPropertyChangeListener(evt -> {
+            if (evt.getPropertyName().equals(JChartPanel.ZOOM_SELECTION_CHANGED)) {
+                showSelectionPopup((Rectangle2D) evt.getNewValue());
             }
         });
 

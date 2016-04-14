@@ -32,8 +32,6 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 
@@ -80,17 +78,14 @@ public abstract class ATsControl extends JComponent2 implements ITsControl, Clip
     }
 
     private void enableProperties() {
-        this.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case DATA_FORMAT_PROPERTY:
-                        onDataFormatChange();
-                        break;
-                    case IColorSchemeAble.COLOR_SCHEME_PROPERTY:
-                        onColorSchemeChange();
-                        break;
-                }
+        this.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case DATA_FORMAT_PROPERTY:
+                    onDataFormatChange();
+                    break;
+                case IColorSchemeAble.COLOR_SCHEME_PROPERTY:
+                    onColorSchemeChange();
+                    break;
             }
         });
     }

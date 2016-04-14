@@ -20,8 +20,6 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.ui.interfaces.ITsDataView;
 import static ec.ui.interfaces.ITsDataView.TS_DATA_PROPERTY;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  *
@@ -41,15 +39,11 @@ public abstract class ATsDataView extends ATsControl implements ITsDataView {
     }
 
     private void enableProperties() {
-        this.addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case TS_DATA_PROPERTY:
-                        onTsDataChange();
-                        break;
-                }
+        this.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case TS_DATA_PROPERTY:
+                    onTsDataChange();
+                    break;
             }
         });
     }

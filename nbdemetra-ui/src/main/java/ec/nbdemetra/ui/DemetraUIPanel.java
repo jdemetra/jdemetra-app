@@ -16,8 +16,6 @@
  */
 package ec.nbdemetra.ui;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.ns.INamedService;
 import ec.nbdemetra.ui.properties.DataFormatComponent2;
@@ -33,6 +31,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.util.stream.Collectors;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
@@ -232,13 +231,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
 
     void load() {
         DemetraUI demetraUI = DemetraUI.getDefault();
-        Function<ColorScheme, INamedService> toNamedService = new Function<ColorScheme, INamedService>() {
-            @Override
-            public INamedService apply(final ColorScheme input) {
-                return new ColorSchemeNamedService(input);
-            }
-        };
-        colorSchemeChoicePanel.setContent(Iterables.transform(demetraUI.getColorSchemes(), toNamedService));
+        colorSchemeChoicePanel.setContent(demetraUI.getColorSchemes().stream().map(o -> new ColorSchemeNamedService(o)).collect(Collectors.toList()));
         colorSchemeChoicePanel.getExplorerManager().addVetoableChangeListener(this);
         colorSchemeChoicePanel.setSelectedServiceName(demetraUI.getColorSchemeName());
         dataFormatComponent.setDataFormat(demetraUI.getDataFormat());

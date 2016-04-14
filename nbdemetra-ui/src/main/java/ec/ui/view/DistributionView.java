@@ -32,8 +32,6 @@ import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.ext.MatrixChartCommand;
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
@@ -114,32 +112,29 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case L_BOUND_PROPERTY:
-                        onDataChange();
-                        break;
-                    case R_BOUND_PROPERTY:
-                        onDataChange();
-                        break;
-                    case DISTRIBUTION_PROPERTY:
-                        onDataChange();
-                        break;
-                    case ADJUST_DISTRIBUTION_PROPERTY:
-                        onDataChange();
-                        break;
-                    case H_COUNT_PROPERTY:
-                        onDataChange();
-                        break;
-                    case DATA_PROPERTY:
-                        onDataChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case L_BOUND_PROPERTY:
+                    onDataChange();
+                    break;
+                case R_BOUND_PROPERTY:
+                    onDataChange();
+                    break;
+                case DISTRIBUTION_PROPERTY:
+                    onDataChange();
+                    break;
+                case ADJUST_DISTRIBUTION_PROPERTY:
+                    onDataChange();
+                    break;
+                case H_COUNT_PROPERTY:
+                    onDataChange();
+                    break;
+                case DATA_PROPERTY:
+                    onDataChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }
@@ -185,12 +180,7 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
 
             // distribution >
             if (distribution != DEFAULT_DISTRIBUTION) {
-                Function2D density = new Function2D() {
-                    @Override
-                    public double getValue(double x) {
-                        return distribution.getDensity(x);
-                    }
-                };
+                Function2D density = distribution::getDensity;
 
                 final double zmin = distribution.hasLeftBound() != BoundaryType.None ? distribution.getLeftBound() : ((xmin - xstep - m) / dv + M);
                 final double zmax = distribution.hasRightBound() != BoundaryType.None ? distribution.getRightBound() : ((xmax + xstep - m) / dv + M);
@@ -367,12 +357,7 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
     }
 
     protected static XYSeriesLabelGenerator getTooltipGenerator(final IContinuousDistribution distribution) {
-        return new XYSeriesLabelGenerator() {
-            @Override
-            public String generateLabel(XYDataset dataset, int series) {
-                return distribution.getDescription();
-            }
-        };
+        return (XYDataset dataset, int series) -> distribution.getDescription();
     }
 
     private static JMenu buildMenu(ChartPanel chartPanel) {

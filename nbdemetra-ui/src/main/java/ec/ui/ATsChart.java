@@ -22,8 +22,6 @@ import ec.ui.commands.TsChartCommand;
 import ec.ui.interfaces.ITsChart;
 import ec.util.chart.ColorScheme;
 import ec.util.various.swing.FontAwesome;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.ActionMap;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -75,26 +73,23 @@ public abstract class ATsChart extends ATsCollectionView implements ITsChart {
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case LEGEND_VISIBLE_PROPERTY:
-                        onLegendVisibleChange();
-                        break;
-                    case TITLE_VISIBLE_PROPERTY:
-                        onTitleVisibleChange();
-                        break;
-                    case AXIS_VISIBLE_PROPERTY:
-                        onAxisVisibleChange();
-                        break;
-                    case TITLE_PROPERTY:
-                        onTitleChange();
-                        break;
-                    case LINES_THICKNESS_PROPERTY:
-                        onLinesThicknessChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case LEGEND_VISIBLE_PROPERTY:
+                    onLegendVisibleChange();
+                    break;
+                case TITLE_VISIBLE_PROPERTY:
+                    onTitleVisibleChange();
+                    break;
+                case AXIS_VISIBLE_PROPERTY:
+                    onAxisVisibleChange();
+                    break;
+                case TITLE_PROPERTY:
+                    onTitleChange();
+                    break;
+                case LINES_THICKNESS_PROPERTY:
+                    onLinesThicknessChange();
+                    break;
             }
         });
     }

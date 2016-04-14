@@ -15,8 +15,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.AbstractCellEditor;
@@ -67,87 +65,83 @@ public class SigmavecPropertyEditor  extends AbstractPropertyEditor {
 
         public SigmavecEditor() {
             final JButton button = new JButton("...");
-            button.addActionListener(new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    JPanel pane = new JPanel(new BorderLayout());
-                    final JTable table = new JTable(
-                            new DefaultTableModel() {
-
-                                @Override
-                                public int getColumnCount() {
-                                    return 2;
-                                }
-
-                                @Override
-                                public String getColumnName(int column) {
-                                    if (column == 0) {
-                                        return "Period";
-                                    } else {
-                                        return "Group";
-                                    }
-                                }
-
-                                @Override
-                                public Class<?> getColumnClass(int columnIndex) {
-                                    if (columnIndex == 0) {
-                                        return String.class;
-                                    } else {
-                                        return SigmavecOption.class;
-                                    }
-                                }
-
-                                @Override
-                                public boolean isCellEditable(int row, int column) {
-                                    return column == 1;
-                                }
-
-                                @Override
-                                public int getRowCount() {
-                                    return ngroups_.length;
-                                }
-
-                                @Override
-                                public Object getValueAt(int row, int column) {
-                                    if (column == 0) {
-                                        return TsPeriod.formatPeriod(TsFrequency.valueOf(ngroups_.length), row);
-                                    } else {
-                                        return ngroups_[row];
-                                    }
-                                }
-
-                                @Override
-                                public void setValueAt(Object aValue, int row, int column) {
-                                    if (column == 1) {
-                                        ngroups_[row] = (SigmavecOption) aValue;
-                                    }
-                                    fireTableCellUpdated(row, column);
-                                }
-                            });
-
-                    table.setDefaultEditor(SigmavecOption.class, new CustomSigmavecEditor());
-                    table.setFillsViewportHeight(true);
-                    pane.add(NbComponents.newJScrollPane(table), BorderLayout.CENTER);
-
-                    JDialog dlg = new JDialog(SwingUtilities.getWindowAncestor(button), Dialog.ModalityType.TOOLKIT_MODAL);
-                    dlg.setContentPane(pane);
-                    dlg.addWindowListener(new WindowAdapter() {
-
-                        @Override
-                        public void windowClosing(WindowEvent e) {
-                            if (table.getCellEditor() != null) {
-                                table.getCellEditor().stopCellEditing();
+            button.addActionListener(event -> {
+                JPanel pane = new JPanel(new BorderLayout());
+                final JTable table = new JTable(
+                        new DefaultTableModel() {
+                            
+                            @Override
+                            public int getColumnCount() {
+                                return 2;
                             }
-                            fireChanged(ngroups_);
+                            
+                            @Override
+                            public String getColumnName(int column) {
+                                if (column == 0) {
+                                    return "Period";
+                                } else {
+                                    return "Group";
+                                }
+                            }
+                            
+                            @Override
+                            public Class<?> getColumnClass(int columnIndex) {
+                                if (columnIndex == 0) {
+                                    return String.class;
+                                } else {
+                                    return SigmavecOption.class;
+                                }
+                            }
+                            
+                            @Override
+                            public boolean isCellEditable(int row, int column) {
+                                return column == 1;
+                            }
+                            
+                            @Override
+                            public int getRowCount() {
+                                return ngroups_.length;
+                            }
+                            
+                            @Override
+                            public Object getValueAt(int row, int column) {
+                                if (column == 0) {
+                                    return TsPeriod.formatPeriod(TsFrequency.valueOf(ngroups_.length), row);
+                                } else {
+                                    return ngroups_[row];
+                                }
+                            }
+                            
+                            @Override
+                            public void setValueAt(Object aValue, int row, int column) {
+                                if (column == 1) {
+                                    ngroups_[row] = (SigmavecOption) aValue;
+                                }
+                                fireTableCellUpdated(row, column);
+                            }
+                        });
+                
+                table.setDefaultEditor(SigmavecOption.class, new CustomSigmavecEditor());
+                table.setFillsViewportHeight(true);
+                pane.add(NbComponents.newJScrollPane(table), BorderLayout.CENTER);
+                
+                JDialog dlg = new JDialog(SwingUtilities.getWindowAncestor(button), Dialog.ModalityType.TOOLKIT_MODAL);
+                dlg.setContentPane(pane);
+                dlg.addWindowListener(new WindowAdapter() {
+                    
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        if (table.getCellEditor() != null) {
+                            table.getCellEditor().stopCellEditing();
                         }
-                    });
-                    dlg.setMinimumSize(new Dimension(300, 300));
-                    dlg.setModal(true);
-                    dlg.setVisible(true);
-                    if (table.getCellEditor() != null) {
-                        table.getCellEditor().stopCellEditing();
+                        fireChanged(ngroups_);
                     }
+                });
+                dlg.setMinimumSize(new Dimension(300, 300));
+                dlg.setModal(true);
+                dlg.setVisible(true);
+                if (table.getCellEditor() != null) {
+                    table.getCellEditor().stopCellEditing();
                 }
             });
 

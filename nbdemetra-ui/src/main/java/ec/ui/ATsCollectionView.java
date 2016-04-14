@@ -29,6 +29,7 @@ import ec.tss.TsCollection;
 import ec.tss.TsEvent;
 import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
+import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TsDragRenderer;
 import ec.tss.datatransfer.TssTransferHandler;
 import ec.tss.datatransfer.TssTransferSupport;
@@ -52,17 +53,17 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.BeanInfo;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.ActionMap;
@@ -78,7 +79,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
-import org.openide.util.datatransfer.ExTransferable;
 import org.openide.util.datatransfer.MultiTransferObject;
 
 public abstract class ATsCollectionView extends ATsControl implements ITsCollectionView {
@@ -157,26 +157,23 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case TS_COLLECTION_PROPERTY:
-                        onCollectionChange();
-                        break;
-                    case SELECTION_PROPERTY:
-                        onSelectionChange();
-                        break;
-                    case UDPATE_MODE_PROPERTY:
-                        onUpdateModeChange();
-                        break;
-                    case TS_ACTION_PROPERTY:
-                        onTsActionChange();
-                        break;
-                    case DROP_CONTENT_PROPERTY:
-                        onDropContentChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case TS_COLLECTION_PROPERTY:
+                    onCollectionChange();
+                    break;
+                case SELECTION_PROPERTY:
+                    onSelectionChange();
+                    break;
+                case UDPATE_MODE_PROPERTY:
+                    onUpdateModeChange();
+                    break;
+                case TS_ACTION_PROPERTY:
+                    onTsActionChange();
+                    break;
+                case DROP_CONTENT_PROPERTY:
+                    onDropContentChange();
+                    break;
             }
         });
     }
@@ -489,18 +486,15 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
                 if ((event.isCollection() && collection.equals(event.tscollection))
                         || (event.isSeries() && collection.contains(event.ts))) {
                     if (!dirty.getAndSet(true)) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-//                            if (dirty.getAndSet(false)) {
-                                // update selection to reflect changes in collection
-                                dirty.set(false);
-                                Ts[] oldSelection = selection;
-                                selection = retainTsCollection(selection);
-                                firePropertyChange(TS_COLLECTION_PROPERTY, null, collection);
-                                firePropertyChange(SELECTION_PROPERTY, oldSelection, selection);
+                        SwingUtilities.invokeLater(() -> {
+                            //                            if (dirty.getAndSet(false)) {
+                            // update selection to reflect changes in collection
+                            dirty.set(false);
+                            Ts[] oldSelection = selection;
+                            selection = retainTsCollection(selection);
+                            firePropertyChange(TS_COLLECTION_PROPERTY, null, collection);
+                            firePropertyChange(SELECTION_PROPERTY, oldSelection, selection);
 //                            }
-                            }
                         });
                     }
                 }
@@ -532,7 +526,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
                 setSelection(null);
             }
 
-            java.util.List<Ts> selected = Lists.newArrayListWithCapacity(1 + (iMax - iMin));
+            java.util.List<Ts> selected = new ArrayList(1 + (iMax - iMin));
             for (int i = iMin; i <= iMax; i++) {
                 if (model.isSelectedIndex(i)) {
                     selected.add(collection.get(indexToModel(i)));
@@ -562,48 +556,38 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     public class TsCollectionTransferHandler extends TransferHandler {
 
         @Nullable
-        private List<Ts> peekCollection(@Nonnull Transferable transferable) {
-            if (TssTransferSupport.isMultiFlavor(transferable.getTransferDataFlavors())) {
-                try {
-                    MultiTransferObject multi = (MultiTransferObject) transferable.getTransferData(ExTransferable.multiFlavor);
-                    List<Ts> result = new ArrayList<>();
-                    for (int i = 0; i < multi.getCount(); i++) {
-                        List<Ts> item = peekCollection(multi.getTransferableAt(i));
-                        if (item != null) {
-                            result.addAll(item);
-                        }
-                    }
-                    return result;
-                } catch (UnsupportedFlavorException | IOException ex) {
-                }
-                return null;
-            } else {
-                TssTransferHandler handler = Lookup.getDefault().lookup(LocalObjectTssTransferHandler.class);
-                if (handler != null) {
-                    DataFlavor dataFlavor = handler.getDataFlavor();
-                    if (transferable.isDataFlavorSupported(dataFlavor)) {
-                        try {
-                            Object data = transferable.getTransferData(dataFlavor);
-                            if (handler.canImportTsCollection(data)) {
-                                return Lists.newArrayList(handler.importTsCollection(data));
-                            }
-                        } catch (UnsupportedFlavorException | IOException ex) {
-                        }
-                    }
-                }
-                return null;
+        private Stream<Ts> peekCollection(@Nonnull Transferable transferable) {
+            Optional<MultiTransferObject> multi = DataTransfers.getMultiTransferObject(transferable);
+            if (multi.isPresent()) {
+                return DataTransfers.asTransferableStream(multi.get())
+                        .map(o -> peek(o))
+                        .filter(o -> o != null)
+                        .flatMap(Function.identity());
             }
+            return peek(transferable);
+        }
+
+        private Stream<Ts> peek(Transferable t) {
+            TssTransferHandler handler = Lookup.getDefault().lookup(LocalObjectTssTransferHandler.class);
+            if (handler != null) {
+                DataFlavor dataFlavor = handler.getDataFlavor();
+                if (t.isDataFlavorSupported(dataFlavor)) {
+                    try {
+                        Object data = t.getTransferData(dataFlavor);
+                        if (handler.canImportTsCollection(data)) {
+                            return handler.importTsCollection(data).stream();
+                        }
+                    } catch (UnsupportedFlavorException | IOException ex) {
+                    }
+                }
+            }
+            return null;
         }
 
         private boolean mayChangeContent(TransferSupport support) {
-            List<Ts> newContent = peekCollection(support.getTransferable());
+            Stream<Ts> newContent = peekCollection(support.getTransferable());
             if (newContent != null) {
-                for (Ts o : newContent) {
-                    if (!collection.contains(o)) {
-                        return true; // YES
-                    }
-                }
-                return false; // NO
+                return !newContent.allMatch(collection::contains); // YES/NO
             }
             return true; // MAYBE
         }

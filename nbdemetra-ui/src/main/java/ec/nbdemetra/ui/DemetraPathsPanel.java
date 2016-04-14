@@ -11,9 +11,6 @@ import ec.tss.tsproviders.TsProviders;
 import ec.util.desktop.DesktopManager;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -44,20 +41,17 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
 
         initComponents();
 
-        em.addVetoableChangeListener(new VetoableChangeListener() {
-            @Override
-            public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-                if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
-                    Node[] nodes = (Node[]) evt.getNewValue();
-                    boolean empty = nodes.length == 0;
-                    boolean loader = !empty && nodes[0].getLookup().lookup(IFileLoader.class) != null;
-                    boolean file = !empty && nodes[0].getLookup().lookup(File.class) != null;
-                    int index = !empty ? ((Index.ArrayChildren) nodes[0].getParentNode().getChildren()).indexOf(nodes[0]) : -1;
-                    addButton.setEnabled(loader);
-                    removeButton.setEnabled(file && index != -1);
-                    moveUpButton.setEnabled(file && index > 0);
-                    moveDownButton.setEnabled(file && index < nodes[0].getParentNode().getChildren().getNodesCount() - 1);
-                }
+        em.addVetoableChangeListener(evt -> {
+            if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
+                Node[] nodes = (Node[]) evt.getNewValue();
+                boolean empty = nodes.length == 0;
+                boolean loader = !empty && nodes[0].getLookup().lookup(IFileLoader.class) != null;
+                boolean file = !empty && nodes[0].getLookup().lookup(File.class) != null;
+                int index = !empty ? ((Index.ArrayChildren) nodes[0].getParentNode().getChildren()).indexOf(nodes[0]) : -1;
+                addButton.setEnabled(loader);
+                removeButton.setEnabled(file && index != -1);
+                moveUpButton.setEnabled(file && index > 0);
+                moveDownButton.setEnabled(file && index < nodes[0].getParentNode().getChildren().getNodesCount() - 1);
             }
         });
         folderChooserBuilder.setDirectoriesOnly(true);

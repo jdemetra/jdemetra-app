@@ -30,8 +30,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import org.openide.awt.DropDownButtonFactory;
 
 /**
@@ -65,11 +63,8 @@ abstract class RandomTsCollectionCommand<C> extends JCommand<C> {
                 JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
             }
         };
-        obsCountModel.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                result.actionPerformed(null);
-            }
+        obsCountModel.addChangeListener(event -> {
+            result.actionPerformed(null);
         });
         return result;
     }
@@ -85,11 +80,8 @@ abstract class RandomTsCollectionCommand<C> extends JCommand<C> {
         menu.add(new JSlider(obsCountModel));
 
         final JLabel label = new JLabel(obsCountModel.getValue() + " obs");
-        obsCountModel.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                label.setText(obsCountModel.getValue() + " obs");
-            }
+        obsCountModel.addChangeListener(event -> {
+            label.setText(obsCountModel.getValue() + " obs");
         });
         menu.add(label);
         return menu;

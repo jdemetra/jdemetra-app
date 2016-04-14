@@ -17,11 +17,10 @@
 package ec.util.chart;
 
 import ec.util.chart.ColorScheme.KnownColor;
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -218,22 +217,12 @@ public abstract class ColorSchemeSupport<T> {
     }
 
     private Colors<T> createColors(ColorScheme colorScheme) {
-        List<T> areaColors = new ArrayList<>();
-        for (int o : colorScheme.getAreaColors()) {
-            areaColors.add(toColor(o));
-        }
-        List<T> lineColors = new ArrayList<>();
-        for (int o : colorScheme.getLineColors()) {
-            lineColors.add(toColor(o));
-        }
+        List<T> areaColors = colorScheme.getAreaColors().stream().map(this::toColor).collect(Collectors.toList());
+        List<T> lineColors = colorScheme.getLineColors().stream().map(this::toColor).collect(Collectors.toList());
         Map<KnownColor, T> areaKnownColors = new EnumMap<>(KnownColor.class);
-        for (Entry<KnownColor, Integer> o : colorScheme.getAreaKnownColors().entrySet()) {
-            areaKnownColors.put(o.getKey(), toColor(o.getValue()));
-        }
+        colorScheme.getAreaKnownColors().entrySet().forEach(o -> areaKnownColors.put(o.getKey(), toColor(o.getValue())));
         Map<KnownColor, T> lineKnownColors = new EnumMap<>(KnownColor.class);
-        for (Entry<KnownColor, Integer> o : colorScheme.getLineKnownColors().entrySet()) {
-            lineKnownColors.put(o.getKey(), toColor(o.getValue()));
-        }
+        colorScheme.getLineKnownColors().entrySet().forEach(o -> lineKnownColors.put(o.getKey(), toColor(o.getValue())));
         T backColor = toColor(colorScheme.getBackColor());
         T plotColor = toColor(colorScheme.getPlotColor());
         T gridColor = toColor(colorScheme.getGridColor());

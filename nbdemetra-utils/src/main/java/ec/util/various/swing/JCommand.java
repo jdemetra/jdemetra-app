@@ -149,12 +149,7 @@ public abstract class JCommand<C> {
          */
         @Nonnull
         public ActionAdapter withWeakPropertyChangeListener(@Nonnull Component source, @Nonnull String... properties) {
-            PropertyChangeListener realListener = new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    refreshActionState();
-                }
-            };
+            PropertyChangeListener realListener = evt -> refreshActionState();
             putValue("PropertyChangeListener", realListener);
             if (properties.length > 0) {
                 for (final String property : properties) {
@@ -185,12 +180,7 @@ public abstract class JCommand<C> {
          */
         @Nonnull
         public ActionAdapter withWeakListSelectionListener(@Nonnull ListSelectionModel source) {
-            ListSelectionListener realListener = new ListSelectionListener() {
-                @Override
-                public void valueChanged(ListSelectionEvent e) {
-                    refreshActionState();
-                }
-            };
+            ListSelectionListener realListener = evt -> refreshActionState();
             putValue("ListSelectionListener", realListener);
             source.addListSelectionListener(new WeakListSelectionListener(realListener) {
                 @Override

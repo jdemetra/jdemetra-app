@@ -16,17 +16,11 @@
  */
 package ec.nbdemetra.ui;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 import ec.nbdemetra.core.GlobalService;
-import static ec.nbdemetra.ui.Jdk6Functions.colorSchemeDisplayName;
-import static ec.nbdemetra.ui.Jdk6Functions.colorSchemeName;
-import static ec.nbdemetra.ui.Jdk6Functions.namedServiceDisplayName;
-import static ec.nbdemetra.ui.Jdk6Functions.namedServiceName;
 import ec.nbdemetra.ui.awt.ListenableBean;
 import ec.nbdemetra.ui.tsaction.ChartGridTsAction;
 import ec.nbdemetra.ui.tsaction.ITsAction;
@@ -48,6 +42,7 @@ import ec.util.various.swing.FontAwesome;
 import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.swing.Icon;
 import org.netbeans.api.options.OptionsDisplayer;
@@ -108,9 +103,9 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     static final IParam<Config, String> DEFAULT_SA_SPEC = Params.onString("tramoseats." + TramoSeatsSpecification.RSAfull.toString(), DEFAULT_SA_SPEC_PROPERTY);
     static final IParam<Config, Boolean> POPUP_MENU_ICONS_VISIBLE = Params.onBoolean(false, POPUP_MENU_ICONS_VISIBLE_PROPERTY);
     // INTERNAL STUFF
-    private static final Ordering<ColorScheme> COLOR_SCHEME_ORDERING = Ordering.natural().onResultOf(colorSchemeDisplayName());
-    private static final Ordering<? super ITsAction> TS_ACTION_ORDERING = Ordering.natural().onResultOf(namedServiceDisplayName());
-    private static final Ordering<? super ITsSave> TS_SAVE_ORDERING = Ordering.natural().onResultOf(namedServiceDisplayName());
+    private static final Ordering<ColorScheme> COLOR_SCHEME_ORDERING = Ordering.natural().onResultOf(o -> o.getDisplayName());
+    private static final Ordering<? super ITsAction> TS_ACTION_ORDERING = Ordering.natural().onResultOf(o -> o.getDisplayName());
+    private static final Ordering<? super ITsSave> TS_SAVE_ORDERING = Ordering.natural().onResultOf(o -> o.getDisplayName());
     // PROPERTIES
     private final ConfigBean properties;
 
@@ -302,7 +297,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
 
     //<editor-fold defaultstate="collapsed" desc="Utils">
     public ITsAction getTsAction() {
-        return find(ITsAction.class, namedServiceName(), properties.tsActionName, TS_ACTION_NAME.defaultValue());
+        return find(ITsAction.class, o -> o.getName(), properties.tsActionName, TS_ACTION_NAME.defaultValue());
     }
 
     public List<? extends ITsAction> getTsActions() {
@@ -314,7 +309,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     }
 
     public ColorScheme getColorScheme() {
-        return find(ColorScheme.class, colorSchemeName(), properties.colorSchemeName, COLOR_SCHEME_NAME.defaultValue());
+        return find(ColorScheme.class, o -> o.getName(), properties.colorSchemeName, COLOR_SCHEME_NAME.defaultValue());
     }
 
     public List<? extends ColorScheme> getColorSchemes() {
@@ -332,7 +327,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     private static <X, Y> X find(Class<X> clazz, Function<? super X, Y> toName, Y... names) {
         Collection<? extends X> items = Lookup.getDefault().lookupAll(clazz);
         for (Y o : names) {
-            Optional<? extends X> result = Iterables.tryFind(items, Predicates.compose(Predicates.equalTo(o), toName));
+            Optional<? extends X> result = Iterables.tryFind(items, x -> o.equals(toName.apply(x)));
             if (result.isPresent()) {
                 return result.get();
             }

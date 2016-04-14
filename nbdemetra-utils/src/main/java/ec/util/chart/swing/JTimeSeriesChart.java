@@ -41,8 +41,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.Beans;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -55,8 +53,6 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
@@ -168,9 +164,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
         chartPanel.getChart().getTitle().setPaint(colorSchemeSupport.getTextColor());
         chartPanel.getChart().setBackgroundPaint(colorSchemeSupport.getBackColor());
         onColorSchemeSupportChange(mainPlot.getDomainAxis());
-        for (XYPlot o : roSubPlots) {
-            onColorSchemeSupportChange(o);
-        }
+        roSubPlots.forEach(o -> onColorSchemeSupportChange(o));
     }
 
     private void onColorSchemeSupportChange(XYPlot plot) {
@@ -199,9 +193,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     }
 
     private void onValueFormatChange() {
-        for (XYPlot o : roSubPlots) {
-            onValueFormatChange(o);
-        }
+        roSubPlots.forEach(o -> onValueFormatChange(o));
     }
 
     private void onValueFormatChange(XYPlot plot) {
@@ -242,9 +234,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
 
     private void onDatasetChange() {
         seriesMapFactory.update(dataset.getSeriesCount(), seriesRenderer, plotDispatcher);
-        for (XYPlot o : roSubPlots) {
-            onDatasetChange(o);
-        }
+        roSubPlots.forEach(o -> onDatasetChange(o));
     }
 
     private void onDatasetChange(final XYPlot plot) {
@@ -261,9 +251,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     }
 
     private void onNoDataMessageChange() {
-        for (XYPlot o : roSubPlots) {
-            onNoDataMessageChange(o);
-        }
+        roSubPlots.forEach(o -> onNoDataMessageChange(o));
     }
 
     private void onNoDataMessageChange(XYPlot plot) {
@@ -284,9 +272,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
                 case AXIS:
                     boolean visible = elementVisible[element.ordinal()];
                     mainPlot.getDomainAxis().setVisible(visible);
-                    for (XYPlot o : roSubPlots) {
-                        onElementVisibleChange(o);
-                    }
+                    roSubPlots.forEach(o -> onElementVisibleChange(o));
                     break;
                 case LEGEND:
                     chartPanel.getChart().getLegend().setVisible(elementVisible[element.ordinal()]);
@@ -309,9 +295,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
     private void onFontSupportChange() {
         chartPanel.getChart().getTitle().setFont(fontSupport.getTitleFont());
         onFontSupportChange(mainPlot.getDomainAxis());
-        for (XYPlot o : roSubPlots) {
-            onFontSupportChange(o);
-        }
+        roSubPlots.forEach(o -> onFontSupportChange(o));
     }
 
     private void onFontSupportChange(XYPlot plot) {
@@ -816,105 +800,99 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
                 return entity != null ? dataset.indexOf(entity.getSeriesKey()) : -1;
             }
         });
-        seriesSelectionModel.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    notification.forceRefresh();
-                }
+        seriesSelectionModel.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                notification.forceRefresh();
             }
         });
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                notification.suspend();
-                switch (evt.getPropertyName()) {
-                    case COLOR_SCHEME_SUPPORT_PROPERTY:
-                        onColorSchemeSupportChange();
-                        break;
-                    case LINE_THICKNESS_PROPERTY:
-                        onLineThicknessChange();
-                        break;
-                    case PERIOD_FORMAT_PROPERTY:
-                        onPeriodFormatChange();
-                        break;
-                    case VALUE_FORMAT_PROPERTY:
-                        onValueFormatChange();
-                        break;
-                    case SERIES_RENDERER_PROPERTY:
-                        onSeriesRendererChange();
-                        break;
-                    case SERIES_FORMATTER_PROPERTY:
-                        onSeriesFormatterChange();
-                        break;
-                    case SERIES_COLORIST_PROPERTY:
-                        onSeriesColoristChange();
-                        break;
-                    case OBS_FORMATTER_PROPERTY:
-                        onObsFormatterChange();
-                        break;
-                    case OBS_COLORIST_PROPERTY:
-                        onObsColoristChange();
-                        break;
-                    case DASH_PREDICATE_PROPERTY:
-                        onDashPredicateChange();
-                        break;
-                    case LEGEND_VISIBILITY_PREDICATE_PROPERTY:
-                        onLegendVisibilityPredicateChange();
-                        break;
-                    case PLOT_DISPATCHER_PROPERTY:
-                        onPlotDispatcherChange();
-                        break;
-                    case DATASET_PROPERTY:
-                        onDatasetChange();
-                        break;
-                    case TITLE_PROPERTY:
-                        onTitleChange();
-                        break;
-                    case NO_DATA_MESSAGE_PROPERTY:
-                        onNoDataMessageChange();
-                        break;
-                    case PLOT_WEIGHTS_PROPERTY:
-                        onPlotWeightsChange();
-                        break;
-                    case ELEMENT_VISIBLE_PROPERTY:
-                        onElementVisibleChange();
-                        break;
-                    case CROSSHAIR_ORIENTATION_PROPERTY:
-                        onCrosshairOrientationChange();
-                        break;
-                    case HOVERED_OBS_PROPERTY:
-                        onHoveredObsChange();
-                        break;
-                    case SELECTED_OBS_PROPERTY:
-                        onSelectedObsChange();
-                        break;
-                    case OBS_HIGHLIGHTER_PROPERTY:
-                        onObsHighlighterChange();
-                        break;
-                    case TOOLTIP_TRIGGER_PROPERTY:
-                        onTooltipTriggerChange();
-                        break;
-                    case CROSSHAIR_TRIGGER_PROPERTY:
-                        onCrosshairTriggerChange();
-                        break;
-                    case REVEAL_OBS_PROPERTY:
-                        onRevealObsChange();
-                        break;
-                    case "enabled":
-                        boolean enabled = isEnabled();
-                        chartPanel.setDomainZoomable(enabled);
-                        chartPanel.setRangeZoomable(enabled);
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
-                notification.resume();
+        addPropertyChangeListener(evt -> {
+            notification.suspend();
+            switch (evt.getPropertyName()) {
+                case COLOR_SCHEME_SUPPORT_PROPERTY:
+                    onColorSchemeSupportChange();
+                    break;
+                case LINE_THICKNESS_PROPERTY:
+                    onLineThicknessChange();
+                    break;
+                case PERIOD_FORMAT_PROPERTY:
+                    onPeriodFormatChange();
+                    break;
+                case VALUE_FORMAT_PROPERTY:
+                    onValueFormatChange();
+                    break;
+                case SERIES_RENDERER_PROPERTY:
+                    onSeriesRendererChange();
+                    break;
+                case SERIES_FORMATTER_PROPERTY:
+                    onSeriesFormatterChange();
+                    break;
+                case SERIES_COLORIST_PROPERTY:
+                    onSeriesColoristChange();
+                    break;
+                case OBS_FORMATTER_PROPERTY:
+                    onObsFormatterChange();
+                    break;
+                case OBS_COLORIST_PROPERTY:
+                    onObsColoristChange();
+                    break;
+                case DASH_PREDICATE_PROPERTY:
+                    onDashPredicateChange();
+                    break;
+                case LEGEND_VISIBILITY_PREDICATE_PROPERTY:
+                    onLegendVisibilityPredicateChange();
+                    break;
+                case PLOT_DISPATCHER_PROPERTY:
+                    onPlotDispatcherChange();
+                    break;
+                case DATASET_PROPERTY:
+                    onDatasetChange();
+                    break;
+                case TITLE_PROPERTY:
+                    onTitleChange();
+                    break;
+                case NO_DATA_MESSAGE_PROPERTY:
+                    onNoDataMessageChange();
+                    break;
+                case PLOT_WEIGHTS_PROPERTY:
+                    onPlotWeightsChange();
+                    break;
+                case ELEMENT_VISIBLE_PROPERTY:
+                    onElementVisibleChange();
+                    break;
+                case CROSSHAIR_ORIENTATION_PROPERTY:
+                    onCrosshairOrientationChange();
+                    break;
+                case HOVERED_OBS_PROPERTY:
+                    onHoveredObsChange();
+                    break;
+                case SELECTED_OBS_PROPERTY:
+                    onSelectedObsChange();
+                    break;
+                case OBS_HIGHLIGHTER_PROPERTY:
+                    onObsHighlighterChange();
+                    break;
+                case TOOLTIP_TRIGGER_PROPERTY:
+                    onTooltipTriggerChange();
+                    break;
+                case CROSSHAIR_TRIGGER_PROPERTY:
+                    onCrosshairTriggerChange();
+                    break;
+                case REVEAL_OBS_PROPERTY:
+                    onRevealObsChange();
+                    break;
+                case "enabled":
+                    boolean enabled1 = isEnabled();
+                    chartPanel.setDomainZoomable(enabled1);
+                    chartPanel.setRangeZoomable(enabled1);
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
+            notification.resume();
         });
     }
     //</editor-fold>

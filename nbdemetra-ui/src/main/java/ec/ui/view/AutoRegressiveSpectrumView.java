@@ -20,8 +20,6 @@ import ec.nbdemetra.ui.DemetraUI;
 import ec.tstoolkit.data.AutoRegressiveSpectrum;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.Values;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.JPopupMenu;
 import org.jfree.data.xy.XYSeries;
 
@@ -68,32 +66,29 @@ public class AutoRegressiveSpectrumView extends ARPView {
     }
 
     private void enableProperties() {
-        this.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case AR_COUNT_PROPERTY:
-                        onArCountChange();
-                        break;
-                    case RESOLUTION_PROPERTY:
-                        onFreqCountChange();
-                        break;
-                    case LOG_PROPERTY:
-                        onLogChange();
-                        break;
-                    case DIFF_PROPERTY:
-                        onDiffChange();
-                        break;
-                    case DIFF_LAG_PROPERTY:
-                        onDiffChange();
-                        break;
-                    case LASTYEARS_PROPERTY:
-                        onLastYearsChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        this.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case AR_COUNT_PROPERTY:
+                    onArCountChange();
+                    break;
+                case RESOLUTION_PROPERTY:
+                    onFreqCountChange();
+                    break;
+                case LOG_PROPERTY:
+                    onLogChange();
+                    break;
+                case DIFF_PROPERTY:
+                    onDiffChange();
+                    break;
+                case DIFF_LAG_PROPERTY:
+                    onDiffChange();
+                    break;
+                case LASTYEARS_PROPERTY:
+                    onLastYearsChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }

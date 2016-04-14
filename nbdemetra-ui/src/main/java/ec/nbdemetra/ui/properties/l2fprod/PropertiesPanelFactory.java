@@ -1,7 +1,6 @@
 package ec.nbdemetra.ui.properties.l2fprod;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.l2fprod.common.propertysheet.DefaultProperty;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
@@ -14,7 +13,6 @@ import java.awt.Dimension;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -46,16 +44,13 @@ public enum PropertiesPanelFactory {
             if (listener != null) {
                 model.addPropertyChangeListener(listener);
             }
-            model.addPropertyChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    try {
-                        model.setProperties(createProperties(o));
-                    } catch (RuntimeException err) {
-                        String msg = err.getMessage();
-                    } finally {
-                        model.fireTableStructureChanged();
-                    }
+            model.addPropertyChangeListener(evt -> {
+                try {
+                    model.setProperties(createProperties(o));
+                } catch (RuntimeException err) {
+                    String msg = err.getMessage();
+                } finally {
+                    model.fireTableStructureChanged();
                 }
             });
         }
@@ -80,18 +75,15 @@ public enum PropertiesPanelFactory {
             if (listener != null) {
                 model.addPropertyChangeListener(listener);
             }
-            model.addPropertyChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    try {
-                        model.setProperties(createProperties(o));
-                    } catch (RuntimeException err) {
-                        String msg = err.getMessage();
-                    }
+            model.addPropertyChangeListener(evt -> {
+                try {
+                    model.setProperties(createProperties(o));
+                } catch (RuntimeException err) {
+                    String msg = err.getMessage();
+                }
 //                    finally {
 //                        model.fireTableStructureChanged();
 //                    }
-                }
             });
         }
         psp.setToolBarVisible(false);
@@ -197,23 +189,19 @@ public enum PropertiesPanelFactory {
                 if (CustomPropertyEditorRegistry.INSTANCE.getRegistry().getEditor(value.getClass()) != null) {
                     // There is an editor available, so the property is a leaf
                     if (p.isEditable()) {
-                        p.addPropertyChangeListener(new PropertyChangeListener() {
-                            @Override
-                            public void propertyChange(PropertyChangeEvent evt) {
-                                try {
-                                    if (evt.getNewValue() == null) {
-                                        return;
-                                    }
-                                    prop.getDescriptor().getWriteMethod().invoke(owner, evt.getNewValue());
-                                    if (prop.getRefreshMode() == EnhancedPropertyDescriptor.Refresh.All) {
-                                    }
-                                } catch (IllegalAccessException ex) {
-                                } catch (IllegalArgumentException ex) {
-                                } catch (InvocationTargetException ex) {
-                                    JOptionPane.showMessageDialog(null, ex.getCause().getMessage());
-                                } catch (RuntimeException err) {
-                                    JOptionPane.showMessageDialog(null, err.getMessage());
+                        p.addPropertyChangeListener(evt -> {
+                            try {
+                                if (evt.getNewValue() == null) {
+                                    return;
                                 }
+                                prop.getDescriptor().getWriteMethod().invoke(owner, evt.getNewValue());
+                                if (prop.getRefreshMode() == EnhancedPropertyDescriptor.Refresh.All) {
+                                }
+                            } catch (IllegalAccessException | IllegalArgumentException ex) {
+                            } catch (InvocationTargetException ex) {
+                                JOptionPane.showMessageDialog(null, ex.getCause().getMessage());
+                            } catch (RuntimeException err) {
+                                JOptionPane.showMessageDialog(null, err.getMessage());
                             }
                         });
                     }

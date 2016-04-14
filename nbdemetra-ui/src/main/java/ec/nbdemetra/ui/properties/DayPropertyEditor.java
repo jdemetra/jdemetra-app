@@ -6,8 +6,6 @@ package ec.nbdemetra.ui.properties;
 
 import com.toedter.calendar.JDateChooser;
 import ec.tstoolkit.timeseries.Day;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Date;
 import javax.swing.JComponent;
 import org.openide.explorer.propertysheet.InplaceEditor;
@@ -26,12 +24,7 @@ public class DayPropertyEditor extends AbstractExPropertyEditor {
             final JDateChooser component = new JDateChooser("yyyy-MM-dd", "####-##-##", '_');
 
             {
-                component.addPropertyChangeListener("date", new PropertyChangeListener() {
-                    @Override
-                    public void propertyChange(PropertyChangeEvent evt) {
-                        fireActionPerformed(COMMAND_SUCCESS);
-                    }
-                });
+                component.addPropertyChangeListener("date", evt -> fireActionPerformed(COMMAND_SUCCESS));
             }
 
             @Override

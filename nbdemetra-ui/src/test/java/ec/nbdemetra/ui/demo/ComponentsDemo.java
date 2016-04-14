@@ -17,7 +17,6 @@
 package ec.nbdemetra.ui.demo;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.awt.ExceptionPanel;
 import ec.tss.TsFactory;
@@ -43,8 +42,6 @@ import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.UIManager;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
@@ -81,19 +78,16 @@ public final class ComponentsDemo extends JPanel {
         IdsTree.fill(tree, Lists.newArrayList(demoData.keySet()));
         expandAll(tree);
 
-        tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-            @Override
-            public void valueChanged(TreeSelectionEvent e) {
-                TreePath p = tree.getSelectionPath();
-                if (p != null) {
-                    main.removeAll();
-                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
-                    Id id = IdsTree.translate(node);
-                    Component c = demoData.get(id);
-                    main.add(c != null ? c : new JPanel());
-                    main.validate();
-                    main.repaint();
-                }
+        tree.getSelectionModel().addTreeSelectionListener(event -> {
+            TreePath p = tree.getSelectionPath();
+            if (p != null) {
+                main.removeAll();
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
+                Id id = IdsTree.translate(node);
+                Component c = demoData.get(id);
+                main.add(c != null ? c : new JPanel());
+                main.validate();
+                main.repaint();
             }
         });
 
@@ -127,7 +121,7 @@ public final class ComponentsDemo extends JPanel {
     }
 
     private static SortedMap<Id, Component> lookupComponents() {
-        TreeMap<Id, Component> result = Maps.newTreeMap();
+        TreeMap<Id, Component> result = new TreeMap();
         for (DemoComponentFactory o : Lookup.getDefault().lookupAll(DemoComponentFactory.class)) {
             for (Entry<Id, Callable<Component>> e : o.getComponents().entrySet()) {
                 result.put(e.getKey(), configure(create(e.getValue())));

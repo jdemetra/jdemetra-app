@@ -74,12 +74,7 @@ public final class ExportJndiJdbcConnection extends NodeAction implements Presen
     private static List<Exportable> getExportables(Node[] activatedNodes) {
         List<Exportable> result = new ArrayList<>();
         for (final Node o : activatedNodes) {
-            result.add(new Exportable() {
-                @Override
-                public Config exportConfig() {
-                    return toConfig(getConnectionBean(o));
-                }
-            });
+            result.add(() -> toConfig(getConnectionBean(o)));
         }
         return result;
     }

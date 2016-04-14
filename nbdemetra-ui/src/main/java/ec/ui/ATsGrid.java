@@ -22,8 +22,6 @@ import static ec.ui.interfaces.ITsGrid.SINGLE_TS_INDEX_PROPERTY;
 import static ec.ui.interfaces.ITsGrid.ZOOM_PROPERTY;
 import ec.util.chart.ColorScheme;
 import ec.util.various.swing.FontAwesome;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.ActionMap;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -77,26 +75,23 @@ public abstract class ATsGrid extends ATsCollectionView implements ITsGrid {
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case ORIENTATION_PROPERTY:
-                        onOrientationChange();
-                        break;
-                    case CHRONOLOGY_PROPERTY:
-                        onChronologyChange();
-                        break;
-                    case MODE_PROPERTY:
-                        onModeChange();
-                        break;
-                    case SINGLE_TS_INDEX_PROPERTY:
-                        onSingleTsIndexChange();
-                        break;
-                    case ZOOM_PROPERTY:
-                        onZoomChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case ORIENTATION_PROPERTY:
+                    onOrientationChange();
+                    break;
+                case CHRONOLOGY_PROPERTY:
+                    onChronologyChange();
+                    break;
+                case MODE_PROPERTY:
+                    onModeChange();
+                    break;
+                case SINGLE_TS_INDEX_PROPERTY:
+                    onSingleTsIndexChange();
+                    break;
+                case ZOOM_PROPERTY:
+                    onZoomChange();
+                    break;
             }
         });
     }

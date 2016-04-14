@@ -27,8 +27,6 @@ import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
@@ -216,14 +214,11 @@ public class SIView extends ATsView implements ClipboardOwner {
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }

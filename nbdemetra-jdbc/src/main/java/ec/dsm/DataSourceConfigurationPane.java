@@ -1,7 +1,5 @@
 package ec.dsm;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import javax.swing.JButton;
@@ -46,17 +44,13 @@ public class DataSourceConfigurationPane extends JPanel {
     txtPwd_ = new JPasswordField();
     txtPwd2_ = new JPasswordField();
 
-    SwingUtilities.invokeLater(new Runnable() {
-
-      @Override
-      public void run() {
+    SwingUtilities.invokeLater(() -> {
         build(properties);
 
         Dimension size = new Dimension(400, 350);
         SwingUtilities.getWindowAncestor(DataSourceConfigurationPane.this).setPreferredSize(size);
         SwingUtilities.getWindowAncestor(DataSourceConfigurationPane.this).setSize(size);
         SwingUtilities.getWindowAncestor(DataSourceConfigurationPane.this).setMinimumSize(size);
-      }
     });
   }
 
@@ -127,10 +121,7 @@ public class DataSourceConfigurationPane extends JPanel {
 
     // Buttons
     bSave_.setText("Save");
-    bSave_.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    bSave_.addActionListener(event -> {
         // Remove old version if there was one
         DataSourceManager.INSTANCE.remove(dataSource_.getSourceType(), dataSource_.getName());
         AccountManager.INSTANCE.removeAccount(dataSource_.getSourceType(), dataSource_.getName());
@@ -138,7 +129,7 @@ public class DataSourceConfigurationPane extends JPanel {
         // Update information
         dataSource_.setName(txtName.getText());
         for (String property : propFields_.keySet()) {
-          dataSource_.setProperty(property, propFields_.get(property).getText());
+            dataSource_.setProperty(property, propFields_.get(property).getText());
         }
 
         // Save new version
@@ -147,18 +138,13 @@ public class DataSourceConfigurationPane extends JPanel {
                 new Account(txtUser.getText(), new String(txtPwd_.getPassword())));
 
         SwingUtilities.getWindowAncestor(bSave_).setVisible(false);
-      }
     });
 
     add(bSave_, new CC().skip().gap("20px").growX().pushX().wrap());
 
     final JButton bCancel = new JButton("Cancel");
-    bCancel.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    bCancel.addActionListener(event -> {
         SwingUtilities.getWindowAncestor(bCancel).setVisible(false);
-      }
     });
     add(bCancel, new CC().skip().gap("20px").growX().pushX());
 

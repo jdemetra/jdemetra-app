@@ -26,8 +26,6 @@ import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -159,20 +157,17 @@ public final class BasicFileViewer extends JPanel {
             Logger.getLogger(BasicFileViewer.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case STATE_PROPERTY:
-                        onStateChange();
-                        break;
-                    case FILE_HANDLER_PROPERTY:
-                        onFileHandlerChange();
-                        break;
-                    case FILE_PROPERTY:
-                        onFileChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case STATE_PROPERTY:
+                    onStateChange();
+                    break;
+                case FILE_HANDLER_PROPERTY:
+                    onFileHandlerChange();
+                    break;
+                case FILE_PROPERTY:
+                    onFileChange();
+                    break;
             }
         });
 
@@ -220,12 +215,7 @@ public final class BasicFileViewer extends JPanel {
         new SwingWorker<Object, Integer>() {
             @Override
             protected Object doInBackground() throws Exception {
-                return fileHandler.asyncLoad(file, new ProgressCallback() {
-                    @Override
-                    public void setProgress(int min, int max, int value) {
-                        publish((value - min) * 100 / (max - min));
-                    }
-                });
+                return fileHandler.asyncLoad(file, (min, max, value) -> publish((value - min) * 100 / (max - min)));
             }
 
             @Override

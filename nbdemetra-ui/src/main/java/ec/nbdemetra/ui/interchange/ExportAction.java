@@ -16,8 +16,6 @@
  */
 package ec.nbdemetra.ui.interchange;
 
-import com.google.common.base.Predicates;
-import ec.nbdemetra.ui.Jdk6Functions;
 import ec.nbdemetra.ui.actions.AbilityAction;
 import ec.nbdemetra.ui.nodes.Nodes;
 import java.awt.event.ActionEvent;
@@ -64,8 +62,8 @@ public final class ExportAction extends AbilityAction<Exportable> implements Pre
 
     private static List<Exportable> getExportables(Node[] activatedNodes) {
         return Nodes.asIterable(activatedNodes)
-                .transform(Jdk6Functions.lookupNode(Exportable.class))
-                .filter(Predicates.notNull())
+                .transform(o -> o.getLookup().lookup(Exportable.class))
+                .filter(o -> o != null)
                 .toList();
     }
 

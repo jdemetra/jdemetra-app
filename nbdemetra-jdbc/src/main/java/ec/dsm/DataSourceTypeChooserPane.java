@@ -3,8 +3,6 @@ package ec.dsm;
 import ec.tss.tsproviders.jdbc.dsm.datasource.DataSourceManager;
 import ec.tss.tsproviders.jdbc.dsm.datasource.DefaultManagedDataSource;
 import ec.tss.tsproviders.jdbc.dsm.datasource.interfaces.IManagedDataSource;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -27,15 +25,10 @@ public class DataSourceTypeChooserPane extends JPanel {
     public DataSourceTypeChooserPane() {
         super();
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                build();
-
-                SwingUtilities.getWindowAncestor(DataSourceTypeChooserPane.this).pack();
-            }
+        SwingUtilities.invokeLater(() -> {
+            build();
+            SwingUtilities.getWindowAncestor(DataSourceTypeChooserPane.this).pack();
         });
-
     }
 
     private void build() {
@@ -49,27 +42,21 @@ public class DataSourceTypeChooserPane extends JPanel {
 
         final JButton bOk = new JButton("Create new data source");
         add(bOk, new CC().skip().wrap());
-        bOk.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SwingUtilities.getWindowAncestor(bOk).setVisible(false);
-
-                String providerQualifier = comboType.getSelectedItem().toString();
-                IManagedDataSource mds = new DefaultManagedDataSource(providerQualifier);
-
-                Object innerPane = new DataSourceConfigurationPane(mds, DataSourceManager.INSTANCE.listDataSourceProperties(providerQualifier));
-                DialogDescriptor d = new DialogDescriptor(innerPane, "Data Source Properties");
-                DialogDisplayer.getDefault().createDialog(d).setVisible(true);
-            }
+        bOk.addActionListener(event -> {
+            SwingUtilities.getWindowAncestor(bOk).setVisible(false);
+            
+            String providerQualifier = comboType.getSelectedItem().toString();
+            IManagedDataSource mds = new DefaultManagedDataSource(providerQualifier);
+            
+            Object innerPane = new DataSourceConfigurationPane(mds, DataSourceManager.INSTANCE.listDataSourceProperties(providerQualifier));
+            DialogDescriptor d = new DialogDescriptor(innerPane, "Data Source Properties");
+            DialogDisplayer.getDefault().createDialog(d).setVisible(true);
         });
 
         final JButton bCancel = new JButton("Cancel");
         add(bCancel, new CC().skip());
-        bCancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SwingUtilities.getWindowAncestor(bCancel).setVisible(false);
-            }
+        bCancel.addActionListener(event -> {
+            SwingUtilities.getWindowAncestor(bCancel).setVisible(false);
         });
     }
 }

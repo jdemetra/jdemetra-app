@@ -35,8 +35,6 @@ import ec.ui.interfaces.ITsGrid;
 import ec.util.chart.ObsIndex;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +53,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
-import org.openide.util.Cancellable;
 
 /**
  * A grid component used to display outliers found in time series. The outliers
@@ -102,34 +99,28 @@ public class JTsAnomalyGrid extends JComponent {
         grid.setCellRenderer(new AnomalyCellRenderer(grid.getCellRenderer()));
 
         // Listening to a data change to calculate the new outliers
-        grid.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case JTsGrid.TS_COLLECTION_PROPERTY:
-                        onCollectionChange((TsCollection) evt.getNewValue());
-                        break;
-                    case ITsGrid.ZOOM_PROPERTY:
-                        firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
-                        break;
-                    case ITsGrid.SELECTION_PROPERTY:
-                        firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
-                        break;
-                    case JTsGrid.HOVERED_OBS_PROPERTY:
-                        firePropertyChange(HOVERED_OBS_PROPERTY, evt.getOldValue(), evt.getNewValue());
-                        break;
-                }
+        grid.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case JTsGrid.TS_COLLECTION_PROPERTY:
+                    onCollectionChange((TsCollection) evt.getNewValue());
+                    break;
+                case ITsGrid.ZOOM_PROPERTY:
+                    firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+                    break;
+                case ITsGrid.SELECTION_PROPERTY:
+                    firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+                    break;
+                case JTsGrid.HOVERED_OBS_PROPERTY:
+                    firePropertyChange(HOVERED_OBS_PROPERTY, evt.getOldValue(), evt.getNewValue());
+                    break;
             }
         });
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String p = evt.getPropertyName();
-                if (p.equals(STATE_PROPERTY)) {
-                    onStateChange();
-                    firePropertyChange(OutliersTopComponent.STATE_CHANGED, null, worker.getState());
-                }
+        addPropertyChangeListener(evt -> {
+            String p = evt.getPropertyName();
+            if (p.equals(STATE_PROPERTY)) {
+                onStateChange();
+                firePropertyChange(OutliersTopComponent.STATE_CHANGED, null, worker.getState());
             }
         });
 
@@ -320,12 +311,7 @@ public class JTsAnomalyGrid extends JComponent {
             case PENDING:
                 break;
             case STARTED:
-                progressHandle = ProgressHandleFactory.createHandle("Calculating Outliers...", new Cancellable() {
-                    @Override
-                    public boolean cancel() {
-                        return worker.cancel(true);
-                    }
-                });
+                progressHandle = ProgressHandleFactory.createHandle("Calculating Outliers...", () -> worker.cancel(true));
                 progressHandle.start(100);
                 break;
         }
@@ -395,11 +381,8 @@ public class JTsAnomalyGrid extends JComponent {
 
     public boolean start(boolean local) {
         worker = new JTsAnomalyGrid.SwingWorkerImpl();
-        worker.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                firePropertyChange(STATE_PROPERTY, null, worker.getState());
-            }
+        worker.addPropertyChangeListener(evt -> {
+            firePropertyChange(STATE_PROPERTY, null, worker.getState());
         });
         worker.execute();
         return true;

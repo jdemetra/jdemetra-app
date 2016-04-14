@@ -23,7 +23,6 @@ import ec.util.various.swing.StandardSwingColor;
 import ec.util.various.swing.TextPrompt;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -37,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import javax.swing.BorderFactory;
@@ -66,12 +64,7 @@ public final class DesktopDemo extends javax.swing.JPanel {
                 .title("Desktop Demo")
                 .size(520, 400)
                 .resizable(false)
-                .icons(new Callable<List<Image>>() {
-                    @Override
-                    public List<Image> call() throws Exception {
-                        return FontAwesome.FA_DESKTOP.getImages(Color.BLACK, 16f, 32f, 64f);
-                    }
-                })
+                .icons(() -> FontAwesome.FA_DESKTOP.getImages(Color.BLACK, 16f, 32f, 64f))
                 .launch();
     }
 

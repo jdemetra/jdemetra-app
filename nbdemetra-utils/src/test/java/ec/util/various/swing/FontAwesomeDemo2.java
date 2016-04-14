@@ -6,9 +6,6 @@
 package ec.util.various.swing;
 
 import java.awt.Color;
-import java.awt.Image;
-import java.util.List;
-import java.util.concurrent.Callable;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JTextField;
@@ -26,12 +23,7 @@ public final class FontAwesomeDemo2 extends javax.swing.JPanel {
                 .content(FontAwesomeDemo2.class)
                 .title("Font Awesome Demo 2")
                 .size(240, 200)
-                .icons(new Callable<List<Image>>() {
-                    @Override
-                    public List<Image> call() throws Exception {
-                        return FontAwesome.FA_FONT.getImages(Color.BLUE, 16f, 32f, 64f);
-                    }
-                })
+                .icons(() -> FontAwesome.FA_FONT.getImages(Color.BLUE, 16f, 32f, 64f))
                 .resizable(false)
                 .launch();
     }

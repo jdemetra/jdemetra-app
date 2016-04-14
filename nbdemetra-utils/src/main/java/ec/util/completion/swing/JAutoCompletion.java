@@ -29,8 +29,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
@@ -81,13 +79,10 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
         });
         this.timer.setRepeats(false);
         this.latestId = 0;
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String p = evt.getPropertyName();
-                if (p.equals(DELAY_PROPERTY)) {
-                    timer.setDelay(delay);
-                }
+        addPropertyChangeListener(evt -> {
+            String p = evt.getPropertyName();
+            if (p.equals(DELAY_PROPERTY)) {
+                timer.setDelay(delay);
             }
         });
     }
@@ -278,14 +273,11 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
 
         void fireDocumentEvent(DocumentEvent e) {
             if (listening) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        String current = getTerm();
-                        if (!current.equals(previous)) {
-                            previous = current;
-                            timer.restart();
-                        }
+                SwingUtilities.invokeLater(() -> {
+                    String current = getTerm();
+                    if (!current.equals(previous)) {
+                        previous = current;
+                        timer.restart();
                     }
                 });
             }

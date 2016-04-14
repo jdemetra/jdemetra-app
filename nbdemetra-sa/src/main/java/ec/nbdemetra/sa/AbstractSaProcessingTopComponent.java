@@ -19,8 +19,6 @@ package ec.nbdemetra.sa;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.ui.WorkspaceTopComponent;
 import ec.tss.sa.SaProcessing;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.JComponent;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewDescription;
@@ -45,13 +43,10 @@ public abstract class AbstractSaProcessingTopComponent extends WorkspaceTopCompo
         setName(txt);
         setToolTipText(txt + " view");
         this.controller = controller;
-        controller.addPropertyChangeListener(MultiProcessingController.SAPROCESSING_STATE_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                // forward event
-                firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
-                onSaProcessingStateChange();
-            }
+        controller.addPropertyChangeListener(MultiProcessingController.SAPROCESSING_STATE_PROPERTY, evt -> {
+            // forward event
+            firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+            onSaProcessingStateChange();
         });
     }
 

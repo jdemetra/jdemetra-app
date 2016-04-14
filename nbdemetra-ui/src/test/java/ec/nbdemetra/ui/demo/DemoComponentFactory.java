@@ -37,22 +37,14 @@ public abstract class DemoComponentFactory {
     }
 
     protected static Callable<Component> newInstance(final Class<? extends Component> clazz) {
-        return new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                return clazz.newInstance();
-            }
-        };
+        return clazz::newInstance;
     }
 
     protected static Callable<Component> reflect(final Class<?> clazz) {
-        return new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                ReflectComponent c = new ReflectComponent();
-                c.setClazz(clazz);
-                return c;
-            }
+        return () -> {
+            ReflectComponent c = new ReflectComponent();
+            c.setClazz(clazz);
+            return c;
         };
     }
 }

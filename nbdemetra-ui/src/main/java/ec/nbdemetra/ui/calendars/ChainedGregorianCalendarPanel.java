@@ -16,7 +16,6 @@ import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import javax.swing.event.DocumentEvent;
@@ -74,23 +73,20 @@ public class ChainedGregorianCalendarPanel extends JPanel2 implements ExplorerMa
 
         nameTextField.getDocument().addDocumentListener(nameTextFieldListener);
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case CALENDAR_NAME_PROPERTY:
-                        onCalendarNameChange();
-                        break;
-                    case FIRST_CALENDAR_PROPERTY:
-                        onFirstCalendarChange();
-                        break;
-                    case SECOND_CALENDAR_PROPERTY:
-                        onSecondCalendarChange();
-                        break;
-                    case DAY_BREAK_PROPERTY:
-                        onDayBreakChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case CALENDAR_NAME_PROPERTY:
+                    onCalendarNameChange();
+                    break;
+                case FIRST_CALENDAR_PROPERTY:
+                    onFirstCalendarChange();
+                    break;
+                case SECOND_CALENDAR_PROPERTY:
+                    onSecondCalendarChange();
+                    break;
+                case DAY_BREAK_PROPERTY:
+                    onDayBreakChange();
+                    break;
             }
         });
     }

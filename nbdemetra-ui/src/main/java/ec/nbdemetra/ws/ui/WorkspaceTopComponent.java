@@ -109,23 +109,13 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements E
                 if (ev.info == WorkspaceFactory.Event.REMOVINGITEM) {
                     WorkspaceItem<?> wdoc = ev.workspace.searchDocument(ev.id);
                     if (wdoc == doc) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                doc.closeView();
-                            }
-                        });
+                        SwingUtilities.invokeLater(doc::closeView);
                     }
                 } else if (ev.info == WorkspaceFactory.Event.ITEMCHANGED) {
                     if (ev.source != this) {
                         WorkspaceItem<?> wdoc = ev.workspace.searchDocument(ev.id);
                         if (wdoc == doc) {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    refresh();
-                                }
-                            });
+                            SwingUtilities.invokeLater(this::refresh);
                         }
                     }
                 }

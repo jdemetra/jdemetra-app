@@ -16,11 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Ordering;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUI;
@@ -38,6 +34,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.Action;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -120,16 +118,12 @@ public final class ProvidersNode extends AbstractNode {
         protected void addNotify() {
             lookupResult.addLookupListener(this);
             demetraUI.addPropertyChangeListener(this);
-            for (IDataSourceProvider o : getProviders()) {
-                o.addDataSourceListener(this);
-            }
+            providerStream().forEach(o -> o.addDataSourceListener(this));
         }
 
         @Override
         protected void removeNotify() {
-            for (IDataSourceProvider o : getProviders()) {
-                o.removeDataSourceListener(this);
-            }
+            providerStream().forEach(o -> o.removeDataSourceListener(this));
             demetraUI.removePropertyChangeListener(this);
             lookupResult.removeLookupListener(this);
         }
@@ -149,22 +143,20 @@ public final class ProvidersNode extends AbstractNode {
 
         private List<? extends Object> getKeys() {
             return demetraUI.isShowTsProviderNodes()
-                    ? getProviders().toSortedList(ON_CLASS_SIMPLENAME)
-                    : getProviders().transformAndConcat(TO_DATASOURCE).toSortedList(ON_TO_STRING);
+                    ? providerStream().sorted(ON_CLASS_SIMPLENAME).collect(Collectors.toList())
+                    : providerStream().flatMap(o -> o.getDataSources().stream()).sorted(ON_TO_STRING).collect(Collectors.toList());
         }
 
-        private FluentIterable<? extends IDataSourceProvider> getProviders() {
-            return FluentIterable.from(lookupResult.allInstances())
-                    .filter(demetraUI.isShowUnavailableTsProviders() ? ALL : IS_AVAILABLE);
+        private Stream<? extends IDataSourceProvider> providerStream() {
+            return lookupResult.allInstances().stream()
+                    .filter(demetraUI.isShowUnavailableTsProviders() ? (o -> true) : o -> o.isAvailable());
         }
 
         //<editor-fold defaultstate="collapsed" desc="LookupListener">
         @Override
         public void resultChanged(LookupEvent ev) {
             refresh(true);
-            for (IDataSourceProvider o : getProviders()) {
-                o.addDataSourceListener(this);
-            }
+            providerStream().forEach(o -> o.addDataSourceListener(this));
         }
         //</editor-fold>
 
@@ -254,35 +246,9 @@ public final class ProvidersNode extends AbstractNode {
         }
     }
 
-    private static final Predicate<IDataSourceProvider> ALL = Predicates.alwaysTrue();
+    private static final Ordering<IDataSourceProvider> ON_CLASS_SIMPLENAME = Ordering.natural().onResultOf(o -> o.getClass().getSimpleName());
 
-    private static final Predicate<IDataSourceProvider> IS_AVAILABLE = new Predicate<IDataSourceProvider>() {
-        @Override
-        public boolean apply(IDataSourceProvider input) {
-            return input.isAvailable();
-        }
-    };
-
-    private static final Ordering<IDataSourceProvider> ON_CLASS_SIMPLENAME = Ordering.natural().onResultOf(new Function<IDataSourceProvider, String>() {
-        @Override
-        public String apply(IDataSourceProvider input) {
-            return input.getClass().getSimpleName();
-        }
-    });
-
-    private static final Ordering<DataSource> ON_TO_STRING = Ordering.natural().onResultOf(new Function<DataSource, String>() {
-        @Override
-        public String apply(DataSource input) {
-            return input.toString();
-        }
-    });
-
-    private static final Function<IDataSourceProvider, List<DataSource>> TO_DATASOURCE = new Function<IDataSourceProvider, List<DataSource>>() {
-        @Override
-        public List<DataSource> apply(IDataSourceProvider input) {
-            return input.getDataSources();
-        }
-    };
+    private static final Ordering<DataSource> ON_TO_STRING = Ordering.natural().onResultOf(o -> o.toString());
 
     public static boolean isProvidersNode(Node[] activatedNodes) {
         return activatedNodes != null && activatedNodes.length == 0;

@@ -24,8 +24,6 @@ import ec.tss.html.HtmlTag;
 import ec.tss.html.HtmlUtil;
 import ec.ui.AHtmlView;
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -50,14 +48,11 @@ final class ReflectComponent extends JComponent {
         setLayout(new BorderLayout());
         add(NbComponents.newJScrollPane(htmlView), BorderLayout.CENTER);
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case CLAZZ_PROPERTY:
-                        onClazzChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case CLAZZ_PROPERTY:
+                    onClazzChange();
+                    break;
             }
         });
     }

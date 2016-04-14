@@ -64,18 +64,15 @@ public final class PropertyEditorFactory extends DemoComponentFactory {
     }
 
     private static Callable<Component> propertySheet() {
-        return new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                JPanel result = new JPanel();
-                PropertySheet view = new PropertySheet();
-
-                view.setNodes(new Node[]{new DemoNode()});
-
-                result.setLayout(new BorderLayout());
-                result.add(view, BorderLayout.CENTER);
-                return result;
-            }
+        return () -> {
+            JPanel result = new JPanel();
+            PropertySheet view = new PropertySheet();
+            
+            view.setNodes(new Node[]{new DemoNode()});
+            
+            result.setLayout(new BorderLayout());
+            result.add(view, BorderLayout.CENTER);
+            return result;
         };
     }
 

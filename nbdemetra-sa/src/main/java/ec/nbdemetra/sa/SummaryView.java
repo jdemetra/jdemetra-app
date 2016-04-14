@@ -16,7 +16,6 @@ import ec.ui.AHtmlView;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,6 @@ import javax.swing.*;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
-import org.openide.windows.TopComponent;
 
 /**
  *
@@ -58,16 +56,13 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
                 return result;
             }
         });
-        comboBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED && e.getItem() != null) {
-                    Map.Entry<Integer, AlgorithmDescriptor> item = (Map.Entry<Integer, AlgorithmDescriptor>) e.getItem();
-                    HtmlRegArimaReport report = new HtmlRegArimaReport(item.getValue().name, reports.get(item.getKey()).get(item.getValue()));
-                    reportTB_.loadContent(HtmlUtil.toString(report));
-                } else {
-                    reportTB_.loadContent("");
-                }
+        comboBox.addItemListener(event -> {
+            if (event.getStateChange() == ItemEvent.SELECTED && event.getItem() != null) {
+                Map.Entry<Integer, AlgorithmDescriptor> item = (Map.Entry<Integer, AlgorithmDescriptor>) event.getItem();
+                HtmlRegArimaReport report = new HtmlRegArimaReport(item.getValue().name, reports.get(item.getKey()).get(item.getValue()));
+                reportTB_.loadContent(HtmlUtil.toString(report));
+            } else {
+                reportTB_.loadContent("");
             }
         });
 

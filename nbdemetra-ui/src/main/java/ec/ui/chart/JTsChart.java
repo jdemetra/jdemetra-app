@@ -18,16 +18,12 @@ package ec.ui.chart;
 
 import com.google.common.base.Converter;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.Jdk6Functions;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.completion.JAutoCompletionService;
@@ -225,20 +221,17 @@ public class JTsChart extends ATsChart implements IConfigurable {
     }
 
     private void enableProperties() {
-        this.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case HOVERED_OBS_PROPERTY:
-                        onHoveredObsChange();
-                        break;
-                    case "transferHandler":
-                        onTransferHandlerChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        this.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case HOVERED_OBS_PROPERTY:
+                    onHoveredObsChange();
+                    break;
+                case "transferHandler":
+                    onTransferHandlerChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }
@@ -436,8 +429,10 @@ public class JTsChart extends ATsChart implements IConfigurable {
             if (colorSchemeName.isEmpty()) {
                 return null;
             }
-            Predicate<ColorScheme> predicate = Predicates.compose(Predicates.equalTo(colorSchemeName), Jdk6Functions.colorSchemeName());
-            return Iterables.tryFind(DemetraUI.getDefault().getColorSchemes(), predicate).orNull();
+            return DemetraUI.getDefault().getColorSchemes().stream()
+                    .filter(o -> colorSchemeName.equals(o.getName()))
+                    .findFirst()
+                    .orElse(null);
         }
     }
 

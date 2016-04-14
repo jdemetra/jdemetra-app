@@ -17,8 +17,6 @@
 package ec.nbdemetra.ui.chart3d.functions;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.BoxLayout;
@@ -81,12 +79,7 @@ public class ParameterComboBox extends JPanel {
         button = new JButton("OK");
         button.setMaximumSize(new Dimension(50, 18));
 
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                firePropertyChange(PARAMETERS_CHANGED, null, null);
-            }
-        });
+        button.addActionListener(event -> firePropertyChange(PARAMETERS_CHANGED, null, null));
 
         add(mainPanel);
         add(button);
@@ -111,23 +104,17 @@ public class ParameterComboBox extends JPanel {
         combo2.removeItem(selected1);
         combo1.removeItem(selected2);
 
-        l1 = new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    selected1 = e.getItem();
-                    resetElements();
-                }
+        l1 = event -> {
+            if (event.getStateChange() == ItemEvent.SELECTED) {
+                selected1 = event.getItem();
+                resetElements();
             }
         };
 
-        l2 = new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    selected2 = e.getItem();
-                    resetElements();
-                }
+        l2 = e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                selected2 = e.getItem();
+                resetElements();
             }
         };
 

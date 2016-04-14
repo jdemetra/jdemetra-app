@@ -5,8 +5,6 @@
 package ec.nbdemetra.ui.properties;
 
 import java.awt.Component;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +21,9 @@ public class ListSelectionEditor<T> extends PropertyEditorSupport  {
 
     public ListSelectionEditor(List<T> allValues) {
         all = allValues;
-        component.addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals(ListSelection.SEL_CHANGED)){
-                    setValue(evt.getNewValue());
-                }
+        component.addPropertyChangeListener(evt -> {
+            if (evt.getPropertyName().equals(ListSelection.SEL_CHANGED)){
+                setValue(evt.getNewValue());
             }
         });
     }
@@ -43,7 +37,7 @@ public class ListSelectionEditor<T> extends PropertyEditorSupport  {
     public Component getCustomEditor() {
         List<T> sel = (List<T>) getValue();
         ArrayList<T> tmpAll = new ArrayList<>(all);
-        ArrayList<T> tmpSel = sel != null ? new ArrayList<>(sel) : new ArrayList<T>();
+        ArrayList<T> tmpSel = sel != null ? new ArrayList<>(sel) : new ArrayList<>();
         tmpAll.removeAll(tmpSel);
         component.set(tmpAll, tmpSel);
         return component;

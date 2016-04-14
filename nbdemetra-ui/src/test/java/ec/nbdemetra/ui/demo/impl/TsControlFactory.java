@@ -47,18 +47,15 @@ public final class TsControlFactory extends DemoComponentFactory {
     }
 
     private static Callable<Component> marginView() {
-        return new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                MarginView result = new MarginView();
-                TsData series = DemoUtils.randomTsCollection(1).get(0).getTsData();
-                DescriptiveStatistics stats = new DescriptiveStatistics(series);
-                double val = (stats.getMax() - stats.getMin()) / 2;
-                TsData lower = series.drop(14, 0).minus(val);
-                TsData upper = series.drop(14, 0).plus(val);
-                result.setData(series, lower, upper);
-                return result;
-            }
+        return () -> {
+            MarginView result = new MarginView();
+            TsData series = DemoUtils.randomTsCollection(1).get(0).getTsData();
+            DescriptiveStatistics stats = new DescriptiveStatistics(series);
+            double val = (stats.getMax() - stats.getMin()) / 2;
+            TsData lower = series.drop(14, 0).minus(val);
+            TsData upper = series.drop(14, 0).plus(val);
+            result.setData(series, lower, upper);
+            return result;
         };
     }
 }

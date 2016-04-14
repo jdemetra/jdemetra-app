@@ -18,12 +18,8 @@ package ec.nbdemetra.ui.interchange;
 
 import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.IConfigurable;
-import static ec.nbdemetra.ui.Jdk6Functions.namedServiceToNode;
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.ns.NamedServiceNode;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -38,13 +34,10 @@ final class InterchangePanel extends javax.swing.JPanel implements ExplorerManag
         this.em = new ExplorerManager();
         initComponents();
         editButton.setEnabled(false);
-        em.addVetoableChangeListener(new VetoableChangeListener() {
-            @Override
-            public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-                if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
-                    Node[] nodes = (Node[]) evt.getNewValue();
-                    editButton.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IConfigurable.class) != null);
-                }
+        em.addVetoableChangeListener(evt -> {
+            if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
+                Node[] nodes = (Node[]) evt.getNewValue();
+                editButton.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IConfigurable.class) != null);
             }
         });
         outlineView2.getOutline().setRootVisible(false);
@@ -99,7 +92,7 @@ final class InterchangePanel extends javax.swing.JPanel implements ExplorerManag
     }//GEN-LAST:event_editButtonActionPerformed
 
     void load() {
-        Iterable<NamedServiceNode> nodes = Iterables.transform(Lookup.getDefault().lookupAll(InterchangeBroker.class), namedServiceToNode());
+        Iterable<NamedServiceNode> nodes = Iterables.transform(Lookup.getDefault().lookupAll(InterchangeBroker.class), o -> new NamedServiceNode(o));
         em.setRootContext(new AbstractNodeBuilder().add(nodes).name("Interchange broker").build());
     }
 

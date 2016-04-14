@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.notification;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
@@ -67,13 +66,7 @@ public class NotifyUtil {
      * @param type
      */
     public static void show(String title, final String message, final MessageType type) {
-        ActionListener actionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MessageUtil.show(message, type);
-            }
-        };
-        show(title, message, type, actionListener, null, null);
+        show(title, message, type, event -> MessageUtil.show(message, type), null, null);
     }
 
     /**
@@ -104,13 +97,7 @@ public class NotifyUtil {
      * @param exception
      */
     public static void error(String title, final String message, final Throwable exception) {
-        ActionListener actionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ErrorManager.getDefault().notify(exception);
-            }
-        };
-        show(title, message, MessageType.ERROR, actionListener, null, null);
+        show(title, message, MessageType.ERROR, event -> ErrorManager.getDefault().notify(exception), null, null);
     }
 
     /**

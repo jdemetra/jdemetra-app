@@ -18,7 +18,6 @@ package ec.nbdemetra.ws.ui;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
 import ec.nbdemetra.ui.awt.JComponent2;
 import ec.nbdemetra.ui.awt.JProperty;
@@ -38,7 +37,6 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import javax.swing.tree.TreeSelectionModel;
@@ -78,7 +76,7 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
         tree.setRootVisible(false);
         tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
-        DecoratedNode root = new DecoratedNode(new DummyWsNode(WorkspaceFactory.getInstance().getActiveWorkspace(), SPECS_ID), showSystemOnly ? ItemWsNodeFilter.SYSTEM_ONLY : Predicates.<Node>alwaysTrue());
+        DecoratedNode root = new DecoratedNode(new DummyWsNode(WorkspaceFactory.getInstance().getActiveWorkspace(), SPECS_ID), showSystemOnly ? ItemWsNodeFilter.SYSTEM_ONLY : (o -> true));
         for (DecoratedNode o : root.breadthFirstIterable()) {
             o.setPreferredActionDecorator(DecoratedNode.PreferredAction.DO_NOTHING);
         }
@@ -90,13 +88,10 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
         setPreferredSize(new Dimension(225, 300));
 
         em.addVetoableChangeListener(selectionListener);
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String p = evt.getPropertyName();
-                if (p.equals(SPECIFICATION_PROPERTY)) {
-                    onSpecificationChange();
-                }
+        addPropertyChangeListener(evt -> {
+            String p = evt.getPropertyName();
+            if (p.equals(SPECIFICATION_PROPERTY)) {
+                onSpecificationChange();
             }
         });
     }
@@ -131,12 +126,7 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
 //            ((DecoratedNode) o).setHtmlDecorator(null);
 //        }
         DecoratedNode root = (DecoratedNode) em.getRootContext();
-        Optional<DecoratedNode> node = root.breadthFirstIterable().firstMatch(new Predicate<DecoratedNode>() {
-            @Override
-            public boolean apply(DecoratedNode input) {
-                return isCurrentSpecificationNode(input.getOriginal());
-            }
-        });
+        Optional<DecoratedNode> node = root.breadthFirstIterable().firstMatch(o -> isCurrentSpecificationNode(o.getOriginal()));
         if (node.isPresent()) {
 //            node.get().setHtmlDecorator(DecoratedNode.Html.BOLD);
             try {

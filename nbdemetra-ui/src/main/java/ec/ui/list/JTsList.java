@@ -153,17 +153,14 @@ public class JTsList extends ATsList {
     }
 
     private void enableProperties() {
-        this.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case "transferHandler":
-                        onTransferHandlerChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        this.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case "transferHandler":
+                    onTransferHandlerChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }
@@ -472,18 +469,15 @@ public class JTsList extends ATsList {
         private boolean hasDropLocation = false;
 
         public DropUI() {
-            this.dropLocationListener = new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    switch (evt.getPropertyName()) {
-                        case "dropLocation":
-                            boolean old = hasDropLocation;
-                            hasDropLocation = evt.getNewValue() != null;
-                            if (old != hasDropLocation) {
-                                ((Component) evt.getSource()).repaint();
-                            }
-                            break;
-                    }
+            this.dropLocationListener = evt -> {
+                switch (evt.getPropertyName()) {
+                    case "dropLocation":
+                        boolean old = hasDropLocation;
+                        hasDropLocation = evt.getNewValue() != null;
+                        if (old != hasDropLocation) {
+                            ((Component) evt.getSource()).repaint();
+                        }
+                        break;
                 }
             };
         }

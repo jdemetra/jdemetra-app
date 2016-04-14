@@ -58,13 +58,10 @@ public final class TsCollectionFactory extends DemoComponentFactory {
     }
 
     private static Callable<Component> gridWithCustomCellRenderer() {
-        return new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                JTsGrid result = new JTsGrid();
-                result.setCellRenderer(new CustomCellRenderer(result.getCellRenderer()));
-                return result;
-            }
+        return () -> {
+            JTsGrid result = new JTsGrid();
+            result.setCellRenderer(new CustomCellRenderer(result.getCellRenderer()));
+            return result;
         };
     }
 

@@ -17,7 +17,6 @@
 package ec.nbdemetra.ui.interchange.impl;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.base.StandardSystemProperty;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
@@ -169,22 +168,10 @@ public final class Configs {
                 throw Throwables.propagate(ex);
             }
         }
-        final static Function<ConfigsBean, Configs> FROM_BEAN = new Function<ConfigsBean, Configs>() {
-            @Override
-            public Configs apply(ConfigsBean input) {
-                return input.toId();
-            }
-        };
-        final static Function<Configs, ConfigsBean> TO_BEAN = new Function<Configs, ConfigsBean>() {
-            @Override
-            public ConfigsBean apply(Configs input) {
-                return input.toBean();
-            }
-        };
 
-        final Parsers.Parser<Configs> defaultParser = Parsers.<ConfigsBean>onJAXB(BEAN_CONTEXT).compose(FROM_BEAN);
-        final Formatters.Formatter<Configs> defaultFormatter = Formatters.<ConfigsBean>onJAXB(BEAN_CONTEXT, false).compose(TO_BEAN);
-        final Formatters.Formatter<Configs> formattedOutputFormatter = Formatters.<ConfigsBean>onJAXB(BEAN_CONTEXT, true).compose(TO_BEAN);
+        final Parsers.Parser<Configs> defaultParser = Parsers.<ConfigsBean>onJAXB(BEAN_CONTEXT).compose(o -> o.toId());
+        final Formatters.Formatter<Configs> defaultFormatter = Formatters.<ConfigsBean>onJAXB(BEAN_CONTEXT, false).compose(o -> o.toBean());
+        final Formatters.Formatter<Configs> formattedOutputFormatter = Formatters.<ConfigsBean>onJAXB(BEAN_CONTEXT, true).compose(o -> o.toBean());
     }
     //</editor-fold>
 }

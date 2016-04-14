@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.ui.tools;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -96,19 +95,9 @@ public final class ToolsPersistence {
             }
         }
     }
-    //
-    private static final Formatters.Formatter<Content> CONTENT_FORMATTER = Formatters.onJAXB(ContentBean.class, false).compose(new Function<Content, ContentBean>() {
-        @Override
-        public ContentBean apply(Content input) {
-            return input.toBean();
-        }
-    });
-    private static final Parsers.Parser<Content> CONTENT_PARSER = Parsers.onJAXB(ContentBean.class).compose(new Function<ContentBean, Content>() {
-        @Override
-        public Content apply(ContentBean input) {
-            return Content.fromBean(input);
-        }
-    });
+
+    private static final Formatters.Formatter<Content> CONTENT_FORMATTER = Formatters.onJAXB(ContentBean.class, false).compose(o -> o.toBean());
+    private static final Parsers.Parser<Content> CONTENT_PARSER = Parsers.onJAXB(ContentBean.class).compose(o -> Content.fromBean(o));
 
     private static class Content {
 
@@ -139,7 +128,7 @@ public final class ToolsPersistence {
         }
 
         static Content fromBean(ContentBean input) {
-            Content result = new Content(new ArrayList<Ts>(), new ArrayList<Ts>());
+            Content result = new Content(new ArrayList<>(), new ArrayList<>());
             if (input.items != null) {
                 for (ContentItemBean o : input.items) {
                     TsMoniker moniker = new TsMoniker(o.source, o.id);

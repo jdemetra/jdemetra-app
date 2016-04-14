@@ -153,38 +153,30 @@ public class FunctionsSurfaceModel extends AbstractSurfaceModel {
             }
 
             Callable<Void> createFn(final int i, final int j) {
-                return new Callable<Void>() {
-                    @Override
-                    public Void call() throws Exception {
-                        DataBlock p2 = p.deepClone();
-                        float xv = xMin + i * stepx;
-                        p2.set(p1_index, xv);   // Change the value of 1st param (X)
-
-                        float yv = yMin + j * stepy;
-                        p2.set(p2_index, yv);   // Change the value of 2nd param (Y)
-
-                        float z = Float.NaN;
-                        try {
-                            if (d.checkBoundaries(p2)) {
-                                // Evaluates the value of the z point
-                                z = (float) function.evaluate(p2).getValue();
-                            }
-                        } catch (Exception err) {
+                return () -> {
+                    DataBlock p3 = p.deepClone();
+                    float xv = xMin + i * stepx;
+                    p3.set(p1_index, xv); // Change the value of 1st param (X)
+                    float yv = yMin + j * stepy;
+                    p3.set(p2_index, yv); // Change the value of 2nd param (Y)
+                    float z = Float.NaN;
+                    try {
+                        if (d.checkBoundaries(p3)) {
+                            // Evaluates the value of the z point
+                            z = (float) function.evaluate(p3).getValue();
                         }
-
-                        if (Float.isInfinite(z)) {
-                            z = Float.NaN;
-                        }
-
-
-                        /* Array used is a one dimension array so, the value k represents the position
-                         * of the [i][j] value converted into a one dimension index.
-                         * If i = 4, j = 5, and steps = 100, then k = 4*100 + 5 = 405
-                         */
-                        int k = i * steps + j;
-                        fnPts[k] = z;
-                        return null;
+                    }catch (Exception err) {
                     }
+                    if (Float.isInfinite(z)) {
+                        z = Float.NaN;
+                    }
+                    /* Array used is a one dimension array so, the value k represents the position
+                    * of the [i][j] value converted into a one dimension index.
+                    * If i = 4, j = 5, and steps = 100, then k = 4*100 + 5 = 405
+                    */
+                    int k = i * steps + j;
+                    fnPts[k] = z;
+                    return null;
                 };
             }
 

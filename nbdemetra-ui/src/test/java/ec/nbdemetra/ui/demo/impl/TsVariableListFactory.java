@@ -33,12 +33,7 @@ public final class TsVariableListFactory extends DemoComponentFactory {
     @Override
     public Map<Id, Callable<Component>> getComponents() {
         Id id = new LinearId("(1) Main", "TsVariableList");
-        Callable<Component> callable = new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                return new JTsVariableList(new TsVariables());
-            }
-        };
+        Callable<Component> callable = () -> new JTsVariableList(new TsVariables());
         return ImmutableMap.of(id, callable);
     }
 }

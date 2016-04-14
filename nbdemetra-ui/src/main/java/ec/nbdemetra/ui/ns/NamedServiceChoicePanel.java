@@ -5,7 +5,6 @@
 package ec.nbdemetra.ui.ns;
 
 import com.google.common.collect.Iterables;
-import ec.nbdemetra.ui.Jdk6Functions;
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Dimension;
 import java.beans.PropertyVetoException;
@@ -34,7 +33,7 @@ public class NamedServiceChoicePanel extends javax.swing.JPanel implements Explo
     }
 
     public void setContent(Iterable<? extends INamedService> namedServices) {
-        Iterable<NamedServiceNode> nodes = Iterables.transform(namedServices, Jdk6Functions.namedServiceToNode());
+        Iterable<NamedServiceNode> nodes = Iterables.transform(namedServices, o -> new NamedServiceNode(o));
         em.setRootContext(new AbstractNodeBuilder().add(nodes).orderable(false).build());
     }
 

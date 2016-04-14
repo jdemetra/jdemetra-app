@@ -84,17 +84,14 @@ public class CompositeGregorianCalendarPanel extends JPanel2 implements Explorer
         nameTextField.setText(calendarName.get());
         nameTextField.getDocument().addDocumentListener(nameTextFieldListener);
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case CompositeGregorianCalendarPanel.CALENDAR_NAME_PROPERTY:
-                        onCalendarNameChange();
-                        break;
-                    case CompositeGregorianCalendarPanel.WEIGHTED_ITEMS_PROPERTY:
-                        onWeightedItemsChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case CompositeGregorianCalendarPanel.CALENDAR_NAME_PROPERTY:
+                    onCalendarNameChange();
+                    break;
+                case CompositeGregorianCalendarPanel.WEIGHTED_ITEMS_PROPERTY:
+                    onWeightedItemsChange();
+                    break;
             }
         });
     }
@@ -166,7 +163,7 @@ public class CompositeGregorianCalendarPanel extends JPanel2 implements Explorer
                 Double weight = tmp.get(o.getName());
                 if (weight != null) {
                     o.setUsed(true);
-                    o.setWeight(weight.doubleValue());
+                    o.setWeight(weight);
                 } else {
                     o.setUsed(false);
                     o.setWeight(0);

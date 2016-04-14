@@ -16,8 +16,6 @@
  */
 package ec.nbdemetra.ui.interchange;
 
-import com.google.common.base.Predicates;
-import ec.nbdemetra.ui.Jdk6Functions;
 import ec.nbdemetra.ui.actions.AbilityAction;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.tsproviders.ProvidersNode;
@@ -71,8 +69,8 @@ public final class ImportAction extends AbilityAction<Importable> implements Pre
 
     private static List<Importable> getImportables(Node[] activatedNodes) {
         return Nodes.asIterable(activatedNodes)
-                .transform(Jdk6Functions.lookupNode(Importable.class))
-                .filter(Predicates.notNull())
+                .transform(o -> o.getLookup().lookup(Importable.class))
+                .filter(o -> o != null)
                 .toList();
     }
 

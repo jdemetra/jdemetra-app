@@ -25,7 +25,6 @@ import ec.ui.grid.JTsGrid;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.DefaultListCellRenderer;
@@ -57,18 +56,14 @@ public class JTsComboGrid extends JComponent {
             generateComboBox();
             grid = new JTsGrid();
 
-            series.addItemListener(new ItemListener() {
-
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-                    if (e.getStateChange() == ItemEvent.SELECTED) {
-                        Object item = e.getItem();
-                        if (item != null) {
-                            if (item instanceof Ts) {
-                                grid.setTsCollection(collections.get((Ts) item));
-                            } else {
-                                showAllTs();
-                            }
+            series.addItemListener(event -> {
+                if (event.getStateChange() == ItemEvent.SELECTED) {
+                    Object item = event.getItem();
+                    if (item != null) {
+                        if (item instanceof Ts) {
+                            grid.setTsCollection(collections.get((Ts) item));
+                        } else {
+                            showAllTs();
                         }
                     }
                 }

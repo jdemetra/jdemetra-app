@@ -12,8 +12,6 @@ import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.utilities.Id;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
@@ -51,11 +49,8 @@ public final class RenameAction extends SingleNodeAction<ItemWsNode> {
             // create the input dialog
             String oldName = cur.getDisplayName(), newName;
             VarsName nd = new VarsName(cur.getFamily(), NAME_MESSAGE, RENAME_TITLE, oldName);
-            nd.addPropertyChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    if (evt.getPropertyName().equals(NotifyDescriptor.PROP_DETAIL)) {
-                    }
+            nd.addPropertyChangeListener(evt -> {
+                if (evt.getPropertyName().equals(NotifyDescriptor.PROP_DETAIL)) {
                 }
             });
             if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {

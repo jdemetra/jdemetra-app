@@ -12,8 +12,6 @@ import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
 import ec.ui.interfaces.ITsList.InfoType;
 import ec.ui.list.JTsList;
 import java.awt.Dimension;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import javax.swing.Box;
 import javax.swing.JLabel;
@@ -69,20 +67,14 @@ public class RegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocume
 
         toolBar.setVisible(true);
 
-        xList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (!quietRefresh) {
-                    updateDocument();
-                }
+        xList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, evt -> {
+            if (!quietRefresh) {
+                updateDocument();
             }
         });
-        yList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (!quietRefresh) {
-                    updateDocument();
-                }
+        yList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, evt-> {
+            if (!quietRefresh) {
+                updateDocument();
             }
         });
     }

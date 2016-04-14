@@ -17,6 +17,7 @@ import org.openide.nodes.Node;
  *
  * @author Philippe Charles
  */
+@Deprecated
 public final class Jdk6Functions {
 
     private Jdk6Functions() {
@@ -24,80 +25,34 @@ public final class Jdk6Functions {
     }
 
     public static Function<ColorScheme, String> colorSchemeName() {
-        return COLOR_SCHEME_NAME;
+        return o -> o.getName();
     }
 
     public static Function<ColorScheme, String> colorSchemeDisplayName() {
-        return COLOR_SCHEME_DISPLAY_NAME;
+        return o -> o.getDisplayName();
     }
 
     public static Function<INamedService, String> namedServiceName() {
-        return NAMED_SERVICE_NAME;
+        return o -> o.getName();
     }
 
     public static Function<INamedService, String> namedServiceDisplayName() {
-        return NAMED_SERVICE_DISPLAY_NAME;
+        return o -> o.getDisplayName();
     }
 
     public static Function<INamedService, NamedServiceNode> namedServiceToNode() {
-        return NAMED_SERVICE_TO_NODE;
+        return o -> new NamedServiceNode(o);
     }
 
-    public static <X> Function<X, CharSequence> forFormatter(final IFormatter<X> formatter) {
-        return new Function<X, CharSequence>() {
-            @Override
-            public CharSequence apply(X input) {
-                return formatter.format(input);
-            }
-        };
+    public static <X> Function<X, CharSequence> forFormatter(IFormatter<X> formatter) {
+        return o -> formatter.format(o);
     }
 
-    public static <X> Function<CharSequence, X> forParser(final IParser<X> parser) {
-        return new Function<CharSequence, X>() {
-            @Override
-            public X apply(CharSequence input) {
-                return parser.parse(input);
-            }
-        };
+    public static <X> Function<CharSequence, X> forParser(IParser<X> parser) {
+        return o -> parser.parse(o);
     }
 
-    public static <X> Function<Node, X> lookupNode(final Class<X> clazz) {
-        return new Function<Node, X>() {
-            @Override
-            public X apply(Node input) {
-                return input.getLookup().lookup(clazz);
-            }
-        };
+    public static <X> Function<Node, X> lookupNode(Class<X> clazz) {
+        return o -> o.getLookup().lookup(clazz);
     }
-    //
-    private static final Function<ColorScheme, String> COLOR_SCHEME_NAME = new Function<ColorScheme, String>() {
-        @Override
-        public String apply(ColorScheme input) {
-            return input.getName();
-        }
-    };
-    private static final Function<ColorScheme, String> COLOR_SCHEME_DISPLAY_NAME = new Function<ColorScheme, String>() {
-        @Override
-        public String apply(ColorScheme input) {
-            return input.getDisplayName();
-        }
-    };
-    private static final Function<INamedService, String> NAMED_SERVICE_NAME = new Function<INamedService, String>() {
-        @Override
-        public String apply(INamedService input) {
-            return input.getName();
-        }
-    };
-    private static final Function<INamedService, String> NAMED_SERVICE_DISPLAY_NAME = new Function<INamedService, String>() {
-        @Override
-        public String apply(INamedService input) {
-            return input.getDisplayName();
-        }
-    };
-    private static final Function<INamedService, NamedServiceNode> NAMED_SERVICE_TO_NODE = new Function<INamedService, NamedServiceNode>() {
-        @Override
-        public NamedServiceNode apply(INamedService input) {
-            return new NamedServiceNode(input);
-        }
-    };
 }
