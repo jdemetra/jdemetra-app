@@ -168,8 +168,11 @@ public abstract class ATsGrowthChart extends ATsChart implements ITsGrowthChart 
         }
         TsData result = input.cleanExtremities();
         result = result.pctVariation(kind == GrowthKind.PreviousPeriod ? 1 : result.getFrequency().intValue());
+        if (result == null) {
+            return null;
+        }
         result = result.select(selector);
-        result.apply(x->x*.01);
+        result.apply(x -> x * .01);
         return result;
     }
 
