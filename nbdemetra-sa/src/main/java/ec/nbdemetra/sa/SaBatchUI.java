@@ -27,7 +27,7 @@ import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
+import static ec.tss.TsFactory.toTsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TransferableXml;
 import ec.tss.datatransfer.TssTransferSupport;
@@ -546,11 +546,9 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     public void copySeries(Collection<SaItem> litems) {
-        TsCollection tmp = TsFactory.instance.createTsCollection();
-        for (SaItem item : litems) {
-            tmp.add(item.getTs());
-        }
-
+        TsCollection tmp = litems.stream()
+                .map(SaItem::getTs)
+                .collect(toTsCollection());
         Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(tmp);
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
     }

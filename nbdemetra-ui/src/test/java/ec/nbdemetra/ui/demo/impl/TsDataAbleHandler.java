@@ -34,13 +34,13 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemoComponentHandler.class)
 public final class TsDataAbleHandler extends DemoComponentHandler.InstanceOf<ITsDataAble> {
 
-    private final RandomCommand randomCommand;
-    private final ClearCommand clearCommand;
+    private final RandomTsCommand<ITsDataAble> randomCommand;
+    private final JCommand<ITsDataAble> clearCommand;
 
     public TsDataAbleHandler() {
         super(ITsDataAble.class);
-        this.randomCommand = new RandomCommand();
-        this.clearCommand = new ClearCommand();
+        this.randomCommand = RandomTsCommand.of(TsDataAbleHandler::apply);
+        this.clearCommand = JCommand.of(TsDataAbleHandler::clear);
     }
 
     @Override
@@ -60,21 +60,11 @@ public final class TsDataAbleHandler extends DemoComponentHandler.InstanceOf<ITs
         toolBar.addSeparator();
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Commands">
-    private static final class RandomCommand extends RandomTsCollectionCommand<ITsDataAble> {
-
-        @Override
-        protected void apply(ITsDataAble c, TsCollection col) {
-            c.setTsData(col.get(0).getTsData());
-        }
+    private static void apply(ITsDataAble o, TsCollection col) {
+        o.setTsData(col.get(0).getTsData());
     }
 
-    private static final class ClearCommand extends JCommand<ITsDataAble> {
-
-        @Override
-        public void execute(ITsDataAble c) throws Exception {
-            c.setTsData(null);
-        }
+    private static void clear(ITsDataAble o) {
+        o.setTsData(null);
     }
-    //</editor-fold>
 }

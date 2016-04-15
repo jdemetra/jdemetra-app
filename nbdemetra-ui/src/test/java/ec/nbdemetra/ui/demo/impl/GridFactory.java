@@ -29,7 +29,7 @@ import com.toedter.components.JSpinField;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
-import ec.nbdemetra.ui.awt.SwingProperties;
+import static ec.nbdemetra.ui.awt.SwingProperties.SPIN_FIELD_VALUE_PROPERTY;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
@@ -46,25 +46,19 @@ public final class GridFactory extends DemoComponentFactory {
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
-        Id id = new LinearId("(2) Other", "JGrid");
-        Callable<Component> callable = this::create;
-        return ImmutableMap.of(id, callable);
+        return ImmutableMap.of(new LinearId("(2) Other", "JGrid"), GridFactory::create);
     }
 
-    private Component create() {
+    private static Component create() {
         JPanel result = new JPanel(new BorderLayout());
         final DynamicModel model = new DynamicModel();
 
         final JSpinField rowCount = new JSpinField(0, 1000);
         rowCount.setValue(model.getRowCount());
-        rowCount.addPropertyChangeListener(SwingProperties.SPIN_FIELD_VALUE_PROPERTY, evt -> {
-            model.setRowCount(rowCount.getValue());
-        });
+        rowCount.addPropertyChangeListener(SPIN_FIELD_VALUE_PROPERTY, evt -> model.setRowCount(rowCount.getValue()));
         final JSpinField colCount = new JSpinField(0, 1000);
         colCount.setValue(model.getColumnCount());
-        colCount.addPropertyChangeListener(SwingProperties.SPIN_FIELD_VALUE_PROPERTY, evt -> {
-            model.setColCount(colCount.getValue());
-        });
+        colCount.addPropertyChangeListener(SPIN_FIELD_VALUE_PROPERTY, evt -> model.setColCount(colCount.getValue()));
 
         JPanel north = new JPanel(new FlowLayout());
         north.add(new JLabel("RowCount:"));
@@ -100,7 +94,7 @@ public final class GridFactory extends DemoComponentFactory {
         return result;
     }
 
-    public static final class DynamicModel extends AbstractGridModel implements GridModel {
+    private static final class DynamicModel extends AbstractGridModel implements GridModel {
 
         private static final long serialVersionUID = 1L;
         int rowCount = 0;

@@ -40,19 +40,17 @@ public final class Grid2Factory extends DemoComponentFactory {
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
-        return builder().put(new LinearId("(2) Other", "JGrid*"), excelGrid()).build();
+        return builder().put(new LinearId("(2) Other", "JGrid*"), Grid2Factory::excelGrid).build();
     }
 
-    private static Callable<Component> excelGrid() {
-        return () -> {
-            JGrid result = new JGrid();
-            result.setModel(new ExcelModel());
-            result.setRowSelectionAllowed(true);
-            result.setColumnSelectionAllowed(true);
-            result.setDragEnabled(true);
-            result.setDefaultRenderer(Object.class, new ExcelCellRenderer(result));
-            return result;
-        };
+    private static Component excelGrid() {
+        JGrid result = new JGrid();
+        result.setModel(new ExcelModel());
+        result.setRowSelectionAllowed(true);
+        result.setColumnSelectionAllowed(true);
+        result.setDragEnabled(true);
+        result.setDefaultRenderer(Object.class, new ExcelCellRenderer(result));
+        return result;
     }
 
     private static final class ExcelModel extends AbstractGridModel implements GridModel {

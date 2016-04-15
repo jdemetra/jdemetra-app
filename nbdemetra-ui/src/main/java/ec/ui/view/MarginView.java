@@ -324,9 +324,9 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TsCollection col = TsFactory.instance.createTsCollection();
-                col.add(TsFactory.instance.createTs("series", null, data.series));
-                col.add(TsFactory.instance.createTs("lower", null, data.lower));
-                col.add(TsFactory.instance.createTs("upper", null, data.upper));
+                col.quietAdd(TsFactory.instance.createTs("series", null, data.series));
+                col.quietAdd(TsFactory.instance.createTs("lower", null, data.lower));
+                col.quietAdd(TsFactory.instance.createTs("upper", null, data.upper));
                 Transferable t = TssTransferSupport.getDefault().fromTsCollection(col);
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
             }

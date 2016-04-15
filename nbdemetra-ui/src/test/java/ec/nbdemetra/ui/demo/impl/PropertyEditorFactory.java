@@ -60,20 +60,18 @@ public final class PropertyEditorFactory extends DemoComponentFactory {
 
     @Override
     public ImmutableMap<Id, Callable<Component>> getComponents() {
-        return builder().put(new LinearId("(2) Other", "PropertyEditor"), propertySheet()).build();
+        return builder().put(new LinearId("(2) Other", "PropertyEditor"), PropertyEditorFactory::propertySheet).build();
     }
 
-    private static Callable<Component> propertySheet() {
-        return () -> {
-            JPanel result = new JPanel();
-            PropertySheet view = new PropertySheet();
-            
-            view.setNodes(new Node[]{new DemoNode()});
-            
-            result.setLayout(new BorderLayout());
-            result.add(view, BorderLayout.CENTER);
-            return result;
-        };
+    private static Component propertySheet() {
+        JPanel result = new JPanel();
+        PropertySheet view = new PropertySheet();
+
+        view.setNodes(new Node[]{new DemoNode()});
+
+        result.setLayout(new BorderLayout());
+        result.add(view, BorderLayout.CENTER);
+        return result;
     }
 
     public static final class DemoNode extends AbstractNode {

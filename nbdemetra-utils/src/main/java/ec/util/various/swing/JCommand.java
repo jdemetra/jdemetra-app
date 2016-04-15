@@ -23,6 +23,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.ref.WeakReference;
 import java.util.EventListener;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
@@ -41,6 +42,16 @@ import javax.swing.event.ListSelectionListener;
  * @param <C> the type of component on which the command is executed
  */
 public abstract class JCommand<C> {
+
+    @Nonnull
+    public static <X> JCommand<X> of(@Nonnull Consumer<X> consumer) {
+        return new JCommand<X>() {
+            @Override
+            public void execute(X component) throws Exception {
+                consumer.accept(component);
+            }
+        };
+    }
 
     private static final Logger LOGGER = Logger.getLogger(JCommand.class.getName());
 

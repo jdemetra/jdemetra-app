@@ -23,6 +23,7 @@ import ec.util.various.swing.JCommand;
 import ec.util.various.swing.ext.FontAwesomeUtils;
 import java.awt.event.ActionEvent;
 import static java.beans.BeanInfo.ICON_COLOR_16x16;
+import java.util.function.BiConsumer;
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JButton;
@@ -37,21 +38,25 @@ import org.openide.awt.DropDownButtonFactory;
  * @author Philippe Charles
  * @param <C>
  */
-abstract class RandomTsCollectionCommand<C> extends JCommand<C> {
+final class RandomTsCommand<C> extends JCommand<C> {
 
+    public static <X> RandomTsCommand<X> of(BiConsumer<X, TsCollection> consumer) {
+        return new RandomTsCommand<>(consumer);
+    }
+
+    private final BiConsumer<C, TsCollection> consumer;
     private final BoundedRangeModel obsCountModel;
     private final DemoUtils.RandomTsCollectionBuilder builder;
 
-    public RandomTsCollectionCommand() {
+    private RandomTsCommand(BiConsumer<C, TsCollection> consumer) {
+        this.consumer = consumer;
         this.obsCountModel = new DefaultBoundedRangeModel(12 * 10, 12, 0, 12 * 100);
         this.builder = new DemoUtils.RandomTsCollectionBuilder().withSeries(1);
     }
 
-    abstract protected void apply(C c, TsCollection col);
-
     @Override
     final public void execute(C c) throws Exception {
-        apply(c, builder.withObs(obsCountModel.getValue()).build());
+        consumer.accept(c, builder.withObs(obsCountModel.getValue()).build());
     }
 
     @Override
@@ -63,9 +68,7 @@ abstract class RandomTsCollectionCommand<C> extends JCommand<C> {
                 JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
             }
         };
-        obsCountModel.addChangeListener(event -> {
-            result.actionPerformed(null);
-        });
+        obsCountModel.addChangeListener(event -> result.actionPerformed(null));
         return result;
     }
 
@@ -79,10 +82,8 @@ abstract class RandomTsCollectionCommand<C> extends JCommand<C> {
         JPopupMenu menu = new JPopupMenu();
         menu.add(new JSlider(obsCountModel));
 
-        final JLabel label = new JLabel(obsCountModel.getValue() + " obs");
-        obsCountModel.addChangeListener(event -> {
-            label.setText(obsCountModel.getValue() + " obs");
-        });
+        JLabel label = new JLabel(obsCountModel.getValue() + " obs");
+        obsCountModel.addChangeListener(event -> label.setText(obsCountModel.getValue() + " obs"));
         menu.add(label);
         return menu;
     }
