@@ -16,6 +16,8 @@
  */
 package ec.util.various.swing;
 
+import java.awt.Color;
+import javax.annotation.Nonnull;
 import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -31,7 +33,8 @@ public final class ModernUI {
         // static class
     }
 
-    public static <X extends JScrollPane> X withEmptyBorders(X scrollPane) {
+    @Nonnull
+    public static <X extends JScrollPane> X withEmptyBorders(@Nonnull X scrollPane) {
         Border empty = BorderFactory.createEmptyBorder();
         //On GTK L&F, the viewport border must be set to empty (not null!) or we still get border buildup
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
@@ -39,9 +42,17 @@ public final class ModernUI {
         return scrollPane;
     }
 
-    public static <X extends JSplitPane> X withEmptyBorders(X splitPane) {
+    @Nonnull
+    public static <X extends JSplitPane> X withEmptyBorders(@Nonnull X splitPane) {
         Border empty = BorderFactory.createEmptyBorder();
         splitPane.setBorder(empty);
         return splitPane;
+    }
+
+    @Nonnull
+    public static Border createDropBorder(@Nonnull Color color) {
+        return BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                BorderFactory.createDashedBorder(color, 3.0f, 5.0f, 3.0f, true));
     }
 }

@@ -16,9 +16,12 @@
  */
 package ec.util.grid.swing;
 
+import static ec.util.chart.swing.SwingColorSchemeSupport.withAlpha;
+import static ec.util.various.swing.ModernUI.createDropBorder;
 import ec.util.various.swing.StandardSwingColor;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import static java.util.Optional.ofNullable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -51,32 +54,31 @@ public class XTable extends JTable {
     //</editor-fold>
 
     // OTHER
+    private final CellRendererPane cellRendererPane;
     private final PaddingBorder cellBorder;
     private boolean hasDropLocation;
     private JComponent toolTipFactory;
 
     public XTable() {
-        cellPadding = UIManager.getDimension(CELL_PADDING_PROPERTY);
-        if (cellPadding == null) {
-            cellPadding = DEFAULT_CELL_PADDING;
-        }
-        oddBackground = UIManager.getColor(ODD_BACKGROUND_PROPERTY);
-        if (oddBackground == null) {
-            oddBackground = DEFAULT_ODD_BACKGROUND;
-        }
-        noDataRenderer = DEFAULT_NO_DATA_RENDERER;
-
-        Color newGridColor = StandardSwingColor.CONTROL.value();
-        if (newGridColor != null) {
-            setGridColor(newGridColor);
-        }
-
+        this.cellRendererPane = new CellRendererPane();
+        this.cellPadding = ofNullable(UIManager.getDimension(CELL_PADDING_PROPERTY)).orElse(DEFAULT_CELL_PADDING);
+        this.oddBackground = ofNullable(UIManager.getColor(ODD_BACKGROUND_PROPERTY)).orElse(DEFAULT_ODD_BACKGROUND);
+        this.noDataRenderer = DEFAULT_NO_DATA_RENDERER;
         this.cellBorder = new PaddingBorder();
-        hasDropLocation = false;
-        toolTipFactory = null;
+        this.hasDropLocation = false;
+        this.toolTipFactory = null;
 
+        initTable();
+        enableProperties();
+    }
+
+    private void initTable() {
+        ofNullable(StandardSwingColor.CONTROL.value()).ifPresent(this::setGridColor);
         onCellPaddingChange();
+    }
 
+    //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
+    private void enableProperties() {
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
                 case "dropLocation":
@@ -95,6 +97,7 @@ public class XTable extends JTable {
             }
         });
     }
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
     protected void onCellPaddingChange() {
@@ -220,13 +223,12 @@ public class XTable extends JTable {
     }
 
     protected void paintNoData(Graphics g) {
-        Component c = noDataRenderer.getNoDataRendererComponent(this, hasDropLocation);
-        c.setSize(getSize());
-        c.paint(g);
+        cellRendererPane.paintComponent(g, noDataRenderer.getNoDataRendererComponent(this, hasDropLocation), this, 0, 0, getWidth(), getHeight());
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="No-data renderer">
+    @FunctionalInterface
     public interface NoDataRenderer {
 
         Component getNoDataRendererComponent(JTable table, boolean hasDropLocation);
@@ -238,40 +240,44 @@ public class XTable extends JTable {
      */
     public static class DefaultNoDataRenderer implements NoDataRenderer {
 
-        final JLabel label;
-        final String message;
-        final String onDropMessage;
+        private final JLabel label;
+        private final String message;
+        private final String onDropMessage;
 
         public DefaultNoDataRenderer() {
             this("No data", "Drop data");
         }
 
-        public DefaultNoDataRenderer(String message) {
+        public DefaultNoDataRenderer(@Nonnull String message) {
             this(message, message);
         }
 
-        public DefaultNoDataRenderer(String message, String onDropMessage) {
+        public DefaultNoDataRenderer(@Nonnull String message, @Nonnull String onDropMessage) {
             this.label = new JLabel();
-            label.setOpaque(true);
-            label.setHorizontalAlignment(SwingConstants.CENTER);
             this.message = message;
             this.onDropMessage = onDropMessage;
+            label.setOpaque(true);
+            label.setHorizontalAlignment(SwingConstants.CENTER);
         }
 
         @Override
         public Component getNoDataRendererComponent(JTable table, boolean hasDropLocation) {
-            label.setSize(table.getSize());
-            label.setHorizontalAlignment(SwingConstants.CENTER);
             if (hasDropLocation) {
                 label.setText(onDropMessage);
-                label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
+                label.setBackground(withAlpha(table.getSelectionBackground(), 200));
+                label.setBorder(createDropBorder(label.getForeground()));
             } else {
                 label.setText(message);
+                label.setForeground(withAlpha(table.getForeground(), 100));
                 label.setBackground(table.getBackground());
-                label.setForeground(table.getForeground());
+                label.setBorder(null);
             }
-            label.setFont(table.getFont());
+            if (label.getText().startsWith("<html>")) {
+                label.setFont(table.getFont());
+            } else {
+                label.setFont(table.getFont().deriveFont(table.getFont().getSize2D() * 2));
+            }
             return label;
         }
     }

@@ -30,25 +30,18 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.ATsList;
 import ec.ui.DemoUtils;
 import ec.ui.chart.TsSparklineCellRenderer;
-import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.grid.swing.XTable;
-import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.StandardSwingColor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.event.*;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Comparator;
+import java.util.function.BiConsumer;
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -195,8 +188,7 @@ public class JTsList extends ATsList {
     @Override
     protected void onUpdateModeChange() {
         String message = getTsUpdateMode().isReadOnly() ? "No data" : "Drop data here";
-        dropUI.setMessage(message);
-        dropUI.setOnDropMessage(message);
+        dropUI.setRenderer(new XTable.DefaultNoDataRenderer(message, message));
     }
 
     @Override
@@ -460,53 +452,33 @@ public class JTsList extends ATsList {
 
     private static final class DropUI extends LayerUI<JScrollPane> {
 
-        public static final String MESSAGE_PROPERTY = "message";
-        public static final String ON_DROP_MESSAGE_PROPERTY = "onDropMessage";
+        private static final String RENDERER_PROPERTY = "renderer";
+        private static final String DROP_PROPERTY = "drop";
 
-        private final PropertyChangeListener dropLocationListener;
-        private String message = "No data";
-        private String onDropMessage = "Drop data";
-        private boolean hasDropLocation = false;
+        private final CellRendererPane cellRendererPane;
+        private final TableDropSupport dropLocationSupport;
+        private XTable.NoDataRenderer renderer;
 
         public DropUI() {
-            this.dropLocationListener = evt -> {
-                switch (evt.getPropertyName()) {
-                    case "dropLocation":
-                        boolean old = hasDropLocation;
-                        hasDropLocation = evt.getNewValue() != null;
-                        if (old != hasDropLocation) {
-                            ((Component) evt.getSource()).repaint();
-                        }
-                        break;
-                }
-            };
+            this.cellRendererPane = new CellRendererPane();
+            this.dropLocationSupport = new TableDropSupport((x, y) -> firePropertyChange(DROP_PROPERTY, null, y));
+            this.renderer = new XTable.DefaultNoDataRenderer("No data", "Drop data");
         }
 
-        //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
-        public String getMessage() {
-            return message;
+        public void setRenderer(XTable.NoDataRenderer renderer) {
+            XTable.NoDataRenderer old = this.renderer;
+            this.renderer = renderer;
+            firePropertyChange(RENDERER_PROPERTY, old, this.renderer);
         }
-
-        public void setMessage(String message) {
-            String old = this.message;
-            this.message = message;
-            firePropertyChange(MESSAGE_PROPERTY, old, this.message);
-        }
-
-        public String getOnDropMessage() {
-            return onDropMessage;
-        }
-
-        public void setOnDropMessage(String onDropMessage) {
-            String old = this.onDropMessage;
-            this.onDropMessage = onDropMessage;
-            firePropertyChange(ON_DROP_MESSAGE_PROPERTY, old, this.onDropMessage);
-        }
-        //</editor-fold>
 
         @Override
         public void applyPropertyChange(PropertyChangeEvent evt, JLayer<? extends JScrollPane> l) {
-            l.repaint();
+            switch (evt.getPropertyName()) {
+                case RENDERER_PROPERTY:
+                case DROP_PROPERTY:
+                    l.repaint();
+                    break;
+            }
         }
 
         private JTable getTable(JComponent c) {
@@ -516,12 +488,12 @@ public class JTsList extends ATsList {
         @Override
         public void installUI(JComponent c) {
             super.installUI(c);
-            getTable(c).addPropertyChangeListener(dropLocationListener);
+            dropLocationSupport.register(getTable(c));
         }
 
         @Override
         public void uninstallUI(JComponent c) {
-            getTable(c).removePropertyChangeListener(dropLocationListener);
+            dropLocationSupport.unregister(getTable(c));
             super.uninstallUI(c);
         }
 
@@ -529,35 +501,42 @@ public class JTsList extends ATsList {
         public void paint(Graphics g, JComponent c) {
             super.paint(g, c);
             JTable table = getTable(c);
-            if (table.getRowCount() == 0 || hasDropLocation) {
-                String text = hasDropLocation ? onDropMessage : message;
-                Color background = hasDropLocation ? table.getSelectionBackground() : table.getBackground();
-                Color foreground = hasDropLocation ? table.getSelectionForeground() : table.getForeground();
-                Font font = table.getFont();
+            boolean drop = table.getDropLocation() != null;
+            if (table.getRowCount() == 0 || drop) {
+                int headerHeight = ((JLayer<JScrollPane>) c).getView().getColumnHeader().getHeight();
+                cellRendererPane.paintComponent(g, renderer.getNoDataRendererComponent(table, drop), c, 0, headerHeight, c.getWidth(), c.getHeight() - headerHeight);
+            }
+        }
+    }
 
-                Graphics2D g2d = (Graphics2D) g.create();
+    private static final class TableDropSupport {
 
-                JViewport xxx = ((JLayer<JScrollPane>) c).getView().getColumnHeader();
-                int headerHeight = xxx.getHeight();
+        private final BiConsumer<JTable, Boolean> onDropChange;
+        private boolean drop;
 
-                g2d.setColor(SwingColorSchemeSupport.withAlpha(background, 200));
-                g2d.fillRect(0, headerHeight, c.getWidth(), c.getHeight());
-                g2d.setColor(foreground);
-                g2d.setFont(font);
+        public TableDropSupport(BiConsumer<JTable, Boolean> onDropChange) {
+            this.onDropChange = onDropChange;
+            this.drop = false;
+        }
 
-                g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-                FontMetrics fm = g2d.getFontMetrics();
-                float x = (c.getWidth() - fm.stringWidth(text)) / 2f;
-                float y = (fm.getAscent() + (headerHeight + c.getHeight() - (fm.getAscent() + fm.getDescent())) / 2f);
+        public void register(JTable table) {
+            table.addPropertyChangeListener(this::onPropertyChange);
+        }
 
-                g2d.drawString(text, x, y);
+        public void unregister(JTable table) {
+            table.removePropertyChangeListener(this::onPropertyChange);
+        }
 
-                if (hasDropLocation) {
-                    Image image = FontAwesome.FA_DOWNLOAD.getImage(foreground, font.getSize2D() * 2);
-                    g2d.drawImage(image, (c.getWidth() - image.getWidth(table)) / 2, (headerHeight + c.getHeight() - image.getHeight(table)) / 2 - 15, table);
-                }
-
-                g2d.dispose();
+        private void onPropertyChange(PropertyChangeEvent evt) {
+            switch (evt.getPropertyName()) {
+                case "dropLocation":
+                    boolean old = drop;
+                    drop = evt.getNewValue() != null;
+                    // avoid event storm
+                    if (old != drop) {
+                        onDropChange.accept((JTable) evt.getSource(), drop);
+                    }
+                    break;
             }
         }
     }

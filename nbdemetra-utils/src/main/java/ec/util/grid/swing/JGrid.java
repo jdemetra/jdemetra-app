@@ -20,7 +20,6 @@ import static ec.util.chart.swing.SwingColorSchemeSupport.withAlpha;
 import ec.util.grid.CellIndex;
 import static ec.util.grid.swing.AGrid.HOVERED_CELL_PROPERTY;
 import ec.util.various.swing.LineBorder2;
-import static ec.util.various.swing.ModernUI.withEmptyBorders;
 import static ec.util.various.swing.StandardSwingColor.TABLE_BACKGROUND;
 import static ec.util.various.swing.StandardSwingColor.TABLE_FOREGROUND;
 import static ec.util.various.swing.StandardSwingColor.TABLE_HEADER_BACKGROUND;
@@ -52,6 +51,7 @@ import java.util.Enumeration;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
+import javax.swing.CellRendererPane;
 import javax.swing.JComponent;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import javax.swing.JLabel;
@@ -73,6 +73,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import static ec.util.various.swing.ModernUI.withEmptyBorders;
 
 /**
  * A grid component for Swing that differs from a JTable by adding a row header.
@@ -126,7 +127,7 @@ public final class JGrid extends AGrid {
         enableProperties();
 
         setLayout(new BorderLayout());
-        add(new JLayer<>(scrollPane, new NoDataUI()), BorderLayout.CENTER);
+        add(new JLayer<>(scrollPane, new DropUI()), BorderLayout.CENTER);
     }
 
     private void initComponents() {
@@ -577,22 +578,23 @@ public final class JGrid extends AGrid {
         }
     }
 
-    private final class NoDataUI extends LayerUI<JScrollPane> {
+    private final class DropUI extends LayerUI<JScrollPane> {
 
-        private static final String HAS_DROP_LOCATION_PROPERTY = "hasDropLocation";
+        private static final String DROP_PROPERTY = "drop";
 
-        private boolean hasDropLocation = false;
+        private final CellRendererPane cellRendererPane = new CellRendererPane();
+        private boolean drop = false;
         private DropTarget dropTarget = null;
 
         private void setHasDropLocation(boolean hasDropLocation) {
-            boolean old = this.hasDropLocation;
-            this.hasDropLocation = hasDropLocation;
-            firePropertyChange(HAS_DROP_LOCATION_PROPERTY, old, this.hasDropLocation);
+            boolean old = this.drop;
+            this.drop = hasDropLocation;
+            firePropertyChange(DROP_PROPERTY, old, this.drop);
         }
 
         @Override
         public void applyPropertyChange(PropertyChangeEvent evt, JLayer<? extends JScrollPane> l) {
-            if (evt.getPropertyName().equals(HAS_DROP_LOCATION_PROPERTY)) {
+            if (evt.getPropertyName().equals(DROP_PROPERTY)) {
                 l.repaint();
             }
         }
@@ -641,10 +643,8 @@ public final class JGrid extends AGrid {
         @Override
         public void paint(Graphics g, JComponent c) {
             super.paint(g, c);
-            if (!internalModel.hasData()/* || hasDropLocation*/) {
-                Component renderer = noDataRenderer.getNoDataRendererComponent(main, hasDropLocation);
-                renderer.setSize(scrollPane.getSize());
-                renderer.paint(g);
+            if (!internalModel.hasData()/* || drop*/) {
+                cellRendererPane.paintComponent(g, noDataRenderer.getNoDataRendererComponent(main, drop), c, 0, 0, c.getWidth(), c.getHeight());
             }
         }
     }
