@@ -72,9 +72,9 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         int nbrYears = 3;
 
         BUILDER.withSeries(1).withForecast(2);
-        for (TsFrequency o : EnumSet.complementOf(EnumSet.of(TsFrequency.Undefined))) {
+        EnumSet.complementOf(EnumSet.of(TsFrequency.Undefined)).forEach((o) -> {
             col.quietAdd(BUILDER.withFrequency(o).withObs(nbrYears * o.intValue()).build().get(0).rename(o.name()));
-        }
+        });
 
         BUILDER.withFrequency(TsFrequency.Monthly);
         col.quietAdd(BUILDER.withObs(nbrYears * 12).withMissingValues(3).build().get(0).rename("Missing"));

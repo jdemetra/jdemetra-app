@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
+import ec.nbdemetra.ui.demo.ReflectComponent;
 import ec.tstoolkit.utilities.Id;
 import ec.ui.chart.JTsChart;
 import ec.ui.chart.JTsDualChart;
@@ -47,22 +48,20 @@ public final class TsCollectionFactory extends DemoComponentFactory {
     @Override
     public Map<Id, Callable<Component>> getComponents() {
         return builder()
-                .put(ID, reflect(ITsCollectionView.class))
-                .put(ID.extend("JTsGrid"), newInstance(JTsGrid.class))
-                .put(ID.extend("JTsChart"), newInstance(JTsChart.class))
-                .put(ID.extend("JTsGrowthChart"), newInstance(JTsGrowthChart.class))
-                .put(ID.extend("JTsDualChart"), newInstance(JTsDualChart.class))
-                .put(ID.extend("JTsList"), newInstance(JTsList.class))
-                .put(ID.extend("JTsGrid++"), gridWithCustomCellRenderer())
+                .put(ID, () -> ReflectComponent.of(ITsCollectionView.class))
+                .put(ID.extend("JTsGrid"), JTsGrid::new)
+                .put(ID.extend("JTsChart"), JTsChart::new)
+                .put(ID.extend("JTsGrowthChart"), JTsGrowthChart::new)
+                .put(ID.extend("JTsDualChart"), JTsDualChart::new)
+                .put(ID.extend("JTsList"), JTsList::new)
+                .put(ID.extend("JTsGrid++"), TsCollectionFactory::gridWithCustomCellRenderer)
                 .build();
     }
 
-    private static Callable<Component> gridWithCustomCellRenderer() {
-        return () -> {
-            JTsGrid result = new JTsGrid();
-            result.setCellRenderer(new CustomCellRenderer(result.getCellRenderer()));
-            return result;
-        };
+    private static Component gridWithCustomCellRenderer() {
+        JTsGrid result = new JTsGrid();
+        result.setCellRenderer(new CustomCellRenderer(result.getCellRenderer()));
+        return result;
     }
 
     private static final class CustomCellRenderer implements TableCellRenderer {

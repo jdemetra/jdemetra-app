@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
+import ec.nbdemetra.ui.demo.ReflectComponent;
 import ec.tstoolkit.utilities.Id;
 import ec.ui.interfaces.IReadDataBlockView;
 import ec.ui.view.AutoCorrelationsView;
@@ -38,9 +39,9 @@ public final class ReadDataBlockViewFactory extends DemoComponentFactory {
     @Override
     public Map<Id, Callable<Component>> getComponents() {
         return builder()
-                .put(ID, reflect(IReadDataBlockView.class))
-                .put(ID.extend("AutoCorrelationsView"), newInstance(AutoCorrelationsView.class))
-                .put(ID.extend("DistributionView"), newInstance(DistributionView.class))
+                .put(ID, () -> ReflectComponent.of(IReadDataBlockView.class))
+                .put(ID.extend("AutoCorrelationsView"), AutoCorrelationsView::new)
+                .put(ID.extend("DistributionView"), DistributionView::new)
                 .build();
     }
 }

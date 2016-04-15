@@ -16,8 +16,8 @@
  */
 package ec.util.various.swing;
 
+import static ec.util.chart.swing.SwingColorSchemeSupport.withAlpha;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -43,7 +43,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.TransferHandler;
-import javax.swing.UIManager;
 
 /**
  *
@@ -406,10 +405,16 @@ public final class BasicFileViewer extends JPanel {
 
         public static final DefaultStartRenderer INSTANCE = new DefaultStartRenderer();
 
-        private final XLabel component;
+        private final JLabel component;
 
         private DefaultStartRenderer() {
-            this.component = new XLabel();
+            this.component = new JLabel();
+            JList resource = new JList();
+            component.setOpaque(true);
+            component.setHorizontalAlignment(SwingConstants.CENTER);
+            component.setFont(resource.getFont().deriveFont(resource.getFont().getSize2D() * 2));
+            component.setBackground(resource.getBackground());
+            component.setForeground(withAlpha(resource.getForeground(), 100));
             component.setText("Drop file here");
         }
 
@@ -423,14 +428,18 @@ public final class BasicFileViewer extends JPanel {
 
         public static final DefaultDragRenderer INSTANCE = new DefaultDragRenderer();
 
-        private final XLabel component;
+        private final JLabel component;
 
         private DefaultDragRenderer() {
-            this.component = new XLabel();
+            this.component = new JLabel();
+            JList resource = new JList();
+            component.setOpaque(true);
+            component.setHorizontalAlignment(SwingConstants.CENTER);
+            component.setFont(resource.getFont().deriveFont(resource.getFont().getSize2D() * 2));
+            component.setBackground(withAlpha(resource.getSelectionBackground(), 200));
+            component.setForeground(resource.getSelectionForeground());
+            component.setBorder(ModernUI.createDropBorder(resource.getSelectionForeground()));
             component.setText("Drop file here");
-            Color saved = component.getForeground();
-            component.setForeground(component.getBackground());
-            component.setBackground(saved);
         }
 
         @Override
@@ -468,7 +477,7 @@ public final class BasicFileViewer extends JPanel {
 
         private DefaultFailureRenderer() {
             this.component = new XLabel();
-            component.setIcon(UIManager.getIcon("OptionPane.errorIcon"));
+            component.setIcon(FontAwesome.FA_EXCLAMATION_CIRCLE.getIcon(component.getForeground(), component.getFont().getSize2D() * 2));
             component.setVerticalTextPosition(JLabel.BOTTOM);
             component.setHorizontalTextPosition(JLabel.CENTER);
             component.setIconTextGap(10);

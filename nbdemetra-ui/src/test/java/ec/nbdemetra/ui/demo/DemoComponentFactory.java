@@ -35,16 +35,4 @@ public abstract class DemoComponentFactory {
     protected static ImmutableMap.Builder<Id, Callable<Component>> builder() {
         return new ImmutableMap.Builder<>();
     }
-
-    protected static Callable<Component> newInstance(final Class<? extends Component> clazz) {
-        return clazz::newInstance;
-    }
-
-    protected static Callable<Component> reflect(final Class<?> clazz) {
-        return () -> {
-            ReflectComponent c = new ReflectComponent();
-            c.setClazz(clazz);
-            return c;
-        };
-    }
 }

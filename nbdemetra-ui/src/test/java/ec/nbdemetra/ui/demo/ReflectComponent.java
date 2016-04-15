@@ -27,14 +27,19 @@ import java.awt.BorderLayout;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Comparator;
 import javax.swing.JComponent;
 
 /**
  *
  * @author Philippe Charles
  */
-final class ReflectComponent extends JComponent {
+public final class ReflectComponent extends JComponent {
+
+    public static ReflectComponent of(Class<?> clazz) {
+        ReflectComponent result = new ReflectComponent();
+        result.setClazz(clazz);
+        return result;
+    }
 
     public static final String CLAZZ_PROPERTY = "clazz";
 
@@ -73,16 +78,6 @@ final class ReflectComponent extends JComponent {
     }
     //</editor-fold>
 
-    private enum MethodComparator implements Comparator<Method> {
-
-        INSTANCE;
-
-        @Override
-        public int compare(Method l, Method r) {
-            return l.getName().compareTo(r.getName());
-        }
-    }
-
     private static final class ClazzReport extends AbstractHtmlElement {
 
         private final Class clazz;
@@ -96,7 +91,7 @@ final class ReflectComponent extends JComponent {
             if (clazz != null) {
                 stream.write(HtmlTag.HEADER1, h1, clazz.getName()).newLine();
                 Method[] methods = clazz.getMethods();
-                Arrays.sort(methods, MethodComparator.INSTANCE);
+                Arrays.sort(methods, (l, r) -> l.getName().compareTo(r.getName()));
                 for (Method o : methods) {
                     stream.write(o.getReturnType().getSimpleName());
                     stream.write(" <b>").write(o.getName()).write("</b>");

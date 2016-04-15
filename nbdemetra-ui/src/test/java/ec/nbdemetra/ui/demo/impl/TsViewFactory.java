@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
+import ec.nbdemetra.ui.demo.ReflectComponent;
 import ec.tstoolkit.utilities.Id;
 import ec.ui.interfaces.ITsView;
 import ec.ui.view.AutoRegressiveSpectrumView;
@@ -39,10 +40,10 @@ public final class TsViewFactory extends DemoComponentFactory {
     @Override
     public Map<Id, Callable<Component>> getComponents() {
         return builder()
-                .put(ID, reflect(ITsView.class))
-                .put(ID.extend("AutoRegressiveSpectrumView"), newInstance(AutoRegressiveSpectrumView.class))
-                .put(ID.extend("PeriodogramView"), newInstance(PeriodogramView.class))
-                .put(ID.extend("SIView"), newInstance(SIView.class))
+                .put(ID, () -> ReflectComponent.of(ITsView.class))
+                .put(ID.extend("AutoRegressiveSpectrumView"), AutoRegressiveSpectrumView::new)
+                .put(ID.extend("PeriodogramView"), PeriodogramView::new)
+                .put(ID.extend("SIView"), SIView::new)
                 .build();
     }
 }

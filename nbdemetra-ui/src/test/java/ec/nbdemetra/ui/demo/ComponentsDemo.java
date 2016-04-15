@@ -30,11 +30,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -100,7 +100,7 @@ public final class ComponentsDemo extends JPanel {
         JSplitPane left = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, NbComponents.newJScrollPane(tree), dragDrop);
         JSplitPane splitPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, main);
         splitPane.getLeftComponent().setPreferredSize(new Dimension(200, 400));
-        
+
         setLayout(new BorderLayout());
         add(splitPane, BorderLayout.CENTER);
     }
@@ -111,7 +111,7 @@ public final class ComponentsDemo extends JPanel {
         UIManager.put("Nb.Editor.Toolbar.border", BorderFactory.createLineBorder(Color.WHITE));
         TsFactory.instance.add(new FakeTsProvider());
     }
-    
+
     private static void expandAll(JTree tree) {
         int row = 0;
         while (row < tree.getRowCount()) {
@@ -121,13 +121,9 @@ public final class ComponentsDemo extends JPanel {
     }
 
     private static SortedMap<Id, Component> lookupComponents() {
-        TreeMap<Id, Component> result = new TreeMap();
-        for (DemoComponentFactory o : Lookup.getDefault().lookupAll(DemoComponentFactory.class)) {
-            for (Entry<Id, Callable<Component>> e : o.getComponents().entrySet()) {
-                result.put(e.getKey(), configure(create(e.getValue())));
-            }
-        }
-        return result;
+        return Lookup.getDefault().lookupAll(DemoComponentFactory.class).stream()
+                .flatMap(o -> o.getComponents().entrySet().stream())
+                .collect(Collectors.toMap(Map.Entry::getKey, o -> configure(create(o.getValue())), (l, r) -> l, TreeMap::new));
     }
 
     private static Component create(Callable<? extends Component> factory) {
@@ -145,12 +141,12 @@ public final class ComponentsDemo extends JPanel {
             return c;
         }
         JToolBar toolBar = NbComponents.newInnerToolbar();
-        for (DemoComponentHandler o : Lookup.getDefault().lookupAll(DemoComponentHandler.class)) {
+        Lookup.getDefault().lookupAll(DemoComponentHandler.class).forEach(o -> {
             if (o.canHandle(c)) {
                 o.configure(c);
                 o.fillToolBar(toolBar, c);
             }
-        }
+        });
         if (toolBar.getComponentCount() > 0) {
             JPanel result = new JPanel(new BorderLayout());
             result.add(c, BorderLayout.CENTER);
@@ -167,7 +163,7 @@ public final class ComponentsDemo extends JPanel {
         public IdRenderer(Map<Id, Component> demoData) {
             this.demoData = demoData;
         }
-        
+
         @Override
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
             JLabel result = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);

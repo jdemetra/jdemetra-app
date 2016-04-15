@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
+import ec.nbdemetra.ui.demo.ReflectComponent;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
 import ec.ui.interfaces.ITsDataView;
@@ -38,8 +39,8 @@ public final class TsDataViewFactory extends DemoComponentFactory {
     @Override
     public Map<Id, Callable<Component>> getComponents() {
         return builder()
-                .put(ID, reflect(ITsDataView.class))
-                .put(ID.extend("ResidualsView"), newInstance(ResidualsView.class))
+                .put(ID, () -> ReflectComponent.of(ITsDataView.class))
+                .put(ID.extend("ResidualsView"), ResidualsView::new)
                 .build();
     }
 }

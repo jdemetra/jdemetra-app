@@ -53,11 +53,11 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemoComponentHandler.class, position = 100)
 public final class ComponentHandler extends DemoComponentHandler {
 
-    private final WatchCommand watchCommand;
-    private final PopupMenuCommand popupMenuCommand;
+    private final JCommand<Component> watchCommand;
+    private final JCommand<JComponent> popupMenuCommand;
 
     public ComponentHandler() {
-        this.watchCommand = new WatchCommand();
+        this.watchCommand = JCommand.of(ComponentHandler::watch);
         this.popupMenuCommand = new PopupMenuCommand();
     }
 
@@ -80,15 +80,11 @@ public final class ComponentHandler extends DemoComponentHandler {
         toolBar.addSeparator();
     }
 
-    private static final class WatchCommand extends JCommand<Component> {
-
-        @Override
-        public void execute(Component c) throws Exception {
-            JTable table = new JTable(new PropertyChangeModel(c));
-            XTable.setWidthAsPercentages(table, .2, .4, .4);
-            table.setDefaultRenderer(Object.class, new DefaultTableCellRendererImpl());
-            showInDialog("Watching " + c.getClass().getName(), table);
-        }
+    private static void watch(Component c) {
+        JTable table = new JTable(new PropertyChangeModel(c));
+        XTable.setWidthAsPercentages(table, .2, .4, .4);
+        table.setDefaultRenderer(Object.class, new DefaultTableCellRendererImpl());
+        showInDialog("Watching " + c.getClass().getName(), table);
     }
 
     private static final class PopupMenuCommand extends JCommand<JComponent> {
@@ -98,8 +94,7 @@ public final class ComponentHandler extends DemoComponentHandler {
 
         public PopupMenuCommand() {
             this.popupMenu = new JPopupMenu();
-            JLabel label = new JLabel(FontAwesome.FA_LOCK.getIcon(Color.RED, 40f));
-            popupMenu.add(label);
+            popupMenu.add(new JLabel(FontAwesome.FA_LOCK.getIcon(Color.RED, 40f)));
             this.toggled = false;
         }
 
@@ -115,7 +110,7 @@ public final class ComponentHandler extends DemoComponentHandler {
         }
     }
 
-    static class PropertyChangeModel extends DefaultTableModel implements PropertyChangeListener {
+    private static final class PropertyChangeModel extends DefaultTableModel implements PropertyChangeListener {
 
         public PropertyChangeModel(Component c) {
             super(new Object[]{"Name", "Old", "New"}, 0);
@@ -128,7 +123,7 @@ public final class ComponentHandler extends DemoComponentHandler {
         }
     }
 
-    static class DefaultTableCellRendererImpl extends DefaultTableCellRenderer {
+    private static final class DefaultTableCellRendererImpl extends DefaultTableCellRenderer {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -154,7 +149,7 @@ public final class ComponentHandler extends DemoComponentHandler {
         }
     }
 
-    static void showInDialog(String title, Component c) {
+    private static void showInDialog(String title, Component c) {
         JDialog dialog = new JDialog();
         dialog.setTitle(title);
         dialog.setModalityType(Dialog.ModalityType.MODELESS);
