@@ -46,7 +46,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -74,6 +73,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import static ec.util.various.swing.ModernUI.withEmptyBorders;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A grid component for Swing that differs from a JTable by adding a row header.
@@ -586,7 +586,7 @@ public final class JGrid extends AGrid {
         private boolean drop = false;
         private DropTarget dropTarget = null;
 
-        private void setHasDropLocation(boolean hasDropLocation) {
+        private void setDrop(boolean hasDropLocation) {
             boolean old = this.drop;
             this.drop = hasDropLocation;
             firePropertyChange(DROP_PROPERTY, old, this.drop);
@@ -611,39 +611,47 @@ public final class JGrid extends AGrid {
 
                 @Override
                 public void dragEnter(DropTargetDragEvent dtde) {
-                    super.dragEnter(dtde);
-                    // FIXME: value still set to true even if import refused
-                    setHasDropLocation(true);
+                    final AtomicBoolean drop = new AtomicBoolean(false);
+                    DropTargetDragEvent dropEvent = new DropTargetDragEvent(dtde.getDropTargetContext(), dtde.getLocation(), dtde.getDropAction(), dtde.getSourceActions()) {
+                        @Override
+                        public void acceptDrag(int dragOperation) {
+                            super.acceptDrag(dragOperation);
+                            drop.set(true);
+                        }
+                    };
+                    super.dragEnter(dropEvent);
+                    setDrop(drop.get());
                 }
 
                 @Override
                 public void dragExit(DropTargetEvent dte) {
                     super.dragExit(dte);
-                    setHasDropLocation(false);
+                    setDrop(false);
                 }
 
                 @Override
                 public void drop(DropTargetDropEvent dtde) {
                     super.drop(dtde);
-                    setHasDropLocation(false);
+                    setDrop(false);
                 }
             });
-            PropertyChangeListener listener = evt -> {
-                switch (evt.getPropertyName()) {
-                    case "dropLocation":
-                        JTable table = (JTable) evt.getSource();
-                        setHasDropLocation(table.getDropLocation() != null);
-                        break;
-                }
-            };
-            main.addPropertyChangeListener(listener);
-            fct.getFixedTable().addPropertyChangeListener(listener);
+            main.addPropertyChangeListener(this::onPropertyChangeInTable);
+            fct.getFixedTable().addPropertyChangeListener(this::onPropertyChangeInTable);
+        }
+
+        private void onPropertyChangeInTable(PropertyChangeEvent evt) {
+            switch (evt.getPropertyName()) {
+                case "dropLocation":
+                    JTable table = (JTable) evt.getSource();
+                    setDrop(table.getDropLocation() != null);
+                    break;
+            }
         }
 
         @Override
         public void paint(Graphics g, JComponent c) {
             super.paint(g, c);
-            if (!internalModel.hasData()/* || drop*/) {
+            if (!internalModel.hasData() || drop) {
                 cellRendererPane.paintComponent(g, noDataRenderer.getNoDataRendererComponent(main, drop), c, 0, 0, c.getWidth(), c.getHeight());
             }
         }
