@@ -101,6 +101,8 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * @author Kristof Bayens
+ * @author Philippe Charles
+ * @author Mats Maggi
  */
 public class SaBatchUI extends AbstractSaProcessingTopComponent implements MultiViewElement, IActiveView {
 
@@ -214,6 +216,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     private SwingWorker<Void, SaItem> worker;
     private final SaProcessingModel model;
     private final ListTableSelectionListener listTableListener;
+    
+    private final DeleteActionPanel deleteActionPanel; 
 
     public SaBatchUI(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
         super(doc, controller);
@@ -303,6 +307,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         });
         master.addMouseListener(new DynamicPopup(MultiProcessingManager.LOCALPATH));
 
+        deleteActionPanel = new DeleteActionPanel();
     }
 
     public boolean isTableEmpty() {
@@ -510,12 +515,26 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             return;
         }
         if (interactive) {
-            NotifyDescriptor nd = new NotifyDescriptor.Confirmation(DELETE_LOCAL_MESSAGE, NotifyDescriptor.OK_CANCEL_OPTION);
-            if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
+            deleteActionPanel.setItems(items); 
+            NotifyDescriptor nd = new NotifyDescriptor(deleteActionPanel,
+                    "Delete confirmation", 
+                    NotifyDescriptor.YES_NO_OPTION, 
+                    NotifyDescriptor.QUESTION_MESSAGE, 
+                    null, 
+                    NotifyDescriptor.YES_OPTION);
+            
+            if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.YES_OPTION) {
                 return;
             }
         }
-        getCurrentProcessing().removeAll(Arrays.asList(items));
+        
+        List<SaItem> itemsToDelete = new ArrayList<>();
+        int[] indexToDelete = deleteActionPanel.getSelectedIndices(); 
+        for (int index : indexToDelete) { 
+            itemsToDelete.add(items[index]); 
+        }
+        getCurrentProcessing().removeAll(itemsToDelete); 
+        
         redrawAll();
         controller.setState(SaProcessingState.READY);
     }
