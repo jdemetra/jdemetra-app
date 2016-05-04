@@ -25,7 +25,9 @@ import org.openide.util.ImageUtilities;
  *
  * @author Jean Palate
  * @param <T>
+ * @deprecated use {@link ec.util.list.swing.JListSelection} instead
  */
+@Deprecated
 public class ListSelection<T> extends javax.swing.JPanel {
 
     public static final String SEL_CHANGED = "SelectionChanged";
