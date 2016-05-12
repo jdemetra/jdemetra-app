@@ -47,6 +47,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
+import java.util.ServiceLoader;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -73,7 +74,6 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.TextAnchor;
-import org.openide.util.Lookup;
 
 /**
  * Utility class for charts.
@@ -420,7 +420,7 @@ public final class Charts {
     }
 
     public static void writeChart(@Nonnull String mediaType, @Nonnull OutputStream stream, @Nonnull JFreeChart chart, @Nonnegative int width, @Nonnegative int height) throws IOException {
-        for (JFreeChartWriter writer : Lookup.getDefault().lookupAll(JFreeChartWriter.class)) {
+        for (JFreeChartWriter writer : ServiceLoader.load(JFreeChartWriter.class)) {
             if (mediaType.equals(writer.getMediaType())) {
                 writer.writeChart(stream, chart, width, height);
                 return;
