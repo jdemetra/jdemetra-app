@@ -33,7 +33,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -83,7 +82,7 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
     //<editor-fold defaultstate="collapsed" desc="Examples">
     final void initExample1() {
         Locale[] locales = Locale.getAvailableLocales();
-        Arrays.sort(locales, LocaleComparator.INSTANCE);
+        Arrays.sort(locales, (l, r) -> l.toString().compareTo(r.toString()));
 
         JAutoCompletion ac = new JAutoCompletion(singleLocale);
         ac.setSource(AutoCompletionSources.of(false, locales));
@@ -104,7 +103,7 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
 
     final void initExample2() {
         Locale[] locales = Locale.getAvailableLocales();
-        Arrays.sort(locales, LocaleComparator.INSTANCE);
+        Arrays.sort(locales, (l, r) -> l.toString().compareTo(r.toString()));
 
         JAutoCompletion ac = new JAutoCompletion(multipleLocale);
         ac.setSeparator(",");
@@ -397,16 +396,6 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
                 + "<b>enabled :</b> " + o.isEnabled() + "<br>"
                 + "<b>minLength :</b> " + o.getMinLength() + "<br>"
                 + "<b>separator :</b> '" + o.getSeparator() + "'";
-    }
-
-    private enum LocaleComparator implements Comparator<Locale> {
-
-        INSTANCE;
-
-        @Override
-        public int compare(Locale o1, Locale o2) {
-            return o1.toString().compareTo(o2.toString());
-        }
     }
 
     private static final class DesktopFileAutoCompletionSource extends FileAutoCompletionSource {

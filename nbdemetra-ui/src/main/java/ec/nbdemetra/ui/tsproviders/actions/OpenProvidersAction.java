@@ -23,7 +23,7 @@ import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.IFileLoader;
 import ec.tss.tsproviders.TsProviders;
-import java.awt.Component;
+import ec.util.list.swing.JLists;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.beans.BeanInfo;
@@ -32,10 +32,8 @@ import java.io.File;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import org.openide.DialogDescriptor;
@@ -80,7 +78,7 @@ public final class OpenProvidersAction extends AbstractAction implements Present
             return Optional.of(loaders.get(0));
         }
         JComboBox cb = new JComboBox(loaders.toArray());
-        cb.setRenderer(new LoaderRenderer());
+        cb.setRenderer(JLists.cellRendererOf(OpenProvidersAction::renderLoader));
         DialogDescriptor dd = new DialogDescriptor(cb, "Choose a loader");
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
             return Optional.of((T) cb.getSelectedItem());
@@ -88,15 +86,9 @@ public final class OpenProvidersAction extends AbstractAction implements Present
         return Optional.absent();
     }
 
-    private static final class LoaderRenderer extends DefaultListCellRenderer {
-
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            JLabel result = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            result.setText(((IFileLoader) value).getDisplayName());
-            result.setIcon(ImageUtilities.image2Icon(DataSourceProviderBuddySupport.getDefault().get((IFileLoader) value).getIcon(BeanInfo.ICON_COLOR_16x16, false)));
-            return result;
-        }
+    private static void renderLoader(JLabel label, Object value) {
+        label.setText(((IDataSourceLoader) value).getDisplayName());
+        label.setIcon(ImageUtilities.image2Icon(DataSourceProviderBuddySupport.getDefault().get((IDataSourceLoader) value).getIcon(BeanInfo.ICON_COLOR_16x16, false)));
     }
 
     private static final Ordering<IDataSourceProvider> ON_CLASS_SIMPLENAME = Ordering.natural().onResultOf(o -> o.getClass().getSimpleName());

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -33,6 +34,8 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 /**
  *
@@ -72,6 +75,26 @@ public final class JLists {
     @Nonnull
     public static <E> ListCellRenderer<E> cellRendererOf(@Nonnull BiConsumer<JLabel, E> consumer) {
         return new LabelListCellRenderer<>((renderer, list, value, index, isSelected, cellHasFocus) -> consumer.accept(renderer, value));
+    }
+
+    @Nonnull
+    public static ListDataListener dataListenerOf(@Nonnull Consumer<ListDataEvent> listener) {
+        return new ListDataListener() {
+            @Override
+            public void intervalAdded(ListDataEvent e) {
+                listener.accept(e);
+            }
+
+            @Override
+            public void intervalRemoved(ListDataEvent e) {
+                listener.accept(e);
+            }
+
+            @Override
+            public void contentsChanged(ListDataEvent e) {
+                listener.accept(e);
+            }
+        };
     }
 
     @Nonnull

@@ -48,14 +48,14 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = IDataSourceProviderBuddy.class)
 public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IConfigurable {
 
-    final static Config DEFAULT = Config.builder("", "", "").build();
-    final AutoCompletionSource dbSource;
-    final ListCellRenderer dbRenderer;
+    private final static Config DEFAULT = Config.builder("", "", "").build();
+    private final AutoCompletionSource dbSource;
+    private final ListCellRenderer dbRenderer;
 
     public OdbcProviderBuddy() {
         super(TsProviders.lookup(OdbcProvider.class, OdbcProvider.SOURCE).get().getConnectionSupplier());
         this.dbSource = new OdbcDsnSource();
-        this.dbRenderer = new DbRenderer();
+        this.dbRenderer = new SimpleHtmlListCellRenderer<>((OdbcDataSource o) -> "<html><b>" + o.getName() + "</b> - <i>" + o.getServerName() + "</i>");
     }
 
     @Override
@@ -150,13 +150,6 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
         @Override
         protected boolean matches(TermMatcher termMatcher, OdbcDataSource input) {
             return termMatcher.matches(input.getName()) || termMatcher.matches(input.getServerName());
-        }
-    }
-
-    private static class DbRenderer extends SimpleHtmlListCellRenderer<OdbcDataSource> {
-
-        public DbRenderer() {
-            super(o -> "<html><b>" + o.getName() + "</b> - <i>" + o.getServerName() + "</i>");
         }
     }
 }

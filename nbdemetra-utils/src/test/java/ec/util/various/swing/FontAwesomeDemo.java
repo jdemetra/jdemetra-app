@@ -16,14 +16,13 @@
  */
 package ec.util.various.swing;
 
+import ec.util.list.swing.JLists;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
@@ -31,35 +30,29 @@ import javax.swing.JSlider;
  *
  * @author Philippe Charles
  */
-public final class FontAwesomeDemo extends JPanel {
+public final class FontAwesomeDemo {
 
     public static void main(String[] args) {
         new BasicSwingLauncher()
-                .content(FontAwesomeDemo.class)
+                .content(FontAwesomeDemo::create)
                 .title("Font Awesome Demo")
                 .size(300, 200)
                 .icons(() -> FontAwesome.FA_FONT.getImages(Color.BLUE, 16f, 32f, 64f))
                 .launch();
     }
 
-    public FontAwesomeDemo() {
-        setLayout(new FlowLayout());
+    private static Component create() {
+        JPanel result = new JPanel();
+        result.setLayout(new FlowLayout());
 
         final JComboBox cb = new JComboBox(FontAwesome.values());
-        cb.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                setIcon(((FontAwesome) value).getIcon(getForeground(), 16));
-                return this;
-            }
-        });
-        add(cb);
+        cb.setRenderer(JLists.cellRendererOf(FontAwesomeDemo::renderFontAwesome));
+        result.add(cb);
 
         final JLabel x = new JLabel();
         x.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         cb.addItemListener(evt -> x.setIcon(((FontAwesome) evt.getItem()).getIcon(Color.GREEN.darker(), 100)));
-        add(x);
+        result.add(x);
 
         final JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 360, 0);
         slider.addChangeListener(evt -> {
@@ -69,9 +62,13 @@ public final class FontAwesomeDemo extends JPanel {
                 x.setIcon(((FontAwesome) (FontAwesome) cb.getSelectedItem()).getIcon(Color.GREEN.darker(), 100, angle));
             }
         });
-        add(slider);
+        result.add(slider);
 
         cb.setSelectedItem(FontAwesome.FA_DESKTOP);
+        return result;
     }
 
+    private static void renderFontAwesome(JLabel label, Object value) {
+        label.setIcon(((FontAwesome) value).getIcon(label.getForeground(), 16));
+    }
 }

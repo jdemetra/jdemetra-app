@@ -16,12 +16,13 @@
  */
 package ec.util.completion;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * An implementation of AutoCompletionSource that allows to quickly construct a
@@ -139,17 +140,11 @@ public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionS
     @Nonnull
     protected List<?> getValues(@Nonnull String term, @Nonnull Iterable<T> allValues) {
         TermMatcher termFilter = createTermMatcher(term);
-        List<T> result = new ArrayList<>();
-        for (T value : allValues) {
-            if (matches(termFilter, value)) {
-                result.add(value);
-                if (result.size() >= getLimitSize()) {
-                    break;
-                }
-            }
-        }
-        Collections.sort(result, this);
-        return result;
+        return StreamSupport.stream(allValues.spliterator(), false)
+                .filter(o -> matches(termFilter, o))
+                .limit(getLimitSize())
+                .sorted(this)
+                .collect(Collectors.toList());
     }
 
     @Nonnull
@@ -174,18 +169,13 @@ public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionS
 
     @Nonnull
     protected TermMatcher createTermMatcher(@Nonnull final String term) {
-        return new TermMatcher() {
-            final String normalizedTerm = getNormalizedString(term);
-
-            @Override
-            public boolean matches(String input) {
-                return input != null && AbstractAutoCompletionSource.this.matches(normalizedTerm, getNormalizedString(input));
-            }
-        };
+        final String normalizedTerm = getNormalizedString(term);
+        return o -> o != null && matches(normalizedTerm, getNormalizedString(o));
     }
 
+    @FunctionalInterface
     public interface TermMatcher {
 
-        boolean matches(@Nonnull String input);
+        boolean matches(@Nullable String input);
     }
 }

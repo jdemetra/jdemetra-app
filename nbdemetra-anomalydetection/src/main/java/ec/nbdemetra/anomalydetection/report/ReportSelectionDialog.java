@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.anomalydetection.report;
 
+import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
@@ -23,7 +24,6 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JList;
@@ -36,12 +36,10 @@ import org.openide.windows.WindowManager;
 public class ReportSelectionDialog extends JDialog {
 
     private String report;
-    private JList list;
+    private JList<ICheckLastReportFactory> list;
 
     private void fillList() {
-        List<ICheckLastReportFactory> factories = CheckLastReportManager.getInstance().getFactories();        
-        DefaultComboBoxModel model = new DefaultComboBoxModel(factories.toArray());
-        list.setModel(model);
+        list.setModel(JLists.modelOf(CheckLastReportManager.getInstance().getFactories()));
     }
 
     public ReportSelectionDialog() {
@@ -52,7 +50,7 @@ public class ReportSelectionDialog extends JDialog {
         btnOK_.addActionListener(event -> setVisible(false));
         btnOK_.setEnabled(false);
 
-        list = new JList();
+        list = new JList<>();
         list.setPreferredSize(new Dimension(200, 200));
         list.addListSelectionListener(event -> {
             if (event.getLastIndex() < 0) {

@@ -17,13 +17,12 @@
 package ec.nbdemetra.ui.properties;
 
 import ec.util.list.swing.JListSelection;
+import ec.util.list.swing.JLists;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.beans.PropertyEditorSupport;
 import java.util.List;
 import javax.swing.BorderFactory;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 
 /**
  *
@@ -37,22 +36,7 @@ public class ListSelectionEditor<T> extends PropertyEditorSupport {
     public ListSelectionEditor(List<T> allValues) {
         this.component = new JListSelection<>();
         allValues.forEach(component.getSourceModel()::addElement);
-        component.getTargetModel().addListDataListener(new ListDataListener() {
-            @Override
-            public void intervalAdded(ListDataEvent e) {
-                setValue(component.getSelectedValues());
-            }
-
-            @Override
-            public void intervalRemoved(ListDataEvent e) {
-                setValue(component.getSelectedValues());
-            }
-
-            @Override
-            public void contentsChanged(ListDataEvent e) {
-                setValue(component.getSelectedValues());
-            }
-        });
+        component.getTargetModel().addListDataListener(JLists.dataListenerOf(o -> setValue(component.getSelectedValues())));
         component.setPreferredSize(new Dimension(400, 300));
         component.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     }

@@ -12,12 +12,11 @@ import javax.swing.JPanel;
  *
  * @author maggima
  */
-public class CheckLastTest extends JPanel {
-    
-    public static void main(String[] args) {
+public final class CheckLastTest {
 
+    public static void main(String[] args) {
         new BasicSwingLauncher()
-                .content(CheckLastBatchUI.class)
+                .content(JPanel::new)
                 .launch();
     }
 }

@@ -23,9 +23,9 @@ import ec.util.various.swing.BasicSwingLauncher;
  *
  * @author Mats Maggi
  */
-public class AddProductTableDemo {
-    public static void main(String[] args) {
+public final class AddProductTableDemo {
 
+    public static void main(String[] args) {
         new BasicSwingLauncher()
                 .content(AddProductTable.class)
                 .launch();

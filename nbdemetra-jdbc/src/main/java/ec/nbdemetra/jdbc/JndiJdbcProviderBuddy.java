@@ -86,7 +86,7 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
     public JndiJdbcProviderBuddy() {
         super(new DbExplorerConnectionSupplier());
         this.dbSource = new DbExplorerSource();
-        this.dbRenderer = new DbExplorerRenderer();
+        this.dbRenderer = new SimpleHtmlListCellRenderer<>((DatabaseConnection o) -> "<html><b>" + o.getDisplayName() + "</b> - <i>" + o.getName() + "</i>");
         this.warningBadge = FontAwesome.FA_EXCLAMATION_TRIANGLE.getImage(rgbToColor(DARK_ORANGE), 8f);
         this.errorBadge = FontAwesome.FA_EXCLAMATION_CIRCLE.getImage(rgbToColor(DARK_SCARLET_RED), 8f);
         // this overrides default connection supplier since we don't have JNDI in JavaSE
@@ -196,13 +196,6 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
         @Override
         protected boolean matches(TermMatcher termMatcher, DatabaseConnection input) {
             return termMatcher.matches(input.getName()) || termMatcher.matches(input.getDisplayName());
-        }
-    }
-
-    private static final class DbExplorerRenderer extends SimpleHtmlListCellRenderer<DatabaseConnection> {
-
-        public DbExplorerRenderer() {
-            super(o -> "<html><b>" + o.getDisplayName() + "</b> - <i>" + o.getName() + "</i>");
         }
     }
 
