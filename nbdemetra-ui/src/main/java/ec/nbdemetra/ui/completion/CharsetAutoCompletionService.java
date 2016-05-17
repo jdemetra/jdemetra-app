@@ -16,12 +16,16 @@
  */
 package ec.nbdemetra.ui.completion;
 
+import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableList;
 import ec.util.completion.AutoCompletionSource;
-import ec.util.completion.ext.QuickAutoCompletionSource;
+import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
 import java.nio.charset.Charset;
-import java.util.Collection;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.swing.ListCellRenderer;
 import javax.swing.text.JTextComponent;
 import org.openide.util.lookup.ServiceProvider;
@@ -34,7 +38,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = JAutoCompletionService.class, path = JAutoCompletionService.CHARSET_PATH)
 public class CharsetAutoCompletionService extends JAutoCompletionService {
 
-    private final AutoCompletionSource source = new CharsetSource();
+    private final AutoCompletionSource source = charsetSource();
     private final ListCellRenderer renderer = new CharsetRenderer();
 
     @Override
@@ -46,20 +50,24 @@ public class CharsetAutoCompletionService extends JAutoCompletionService {
         return result;
     }
 
-    private static final class CharsetSource extends QuickAutoCompletionSource<Charset> {
+    private static AutoCompletionSource charsetSource() {
+        return ExtAutoCompletionSource
+                .builder(Suppliers.memoize(CharsetAutoCompletionService::getCharsets)::get)
+                .behavior(AutoCompletionSource.Behavior.SYNC)
+                .postProcessor(CharsetAutoCompletionService::getCharsets)
+                .build();
+    }
 
-//        final List<Charset> locales = Arrays.asList(Charsets.ISO_8859_1, Charsets.US_ASCII, Charsets.UTF_16, Charsets.UTF_16BE, Charsets.UTF_16LE, Charsets.UTF_8);
-        final Collection<Charset> charsets = Charset.availableCharsets().values();
+    private static List<Charset> getCharsets() {
+        return ImmutableList.copyOf(Charset.availableCharsets().values());
+    }
 
-        @Override
-        protected Iterable<Charset> getAllValues() throws Exception {
-            return charsets;
-        }
-
-        @Override
-        protected boolean matches(TermMatcher termMatcher, Charset input) {
-            return termMatcher.matches(input.name());
-        }
+    private static List<Charset> getCharsets(List<Charset> allValues, String term) {
+        Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
+        return allValues.stream()
+                .filter(o -> filter.test(o.name()))
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     private static final class CharsetRenderer extends CustomListCellRenderer<Charset> {

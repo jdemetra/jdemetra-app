@@ -20,9 +20,13 @@ import ec.nbdemetra.ui.DemetraUI;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.ColorSchemeIcon;
 import ec.util.completion.AutoCompletionSource;
-import ec.util.completion.ext.QuickAutoCompletionSource;
+import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.swing.Icon;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
@@ -37,7 +41,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = JAutoCompletionService.class, path = JAutoCompletionService.COLOR_SCHEME_PATH)
 public class ColorSchemeAutoCompletionService extends JAutoCompletionService {
 
-    private final AutoCompletionSource source = new ColorSchemeSource();
+    private final AutoCompletionSource source = colorSchemeSource();
     private final ListCellRenderer renderer = new ColorSchemeRenderer();
 
     @Override
@@ -50,22 +54,20 @@ public class ColorSchemeAutoCompletionService extends JAutoCompletionService {
         return result;
     }
 
-    private static class ColorSchemeSource extends QuickAutoCompletionSource<ColorScheme> {
+    private static AutoCompletionSource colorSchemeSource() {
+        return ExtAutoCompletionSource
+                .builder(ColorSchemeAutoCompletionService::getColorSchemes)
+                .behavior(AutoCompletionSource.Behavior.SYNC)
+                .valueToString(ColorScheme::getName)
+                .build();
+    }
 
-        @Override
-        protected Iterable<ColorScheme> getAllValues() throws Exception {
-            return (Iterable<ColorScheme>) DemetraUI.getDefault().getColorSchemes();
-        }
-
-        @Override
-        protected String getValueAsString(ColorScheme value) {
-            return value.getName();
-        }
-
-        @Override
-        protected boolean matches(TermMatcher termMatcher, ColorScheme input) {
-            return termMatcher.matches(input.getName()) || termMatcher.matches(input.getDisplayName());
-        }
+    private static List<ColorScheme> getColorSchemes(String term) {
+        Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
+        return DemetraUI.getDefault().getColorSchemes().stream()
+                .filter(o -> filter.test(o.getName()) || filter.test(o.getDisplayName()))
+                .sorted(Comparator.comparing(ColorScheme::getDisplayName))
+                .collect(Collectors.toList());
     }
 
     private static class ColorSchemeRenderer extends CustomListCellRenderer<ColorScheme> {

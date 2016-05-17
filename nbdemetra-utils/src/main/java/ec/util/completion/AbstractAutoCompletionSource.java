@@ -30,7 +30,9 @@ import javax.annotation.Nullable;
  *
  * @author Philippe Charles
  * @param <T>
+ * @Deprecated use {@link ec.util.completion.ExtAutoCompletionSource} instead
  */
+@Deprecated
 public abstract class AbstractAutoCompletionSource<T> extends ExtAutoCompletionSource implements Comparator<T> {
 
     //<editor-fold defaultstate="collapsed" desc="AutoCompletionSource">

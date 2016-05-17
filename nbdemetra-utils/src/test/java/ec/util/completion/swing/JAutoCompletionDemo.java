@@ -16,10 +16,10 @@
  */
 package ec.util.completion.swing;
 
-import ec.util.completion.AbstractAutoCompletionSource;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.AutoCompletionSource.Behavior;
 import ec.util.completion.AutoCompletionSources;
+import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.FileAutoCompletionSource;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
@@ -33,12 +33,15 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
@@ -158,29 +161,14 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
 
     final void initExample6() {
         JAutoCompletion ac = new JAutoCompletion(lotr);
-        ac.setSource(new AbstractAutoCompletionSource<Lotr.Character>() {
-            @Override
-            protected Iterable<Lotr.Character> getAllValues() throws Exception {
-                TimeUnit.SECONDS.sleep(1);
-                return Arrays.asList(Lotr.load().characters);
-            }
-
-            @Override
-            public Behavior getBehavior(String term) {
-                return Behavior.ASYNC;
-            }
-
-            @Override
-            protected String getValueAsString(Lotr.Character value) {
-                return value.name;
-            }
-
-            @Override
-            protected boolean matches(TermMatcher termMatcher, Lotr.Character input) {
-                return termMatcher.matches(input.name)
-                        || termMatcher.matches(input.description);
-            }
-        });
+        ac.setSource(ExtAutoCompletionSource.builder(term -> {
+            TimeUnit.SECONDS.sleep(1);
+            Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
+            return Arrays.stream(Lotr.load().characters)
+                    .filter(o -> filter.test(o.name) || filter.test(o.description))
+                    .sorted(Comparator.comparing(o -> o.name))
+                    .collect(Collectors.toList());
+        }).behavior(Behavior.ASYNC).valueToString(o -> o.name).build());
         ac.getList().setCellRenderer(new CustomListCellRenderer(false) {
             @Override
             protected String toString(String term, JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
