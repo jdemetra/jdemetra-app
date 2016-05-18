@@ -21,6 +21,7 @@ import ec.tstoolkit.information.InformationSet;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.JGrid;
 import ec.util.grid.swing.ext.TableGridCommand;
+import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
@@ -65,17 +66,11 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         this.saItems = new ArrayList<>();
 
         this.comboBox = new JComboBox<>();
-        comboBox.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                JLabel result = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value != null) {
-                    Entry<Integer, AlgorithmDescriptor> item = (Entry<Integer, AlgorithmDescriptor>) value;
-                    result.setText(TaggedTreeNode.freqName(item.getKey()) + " > " + item.getValue().name);
-                }
-                return result;
+        comboBox.setRenderer(JLists.cellRendererOf((label, value) -> {
+            if (value != null) {
+                label.setText(TaggedTreeNode.freqName(value.getKey()) + " > " + value.getValue().name);
             }
-        });
+        }));
         comboBox.addItemListener(event -> {
             if (event.getStateChange() == ItemEvent.SELECTED && event.getItem() != null) {
                 Entry<Integer, AlgorithmDescriptor> item = (Entry<Integer, AlgorithmDescriptor>) event.getItem();

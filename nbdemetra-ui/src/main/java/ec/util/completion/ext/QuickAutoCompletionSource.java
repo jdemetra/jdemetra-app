@@ -23,6 +23,7 @@ import ec.util.completion.AutoCompletionSources;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import javax.annotation.Nonnull;
 
 /**
  * An implementation of AutoCompletionSource that allows to quickly construct a
@@ -30,10 +31,13 @@ import java.util.stream.StreamSupport;
  *
  * @author Philippe Charles
  * @param <T>
+ * @Deprecated use {@link ec.util.completion.ExtAutoCompletionSource} instead
  */
+@Deprecated
 public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletionSource<T> {
 
-    public static <X> QuickAutoCompletionSource<X> from(final Iterable<X> list) {
+    @Nonnull
+    public static <X> QuickAutoCompletionSource<X> from(@Nonnull Iterable<X> list) {
         return new QuickAutoCompletionSource<X>() {
             @Override
             protected Iterable<X> getAllValues() throws Exception {
@@ -62,7 +66,8 @@ public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletio
      * #matches(ec.util.completion.AbstractAutoCompletionSource.TermMatcher,
      * java.lang.Object)
      */
-    protected Predicate<T> getFilter(final String term) {
+    @Nonnull
+    protected Predicate<T> getFilter(@Nonnull String term) {
         final TermMatcher termMatcher = createTermMatcher(term);
         return o -> matches(termMatcher, o);
     }
@@ -73,6 +78,7 @@ public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletio
      *
      * @return a new ordering
      */
+    @Nonnull
     protected Ordering getSorter() {
         return Ordering.from(this);
     }

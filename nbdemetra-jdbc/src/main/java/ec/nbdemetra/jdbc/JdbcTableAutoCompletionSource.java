@@ -29,7 +29,9 @@ import java.util.concurrent.TimeUnit;
 /**
  *
  * @author Philippe Charles
+ * @Deprecated use {@link ec.util.completion.ExtAutoCompletionSource} instead
  */
+@Deprecated
 public class JdbcTableAutoCompletionSource extends JdbcAutoCompletionSource<JdbcTable> {
 
     private final Cache<String, Iterable<JdbcTable>> cache;

@@ -5,6 +5,7 @@
 package ec.nbdemetra.ui.awt;
 
 import java.awt.Component;
+import javax.annotation.Nonnull;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import org.openide.awt.HtmlRenderer;
@@ -18,7 +19,7 @@ public class SimpleHtmlListCellRenderer<T> implements ListCellRenderer {
     protected final HtmlProvider<T> htmlProvider;
     protected final HtmlRenderer.Renderer htmlRenderer;
 
-    public SimpleHtmlListCellRenderer(HtmlProvider<T> htmlProvider) {
+    public SimpleHtmlListCellRenderer(@Nonnull HtmlProvider<T> htmlProvider) {
         this.htmlProvider = htmlProvider;
         this.htmlRenderer = HtmlRenderer.createRenderer();
     }
@@ -29,6 +30,7 @@ public class SimpleHtmlListCellRenderer<T> implements ListCellRenderer {
         return htmlRenderer.getListCellRendererComponent(list, htmlProvider.getHtmlDisplayName((T) value), index, isSelected, cellHasFocus);
     }
 
+    @FunctionalInterface
     public interface HtmlProvider<T> {
 
         String getHtmlDisplayName(T value);

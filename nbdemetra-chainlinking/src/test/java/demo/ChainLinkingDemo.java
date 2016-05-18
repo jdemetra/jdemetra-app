@@ -18,16 +18,14 @@ package demo;
 
 import ec.nbdemetra.chainlinking.outlineview.ChainLinkingTopComponent;
 import ec.util.various.swing.BasicSwingLauncher;
-import javax.swing.JPanel;
 
 /**
  *
  * @author Mats Maggi
  */
-public class ChainLinkingDemo extends JPanel {
+public final class ChainLinkingDemo {
 
     public static void main(String[] args) {
-
         new BasicSwingLauncher()
                 .content(ChainLinkingTopComponent.class)
                 .launch();

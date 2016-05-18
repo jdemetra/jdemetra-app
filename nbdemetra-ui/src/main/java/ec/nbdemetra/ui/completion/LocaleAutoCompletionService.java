@@ -16,13 +16,17 @@
  */
 package ec.nbdemetra.ui.completion;
 
+import com.google.common.base.Suppliers;
 import ec.util.completion.AutoCompletionSource;
-import ec.util.completion.ext.QuickAutoCompletionSource;
+import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.swing.ListCellRenderer;
 import javax.swing.text.JTextComponent;
 import org.openide.util.lookup.ServiceProvider;
@@ -35,7 +39,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = JAutoCompletionService.class, path = JAutoCompletionService.LOCALE_PATH)
 public class LocaleAutoCompletionService extends JAutoCompletionService {
 
-    private final AutoCompletionSource source = new LocaleSource();
+    private final AutoCompletionSource source = localeSource();
     private final ListCellRenderer renderer = new LocaleRenderer();
 
     @Override
@@ -47,19 +51,24 @@ public class LocaleAutoCompletionService extends JAutoCompletionService {
         return result;
     }
 
-    private static class LocaleSource extends QuickAutoCompletionSource<Locale> {
+    private static AutoCompletionSource localeSource() {
+        return ExtAutoCompletionSource
+                .builder(Suppliers.memoize(LocaleAutoCompletionService::getLocales)::get)
+                .behavior(AutoCompletionSource.Behavior.SYNC)
+                .postProcessor(LocaleAutoCompletionService::getLocales)
+                .build();
+    }
 
-        final List<Locale> locales = Arrays.asList(Locale.getAvailableLocales());
+    private static List<Locale> getLocales() {
+        return Arrays.asList(Locale.getAvailableLocales());
+    }
 
-        @Override
-        protected Iterable<Locale> getAllValues() throws Exception {
-            return locales;
-        }
-
-        @Override
-        protected boolean matches(TermMatcher termMatcher, Locale input) {
-            return termMatcher.matches(input.toString()) || termMatcher.matches(input.getDisplayName());
-        }
+    private static List<Locale> getLocales(List<Locale> allValues, String term) {
+        Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
+        return allValues.stream()
+                .filter(o -> filter.test(o.toString()) || filter.test(o.getDisplayName()))
+                .sorted(Comparator.comparing(Locale::toString))
+                .collect(Collectors.toList());
     }
 
     private static class LocaleRenderer extends CustomListCellRenderer<Locale> {

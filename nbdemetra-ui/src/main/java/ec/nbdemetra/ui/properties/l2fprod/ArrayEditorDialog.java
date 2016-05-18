@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.l2fprod.common.propertysheet.*;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.NbComponents;
+import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
@@ -42,7 +43,7 @@ public class ArrayEditorDialog<T> extends JDialog {
         final JPanel pane = new JPanel(new BorderLayout());
         pane.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
-        final JList list = new JList(new ArrayEditorListModel(elementsList_));
+        final JList list = new JList(JLists.modelOf(elementsList_));
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setPreferredSize(new Dimension(150, 200));
         pane.add(NbComponents.newJScrollPane(list), BorderLayout.WEST);
@@ -77,7 +78,7 @@ public class ArrayEditorDialog<T> extends JDialog {
             @Override
             public void focusLost(FocusEvent e) {
                 if (dirty_) {
-                    list.setModel(new ArrayEditorListModel(elementsList_));
+                    list.setModel(JLists.modelOf(elementsList_));
                     list.invalidate();
                 }
             }
@@ -110,7 +111,7 @@ public class ArrayEditorDialog<T> extends JDialog {
                 final T o = constructor.newInstance(new Object[]{});
                 elementsList_.add(o);
                 SwingUtilities.invokeLater(() -> {
-                    list.setModel(new ArrayEditorListModel(elementsList_));
+                    list.setModel(JLists.modelOf(elementsList_));
                     list.setSelectedValue(o, true);
                     list.invalidate();
                 });
@@ -131,7 +132,7 @@ public class ArrayEditorDialog<T> extends JDialog {
                 dirty_ = true;
                 elementsList_.remove(cur_);
                 SwingUtilities.invokeLater(() -> {
-                    list.setModel(new ArrayEditorListModel(elementsList_));
+                    list.setModel(JLists.modelOf(elementsList_));
                     list.invalidate();
                 });
                 
@@ -156,25 +157,5 @@ public class ArrayEditorDialog<T> extends JDialog {
         setContentPane(pane);
         pack();
         setModal(true);
-    }
-}
-
-class ArrayEditorListModel<T> extends DefaultListModel {
-
-    private List<T> elementsList_;
-
-    public ArrayEditorListModel(List<T> elements) {
-        super();
-        elementsList_ = elements;
-    }
-
-    @Override
-    public int getSize() {
-        return elementsList_.size();
-    }
-
-    @Override
-    public Object getElementAt(int index) {
-        return elementsList_.get(index);
     }
 }

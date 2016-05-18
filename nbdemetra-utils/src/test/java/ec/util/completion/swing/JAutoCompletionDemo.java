@@ -16,10 +16,10 @@
  */
 package ec.util.completion.swing;
 
-import ec.util.completion.AbstractAutoCompletionSource;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.AutoCompletionSource.Behavior;
 import ec.util.completion.AutoCompletionSources;
+import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.FileAutoCompletionSource;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
@@ -40,6 +40,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
@@ -83,7 +85,7 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
     //<editor-fold defaultstate="collapsed" desc="Examples">
     final void initExample1() {
         Locale[] locales = Locale.getAvailableLocales();
-        Arrays.sort(locales, LocaleComparator.INSTANCE);
+        Arrays.sort(locales, (l, r) -> l.toString().compareTo(r.toString()));
 
         JAutoCompletion ac = new JAutoCompletion(singleLocale);
         ac.setSource(AutoCompletionSources.of(false, locales));
@@ -104,7 +106,7 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
 
     final void initExample2() {
         Locale[] locales = Locale.getAvailableLocales();
-        Arrays.sort(locales, LocaleComparator.INSTANCE);
+        Arrays.sort(locales, (l, r) -> l.toString().compareTo(r.toString()));
 
         JAutoCompletion ac = new JAutoCompletion(multipleLocale);
         ac.setSeparator(",");
@@ -159,29 +161,14 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
 
     final void initExample6() {
         JAutoCompletion ac = new JAutoCompletion(lotr);
-        ac.setSource(new AbstractAutoCompletionSource<Lotr.Character>() {
-            @Override
-            protected Iterable<Lotr.Character> getAllValues() throws Exception {
-                TimeUnit.SECONDS.sleep(1);
-                return Arrays.asList(Lotr.load().characters);
-            }
-
-            @Override
-            public Behavior getBehavior(String term) {
-                return Behavior.ASYNC;
-            }
-
-            @Override
-            protected String getValueAsString(Lotr.Character value) {
-                return value.name;
-            }
-
-            @Override
-            protected boolean matches(TermMatcher termMatcher, Lotr.Character input) {
-                return termMatcher.matches(input.name)
-                        || termMatcher.matches(input.description);
-            }
-        });
+        ac.setSource(ExtAutoCompletionSource.builder(term -> {
+            TimeUnit.SECONDS.sleep(1);
+            Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
+            return Arrays.stream(Lotr.load().characters)
+                    .filter(o -> filter.test(o.name) || filter.test(o.description))
+                    .sorted(Comparator.comparing(o -> o.name))
+                    .collect(Collectors.toList());
+        }).behavior(Behavior.ASYNC).valueToString(o -> o.name).build());
         ac.getList().setCellRenderer(new CustomListCellRenderer(false) {
             @Override
             protected String toString(String term, JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -397,16 +384,6 @@ public final class JAutoCompletionDemo extends javax.swing.JPanel {
                 + "<b>enabled :</b> " + o.isEnabled() + "<br>"
                 + "<b>minLength :</b> " + o.getMinLength() + "<br>"
                 + "<b>separator :</b> '" + o.getSeparator() + "'";
-    }
-
-    private enum LocaleComparator implements Comparator<Locale> {
-
-        INSTANCE;
-
-        @Override
-        public int compare(Locale o1, Locale o2) {
-            return o1.toString().compareTo(o2.toString());
-        }
     }
 
     private static final class DesktopFileAutoCompletionSource extends FileAutoCompletionSource {

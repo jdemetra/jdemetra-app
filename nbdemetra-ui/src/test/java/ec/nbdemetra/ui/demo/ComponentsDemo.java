@@ -55,18 +55,20 @@ import org.openide.util.Lookup;
  *
  * @author Philippe Charles
  */
-public final class ComponentsDemo extends JPanel {
+public final class ComponentsDemo {
 
     public static void main(String[] args) {
         new BasicSwingLauncher()
-                .content(ComponentsDemo.class)
+                .content(ComponentsDemo::create)
                 .title("Components Demo")
                 .logLevel(Level.FINE)
                 .launch();
     }
 
-    public ComponentsDemo() {
+    private static Component create() {
         initStaticResources();
+
+        JPanel result = new JPanel();
 
         final Map<Id, Component> demoData = lookupComponents();
 
@@ -101,8 +103,9 @@ public final class ComponentsDemo extends JPanel {
         JSplitPane splitPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, main);
         splitPane.getLeftComponent().setPreferredSize(new Dimension(200, 400));
 
-        setLayout(new BorderLayout());
-        add(splitPane, BorderLayout.CENTER);
+        result.setLayout(new BorderLayout());
+        result.add(splitPane, BorderLayout.CENTER);
+        return result;
     }
 
     private static void initStaticResources() {

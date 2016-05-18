@@ -61,7 +61,6 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.SwingConstants;
 import javax.swing.TransferHandler;
-import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 /**
@@ -501,22 +500,7 @@ public final class JListSelection<E> extends JComponent {
     }
 
     private static void addListDataListener(JCommand.ActionAdapter action, JList<?> list) {
-        ListDataListener listener = new ListDataListener() {
-            @Override
-            public void intervalAdded(ListDataEvent e) {
-                action.refreshActionState();
-            }
-
-            @Override
-            public void intervalRemoved(ListDataEvent e) {
-                action.refreshActionState();
-            }
-
-            @Override
-            public void contentsChanged(ListDataEvent e) {
-                action.refreshActionState();
-            }
-        };
+        ListDataListener listener = JLists.dataListenerOf(o -> action.refreshActionState());
         list.getModel().addListDataListener(listener);
         list.addPropertyChangeListener("model", evt -> {
             ((ListModel) evt.getOldValue()).removeListDataListener(listener);

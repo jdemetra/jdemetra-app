@@ -28,7 +28,7 @@ import org.openide.awt.DropDownButtonFactory;
  *
  * @author maggima
  */
-public class JTsAnomalyGridTest extends JPanel {
+public final class JTsAnomalyGridTest extends JPanel {
 
     public static void main(String[] args) {
 

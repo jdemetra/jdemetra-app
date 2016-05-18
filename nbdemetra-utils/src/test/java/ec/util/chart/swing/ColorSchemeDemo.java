@@ -19,6 +19,7 @@ package ec.util.chart.swing;
 import ec.util.chart.ColorScheme;
 import static ec.util.chart.swing.SwingColorSchemeSupport.rgbToColor;
 import static ec.util.chart.swing.SwingColorSchemeSupport.toHex;
+import ec.util.list.swing.JLists;
 import ec.util.various.swing.BasicSwingLauncher;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.ModernUI;
@@ -26,12 +27,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
-import javax.swing.AbstractListModel;
-import javax.swing.DefaultListCellRenderer;
+import java.util.stream.StreamSupport;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -44,11 +42,11 @@ import javax.swing.ListCellRenderer;
  *
  * @author Philippe Charles
  */
-public final class ColorSchemeDemo extends JPanel {
+public final class ColorSchemeDemo {
 
     public static void main(String[] args) {
         new BasicSwingLauncher()
-                .content(ColorSchemeDemo.class)
+                .content(ColorSchemeDemo::create)
                 .title("Color Scheme Demo")
                 .icons(() -> FontAwesome.FA_PAINT_BRUSH.getImages(Color.DARK_GRAY, 16f, 32f, 64f))
                 .size(300, 400)
@@ -56,9 +54,11 @@ public final class ColorSchemeDemo extends JPanel {
                 .launch();
     }
 
-    public ColorSchemeDemo() {
+    private static Component create() {
+        JPanel result = new JPanel();
+
         JComboBox<ColorScheme> colorScheme = new JComboBox<>(getColorSchemes());
-        colorScheme.setRenderer(new ColorSchemeRenderer());
+        colorScheme.setRenderer(JLists.cellRendererOf(ColorSchemeDemo::applyToolTipText));
 
         final JList<Integer> colors = new JList<>();
         colors.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -69,42 +69,20 @@ public final class ColorSchemeDemo extends JPanel {
 
         applyColorScheme((ColorScheme) colorScheme.getSelectedItem(), colors);
 
-        setLayout(new BorderLayout());
-        add(BorderLayout.NORTH, colorScheme);
-        add(BorderLayout.CENTER, ModernUI.withEmptyBorders(new JScrollPane(colors)));
+        result.setLayout(new BorderLayout());
+        result.add(colorScheme, BorderLayout.NORTH);
+        result.add(ModernUI.withEmptyBorders(new JScrollPane(colors)), BorderLayout.CENTER);
+        return result;
     }
 
     private static void applyColorScheme(ColorScheme colorScheme, JList<Integer> colors) {
-        colors.setModel(new ColorModel(colorScheme));
+        colors.setModel(JLists.modelOf(colorScheme.getAreaColors()));
         colors.setBackground(rgbToColor(colorScheme.getPlotColor()));
         colors.setSelectionBackground(rgbToColor(colorScheme.getGridColor()));
     }
 
     private static ColorScheme[] getColorSchemes() {
-        List<ColorScheme> result = new ArrayList<>();
-        for (ColorScheme o : ServiceLoader.load(ColorScheme.class)) {
-            result.add(o);
-        }
-        return result.toArray(new ColorScheme[result.size()]);
-    }
-
-    private static final class ColorModel extends AbstractListModel<Integer> {
-
-        final List<Integer> tmp;
-
-        public ColorModel(ColorScheme cs) {
-            this.tmp = cs.getAreaColors();
-        }
-
-        @Override
-        public int getSize() {
-            return tmp.size();
-        }
-
-        @Override
-        public Integer getElementAt(int i) {
-            return tmp.get(i);
-        }
+        return StreamSupport.stream(ServiceLoader.load(ColorScheme.class).spliterator(), false).toArray(ColorScheme[]::new);
     }
 
     private static final class ColorRenderer implements ListCellRenderer<Integer>, Icon {
@@ -140,15 +118,7 @@ public final class ColorSchemeDemo extends JPanel {
         }
     }
 
-    private static final class ColorSchemeRenderer implements ListCellRenderer<ColorScheme> {
-
-        private final DefaultListCellRenderer renderer = new DefaultListCellRenderer();
-
-        @Override
-        public Component getListCellRendererComponent(JList<? extends ColorScheme> list, ColorScheme value, int index, boolean isSelected, boolean cellHasFocus) {
-            renderer.getListCellRendererComponent(list, value.getDisplayName(), index, isSelected, cellHasFocus);
-            renderer.setToolTipText(value.getName());
-            return renderer;
-        }
+    private static void applyToolTipText(JLabel label, ColorScheme value) {
+        label.setToolTipText(value.getName());
     }
 }
