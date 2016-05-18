@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.properties;
 
 import com.toedter.components.JSpinField;
+import static ec.nbdemetra.ui.properties.Util.attr;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyEditor;
@@ -55,8 +56,8 @@ public class JSpinFieldPropertyEditor extends AbstractExPropertyEditor {
 
             @Override
             public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
-                component.setMaximum(getAttribute(env, MAX_ATTRIBUTE, Integer.class, Integer.MAX_VALUE));
-                component.setMinimum(getAttribute(env, MIN_ATTRIBUTE, Integer.class, Integer.MIN_VALUE));
+                component.setMaximum(attr(env, MAX_ATTRIBUTE, Integer.class).orElse(Integer.MAX_VALUE));
+                component.setMinimum(attr(env, MIN_ATTRIBUTE, Integer.class).orElse(Integer.MIN_VALUE));
                 super.connect(propertyEditor, env);
             }
 

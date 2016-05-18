@@ -22,7 +22,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import ec.tstoolkit.design.IBuilder;
 import ec.util.completion.AutoCompletionSource;
-import ec.util.completion.ext.QuickAutoCompletionSource;
+import ec.util.completion.AutoCompletionSources;
 import java.beans.FeatureDescriptor;
 import java.beans.PropertyEditor;
 import java.io.File;
@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.Callable;
 import javax.swing.ListCellRenderer;
 import javax.swing.text.NumberFormatter;
 import org.openide.nodes.Node;
@@ -266,7 +267,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * needed.
          * <p>
          * <strong>This method should set either an HTML display name or null;
-         * it should not set the non-HTML display name.
+         * it should not set the non-HTML display name.</strong>
          *
          * @see Property#getHtmlDisplayName()
          * @see org.openide.awt.HtmlRenderer
@@ -379,11 +380,19 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
         }
 
         public AutoCompletedStep source(Iterable<?> list) {
-            return source(QuickAutoCompletionSource.from(list));
+            return source(AutoCompletionSources.of(false, list));
         }
 
         public AutoCompletedStep cellRenderer(ListCellRenderer cellRenderer) {
             return attribute(AutoCompletedPropertyEditor3.CELL_RENDERER_ATTRIBUTE, cellRenderer);
+        }
+
+        public AutoCompletedStep defautlValueSupplier(Callable<String> defautlValueSupplier) {
+            return attribute(AutoCompletedPropertyEditor3.DEFAULT_VALUE_SUPPLIER_ATTRIBUTE, defautlValueSupplier);
+        }
+
+        public AutoCompletedStep defautlValueSupplier(String defautlValue) {
+            return defautlValueSupplier(() -> defautlValue);
         }
     }
 

@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ui.properties;
 
+import static ec.nbdemetra.ui.properties.Util.attr;
 import ec.util.completion.AutoCompletionSource;
 import java.beans.PropertyEditor;
 import javax.swing.JComponent;
@@ -37,8 +38,8 @@ public class AutoCompletedPropertyEditor extends AbstractExPropertyEditor {
 
             @Override
             public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
-                component.setAutoCompletion(getAttribute(env, VALUES_ATTRIBUTE, AutoCompletionSource.class, null));
-                component.setSeparator(getAttribute(env, SEPARATOR_ATTRIBUTE, String.class, null));
+                component.setAutoCompletion(attr(env, VALUES_ATTRIBUTE, AutoCompletionSource.class).orElse(null));
+                component.setSeparator(attr(env, SEPARATOR_ATTRIBUTE, String.class).orElse(null));
                 super.connect(propertyEditor, env);
             }
 

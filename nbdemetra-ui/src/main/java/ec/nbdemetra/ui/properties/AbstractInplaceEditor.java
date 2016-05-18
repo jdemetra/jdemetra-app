@@ -1,10 +1,21 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2015 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ui.properties;
 
-import com.google.common.base.Optional;
 import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.EventQueue;
@@ -87,6 +98,7 @@ public abstract class AbstractInplaceEditor implements InplaceEditor {
     }
 
     /**
+     * @param command
      * @see JComboBox#fireActionEvent()
      */
     protected void fireActionPerformed(String command) {
@@ -126,13 +138,17 @@ public abstract class AbstractInplaceEditor implements InplaceEditor {
         listenerList.remove(ActionListener.class, actionListener);
     }
 
+    @Deprecated
     protected static <T> T getAttribute(PropertyEnv env, String attrName, Class<T> attrType, T defaultValue) {
         Object value = env.getFeatureDescriptor().getValue(attrName);
         return attrType.isInstance(value) ? attrType.cast(value) : defaultValue;
     }
 
-    protected <T> Optional<T> getAttribute(PropertyEnv env, String attrName, Class<T> attrType) {
+    @Deprecated
+    protected <T> com.google.common.base.Optional<T> getAttribute(PropertyEnv env, String attrName, Class<T> attrType) {
         Object value = env.getFeatureDescriptor().getValue(attrName);
-        return attrType.isInstance(value) ? Optional.of(attrType.cast(value)) : Optional.<T>absent();
+        return attrType.isInstance(value)
+                ? com.google.common.base.Optional.of(attrType.cast(value))
+                : com.google.common.base.Optional.<T>absent();
     }
 }
