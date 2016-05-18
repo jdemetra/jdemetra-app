@@ -33,6 +33,7 @@ import ec.util.completion.swing.JAutoCompletion;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
@@ -44,14 +45,16 @@ import org.openide.util.NbBundle;
  * An abstract provider buddy that targets database providers.
  *
  * @author Philippe Charles
+ * @param <BEAN>
  */
 public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataSourceProviderBuddy {
 
     /**
-     * Checks if the provider can use files as data input. <p>Some databases are
-     * stored exclusively in files while others can live in memory or remotely.
-     * This property allows the user to search the file system for a database
-     * file.
+     * Checks if the provider can use files as data input.
+     * <p>
+     * Some databases are stored exclusively in files while others can live in
+     * memory or remotely. This property allows the user to search the file
+     * system for a database file.
      *
      * @return true if the bean represents a file; false otherwise
      */
@@ -144,6 +147,7 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
                 .select(bean, "dimColumns")
                 .source(columns)
                 .separator(",")
+                .defautlValueSupplier(() -> columns.getValues("").stream().map(columns::toString).collect(Collectors.joining(",")))
                 .cellRenderer(columnCellRenderer)
                 .display(Bundle.bean_dimColumns_display())
                 .description(Bundle.bean_dimColumns_description())
@@ -223,8 +227,10 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
 
     /**
      * Gets an auto completion source for a bean field such as
-     * {@link DbBean#dbName}. <p>The default source is an empty one. Override
-     * this method to provide your own source.
+     * {@link DbBean#dbName}.
+     * <p>
+     * The default source is an empty one. Override this method to provide your
+     * own source.
      *
      * @param bean
      * @return a non-null auto completion source
@@ -238,8 +244,10 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
 
     /**
      * Gets an auto completion source for a bean field such as
-     * {@link DbBean#tableName}. <p>The default source is an empty one. Override
-     * this method to provide your own source.
+     * {@link DbBean#tableName}.
+     * <p>
+     * The default source is an empty one. Override this method to provide your
+     * own source.
      *
      * @param bean
      * @return a non-null auto completion source
@@ -253,8 +261,10 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
 
     /**
      * Gets an auto completion source for a bean field such as
-     * {@link DbBean#periodColumn}. <p>The default source is an empty one.
-     * Override this method to provide your own source.
+     * {@link DbBean#periodColumn}.
+     * <p>
+     * The default source is an empty one. Override this method to provide your
+     * own source.
      *
      * @param bean
      * @return a non-null auto completion source
@@ -269,8 +279,9 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
     /**
      * Gets an auto completion renderer for a bean field such as
      * {@link DbBean#dbName}.
-     * <p>The default renderer just uses {@link Object#toString()}. Override
-     * this method to provide your own renderer.
+     * <p>
+     * The default renderer just uses {@link Object#toString()}. Override this
+     * method to provide your own renderer.
      *
      * @param bean
      * @return a non-null auto completion renderer
@@ -285,8 +296,9 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
     /**
      * Gets an auto completion renderer for a bean field such as
      * {@link DbBean#tableName}.
-     * <p>The default renderer just uses {@link Object#toString()}. Override
-     * this method to provide your own renderer.
+     * <p>
+     * The default renderer just uses {@link Object#toString()}. Override this
+     * method to provide your own renderer.
      *
      * @param bean
      * @return a non-null auto completion renderer
@@ -301,8 +313,9 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
     /**
      * Gets an auto completion renderer for a bean field such as
      * {@link DbBean#periodColumn}.
-     * <p>The default renderer just uses {@link Object#toString()}. Override
-     * this method to provide your own renderer.
+     * <p>
+     * The default renderer just uses {@link Object#toString()}. Override this
+     * method to provide your own renderer.
      *
      * @param bean
      * @return a non-null auto completion renderer

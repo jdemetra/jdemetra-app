@@ -5,6 +5,7 @@
 package ec.nbdemetra.ui.properties;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import static ec.nbdemetra.ui.properties.Util.attr;
 import ec.util.completion.ext.DesktopFileAutoCompletionSource;
 import ec.util.completion.swing.FileListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
@@ -108,8 +109,8 @@ public class DesktopFilePropertyEditor extends AbstractExPropertyEditor {
 
             @Override
             public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
-                Object tmp = getAttribute(env, FILTER_ATTRIBUTE, Object.class, null);
-                File[] paths = getAttribute(env, PATHS_ATTRIBUTE, File[].class, new File[0]);
+                Object tmp = attr(env, FILTER_ATTRIBUTE, Object.class).orElse(null);
+                File[] paths = attr(env, PATHS_ATTRIBUTE, File[].class).orElse(new File[0]);
                 java.io.FileFilter filter = null;
                 if (tmp instanceof java.io.FileFilter) {
                     filter = (java.io.FileFilter) tmp;
