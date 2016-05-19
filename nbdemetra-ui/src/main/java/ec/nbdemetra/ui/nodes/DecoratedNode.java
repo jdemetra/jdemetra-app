@@ -47,8 +47,8 @@ public class DecoratedNode extends FilterNode {
 
     public DecoratedNode(Node original, Predicate<Node> filter) {
         super(original, original.isLeaf() ? Children.LEAF : new DecoratedChildren(original, filter));
-        this.htmlDecorator = newProperty(HTML_DECORATOR_PROPERTY, JProperty.<Function<Node, String>>nullTo(Html.DEFAULT), null);
-        this.preferredActionDecorator = newProperty(PREFERRED_ACTION_DECORATOR_PROPERTY, JProperty.<Function<Node, Action>>nullTo(PreferredAction.DEFAULT), null);
+        this.htmlDecorator = newProperty(HTML_DECORATOR_PROPERTY, (o, n) -> n != null ? n : Html.DEFAULT, null);
+        this.preferredActionDecorator = newProperty(PREFERRED_ACTION_DECORATOR_PROPERTY, (o, n) -> n != null ? n : PreferredAction.DEFAULT, null);
     }
 
     @Override

@@ -53,7 +53,7 @@ public abstract class ATsCollectionFormatter extends AbstractNamedService implem
     public Sheet createSheet() {
         Sheet result = super.createSheet();
         NodePropertySetBuilder b = new NodePropertySetBuilder();
-        b.with(String.class).select("DataFlavor", getDataFlavor().getMimeType()).display("Data Flavor").add();
+        b.with(String.class).selectConst("DataFlavor", getDataFlavor().getMimeType()).display("Data Flavor").add();
         result.put(b.build());
         return result;
     }

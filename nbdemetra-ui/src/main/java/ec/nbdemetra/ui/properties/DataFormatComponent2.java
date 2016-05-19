@@ -23,6 +23,8 @@ import ec.util.various.swing.TextPrompt;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.Date;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -41,9 +43,10 @@ public final class DataFormatComponent2 extends JComponent {
 
     public static final String DATA_FORMAT_PROPERTY = "dataFormat";
     public static final String PREVIEW_VISIBLE_PROPERTY = "previewVisible";
+
     private static final DataFormat DEFAULT_DATA_FORMAT = DataFormat.DEFAULT;
     private static final boolean DEFAULT_PREVIEW_VISIBLE = true;
-    //
+
     private final JTextComponent locale;
     private final JTextComponent datePattern;
     private final JTextComponent numberPattern;
@@ -69,6 +72,12 @@ public final class DataFormatComponent2 extends JComponent {
         this.dataFormat = DEFAULT_DATA_FORMAT;
         this.previewVisible = DEFAULT_PREVIEW_VISIBLE;
 
+        initComponents();
+        enableProperties();
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Initialization">
+    private void initComponents() {
         JAutoCompletionService.forPathBind(JAutoCompletionService.LOCALE_PATH, locale);
         JAutoCompletionService.forPathBind(JAutoCompletionService.DATE_PATTERN_PATH, datePattern);
 
@@ -82,6 +91,15 @@ public final class DataFormatComponent2 extends JComponent {
         datePattern.getDocument().addDocumentListener(listener);
         numberPattern.getDocument().addDocumentListener(listener);
 
+        GridLayout layout = new GridLayout(1, 3);
+        layout.setHgap(3);
+        setLayout(layout);
+        add(locale);
+        add(datePattern);
+        add(numberPattern);
+    }
+
+    private void enableProperties() {
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
                 case DATA_FORMAT_PROPERTY:
@@ -108,15 +126,10 @@ public final class DataFormatComponent2 extends JComponent {
                 refreshPreviews();
             }
         });
-
-        GridLayout layout = new GridLayout(1, 3);
-        layout.setHgap(3);
-        setLayout(layout);
-        add(locale);
-        add(datePattern);
-        add(numberPattern);
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Events handlers">
     private void refreshPreviews() {
         datePatternPreview.setText(dataFormat.dateFormatter().tryFormatAsString(dateSample).or("\u203C "));
         numberPatternPreview.setText(dataFormat.numberFormatter().tryFormatAsString(numberSample).or("\u203C "));
@@ -137,12 +150,15 @@ public final class DataFormatComponent2 extends JComponent {
         datePatternPreview.setVisible(previewVisible);
         numberPatternPreview.setVisible(previewVisible);
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
+    @Nonnull
     public DataFormat getDataFormat() {
         return dataFormat;
     }
 
-    public void setDataFormat(DataFormat dataFormat) {
+    public void setDataFormat(@Nullable DataFormat dataFormat) {
         DataFormat old = this.dataFormat;
         this.dataFormat = dataFormat != null ? dataFormat : DEFAULT_DATA_FORMAT;
         firePropertyChange(DATA_FORMAT_PROPERTY, old, this.dataFormat);
@@ -157,8 +173,10 @@ public final class DataFormatComponent2 extends JComponent {
         this.previewVisible = previewVisible;
         firePropertyChange(PREVIEW_VISIBLE_PROPERTY, old, this.previewVisible);
     }
+    //</editor-fold>
 
-    private class Listener implements DocumentListener {
+    //<editor-fold defaultstate="collapsed" desc="Internal implementation">
+    private final class Listener implements DocumentListener {
 
         boolean enabled = true;
 
@@ -182,7 +200,7 @@ public final class DataFormatComponent2 extends JComponent {
         }
     }
 
-    private static class CustomPreview {
+    private static final class CustomPreview {
 
         final JTextComponent target;
         final XPopup popup;
@@ -211,4 +229,5 @@ public final class DataFormatComponent2 extends JComponent {
             }
         }
     }
+    //</editor-fold>
 }

@@ -11,6 +11,7 @@ import com.google.common.base.Supplier;
  * @author Philippe Charles
  * @param <T>
  */
+@Deprecated
 public abstract class JProperty<T> {
 
     private final String name;

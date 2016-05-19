@@ -35,8 +35,8 @@ import org.openide.nodes.Sheet;
  */
 public class OpenIdePropertySheetBeanEditor implements IBeanEditor {
 
-    final String title;
-    final Image image;
+    private final String title;
+    private final Image image;
 
     public OpenIdePropertySheetBeanEditor(String title, Image image) {
         this.title = title;

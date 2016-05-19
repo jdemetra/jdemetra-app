@@ -153,7 +153,7 @@ public final class PropertyEditorFactory extends DemoComponentFactory {
                 .selectField(bean, "columns")
                 .source("FirstName", "LastName", "Birthdate")
                 .separator(",")
-                .defautlValueSupplier("FirstName,LastName")
+                .defaultValueSupplier("FirstName,LastName")
                 .display("Multiple with magic")
                 .description("Names separated by a comma.")
                 .add();
@@ -183,7 +183,7 @@ public final class PropertyEditorFactory extends DemoComponentFactory {
                 .selectField(bean, "readOnly")
                 .add();
         b.with(String.class)
-                .select("html", "hello world")
+                .selectConst("html", "hello world")
                 .htmlDisplay("<b><font color=\"#FF0000\">Html</font></b>")
                 .add();
         b.withDouble()

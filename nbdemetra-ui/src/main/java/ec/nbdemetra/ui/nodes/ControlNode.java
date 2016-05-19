@@ -79,7 +79,7 @@ public class ControlNode {
             b.with(String.class).select(col, "getName", null).display("Name").add();
             if (!col.getMoniker().isAnonymous()) {
                 Optional<IDataSourceProvider> provider = TsProviders.lookup(IDataSourceProvider.class, col.getMoniker());
-                b.with(String.class).select("Provider", provider.isPresent() ? provider.get().getDisplayName() : col.getMoniker().getSource()).add();
+                b.with(String.class).selectConst("Provider", provider.isPresent() ? provider.get().getDisplayName() : col.getMoniker().getSource()).add();
 //                b.with(String.class).select("Unique ID", ts.getMoniker().getId()).add();
             }
             b.withEnum(TsInformationType.class).select(col, "getInformationType", null).display("Information type").add();
@@ -94,7 +94,7 @@ public class ControlNode {
                 b.reset("Meta data");
                 // using treemap to order entries
                 for (Entry<String, String> o : new TreeMap<>(col.getMetaData()).entrySet()) {
-                    b.with(String.class).select(o.getKey(), o.getValue()).add();
+                    b.with(String.class).selectConst(o.getKey(), o.getValue()).add();
                 }
                 result.put(b.build());
             }
@@ -144,14 +144,14 @@ public class ControlNode {
             b.with(String.class).select(ts, "getName", null).display("Name").add();
             if (!ts.getMoniker().isAnonymous()) {
                 Optional<IDataSourceProvider> provider = TsProviders.lookup(IDataSourceProvider.class, ts.getMoniker());
-                b.with(String.class).select("Provider", provider.isPresent() ? provider.get().getDisplayName() : ts.getMoniker().getSource()).add();
+                b.with(String.class).selectConst("Provider", provider.isPresent() ? provider.get().getDisplayName() : ts.getMoniker().getSource()).add();
 //                b.with(String.class).select("Unique ID", ts.getMoniker().getId()).add();
             }
             b.withEnum(TsInformationType.class).select(ts, "getInformationType", null).display("Information type").add();
             b.withBoolean().select(ts, "isFrozen", null).display("Frozen").add();
             if (ts.hasData() == TsStatus.Invalid) {
                 b.withEnum(TsStatus.class).select(ts, "hasData", null).display("Data status").add();
-                b.with(String.class).select("InvalidDataCause", ts.getInvalidDataCause()).display("Invalid data cause").add();
+                b.with(String.class).selectConst("InvalidDataCause", ts.getInvalidDataCause()).display("Invalid data cause").add();
             }
             if (ts.hasMetaData() == TsStatus.Invalid) {
                 b.withEnum(TsStatus.class).select(ts, "hasMetaData", null).display("Meta data status").add();
@@ -173,7 +173,7 @@ public class ControlNode {
                 b.reset("Meta data");
                 // using treemap to order entries
                 for (Entry<String, String> o : new TreeMap<>(ts.getMetaData()).entrySet()) {
-                    b.with(String.class).select(o.getKey(), o.getValue()).add();
+                    b.with(String.class).selectConst(o.getKey(), o.getValue()).add();
                 }
                 result.put(b.build());
             }

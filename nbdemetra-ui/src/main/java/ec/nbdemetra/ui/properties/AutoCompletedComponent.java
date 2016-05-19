@@ -215,21 +215,21 @@ final class AutoCompletedComponent extends JComponent {
 
         button = result.add(new Magic().toAction(this));
         button.setIcon(FontAwesomeUtils.getIcon(FontAwesome.FA_MAGIC, BeanInfo.ICON_MONO_16x16));
-        button.setToolTipText("Retrieve the default dimensions");
+        button.setToolTipText("Retrieve the default values");
         button = result.add(new Add().toAction(this));
         button.setIcon(FontAwesomeUtils.getIcon(FontAwesome.FA_PLUS, BeanInfo.ICON_MONO_16x16));
-        button.setToolTipText("Add a new dimension");
+        button.setToolTipText("Add a new value");
         button = result.add(new Remove().toAction(this));
         button.setIcon(FontAwesomeUtils.getIcon(FontAwesome.FA_MINUS, BeanInfo.ICON_MONO_16x16));
-        button.setToolTipText("Remove the selected dimensions");
+        button.setToolTipText("Remove the selected values");
 
         result.addSeparator();
         button = result.add(list.getActionMap().get(JListOrdering.MOVE_UP_ACTION));
         button.setIcon(FontAwesomeUtils.getIcon(FontAwesome.FA_CARET_UP, BeanInfo.ICON_MONO_16x16));
-        button.setToolTipText("Move up the selected dimension");
+        button.setToolTipText("Move up the selected value");
         button = result.add(list.getActionMap().get(JListOrdering.MOVE_DOWN_ACTION));
         button.setIcon(FontAwesomeUtils.getIcon(FontAwesome.FA_CARET_DOWN, BeanInfo.ICON_MONO_16x16));
-        button.setToolTipText("Move down the selected dimension");
+        button.setToolTipText("Move down the selected value");
 
         result.addSeparator();
         button = result.add(new Help().toAction(this));
@@ -373,7 +373,7 @@ final class AutoCompletedComponent extends JComponent {
                     iconStrongRef = null;
                 }
                 if (view.getModel().getSize() == 0) {
-                    renderer.setText("<html><center><b>No dimension defined</b><br>Use the toolbar on the right to add new values");
+                    renderer.setText("<html><center><b>No value defined</b><br>Use the toolbar on the right to add new values");
                     renderer.setIcon(null);
                     renderer.setBackground(view.getBackground());
                     renderer.setOpaque(true);

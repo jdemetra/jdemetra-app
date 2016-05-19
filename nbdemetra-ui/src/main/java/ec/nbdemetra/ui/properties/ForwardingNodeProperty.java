@@ -1,119 +1,135 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ui.properties;
 
 import java.beans.PropertyEditor;
 import java.lang.reflect.InvocationTargetException;
+import javax.annotation.Nonnull;
 import org.openide.nodes.Node;
 import org.openide.nodes.PropertySupport;
 
 /**
  *
  * @author Philippe Charles
+ * @param <T>
  */
 public abstract class ForwardingNodeProperty<T> extends Node.Property<T> {
 
-    final Node.Property<T> p;
+    private final Node.Property<T> delegate;
 
-    public ForwardingNodeProperty(Node.Property<T> p) {
-        super(p.getValueType());
-        this.p = p;
+    public ForwardingNodeProperty(@Nonnull Node.Property<T> delegate) {
+        super(delegate.getValueType());
+        this.delegate = delegate;
     }
 
     @Override
     public String getDisplayName() {
-        return p.getDisplayName();
+        return delegate.getDisplayName();
     }
 
     @Override
     public void setDisplayName(String displayName) {
-        p.setDisplayName(displayName);
+        delegate.setDisplayName(displayName);
     }
 
     @Override
     public String getHtmlDisplayName() {
-        return p.getHtmlDisplayName();
+        return delegate.getHtmlDisplayName();
     }
 
     @Override
     public String getName() {
-        return p.getName();
+        return delegate.getName();
     }
 
     @Override
     public void setName(String name) {
-        p.setName(name);
+        delegate.setName(name);
     }
 
     @Override
     public String getShortDescription() {
-        return p.getShortDescription();
+        return delegate.getShortDescription();
     }
 
     @Override
     public void setShortDescription(String text) {
-        p.setShortDescription(text);
+        delegate.setShortDescription(text);
     }
 
     @Override
     public PropertyEditor getPropertyEditor() {
-        return p.getPropertyEditor();
+        return delegate.getPropertyEditor();
     }
 
     @Override
     public boolean canRead() {
-        return p.canRead();
+        return delegate.canRead();
     }
 
     @Override
     public boolean canWrite() {
-        return p.canWrite();
+        return delegate.canWrite();
     }
 
     @Override
     public T getValue() throws IllegalAccessException, InvocationTargetException {
-        return p.getValue();
+        return delegate.getValue();
     }
 
     @Override
     public void setValue(T val) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        p.setValue(val);
+        delegate.setValue(val);
     }
 
     @Override
     public Object getValue(String attributeName) {
-        return p.getValue(attributeName);
+        return delegate.getValue(attributeName);
     }
 
     @Override
     public void setValue(String attributeName, Object value) {
-        p.setValue(attributeName, value);
+        delegate.setValue(attributeName, value);
     }
 
     @Override
     public boolean isDefaultValue() {
-        return p.isDefaultValue();
+        return delegate.isDefaultValue();
     }
 
     @Override
     public boolean supportsDefaultValue() {
-        return p.supportsDefaultValue();
+        return delegate.supportsDefaultValue();
     }
 
     @Override
     public void restoreDefaultValue() throws IllegalAccessException, InvocationTargetException {
-        p.restoreDefaultValue();
+        delegate.restoreDefaultValue();
     }
 
-    public static <T> Node.Property<T> readOnly(Node.Property<T> p) {
+    @Nonnull
+    public static <T> Node.Property<T> readOnly(@Nonnull Node.Property<T> p) {
         return p instanceof PropertySupport.ReadOnly || p instanceof ReadOnly ? p : new ReadOnly(p);
     }
 
-    private static class ReadOnly<T> extends ForwardingNodeProperty<T> {
+    //<editor-fold defaultstate="collapsed" desc="Implementation details">
+    private static final class ReadOnly<T> extends ForwardingNodeProperty<T> {
 
-        ReadOnly(Node.Property<T> p) {
+        private ReadOnly(Node.Property<T> p) {
             super(p);
         }
 
@@ -127,4 +143,5 @@ public abstract class ForwardingNodeProperty<T> extends Node.Property<T> {
             throw new UnsupportedOperationException("Not supported yet.");
         }
     }
+    //</editor-fold>
 }
