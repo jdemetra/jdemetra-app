@@ -88,12 +88,12 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
     @Override
     protected void fillParamProperties(NodePropertySetBuilder b, DataSet dataSet) {
         b.with(String.class)
-                .select("sheetName", SpreadSheetProvider.Y_SHEETNAME.get(dataSet))
+                .selectConst("sheetName", SpreadSheetProvider.Y_SHEETNAME.get(dataSet))
                 .display(Bundle.dataset_sheetName_display())
                 .add();
         if (dataSet.getKind().equals(DataSet.Kind.SERIES)) {
             b.with(String.class)
-                    .select("seriesName", SpreadSheetProvider.Z_SERIESNAME.get(dataSet))
+                    .selectConst("seriesName", SpreadSheetProvider.Z_SERIESNAME.get(dataSet))
                     .display(Bundle.dataset_seriesName_display())
                     .add();
         }

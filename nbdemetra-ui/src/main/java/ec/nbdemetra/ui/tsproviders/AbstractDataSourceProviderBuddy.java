@@ -97,8 +97,8 @@ public abstract class AbstractDataSourceProviderBuddy implements IDataSourceProv
         b.with(String.class).select(provider, "getSource", null).display("Source").add();
         b.withEnum(TsAsyncMode.class).select(provider, "getAsyncMode", null).display("Async mode").add();
         b.with(Boolean.class).select(provider, "isAvailable", null).display("Available").add();
-        b.withBoolean().select("Loadable", provider instanceof IDataSourceLoader).add();
-        b.withBoolean().select("Files as source", provider instanceof IFileLoader).add();
+        b.withBoolean().selectConst("Loadable", provider instanceof IDataSourceLoader).add();
+        b.withBoolean().selectConst("Files as source", provider instanceof IFileLoader).add();
         result.add(b.build());
         return result;
     }
@@ -146,7 +146,7 @@ public abstract class AbstractDataSourceProviderBuddy implements IDataSourceProv
 
     protected void fillParamProperties(NodePropertySetBuilder b, DataSet dataSet) {
         for (Map.Entry<String, String> o : dataSet.getParams().entrySet()) {
-            b.with(String.class).select(o.getKey(), o.getValue()).add();
+            b.with(String.class).selectConst(o.getKey(), o.getValue()).add();
         }
     }
 
@@ -159,8 +159,8 @@ public abstract class AbstractDataSourceProviderBuddy implements IDataSourceProv
         Throwable current = ex;
         while (current != null) {
             b.reset("throwable" + i++).display(current.getClass().getSimpleName());
-            b.with(String.class).select("Type", current.getClass().getName()).add();
-            b.with(String.class).select("Message", current.getMessage()).add();
+            b.with(String.class).selectConst("Type", current.getClass().getName()).add();
+            b.with(String.class).selectConst("Message", current.getMessage()).add();
             result.put(b.build());
             current = current.getCause();
         }

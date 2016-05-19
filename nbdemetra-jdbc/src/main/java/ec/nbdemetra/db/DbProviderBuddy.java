@@ -147,7 +147,7 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
                 .select(bean, "dimColumns")
                 .source(columns)
                 .separator(",")
-                .defautlValueSupplier(() -> columns.getValues("").stream().map(columns::toString).collect(Collectors.joining(",")))
+                .defaultValueSupplier(() -> columns.getValues("").stream().map(columns::toString).collect(Collectors.joining(",")))
                 .cellRenderer(columnCellRenderer)
                 .display(Bundle.bean_dimColumns_display())
                 .description(Bundle.bean_dimColumns_description())

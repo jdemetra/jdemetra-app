@@ -20,8 +20,6 @@ import ec.nbdemetra.ui.completion.JAutoCompletionService;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.util.various.swing.TextPrompt;
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.nio.charset.Charset;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
@@ -38,7 +36,7 @@ import javax.swing.event.DocumentListener;
 public class CharsetComponent2 extends JComponent {
 
     public static final String CHARSET_PROPERTY = "charset";
-    //
+
     private final JTextField textField;
     private final Listener listener;
     private Charset charset;
@@ -48,6 +46,11 @@ public class CharsetComponent2 extends JComponent {
         this.listener = new Listener();
         this.charset = null;
 
+        initComponents();
+        enableProperties();
+    }
+
+    private void initComponents() {
         JAutoCompletionService.forPathBind(JAutoCompletionService.CHARSET_PATH, textField);
 
         new TextPrompt(Charset.defaultCharset().name(), textField).setEnabled(false);
@@ -56,15 +59,17 @@ public class CharsetComponent2 extends JComponent {
 
         textField.getDocument().addDocumentListener(listener);
 
+        setLayout(new BorderLayout());
+        add(textField);
+    }
+
+    private void enableProperties() {
         addPropertyChangeListener(evt -> {
             String p = evt.getPropertyName();
             if (p.equals(CHARSET_PROPERTY)) {
                 onCharsetChange();
             }
         });
-
-        setLayout(new BorderLayout());
-        add(textField);
     }
 
     private void onCharsetChange() {
@@ -86,7 +91,8 @@ public class CharsetComponent2 extends JComponent {
         firePropertyChange(CHARSET_PROPERTY, old, this.charset);
     }
 
-    private class Listener implements DocumentListener {
+    //<editor-fold defaultstate="collapsed" desc="Internal implementation">
+    private final class Listener implements DocumentListener {
 
         boolean enabled = true;
 
@@ -131,4 +137,5 @@ public class CharsetComponent2 extends JComponent {
     public Border getBorder() {
         return textField.getBorder();
     }
+    //</editor-fold>
 }

@@ -20,7 +20,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
 import ec.nbdemetra.ui.awt.JComponent2;
-import ec.nbdemetra.ui.awt.JProperty;
 import ec.nbdemetra.ui.calendars.CustomDialogDescriptor;
 import ec.nbdemetra.ui.nodes.DecoratedNode;
 import ec.nbdemetra.ws.WorkspaceFactory;
@@ -54,13 +53,13 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
     public static final Id SPECS_ID = new LinearId(GenericSaProcessingFactory.FAMILY, WorkspaceFactory.SPECIFICATIONS);
     public static final String SPECIFICATION_PROPERTY = "specification";
     public static final String ICON_PROPERTY = "icon";
-    //
+
     private final BeanTreeView tree;
     private final ExplorerManager em;
     private final SelectionListener selectionListener;
-    //
-    private final JProperty<ISaSpecification> specification;
-    private final JProperty<Image> icon;
+
+    private ISaSpecification specification;
+    private Image icon;
 
     public SpecSelectionComponent() {
         this(false);
@@ -70,8 +69,8 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
         this.tree = new BeanTreeView();
         this.em = new ExplorerManager();
         this.selectionListener = new SelectionListener();
-        this.specification = newProperty(SPECIFICATION_PROPERTY, null);
-        this.icon = newProperty(ICON_PROPERTY, null);
+        this.specification = null;
+        this.icon = null;
 
         tree.setRootVisible(false);
         tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -97,7 +96,7 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
     }
 
     boolean isCurrentSpecificationNode(Node o) {
-        return o instanceof ItemWsNode && ((ItemWsNode) o).getItem().getElement().equals(specification.get());
+        return o instanceof ItemWsNode && ((ItemWsNode) o).getItem().getElement().equals(specification);
     }
 
     class SelectionListener implements VetoableChangeListener {
@@ -145,19 +144,23 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
     }
 
     public ISaSpecification getSpecification() {
-        return specification.get();
+        return specification;
     }
 
     public void setSpecification(ISaSpecification specification) {
-        this.specification.set(specification);
+        ISaSpecification old = this.specification;
+        this.specification = specification;
+        firePropertyChange(SPECIFICATION_PROPERTY, old, this.specification);
     }
 
     public Image getIcon() {
-        return icon.get();
+        return icon;
     }
 
     public void setIcon(Image icon) {
-        this.icon.set(icon);
+        Image old = this.icon;
+        this.icon = icon;
+        firePropertyChange(ICON_PROPERTY, old, this.icon);
     }
     //</editor-fold>
 

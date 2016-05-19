@@ -33,7 +33,7 @@ public class NbUtilities {
         Collections.sort(keys);
         for (final String key : keys) {
             String dname=key.charAt(0) == '@' ? key.substring(1) :key;
-             b.with(String.class).select(key, md.get(key)).name(key).display(dname).add();
+             b.with(String.class).selectConst(key, md.get(key)).name(key).display(dname).add();
         }
         return b.build();
     }
@@ -43,7 +43,7 @@ public class NbUtilities {
         b.with(String.class).select(dataSource, "getProviderName", null).display("Source").add();
         b.with(String.class).select(dataSource, "getVersion", null).display("Version").add();
         for (Map.Entry<String, String> o : dataSource.getParams().entrySet()) {
-            b.with(String.class).select(o.getKey(), o.getValue()).add();
+            b.with(String.class).selectConst(o.getKey(), o.getValue()).add();
         }
         return b.build();
     }

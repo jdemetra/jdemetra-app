@@ -60,7 +60,7 @@ public abstract class TssTransferHandler implements INamedService {
     public Sheet createSheet() {
         Sheet result = new Sheet();
         NodePropertySetBuilder b = new NodePropertySetBuilder();
-        b.with(String.class).select("DataFlavor", getDataFlavor().getMimeType()).display("Data Flavor").add();
+        b.with(String.class).selectConst("DataFlavor", getDataFlavor().getMimeType()).display("Data Flavor").add();
         result.put(b.build());
         return result;
     }

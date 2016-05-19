@@ -186,10 +186,10 @@ public final class SpreadSheetProfilerTopComponent extends TopComponent implemen
             Sheet result = new Sheet();
             NodePropertySetBuilder b = new NodePropertySetBuilder();
 
-            b.with(String.class).select("Name", file.getName()).add();
-            b.with(long.class).select("File Size", file.length()).add();
-            b.with(Date.class).select("Modification Time", new Date(file.lastModified())).add();
-//            b.with(String.class).select("Duration", model.duration + "ms").add();
+            b.with(String.class).selectConst("Name", file.getName()).add();
+            b.with(long.class).selectConst("File Size", file.length()).add();
+            b.with(Date.class).selectConst("Modification Time", new Date(file.lastModified())).add();
+//            b.with(String.class).selectConst("Duration", model.duration + "ms").add();
             result.put(b.build());
 
             return result;

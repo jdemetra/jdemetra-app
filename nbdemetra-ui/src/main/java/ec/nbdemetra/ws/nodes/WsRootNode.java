@@ -35,7 +35,7 @@ public class WsRootNode extends AbstractNode {
         Sheet sheet = super.createSheet();
         Sheet.Set identification = Sheet.createPropertiesSet();
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("Active workspace");
-        b.with(String.class).select("Name", ws_.getName()).add();
+        b.with(String.class).selectConst("Name", ws_.getName()).add();
         sheet.put(b.build());
         sheet.put(NbUtilities.creatDataSourcePropertiesSet(ws_.getDataSource()));
         return sheet;
