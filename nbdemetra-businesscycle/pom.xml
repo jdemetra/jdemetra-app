@@ -61,6 +61,10 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-nodes</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-ui</artifactId>
+        </dependency>
        
         <!-- NbDemetra -->
         <dependency>

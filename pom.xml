@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>1.8</jdk.version>
         <brandingToken>nbdemetra</brandingToken>
-        <netbeans.version>RELEASE802</netbeans.version>
+        <netbeans.version>RELEASE81</netbeans.version>
         <jdemetra.version>2.2.0-SNAPSHOT</jdemetra.version>
         <!-- plugins versions > -->
         <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
@@ -156,6 +156,21 @@
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-swing-outline</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-openide-util-ui</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-openide-filesystems-nb</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-api-progress-nb</artifactId>
                 <version>${netbeans.version}</version>
             </dependency>
             <dependency>
@@ -405,16 +420,10 @@
     </build>
 
     <repositories>
-        <!-- Repository hosting NetBeans modules -->
         <repository>
             <id>netbeans</id>
             <name>NetBeans</name>
-            <url>http://bits.netbeans.org/maven2/</url>
-        </repository>
-        <repository>
-            <id>netbeans-snapshot</id>
-            <name>NetBeans Snapshots</name>
-            <url>http://bits.netbeans.org/netbeans/trunk/maven-snapshot/</url>
+            <url>http://bits.netbeans.org/nexus/content/groups/netbeans/</url>
         </repository>
     </repositories>
 

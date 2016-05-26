@@ -125,6 +125,14 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-swing-outline</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-filesystems-nb</artifactId>
+        </dependency>
 
         <!-- NbDemetra -->
         <dependency>
