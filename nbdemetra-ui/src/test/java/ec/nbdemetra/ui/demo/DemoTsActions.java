@@ -9,7 +9,6 @@ import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.tss.Ts;
 import java.awt.Image;
 import javax.swing.JOptionPane;
-import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 
 /**
@@ -36,17 +35,7 @@ public enum DemoTsActions implements ITsAction {
     }
 
     @Override
-    public String getDisplayName() {
-        return getName();
-    }
-
-    @Override
     public Image getIcon(int type, boolean opened) {
         return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
-    }
-
-    @Override
-    public Sheet createSheet() {
-        return new Sheet();
     }
 }

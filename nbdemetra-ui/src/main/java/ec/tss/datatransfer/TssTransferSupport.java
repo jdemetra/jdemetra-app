@@ -26,6 +26,7 @@ import ec.tss.*;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.timeseries.simplets.TsData;
+import ec.util.various.swing.OnEDT;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -138,6 +139,7 @@ public class TssTransferSupport extends ListenableBean {
         return new ArrayList<>();
     }
 
+    @OnEDT
     public boolean canImport(@Nonnull DataFlavor... dataFlavors) {
         // multiFlavor means "maybe", not "yes"
         return DataTransfers.isMultiFlavor(dataFlavors) || stream().anyMatch(onDataFlavors(dataFlavors));
@@ -149,6 +151,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param data a non-null {@link TsData}
      * @return a never-null {@link Transferable}
      */
+    @OnEDT
     @Nonnull
     public Transferable fromTsData(@Nonnull TsData data) {
         Preconditions.checkNotNull(data);
@@ -161,6 +164,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param ts a non-null {@link Ts}
      * @return a never-null {@link Transferable}
      */
+    @OnEDT
     @Nonnull
     public Transferable fromTs(@Nonnull Ts ts) {
         Preconditions.checkNotNull(ts);
@@ -175,6 +179,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param col a non-null {@link TsCollection}
      * @return a never-null {@link Transferable}
      */
+    @OnEDT
     @Nonnull
     public Transferable fromTsCollection(@Nonnull TsCollection col) {
         Preconditions.checkNotNull(col);
@@ -187,6 +192,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param matrix a non-null {@link Matrix}
      * @return a never-null {@link Transferable}
      */
+    @OnEDT
     @Nonnull
     public Transferable fromMatrix(@Nonnull Matrix matrix) {
         Preconditions.checkNotNull(matrix);
@@ -199,6 +205,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param table a non-null {@link Table}
      * @return a never-null {@link Transferable}
      */
+    @OnEDT
     @Nonnull
     public Transferable fromTable(@Nonnull Table<?> table) {
         Preconditions.checkNotNull(table);
@@ -211,6 +218,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param transferable a non-null object
      * @return a {@link TsData} if possible, <code>null</code> otherwise
      */
+    @OnEDT
     @Nullable
     public TsData toTsData(@Nonnull Transferable transferable) {
         Ts ts = toTs(transferable);
@@ -233,6 +241,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param transferable a non-null object
      * @return a {@link Ts} if possible, <code>null</code> otherwise
      */
+    @OnEDT
     @Nullable
     public Ts toTs(@Nonnull Transferable transferable) {
         TsCollection col = toTsCollection(transferable);
@@ -250,6 +259,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param transferable a non-null object
      * @return a {@link TsCollection} if possible, <code>null</code> otherwise
      */
+    @OnEDT
     @Nullable
     public TsCollection toTsCollection(@Nonnull Transferable transferable) {
         Preconditions.checkNotNull(transferable);
@@ -269,6 +279,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param transferable a non-null object
      * @return a {@link Matrix} if possible, <code>null</code> otherwise
      */
+    @OnEDT
     @Nullable
     public Matrix toMatrix(@Nonnull Transferable transferable) {
         Preconditions.checkNotNull(transferable);
@@ -286,6 +297,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param transferable a non-null object
      * @return a {@link Table} if possible, <code>null</code> otherwise
      */
+    @OnEDT
     @Nullable
     public Table<?> toTable(@Nonnull Transferable transferable) {
         Preconditions.checkNotNull(transferable);

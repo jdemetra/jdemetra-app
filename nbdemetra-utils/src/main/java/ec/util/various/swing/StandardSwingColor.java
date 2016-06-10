@@ -17,6 +17,7 @@
 package ec.util.various.swing;
 
 import java.awt.Color;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JPanel;
@@ -93,9 +94,7 @@ public enum StandardSwingColor {
 
     @Nonnull
     public Color or(@Nonnull Color fallback) {
-        if (fallback == null) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull(fallback);
         Color result = value();
         return result != null ? result : fallback;
     }

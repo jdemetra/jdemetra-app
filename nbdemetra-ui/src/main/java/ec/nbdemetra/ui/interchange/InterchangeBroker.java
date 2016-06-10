@@ -24,31 +24,20 @@ import java.awt.Image;
 import java.io.IOException;
 import java.util.List;
 import javax.annotation.Nonnull;
-import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 
 /**
  * Service that performs import/export of configs.
  *
  * @author Philippe Charles
+ * @since 1.5.1
  */
 @ServiceDefinition(hasPosition = true)
 public abstract class InterchangeBroker implements INamedService {
 
     @Override
-    public String getDisplayName() {
-        return getName();
-    }
-
-    @Override
     public Image getIcon(int type, boolean opened) {
         return ImageUtilities.icon2Image(DemetraUiIcon.CLIPBOARD_PASTE_DOCUMENT_TEXT_16);
-    }
-
-    @Override
-    public Sheet createSheet() {
-        Sheet result = new Sheet();
-        return result;
     }
 
     @OnEDT

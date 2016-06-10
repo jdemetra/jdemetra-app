@@ -16,9 +16,9 @@
  */
 package ec.nbdemetra.spreadsheet;
 
+import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
-import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
@@ -33,22 +33,25 @@ import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.helpers.ArraySheet;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.SwingWorker;
+import java.io.UncheckedIOException;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.nodes.Sheet;
 import org.openide.util.Exceptions;
+import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -57,14 +60,13 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = ITsSave.class)
-public final class SpreadsheetTsSave extends AbstractNamedService implements ITsSave {
+public final class SpreadsheetTsSave implements ITsSave {
 
     private final FileChooserBuilder fileChooserBuilder;
     private final OptionsEditor optionsEditor;
     private final OptionsBean optionsBean;
 
     public SpreadsheetTsSave() {
-        super(ITsSave.class, "SpreadsheetTsSave");
         this.fileChooserBuilder = new FileChooserBuilder(SpreadsheetTsSave.class)
                 .setFileFilter(new SaveFileFilter())
                 .setSelectionApprover(new SaveSelectionApprover());
@@ -73,16 +75,8 @@ public final class SpreadsheetTsSave extends AbstractNamedService implements ITs
     }
 
     @Override
-    public void save(Ts[] ts) {
-        File file = fileChooserBuilder.showSaveDialog();
-        if (file != null) {
-            Book.Factory factory = getFactoryByFile(file);
-            if (factory != null) {
-                if (optionsEditor.editBean(optionsBean)) {
-                    save(ts, file, factory, optionsBean.getTsExportOptions());
-                }
-            }
-        }
+    public String getName() {
+        return "SpreadsheetTsSave";
     }
 
     @Override
@@ -90,50 +84,64 @@ public final class SpreadsheetTsSave extends AbstractNamedService implements ITs
         return "Spreadsheet file";
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    private void save(final Ts[] data, final File file, final Book.Factory bookFactory, final TsExportOptions options) {
-        new SwingWorker<Void, String>() {
-            final ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Saving to spreadsheet");
-
-            @Override
-            protected Void doInBackground() throws Exception {
-                progressHandle.start();
-                progressHandle.progress("Initializing content");
-                TsCollectionInformation col = new TsCollectionInformation();
-                for (Ts o : data) {
-                    col.items.add(new TsInformation(o, TsInformationType.All));
-                }
-                progressHandle.progress("Creating content");
-                ArraySheet sheet = SpreadSheetFactory.getDefault().fromTsCollectionInfo(col, options);
-                progressHandle.progress("Writing content");
-                bookFactory.store(file, sheet.toBook());
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                progressHandle.finish();
-                try {
-                    get();
-                    NotifyUtil.show("Spreadsheet saved", "Show in folder", MessageType.SUCCESS, new ShowInFolderActionListener(file), null, null);
-                } catch (InterruptedException | ExecutionException ex) {
-                    NotifyUtil.error("Saving to spreadsheet failed", ex.getMessage(), ex);
-                }
-            }
-        }.execute();
+    @Override
+    public Image getIcon(int type, boolean opened) {
+        return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
     }
 
-    @Nullable
-    private static Book.Factory getFactoryByFile(@Nonnull File file) {
-        for (Book.Factory o : Lookup.getDefault().lookupAll(Book.Factory.class
-        )) {
-            if (o.canStore()
-                    && o.accept(file)) {
-                return o;
+    @Override
+    public void save(Ts[] ts) {
+        File file = fileChooserBuilder.showSaveDialog();
+        if (file != null) {
+            Optional<? extends Book.Factory> factory = getFactoryByFile(file);
+            if (factory.isPresent()) {
+                if (optionsEditor.editBean(optionsBean)) {
+                    TsExportOptions options = optionsBean.getTsExportOptions();
+                    CompletableFuture
+                            .supplyAsync(() -> store(ts, file, factory.get(), options))
+                            .whenCompleteAsync(SpreadsheetTsSave::notify, SwingUtilities::invokeLater);
+                }
             }
         }
-        return null;
+    }
 
+    //<editor-fold defaultstate="collapsed" desc="Implementation details">
+    private static void notify(File file, Throwable ex) {
+        if (ex != null) {
+            Throwable tmp = unwrapException(ex, CompletionException.class, UncheckedIOException.class);
+            NotifyUtil.error("Saving to spreadsheet failed", tmp.getMessage(), tmp);
+        } else {
+            NotifyUtil.show("Spreadsheet saved", "Show in folder", MessageType.SUCCESS, new ShowInFolderActionListener(file), null, null);
+        }
+    }
+
+    private static Throwable unwrapException(Throwable ex, Class<? extends Throwable>... types) {
+        return ex.getCause() != null && Arrays.stream(types).anyMatch(o -> o.isInstance(ex)) ? unwrapException(ex.getCause(), types) : ex;
+    }
+
+    private static File store(Ts[] data, File file, Book.Factory bookFactory, TsExportOptions options) {
+        ProgressHandle progressHandle = ProgressHandle.createHandle("Saving to spreadsheet");
+        progressHandle.start();
+        progressHandle.progress("Initializing content");
+        TsCollectionInformation col = new TsCollectionInformation();
+        for (Ts o : data) {
+            col.items.add(new TsInformation(o, TsInformationType.All));
+        }
+        progressHandle.progress("Creating content");
+        ArraySheet sheet = SpreadSheetFactory.getDefault().fromTsCollectionInfo(col, options);
+        progressHandle.progress("Writing content");
+        try {
+            bookFactory.store(file, sheet.toBook());
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        } finally {
+            progressHandle.finish();
+        }
+        return file;
+    }
+
+    private static Optional<? extends Book.Factory> getFactoryByFile(File file) {
+        return Lookup.getDefault().lookupAll(Book.Factory.class).stream().filter(o -> o.canStore() && o.accept(file)).findFirst();
     }
 
     private static final class ShowInFolderActionListener implements ActionListener {

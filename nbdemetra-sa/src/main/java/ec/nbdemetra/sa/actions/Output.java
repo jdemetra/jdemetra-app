@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -89,7 +88,7 @@ public final class Output extends AbstractViewAction<SaBatchUI> {
 
     private void save(final ISaOutputFactory output, final LinearId id, final SaProcessing processing) {
         new SwingWorker<Void, String>() {
-            final ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Saving to " + output.getName());
+            final ProgressHandle progressHandle = ProgressHandle.createHandle("Saving to " + output.getName());
 
             @Override
             protected Void doInBackground() throws Exception {

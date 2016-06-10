@@ -51,7 +51,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.PopupMenuEvent;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.DropDownButtonFactory;
 import org.openide.awt.StatusDisplayer;
@@ -320,7 +319,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
             case STARTED:
                 runButton.setEnabled(false);
                 loadingPanel.setLoading(true);
-                progressHandle = ProgressHandleFactory.createHandle("Processing Time Series...", () -> {
+                progressHandle = ProgressHandle.createHandle("Processing Time Series...", () -> {
                     runButton.setEnabled(true);
                     return worker.cancel(true);
                 });

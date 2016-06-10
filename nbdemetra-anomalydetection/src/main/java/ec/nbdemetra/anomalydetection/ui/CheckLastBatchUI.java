@@ -64,7 +64,6 @@ import static javax.swing.SwingWorker.StateValue.DONE;
 import static javax.swing.SwingWorker.StateValue.PENDING;
 import static javax.swing.SwingWorker.StateValue.STARTED;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
@@ -497,7 +496,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
             case STARTED:
                 runButton.setEnabled(false);
                 reportButton.setEnabled(false);
-                progressHandle = ProgressHandleFactory.createHandle("Processing Check Last...", () -> worker.cancel(true));
+                progressHandle = ProgressHandle.createHandle("Processing Check Last...", () -> worker.cancel(true));
                 progressHandle.start(100);
                 break;
         }

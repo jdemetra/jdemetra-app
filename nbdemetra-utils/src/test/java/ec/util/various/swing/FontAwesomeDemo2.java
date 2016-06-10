@@ -1,20 +1,33 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.util.various.swing;
 
 import java.awt.Color;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JTextField;
-import javax.swing.SwingWorker;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 /**
  *
- * @author charphi
+ * @author Philippe Charles
  */
 public final class FontAwesomeDemo2 extends javax.swing.JPanel {
 
@@ -106,20 +119,18 @@ public final class FontAwesomeDemo2 extends javax.swing.JPanel {
         user.setEnabled(false);
         password.setEnabled(false);
         login.setEnabled(false);
-        new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                Thread.sleep(3000);
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                user.setEnabled(true);
-                password.setEnabled(true);
-                login.setEnabled(true);
-            }
-        }.execute();
+        CompletableFuture
+                .runAsync(() -> {
+                    try {
+                        TimeUnit.SECONDS.sleep(3);
+                    } catch (InterruptedException ex) {
+                    }
+                })
+                .whenCompleteAsync((value, ex) -> {
+                    user.setEnabled(true);
+                    password.setEnabled(true);
+                    login.setEnabled(true);
+                }, SwingUtilities::invokeLater);
     }//GEN-LAST:event_loginActionPerformed
 
 
