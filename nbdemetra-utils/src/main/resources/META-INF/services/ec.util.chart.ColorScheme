@@ -1,9 +1,0 @@
-ec.util.chart.impl.AndroidColorScheme$AndroidDarkColorScheme
-ec.util.chart.impl.AndroidColorScheme$AndroidLightColorScheme
-ec.util.chart.impl.PairedColorScheme
-ec.util.chart.impl.SmartColorScheme
-ec.util.chart.impl.SolarizedColorScheme$SolarizedDarkColorScheme
-ec.util.chart.impl.SolarizedColorScheme$SolarizedLightColorScheme
-ec.util.chart.impl.TangoColorScheme
-ec.util.chart.impl.LollipopColorScheme
-ec.util.chart.impl.ColorBlindColorScheme

@@ -16,10 +16,12 @@
  */
 package ec.util.chart.impl;
 
+import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorSchemeSupport;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Android 4 color scheme.
@@ -74,13 +76,14 @@ public abstract class AndroidColorScheme extends AbstractColorScheme {
      * @author Philippe Charles
      * @author Jeremy Demortier
      */
+    @ServiceProvider(service = ColorScheme.class)
     public static class AndroidDarkColorScheme extends AndroidColorScheme {
 
         @Override
         public String getName() {
             return "Android - Dark";
         }
-        
+
         @Override
         public String getDisplayName() {
             return "Ice Cream Sandwich - Dark";
@@ -109,6 +112,7 @@ public abstract class AndroidColorScheme extends AbstractColorScheme {
      * @author Philippe Charles
      * @author Jeremy Demortier
      */
+    @ServiceProvider(service = ColorScheme.class)
     public static class AndroidLightColorScheme extends AndroidColorScheme {
 
         @Override

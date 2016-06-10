@@ -13,13 +13,14 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and 
 * limitations under the Licence.
-*/
-
+ */
 package ec.util.chart.impl;
 
+import ec.util.chart.ColorScheme;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Tango color scheme.
@@ -28,6 +29,7 @@ import java.util.Map;
  * @author Philippe Charles
  * @author Jeremy Demortier
  */
+@ServiceProvider(service = ColorScheme.class)
 public class TangoColorScheme extends AbstractColorScheme {
 
     // Tango color palette
