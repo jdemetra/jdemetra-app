@@ -1,4 +1,0 @@
-ec.util.desktop.impl.AwtDesktop$Factory
-ec.util.desktop.impl.MacDesktop$Factory
-ec.util.desktop.impl.WinDesktop$Factory
-ec.util.desktop.impl.XdgDesktop$Factory

@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * A generic {@link Desktop} implementation for Windows.
@@ -127,6 +128,7 @@ public class WinDesktop extends AwtDesktop {
         return search.search(query);
     }
 
+    @ServiceProvider(service = Desktop.Factory.class)
     public static class Factory implements Desktop.Factory {
 
         @Override

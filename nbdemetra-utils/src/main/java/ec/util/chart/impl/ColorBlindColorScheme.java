@@ -16,9 +16,11 @@
  */
 package ec.util.chart.impl;
 
+import ec.util.chart.ColorScheme;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Color Blindness Color Scheme based on
@@ -26,6 +28,7 @@ import java.util.Map;
  *
  * @author Laurent Jadoul
  */
+@ServiceProvider(service = ColorScheme.class)
 public final class ColorBlindColorScheme extends AbstractColorScheme {
 
     private final int ORANGE = 0xE69F00;
@@ -74,5 +77,4 @@ public final class ColorBlindColorScheme extends AbstractColorScheme {
     public int getGridColor() {
         return BasicColor.LIGHT_GRAY;
     }
-
 }

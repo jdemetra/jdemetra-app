@@ -13,23 +13,25 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and 
 * limitations under the Licence.
-*/
-
+ */
 package ec.util.chart.impl;
 
+import ec.util.chart.ColorScheme;
 import static java.util.Arrays.asList;
 import java.util.List;
 import java.util.Map;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
- * Solarized - Precision colors for machines and people. <p>Solarized is a
- * sixteen color palette (eight monotones, eight accent colors) designed for use
- * with terminal and gui applications. It has several unique properties. I
- * designed this colorscheme with both precise CIELAB lightness relationships
- * and a refined set of hues based on fixed color wheel relationships. It has
- * been tested extensively in real world use on color calibrated displays (as
- * well as uncalibrated/intentionally miscalibrated displays) and in a variety
- * of lighting conditions
+ * Solarized - Precision colors for machines and people.
+ * <p>
+ * Solarized is a sixteen color palette (eight monotones, eight accent colors)
+ * designed for use with terminal and gui applications. It has several unique
+ * properties. I designed this colorscheme with both precise CIELAB lightness
+ * relationships and a refined set of hues based on fixed color wheel
+ * relationships. It has been tested extensively in real world use on color
+ * calibrated displays (as well as uncalibrated/intentionally miscalibrated
+ * displays) and in a variety of lighting conditions
  *
  * @see http://ethanschoonover.com/solarized
  * @version 1.0.0beta2
@@ -89,6 +91,7 @@ public abstract class SolarizedColorScheme extends AbstractColorScheme {
      * @author Philippe Charles
      * @author Jeremy Demortier
      */
+    @ServiceProvider(service = ColorScheme.class)
     public static class SolarizedDarkColorScheme extends SolarizedColorScheme {
 
         @Override
@@ -100,7 +103,7 @@ public abstract class SolarizedColorScheme extends AbstractColorScheme {
         public int getBackColor() {
             return BasicColor.WHITE;
         }
-        
+
         @Override
         public int getPlotColor() {
             return BASE03;
@@ -114,6 +117,7 @@ public abstract class SolarizedColorScheme extends AbstractColorScheme {
      * @author Philippe Charles
      * @author Jeremy Demortier
      */
+    @ServiceProvider(service = ColorScheme.class)
     public static class SolarizedLightColorScheme extends SolarizedColorScheme {
 
         @Override
@@ -125,7 +129,7 @@ public abstract class SolarizedColorScheme extends AbstractColorScheme {
         public int getBackColor() {
             return BasicColor.WHITE;
         }
-        
+
         @Override
         public int getPlotColor() {
             return BASE3;

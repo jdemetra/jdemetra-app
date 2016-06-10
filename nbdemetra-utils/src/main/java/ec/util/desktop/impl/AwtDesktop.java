@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import javax.annotation.Nonnull;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * A basic {@link Desktop} implementation based on
@@ -122,6 +123,7 @@ public class AwtDesktop implements Desktop {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @ServiceProvider(service = Desktop.Factory.class)
     public static class Factory implements Desktop.Factory {
 
         @Override

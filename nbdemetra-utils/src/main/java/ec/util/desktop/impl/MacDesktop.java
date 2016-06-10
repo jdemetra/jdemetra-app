@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * A generic {@link Desktop} implementation for Mac OS X.
@@ -102,6 +103,7 @@ public class MacDesktop extends AwtDesktop {
         return Util.toFiles(p, Charset.defaultCharset());
     }
 
+    @ServiceProvider(service = Desktop.Factory.class)
     public static class Factory implements Desktop.Factory {
 
         @Override

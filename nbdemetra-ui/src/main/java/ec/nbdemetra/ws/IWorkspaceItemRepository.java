@@ -4,10 +4,13 @@
  */
 package ec.nbdemetra.ws;
 
+import ec.tstoolkit.design.ServiceDefinition;
+
 /**
  *
  * @author Jean Palate
  */
+@ServiceDefinition
 public interface IWorkspaceItemRepository<D> {
     
     Class<D> getSupportedType();

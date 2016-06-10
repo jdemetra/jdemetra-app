@@ -16,14 +16,19 @@
  */
 package ec.nbdemetra.anomalydetection.report;
 
+import ec.tstoolkit.design.ServiceDefinition;
 import java.util.Map;
 
 /**
  *
  * @author Mats Maggi
  */
+@ServiceDefinition
 public interface ICheckLastReportFactory {
+
     String getReportName();
+
     String getReportDescription();
+
     boolean createReport(Map parameters);
 }
