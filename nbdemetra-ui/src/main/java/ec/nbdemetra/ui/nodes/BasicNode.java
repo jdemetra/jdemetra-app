@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ui.nodes;
 
+import ec.tstoolkit.design.ServiceDefinition;
 import java.awt.Image;
 import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
@@ -90,6 +91,7 @@ public abstract class BasicNode<LTYPE> extends AbstractNode {
         fireOpenedIconChange();
     }
 
+    @ServiceDefinition
     public interface Annotator {
 
         Image annotateIcon(Node node, Image image);

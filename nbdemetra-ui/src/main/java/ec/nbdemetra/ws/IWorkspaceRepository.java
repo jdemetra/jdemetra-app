@@ -5,12 +5,14 @@
 package ec.nbdemetra.ws;
 
 import ec.tss.tsproviders.DataSource;
+import ec.tstoolkit.design.ServiceDefinition;
 import java.util.Collection;
 
 /**
  *
  * @author Jean Palate
  */
+@ServiceDefinition
 public interface IWorkspaceRepository {
     
     Collection<Class> getSupportedTypes();
