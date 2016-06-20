@@ -16,29 +16,28 @@
  */
 package ec.nbdemetra.sa.output;
 
+import ec.nbdemetra.ui.DemetraUiIcon;
+import ec.tss.sa.ISaOutputFactory;
+import java.awt.Image;
+import org.openide.nodes.AbstractNode;
+import org.openide.nodes.Children;
+import org.openide.util.lookup.Lookups;
+
 /**
- * @deprecated Use {@link ec.nbdemetra.sa.output.impl.CsvMatrixOutputBuddy}
- * instead
+ *
  * @author Jean Palate
  */
-@Deprecated
-public class CsvMatrixFactory implements INbOutputFactory {
+public abstract class AbstractOutputNode<T> extends AbstractNode {
 
-    private INbOutputFactory delegate = new ec.nbdemetra.sa.output.impl.CsvMatrixOutputBuddy();
-
-    @Override
-    public AbstractOutputNode createNode() {
-        return delegate.createNode();
+    public AbstractOutputNode(T config) {
+        super(Children.LEAF, Lookups.singleton(config));
     }
-
+    
+    public abstract ISaOutputFactory getFactory();
+ 
     @Override
-    public String getName() {
-        return delegate.getName();
+    public Image getIcon(int type) {
+        return DemetraUiIcon.DOCUMENT_PRINT_16.getImageIcon().getImage();
     }
-
-    @Override
-    public AbstractOutputNode createNodeFor(Object properties) {
-        return delegate.createNodeFor(properties);
-    }
-
+    
 }

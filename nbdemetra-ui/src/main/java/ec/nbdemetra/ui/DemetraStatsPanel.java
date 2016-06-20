@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 National Bank of Belgium
+ * Copyright 2016 National Bank of Belgium
  *
  * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -16,6 +16,8 @@
  */
 package ec.nbdemetra.ui;
 
+import ec.nbdemetra.sa.output.INbOutputFactory;
+import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.ns.NamedServiceNode;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.nbdemetra.ws.ui.SpecSelectionComponent;
@@ -24,7 +26,6 @@ import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.tss.sa.EstimationPolicyType;
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -61,8 +62,8 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         diagnosticsView.getOutline().setRootVisible(false);
         editDiagnostic.setEnabled(false);
         resetDiagnostic.setEnabled(false);
-        
-        getDiagnosticsExplorerManager().addPropertyChangeListener(evt -> {
+
+        getDiagnosticsExplorerManager().addPropertyChangeListener((PropertyChangeEvent evt) -> {
             if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
                 Node[] nodes = (Node[]) evt.getNewValue();
                 editDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IConfigurable.class) != null);
@@ -83,7 +84,13 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         specComponent.setSpecification(demetraUI.getDefaultSASpec());
         selectedSpecLabel.setText(demetraUI.getDefaultSASpec().toLongString());
 
-        NamedServiceNode.loadAll(getDiagnosticsExplorerManager(), Lookup.getDefault().lookupAll(SaDiagnosticsFactoryBuddy.class));
+        AbstractNodeBuilder root = new AbstractNodeBuilder();
+        root.add(new AbstractNodeBuilder().name("Diagnostics")
+                .add(Lookup.getDefault().lookupAll(SaDiagnosticsFactoryBuddy.class).stream().map(NamedServiceNode::new)).build());
+        root.add(new AbstractNodeBuilder().name("Outputs")
+                .add(Lookup.getDefault().lookupAll(INbOutputFactory.class).stream().map(NamedServiceNode::new)).build());
+        
+        getDiagnosticsExplorerManager().setRootContext(root.build());
     }
 
     void store() {
@@ -267,12 +274,13 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         diagnosticsPanelLayout.setVerticalGroup(
             diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(diagnosticsPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addGroup(diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(diagnosticsPanelLayout.createSequentialGroup()
-                        .addComponent(diagnosticsView, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addContainerGap())))
+                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 70, Short.MAX_VALUE))
+                    .addComponent(diagnosticsView, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -293,8 +301,8 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(revisionHistoryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(diagnosticsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 32, Short.MAX_VALUE))
+                .addComponent(diagnosticsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -338,15 +346,12 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
 
     private void initSpecButton() {
         specPopup.add(specComponent);
-        specComponent.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String p = evt.getPropertyName();
-                if (p.equals(SpecSelectionComponent.SPECIFICATION_PROPERTY) && evt.getNewValue() != null) {
-                    selectedSpecLabel.setText(((ISaSpecification) evt.getNewValue()).toLongString());
-                } else if (p.equals(SpecSelectionComponent.ICON_PROPERTY) && evt.getNewValue() != null) {
-                    specButton.setIcon(ImageUtilities.image2Icon((Image) evt.getNewValue()));
-                }
+        specComponent.addPropertyChangeListener((PropertyChangeEvent evt) -> {
+            String p = evt.getPropertyName();
+            if (p.equals(SpecSelectionComponent.SPECIFICATION_PROPERTY) && evt.getNewValue() != null) {
+                selectedSpecLabel.setText(((ISaSpecification) evt.getNewValue()).toLongString());
+            } else if (p.equals(SpecSelectionComponent.ICON_PROPERTY) && evt.getNewValue() != null) {
+                specButton.setIcon(ImageUtilities.image2Icon((Image) evt.getNewValue()));
             }
         });
     }

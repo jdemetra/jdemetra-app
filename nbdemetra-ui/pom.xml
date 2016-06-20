@@ -188,6 +188,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>ec.benchmarking.*</publicPackage>
+                        <publicPackage>ec.nbdemetra.sa.output</publicPackage>
                         <publicPackage>ec.nbdemetra.ui.*</publicPackage>
                         <publicPackage>ec.nbdemetra.ws.*</publicPackage>
                         <publicPackage>ec.tss.*</publicPackage>

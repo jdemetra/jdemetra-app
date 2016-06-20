@@ -16,29 +16,35 @@
  */
 package ec.nbdemetra.sa.output;
 
+import ec.nbdemetra.ui.ns.INamedService;
+import java.awt.Image;
+import org.openide.nodes.Sheet;
+
 /**
- * @deprecated Use {@link ec.nbdemetra.sa.output.impl.CsvMatrixOutputBuddy}
- * instead
+ *
  * @author Jean Palate
  */
-@Deprecated
-public class CsvMatrixFactory implements INbOutputFactory {
-
-    private INbOutputFactory delegate = new ec.nbdemetra.sa.output.impl.CsvMatrixOutputBuddy();
+public interface INbOutputFactory extends INamedService {
 
     @Override
-    public AbstractOutputNode createNode() {
-        return delegate.createNode();
+    String getName();
+
+    AbstractOutputNode createNode();
+
+    AbstractOutputNode createNodeFor(Object properties);
+
+    @Override
+    default String getDisplayName() {
+        return getName();
     }
 
     @Override
-    public String getName() {
-        return delegate.getName();
+    default Image getIcon(int type, boolean opened) {
+        return null;
     }
 
     @Override
-    public AbstractOutputNode createNodeFor(Object properties) {
-        return delegate.createNodeFor(properties);
+    default Sheet createSheet() {
+        return new Sheet();
     }
-
 }
