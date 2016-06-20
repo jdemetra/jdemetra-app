@@ -20,6 +20,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import ec.nbdemetra.core.InstallerStep;
+import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.ui.interchange.InterchangeBroker;
 import ec.nbdemetra.ui.mru.MruProvidersStep;
 import ec.nbdemetra.ui.mru.MruWorkspacesStep;
@@ -66,7 +67,8 @@ public final class Installer extends ModuleInstall {
             new PersistOpenedDataSourcesStep(),
             new InterchangeStep(),
             new ProviderBuddiesStep(),
-            new DiagnosticsBuddiesStep());
+            new DiagnosticsBuddiesStep(),
+            new OutputBuddiesStep());
 
     @Override
     public void restored() {
@@ -199,6 +201,13 @@ public final class Installer extends ModuleInstall {
 
         DiagnosticsBuddiesStep() {
             super(SaDiagnosticsFactoryBuddy.class);
+        }
+    }
+    
+    private static final class OutputBuddiesStep extends ConfigStep<INbOutputFactory> {
+
+        OutputBuddiesStep() {
+            super(INbOutputFactory.class);
         }
     }
 

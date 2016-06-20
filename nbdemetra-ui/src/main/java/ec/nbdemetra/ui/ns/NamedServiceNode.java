@@ -1,7 +1,7 @@
 /*
- * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * Copyright 2016 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
@@ -107,6 +107,11 @@ public class NamedServiceNode extends AbstractNode {
         for (Node o : em.getRootContext().getChildren().getNodes()) {
             if (o instanceof NamedServiceNode) {
                 ((NamedServiceNode) o).applyConfig();
+            }
+            for (Node c : o.getChildren().getNodes()) {
+                if (c instanceof NamedServiceNode) {
+                    ((NamedServiceNode) c).applyConfig();
+                }
             }
         }
     }
