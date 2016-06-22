@@ -38,6 +38,7 @@ import java.awt.event.MouseWheelListener;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * The class
@@ -137,11 +138,7 @@ public class JSurface extends javax.swing.JComponent {
             model.removeChangeListener(surfaceChangesListener);
         }
 
-        if (model == null) {
-            throw new NullPointerException("Given surface model is null");
-        }
-
-        this.model = model;
+        this.model = Objects.requireNonNull(model, "Given surface model is null");
         interrupted = false;
         data_available = false;
         printing = false;

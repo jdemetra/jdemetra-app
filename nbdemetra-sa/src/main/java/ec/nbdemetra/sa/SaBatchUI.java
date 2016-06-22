@@ -85,7 +85,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
@@ -356,7 +355,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 break;
             case STARTED:
                 runButton.setEnabled(false);
-                progressHandle = ProgressHandleFactory.createHandle(getDocument().getDisplayName(), () -> worker.cancel(true));
+                progressHandle = ProgressHandle.createHandle(getDocument().getDisplayName(), () -> worker.cancel(true));
                 progressHandle.start(getCurrentProcessing().size());
                 break;
         }

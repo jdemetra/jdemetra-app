@@ -19,24 +19,25 @@ package ec.util.desktop;
 import ec.util.desktop.Desktop.Factory;
 import ec.util.desktop.Desktop.Factory.SupportType;
 import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.StreamSupport;
+import javax.annotation.Nonnull;
 
 /**
  * The DesktopManager is a utility class that allows you to retrieve a suitable
- * Desktop implementation.<p>By default, it uses {@link ServiceLoader} to get
- * the right implementation but you can override this behavior by calling
+ * Desktop implementation.<p>
+ * By default, it uses {@link ServiceLoader} to get the right implementation but
+ * you can override this behavior by calling
  * {@link DesktopManager#set(ec.util.desktop.Desktop)}.<br>If no implementation
- * is found, a no-operation implementation will be returned.<p>A Desktop
- * implementation is created by a {@link Factory}. If several factories are
- * available at runtime, this utility will choose the one that offers the best
- * support.
+ * is found, a no-operation implementation will be returned.<p>
+ * A Desktop implementation is created by a {@link Factory}. If several
+ * factories are available at runtime, this utility will choose the one that
+ * offers the best support.
  *
  * @see ServiceLoader
  * @see Factory
@@ -53,6 +54,7 @@ public final class DesktopManager {
      *
      * @return the non-null current Desktop
      */
+    @Nonnull
     public static synchronized Desktop get() {
         if (DESKTOP == null) {
             try {
@@ -71,11 +73,8 @@ public final class DesktopManager {
      * @param newDesktop a non-null new Desktop
      * @throws NullPointerException if the parameter is null
      */
-    public static synchronized void set(Desktop newDesktop) {
-        if (newDesktop == null) {
-            throw new NullPointerException("desktop");
-        }
-        DESKTOP = newDesktop;
+    public static synchronized void set(@Nonnull Desktop newDesktop) {
+        DESKTOP = Objects.requireNonNull(newDesktop, "desktop");
     }
 
     /**
@@ -87,35 +86,32 @@ public final class DesktopManager {
      * @return a non-null Desktop implementation
      * @throws NullPointerException if the parameter is null
      */
-    public static Desktop load(Iterable<? extends Factory> factories) {
-        if (factories == null) {
-            throw new NullPointerException("factories");
-        }
+    @Nonnull
+    public static Desktop load(@Nonnull Iterable<? extends Factory> factories) {
+        Objects.requireNonNull(factories, "factories");
 
         String osArch = System.getProperty("os.arch");
         String osName = System.getProperty("os.name");
         String osVersion = System.getProperty("os.version");
 
-        List<Entry<SupportType, Factory>> list = new ArrayList<>();
-        for (Factory o : factories) {
-            list.add(new AbstractMap.SimpleEntry<>(o.getSupportType(osArch, osName, osVersion), o));
-        }
+        Optional<AbstractMap.SimpleEntry<SupportType, Factory>> bestFactory
+                = StreamSupport.stream(factories.spliterator(), false)
+                .map(o -> new AbstractMap.SimpleEntry<>(o.getSupportType(osArch, osName, osVersion), o))
+                .sorted(DesktopManager::compareByLevelOfSupport)
+                .findFirst();
 
-        if (list.isEmpty()) {
+        if (!bestFactory.isPresent()) {
             LOGGER.info("No factories found");
             return new NoOpDesktop();
         }
 
-        Collections.sort(list, DesktopManager.BestFactoryComparator.INSTANCE);
-        Entry<SupportType, Factory> bestFactory = list.get(0);
-
-        if (bestFactory.getKey() == SupportType.NONE) {
+        if (bestFactory.get().getKey() == SupportType.NONE) {
             LOGGER.info("No support for this OS");
             return new NoOpDesktop();
         }
 
-        LOGGER.log(Level.INFO, "Using factory ''{0}''", bestFactory.getValue().getClass().getName());
-        return bestFactory.getValue().create(osArch, osName, osVersion);
+        LOGGER.log(Level.INFO, "Using factory ''{0}''", bestFactory.get().getValue().getClass().getName());
+        return bestFactory.get().getValue().create(osArch, osName, osVersion);
     }
 
     private DesktopManager() {
@@ -126,13 +122,7 @@ public final class DesktopManager {
      * The comparator used to select the best factory through their level of
      * support.
      */
-    private enum BestFactoryComparator implements Comparator<Entry<SupportType, Factory>> {
-
-        INSTANCE;
-
-        @Override
-        public int compare(Entry<SupportType, Factory> l, Entry<SupportType, Factory> r) {
-            return r.getKey().compareTo(l.getKey());
-        }
+    private static int compareByLevelOfSupport(Entry<SupportType, Factory> l, Entry<SupportType, Factory> r) {
+        return r.getKey().compareTo(l.getKey());
     }
 }

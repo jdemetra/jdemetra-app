@@ -52,7 +52,6 @@ import static javax.swing.SwingWorker.StateValue.STARTED;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 
 /**
  * A grid component used to display outliers found in time series. The outliers
@@ -311,7 +310,7 @@ public class JTsAnomalyGrid extends JComponent {
             case PENDING:
                 break;
             case STARTED:
-                progressHandle = ProgressHandleFactory.createHandle("Calculating Outliers...", () -> worker.cancel(true));
+                progressHandle = ProgressHandle.createHandle("Calculating Outliers...", () -> worker.cancel(true));
                 progressHandle.start(100);
                 break;
         }

@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 /**
@@ -64,9 +65,7 @@ final class Util {
      */
     @Nonnull
     public static File checkFile(File file) throws NullPointerException, IllegalArgumentException {
-        if (file == null) {
-            throw new NullPointerException("File must not be null");
-        }
+        Objects.requireNonNull(file, "File must not be null");
         if (!file.exists()) {
             throw new IllegalArgumentException("The file: " + file.getPath() + " doesn't exist.");
         }
