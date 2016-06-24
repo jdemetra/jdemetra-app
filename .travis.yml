@@ -6,3 +6,9 @@ before_install:
   - pushd ~/builds/jdemetra-core
   - mvn clean install -DskipTests=true
   - popd
+
+# Use JDK 8u45. The above line just causes the use of a minor version of Java 8.
+addons:
+    apt:
+        packages:
+            - oracle-java8-installer
