@@ -17,11 +17,18 @@
 package ec.nbdemetra.ui.properties;
 
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
+import ec.tstoolkit.utilities.Trees;
+import ec.util.grid.swing.XTable;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Image;
 import java.beans.IntrospectionException;
+import java.util.Arrays;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.JTable;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.explorer.propertysheet.PropertySheet;
@@ -52,6 +59,11 @@ public class OpenIdePropertySheetBeanEditor implements IBeanEditor {
         PropertySheet v = new PropertySheet();
         v.setNodes(new Node[]{node});
 
+        Trees.breadthFirstStream(v, OpenIdePropertySheetBeanEditor::childrenStream)
+                .filter(o -> o instanceof JTable)
+                .findFirst()
+                .ifPresent(o -> XTable.setWidthAsPercentages(((JTable) o), .3, .7));
+
         DialogDescriptor d = new DialogDescriptor(v, title);
         Dialog dialog = DialogDisplayer.getDefault().createDialog(d);
         if (image != null) {
@@ -65,5 +77,11 @@ public class OpenIdePropertySheetBeanEditor implements IBeanEditor {
     public static boolean editSheet(@Nonnull Sheet sheet, @Nullable String title, @Nullable Image image) {
         Node node = new AbstractNodeBuilder().sheet(sheet).build();
         return editNode(node, title, image);
+    }
+
+    private static Stream<Component> childrenStream(Component c) {
+        return c instanceof Container && ((Container) c).getComponentCount() > 0
+                ? Arrays.stream(((Container) c).getComponents())
+                : Stream.empty();
     }
 }
