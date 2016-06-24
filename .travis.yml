@@ -1,0 +1,8 @@
+language: java
+jdk:
+  - oraclejdk8
+before_install:
+  - git clone https://github.com/jdemetra/jdemetra-core.git ~/builds/jdemetra-core
+  - pushd ~/builds/jdemetra-core
+  - mvn clean install -DskipTests=true
+  - popd
