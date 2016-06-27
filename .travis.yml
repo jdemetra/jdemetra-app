@@ -1,0 +1,16 @@
+language: java
+jdk:
+  - oraclejdk8
+before_install:
+  - git clone https://github.com/jdemetra/jdemetra-core.git ~/builds/jdemetra-core
+  - pushd ~/builds/jdemetra-core
+  - mvn clean install -DskipTests=true
+  - popd
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+
+# Use latest JDK
+addons:
+    apt:
+        packages:
+            - oracle-java8-installer
