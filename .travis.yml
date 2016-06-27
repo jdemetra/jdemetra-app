@@ -6,8 +6,10 @@ before_install:
   - pushd ~/builds/jdemetra-core
   - mvn clean install -DskipTests=true
   - popd
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start
 
-# Use JDK 8u45. The above line just causes the use of a minor version of Java 8.
+# Use latest JDK
 addons:
     apt:
         packages:
