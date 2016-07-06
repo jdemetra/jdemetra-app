@@ -35,23 +35,20 @@ public class OutlierDescriptor implements IObjectDescriptor<OutlierDefinition> {
     private static final int POSITION_ID = 1, TYPE_ID = 2;
     private Day day;
     private OutlierType type;
-    private boolean prespecified;
 
     public OutlierDescriptor() {
         day=Day.toDay();
         type=OutlierType.AO;
-        prespecified=true;
     }
 
     public OutlierDescriptor(OutlierDefinition outlier) {
         day=outlier.getPosition();
         type=outlier.getType();
-        prespecified=outlier.isPrespecified();
     }
 
     @Override
     public OutlierDefinition getCore() {
-        return new OutlierDefinition(day, type, prespecified);
+        return new OutlierDefinition(day, type);
     }
 
     public Day getPosition() {
