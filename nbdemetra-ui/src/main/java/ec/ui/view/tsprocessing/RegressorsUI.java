@@ -45,7 +45,7 @@ public class RegressorsUI<V extends IProcDocumentView<?>> extends DefaultItemUI<
                 }
                 cur.data(edomain, tmp);
                 for (int j = 0; j < dim; ++j) {
-                    collection.quietAdd(TsFactory.instance.createTs(cur.getItemDescription(j), null, new TsData(start, tmp.get(j).getData(), false)));
+                    collection.quietAdd(TsFactory.instance.createTs(cur.getItemDescription(j, information.getFrequency()), null, new TsData(start, tmp.get(j).getData(), false)));
                 }
             }
         }

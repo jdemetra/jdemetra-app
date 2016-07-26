@@ -50,8 +50,8 @@ public class OutlierTypeSelector extends ComboBoxPropertyEditor {
         if (null != value) {
             OutlierType oType = (OutlierType) value;
             label.setText(oType.toString());
-            label.setBackground(ColorChooser.getColor(oType));
-            label.setForeground(ColorChooser.getForeColor(oType));
+            label.setBackground(ColorChooser.getColor(oType.name()));
+            label.setForeground(ColorChooser.getForeColor(oType.name()));
             label.setOpaque(true);
         } else {
             label.setBackground(Color.white);

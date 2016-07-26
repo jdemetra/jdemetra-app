@@ -33,35 +33,38 @@ import java.util.List;
 public class OutlierDescriptor implements IObjectDescriptor<OutlierDefinition> {
 
     private static final int POSITION_ID = 1, TYPE_ID = 2;
-    private final OutlierDefinition outlier;
+    private Day day;
+    private OutlierType type;
 
     public OutlierDescriptor() {
-        this.outlier = new OutlierDefinition(Day.toDay(), OutlierType.AO, true);
+        day=Day.toDay();
+        type=OutlierType.AO;
     }
 
     public OutlierDescriptor(OutlierDefinition outlier) {
-        this.outlier = outlier;
+        day=outlier.getPosition();
+        type=outlier.getType();
     }
 
     @Override
     public OutlierDefinition getCore() {
-        return outlier;
+        return new OutlierDefinition(day, type);
     }
 
     public Day getPosition() {
-        return outlier.getPosition();
+        return day;
     }
 
     public void setPosition(Day position) {
-        outlier.setPosition(position);
+        day=position;
     }
 
-    public OutlierType getType() {
-        return outlier.getType();
+   public OutlierType getType() {
+        return type;
     }
 
     public void setType(OutlierType type) {
-        outlier.setType(type);
+        this.type=type;
     }
 
     @Override
@@ -107,6 +110,6 @@ public class OutlierDescriptor implements IObjectDescriptor<OutlierDefinition> {
 
     @Override
     public String toString() {
-        return outlier.toString();
+        return getCore().toString();
     }
 }

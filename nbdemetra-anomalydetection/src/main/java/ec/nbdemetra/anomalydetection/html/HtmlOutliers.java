@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ import java.util.Map;
 public class HtmlOutliers extends AbstractHtmlElement implements IHtmlElement {
 
     private OutlierEstimation[] outliers_;
-    Map<OutlierType, OutlierPojo> map = new EnumMap<>(OutlierType.class);
+    Map<String, OutlierPojo> map = new HashMap<>();
 
     public HtmlOutliers(OutlierEstimation[] estimations) {
         outliers_ = estimations;
@@ -76,7 +77,7 @@ public class HtmlOutliers extends AbstractHtmlElement implements IHtmlElement {
 
         for (OutlierEstimation e : outliers_) {
             stream.open(HtmlTag.TABLEROW);
-            stream.write(new HtmlTableCell(e.getCode().toString(), 40, HtmlStyle.Center, getForeground(e.getCode())), ColorChooser.getBgHexColor(e.getCode()));
+            stream.write(new HtmlTableCell(e.getCode(), 40, HtmlStyle.Center, getForeground(e.getCode())), ColorChooser.getBgHexColor(e.getCode()));
             stream.write(new HtmlTableCell(e.getPosition().toString(), 50));
             stream.write(new HtmlTableCell(df4.format(e.getValue()), 80));
             stream.write(new HtmlTableCell(df4.format(e.getStdev()), 80));
@@ -99,7 +100,7 @@ public class HtmlOutliers extends AbstractHtmlElement implements IHtmlElement {
 
         // Data
         processOutliers();
-        List<OutlierType> l = new ArrayList<>(map.keySet());
+        List<String> l = new ArrayList<>(map.keySet());
         for (int i = 0; i < l.size(); i++) {
             stream.open(HtmlTag.TABLEROW);
             OutlierPojo o = map.get(l.get(i));
@@ -111,12 +112,12 @@ public class HtmlOutliers extends AbstractHtmlElement implements IHtmlElement {
         }
     }
 
-    public static HtmlStyle getForeground(OutlierType t) {
+    public static HtmlStyle getForeground(String t) {
         switch (t) {
-            case AO:
+            case "AO":
                 return CustomDark;
-            case LS:
-            case TC:
+            case "LS":
+            case "TC":
                 return CustomLight;
             default:
                 return Black;
@@ -153,10 +154,10 @@ public class HtmlOutliers extends AbstractHtmlElement implements IHtmlElement {
 
     private void processOutliers() {
         map.clear();
-        map.put(OutlierType.AO, new OutlierPojo());
-        map.put(OutlierType.LS, new OutlierPojo());
-        map.put(OutlierType.TC, new OutlierPojo());
-        map.put(OutlierType.SO, new OutlierPojo());
+        map.put("AO", new OutlierPojo());
+        map.put("LS", new OutlierPojo());
+        map.put("TC", new OutlierPojo());
+        map.put("SO", new OutlierPojo());
 
         for (OutlierEstimation e : outliers_) {
             map.get(e.getCode()).add(e);

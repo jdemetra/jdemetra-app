@@ -37,34 +37,34 @@ public class ColorChooser {
     private static final Color DARK = new Color(50, 50, 50);
     private static final Color LIGHT = new Color(230, 230, 230);
 
-    public static Color getColor(OutlierType type) {
+    public static Color getColor(String type) {
         switch (type) {
-            case AO:
+            case "AO":
                 return CUSTOMGREEN;
-            case LS:
+            case "LS":
                 return CUSTOMRED;
-            case TC:
+            case "TC":
                 return CUSTOMBLUE;
-            case SO:
+            case "SO":
                 return CUSTOMPINK;
             default:
                 return Color.white;
         }
     }
 
-    public static Color getForeColor(OutlierType type) {
+    public static Color getForeColor(String type) {
         switch (type) {
-            case AO:
+            case "AO":
                 return DARK;
-            case LS:
-            case TC:
+            case "LS":
+            case "TC":
                 return LIGHT;
             default:
                 return Color.black;
         }
     }
     
-    public static String getBgHexColor(OutlierType type) {
+    public static String getBgHexColor(String type) {
         return toHex(getColor(type));
     }
 }
