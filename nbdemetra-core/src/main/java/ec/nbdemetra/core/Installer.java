@@ -95,8 +95,9 @@ public final class Installer extends ModuleInstall {
         public void restore() {
             try {
                 ByteArrayConverter.setInstance(new SnappyConverter());
+                LOGGER.info("Using Snappy byte array converter");
             } catch (Exception ex) {
-                LOGGER.warn("While loading byte array converter", ex);
+                LOGGER.warn("While loading Snappy byte array converter", ex);
             }
         }
     }
