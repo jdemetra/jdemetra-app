@@ -6,8 +6,8 @@ package ec.nbdemetra.sa.actions;
 
 import ec.nbdemetra.sa.MultiProcessingManager;
 import ec.nbdemetra.sa.SaBatchUI;
-import ec.nbdemetra.sa.SpecSelectionComponent;
 import ec.nbdemetra.ws.actions.AbstractViewAction;
+import ec.nbdemetra.ws.ui.SpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.tss.sa.SaItem;
 import org.openide.DialogDescriptor;
@@ -20,7 +20,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "ec.nbdemetra.sa.actions.ChangeSpecification")
+        id = "ec.nbdemetra.sa.actions.ChangeSpecification")
 @ActionRegistration(displayName = "#CTL_ChangeSpecification", lazy = false)
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.CONTEXTPATH, position = 1400),
@@ -62,6 +62,7 @@ public final class ChangeSpecification extends AbstractViewAction<SaBatchUI> {
             for (int i = 0; i < selection.length; ++i) {
                 SaItem o = selection[i];
                 SaItem n = new SaItem(c.getSpecification(), o.getTs());
+                n.setMetaData(o.getMetaData());
                 cur.getCurrentProcessing().replace(o, n);
             }
             cur.redrawAll();

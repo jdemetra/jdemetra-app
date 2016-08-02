@@ -171,7 +171,11 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     @Override
     public Node getNode() {
-        return null;
+        if (selection.length == 0) {
+            return null;
+        } else {
+            return new SaItemNode(selection[0]);
+        }
     }
 
     @Override
@@ -381,6 +385,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             showDetails(null);
         }
         listTableListener.setEnabled(true);
+        ActiveViewManager.getInstance().set(SaBatchUI.this);
     }
     // < EVENT HANDLERS
 
@@ -677,6 +682,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         }
         SaItem item = selection[0];
         SaItem nitem = new SaItem(doc.getSpecification().clone(), EstimationPolicyType.Interactive, null, doc.getInput());
+        nitem.setMetaData(item.getMetaData());
         nitem.unsafeFill(doc.getResults());
         selection[0] = nitem;
         getCurrentProcessing().replace(item, nitem);
