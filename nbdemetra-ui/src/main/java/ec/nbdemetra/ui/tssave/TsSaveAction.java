@@ -39,7 +39,7 @@ import org.openide.util.actions.Presenter;
  */
 @ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction")
 @ActionRegistration(displayName = "#CTL_TsSaveAction", lazy = false)
-@Messages("CTL_TsSaveAction=Save")
+@Messages("CTL_TsSaveAction=Save to")
 public final class TsSaveAction extends AbilityAction<ITsSavable> implements Presenter.Popup {
 
     public TsSaveAction() {

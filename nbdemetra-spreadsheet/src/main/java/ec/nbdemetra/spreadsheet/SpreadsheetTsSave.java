@@ -17,6 +17,7 @@
 package ec.nbdemetra.spreadsheet;
 
 import ec.nbdemetra.ui.DemetraUiIcon;
+import ec.nbdemetra.ui.awt.ShowInFolderActionListener;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ui.properties.IBeanEditor;
@@ -29,13 +30,9 @@ import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
 import ec.tss.tsproviders.spreadsheet.engine.TsExportOptions;
-import ec.util.desktop.Desktop;
-import ec.util.desktop.DesktopManager;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.helpers.ArraySheet;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -50,7 +47,6 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.nodes.Sheet;
-import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -111,7 +107,7 @@ public final class SpreadsheetTsSave implements ITsSave {
             Throwable tmp = unwrapException(ex, CompletionException.class, UncheckedIOException.class);
             NotifyUtil.error("Saving to spreadsheet failed", tmp.getMessage(), tmp);
         } else {
-            NotifyUtil.show("Spreadsheet saved", "Show in folder", MessageType.SUCCESS, new ShowInFolderActionListener(file), null, null);
+            NotifyUtil.show("Spreadsheet saved", "Show in folder", MessageType.SUCCESS, ShowInFolderActionListener.of(file), null, null);
         }
     }
 
@@ -144,32 +140,11 @@ public final class SpreadsheetTsSave implements ITsSave {
         return Lookup.getDefault().lookupAll(Book.Factory.class).stream().filter(o -> o.canStore() && o.accept(file)).findFirst();
     }
 
-    private static final class ShowInFolderActionListener implements ActionListener {
-
-        private final File file;
-
-        public ShowInFolderActionListener(File file) {
-            this.file = file;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Desktop desktop = DesktopManager.get();
-            if (desktop.isSupported(Desktop.Action.SHOW_IN_FOLDER)) {
-                try {
-                    desktop.showInFolder(file);
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
-        }
-    }
-
     private static final class SaveFileFilter extends FileFilter {
 
         @Override
         public boolean accept(File f) {
-            return getFactoryByFile(f) != null;
+            return f.isDirectory() || getFactoryByFile(f).isPresent();
         }
 
         @Override
