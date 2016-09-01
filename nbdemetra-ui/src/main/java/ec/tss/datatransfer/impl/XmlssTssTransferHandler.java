@@ -52,15 +52,15 @@ import java.util.Locale;
 import javax.xml.stream.*;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  * XML Spreadsheet (XMLSS).
  *
  * @see http://msdn.microsoft.com/en-us/library/aa140066(v=office.10).aspx
  * @author Jean Palate
+ * @deprecated moved to nbdemetra-spreadsheet project
  */
-@ServiceProvider(service = TssTransferHandler.class, position = 1000)
+@Deprecated
 public class XmlssTssTransferHandler extends TssTransferHandler implements IConfigurable {
 
     private final static DataFlavor XMLSS = createXmlssDataFlavor();

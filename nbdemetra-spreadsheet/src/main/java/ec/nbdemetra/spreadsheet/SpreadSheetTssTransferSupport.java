@@ -27,7 +27,6 @@ import ec.tss.TsCollectionInformation;
 import ec.tss.TsFactory;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
-import ec.tss.datatransfer.TssTransferHandler;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
 import ec.tss.tsproviders.spreadsheet.engine.TsExportOptions;
 import ec.tss.tsproviders.spreadsheet.engine.TsImportOptions;
@@ -50,43 +49,49 @@ import org.openide.util.NbBundle;
 /**
  *
  * @author Philippe Charles
+ * @since 2.2.0
  */
-abstract class SpreadSheetTssTransferHandler<T> extends TssTransferHandler {
+final class SpreadSheetTssTransferSupport {
 
-    abstract protected AbstractBean getInternalConfig();
+    public interface Resource {
 
-    abstract protected Book toBook(T input) throws IOException;
+        AbstractBean getInternalConfig();
 
-    abstract protected T fromBook(Book book) throws IOException;
+        Book toBook(Object input) throws IOException;
 
-    abstract protected boolean isInstance(Object obj);
+        Object fromBook(Book book) throws IOException;
 
-    protected SpreadSheetFactory getFactory() {
-        return SpreadSheetFactory.getDefault();
+        boolean isInstance(Object obj);
+
+        default SpreadSheetFactory getFactory() {
+            return SpreadSheetFactory.getDefault();
+        }
     }
 
-    @Override
+    private final Resource resource;
+
+    public SpreadSheetTssTransferSupport(Resource resource) {
+        this.resource = resource;
+    }
+
     public boolean canExportTsCollection(TsCollection col) {
-        return getInternalConfig().exportTs;
+        return resource.getInternalConfig().exportTs;
     }
 
-    @Override
     public Object exportTsCollection(TsCollection col) throws IOException {
         TsCollectionInformation info = new TsCollectionInformation(col, TsInformationType.Data);
-        ArraySheet sheet = getFactory().fromTsCollectionInfo(info, getInternalConfig().getTsExportOptions());
-        return fromBook(sheet.toBook());
+        ArraySheet sheet = resource.getFactory().fromTsCollectionInfo(info, resource.getInternalConfig().getTsExportOptions());
+        return resource.fromBook(sheet.toBook());
     }
 
-    @Override
     public boolean canImportTsCollection(Object obj) {
-        return getInternalConfig().importTs && isInstance(obj);
+        return resource.getInternalConfig().importTs && resource.isInstance(obj);
     }
 
-    @Override
     public TsCollection importTsCollection(Object obj) throws IOException {
-        try (Book book = toBook((T) obj)) {
+        try (Book book = resource.toBook(obj)) {
             if (book.getSheetCount() > 0) {
-                TsCollectionInformation info = getFactory().toTsCollectionInfo(book.getSheet(0), getInternalConfig().getTsImportOptions());
+                TsCollectionInformation info = resource.getFactory().toTsCollectionInfo(book.getSheet(0), resource.getInternalConfig().getTsImportOptions());
                 return info.items.stream()
                         .filter(TsInformation::hasData)
                         .map(o -> TsFactory.instance.createTs(o.name, null, o.data))
@@ -96,38 +101,32 @@ abstract class SpreadSheetTssTransferHandler<T> extends TssTransferHandler {
         }
     }
 
-    @Override
     public boolean canExportMatrix(Matrix matrix) {
-        return getInternalConfig().exportMatrix && !matrix.isEmpty();
+        return resource.getInternalConfig().exportMatrix && !matrix.isEmpty();
     }
 
-    @Override
     public Object exportMatrix(Matrix matrix) throws IOException {
-        return fromBook(getFactory().fromMatrix(matrix).toBook());
+        return resource.fromBook(resource.getFactory().fromMatrix(matrix).toBook());
     }
 
-    @Override
     public boolean canImportTable(Object obj) {
-        return getInternalConfig().importTable && isInstance(obj);
+        return resource.getInternalConfig().importTable && resource.isInstance(obj);
     }
 
-    @Override
     public Table<?> importTable(Object obj) throws IOException, ClassCastException {
-        try (Book book = toBook((T) obj)) {
+        try (Book book = resource.toBook(obj)) {
             return book.getSheetCount() > 0
-                    ? getFactory().toTable(book.getSheet(0))
+                    ? resource.getFactory().toTable(book.getSheet(0))
                     : new Table<>(0, 0);
         }
     }
 
-    @Override
     public boolean canExportTable(Table<?> table) {
-        return getInternalConfig().exportTable;
+        return resource.getInternalConfig().exportTable;
     }
 
-    @Override
     public Object exportTable(Table<?> table) throws IOException {
-        return fromBook(getFactory().fromTable(table).toBook());
+        return resource.fromBook(resource.getFactory().fromTable(table).toBook());
     }
 
     public abstract static class AbstractBean {

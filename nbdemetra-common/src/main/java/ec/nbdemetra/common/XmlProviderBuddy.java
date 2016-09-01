@@ -53,9 +53,6 @@ public class XmlProviderBuddy extends AbstractDataSourceProviderBuddy {
                 .paths(loader.getPaths())
                 .directories(false)
                 .add();
-        result.add(b.build());
-
-        b.reset("Options");
         b.with(Charset.class).select(bean, "charset").display("Charset").description("The charset used to read the file.").add();
         result.add(b.build());
 
