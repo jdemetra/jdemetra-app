@@ -16,11 +16,18 @@
  */
 package ec.nbdemetra.spreadsheet;
 
+import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractBean;
+import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractBeanEditor;
+import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractConverter;
+import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.Resource;
 import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.IConfigurable;
+import ec.tss.TsCollection;
 import ec.tss.datatransfer.TssTransferHandler;
+import ec.tstoolkit.data.Table;
+import ec.tstoolkit.maths.matrices.Matrix;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.html.HtmlBookFactory;
 import java.awt.datatransfer.DataFlavor;
@@ -28,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Supplier;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -35,16 +43,16 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = TssTransferHandler.class, position = 1500)
-public final class HtmlTssTransferHandler extends SpreadSheetTssTransferHandler<String> implements IConfigurable {
+public final class HtmlTssTransferHandler extends TssTransferHandler implements IConfigurable {
 
     private final DataFlavor dataFlavor;
-    private final HtmlBookFactory bookFactory;
+    private final SpreadSheetTssTransferSupport support;
     private final Configurator<HtmlTssTransferHandler> configurator;
     private HtmlBean config;
 
     public HtmlTssTransferHandler() {
         this.dataFlavor = createDataFlavor();
-        this.bookFactory = new HtmlBookFactory();
+        this.support = new SpreadSheetTssTransferSupport(new ResourceImpl(() -> config));
         this.configurator = new HtmlBeanHandler().toConfigurator(new HtmlConverter(), new HtmlBeanEditor());
         this.config = new HtmlBean();
     }
@@ -65,6 +73,56 @@ public final class HtmlTssTransferHandler extends SpreadSheetTssTransferHandler<
     }
 
     @Override
+    public boolean canExportTsCollection(TsCollection col) {
+        return support.canExportTsCollection(col);
+    }
+
+    @Override
+    public Object exportTsCollection(TsCollection col) throws IOException {
+        return support.exportTsCollection(col);
+    }
+
+    @Override
+    public boolean canImportTsCollection(Object obj) {
+        return support.canImportTsCollection(obj);
+    }
+
+    @Override
+    public TsCollection importTsCollection(Object obj) throws IOException {
+        return support.importTsCollection(obj);
+    }
+
+    @Override
+    public boolean canExportMatrix(Matrix matrix) {
+        return support.canExportMatrix(matrix);
+    }
+
+    @Override
+    public Object exportMatrix(Matrix matrix) throws IOException {
+        return support.exportMatrix(matrix);
+    }
+
+    @Override
+    public boolean canImportTable(Object obj) {
+        return support.canImportTable(obj);
+    }
+
+    @Override
+    public Table<?> importTable(Object obj) throws IOException, ClassCastException {
+        return support.importTable(obj);
+    }
+
+    @Override
+    public boolean canExportTable(Table<?> table) {
+        return support.canExportTable(table);
+    }
+
+    @Override
+    public Object exportTable(Table<?> table) throws IOException {
+        return support.exportTable(table);
+    }
+
+    @Override
     public Config getConfig() {
         return configurator.getConfig(this);
     }
@@ -80,29 +138,40 @@ public final class HtmlTssTransferHandler extends SpreadSheetTssTransferHandler<
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    @Override
-    protected AbstractBean getInternalConfig() {
-        return config;
-    }
+    private static final class ResourceImpl implements Resource {
 
-    @Override
-    protected Book toBook(String input) throws IOException {
-        try (ByteArrayInputStream stream = new ByteArrayInputStream(input.getBytes())) {
-            return bookFactory.load(stream);
+        private final HtmlBookFactory bookFactory;
+        private final Supplier<? extends AbstractBean> configSupplier;
+
+        public ResourceImpl(Supplier<? extends AbstractBean> configSupplier) {
+            this.bookFactory = new HtmlBookFactory();
+            this.configSupplier = configSupplier;
         }
-    }
 
-    @Override
-    protected String fromBook(Book book) throws IOException {
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-            bookFactory.store(stream, book);
-            return new String(stream.toByteArray(), StandardCharsets.UTF_8);
+        @Override
+        public AbstractBean getInternalConfig() {
+            return configSupplier.get();
         }
-    }
 
-    @Override
-    protected boolean isInstance(Object obj) {
-        return obj instanceof String;
+        @Override
+        public Book toBook(Object input) throws IOException {
+            try (ByteArrayInputStream stream = new ByteArrayInputStream(((String) input).getBytes())) {
+                return bookFactory.load(stream);
+            }
+        }
+
+        @Override
+        public Object fromBook(Book book) throws IOException {
+            try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+                bookFactory.store(stream, book);
+                return new String(stream.toByteArray(), StandardCharsets.UTF_8);
+            }
+        }
+
+        @Override
+        public boolean isInstance(Object obj) {
+            return obj instanceof String;
+        }
     }
 
     private static DataFlavor createDataFlavor() {
