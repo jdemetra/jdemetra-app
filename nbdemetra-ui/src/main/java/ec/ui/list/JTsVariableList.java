@@ -442,9 +442,7 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
     }
 
     private static Ts toTs(TsVariable variable) {
-        return variable instanceof DynamicTsVariable
-                ? TsFactory.instance.getTs(((DynamicTsVariable) variable).getMoniker())
-                : TsFactory.instance.createTs(variable.getDescription(), null, variable.getTsData());
+        return TsFactory.instance.createTs(variable.getDescription(), null, variable.getTsData());
     }
 
     private static final class OpenCommand extends JCommand<JTsVariableList> {
