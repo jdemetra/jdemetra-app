@@ -16,20 +16,25 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tss.TsMoniker;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tstoolkit.design.ServiceDefinition;
 import java.awt.Image;
+import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.io.IOException;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.openide.nodes.BeanNode;
 import org.openide.nodes.Sheet;
 
 /**
  *
  * @author Philippe Charles
+ * @since 1.0.0
  */
 @ServiceDefinition
 public interface IDataSourceProviderBuddy {
@@ -38,31 +43,56 @@ public interface IDataSourceProviderBuddy {
     String getProviderName();
 
     @Nullable
-    Image getIcon(int type, boolean opened);
+    default Image getIcon(int type, boolean opened) {
+        return null;
+    }
 
     @Nullable
-    Image getIcon(@Nonnull DataSource dataSource, int type, boolean opened);
+    default Image getIcon(@Nonnull DataSource dataSource, int type, boolean opened) {
+        return getIcon(type, opened);
+    }
 
     @Nullable
-    Image getIcon(@Nonnull DataSet dataSet, int type, boolean opened);
+    default Image getIcon(@Nonnull DataSet dataSet, int type, boolean opened) {
+        return getIcon(dataSet.getDataSource(), type, opened);
+    }
 
     @Nullable
-    Image getIcon(@Nonnull IOException ex, int type, boolean opened);
+    default Image getIcon(@Nonnull IOException ex, int type, boolean opened) {
+        return null;
+    }
 
     @Nullable
-    Image getIcon(@Nonnull TsMoniker moniker, int type, boolean opened);
+    default Image getIcon(@Nonnull TsMoniker moniker, int type, boolean opened) {
+        return getIcon(type, opened);
+    }
 
     @Nonnull
-    Sheet createSheet();
+    default Sheet createSheet() {
+        List<Sheet.Set> result = ProvidersUtil.sheetSetsOfProvider(getProviderName());
+        return ProvidersUtil.sheetOf(result);
+    }
 
     @Nonnull
-    Sheet createSheet(@Nonnull DataSource dataSource);
+    default Sheet createSheet(@Nonnull DataSource dataSource) {
+        List<Sheet.Set> result = ProvidersUtil.sheetSetsOfDataSource(dataSource);
+        return ProvidersUtil.sheetOf(result);
+    }
 
     @Nonnull
-    Sheet createSheet(@Nonnull DataSet dataSet);
+    default Sheet createSheet(@Nonnull DataSet dataSet) {
+        List<Sheet.Set> result = ProvidersUtil.sheetSetsOfDataSet(dataSet);
+        return ProvidersUtil.sheetOf(result);
+    }
 
     @Nonnull
-    Sheet createSheet(@Nonnull IOException ex);
+    default Sheet createSheet(@Nonnull IOException ex) {
+        List<Sheet.Set> result = ProvidersUtil.sheetSetsOfException(ex);
+        return ProvidersUtil.sheetOf(result);
+    }
 
-    boolean editBean(@Nonnull String title, @Nonnull Object bean) throws IntrospectionException;
+    default boolean editBean(@Nonnull String title, @Nonnull Object bean) throws IntrospectionException {
+        Image image = getIcon(BeanInfo.ICON_COLOR_16x16, false);
+        return OpenIdePropertySheetBeanEditor.editNode(new BeanNode<>(bean), title, image);
+    }
 }

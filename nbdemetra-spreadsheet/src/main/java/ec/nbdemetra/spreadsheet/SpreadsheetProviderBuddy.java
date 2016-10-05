@@ -35,7 +35,6 @@ import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.openide.nodes.Sheet.Set;
 import org.openide.util.ImageUtilities;

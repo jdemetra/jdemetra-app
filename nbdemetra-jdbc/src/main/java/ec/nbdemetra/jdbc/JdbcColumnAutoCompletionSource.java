@@ -18,9 +18,9 @@ package ec.nbdemetra.jdbc;
 
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import ec.tss.tsproviders.jdbc.JdbcBean;
 import ec.tss.tsproviders.jdbc.ConnectionSupplier;
+import ec.tstoolkit.utilities.GuavaCaches;
 import ec.util.jdbc.JdbcColumn;
 import ec.util.jdbc.SqlIdentifierQuoter;
 import java.io.IOException;
@@ -28,7 +28,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 /**
  *
@@ -42,7 +42,7 @@ public class JdbcColumnAutoCompletionSource extends JdbcAutoCompletionSource<Jdb
 
     public JdbcColumnAutoCompletionSource(ConnectionSupplier supplier, JdbcBean bean) {
         super(supplier, bean);
-        this.cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
+        this.cache = GuavaCaches.ttlCache(Duration.ofMinutes(1));
     }
 
     private String getKey() {

@@ -18,7 +18,6 @@ package ec.nbdemetra.odbc;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.cache.CacheBuilder;
 import ec.nbdemetra.jdbc.JdbcProviderBuddy;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
@@ -31,17 +30,17 @@ import ec.tss.tsproviders.odbc.OdbcBean;
 import ec.tss.tsproviders.odbc.OdbcProvider;
 import ec.tss.tsproviders.odbc.registry.IOdbcRegistry;
 import ec.tss.tsproviders.odbc.registry.OdbcDataSource;
+import ec.tstoolkit.utilities.GuavaCaches;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
 import java.awt.Image;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.swing.ListCellRenderer;
@@ -145,7 +144,7 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
                 .behavior(AutoCompletionSource.Behavior.ASYNC)
                 .postProcessor(OdbcProviderBuddy::getDataSources)
                 .valueToString(OdbcDataSource::getName)
-                .cache(cacheTtl(30, TimeUnit.SECONDS), o -> "", AutoCompletionSource.Behavior.SYNC)
+                .cache(GuavaCaches.ttlCacheAsMap(Duration.ofSeconds(30)), o -> "", AutoCompletionSource.Behavior.SYNC)
                 .build();
     }
 
@@ -162,10 +161,6 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
                 .filter(o -> filter.test(o.getName()) || filter.test(o.getServerName()))
                 .sorted(Comparator.comparing(OdbcDataSource::getName))
                 .collect(Collectors.toList());
-    }
-
-    private static <K, V> ConcurrentMap<K, V> cacheTtl(long duration, TimeUnit unit) {
-        return CacheBuilder.newBuilder().expireAfterWrite(duration, unit).<K, V>build().asMap();
     }
     //</editor-fold>
 }
