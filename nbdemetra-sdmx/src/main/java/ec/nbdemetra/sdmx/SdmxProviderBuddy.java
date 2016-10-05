@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.sdmx;
 
+import com.google.common.base.Optional;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.IConfigurable;
@@ -25,9 +26,11 @@ import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.IFileLoader;
 import ec.tss.tsproviders.TsProviders;
+import ec.tss.tsproviders.sdmx.SdmxBean;
 import ec.tss.tsproviders.sdmx.SdmxProvider;
 import ec.tss.tsproviders.sdmx.engine.CunningPlanFactory;
 import java.awt.Image;
+import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.List;
 import org.openide.nodes.Sheet.Set;
@@ -43,10 +46,6 @@ public class SdmxProviderBuddy extends AbstractDataSourceProviderBuddy implement
 
     private final Configurator<SdmxProviderBuddy> configurator = createConfigurator();
 
-    SdmxProvider lookup() {
-        return TsProviders.lookup(SdmxProvider.class, SdmxProvider.SOURCE).get();
-    }
-
     @Override
     public String getProviderName() {
         return SdmxProvider.SOURCE;
@@ -58,20 +57,21 @@ public class SdmxProviderBuddy extends AbstractDataSourceProviderBuddy implement
     }
 
     @Override
-    protected List<Set> createSheetSets(Object bean) {
+    protected List<Set> createSheetSets(Object bean) throws IntrospectionException {
+        return bean instanceof SdmxBean
+                ? createSheetSets((SdmxBean) bean)
+                : super.createSheetSets(bean);
+    }
+
+    private List<Set> createSheetSets(SdmxBean bean) {
         List<Set> result = new ArrayList<>();
 
-        IFileLoader loader = lookup();
-
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("Source");
-        b.withFile()
-                .select(bean, "file")
-                .display("Sdmx file")
-                .description("The path to the sdmx file.")
-                .filterForSwing(new FileLoaderFileFilter(loader))
-                .paths(loader.getPaths())
-                .directories(false)
-                .add();
+
+        Optional<IFileLoader> loader = TsProviders.lookup(IFileLoader.class, SdmxProvider.SOURCE);
+        if (loader.isPresent()) {
+            addFileProperty(b, bean, loader.get());
+        }
         result.add(b.build());
 
         b.reset("Options");
@@ -108,5 +108,16 @@ public class SdmxProviderBuddy extends AbstractDataSourceProviderBuddy implement
 
     private static Configurator<SdmxProviderBuddy> createConfigurator() {
         return new SdmxBuddyConfigHandler().toConfigurator(new SdmxBuddyConfigConverter(), new SdmxBuddyConfigEditor());
+    }
+
+    private static void addFileProperty(NodePropertySetBuilder b, SdmxBean bean, IFileLoader loader) {
+        b.withFile()
+                .select(bean, "file")
+                .display("Sdmx file")
+                .description("The path to the sdmx file.")
+                .filterForSwing(new FileLoaderFileFilter(loader))
+                .paths(loader.getPaths())
+                .directories(false)
+                .add();
     }
 }

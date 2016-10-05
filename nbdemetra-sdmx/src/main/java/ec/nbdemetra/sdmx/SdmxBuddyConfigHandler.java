@@ -16,7 +16,9 @@
  */
 package ec.nbdemetra.sdmx;
 
+import com.google.common.base.Optional;
 import ec.nbdemetra.ui.BeanHandler;
+import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.sdmx.SdmxProvider;
 
 /**
@@ -27,17 +29,21 @@ final class SdmxBuddyConfigHandler extends BeanHandler<SdmxBuddyConfig, SdmxProv
 
     @Override
     public SdmxBuddyConfig loadBean(SdmxProviderBuddy resource) {
-        SdmxProvider provider = resource.lookup();
         SdmxBuddyConfig result = new SdmxBuddyConfig();
-        result.setCompactNaming(provider.isCompactNaming());
-        result.setKeysInMetaData(provider.isKeysInMetaData());
+        Optional<SdmxProvider> loader = TsProviders.lookup(SdmxProvider.class, SdmxProvider.SOURCE);
+        if (loader.isPresent()) {
+            result.setCompactNaming(loader.get().isCompactNaming());
+            result.setKeysInMetaData(loader.get().isKeysInMetaData());
+        }
         return result;
     }
 
     @Override
     public void storeBean(SdmxProviderBuddy resource, SdmxBuddyConfig bean) {
-        SdmxProvider provider = resource.lookup();
-        provider.setCompactNaming(bean.isCompactNaming());
-        provider.setKeysInMetaData(bean.isKeysInMetaData());
+        Optional<SdmxProvider> loader = TsProviders.lookup(SdmxProvider.class, SdmxProvider.SOURCE);
+        if (loader.isPresent()) {
+            loader.get().setCompactNaming(bean.isCompactNaming());
+            loader.get().setKeysInMetaData(bean.isKeysInMetaData());
+        }
     }
 }

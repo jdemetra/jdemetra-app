@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.spreadsheet;
 
+import com.google.common.base.Optional;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
@@ -24,13 +25,17 @@ import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IFileLoader;
 import ec.tss.tsproviders.TsProviders;
+import ec.tss.tsproviders.spreadsheet.SpreadSheetBean;
 import ec.tss.tsproviders.spreadsheet.SpreadSheetProvider;
+import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetCollection;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.timeseries.TsAggregationType;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import java.awt.Image;
+import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.openide.nodes.Sheet.Set;
 import org.openide.util.ImageUtilities;
@@ -65,16 +70,11 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
             case COLLECTION:
                 return ImageUtilities.loadImage("ec/nbdemetra/spreadsheet/table-sheet.png", true);
             case SERIES:
-                SpreadSheetProvider p = TsProviders.lookup(SpreadSheetProvider.class, SpreadSheetProvider.SOURCE).get();
-                try {
-                    switch (p.getSeries(dataSet).alignType) {
-                        case VERTICAL:
-                            return ImageUtilities.loadImage("ec/nbdemetra/spreadsheet/table-select-column.png", true);
-                        case HORIZONTAL:
-                            return ImageUtilities.loadImage("ec/nbdemetra/spreadsheet/table-select-row.png", true);
-                    }
-                } catch (IOException ex) {
-                    // TODO: log this?
+                switch (getAlignType(dataSet)) {
+                    case VERTICAL:
+                        return ImageUtilities.loadImage("ec/nbdemetra/spreadsheet/table-select-column.png", true);
+                    case HORIZONTAL:
+                        return ImageUtilities.loadImage("ec/nbdemetra/spreadsheet/table-select-row.png", true);
                 }
                 break;
         }
@@ -99,6 +99,13 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
         }
     }
 
+    @Override
+    protected List<Set> createSheetSets(Object bean) throws IntrospectionException {
+        return bean instanceof SpreadSheetBean
+                ? createSheetSets((SpreadSheetBean) bean)
+                : super.createSheetSets(bean);
+    }
+
     @Messages({
         "bean.source.display=Source",
         "bean.file.display=Spreadsheet file",
@@ -113,15 +120,39 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
         "bean.cleanMissing.display=Clean missing",
         "bean.cleanMissing.description=Erases the Missing values of the series."
     })
-    @Override
-    protected List<Set> createSheetSets(Object bean) {
+    private List<Set> createSheetSets(SpreadSheetBean bean) {
         List<Set> result = new ArrayList<>();
-
-        IFileLoader loader = TsProviders.lookup(SpreadSheetProvider.class, SpreadSheetProvider.SOURCE).get();
 
         NodePropertySetBuilder b = new NodePropertySetBuilder();
 
         b.reset("source").display(Bundle.bean_source_display());
+        Optional<IFileLoader> loader = TsProviders.lookup(IFileLoader.class, SpreadSheetProvider.SOURCE);
+        if (loader.isPresent()) {
+            addFileProperty(b, bean, loader.get());
+        }
+        result.add(b.build());
+
+        b.reset("options").display(Bundle.bean_options_display());
+        addObsFormatProperty(b, bean);
+        addObsGatheringProperty(b, bean);
+        result.add(b.build());
+
+        return result;
+    }
+
+    private static SpreadSheetCollection.AlignType getAlignType(DataSet dataSet) {
+        Optional<SpreadSheetProvider> p = TsProviders.lookup(SpreadSheetProvider.class, SpreadSheetProvider.SOURCE);
+        if (p.isPresent()) {
+            try {
+                return p.get().getSeries(dataSet).alignType;
+            } catch (IOException ex) {
+                // TODO: log this?
+            }
+        }
+        return SpreadSheetCollection.AlignType.UNKNOWN;
+    }
+
+    private static void addFileProperty(NodePropertySetBuilder b, SpreadSheetBean bean, IFileLoader loader) {
         b.withFile()
                 .select(bean, "file")
                 .display(Bundle.bean_file_display())
@@ -130,14 +161,17 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
                 .paths(loader.getPaths())
                 .directories(false)
                 .add();
-        result.add(b.build());
+    }
 
-        b.reset("options").display(Bundle.bean_options_display());
+    private static void addObsFormatProperty(NodePropertySetBuilder b, SpreadSheetBean bean) {
         b.with(DataFormat.class)
                 .select(bean, "dataFormat")
                 .display(Bundle.bean_dataFormat_display())
                 .description(Bundle.bean_dataFormat_description())
                 .add();
+    }
+
+    private static void addObsGatheringProperty(NodePropertySetBuilder b, SpreadSheetBean bean) {
         b.withEnum(TsFrequency.class)
                 .select(bean, "frequency")
                 .display(Bundle.bean_frequency_display())
@@ -153,8 +187,5 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
                 .display(Bundle.bean_cleanMissing_display())
                 .description(Bundle.bean_cleanMissing_description())
                 .add();
-        result.add(b.build());
-
-        return result;
     }
 }
