@@ -17,10 +17,10 @@
 package ec.nbdemetra.jdbc;
 
 import com.google.common.base.Strings;
-import com.google.common.cache.CacheBuilder;
 import ec.nbdemetra.db.DbProviderBuddy;
 import ec.tss.tsproviders.jdbc.ConnectionSupplier;
 import ec.tss.tsproviders.jdbc.JdbcBean;
+import ec.tstoolkit.utilities.GuavaCaches;
 import ec.util.completion.AutoCompletionSource;
 import static ec.util.completion.AutoCompletionSource.Behavior.ASYNC;
 import static ec.util.completion.AutoCompletionSource.Behavior.NONE;
@@ -33,10 +33,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -63,7 +62,7 @@ public abstract class JdbcProviderBuddy<BEAN extends JdbcBean> extends DbProvide
                 .behavior(o -> !Strings.isNullOrEmpty(bean.getDbName()) ? ASYNC : NONE)
                 .postProcessor(JdbcProviderBuddy::getJdbcTables)
                 .valueToString(JdbcTable::getName)
-                .cache(cacheTtl(1, TimeUnit.MINUTES), o -> bean.getDbName(), SYNC)
+                .cache(GuavaCaches.ttlCacheAsMap(Duration.ofMinutes(1)), o -> bean.getDbName(), SYNC)
                 .build();
     }
 
@@ -79,7 +78,7 @@ public abstract class JdbcProviderBuddy<BEAN extends JdbcBean> extends DbProvide
                 .behavior(o -> !Strings.isNullOrEmpty(bean.getDbName()) && !Strings.isNullOrEmpty(bean.getTableName()) ? ASYNC : NONE)
                 .postProcessor(JdbcProviderBuddy::getJdbcColumns)
                 .valueToString(JdbcColumn::getName)
-                .cache(cacheTtl(1, TimeUnit.MINUTES), o -> bean.getDbName() + "/" + bean.getTableName(), SYNC)
+                .cache(GuavaCaches.ttlCacheAsMap(Duration.ofMinutes(1)), o -> bean.getDbName() + "/" + bean.getTableName(), SYNC)
                 .build();
     }
 
@@ -120,10 +119,6 @@ public abstract class JdbcProviderBuddy<BEAN extends JdbcBean> extends DbProvide
                 .filter(o -> filter.test(o.getName()) || filter.test(o.getLabel()) || filter.test(o.getTypeName()))
                 .sorted(Comparator.comparing(JdbcColumn::getName))
                 .collect(Collectors.toList());
-    }
-
-    private static <K, V> ConcurrentMap<K, V> cacheTtl(long duration, TimeUnit unit) {
-        return CacheBuilder.newBuilder().expireAfterWrite(duration, unit).<K, V>build().asMap();
     }
     //</editor-fold>
 }

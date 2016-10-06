@@ -18,13 +18,13 @@ package ec.nbdemetra.jdbc;
 
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Ordering;
 import ec.tss.tsproviders.jdbc.JdbcBean;
 import ec.tss.tsproviders.jdbc.ConnectionSupplier;
+import ec.tstoolkit.utilities.GuavaCaches;
 import ec.util.jdbc.JdbcTable;
 import java.sql.Connection;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 /**
  *
@@ -38,7 +38,7 @@ public class JdbcTableAutoCompletionSource extends JdbcAutoCompletionSource<Jdbc
 
     public JdbcTableAutoCompletionSource(ConnectionSupplier supplier, JdbcBean bean) {
         super(supplier, bean);
-        this.cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
+        this.cache = GuavaCaches.ttlCache(Duration.ofMinutes(1));
     }
 
     private String getKey() {
