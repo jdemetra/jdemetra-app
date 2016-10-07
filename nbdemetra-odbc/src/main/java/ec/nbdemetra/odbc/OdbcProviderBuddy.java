@@ -16,27 +16,31 @@
  */
 package ec.nbdemetra.odbc;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.cache.CacheBuilder;
 import ec.nbdemetra.jdbc.JdbcProviderBuddy;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.awt.SimpleHtmlListCellRenderer;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.TsProviders;
+import ec.tss.tsproviders.jdbc.ConnectionSupplier;
+import ec.tss.tsproviders.jdbc.JdbcBean;
 import ec.tss.tsproviders.odbc.OdbcBean;
 import ec.tss.tsproviders.odbc.OdbcProvider;
 import ec.tss.tsproviders.odbc.registry.IOdbcRegistry;
 import ec.tss.tsproviders.odbc.registry.OdbcDataSource;
+import ec.tstoolkit.utilities.GuavaCaches;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
 import java.awt.Image;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.swing.ListCellRenderer;
@@ -57,7 +61,7 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
     private final ListCellRenderer dbRenderer;
 
     public OdbcProviderBuddy() {
-        super(TsProviders.lookup(OdbcProvider.class, OdbcProvider.SOURCE).get().getConnectionSupplier());
+        super(getOdbcConnectionSupplier());
         this.dbSource = odbcDsnSource();
         this.dbRenderer = new SimpleHtmlListCellRenderer<>((OdbcDataSource o) -> "<html><b>" + o.getName() + "</b> - <i>" + o.getServerName() + "</i>");
     }
@@ -74,12 +78,7 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
 
     @Override
     public Config editConfig(Config config) throws IllegalArgumentException {
-        try {
-            // %SystemRoot%\\system32\\odbcad32.exe
-            Runtime.getRuntime().exec("odbcad32.exe");
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        launchOdbcDataSourceAdministrator();
         return config;
     }
 
@@ -109,13 +108,43 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
     }
 
     //<editor-fold defaultstate="collapsed" desc="Internal implementation">
+    private static void launchOdbcDataSourceAdministrator() {
+        try {
+            // %SystemRoot%\\system32\\odbcad32.exe
+            Runtime.getRuntime().exec("odbcad32.exe");
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    private static ConnectionSupplier getOdbcConnectionSupplier() {
+        Optional<OdbcProvider> provider = TsProviders.lookup(OdbcProvider.class, OdbcProvider.SOURCE);
+        return provider.isPresent()
+                ? provider.get().getConnectionSupplier()
+                : new FailingConnectionSupplier("Cannot load OdbcProvider");
+    }
+
+    private static final class FailingConnectionSupplier implements ConnectionSupplier {
+
+        private final String cause;
+
+        public FailingConnectionSupplier(String cause) {
+            this.cause = cause;
+        }
+
+        @Override
+        public Connection getConnection(JdbcBean bean) throws SQLException {
+            throw new SQLException(cause);
+        }
+    }
+
     private static AutoCompletionSource odbcDsnSource() {
         return ExtAutoCompletionSource
                 .builder(OdbcProviderBuddy::getDataSources)
                 .behavior(AutoCompletionSource.Behavior.ASYNC)
                 .postProcessor(OdbcProviderBuddy::getDataSources)
                 .valueToString(OdbcDataSource::getName)
-                .cache(cacheTtl(30, TimeUnit.SECONDS), o -> "", AutoCompletionSource.Behavior.SYNC)
+                .cache(GuavaCaches.ttlCacheAsMap(Duration.ofSeconds(30)), o -> "", AutoCompletionSource.Behavior.SYNC)
                 .build();
     }
 
@@ -123,7 +152,7 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
         IOdbcRegistry odbcRegistry = Lookup.getDefault().lookup(IOdbcRegistry.class);
         return odbcRegistry != null
                 ? odbcRegistry.getDataSources(OdbcDataSource.Type.SYSTEM, OdbcDataSource.Type.USER)
-                : Collections.<OdbcDataSource>emptyList();
+                : Collections.emptyList();
     }
 
     private static List<OdbcDataSource> getDataSources(List<OdbcDataSource> allValues, String term) {
@@ -132,10 +161,6 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
                 .filter(o -> filter.test(o.getName()) || filter.test(o.getServerName()))
                 .sorted(Comparator.comparing(OdbcDataSource::getName))
                 .collect(Collectors.toList());
-    }
-
-    private static <K, V> ConcurrentMap<K, V> cacheTtl(long duration, TimeUnit unit) {
-        return CacheBuilder.newBuilder().expireAfterWrite(duration, unit).<K, V>build().asMap();
     }
     //</editor-fold>
 }

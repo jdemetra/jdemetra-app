@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.db;
 
+import com.google.common.base.Optional;
 import ec.nbdemetra.ui.properties.DhmsPropertyEditor;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
@@ -31,6 +32,7 @@ import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.AutoCompletionSources;
 import ec.util.completion.swing.JAutoCompletion;
 import java.awt.Image;
+import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,7 +68,13 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
     }
 
     @Override
-    protected List<Sheet.Set> createSheetSets(Object bean) {
+    protected List<Sheet.Set> createSheetSets(Object bean) throws IntrospectionException {
+        return bean instanceof DbBean
+                ? createSheetSets((DbBean) bean)
+                : super.createSheetSets(bean);
+    }
+
+    private List<Sheet.Set> createSheetSets(DbBean bean) {
         List<Sheet.Set> result = new ArrayList<>();
         NodePropertySetBuilder b = new NodePropertySetBuilder();
         result.add(withSource(b.reset("Source"), (BEAN) bean).build());
@@ -104,15 +112,18 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
         "bean.file.description=The path to the database file."})
     @Nonnull
     protected NodePropertySetBuilder withFileName(@Nonnull NodePropertySetBuilder b, @Nonnull BEAN bean) {
-        IFileLoader loader = TsProviders.lookup(IFileLoader.class, getProviderName()).get();
-        return b.withFile()
-                .select(bean, "file")
-                .filterForSwing(new FileLoaderFileFilter(loader))
-                .paths(loader.getPaths())
-                .directories(false)
-                .display(Bundle.bean_file_display())
-                .description(Bundle.bean_file_description())
-                .add();
+        Optional<IFileLoader> loader = TsProviders.lookup(IFileLoader.class, getProviderName());
+        if (loader.isPresent()) {
+            return b.withFile()
+                    .select(bean, "file")
+                    .filterForSwing(new FileLoaderFileFilter(loader.get()))
+                    .paths(loader.get().getPaths())
+                    .directories(false)
+                    .display(Bundle.bean_file_display())
+                    .description(Bundle.bean_file_description())
+                    .add();
+        }
+        return b;
     }
 
     @NbBundle.Messages({
