@@ -90,8 +90,15 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
         this.dbRenderer = new SimpleHtmlListCellRenderer<>((DatabaseConnection o) -> "<html><b>" + o.getDisplayName() + "</b> - <i>" + o.getName() + "</i>");
         this.warningBadge = FontAwesome.FA_EXCLAMATION_TRIANGLE.getImage(rgbToColor(DARK_ORANGE), 8f);
         this.errorBadge = FontAwesome.FA_EXCLAMATION_CIRCLE.getImage(rgbToColor(DARK_SCARLET_RED), 8f);
-        // this overrides default connection supplier since we don't have JNDI in JavaSE
-        TsProviders.lookup(JndiJdbcProvider.class, JndiJdbcProvider.SOURCE).get().setConnectionSupplier(supplier);
+        overrideDefaultConnectionSupplier();
+    }
+
+    // this overrides default connection supplier since we don't have JNDI in JavaSE
+    private void overrideDefaultConnectionSupplier() {
+        Optional<JndiJdbcProvider> provider = TsProviders.lookup(JndiJdbcProvider.class, JndiJdbcProvider.SOURCE);
+        if (provider.isPresent()) {
+            provider.get().setConnectionSupplier(supplier);
+        }
     }
 
     @Override

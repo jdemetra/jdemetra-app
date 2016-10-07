@@ -48,7 +48,7 @@ public class DataSourceProviderBuddySupport {
     public static DataSourceProviderBuddySupport getInstance() {
         return getDefault();
     }
-    //
+
     private final LoadingCache<String, IDataSourceProviderBuddy> fallback;
 
     public DataSourceProviderBuddySupport() {
@@ -63,12 +63,11 @@ public class DataSourceProviderBuddySupport {
     @Nonnull
     public IDataSourceProviderBuddy get(@Nullable String providerName) {
         String tmp = Strings.nullToEmpty(providerName);
-        for (IDataSourceProviderBuddy o : Lookup.getDefault().lookupAll(IDataSourceProviderBuddy.class)) {
-            if (o.getProviderName().equals(tmp)) {
-                return o;
-            }
-        }
-        return getFallback(tmp);
+        return Lookup.getDefault().lookupAll(IDataSourceProviderBuddy.class).stream()
+                .filter(o -> o.getProviderName().equals(tmp))
+                .map(o -> (IDataSourceProviderBuddy) o)
+                .findFirst()
+                .orElseGet(() -> getFallback(tmp));
     }
 
     @Nonnull
@@ -91,25 +90,13 @@ public class DataSourceProviderBuddySupport {
         return get(moniker.getSource());
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Implementation details">
     private static final class CacheLoaderImpl extends CacheLoader<String, IDataSourceProviderBuddy> {
 
         @Override
         public IDataSourceProviderBuddy load(final String key) {
-            return new DataSourceProviderBuddyImpl(key);
-        }
-
-        private static final class DataSourceProviderBuddyImpl extends AbstractDataSourceProviderBuddy {
-
-            private final String providerName;
-
-            public DataSourceProviderBuddyImpl(String providerName) {
-                this.providerName = providerName;
-            }
-
-            @Override
-            public String getProviderName() {
-                return providerName;
-            }
+            return () -> key;
         }
     }
+    //</editor-fold>
 }
