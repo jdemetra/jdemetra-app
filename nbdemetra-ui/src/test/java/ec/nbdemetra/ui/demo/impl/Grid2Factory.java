@@ -19,7 +19,7 @@ package ec.nbdemetra.ui.demo.impl;
 import com.google.common.collect.ImmutableMap;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.tss.tsproviders.utils.DataFormat;
-import ec.tss.tsproviders.utils.Formatters.Formatter;
+import ec.tss.tsproviders.utils.IFormatter;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
 import ec.util.grid.swing.AbstractGridModel;
@@ -96,8 +96,8 @@ public final class Grid2Factory extends DemoComponentFactory {
     private static final class ExcelCellRenderer implements TableCellRenderer {
 
         final TableCellRenderer delegate;
-        final Formatter<Number> numberFormatter = DataFormat.DEFAULT.numberFormatter();
-        final Formatter<Date> dateFormatter = DataFormat.DEFAULT.dateFormatter();
+        final IFormatter<Number> numberFormatter = DataFormat.DEFAULT.numberFormatter();
+        final IFormatter<Date> dateFormatter = DataFormat.DEFAULT.dateFormatter();
 
         public ExcelCellRenderer(JGrid grid) {
             this.delegate = grid.getDefaultRenderer(Object.class);

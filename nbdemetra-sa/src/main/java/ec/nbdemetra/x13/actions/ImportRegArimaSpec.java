@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.x13.actions;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.interchange.ImportAction;
 import ec.nbdemetra.ui.interchange.Importable;
@@ -30,7 +29,6 @@ import ec.tstoolkit.algorithm.IProcSpecification;
 import ec.tstoolkit.modelling.arima.x13.RegArimaSpecification;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
@@ -104,19 +102,14 @@ public class ImportRegArimaSpec extends SingleNodeAction<Node> implements Presen
             throw new IllegalArgumentException("Invalid config");
         }
 
-        Parsers.Parser<XmlInformationSet> parser = Parsers.onJAXB(XmlInformationSet.class);
-
-        for (Map.Entry<String, String> o : config.getParams().entrySet()) {
-            if (o.getKey().equals("specification")) {
-                Optional<XmlInformationSet> xmlSpec = parser.tryParse(o.getValue());
-                if (xmlSpec.isPresent()) {
+        return config.getParam("specification")
+                .map(Parsers.onJAXB(XmlInformationSet.class)::parse)
+                .map(XmlInformationSet::create)
+                .map(o -> {
                     RegArimaSpecification spec = new RegArimaSpecification();
-                    spec.read(xmlSpec.get().create());
+                    spec.read(o);
                     return spec;
-                }
-            }
-        }
-
-        return null;
+                })
+                .orElse(null);
     }
 }

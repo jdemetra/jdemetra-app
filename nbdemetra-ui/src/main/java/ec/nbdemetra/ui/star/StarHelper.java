@@ -10,8 +10,8 @@ import static ec.nbdemetra.core.InstallerStep.tryGet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.TsProviders;
-import ec.tss.tsproviders.utils.Formatters;
-import ec.tss.tsproviders.utils.Parsers;
+import ec.tss.tsproviders.utils.IFormatter;
+import ec.tss.tsproviders.utils.IParser;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import org.openide.util.NbPreferences;
@@ -32,7 +32,7 @@ public class StarHelper extends InstallerStep {
     public void restore() {
         StarList.getInstance().clear();
 
-        Parsers.Parser<DataSource> parser = DataSource.xmlParser();
+        IParser<DataSource> parser = DataSource.xmlParser();
 
         try {
             for (String i : prefs.childrenNames()) {
@@ -64,7 +64,7 @@ public class StarHelper extends InstallerStep {
             LOGGER.warn("Can't clear storage", ex);
         }
 
-        Formatters.Formatter<DataSource> formatter = DataSource.xmlFormatter(false);
+        IFormatter<DataSource> formatter = DataSource.xmlFormatter(false);
 
         int i = 0;
         for (DataSource o : StarList.getInstance()) {

@@ -4,12 +4,12 @@
  */
 package ec.nbdemetra.ui.mru;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Ordering;
 import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.utils.Formatters;
+import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.Parsers;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ enum MruPreferences {
                 if (tmp == null) {
                     continue;
                 }
-                Optional<DataSource> dataSource = parser.tryParse(tmp);
+                Optional<DataSource> dataSource = parser.parseValue(tmp);
                 if (!dataSource.isPresent()) {
                     continue;
                 }
@@ -54,11 +54,11 @@ enum MruPreferences {
     public void store(Preferences prefs, MruList list) {
         // clear the backing store
         clear(prefs);
-        Formatters.Formatter<DataSource> formatter = DataSource.xmlFormatter(false);
+        IFormatter<DataSource> formatter = DataSource.xmlFormatter(false);
         int i = 0;
         for (SourceId o : list) {
             Preferences node = prefs.node(String.valueOf(i++));
-            node.put(DATASOURCE_PROPERTY, formatter.tryFormatAsString(o.getDataSource()).get());
+            node.put(DATASOURCE_PROPERTY, formatter.formatValueAsString(o.getDataSource()).get());
             node.put(LABEL_PROPERTY, o.getLabel());
         }
         try {
@@ -71,7 +71,7 @@ enum MruPreferences {
     public void clear(Preferences prefs) {
         try {
             prefs.clear();
-            for (String i : prefs.childrenNames()){
+            for (String i : prefs.childrenNames()) {
                 prefs.node(i).removeNode();
             }
         } catch (BackingStoreException ex) {

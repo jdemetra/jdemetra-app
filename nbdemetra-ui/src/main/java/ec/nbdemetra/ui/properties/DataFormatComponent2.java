@@ -131,8 +131,8 @@ public final class DataFormatComponent2 extends JComponent {
 
     //<editor-fold defaultstate="collapsed" desc="Events handlers">
     private void refreshPreviews() {
-        datePatternPreview.setText(dataFormat.dateFormatter().tryFormatAsString(dateSample).or("\u203C "));
-        numberPatternPreview.setText(dataFormat.numberFormatter().tryFormatAsString(numberSample).or("\u203C "));
+        datePatternPreview.setText(dataFormat.dateFormatter().formatValueAsString(dateSample).orElse("\u203C "));
+        numberPatternPreview.setText(dataFormat.numberFormatter().formatValueAsString(numberSample).orElse("\u203C "));
     }
 
     private void onDataFormatChange() {

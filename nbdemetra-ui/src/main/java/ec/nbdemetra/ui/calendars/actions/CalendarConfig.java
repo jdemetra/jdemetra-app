@@ -19,6 +19,8 @@ package ec.nbdemetra.ui.calendars.actions;
 import com.google.common.base.Converter;
 import ec.nbdemetra.ui.Config;
 import ec.tss.tsproviders.utils.Formatters;
+import ec.tss.tsproviders.utils.IFormatter;
+import ec.tss.tsproviders.utils.IParser;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.tss.xml.calendar.AbstractXmlCalendar;
 import ec.tss.xml.calendar.XmlChainedCalendar;
@@ -39,13 +41,13 @@ final class CalendarConfig extends Converter<IGregorianCalendarProvider, Config>
 
     public static final String DOMAIN = AbstractXmlCalendar.class.getName();
 
-    private final Formatters.Formatter<XmlNationalCalendar> nationalFormatter = Formatters.onJAXB(XmlNationalCalendar.class, false);
-    private final Formatters.Formatter<XmlChainedCalendar> chainedFormatter = Formatters.onJAXB(XmlChainedCalendar.class, false);
-    private final Formatters.Formatter<XmlCompositeCalendar> compositeFormatter = Formatters.onJAXB(XmlCompositeCalendar.class, false);
+    private final IFormatter<XmlNationalCalendar> nationalFormatter = Formatters.onJAXB(XmlNationalCalendar.class, false);
+    private final IFormatter<XmlChainedCalendar> chainedFormatter = Formatters.onJAXB(XmlChainedCalendar.class, false);
+    private final IFormatter<XmlCompositeCalendar> compositeFormatter = Formatters.onJAXB(XmlCompositeCalendar.class, false);
 
-    private final Parsers.Parser<XmlNationalCalendar> nationalParser = Parsers.onJAXB(XmlNationalCalendar.class);
-    private final Parsers.Parser<XmlChainedCalendar> chainedParser = Parsers.onJAXB(XmlChainedCalendar.class);
-    private final Parsers.Parser<XmlCompositeCalendar> compositeParser = Parsers.onJAXB(XmlCompositeCalendar.class);
+    private final IParser<XmlNationalCalendar> nationalParser = Parsers.onJAXB(XmlNationalCalendar.class);
+    private final IParser<XmlChainedCalendar> chainedParser = Parsers.onJAXB(XmlChainedCalendar.class);
+    private final IParser<XmlCompositeCalendar> compositeParser = Parsers.onJAXB(XmlCompositeCalendar.class);
 
     @Override
     protected Config doForward(IGregorianCalendarProvider cal) {

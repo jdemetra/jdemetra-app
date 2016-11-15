@@ -17,7 +17,6 @@
 package ec.nbdemetra.jdbc;
 
 import com.google.common.base.Optional;
-import java.util.Map.Entry;
 import java.util.Properties;
 import javax.annotation.Nonnull;
 import org.netbeans.api.db.explorer.ConnectionManager;
@@ -106,9 +105,7 @@ public final class DbExplorerUtil {
             return;
         }
         Properties properties = new Properties();
-        for (Entry<String, String> o : config.getParams().entrySet()) {
-            properties.put(o.getKey(), o.getValue());
-        }
+        config.forEach(properties::put);
         DatabaseConnection newConn = DatabaseConnection.create(driver.get(), config.getDatabaseUrl(), "", config.getSchema(), "", false, config.getDisplayName(), properties);
         try {
             ConnectionManager.getDefault().addConnection(newConn);
