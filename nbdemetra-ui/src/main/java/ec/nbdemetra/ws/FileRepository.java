@@ -40,6 +40,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -83,6 +84,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     public FileRepository() {
         this.repositoryLookup = Lookup.getDefault().lookupResult(IWorkspaceItemRepository.class);
         this.wsFileChooser = new FileChooserBuilder(FileRepository.class)
+                .setDefaultWorkingDirectory(getDefaultWorkingDirectory(DesktopManager.get(), System::getProperty))
                 .setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Xml files", "xml"));
     }
 
@@ -238,7 +240,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     public static String getRepositoryRootFolder(Workspace ws) {
         File id = decode(ws.getDataSource());
         if (id == null) {
-            File defaultWsFolder = getDefaultWsFolder();
+            File defaultWsFolder = getDefaultWorkingDirectory(DesktopManager.get(), System::getProperty);
             if (!defaultWsFolder.exists()) {
                 defaultWsFolder.mkdirs();
             }
@@ -347,13 +349,12 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     private static final String VARIABLES_REPOSITORY = "Variables";
     private static final String VARIABLES = "Variables.xml";
 
-    private static File getDefaultWsFolder() {
-        File documents = getDocumentsFolder().orElseGet(() -> getUserHomeFolder());
+    private static File getDefaultWorkingDirectory(Desktop desktop, UnaryOperator<String> properties) {
+        File documents = getDocumentsDirectory(desktop).orElseGet(() -> getUserHome(properties));
         return new File(documents, "Demetra+");
     }
 
-    private static Optional<File> getDocumentsFolder() {
-        Desktop desktop = DesktopManager.get();
+    private static Optional<File> getDocumentsDirectory(Desktop desktop) {
         if (desktop.isSupported(Desktop.Action.KNOWN_FOLDER_LOOKUP)) {
             try {
                 return Optional.ofNullable(desktop.getKnownFolderPath(KnownFolder.DOCUMENTS));
@@ -364,7 +365,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         return Optional.empty();
     }
 
-    private static File getUserHomeFolder() {
-        return new File(StandardSystemProperty.USER_HOME.value());
+    private static File getUserHome(UnaryOperator<String> properties) {
+        return new File(properties.apply(StandardSystemProperty.USER_HOME.key()));
     }
 }
