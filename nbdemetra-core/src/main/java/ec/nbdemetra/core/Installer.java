@@ -29,6 +29,8 @@ import ec.tss.tsproviders.IFileLoader;
 import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.utils.ByteArrayConverter;
 import ec.tss.tsproviders.utils.Formatters;
+import ec.tss.tsproviders.utils.IFormatter;
+import ec.tss.tsproviders.utils.IParser;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.tstoolkit.timeseries.regression.TsVariable;
 import ec.tstoolkit.utilities.FileXmlAdapter;
@@ -105,8 +107,8 @@ public final class Installer extends ModuleInstall {
     private static final class ProvidersStep extends InstallerStep.LookupStep<ITsProvider> {
 
         final Preferences prefs = prefs();
-        final Parsers.Parser<File[]> pathsParser = Parsers.onJAXB(PathsBean.class).compose(o -> o.paths != null ? o.paths : new File[0]);
-        final Formatters.Formatter<File[]> pathsFormatter = Formatters.onJAXB(PathsBean.class, false).compose(PathsBean::create);
+        final IParser<File[]> pathsParser = Parsers.onJAXB(PathsBean.class).andThen(o -> o.paths != null ? o.paths : new File[0]);
+        final IFormatter<File[]> pathsFormatter = Formatters.onJAXB(PathsBean.class, false).compose2(PathsBean::create);
 
         ProvidersStep() {
             super(ITsProvider.class);

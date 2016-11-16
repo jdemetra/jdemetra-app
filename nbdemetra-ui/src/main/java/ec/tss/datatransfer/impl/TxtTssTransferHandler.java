@@ -35,10 +35,10 @@ import ec.tss.TsStatus;
 import ec.tss.datatransfer.TssTransferHandler;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IParam;
+import ec.tss.tsproviders.utils.IParser;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tss.tsproviders.utils.Params;
 import ec.tss.tsproviders.utils.Parsers;
-import ec.tss.tsproviders.utils.Parsers.Parser;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
 import java.awt.datatransfer.DataFlavor;
@@ -263,8 +263,8 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
     }
 
     public TsCollection tsCollectionFromString(String text) throws IOException {
-        Parser<Date> periodParser = FALLBACK_PARSER.get();
-        Parser<Number> valueParser = Parsers.onNumberFormat(numberFormat);
+        IParser<Date> periodParser = FALLBACK_PARSER.get();
+        IParser<Number> valueParser = Parsers.onNumberFormat(numberFormat);
 
         TsCollection result = null;
         try {
@@ -279,7 +279,7 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
                 if (cols < colarray.length) {
                     cols = colarray.length;
                 }
-                datesAreVertical = periodParser.tryParse(colarray[0]).isPresent();
+                datesAreVertical = periodParser.parseValue(colarray[0]).isPresent();
             }
 
             if (cols < 1 || rows < 1) {
@@ -299,7 +299,7 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
                 String[] colarray = rowarray[i].split("\\t");
                 for (int j = 0; j < colarray.length; j++) {
                     if (((j == 0 && datesAreVertical) || (i == 0 && !datesAreVertical))
-                            && periodParser.tryParse(colarray[j]).isPresent()) {
+                            && periodParser.parseValue(colarray[j]).isPresent()) {
                         dates[(datesAreVertical ? i : j)] = periodParser.parse(colarray[j]);
                     } else if ((j == 0 && !datesAreVertical)
                             || (i == 0 && datesAreVertical)) {
@@ -339,9 +339,9 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
         }
         return result;
     }
-    private static final ThreadLocal<Parsers.Parser<Date>> FALLBACK_PARSER = new ThreadLocal<Parsers.Parser<Date>>() {
+    private static final ThreadLocal<IParser<Date>> FALLBACK_PARSER = new ThreadLocal<IParser<Date>>() {
         @Override
-        protected Parsers.Parser<Date> initialValue() {
+        protected IParser<Date> initialValue() {
             ImmutableList.Builder<Parsers.Parser<Date>> list = ImmutableList.builder();
             for (String o : FALLBACK_FORMATS) {
                 list.add(new DataFormat(Locale.ROOT, o, null).dateParser());

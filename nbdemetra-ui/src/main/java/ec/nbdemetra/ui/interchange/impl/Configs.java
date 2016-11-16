@@ -28,6 +28,7 @@ import ec.nbdemetra.ui.interchange.Importable;
 import ec.tss.tsproviders.utils.Formatters;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.tstoolkit.design.Immutable;
+import ec.tstoolkit.utilities.GuavaCollectors;
 import java.io.IOException;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -115,22 +116,22 @@ public final class Configs {
 
         @VisibleForTesting
         Configs toId() {
-            return new Configs(Strings.nullToEmpty(author), creationTime, items != null ? ImmutableList.<Config>copyOf(items) : ImmutableList.<Config>of());
+            return new Configs(Strings.nullToEmpty(author), creationTime, items != null ? ImmutableList.copyOf(items) : ImmutableList.of());
         }
     }
 
     public static Configs fromExportables(List<? extends Exportable> exportables) {
-        ImmutableList.Builder<Config> items = ImmutableList.builder();
-        for (Exportable o : exportables) {
-            items.add(o.exportConfig());
-        }
-        return new Configs(StandardSystemProperty.USER_NAME.value(), System.currentTimeMillis(), items.build());
+        return new Configs(
+                StandardSystemProperty.USER_NAME.value(),
+                System.currentTimeMillis(),
+                exportables.stream().map(o -> o.exportConfig()).collect(GuavaCollectors.toImmutableList())
+        );
     }
 
     public void performImport(List<? extends Importable> importables) throws IOException, IllegalArgumentException {
         for (Config o : items) {
             for (Importable importable : importables) {
-                if (importable.getDomain().equals(o.getDomain())) {
+                if (canImport(o, importable)) {
                     importable.importConfig(o);
                     break;
                 }
@@ -139,23 +140,19 @@ public final class Configs {
     }
 
     public boolean canImport(List<? extends Importable> importables) {
-        for (Config o : items) {
-            for (Importable importable : importables) {
-                if (importable.getDomain().equals(o.getDomain())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return items.stream().anyMatch(o -> canImport(o, importables));
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    private static final ThreadLocal<Xml> XML = new ThreadLocal<Xml>() {
-        @Override
-        protected Xml initialValue() {
-            return new Xml();
-        }
-    };
+    private static boolean canImport(Config config, Importable importable) {
+        return importable.getDomain().equals(config.getDomain());
+    }
+
+    private static boolean canImport(Config config, List<? extends Importable> importables) {
+        return importables.stream().anyMatch(o -> canImport(config, o));
+    }
+
+    private static final ThreadLocal<Xml> XML = ThreadLocal.withInitial(Xml::new);
 
     private static final class Xml {
 
@@ -169,9 +166,9 @@ public final class Configs {
             }
         }
 
-        final Parsers.Parser<Configs> defaultParser = Parsers.<ConfigsBean>onJAXB(BEAN_CONTEXT).compose(o -> o.toId());
-        final Formatters.Formatter<Configs> defaultFormatter = Formatters.<ConfigsBean>onJAXB(BEAN_CONTEXT, false).compose(o -> o.toBean());
-        final Formatters.Formatter<Configs> formattedOutputFormatter = Formatters.<ConfigsBean>onJAXB(BEAN_CONTEXT, true).compose(o -> o.toBean());
+        final Parsers.Parser<Configs> defaultParser = Parsers.wrap(Parsers.<ConfigsBean>onJAXB(BEAN_CONTEXT).andThen(ConfigsBean::toId));
+        final Formatters.Formatter<Configs> defaultFormatter = Formatters.wrap(Formatters.<ConfigsBean>onJAXB(BEAN_CONTEXT, false).compose2(Configs::toBean));
+        final Formatters.Formatter<Configs> formattedOutputFormatter = Formatters.wrap(Formatters.<ConfigsBean>onJAXB(BEAN_CONTEXT, true).compose2(Configs::toBean));
     }
     //</editor-fold>
 }

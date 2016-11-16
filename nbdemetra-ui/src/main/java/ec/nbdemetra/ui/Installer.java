@@ -34,6 +34,8 @@ import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.utils.Formatters;
+import ec.tss.tsproviders.utils.IFormatter;
+import ec.tss.tsproviders.utils.IParser;
 import ec.tss.tsproviders.utils.Parsers;
 import java.util.Collection;
 import java.util.Collections;
@@ -140,7 +142,7 @@ public final class Installer extends ModuleInstall {
         public void restore() {
             if (DemetraUI.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
-                Parsers.Parser<DataSourcesBean> parser = Parsers.onJAXB(DataSourcesBean.class);
+                IParser<DataSourcesBean> parser = Parsers.onJAXB(DataSourcesBean.class);
                 for (IDataSourceLoader o : TsProviders.all().filter(IDataSourceLoader.class)) {
                     Optional<DataSourcesBean> value = tryGet(prefs, o.getSource(), parser);
                     if (value.isPresent()) {
@@ -156,7 +158,7 @@ public final class Installer extends ModuleInstall {
         public void close() {
             if (DemetraUI.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
-                Formatters.Formatter<DataSourcesBean> formatter = Formatters.onJAXB(DataSourcesBean.class, false);
+                IFormatter<DataSourcesBean> formatter = Formatters.onJAXB(DataSourcesBean.class, false);
                 for (IDataSourceLoader o : TsProviders.all().filter(IDataSourceLoader.class)) {
                     DataSourcesBean value = new DataSourcesBean();
                     value.dataSources = o.getDataSources();
@@ -203,7 +205,7 @@ public final class Installer extends ModuleInstall {
             super(SaDiagnosticsFactoryBuddy.class);
         }
     }
-    
+
     private static final class OutputBuddiesStep extends ConfigStep<INbOutputFactory> {
 
         OutputBuddiesStep() {
@@ -236,7 +238,7 @@ public final class Installer extends ModuleInstall {
     //</editor-fold>
 
     public static void loadConfig(Collection<?> list, Preferences root) {
-        Parsers.Parser<Config> parser = Config.xmlParser();
+        IParser<Config> parser = Config.xmlParser();
         for (IConfigurable o : Iterables.filter(list, IConfigurable.class)) {
             Config current = o.getConfig();
             try {

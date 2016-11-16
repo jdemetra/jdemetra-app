@@ -116,7 +116,7 @@ public final class TxtTsSave implements ITsSave {
         progressHandle.progress("Initializing content");
         TsCollection col = Arrays.stream(data).collect(TsFactory.toTsCollection());
         TxtTssTransferHandler handler = new TxtTssTransferHandler();
-        Config config = Config.builder(handler.getConfig())
+        Config config = handler.getConfig().toBuilder()
                 .put("beginPeriod", options.beginPeriod)
                 .put("showDates", options.showDates)
                 .put("showTitle", options.showTitle)

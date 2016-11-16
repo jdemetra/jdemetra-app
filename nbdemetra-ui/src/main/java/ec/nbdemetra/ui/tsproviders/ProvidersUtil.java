@@ -60,15 +60,9 @@ final class ProvidersUtil {
 
     @Nonnull
     public static DataSource getDataSource(@Nonnull Config config) throws IllegalArgumentException {
-        String uri = config.get("uri");
-        if (uri == null) {
-            throw new IllegalArgumentException("Missing parameter");
-        }
-        DataSource result = DataSource.uriParser().parse(uri);
-        if (result == null) {
-            throw new IllegalArgumentException("Invalid uri");
-        }
-        return result;
+        return config.getParam("uri")
+                .map(DataSource.uriParser()::parse)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid config"));
     }
 
     public static Config getConfig(DataSource dataSource, String displayName) {
@@ -189,9 +183,7 @@ final class ProvidersUtil {
 
     @Nonnull
     static void fillParamProperties(@Nonnull NodePropertySetBuilder b, @Nonnull DataSet dataSet) {
-        dataSet.getParams().forEach((k, v) -> {
-            b.with(String.class).selectConst(k, v).add();
-        });
+        dataSet.forEach((k, v) -> b.with(String.class).selectConst(k, v).add());
     }
 
     @Nonnull

@@ -109,9 +109,9 @@ public final class DebugTopComponent extends TopComponent implements LookupListe
         StringBuilder sb = new StringBuilder();
         for (AbstractNode o : lookupResult.allInstances()) {
             if (o instanceof DataSourceNode) {
-                sb.append(DataSource.xmlFormatter(true).tryFormat(o.getLookup().lookup(DataSource.class)).get());
+                sb.append(DataSource.xmlFormatter(true).formatValue(o.getLookup().lookup(DataSource.class)).get());
             } else if (o instanceof DataSetNode) {
-                sb.append(DataSet.xmlFormatter(true).tryFormat(o.getLookup().lookup(DataSet.class)).get());
+                sb.append(DataSet.xmlFormatter(true).formatValue(o.getLookup().lookup(DataSet.class)).get());
             }
         }
         jTextPane1.setText(sb.toString());
