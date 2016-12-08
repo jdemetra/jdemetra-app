@@ -22,7 +22,7 @@ import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
 import ec.tss.Ts;
 import ec.tss.tsproviders.utils.DataFormat;
-import ec.tss.tsproviders.utils.Formatters.Formatter;
+import ec.tss.tsproviders.utils.IFormatter;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import static ec.ui.ATsControl.FORMAT_ACTION;
@@ -583,9 +583,9 @@ public class JTsGrid extends ATsGrid {
     private static final class CustomCellRenderer extends BarTableCellRenderer {
 
         private final TableCellRenderer delegate;
-        private final Formatter<? super TsPeriod> periodFormatter;
+        private final IFormatter<? super TsPeriod> periodFormatter;
         private final JToolTip toolTip;
-        private Formatter<? super Number> valueFormatter;
+        private IFormatter<? super Number> valueFormatter;
         private SwingColorSchemeSupport colorSchemeSupport;
         private boolean showBars;
 
@@ -738,7 +738,7 @@ public class JTsGrid extends ATsGrid {
         }
     }
 
-    private static final class TsPeriodFormatter extends Formatter<TsPeriod> {
+    private static final class TsPeriodFormatter implements IFormatter<TsPeriod> {
 
         private final static TsPeriodFormatter INSTANCE = new TsPeriodFormatter();
 

@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.tramoseats.actions;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.tramoseats.TramoSpecificationManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.interchange.ImportAction;
@@ -30,7 +29,6 @@ import ec.tstoolkit.algorithm.IProcSpecification;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
@@ -104,19 +102,14 @@ public class ImportTramoSpec extends SingleNodeAction<Node> implements Presenter
             throw new IllegalArgumentException("Invalid config");
         }
 
-        Parsers.Parser<XmlInformationSet> parser = Parsers.onJAXB(XmlInformationSet.class);
-
-        for (Map.Entry<String, String> o : config.getParams().entrySet()) {
-            if (o.getKey().equals("specification")) {
-                Optional<XmlInformationSet> xmlSpec = parser.tryParse(o.getValue());
-                if (xmlSpec.isPresent()) {
+        return config.getParam("specification")
+                .map(Parsers.onJAXB(XmlInformationSet.class)::parse)
+                .map(XmlInformationSet::create)
+                .map(o -> {
                     TramoSpecification spec = new TramoSpecification();
-                    spec.read(xmlSpec.get().create());
+                    spec.read(o);
                     return spec;
-                }
-            }
-        }
-
-        return null;
+                })
+                .orElse(null);
     }
 }

@@ -55,7 +55,7 @@ public class MailBroker extends InterchangeBroker {
 
     private static void store(@Nonnull Desktop desktop, @Nonnull Configs configs) throws IOException {
         String subject = configs.getItems().size() == 1 ? configs.getItems().get(0).getName() : "Configs";
-        String body = Configs.xmlFormatter(true).tryFormatAsString(configs).get();
+        String body = Configs.xmlFormatter(true).formatValueAsString(configs).orElseThrow(RuntimeException::new);
         desktop.mail(new MailtoBuilder().subject(subject).body(body).build());
     }
 }

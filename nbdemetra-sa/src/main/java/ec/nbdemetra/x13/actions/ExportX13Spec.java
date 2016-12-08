@@ -25,6 +25,7 @@ import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.nbdemetra.x13.X13SpecificationManager;
 import ec.satoolkit.x13.X13Specification;
 import ec.tss.tsproviders.utils.Formatters;
+import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.xml.x13.XmlX13Specification;
 import java.util.List;
 import javax.swing.JMenuItem;
@@ -109,7 +110,7 @@ public class ExportX13Spec extends NodeAction implements Presenter.Popup {
             XmlX13Specification spec = new XmlX13Specification();
             spec.copy(xdoc.getElement());
 
-            Formatters.Formatter<XmlX13Specification> formatter = Formatters.onJAXB(XmlX13Specification.class, true);
+            IFormatter<XmlX13Specification> formatter = Formatters.onJAXB(XmlX13Specification.class, true);
             Config.Builder b = Config.builder(X13Specification.class.getName(), input.getDisplayName(), "1.0.0")
                     .put("specification", formatter.formatAsString(spec));
             return b.build();

@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ws;
 
@@ -27,6 +39,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Optional;
+import java.util.function.UnaryOperator;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -42,33 +56,36 @@ import org.openide.util.lookup.ServiceProvider;
 /**
  *
  * @author Jean Palate
+ * @since 1.0.0
  */
-@ServiceProvider(service = IWorkspaceRepository.class,
-        position = 10)
+@ServiceProvider(service = IWorkspaceRepository.class, position = 10)
 public class FileRepository extends AbstractWorkspaceRepository implements LookupListener {
 
     public static final String NAME = "File", FILENAME = "fileName", VERSION = "20120925";
-    static final JAXBContext XML_GENERIC_WS_CONTEXT;
-    static final JAXBContext XML_WS_CONTEXT;
-    private static final FileChooserBuilder calendarChooserBuilder;
+
+    private static final JAXBContext XML_GENERIC_WS_CONTEXT;
+    private static final JAXBContext XML_WS_CONTEXT;
+    private static final FileChooserBuilder CALENDAR_FILE_CHOOSER;
 
     static {
         try {
-            calendarChooserBuilder = new FileChooserBuilder(CalendarDocumentManager.class);
-            calendarChooserBuilder.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Xml files", "xml"));
             XML_GENERIC_WS_CONTEXT = JAXBContext.newInstance(XmlGenericWorkspace.class);
             XML_WS_CONTEXT = JAXBContext.newInstance(XmlWorkspace.class);
+            CALENDAR_FILE_CHOOSER = new FileChooserBuilder(CalendarDocumentManager.class)
+                    .setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Xml files", "xml"));
         } catch (JAXBException ex) {
             throw Throwables.propagate(ex);
         }
     }
-    private Lookup.Result<IWorkspaceItemRepository> repositoryLookup;
-    private final FileChooserBuilder fileChooserBuilder;
+
+    private final Lookup.Result<IWorkspaceItemRepository> repositoryLookup;
+    private final FileChooserBuilder wsFileChooser;
 
     public FileRepository() {
         this.repositoryLookup = Lookup.getDefault().lookupResult(IWorkspaceItemRepository.class);
-        this.fileChooserBuilder = new FileChooserBuilder(FileRepository.class);
-        fileChooserBuilder.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Xml files", "xml"));
+        this.wsFileChooser = new FileChooserBuilder(FileRepository.class)
+                .setDefaultWorkingDirectory(getDefaultWorkingDirectory(DesktopManager.get(), System::getProperty))
+                .setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Xml files", "xml"));
     }
 
     public static DataSource encode(File file) {
@@ -94,32 +111,6 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         return null;
     }
 
-    private static File getDocumentsFolder() {
-        Desktop desktop = DesktopManager.get();
-        if (desktop.isSupported(Desktop.Action.KNOWN_FOLDER_LOOKUP)) {
-            try {
-                return desktop.getKnownFolderPath(KnownFolder.DOCUMENTS);
-            } catch (IOException ex) {
-                // log this?
-            }
-        }
-        return null;
-    }
-
-    private static String path() {
-        File documents = getDocumentsFolder();
-        if (documents == null) {
-            // fallback
-            documents = new File(StandardSystemProperty.USER_HOME.value());
-        }
-        File def = new File(documents, "Demetra+");
-        if (!def.exists()) {
-            def.mkdirs();
-        }
-        return def.getAbsolutePath();
-    }
-    private static String defPath = path();
-
     @Override
     public String getName() {
         return NAME;
@@ -131,19 +122,8 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     }
 
     @Override
-    public Object getProperties() {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public void setProperties() {
-        // TODO
-    }
-
-    @Override
     public boolean saveAs(Workspace ws) {
-        java.io.File file = fileChooserBuilder.showSaveDialog();
+        java.io.File file = wsFileChooser.showSaveDialog();
         if (file != null) {
             try {
                 ws.loadAll();
@@ -164,7 +144,6 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
             return saveAs(ws);
         }
         try (FileOutputStream stream = new FileOutputStream(file)) {
-            //XMLOutputFactory factory=XMLOutputFactory.newInstance();
             try (OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
 
                 Marshaller marshaller = XML_GENERIC_WS_CONTEXT.createMarshaller();
@@ -192,7 +171,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
 
     @Override
     public Workspace open() {
-        java.io.File file = fileChooserBuilder.showOpenDialog();
+        java.io.File file = wsFileChooser.showOpenDialog();
         if (file != null) {
             Workspace ws = new Workspace(encode(file), Paths.changeExtension(file.getName(), null));
             if (!load(ws)) {
@@ -261,7 +240,11 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     public static String getRepositoryRootFolder(Workspace ws) {
         File id = decode(ws.getDataSource());
         if (id == null) {
-            return Paths.concatenate(defPath, ws.getName());
+            File defaultWsFolder = getDefaultWorkingDirectory(DesktopManager.get(), System::getProperty);
+            if (!defaultWsFolder.exists()) {
+                defaultWsFolder.mkdirs();
+            }
+            return Paths.concatenate(defaultWsFolder.getAbsolutePath(), ws.getName());
         } else {
             return Paths.changeExtension(id.getAbsolutePath(), null);
         }
@@ -286,9 +269,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
 
     @Override
     public void initialize() {
-        for (IWorkspaceItemRepository fac : repositoryLookup.allInstances()) {
-            register(fac.getSupportedType(), fac);
-        }
+        repositoryLookup.allInstances().forEach(o -> register(o.getSupportedType(), o));
     }
 
     @Override
@@ -308,7 +289,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     }
 
     public static void importCalendars(Workspace ws) {
-        java.io.File file = calendarChooserBuilder.showOpenDialog();
+        java.io.File file = CALENDAR_FILE_CHOOSER.showOpenDialog();
         if (file != null) {
             loadCalendars(ws, file.getAbsolutePath());
         }
@@ -367,4 +348,24 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     }
     private static final String VARIABLES_REPOSITORY = "Variables";
     private static final String VARIABLES = "Variables.xml";
+
+    private static File getDefaultWorkingDirectory(Desktop desktop, UnaryOperator<String> properties) {
+        File documents = getDocumentsDirectory(desktop).orElseGet(() -> getUserHome(properties));
+        return new File(documents, "Demetra+");
+    }
+
+    private static Optional<File> getDocumentsDirectory(Desktop desktop) {
+        if (desktop.isSupported(Desktop.Action.KNOWN_FOLDER_LOOKUP)) {
+            try {
+                return Optional.ofNullable(desktop.getKnownFolderPath(KnownFolder.DOCUMENTS));
+            } catch (IOException ex) {
+                // log this?
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static File getUserHome(UnaryOperator<String> properties) {
+        return new File(properties.apply(StandardSystemProperty.USER_HOME.key()));
+    }
 }

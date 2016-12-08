@@ -6,8 +6,8 @@ package ec.tss.datatransfer;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
-import ec.tss.tsproviders.utils.Formatters;
-import ec.tss.tsproviders.utils.Parsers;
+import ec.tss.tsproviders.utils.IFormatter;
+import ec.tss.tsproviders.utils.IParser;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -53,11 +53,11 @@ public final class DataTransfers {
         return Optional.absent();
     }
 
-    public static <T> Optional<T> tryParse(Transferable t, Parsers.Parser<T> parser) {
+    public static <T> Optional<T> tryParse(Transferable t, IParser<T> parser) {
         if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
             try {
                 String text = (String) t.getTransferData(DataFlavor.stringFlavor);
-                return text != null ? parser.tryParse(text) : Optional.<T>absent();
+                return text != null ? Optional.fromNullable(parser.parse(text)) : Optional.absent();
             } catch (UnsupportedFlavorException ex) {
                 throw Throwables.propagate(ex);
             } catch (IOException ex) {
@@ -67,7 +67,7 @@ public final class DataTransfers {
         return Optional.absent();
     }
 
-    public static <T> Optional<Transferable> tryFormat(T value, Formatters.Formatter<T> formatter) {
+    public static <T> Optional<Transferable> tryFormat(T value, IFormatter<T> formatter) {
         String text = formatter.formatAsString(value);
         return text != null
                 ? Optional.<Transferable>of(new StringSelection(text))
