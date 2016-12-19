@@ -24,6 +24,7 @@ import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.tss.tsproviders.utils.Formatters;
+import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.xml.information.XmlInformationSet;
 import ec.tstoolkit.information.InformationSet;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
@@ -111,7 +112,7 @@ public class ExportTramoSpec extends NodeAction implements Presenter.Popup {
             XmlInformationSet xmlSet = new XmlInformationSet();
             xmlSet.copy(set);
 
-            Formatters.Formatter<XmlInformationSet> formatter = Formatters.onJAXB(XmlInformationSet.class, true);
+            IFormatter<XmlInformationSet> formatter = Formatters.onJAXB(XmlInformationSet.class, true);
             Config.Builder b = Config.builder(TramoSpecification.class.getName(), input.getDisplayName(), "1.0.0")
                     .put("specification", formatter.formatAsString(xmlSet));
             return b.build();

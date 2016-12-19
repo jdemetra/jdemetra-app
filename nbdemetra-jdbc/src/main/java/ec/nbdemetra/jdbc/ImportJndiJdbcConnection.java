@@ -22,7 +22,6 @@ import ec.nbdemetra.ui.interchange.ImportAction;
 import ec.nbdemetra.ui.interchange.Importable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
@@ -87,12 +86,10 @@ public final class ImportJndiJdbcConnection extends SingleNodeAction<Node> imple
         if (!DriverBasedConfig.class.getName().equals(config.getDomain())) {
             throw new IllegalArgumentException("Invalid config");
         }
-        DriverBasedConfig.Builder b = DriverBasedConfig.builder(config.get("driverClass"), config.get("databaseUrl"), config.get("schema"), config.getName());
-        for (Map.Entry<String, String> o : config.getParams().entrySet()) {
-            if (o.getKey().startsWith("prop_")) {
-                b.put(o.getKey().substring(5), o.getValue());
-            }
-        }
-        return b.build();
+        DriverBasedConfig.Builder result = DriverBasedConfig.builder(config.get("driverClass"), config.get("databaseUrl"), config.get("schema"), config.getName());
+        config.stream()
+                .filter(o -> o.getKey().startsWith("prop_"))
+                .forEach(o -> result.put(o.getKey().substring(5), o.getValue()));
+        return result.build();
     }
 }

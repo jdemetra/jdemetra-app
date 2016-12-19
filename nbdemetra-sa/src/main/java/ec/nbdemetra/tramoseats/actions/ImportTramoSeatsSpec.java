@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.tramoseats.actions;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.tramoseats.TramoSeatsSpecificationManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.interchange.ImportAction;
@@ -30,7 +29,6 @@ import ec.tss.xml.tramoseats.XmlTramoSeatsSpecification;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
@@ -104,15 +102,9 @@ public class ImportTramoSeatsSpec extends SingleNodeAction<Node> implements Pres
             throw new IllegalArgumentException("Invalid config");
         }
 
-        Parsers.Parser<XmlTramoSeatsSpecification> parser = Parsers.onJAXB(XmlTramoSeatsSpecification.class);
-
-        for (Map.Entry<String, String> o : config.getParams().entrySet()) {
-            if (o.getKey().equals("specification")) {
-                Optional<XmlTramoSeatsSpecification> xmlSpec = parser.tryParse(o.getValue());
-                return xmlSpec.isPresent() ? xmlSpec.get().create() : null;
-            }
-        }
-
-        return null;
+        return config.getParam("specification")
+                .map(Parsers.onJAXB(XmlTramoSeatsSpecification.class)::parse)
+                .map(XmlTramoSeatsSpecification::create)
+                .orElse(null);
     }
 }

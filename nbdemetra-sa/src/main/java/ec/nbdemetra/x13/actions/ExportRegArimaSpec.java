@@ -24,6 +24,7 @@ import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.nbdemetra.x13.RegArimaSpecificationManager;
 import ec.tss.tsproviders.utils.Formatters;
+import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.xml.information.XmlInformationSet;
 import ec.tstoolkit.information.InformationSet;
 import ec.tstoolkit.modelling.arima.x13.RegArimaSpecification;
@@ -111,7 +112,7 @@ public class ExportRegArimaSpec extends NodeAction implements Presenter.Popup {
             XmlInformationSet xmlSet = new XmlInformationSet();
             xmlSet.copy(set);
 
-            Formatters.Formatter<XmlInformationSet> formatter = Formatters.onJAXB(XmlInformationSet.class, true);
+            IFormatter<XmlInformationSet> formatter = Formatters.onJAXB(XmlInformationSet.class, true);
             Config.Builder b = Config.builder(RegArimaSpecification.class.getName(), input.getDisplayName(), "1.0.0")
                     .put("specification", formatter.formatAsString(xmlSet));
             return b.build();

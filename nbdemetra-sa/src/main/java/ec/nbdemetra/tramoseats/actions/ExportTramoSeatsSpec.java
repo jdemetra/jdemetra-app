@@ -25,6 +25,7 @@ import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.tss.tsproviders.utils.Formatters;
+import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.xml.tramoseats.XmlTramoSeatsSpecification;
 import java.util.List;
 import javax.swing.JMenuItem;
@@ -109,7 +110,7 @@ public class ExportTramoSeatsSpec extends NodeAction implements Presenter.Popup 
             XmlTramoSeatsSpecification spec = new XmlTramoSeatsSpecification();
             spec.copy(xdoc.getElement());
 
-            Formatters.Formatter<XmlTramoSeatsSpecification> formatter = Formatters.onJAXB(XmlTramoSeatsSpecification.class, true);
+            IFormatter<XmlTramoSeatsSpecification> formatter = Formatters.onJAXB(XmlTramoSeatsSpecification.class, true);
             Config.Builder b = Config.builder(TramoSeatsSpecification.class.getName(), input.getDisplayName(), "1.0.0")
                     .put("specification", formatter.formatAsString(spec));
             return b.build();
