@@ -849,13 +849,13 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         protected String getText(SaItem item) {
-            String name = item.getTs().getName();
+            String name = item.getName();
             return !Strings.isNullOrEmpty(name) ? MultiLineNameUtil.join(name) : ("item_" + item.getKey());
         }
 
         @Override
         protected String getToolTipText(SaItem item) {
-            String name = item.getTs().getName();
+            String name = item.getName();
             return !Strings.isNullOrEmpty(name) ? MultiLineNameUtil.toHtml(name) : null;
         }
 
@@ -1084,7 +1084,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             progressCount += chunks.size();
             if (progressHandle != null) {
                 if (!chunks.isEmpty()) {
-                    progressHandle.progress(chunks.get(chunks.size() - 1).getTs().getName(), progressCount);
+                    progressHandle.progress(chunks.get(chunks.size() - 1).getName(), progressCount);
                 } else {
                     progressHandle.progress(progressCount);
                 }

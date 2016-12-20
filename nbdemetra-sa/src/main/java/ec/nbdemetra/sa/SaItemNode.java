@@ -28,7 +28,7 @@ public class SaItemNode extends AbstractNode {
 
     @Override
     public String getDisplayName() {
-        return item.getTs().getRawName();
+        return item.getName();
 
     }
 
@@ -36,7 +36,8 @@ public class SaItemNode extends AbstractNode {
     protected Sheet createSheet() {
         Sheet sheet = super.createSheet();
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("Time series");
-        b.with(String.class).select("Name", item.getTs().getName()).add();
+        b.with(String.class).select("Time series name", item.getTs().getRawName()).add();
+        b.withBoolean().select("Is frozen", item.getTs().isFrozen()).add();
         sheet.put(b.build());
 
         MetaData metaData = item.getMetaData();
