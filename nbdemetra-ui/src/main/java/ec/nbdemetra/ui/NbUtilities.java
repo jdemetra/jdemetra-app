@@ -34,7 +34,7 @@ public class NbUtilities {
         for (final String key : keys) {
             if (key.charAt(0) == '@') {
                 String dname = key.substring(1);
-                b.with(String.class).select(key, md.get(key)).name(key).display(dname).add();
+                b.with(String.class).selectConst(key, md.get(key)).name(key).display(dname).add();
             } else {
                 b.with(String.class).select(new StringProperty(key, md)).name(key).display(key).add();
             }

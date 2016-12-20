@@ -1,6 +1,5 @@
 package ec.nbdemetra.ui.properties.l2fprod;
 
-import com.l2fprod.common.propertysheet.PropertyRendererFactory;
 import com.l2fprod.common.propertysheet.PropertyRendererRegistry;
 import ec.satoolkit.x11.SeasonalFilterOption;
 import ec.satoolkit.x11.SigmavecOption;
@@ -33,7 +32,7 @@ public enum CustomPropertyRendererFactory {
         registry_.registerRenderer(SigmavecOption[].class, new ArrayRenderer());
     }
 
-    public PropertyRendererFactory getRegistry() {
+    public PropertyRendererRegistry getRegistry() {
         return registry_;
     }
 }
