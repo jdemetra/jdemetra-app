@@ -6,6 +6,7 @@ package ec.nbdemetra.x13.ui;
 
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.ISeriesDecomposition;
+import ec.satoolkit.x11.DefaultSeasonalFilteringStrategy;
 import ec.satoolkit.x11.Mstatistics;
 import ec.satoolkit.x11.X11Kernel;
 import ec.satoolkit.x11.X11Results;
@@ -112,7 +113,7 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
             super(X13Document.class);
         }
     }
-   //</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SUMMARY">
     @Deprecated
@@ -177,8 +178,9 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
                 @Override
                 public TsData[] retrieve(X13Document source) {
                     X11Results rslt = source.getDecompositionPart();
-                    if (rslt == null)
+                    if (rslt == null) {
                         return null;
+                    }
                     TsData si = rslt.getData("d8", TsData.class);
                     TsData seas = rslt.getData("d10", TsData.class);
 
@@ -190,7 +192,7 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
             }, new SiRatioUI());
         }
     }
-    
+
 //    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 204000)
     public static class ProcessingLogFactory extends SaDocumentViewFactory.ProcessingLogFactory<X13Document> {
 
@@ -356,7 +358,16 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
                             stream.write(HtmlTag.HEADER1, h1, "Final filters").newLine();
                             //stream.open(HtmlTag.DIV, "title", "Final seasonal filter");
                             stream.write("Seasonal filter: " + information.getFinalSeasonalFilter()).newLine();
-                            //stream.close(HtmlTag.DIV).newLine();
+                            if ("Composite filter".equals(information.getFinalSeasonalFilter())) {
+                                DefaultSeasonalFilteringStrategy[] strategies = information.getFinalSeasonalFilterComposit();
+                                for (int i = 0; i < strategies.length; i++) {
+                                    DefaultSeasonalFilteringStrategy strategy = strategies[i];
+                                    stream.write((i + 1) + "&#09;" + strategy.getDescription()).newLine();
+
+                                }
+                            }
+
+//stream.close(HtmlTag.DIV).newLine();
                             stream.write("Trend filter: " + information.getFinalTrendFilter()).newLine();
                         }
                     };
@@ -480,11 +491,13 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
                 public SeasonalityTestUI.Information retrieve(X13Document source) {
                     CompositeResults rslt = source.getResults();
                     ISeriesDecomposition finals = source.getFinalDecomposition();
-                    if (finals == null)
+                    if (finals == null) {
                         return null;
+                    }
                     TsData si = rslt.getData("d8", TsData.class);
-                    if (si == null)
+                    if (si == null) {
                         return null;
+                    }
                     DecompositionMode mode = finals.getMode();
                     boolean mul = mode.isMultiplicative();
                     if (mode == DecompositionMode.LogAdditive) {
