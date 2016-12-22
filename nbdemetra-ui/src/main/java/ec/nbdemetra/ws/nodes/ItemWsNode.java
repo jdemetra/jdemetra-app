@@ -86,7 +86,7 @@ public class ItemWsNode extends WsNode {
             return sheet;
         }
 
-        Sheet.Set info=NbUtilities.createMetadataPropertiesSet(metaData);
+        Sheet.Set info = NbUtilities.createMetadataPropertiesSet(metaData);
         sheet.put(info);
         return sheet;
     }

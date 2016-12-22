@@ -7,13 +7,15 @@ package ec.nbdemetra.sa;
 import ec.satoolkit.ISaSpecification;
 import ec.tss.sa.EstimationPolicyType;
 import ec.tss.sa.SaProcessing;
+import ec.tstoolkit.IDocumented;
+import ec.tstoolkit.MetaData;
 import ec.tstoolkit.utilities.IModifiable;
 
 /**
  *
  * @author Jean Palate
  */
-public class MultiProcessingDocument implements IModifiable {
+public class MultiProcessingDocument implements IModifiable, IDocumented {
 
     private SaProcessing current_;
     private SaProcessing initial_;
@@ -49,6 +51,11 @@ public class MultiProcessingDocument implements IModifiable {
         MultiProcessingDocument doc = new MultiProcessingDocument();
         doc.initial_ = initial;
         return doc;
+    }
+
+    @Override
+    public MetaData getMetaData() {
+        return getCurrent().getMetaData();
     }
 
     public boolean isNew() {

@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ui;
 
+import ec.nbdemetra.ui.nodes.StringProperty;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.DataSource;
 import ec.tstoolkit.MetaData;
@@ -30,10 +31,14 @@ public class NbUtilities {
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("Metadata");
         List<String> keys = new ArrayList<>(md.keySet());
         Collections.sort(keys);
-        keys.forEach(o -> {
-            String dname = o.charAt(0) == '@' ? o.substring(1) : o;
-            b.with(String.class).selectConst(o, md.get(o)).name(o).display(dname).add();
-        });
+        for (final String key : keys) {
+            if (key.charAt(0) == '@') {
+                String dname = key.substring(1);
+                b.with(String.class).selectConst(key, md.get(key)).name(key).display(dname).add();
+            } else {
+                b.with(String.class).select(new StringProperty(key, md)).name(key).display(key).add();
+            }
+        }
         return b.build();
     }
 
