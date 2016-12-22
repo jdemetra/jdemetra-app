@@ -10,7 +10,7 @@ Besides seasonal adjustment, JDemetra+ bundles other time series models that are
 
 From a technical point of view, JDemetra+ is a collection of reusable and extensible Java components, which can be easily accessed through a rich graphical interface. The software is a free and open-source software (FOSS) developed under the [EUPL licence](http://ec.europa.eu/idabc/eupl).
 
-JDemetra+ has been [officially recommended](http://www.cros-portal.eu/sites/default/files/Jdemetra%2B%20release.pdf), since 2 February 2015, to the members of the ESS and the European System of Central Banks as software for seasonal and calendar adjustment of official statistics.
+JDemetra+ has been [officially recommended](https://ec.europa.eu/eurostat/cros/system/files/Jdemetra_%20release.pdf), since 2 February 2015, to the members of the ESS and the European System of Central Banks as software for seasonal and calendar adjustment of official statistics.
 
 ##Quickstart
 
@@ -18,10 +18,10 @@ JDemetra+ runs on multiple platforms such as Windows, Mac OS X and Linux (Java S
 
 To install, download the [latest version](https://github.com/jdemetra/jdemetra-app/releases/latest), unzip it somewhere and launch the executable in `/bin`.
 
-The SACE has elaborated an extensive documentation, available through the [CROS - PORTAL](http://www.cros-portal.eu/content/seasonal-adjustment):
+The SACE has elaborated an extensive documentation, available through the [CROS - PORTAL](https://ec.europa.eu/eurostat/cros/content/seasonal-adjustment):
 
-- [Quick start](http://www.cros-portal.eu/content/jdemetra-quick-start-0) is an introduction to the JDemetra+ functions for seasonal adjustment, including details regarding installation. 
-- [User guide](http://www.cros-portal.eu/content/jdemetra-user-guide-0) includes step-by-step descriptions of how to perform a typical analysis of seasonal data and useful tips that facilitate replication of the results with the user’s own data and working instructions. 
-- [Reference manual](http://www.cros-portal.eu/content/jdemetra-reference-manual)  covers all available JDemetra+ functionalities, options and functions available through the interface. 
+- [Quick start](https://ec.europa.eu/eurostat/cros/content/jdemetra-quick-start-0) is an introduction to the JDemetra+ functions for seasonal adjustment, including details regarding installation. 
+- [User guide](https://ec.europa.eu/eurostat/cros/content/jdemetra-user-guide-0) includes step-by-step descriptions of how to perform a typical analysis of seasonal data and useful tips that facilitate replication of the results with the user’s own data and working instructions. 
+- [Reference manual](https://ec.europa.eu/eurostat/cros/content/jdemetra-reference-manual)  covers all available JDemetra+ functionalities, options and functions available through the interface. 
 
 The [technical docs](https://github.com/jdemetra/jdemetra-app/wiki) are available on the wiki.
