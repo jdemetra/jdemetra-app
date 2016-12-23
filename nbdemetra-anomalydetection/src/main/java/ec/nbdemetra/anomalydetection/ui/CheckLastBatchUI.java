@@ -26,9 +26,9 @@ import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IActiveView;
 import ec.nbdemetra.ui.NbComponents;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.nbdemetra.ui.tools.ToolsPersistence;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -212,7 +212,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
         prefButton = toolBar.add(new AbstractAction("", DemetraUiIcon.PREFERENCES) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                OpenIdePropertySheetBeanEditor.editNode(n, "Properties", null);
+                new PropertySheetDialogBuilder().title("Properties").editNode(n);
             }
         });
         prefButton.setToolTipText("Open the properties dialog");

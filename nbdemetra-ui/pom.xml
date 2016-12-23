@@ -133,6 +133,10 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-filesystems-nb</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-api-progress</artifactId>
+        </dependency>
 
         <!-- NbDemetra -->
         <dependency>

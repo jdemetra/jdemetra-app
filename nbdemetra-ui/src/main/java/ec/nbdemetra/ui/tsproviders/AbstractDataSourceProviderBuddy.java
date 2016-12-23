@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tss.tsproviders.*;
 import java.awt.Image;
 import java.beans.BeanInfo;
@@ -83,7 +83,7 @@ public abstract class AbstractDataSourceProviderBuddy implements IDataSourceProv
     public boolean editBean(String title, Object bean) throws IntrospectionException {
         Sheet sheet = createSheet(createSheetSets(bean));
         Image image = getIcon(BeanInfo.ICON_COLOR_16x16, false);
-        return OpenIdePropertySheetBeanEditor.editSheet(sheet, title, image);
+        return new PropertySheetDialogBuilder().title(title).icon(image).editSheet(sheet);
     }
 
     @Nonnull

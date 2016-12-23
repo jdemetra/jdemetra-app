@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.tss.TsMoniker;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.openide.nodes.BeanNode;
 import org.openide.nodes.Sheet;
 
 /**
@@ -92,7 +91,9 @@ public interface IDataSourceProviderBuddy {
     }
 
     default boolean editBean(@Nonnull String title, @Nonnull Object bean) throws IntrospectionException {
-        Image image = getIcon(BeanInfo.ICON_COLOR_16x16, false);
-        return OpenIdePropertySheetBeanEditor.editNode(new BeanNode<>(bean), title, image);
+        return new PropertySheetDialogBuilder()
+                .title(title)
+                .icon(getIcon(BeanInfo.ICON_COLOR_16x16, false))
+                .editBean(bean);
     }
 }
