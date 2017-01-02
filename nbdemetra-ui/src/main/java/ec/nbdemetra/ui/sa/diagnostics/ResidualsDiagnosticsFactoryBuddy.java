@@ -23,9 +23,9 @@ import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.IResetable;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.ResidualsDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.ResidualsDiagnosticsFactory;
@@ -254,7 +254,7 @@ public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
             Sheet sheet = createSheet((ResidualsDiagnosticsConfiguration) bean);
             String title = Bundle.residualsDiagnostics_edit_title();
             while (true) {
-                if (!OpenIdePropertySheetBeanEditor.editSheet(sheet, title, getIcon())) {
+                if (!new PropertySheetDialogBuilder().title(title).icon(getIcon()).editSheet(sheet)) {
                     return false;
                 }
                 try {

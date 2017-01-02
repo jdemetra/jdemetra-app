@@ -19,12 +19,10 @@ package ec.nbdemetra.common;
 import com.google.common.io.Files;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.awt.ShowInFolderActionListener;
-import ec.nbdemetra.ui.notification.MessageType;
-import ec.nbdemetra.ui.notification.NotifyUtil;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
+import ec.nbdemetra.ui.SingleFileExporter;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -34,16 +32,10 @@ import ec.tss.tsproviders.common.txt.TxtFileFilter;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import org.netbeans.api.progress.ProgressHandle;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
@@ -64,7 +56,7 @@ public final class TxtTsSave implements ITsSave {
     public TxtTsSave() {
         this.fileChooserBuilder = new FileChooserBuilder(TxtTsSave.class)
                 .setFileFilter(new SaveFileFilter())
-                .setSelectionApprover(new SaveSelectionApprover());
+                .setSelectionApprover(SingleFileExporter.overwriteApprover());
         this.optionsEditor = new OptionsEditor();
         this.optionsBean = new OptionsBean();
     }
@@ -86,34 +78,21 @@ public final class TxtTsSave implements ITsSave {
 
     @Override
     public void save(Ts[] ts) {
-        File file = fileChooserBuilder.showSaveDialog();
-        if (file != null) {
-            if (optionsEditor.editBean(optionsBean)) {
-                CompletableFuture
-                        .supplyAsync(() -> store(ts, file, optionsBean))
-                        .whenCompleteAsync(TxtTsSave::notify, SwingUtilities::invokeLater);
-            }
+        File target = fileChooserBuilder.showSaveDialog();
+        if (target != null && optionsEditor.editBean(optionsBean)) {
+            new SingleFileExporter()
+                    .file(target)
+                    .progressLabel("Saving to text file")
+                    .onErrorNotify("Saving to text file failed")
+                    .onSussessNotify("Text file saved")
+                    .execAsync((f, ph) -> store(ts, f, optionsBean, ph));
         }
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    private static void notify(File file, Throwable ex) {
-        if (ex != null) {
-            Throwable tmp = unwrapException(ex, CompletionException.class, UncheckedIOException.class);
-            NotifyUtil.error("Saving to text file failed", tmp.getMessage(), tmp);
-        } else {
-            NotifyUtil.show("Text file saved", "Show in folder", MessageType.SUCCESS, ShowInFolderActionListener.of(file), null, null);
-        }
-    }
-
-    private static Throwable unwrapException(Throwable ex, Class<? extends Throwable>... types) {
-        return ex.getCause() != null && Arrays.stream(types).anyMatch(o -> o.isInstance(ex)) ? unwrapException(ex.getCause(), types) : ex;
-    }
-
-    private static File store(Ts[] data, File file, OptionsBean options) {
-        ProgressHandle progressHandle = ProgressHandle.createHandle("Saving to text file");
-        progressHandle.start();
-        progressHandle.progress("Initializing content");
+    private static File store(Ts[] data, File file, OptionsBean options, ProgressHandle ph) throws IOException {
+        ph.start();
+        ph.progress("Initializing content");
         TsCollection col = Arrays.stream(data).collect(TsFactory.toTsCollection());
         TxtTssTransferHandler handler = new TxtTssTransferHandler();
         Config config = handler.getConfig().toBuilder()
@@ -123,16 +102,10 @@ public final class TxtTsSave implements ITsSave {
                 .put("vertical", options.vertical)
                 .build();
         handler.setConfig(config);
-        try {
-            progressHandle.progress("Creating content");
-            String content = handler.tsCollectionToString(col);
-            progressHandle.progress("Writing content");
-            Files.write(content, file, StandardCharsets.UTF_8);
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
-        } finally {
-            progressHandle.finish();
-        }
+        ph.progress("Creating content");
+        String content = handler.tsCollectionToString(col);
+        ph.progress("Writing content");
+        Files.write(content, file, StandardCharsets.UTF_8);
         return file;
     }
 
@@ -148,18 +121,6 @@ public final class TxtTsSave implements ITsSave {
         @Override
         public String getDescription() {
             return delegate.getDescription();
-        }
-    }
-
-    private static final class SaveSelectionApprover implements FileChooserBuilder.SelectionApprover {
-
-        @Override
-        public boolean approve(File[] selection) {
-            if (selection.length > 0 && selection[0].exists()) {
-                NotifyDescriptor d = new NotifyDescriptor.Confirmation("Overwrite file?", NotifyDescriptor.OK_CANCEL_OPTION);
-                return DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.OK_OPTION;
-            }
-            return selection.length != 0;
         }
     }
 
@@ -189,7 +150,7 @@ public final class TxtTsSave implements ITsSave {
         @Override
         final public boolean editBean(Object bean) {
             OptionsBean config = (OptionsBean) bean;
-            return OpenIdePropertySheetBeanEditor.editSheet(getSheet(config), "Options", null);
+            return new PropertySheetDialogBuilder().title("Options").editSheet(getSheet(config));
         }
     }
     //</editor-fold>

@@ -26,9 +26,9 @@ import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.IResetable;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.output.CsvMatrixOutputConfiguration;
 import ec.tss.sa.output.CsvMatrixOutputFactory;
@@ -107,7 +107,9 @@ public class CsvMatrixOutputBuddy implements INbOutputFactory, IConfigurable, IR
 
         @Override
         public boolean editBean(Object bean) throws IntrospectionException {
-            return OpenIdePropertySheetBeanEditor.editNode(new CsvMatrixNode((CsvMatrixOutputConfiguration) bean), "Edit Csv Matrix output config", null);
+            return new PropertySheetDialogBuilder()
+                    .title("Edit Csv Matrix output config")
+                    .editNode(new CsvMatrixNode((CsvMatrixOutputConfiguration) bean));
         }
     }
 

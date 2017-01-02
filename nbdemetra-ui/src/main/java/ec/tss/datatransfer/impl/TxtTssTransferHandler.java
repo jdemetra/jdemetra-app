@@ -25,9 +25,9 @@ import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IConfigurable;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
@@ -50,7 +50,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import org.openide.nodes.Sheet;
-import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -455,8 +454,10 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
             b.withBoolean().selectField(bean, "exportTable").display("Allow export").add();
             sheet.put(b.build());
 
-            return OpenIdePropertySheetBeanEditor.editSheet(sheet, "Configure Tab-delimited values",
-                    ImageUtilities.icon2Image(DemetraUiIcon.CLIPBOARD_PASTE_DOCUMENT_TEXT_16));
+            return new PropertySheetDialogBuilder()
+                    .title("Configure Tab-delimited values")
+                    .icon(DemetraUiIcon.CLIPBOARD_PASTE_DOCUMENT_TEXT_16)
+                    .editSheet(sheet);
         }
     }
 

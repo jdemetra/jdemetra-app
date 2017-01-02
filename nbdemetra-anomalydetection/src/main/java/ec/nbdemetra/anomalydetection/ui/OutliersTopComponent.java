@@ -22,9 +22,9 @@ import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IActiveView;
 import ec.nbdemetra.ui.NbComponents;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.ui.interfaces.ITsGrid;
 import ec.util.chart.ObsIndex;
@@ -247,7 +247,7 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
         prefButton = result.add(new AbstractAction("", DemetraUiIcon.PREFERENCES) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                OpenIdePropertySheetBeanEditor.editNode(node, "Properties", null);
+                new PropertySheetDialogBuilder().title("Properties").editNode(node);
             }
         });
         prefButton.setToolTipText("Open the properties dialog");

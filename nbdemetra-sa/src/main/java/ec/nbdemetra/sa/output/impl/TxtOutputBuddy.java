@@ -27,9 +27,9 @@ import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.IResetable;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.output.TxtOutputConfiguration;
 import ec.tss.sa.output.TxtOutputFactory;
@@ -115,7 +115,9 @@ public class TxtOutputBuddy implements INbOutputFactory, IConfigurable, IResetab
 
         @Override
         public boolean editBean(Object bean) throws IntrospectionException {
-            return OpenIdePropertySheetBeanEditor.editNode(new TxtNode((TxtOutputConfiguration) bean), "Edit Text output config", null);
+            return new PropertySheetDialogBuilder()
+                    .title("Edit Text output config")
+                    .editNode(new TxtNode((TxtOutputConfiguration) bean));
         }
     }
 
