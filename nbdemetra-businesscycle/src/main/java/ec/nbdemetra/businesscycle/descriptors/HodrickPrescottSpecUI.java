@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.businesscycle.descriptors;
 
-import ec.nbdemetra.ui.properties.l2fprod.CustomPropertyEditorRegistry;
 import ec.satoolkit.SaSpecification;
 import ec.tss.businesscycle.documents.HodrickPrescottSpecification;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
@@ -20,12 +19,6 @@ import java.util.List;
  */
 public class HodrickPrescottSpecUI implements IObjectDescriptor<HodrickPrescottSpecification> {
     
-    static {
-        CustomPropertyEditorRegistry.INSTANCE.registerEnumEditor(SaSpecification.Method.class);
-        CustomPropertyEditorRegistry.INSTANCE.registerEnumEditor(SaSpecification.Spec.class);
-        CustomPropertyEditorRegistry.INSTANCE.registerEnumEditor(HodrickPrescottSpecification.Target.class);
-    }
-
     final HodrickPrescottSpecification core;
 
     public HodrickPrescottSpecUI(HodrickPrescottSpecification spec) {

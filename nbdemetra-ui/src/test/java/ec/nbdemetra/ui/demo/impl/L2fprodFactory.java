@@ -24,6 +24,7 @@ import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.descriptors.IPropertyDescriptors;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
+import ec.ui.interfaces.ITsGrid;
 import java.awt.Component;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -42,17 +43,19 @@ public final class L2fprodFactory extends DemoComponentFactory {
     }
 
     private static Component create() {
-        return PropertiesPanelFactory.INSTANCE.createPanel(new CustomObj(3.14, CalendarSigma.Signif));
+        return PropertiesPanelFactory.INSTANCE.createPanel(new CustomObj(3.14, CalendarSigma.Signif, ITsGrid.Orientation.REVERSED));
     }
 
     public static final class CustomObj implements IPropertyDescriptors {
 
         private double doubleValue;
         private CalendarSigma enumValue;
+        private ITsGrid.Orientation orientation;
 
-        public CustomObj(double doubleValue, CalendarSigma enumValue) {
+        public CustomObj(double doubleValue, CalendarSigma enumValue, ITsGrid.Orientation orientation) {
             this.doubleValue = doubleValue;
             this.enumValue = enumValue;
+            this.orientation = orientation;
         }
 
         public double getDoubleValue() {
@@ -71,6 +74,14 @@ public final class L2fprodFactory extends DemoComponentFactory {
             this.enumValue = enumValue;
         }
 
+        public ITsGrid.Orientation getOrientation() {
+            return orientation;
+        }
+
+        public void setOrientation(ITsGrid.Orientation orientation) {
+            this.orientation = orientation;
+        }
+
         @Override
         public List<EnhancedPropertyDescriptor> getProperties() {
             List<EnhancedPropertyDescriptor> result = new ArrayList<>();
@@ -79,6 +90,10 @@ public final class L2fprodFactory extends DemoComponentFactory {
                 result.add(desc);
             }
             desc = enumValueDesc();
+            if (desc != null) {
+                result.add(desc);
+            }
+            desc = orientationDesc();
             if (desc != null) {
                 result.add(desc);
             }
@@ -106,6 +121,17 @@ public final class L2fprodFactory extends DemoComponentFactory {
                 PropertyDescriptor desc = new PropertyDescriptor("enumValue", this.getClass());
                 EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, 1);
                 desc.setDisplayName("Enum value");
+                return edesc;
+            } catch (IntrospectionException ex) {
+                return null;
+            }
+        }
+
+        private EnhancedPropertyDescriptor orientationDesc() {
+            try {
+                PropertyDescriptor desc = new PropertyDescriptor("orientation", this.getClass());
+                EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, 2);
+                desc.setDisplayName("Orientation");
                 return edesc;
             } catch (IntrospectionException ex) {
                 return null;

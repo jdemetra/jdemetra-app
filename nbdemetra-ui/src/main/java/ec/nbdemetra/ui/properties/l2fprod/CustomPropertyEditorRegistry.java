@@ -1,44 +1,17 @@
 package ec.nbdemetra.ui.properties.l2fprod;
 
-import com.l2fprod.common.beans.editor.ComboBoxPropertyEditor;
 import com.l2fprod.common.propertysheet.PropertyEditorRegistry;
-import ec.satoolkit.DecompositionMode;
-import ec.satoolkit.benchmarking.SaBenchmarkingSpec.Target;
-import ec.satoolkit.seats.SeatsSpecification;
-import ec.satoolkit.x11.CalendarSigma;
 import ec.satoolkit.x11.SeasonalFilterOption;
 import ec.satoolkit.x11.SigmavecOption;
-import ec.tss.sa.output.CsvLayout;
 import ec.tstoolkit.Parameter;
-import ec.tstoolkit.modelling.ComponentType;
-import ec.tstoolkit.modelling.DefaultTransformationType;
-import ec.tstoolkit.modelling.RegressionTestSpec;
-import ec.tstoolkit.modelling.RegressionTestType;
-import ec.tstoolkit.modelling.TradingDaysSpecType;
 import ec.tstoolkit.modelling.TsVariableDescriptor;
-import ec.tstoolkit.modelling.TsVariableDescriptor.UserComponentType;
-import ec.tstoolkit.modelling.arima.Method;
-import ec.tstoolkit.modelling.arima.tramo.EasterSpec;
-import ec.tstoolkit.modelling.arima.tramo.TradingDaysSpec;
-import ec.tstoolkit.modelling.arima.tramo.TramoChoice;
-import ec.tstoolkit.structural.ComponentUse;
-import ec.tstoolkit.structural.SeasonalModel;
 import ec.tstoolkit.timeseries.Day;
-import ec.tstoolkit.timeseries.PeriodSelectorType;
-import ec.tstoolkit.timeseries.calendars.LengthOfPeriodType;
-import ec.tstoolkit.timeseries.calendars.TradingDaysType;
 import ec.tstoolkit.timeseries.regression.InterventionVariable;
 import ec.tstoolkit.timeseries.regression.OutlierDefinition;
 import ec.tstoolkit.timeseries.regression.OutlierType;
 import ec.tstoolkit.timeseries.regression.Ramp;
 import ec.tstoolkit.timeseries.regression.Sequence;
-import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.utilities.Directory;
-import ec.ui.descriptors.TsPeriodSelectorUI;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
-import ec.ui.interfaces.ITsControl.TooltipType;
-import ec.ui.interfaces.ITsGrid;
-import ec.ui.interfaces.ITsList;
 import java.beans.PropertyEditor;
 
 /**
@@ -53,38 +26,9 @@ public enum CustomPropertyEditorRegistry {
     private CustomPropertyEditorRegistry() {
         m_registry = PropertyEditorRegistry.INSTANCE;
 
-        registerEnumEditor(ITsGrid.Chronology.class);
-        registerEnumEditor(ITsGrid.Orientation.class);
-        registerEnumEditor(ITsGrid.Mode.class);
-        registerEnumEditor(ITsList.InfoType.class);
-        registerEnumEditor(TooltipType.class);
-        registerEnumEditor(TsUpdateMode.class);
-        registerEnumEditor(ComponentType.class);
-        registerEnumEditor(UserComponentType.class);
-        registerEnumEditor(PeriodSelectorType.class);
-        registerEnumEditor(DefaultTransformationType.class);
-        registerEnumEditor(TradingDaysType.class);
-        registerEnumEditor(TramoChoice.class);
-        registerEnumEditor(TradingDaysSpecType.class);
-        registerEnumEditor(LengthOfPeriodType.class);
-        registerEnumEditor(RegressionTestSpec.class);
-        registerEnumEditor(SeasonalFilterOption.class);
-        registerEnumEditor(ComponentUse.class);
-        registerEnumEditor(SeasonalModel.class);
-        registerEnumEditor(Method.class);
-        registerEnumEditor(DecompositionMode.class);
-        registerEnumEditor(CalendarSigma.class);
-        registerEnumEditor(CsvLayout.class);
-        registerEnumEditor(Target.class);
-        registerEnumEditor(EasterSpec.Type.class);
-        registerEnumEditor(TsFrequency.class);
-        //registerEnumEditor(SpreadsheetLayout.class);
+        m_registry.registerEditor(Enum.class, EnumPropertyEditor.class);
+        
         //registerCompositeEditor(SeasonalFilterOption[].class);
-        registerEnumEditor(TsPeriodSelectorUI.Type.class);
-        registerEnumEditor(SeatsSpecification.ApproximationMode.class);
-        registerEnumEditor(SeatsSpecification.EstimationMethod.class);
-        registerEnumEditor(RegressionTestType.class);
-        registerEnumEditor(TradingDaysSpec.AutoMethod.class);
 
         register(Directory.class, new DirectoryEditor());
         register(Day.class, new JDayPropertyEditor());
@@ -108,16 +52,8 @@ public enum CustomPropertyEditorRegistry {
         return m_registry;
     }
 
+    @Deprecated
     public void registerEnumEditor(Class<? extends Enum<?>> type) {
-        Enum<?>[] enumConstants = type.getEnumConstants();
-        ComboBoxPropertyEditor.Value[] values = new ComboBoxPropertyEditor.Value[enumConstants.length];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = new ComboBoxPropertyEditor.Value(enumConstants[i], enumConstants[i].name());
-        }
-
-        ComboBoxPropertyEditor editor = new ComboBoxPropertyEditor();
-        editor.setAvailableValues(values);
-        m_registry.registerEditor(type, editor);
     }
 
     /**
