@@ -51,7 +51,7 @@ public enum CustomPropertyEditorRegistry {
     private final PropertyEditorRegistry m_registry;
 
     private CustomPropertyEditorRegistry() {
-        m_registry = PropertyEditorRegistry.Instance;
+        m_registry = PropertyEditorRegistry.INSTANCE;
 
         registerEnumEditor(ITsGrid.Chronology.class);
         registerEnumEditor(ITsGrid.Orientation.class);
