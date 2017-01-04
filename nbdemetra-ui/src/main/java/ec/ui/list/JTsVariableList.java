@@ -219,11 +219,15 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
 
     public void appendTsVariables(TsCollection coll) {
         for (Ts s : coll) {
+            String name=variables.nextName();
+            TsVariable var;
             if (s.getMoniker().isAnonymous()) {
-                variables.set(variables.nextName(), new TsVariable(s.getName(), s.getTsData()));
+                var=new TsVariable(s.getName(), s.getTsData());
             } else {
-                variables.set(variables.nextName(), new DynamicTsVariable(s.getName(), s.getMoniker(), s.getTsData()));
+                var=new DynamicTsVariable(s.getName(), s.getMoniker(), s.getTsData());
             }
+            var.setName(name);
+            variables.set(name, var);
         }
         ((CustomTableModel) table.getModel()).fireTableStructureChanged();
     }
