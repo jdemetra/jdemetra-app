@@ -28,7 +28,7 @@ import ec.ui.interfaces.ITsGrid;
 import java.awt.Component;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -43,61 +43,36 @@ public final class L2fprodFactory extends DemoComponentFactory {
     }
 
     private static Component create() {
-        return PropertiesPanelFactory.INSTANCE.createPanel(new CustomObj(3.14, CalendarSigma.Signif, ITsGrid.Orientation.REVERSED));
+        return PropertiesPanelFactory.INSTANCE.createPanel(new CustomObj());
     }
 
+    @lombok.Data
     public static final class CustomObj implements IPropertyDescriptors {
 
         private double doubleValue;
-        private CalendarSigma enumValue;
-        private ITsGrid.Orientation orientation;
+        private double smallValue;
+        private CalendarSigma enumValue1;
+        private ITsGrid.Orientation enumValue2;
+        private String stringValue;
 
-        public CustomObj(double doubleValue, CalendarSigma enumValue, ITsGrid.Orientation orientation) {
-            this.doubleValue = doubleValue;
-            this.enumValue = enumValue;
-            this.orientation = orientation;
-        }
-
-        public double getDoubleValue() {
-            return doubleValue;
-        }
-
-        public void setDoubleValue(double doubleValue) {
-            this.doubleValue = doubleValue;
-        }
-
-        public CalendarSigma getEnumValue() {
-            return enumValue;
-        }
-
-        public void setEnumValue(CalendarSigma enumValue) {
-            this.enumValue = enumValue;
-        }
-
-        public ITsGrid.Orientation getOrientation() {
-            return orientation;
-        }
-
-        public void setOrientation(ITsGrid.Orientation orientation) {
-            this.orientation = orientation;
+        public CustomObj() {
+            this.doubleValue = 3.14;
+            this.smallValue = 0.0000001;
+            this.enumValue1 = CalendarSigma.Select;
+            this.enumValue2 = ITsGrid.Orientation.REVERSED;
+            this.stringValue = "hello";
         }
 
         @Override
         public List<EnhancedPropertyDescriptor> getProperties() {
-            List<EnhancedPropertyDescriptor> result = new ArrayList<>();
-            EnhancedPropertyDescriptor desc = doubleValueDesc();
-            if (desc != null) {
-                result.add(desc);
-            }
-            desc = enumValueDesc();
-            if (desc != null) {
-                result.add(desc);
-            }
-            desc = orientationDesc();
-            if (desc != null) {
-                result.add(desc);
-            }
-            return result;
+            int i = 0;
+            return Arrays.asList(
+                    descriptorOf("doubleValue", i++),
+                    descriptorOf("smallValue", i++),
+                    descriptorOf("enumValue1", i++),
+                    descriptorOf("enumValue2", i++),
+                    descriptorOf("stringValue", i++)
+            );
         }
 
         @Override
@@ -105,36 +80,12 @@ public final class L2fprodFactory extends DemoComponentFactory {
             return "Some custom object";
         }
 
-        private EnhancedPropertyDescriptor doubleValueDesc() {
+        private EnhancedPropertyDescriptor descriptorOf(String propertyName, int position) {
             try {
-                PropertyDescriptor desc = new PropertyDescriptor("doubleValue", this.getClass());
-                EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, 0);
-                desc.setDisplayName("Double value");
-                return edesc;
+                PropertyDescriptor desc = new PropertyDescriptor(propertyName, this.getClass());
+                return new EnhancedPropertyDescriptor(desc, position);
             } catch (IntrospectionException ex) {
-                return null;
-            }
-        }
-
-        private EnhancedPropertyDescriptor enumValueDesc() {
-            try {
-                PropertyDescriptor desc = new PropertyDescriptor("enumValue", this.getClass());
-                EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, 1);
-                desc.setDisplayName("Enum value");
-                return edesc;
-            } catch (IntrospectionException ex) {
-                return null;
-            }
-        }
-
-        private EnhancedPropertyDescriptor orientationDesc() {
-            try {
-                PropertyDescriptor desc = new PropertyDescriptor("orientation", this.getClass());
-                EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, 2);
-                desc.setDisplayName("Orientation");
-                return edesc;
-            } catch (IntrospectionException ex) {
-                return null;
+                throw new RuntimeException(ex);
             }
         }
     }

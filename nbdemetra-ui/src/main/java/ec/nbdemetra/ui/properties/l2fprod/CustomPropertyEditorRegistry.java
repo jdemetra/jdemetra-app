@@ -27,6 +27,8 @@ public enum CustomPropertyEditorRegistry {
         m_registry = PropertyEditorRegistry.INSTANCE;
 
         m_registry.registerEditor(Enum.class, EnumPropertyEditor.class);
+        m_registry.registerEditor(double.class, DoublePropertyEditor.class);
+        m_registry.registerEditor(Double.class, DoublePropertyEditor.class);
         
         //registerCompositeEditor(SeasonalFilterOption[].class);
 
