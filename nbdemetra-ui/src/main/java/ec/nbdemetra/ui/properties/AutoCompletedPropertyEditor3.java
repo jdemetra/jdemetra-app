@@ -70,31 +70,7 @@ public class AutoCompletedPropertyEditor3 extends AbstractExPropertyEditor {
 
     @Override
     protected InplaceEditor createInplaceEditor() {
-        return new AbstractInplaceEditor() {
-            JTextField component;
-
-            @Override
-            public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
-                component = new JTextField();
-                applyAutoCompletion(env, component);
-                super.connect(propertyEditor, env);
-            }
-
-            @Override
-            public JComponent getComponent() {
-                return component;
-            }
-
-            @Override
-            public Object getValue() {
-                return component.getText();
-            }
-
-            @Override
-            public void setValue(Object o) {
-                component.setText((String) o);
-            }
-        };
+        return new AC3InplaceEditor();
     }
 
     @Override
@@ -137,5 +113,32 @@ public class AutoCompletedPropertyEditor3 extends AbstractExPropertyEditor {
         attr(env, SOURCE_ATTRIBUTE, AutoCompletionSource.class).ifPresent(completion::setSource);
         attr(env, CELL_RENDERER_ATTRIBUTE, ListCellRenderer.class).ifPresent(completion.getList()::setCellRenderer);
         attr(env, PROMPT_TEXT_ATTRIBUTE, String.class).ifPresent(o -> new TextPrompt(o, component).setEnabled(false));
+    }
+
+    private static final class AC3InplaceEditor extends AbstractInplaceEditor {
+
+        private JTextField component;
+
+        @Override
+        public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
+            component = new JTextField();
+            applyAutoCompletion(env, component);
+            super.connect(propertyEditor, env);
+        }
+
+        @Override
+        public JComponent getComponent() {
+            return component;
+        }
+
+        @Override
+        public Object getValue() {
+            return component.getText();
+        }
+
+        @Override
+        public void setValue(Object o) {
+            component.setText((String) o);
+        }
     }
 }

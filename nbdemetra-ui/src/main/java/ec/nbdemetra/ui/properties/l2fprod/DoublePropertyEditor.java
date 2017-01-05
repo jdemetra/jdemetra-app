@@ -22,15 +22,11 @@ import static internal.JTextComponents.enableDecimalMappingOnNumpad;
 import static internal.JTextComponents.enableValidationFeedback;
 import static internal.JTextComponents.fixMaxDecimals;
 import static internal.JTextComponents.isDouble;
-import java.awt.Color;
-import java.awt.Component;
+import static internal.JTextComponents.peekValue;
 import java.beans.PropertyEditor;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.function.BiConsumer;
 import javax.swing.JFormattedTextField;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.NumberFormatter;
 
 /**
  *
@@ -39,49 +35,41 @@ import javax.swing.text.NumberFormatter;
  */
 public final class DoublePropertyEditor implements PropertyEditor {
 
-    private final DecimalFormat format;
-    private final JFormattedTextField editor;
-
     @lombok.experimental.Delegate
     private final CustomPropertyEditorSupport support;
 
     @SuppressWarnings("LeakingThisInConstructor")
     public DoublePropertyEditor() {
-        this.format = new DecimalFormat();
-        this.editor = new JFormattedTextField();
-        this.support = CustomPropertyEditorSupport.of(editor, this, DoubleResource.INSTANCE);
-        initComponents();
+        this.support = CustomPropertyEditorSupport.of(createEditor(), this, DoubleResource.INSTANCE);
     }
 
-    private void initComponents() {
+    private static JFormattedTextField createEditor() {
+        DecimalFormat format = new DecimalFormat();
         fixMaxDecimals(format);
-        editor.setBorder(LookAndFeelTweaks.EMPTY_BORDER);
-        editor.setFormatterFactory(new DefaultFormatterFactory(new NumberFormatter(format)));
-        enableValidationFeedback(editor, o -> isDouble(format, o), () -> Color.RED);
-        enableDecimalMappingOnNumpad(editor, () -> format.getDecimalFormatSymbols().getDecimalSeparator());
+        JFormattedTextField result = new JFormattedTextField(format);
+        result.setBorder(LookAndFeelTweaks.EMPTY_BORDER);
+        enableValidationFeedback(result, o -> isDouble(format, o));
+        enableDecimalMappingOnNumpad(result);
+        return result;
     }
 
-    private enum DoubleResource implements CustomPropertyEditorSupport.Resource {
+    private enum DoubleResource implements CustomPropertyEditorSupport.Resource<JFormattedTextField, Number> {
 
         INSTANCE;
 
         @Override
-        public void bindValue(Component editor, BiConsumer<Object, Object> y) {
-            editor.addPropertyChangeListener("value", o -> y.accept(o.getOldValue(), o.getNewValue()));
+        public void bindValue(JFormattedTextField editor, BiConsumer<Number, Number> broadcaster) {
+            editor.addPropertyChangeListener("value", o -> broadcaster.accept((Number) o.getOldValue(), (Number) o.getNewValue()));
         }
 
         @Override
-        public Object getValue(Component editor) {
-            try {
-                return ((JFormattedTextField) editor).getFormatter().stringToValue(((JFormattedTextField) editor).getText());
-            } catch (ParseException ex) {
-                return ((JFormattedTextField) editor).getValue();
-            }
+        public Number getValue(JFormattedTextField editor) {
+            return (Number) peekValue(editor).orElseGet(editor::getValue);
         }
 
         @Override
-        public void setValue(Component editor, Object value) {
-            ((JFormattedTextField) editor).setValue(value);
+        public void setValue(JFormattedTextField editor, Number value) {
+            editor.setValue(value);
         }
     }
 }

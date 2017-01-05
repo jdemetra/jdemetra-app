@@ -30,16 +30,16 @@ import java.util.function.BiConsumer;
  */
 public final class CustomPropertyEditorSupport implements PropertyEditor {
 
-    public interface Resource {
+    public interface Resource<C extends Component, V> {
 
-        void bindValue(Component editor, BiConsumer<Object, Object> y);
+        void bindValue(C editor, BiConsumer<V, V> broadcaster);
 
-        Object getValue(Component editor);
+        Object getValue(C editor);
 
-        void setValue(Component editor, Object value);
+        void setValue(C editor, V value);
     }
 
-    public static CustomPropertyEditorSupport of(Component customEditor, Object source, Resource resource) {
+    public static <C extends Component> CustomPropertyEditorSupport of(C customEditor, Object source, Resource<C, ?> resource) {
         PropertyChangeSupport listeners = new PropertyChangeSupport(source);
         resource.bindValue(customEditor, (o, n) -> listeners.firePropertyChange("value", o, n));
         return new CustomPropertyEditorSupport(customEditor, listeners, resource);

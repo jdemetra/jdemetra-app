@@ -19,14 +19,20 @@ package internal;
 import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.text.DecimalFormat;
+import java.text.Format;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.ParsePosition;
+import java.util.Optional;
 import java.util.function.IntSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import javax.swing.JFormattedTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
+import javax.swing.text.NumberFormatter;
 
 /**
  *
@@ -37,6 +43,19 @@ public final class JTextComponents {
 
     private JTextComponents() {
         // static class
+    }
+
+    public static void enableDecimalMappingOnNumpad(JFormattedTextField component) {
+        enableDecimalMappingOnNumpad(component, () -> {
+            JFormattedTextField.AbstractFormatter af = component.getFormatter();
+            if (af instanceof NumberFormatter) {
+                Format format = ((NumberFormatter) af).getFormat();
+                if (format instanceof DecimalFormat) {
+                    return ((DecimalFormat) format).getDecimalFormatSymbols().getDecimalSeparator();
+                }
+            }
+            return '.';
+        });
     }
 
     public static void enableDecimalMappingOnNumpad(JTextComponent component, IntSupplier decimalSeparator) {
@@ -72,6 +91,10 @@ public final class JTextComponents {
         });
     }
 
+    public static void enableValidationFeedback(JTextComponent component, Predicate<? super String> validator) {
+        enableValidationFeedback(component, validator, JTextComponents::getInvalidForeground);
+    }
+
     public static void enableValidationFeedback(JTextComponent component, Predicate<? super String> validator, Supplier<Color> feedbackColor) {
         component.getDocument().addDocumentListener(new DocumentListener() {
             private final Color valid = component.getForeground();
@@ -105,5 +128,17 @@ public final class JTextComponents {
     public static void fixMaxDecimals(NumberFormat format) {
         format.setMinimumFractionDigits(0);
         format.setMaximumFractionDigits(64);
+    }
+
+    public static Optional peekValue(JFormattedTextField component) {
+        try {
+            return Optional.ofNullable(component.getFormatter().stringToValue(component.getText()));
+        } catch (ParseException ex) {
+            return Optional.empty();
+        }
+    }
+
+    public static Color getInvalidForeground() {
+        return Color.RED;
     }
 }

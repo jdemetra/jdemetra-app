@@ -30,23 +30,26 @@ public class DataFormatPropertyEditor extends AbstractExPropertyEditor {
 
     @Override
     public InplaceEditor createInplaceEditor() {
-        return new AbstractInplaceEditor() {
-            final DataFormatComponent2 component = new DataFormatComponent2();
+        return new DataFormatInplaceEditor();
+    }
 
-            @Override
-            public JComponent getComponent() {
-                return component;
-            }
+    private static final class DataFormatInplaceEditor extends AbstractInplaceEditor {
 
-            @Override
-            public Object getValue() {
-                return component.getDataFormat();
-            }
+        final DataFormatComponent2 component = new DataFormatComponent2();
 
-            @Override
-            public void setValue(Object o) {
-                component.setDataFormat((DataFormat) o);
-            }
-        };
+        @Override
+        public JComponent getComponent() {
+            return component;
+        }
+
+        @Override
+        public Object getValue() {
+            return component.getDataFormat();
+        }
+
+        @Override
+        public void setValue(Object o) {
+            component.setDataFormat((DataFormat) o);
+        }
     }
 }

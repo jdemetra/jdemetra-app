@@ -16,8 +16,10 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableMap;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
+import ec.nbdemetra.ui.properties.l2fprod.CustomPropertyEditorRegistry;
 import ec.nbdemetra.ui.properties.l2fprod.PropertiesPanelFactory;
 import ec.satoolkit.x11.CalendarSigma;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
@@ -26,15 +28,20 @@ import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.Month;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
-import ec.ui.interfaces.ITsGrid;
+import ec.util.various.swing.BasicSwingLauncher;
 import java.awt.Component;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.Arrays;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.swing.SwingWorker;
 import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service = DemoComponentFactory.class)
@@ -46,56 +53,108 @@ public final class L2fprodFactory extends DemoComponentFactory {
     }
 
     private static Component create() {
-        return PropertiesPanelFactory.INSTANCE.createPanel(new CustomObj());
+        return PropertiesPanelFactory.INSTANCE.createPanel(new Example());
     }
 
     @lombok.Data
-    public static final class CustomObj implements IPropertyDescriptors {
+    public static final class Primitives implements AutoDescriptors {
 
-        private double doubleValue;
-        private double smallValue;
-        private CalendarSigma enumValue1;
-        private ITsGrid.Orientation enumValue2;
-        private String stringValue;
-        private Date date;
-        private Day day;
+        byte byteValue = 1;
+        short shortValue = 123;
+        int intValue = 123;
+        long longValue = 123;
+        float floatValue = (float) Math.PI;
+        double doubleValue = Math.PI;
+        double smallDouble = 0.0000001;
+        boolean boolValue = true;
+        char charValue = 'A';
+    }
 
-        public CustomObj() {
-            this.doubleValue = 3.14;
-            this.smallValue = 0.0000001;
-            this.enumValue1 = CalendarSigma.Select;
-            this.enumValue2 = ITsGrid.Orientation.REVERSED;
-            this.stringValue = "hello";
-            this.date = new Date();
-            this.day = new Day(2010, Month.April, 1);
+    @lombok.Data
+    public static final class JdkObjects implements AutoDescriptors {
+
+        String stringValue = "hello";
+        SwingWorker.StateValue enumValue = SwingWorker.StateValue.PENDING;
+        Date dateValue = new Date();
+    }
+
+    @lombok.Data
+    public static final class DemetraObjects implements AutoDescriptors {
+
+        CalendarSigma calendarSigma = CalendarSigma.Signif;
+        Day day = new Day(2010, Month.April, 1);
+        String[] stringArray = {"hello", "world"};
+    }
+
+    @lombok.Data
+    public static final class Example implements AutoDescriptors {
+
+        Primitives primitives = new Primitives();
+        JdkObjects jdk = new JdkObjects();
+        DemetraObjects demetra = new DemetraObjects();
+    }
+
+    private interface AutoDescriptors extends IPropertyDescriptors {
+
+        @Override
+        default List<EnhancedPropertyDescriptor> getProperties() {
+            return PropertyDescriptors.descriptorsOf(getClass());
         }
 
         @Override
-        public List<EnhancedPropertyDescriptor> getProperties() {
-            int i = 0;
-            return Arrays.asList(
-                    descriptorOf("doubleValue", i++),
-                    descriptorOf("smallValue", i++),
-                    descriptorOf("enumValue1", i++),
-                    descriptorOf("enumValue2", i++),
-                    descriptorOf("stringValue", i++),
-                    descriptorOf("date", i++),
-                    descriptorOf("day", i++)
-            );
+        default String getDisplayName() {
+            return getClass().getSimpleName();
+        }
+    }
+
+    @lombok.experimental.UtilityClass
+    private class PropertyDescriptors {
+
+        List<EnhancedPropertyDescriptor> descriptorsOf(Class<?> beanClass) {
+            return descriptorsOf(beanClass, Stream.of(beanClass.getDeclaredFields()).map(Field::getName).collect(Collectors.toList()));
         }
 
-        @Override
-        public String getDisplayName() {
-            return "Some custom object";
+        List<EnhancedPropertyDescriptor> descriptorsOf(Class<?> beanClass, List<String> propertyNames) {
+            List<EnhancedPropertyDescriptor> result = new ArrayList<>();
+            for (int i = 0; i < propertyNames.size(); i++) {
+                result.add(descriptorOf(beanClass, propertyNames.get(i), i));
+            }
+            return result;
         }
 
-        private EnhancedPropertyDescriptor descriptorOf(String propertyName, int position) {
+        EnhancedPropertyDescriptor descriptorOf(Class<?> beanClass, String propertyName, int position) {
             try {
-                PropertyDescriptor desc = new PropertyDescriptor(propertyName, this.getClass());
+                PropertyDescriptor desc = new PropertyDescriptor(propertyName, beanClass);
+                String displayName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, desc.getName()).replace("-", " ");
+                Optional<Class<?>> registeredEditor = getRegisteredEditor(desc);
+                if (registeredEditor.isPresent()) {
+                    desc.setDisplayName(isL2fprodEditor(registeredEditor.get()) ? displayName : ("<html><b>" + displayName));
+                    desc.setShortDescription(registeredEditor.get().getName());
+                } else if (!IPropertyDescriptors.class.isAssignableFrom(desc.getPropertyType())) {
+                    desc.setDisplayName("<html><body><span style='text-decoration: line-through;'>" + displayName);
+                } else {
+                    desc.setDisplayName(displayName);
+                }
                 return new EnhancedPropertyDescriptor(desc, position);
             } catch (IntrospectionException ex) {
                 throw new RuntimeException(ex);
             }
         }
+
+        Optional<Class<?>> getRegisteredEditor(PropertyDescriptor desc) {
+            return getRegisteredEditor(desc.getPropertyType());
+        }
+
+        Optional<Class<?>> getRegisteredEditor(Class<?> propertyType) {
+            return Optional.ofNullable(CustomPropertyEditorRegistry.INSTANCE.getRegistry().getEditor(propertyType)).map(Object::getClass);
+        }
+
+        boolean isL2fprodEditor(Class<?> registeredEditor) {
+            return registeredEditor.getPackage().getName().startsWith("com.l2fprod");
+        }
+    }
+
+    public static void main(String[] args) {
+        new BasicSwingLauncher().content(L2fprodFactory::create).size(400, 550).launch();
     }
 }

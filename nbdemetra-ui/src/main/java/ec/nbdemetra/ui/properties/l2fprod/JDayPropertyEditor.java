@@ -2,11 +2,9 @@ package ec.nbdemetra.ui.properties.l2fprod;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import com.l2fprod.common.swing.LookAndFeelTweaks;
-import com.toedter.calendar.IDateEditor;
 import com.toedter.calendar.JTextFieldDateEditor;
 import ec.tstoolkit.timeseries.Day;
 import internal.CustomPropertyEditorSupport;
-import java.awt.Component;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.function.BiConsumer;
@@ -19,52 +17,31 @@ public class JDayPropertyEditor extends AbstractPropertyEditor {
 
     public JDayPropertyEditor() {
         this.editor = createEditor();
-        JDayResource.INSTANCE.bindValue(editor, this::firePropertyChange);
+        DayResource.INSTANCE.bindValue((JTextFieldDateEditor) editor, this::firePropertyChange);
     }
 
     @Override
     public Object getValue() {
-        return JDayResource.INSTANCE.getValue(editor);
+        return DayResource.INSTANCE.getValue((JTextFieldDateEditor) editor);
     }
 
     @Override
     public void setValue(Object o) {
-        JDayResource.INSTANCE.setValue(editor, o);
+        DayResource.INSTANCE.setValue((JTextFieldDateEditor) editor, (Day) o);
     }
 
-    private static Component createEditor() {
-        JTextFieldDateEditor result = new JTextFieldDateEditor("yyyy-MM-dd", "####-##-##", '_') {
-            @Override
-            public void commitEdit() throws ParseException {
-                preventInvalidCommit();
-            }
-
-            @Override
-            public Date getDate() {
-                return parseDateOrPrevious();
-            }
-
-            private void preventInvalidCommit() throws ParseException {
-                dateFormatter.parse(getText());
-            }
-
-            private Date parseDateOrPrevious() {
-                Date previous = date;
-                if (super.getDate() == null) {
-                    date = previous;
-                }
-                return date;
-            }
-        };
+    private static JTextFieldDateEditor createEditor() {
+        JTextFieldDateEditor result = new PatchedTextFieldDateEditor();
         result.setBorder(LookAndFeelTweaks.EMPTY_BORDER);
         return result;
     }
 
-    private enum JDayResource implements CustomPropertyEditorSupport.Resource {
+    private enum DayResource implements CustomPropertyEditorSupport.Resource<JTextFieldDateEditor, Day> {
+
         INSTANCE;
 
         @Override
-        public void bindValue(Component editor, BiConsumer<Object, Object> y) {
+        public void bindValue(JTextFieldDateEditor editor, BiConsumer<Day, Day> broadcaster) {
             editor.addPropertyChangeListener("date", evt -> {
                 Day oday = null, nday = null;
                 if (evt.getOldValue() instanceof Date) {
@@ -73,19 +50,48 @@ public class JDayPropertyEditor extends AbstractPropertyEditor {
                 if (evt.getNewValue() instanceof Date) {
                     nday = new Day((Date) evt.getNewValue());
                 }
-                y.accept(oday, nday);
+                broadcaster.accept(oday, nday);
             });
         }
 
         @Override
-        public Object getValue(Component editor) {
-            Date date = ((IDateEditor) editor).getDate();
+        public Day getValue(JTextFieldDateEditor editor) {
+            Date date = editor.getDate();
             return date != null ? new Day(date) : Day.BEG;
         }
 
         @Override
-        public void setValue(Component editor, Object value) {
-            ((IDateEditor) editor).setDate(value != null ? ((Day) value).getTime() : Day.toDay().getTime());
+        public void setValue(JTextFieldDateEditor editor, Day value) {
+            editor.setDate(value != null ? value.getTime() : Day.toDay().getTime());
+        }
+    }
+
+    private static final class PatchedTextFieldDateEditor extends JTextFieldDateEditor {
+
+        private PatchedTextFieldDateEditor() {
+            super("yyyy-MM-dd", "####-##-##", '_');
+        }
+
+        @Override
+        public void commitEdit() throws ParseException {
+            preventInvalidCommit();
+        }
+
+        @Override
+        public Date getDate() {
+            return parseDateOrPrevious();
+        }
+
+        private void preventInvalidCommit() throws ParseException {
+            dateFormatter.parse(getText());
+        }
+
+        private Date parseDateOrPrevious() {
+            Date previous = date;
+            if (super.getDate() == null) {
+                date = previous;
+            }
+            return date;
         }
     }
 }
