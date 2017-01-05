@@ -22,6 +22,8 @@ import ec.nbdemetra.ui.properties.l2fprod.PropertiesPanelFactory;
 import ec.satoolkit.x11.CalendarSigma;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.descriptors.IPropertyDescriptors;
+import ec.tstoolkit.timeseries.Day;
+import ec.tstoolkit.timeseries.Month;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
 import ec.ui.interfaces.ITsGrid;
@@ -29,6 +31,7 @@ import java.awt.Component;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -54,6 +57,8 @@ public final class L2fprodFactory extends DemoComponentFactory {
         private CalendarSigma enumValue1;
         private ITsGrid.Orientation enumValue2;
         private String stringValue;
+        private Date date;
+        private Day day;
 
         public CustomObj() {
             this.doubleValue = 3.14;
@@ -61,6 +66,8 @@ public final class L2fprodFactory extends DemoComponentFactory {
             this.enumValue1 = CalendarSigma.Select;
             this.enumValue2 = ITsGrid.Orientation.REVERSED;
             this.stringValue = "hello";
+            this.date = new Date();
+            this.day = new Day(2010, Month.April, 1);
         }
 
         @Override
@@ -71,7 +78,9 @@ public final class L2fprodFactory extends DemoComponentFactory {
                     descriptorOf("smallValue", i++),
                     descriptorOf("enumValue1", i++),
                     descriptorOf("enumValue2", i++),
-                    descriptorOf("stringValue", i++)
+                    descriptorOf("stringValue", i++),
+                    descriptorOf("date", i++),
+                    descriptorOf("day", i++)
             );
         }
 
