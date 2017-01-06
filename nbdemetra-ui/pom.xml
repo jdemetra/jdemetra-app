@@ -14,7 +14,7 @@
 
     <properties>
         <miglayout.version>3.7.4</miglayout.version>
-        <l2fprod.version>1.0.2</l2fprod.version>
+        <l2fprod.version>1.0.5</l2fprod.version>
         <jcalendar.version>1.4</jcalendar.version>
         <swinglayout.version>1.0.3</swinglayout.version>
     </properties>
@@ -52,6 +52,13 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- compile only -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
         <!-- NetBeans -->
         <dependency>
             <groupId>org.netbeans.api</groupId>

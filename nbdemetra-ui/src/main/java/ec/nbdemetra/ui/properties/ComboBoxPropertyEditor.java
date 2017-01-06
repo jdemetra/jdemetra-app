@@ -35,55 +35,58 @@ public class ComboBoxPropertyEditor extends AbstractExPropertyEditor {
 
     @Override
     public InplaceEditor createInplaceEditor() {
-        return new AbstractInplaceEditor() {
-            final JComboBox component = new JComboBox();
-            final KeyStroke[] keyStrokes = new KeyStroke[]{
-                KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false),
-                KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false),
-                KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, true),
-                KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, true),
-                KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0, false),
-                KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0, false),
-                KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0, true),
-                KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0, true)
-            };
+        return new ComboBoxInplaceEditor();
+    }
 
-            {
-                component.addActionListener(event -> fireActionPerformed(COMMAND_SUCCESS));
-            }
+    private static final class ComboBoxInplaceEditor extends AbstractInplaceEditor {
 
-            @Override
-            public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
-                Object values = env.getFeatureDescriptor().getValue(VALUES_ATTRIBUTE);
-                DefaultComboBoxModel cbModel = (DefaultComboBoxModel) component.getModel();
-                cbModel.removeAllElements();
-                if (values instanceof Object[]) {
-                    for (Object o : (Object[]) values) {
-                        cbModel.addElement(o);
-                    }
-                }
-                super.connect(propertyEditor, env);
-            }
-
-            @Override
-            public JComponent getComponent() {
-                return component;
-            }
-
-            @Override
-            public Object getValue() {
-                return component.getSelectedItem();
-            }
-
-            @Override
-            public void setValue(Object o) {
-                component.setSelectedItem(o);
-            }
-
-            @Override
-            public KeyStroke[] getKeyStrokes() {
-                return keyStrokes;
-            }
+        final JComboBox component = new JComboBox();
+        final KeyStroke[] keyStrokes = new KeyStroke[]{
+            KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false),
+            KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false),
+            KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, true),
+            KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, true),
+            KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0, false),
+            KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0, false),
+            KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0, true),
+            KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0, true)
         };
+
+        {
+            component.addActionListener(event -> fireActionPerformed(COMMAND_SUCCESS));
+        }
+
+        @Override
+        public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
+            Object values = env.getFeatureDescriptor().getValue(VALUES_ATTRIBUTE);
+            DefaultComboBoxModel cbModel = (DefaultComboBoxModel) component.getModel();
+            cbModel.removeAllElements();
+            if (values instanceof Object[]) {
+                for (Object o : (Object[]) values) {
+                    cbModel.addElement(o);
+                }
+            }
+            super.connect(propertyEditor, env);
+        }
+
+        @Override
+        public JComponent getComponent() {
+            return component;
+        }
+
+        @Override
+        public Object getValue() {
+            return component.getSelectedItem();
+        }
+
+        @Override
+        public void setValue(Object o) {
+            component.setSelectedItem(o);
+        }
+
+        @Override
+        public KeyStroke[] getKeyStrokes() {
+            return keyStrokes;
+        }
     }
 }
