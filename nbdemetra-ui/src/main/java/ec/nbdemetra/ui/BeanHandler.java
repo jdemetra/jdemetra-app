@@ -16,9 +16,9 @@
  */
 package ec.nbdemetra.ui;
 
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import com.google.common.base.Converter;
 import ec.nbdemetra.ui.properties.IBeanEditor;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import java.beans.IntrospectionException;
 import javax.annotation.Nonnull;
 import org.openide.util.Exceptions;
@@ -47,7 +47,7 @@ public abstract class BeanHandler<B, R> {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Internal implementation">
-    private static final IBeanEditor DEFAULT_EDITOR = new OpenIdePropertySheetBeanEditor(null, null);
+    private static final IBeanEditor DEFAULT_EDITOR = o -> new PropertySheetDialogBuilder().editBean(o);
 
     private static final class ConfiguratorImpl<B, R> extends Configurator<R> {
 

@@ -35,40 +35,43 @@ public class AutoCompletedPropertyEditor extends AbstractExPropertyEditor {
 
     @Override
     protected InplaceEditor createInplaceEditor() {
-        return new AbstractInplaceEditor() {
-            final AutoCompletedComboBox<String> component = new AutoCompletedComboBox<String>() {
-                @Override
-                public String getValue() {
-                    return textComponent.getText();
-                }
+        return new ACInplaceEditor();
+    }
 
-                @Override
-                public void setValue(String value) {
-                    textComponent.setText(value);
-                }
-            };
+    private static final class ACInplaceEditor extends AbstractInplaceEditor {
 
+        final AutoCompletedComboBox<String> component = new AutoCompletedComboBox<String>() {
             @Override
-            public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
-                component.setAutoCompletion(attr(env, VALUES_ATTRIBUTE, AutoCompletionSource.class).orElse(null));
-                component.setSeparator(attr(env, SEPARATOR_ATTRIBUTE, String.class).orElse(null));
-                super.connect(propertyEditor, env);
+            public String getValue() {
+                return textComponent.getText();
             }
 
             @Override
-            public JComponent getComponent() {
-                return component;
-            }
-
-            @Override
-            public Object getValue() {
-                return component.getValue();
-            }
-
-            @Override
-            public void setValue(Object o) {
-                component.setValue((String) o);
+            public void setValue(String value) {
+                textComponent.setText(value);
             }
         };
+
+        @Override
+        public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
+            component.setAutoCompletion(attr(env, VALUES_ATTRIBUTE, AutoCompletionSource.class).orElse(null));
+            component.setSeparator(attr(env, SEPARATOR_ATTRIBUTE, String.class).orElse(null));
+            super.connect(propertyEditor, env);
+        }
+
+        @Override
+        public JComponent getComponent() {
+            return component;
+        }
+
+        @Override
+        public Object getValue() {
+            return component.getValue();
+        }
+
+        @Override
+        public void setValue(Object o) {
+            component.setValue((String) o);
+        }
     }
 }

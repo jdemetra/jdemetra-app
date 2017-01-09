@@ -23,9 +23,9 @@ import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.IResetable;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.SpectralDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.SpectralDiagnosticsFactory;
@@ -204,7 +204,7 @@ public final class SpectralDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryB
             Sheet sheet = createSheet((SpectralDiagnosticsConfiguration) bean);
             String title = Bundle.spectralDiagnostics_edit_title();
             while (true) {
-                if (!OpenIdePropertySheetBeanEditor.editSheet(sheet, title, getIcon())) {
+                if (!new PropertySheetDialogBuilder().title(title).icon(getIcon()).editSheet(sheet)) {
                     return false;
                 }
                 try {

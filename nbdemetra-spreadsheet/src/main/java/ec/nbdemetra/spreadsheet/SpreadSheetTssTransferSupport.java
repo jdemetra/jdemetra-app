@@ -19,9 +19,9 @@ package ec.nbdemetra.spreadsheet;
 import com.google.common.base.Converter;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tss.TsCollection;
 import ec.tss.TsCollectionInformation;
 import ec.tss.TsFactory;
@@ -229,7 +229,7 @@ final class SpreadSheetTssTransferSupport {
         @Override
         final public boolean editBean(Object bean) throws IntrospectionException {
             AbstractBean config = (AbstractBean) bean;
-            return OpenIdePropertySheetBeanEditor.editSheet(getSheet(config), getTitle(), getImage());
+            return new PropertySheetDialogBuilder().title(getTitle()).icon(getImage()).editSheet(getSheet(config));
         }
     }
 
