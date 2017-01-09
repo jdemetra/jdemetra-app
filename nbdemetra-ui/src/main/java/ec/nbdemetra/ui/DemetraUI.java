@@ -22,6 +22,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 import ec.nbdemetra.core.GlobalService;
 import ec.nbdemetra.ui.awt.ListenableBean;
+import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
 import ec.nbdemetra.ui.tsaction.ChartGridTsAction;
 import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.nbdemetra.ui.tssave.ITsSave;
@@ -85,6 +86,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public static final String ESTIMATION_POLICY_PROPERTY = "estimationPolicyType";
     public static final String DEFAULT_SA_SPEC_PROPERTY = "defaultSASpec";
     public static final String POPUP_MENU_ICONS_VISIBLE_PROPERTY = "menuIconsVisibility";
+    public static final String PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY = "prespecifiedOutliersEditor";
 
     // DEFAULT PROPERTIES
     static final IParam<Config, String> COLOR_SCHEME_NAME = Params.onString(SmartColorScheme.NAME, COLOR_SCHEME_NAME_PROPERTY);
@@ -102,6 +104,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     static final IParam<Config, EstimationPolicyType> ESTIMATION_POLICY_TYPE = Params.onEnum(EstimationPolicyType.FreeParameters, ESTIMATION_POLICY_PROPERTY);
     static final IParam<Config, String> DEFAULT_SA_SPEC = Params.onString("tramoseats." + TramoSeatsSpecification.RSAfull.toString(), DEFAULT_SA_SPEC_PROPERTY);
     static final IParam<Config, Boolean> POPUP_MENU_ICONS_VISIBLE = Params.onBoolean(false, POPUP_MENU_ICONS_VISIBLE_PROPERTY);
+    static final IParam<Config, PrespecificiedOutliersEditor> PRESPECIFIED_OUTLIERS_EDITOR = Params.onEnum(PrespecificiedOutliersEditor.CALENDAR_GRID, PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY);
     // INTERNAL STUFF
     private static final Ordering<ColorScheme> COLOR_SCHEME_ORDERING = Ordering.natural().onResultOf(o -> o.getDisplayName());
     private static final Ordering<? super ITsAction> TS_ACTION_ORDERING = Ordering.natural().onResultOf(o -> o.getDisplayName());
@@ -293,6 +296,16 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
         this.properties.popupMenuIconsVisible = visible;
         firePropertyChange(POPUP_MENU_ICONS_VISIBLE_PROPERTY, old, this.properties.popupMenuIconsVisible);
     }
+
+    public PrespecificiedOutliersEditor getPrespecifiedOutliersEditor() {
+        return properties.prespecifiedOutliersEditor;
+    }
+
+    public void setPrespecifiedOutliersEditor(PrespecificiedOutliersEditor prespecifiedOutliersEditor) {
+        PrespecificiedOutliersEditor old = this.properties.prespecifiedOutliersEditor;
+        this.properties.prespecifiedOutliersEditor = prespecifiedOutliersEditor != null ? prespecifiedOutliersEditor : PRESPECIFIED_OUTLIERS_EDITOR.defaultValue();
+        firePropertyChange(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, old, this.properties.prespecifiedOutliersEditor);
+    }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Utils">
@@ -360,6 +373,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
         setStabilityLength(bean.stabilityLength);
         setDefaultSASpec(bean.defaultSASpec);
         setPopupMenuIconsVisible(bean.popupMenuIconsVisible);
+        setPrespecifiedOutliersEditor(bean.prespecifiedOutliersEditor);
     }
 
     @Override
@@ -386,6 +400,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
         Integer stabilityLength;
         String defaultSASpec;
         boolean popupMenuIconsVisible;
+        PrespecificiedOutliersEditor prespecifiedOutliersEditor;
 
         ConfigBean() {
             colorSchemeName = COLOR_SCHEME_NAME.defaultValue();
@@ -403,6 +418,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
             stabilityLength = STABILITY_LENGTH.defaultValue();
             defaultSASpec = DEFAULT_SA_SPEC.defaultValue();
             popupMenuIconsVisible = POPUP_MENU_ICONS_VISIBLE.defaultValue();
+            prespecifiedOutliersEditor = PRESPECIFIED_OUTLIERS_EDITOR.defaultValue();
         }
 
         ConfigBean(Config config) {
@@ -422,6 +438,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
             stabilityLength = STABILITY_LENGTH.get(config);
             defaultSASpec = DEFAULT_SA_SPEC.get(config);
             popupMenuIconsVisible = POPUP_MENU_ICONS_VISIBLE.get(config);
+            prespecifiedOutliersEditor = PRESPECIFIED_OUTLIERS_EDITOR.get(config);
         }
 
         Config toConfig() {
@@ -441,6 +458,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
             STABILITY_LENGTH.set(b, stabilityLength);
             DEFAULT_SA_SPEC.set(b, defaultSASpec);
             POPUP_MENU_ICONS_VISIBLE.set(b, popupMenuIconsVisible);
+            PRESPECIFIED_OUTLIERS_EDITOR.set(b, prespecifiedOutliersEditor);
             return b.build();
         }
     }

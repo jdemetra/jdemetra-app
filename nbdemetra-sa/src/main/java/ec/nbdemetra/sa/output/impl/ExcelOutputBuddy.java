@@ -26,9 +26,9 @@ import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.IResetable;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.output.SpreadsheetOutputConfiguration;
 import ec.tss.sa.output.SpreadsheetOutputConfiguration.SpreadsheetLayout;
@@ -116,7 +116,9 @@ public class ExcelOutputBuddy implements INbOutputFactory, IConfigurable, IReset
 
         @Override
         public boolean editBean(Object bean) throws IntrospectionException {
-            return OpenIdePropertySheetBeanEditor.editNode(new ExcelNode((SpreadsheetOutputConfiguration) bean), "Edit Excel output config", null);
+            return new PropertySheetDialogBuilder()
+                    .title("Edit Excel output config")
+                    .editNode(new ExcelNode((SpreadsheetOutputConfiguration) bean));
         }
     }
 

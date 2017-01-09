@@ -23,10 +23,12 @@ import com.google.common.collect.Lists;
 import ec.tstoolkit.design.IBuilder;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.AutoCompletionSources;
+import static internal.JTextComponents.fixMaxDecimals;
 import java.beans.FeatureDescriptor;
 import java.beans.PropertyEditor;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -750,7 +752,9 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
 
         private DoubleStep(Node.Property<Double> nodeProperty) {
             super(nodeProperty);
-            formatter = new NumberFormatter();
+            DecimalFormat format = new DecimalFormat();
+            fixMaxDecimals(format);
+            formatter = new NumberFormatter(format);
             editor(FormattedPropertyEditor.class);
             attribute(FormattedPropertyEditor.FORMATTER_ATTRIBUTE, formatter);
         }

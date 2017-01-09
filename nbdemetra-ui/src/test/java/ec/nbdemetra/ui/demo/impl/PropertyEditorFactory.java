@@ -32,6 +32,7 @@ import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
 import ec.util.completion.FileAutoCompletionSource;
 import ec.util.completion.swing.FileListCellRenderer;
+import ec.util.various.swing.BasicSwingLauncher;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.io.File;
@@ -83,12 +84,24 @@ public final class PropertyEditorFactory extends DemoComponentFactory {
             DemoBean bean = getLookup().lookup(DemoBean.class);
             Sheet result = super.createSheet();
             NodePropertySetBuilder b = new NodePropertySetBuilder();
+            result.put(withPrimitives(b, bean).build());
             result.put(withCustomEditors(b, bean).build());
             result.put(withEnums(b, bean).build());
             result.put(withAutoCompletion(b, bean).build());
             result.put(withOther(b, bean).build());
             return result;
         }
+    }
+
+    private static NodePropertySetBuilder withPrimitives(NodePropertySetBuilder b, Object bean) {
+        b.reset("Primitives");
+        b.withDouble()
+                .selectField(bean, "doubleValue")
+                .add();
+        b.withDouble()
+                .selectField(bean, "smallDouble")
+                .add();
+        return b;
     }
 
     private static NodePropertySetBuilder withCustomEditors(NodePropertySetBuilder b, Object bean) {
@@ -196,6 +209,8 @@ public final class PropertyEditorFactory extends DemoComponentFactory {
 
     public static class DemoBean {
 
+        public double doubleValue = 3.14;
+        public double smallDouble = 0.0000001;
         public Charset charset = Charset.defaultCharset();
         public DataFormat dataFormat = DataFormat.DEFAULT;
         public TsFrequency frequency = TsFrequency.Monthly;
@@ -212,5 +227,9 @@ public final class PropertyEditorFactory extends DemoComponentFactory {
         public double weight = 0.3;
         public long duration = 60 * 1000;
         public TsPeriodSelector periodSelector = new TsPeriodSelector();
+    }
+
+    public static void main(String[] args) {
+        new BasicSwingLauncher().content(PropertyEditorFactory::propertySheet).size(350, 500).launch();
     }
 }

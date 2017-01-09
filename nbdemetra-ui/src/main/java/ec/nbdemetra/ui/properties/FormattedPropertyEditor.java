@@ -16,19 +16,19 @@
  */
 package ec.nbdemetra.ui.properties;
 
-import java.awt.Color;
+import static ec.nbdemetra.ui.properties.Util.attr;
+import static internal.JTextComponents.enableDecimalMappingOnNumpad;
+import static internal.JTextComponents.enableValidationFeedback;
+import static internal.JTextComponents.peekValue;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyEditor;
 import java.text.ParseException;
-import java.util.Arrays;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.KeyStroke;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.text.DefaultFormatterFactory;
 import org.openide.explorer.propertysheet.InplaceEditor;
 import org.openide.explorer.propertysheet.PropertyEnv;
 
@@ -40,90 +40,80 @@ public class FormattedPropertyEditor extends AbstractExPropertyEditor {
 
     public static final String FORMATTER_ATTRIBUTE = "formatter";
 
+    private PropertyEnv currentEnv = null;
+
+    @Override
+    public void attachEnv(PropertyEnv env) {
+        super.attachEnv(env);
+        currentEnv = env;
+    }
+
     @Override
     public String getAsText() {
-        Object value = getValue();
-        if (value instanceof double[]) {
-            return Arrays.toString((double[]) value);
-        } else if (value instanceof int[]) {
-            return Arrays.toString((int[]) value);
-        }
-        return super.getAsText();
+        return attr(currentEnv, FORMATTER_ATTRIBUTE, JFormattedTextField.AbstractFormatter.class)
+                .map(o -> {
+                    try {
+                        return o.valueToString(getValue());
+                    } catch (ParseException ex) {
+                        return null;
+                    }
+                })
+                .orElseGet(super::getAsText);
     }
 
     @Override
     protected InplaceEditor createInplaceEditor() {
-        return new AbstractInplaceEditor() {
-            final JFormattedTextField component = new JFormattedTextField();
+        return new FormattedInplaceEditor();
+    }
 
-            {
-                component.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), "FIRE_ACTION_PERFORMED");
-                component.getActionMap().put("FIRE_ACTION_PERFORMED", new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (getValueFromText() != null) {
-                            fireActionPerformed(COMMAND_SUCCESS);
-                        }
-                    }
-                });
-                component.getDocument().addDocumentListener(new DocumentListener() {
-                    @Override
-                    public void insertUpdate(DocumentEvent e) {
-                        updateForeground();
-                    }
+    private static final class FormattedInplaceEditor extends AbstractInplaceEditor {
 
-                    @Override
-                    public void removeUpdate(DocumentEvent e) {
-                        updateForeground();
-                    }
+        private final JFormattedTextField component = new JFormattedTextField();
 
-                    @Override
-                    public void changedUpdate(DocumentEvent e) {
+        {
+            component.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), "FIRE_ACTION_PERFORMED");
+            component.getActionMap().put("FIRE_ACTION_PERFORMED", new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (isValid(component.getText())) {
+                        fireActionPerformed(COMMAND_SUCCESS);
                     }
-
-                    void updateForeground() {
-                        component.setForeground(getValueFromText() != null ? Color.GREEN.darker() : Color.RED);
-                    }
-                });
-            }
-
-            Object getValueFromText() {
-                try {
-                    return component.getFormatter().stringToValue(component.getText());
-                } catch (ParseException ex) {
-                    return null;
                 }
-            }
+            });
+            enableValidationFeedback(component, this::isValid);
+            enableDecimalMappingOnNumpad(component);
+        }
 
-            @Override
-            public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
-                final JFormattedTextField.AbstractFormatter format = (JFormattedTextField.AbstractFormatter) env.getFeatureDescriptor().getValue(FORMATTER_ATTRIBUTE);
-                component.setFormatterFactory(new JFormattedTextField.AbstractFormatterFactory() {
-                    @Override
-                    public AbstractFormatter getFormatter(JFormattedTextField tf) {
-                        return format;
-                    }
-                });
-                super.connect(propertyEditor, env);
+        private boolean isValid(String input) {
+            try {
+                return component.getFormatter().stringToValue(input) != null;
+            } catch (ParseException ex) {
+                return false;
             }
+        }
 
-            @Override
-            public JComponent getComponent() {
-                return component;
-            }
+        @Override
+        public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
+            JFormattedTextField.AbstractFormatterFactory format = attr(env, FORMATTER_ATTRIBUTE, JFormattedTextField.AbstractFormatter.class)
+                    .map(DefaultFormatterFactory::new)
+                    .orElseGet(DefaultFormatterFactory::new);
+            component.setFormatterFactory(format);
+            super.connect(propertyEditor, env);
+        }
 
-            @Override
-            public Object getValue() {
-                //return component.getValue();
-                // FIXME: focusLost after getValue() => this quick&dirty hack:
-                Object result = getValueFromText();
-                return result != null ? result : component.getValue();
-            }
+        @Override
+        public JComponent getComponent() {
+            return component;
+        }
 
-            @Override
-            public void setValue(Object o) {
-                component.setValue(o);
-            }
-        };
+        @Override
+        public Object getValue() {
+            return peekValue(component).orElseGet(component::getValue);
+        }
+
+        @Override
+        public void setValue(Object o) {
+            component.setValue(o);
+        }
     }
 }

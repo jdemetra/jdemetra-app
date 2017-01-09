@@ -23,7 +23,7 @@ id = "ec.nbdemetra.sa.actions.RefreshArima")
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.CONTEXTPATH+RefreshPartial.PATH, position = 1260)
 })
-@Messages("CTL_RefreshArima=Arima (+ outliers)")
+@Messages("CTL_RefreshArima=+ Arima model")
 public final class RefreshArima implements ActionListener {
 
     public RefreshArima() {

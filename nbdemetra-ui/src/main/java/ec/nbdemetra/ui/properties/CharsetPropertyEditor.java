@@ -30,23 +30,26 @@ public class CharsetPropertyEditor extends AbstractExPropertyEditor {
 
     @Override
     public InplaceEditor createInplaceEditor() {
-        return new AbstractInplaceEditor() {
-            final CharsetComponent2 component = new CharsetComponent2();
+        return new CharsetInplaceEditor();
+    }
 
-            @Override
-            public JComponent getComponent() {
-                return component;
-            }
+    private static final class CharsetInplaceEditor extends AbstractInplaceEditor {
 
-            @Override
-            public Object getValue() {
-                return component.getCharset();
-            }
+        final CharsetComponent2 component = new CharsetComponent2();
 
-            @Override
-            public void setValue(Object o) {
-                component.setCharset((Charset) o);
-            }
-        };
+        @Override
+        public JComponent getComponent() {
+            return component;
+        }
+
+        @Override
+        public Object getValue() {
+            return component.getCharset();
+        }
+
+        @Override
+        public void setValue(Object o) {
+            component.setCharset((Charset) o);
+        }
     }
 }

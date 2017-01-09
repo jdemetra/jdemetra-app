@@ -24,12 +24,12 @@ import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.completion.JAutoCompletionService;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.datatransfer.TssTransferSupport;
@@ -511,7 +511,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
             b.withAutoCompletion().selectField(bean, "colorSchemeName").servicePath(JAutoCompletionService.COLOR_SCHEME_PATH).promptText(DemetraUI.getDefault().getColorSchemeName()).display("Color scheme").add();
 
             sheet.put(b.build());
-            return OpenIdePropertySheetBeanEditor.editSheet(sheet, "Configure chart", null);
+            return new PropertySheetDialogBuilder().title("Configure chart").editSheet(sheet);
         }
     }
 

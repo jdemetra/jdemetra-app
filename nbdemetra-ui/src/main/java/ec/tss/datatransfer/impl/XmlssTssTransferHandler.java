@@ -24,9 +24,9 @@ import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IConfigurable;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
@@ -51,7 +51,6 @@ import java.util.Date;
 import java.util.Locale;
 import javax.xml.stream.*;
 import org.openide.nodes.Sheet;
-import org.openide.util.ImageUtilities;
 
 /**
  * XML Spreadsheet (XMLSS).
@@ -574,8 +573,10 @@ public class XmlssTssTransferHandler extends TssTransferHandler implements IConf
             b.withBoolean().selectField(bean, "exportMatrix").display("Allow export").add();
             sheet.put(b.build());
 
-            return OpenIdePropertySheetBeanEditor.editSheet(sheet, "Configure XML Spreadsheet (XMLSS)",
-                    ImageUtilities.icon2Image(DemetraUiIcon.CLIPBOARD_PASTE_DOCUMENT_TEXT_16));
+            return new PropertySheetDialogBuilder()
+                    .title("Configure XML Spreadsheet (XMLSS)")
+                    .icon(DemetraUiIcon.CLIPBOARD_PASTE_DOCUMENT_TEXT_16)
+                    .editSheet(sheet);
         }
     }
 

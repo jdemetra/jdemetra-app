@@ -40,16 +40,16 @@ import org.openide.explorer.propertysheet.PropertyEnv;
 public class ListSelectionEditor<T> extends PropertyEditorSupport implements ExPropertyEditor, InplaceEditor.Factory {
 
     private final List<T> allValues;
-    private final JListSelection<T> component;
+    private final JListSelection<T> customEditor;
     private PropertyEnv currentEnv;
 
     public ListSelectionEditor(List<T> allValues) {
         this.allValues = allValues;
-        this.component = new JListSelection<>();
+        this.customEditor = new JListSelection<>();
         this.currentEnv = null;
-        component.getTargetModel().addListDataListener(JLists.dataListenerOf(o -> setValue(component.getSelectedValues())));
-        component.setPreferredSize(new Dimension(400, 300));
-        component.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        customEditor.getTargetModel().addListDataListener(JLists.dataListenerOf(o -> setValue(customEditor.getSelectedValues())));
+        customEditor.setPreferredSize(new Dimension(400, 300));
+        customEditor.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     }
 
     @Override
@@ -60,35 +60,7 @@ public class ListSelectionEditor<T> extends PropertyEditorSupport implements ExP
 
     @Override
     public InplaceEditor getInplaceEditor() {
-        return new AbstractInplaceEditor() {
-            JTextField component = new JTextField();
-            List<?> currentValue;
-
-            {
-                component.setEditable(false);
-            }
-
-            @Override
-            public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
-                super.connect(propertyEditor, env);
-            }
-
-            @Override
-            public JComponent getComponent() {
-                return component;
-            }
-
-            @Override
-            public Object getValue() {
-                return currentValue;
-            }
-
-            @Override
-            public void setValue(Object o) {
-                currentValue = (List<?>) o;
-                component.setText(currentValue.stream().map(Object::toString).collect(Collectors.joining(", ")));
-            }
-        };
+        return new ListSelectionInplaceEditor();
     }
 
     @Override
@@ -102,16 +74,47 @@ public class ListSelectionEditor<T> extends PropertyEditorSupport implements ExP
         List<T> sourceList = new ArrayList<>(allValues);
         sourceList.removeAll(targetList);
 
-        component.getSourceModel().clear();
-        sourceList.forEach(component.getSourceModel()::addElement);
-        component.getTargetModel().clear();
-        targetList.forEach(component.getTargetModel()::addElement);
+        customEditor.getSourceModel().clear();
+        sourceList.forEach(customEditor.getSourceModel()::addElement);
+        customEditor.getTargetModel().clear();
+        targetList.forEach(customEditor.getTargetModel()::addElement);
 
-        return component;
+        return customEditor;
     }
 
     @Override
     public String getAsText() {
         return super.getAsText();
+    }
+
+    private static final class ListSelectionInplaceEditor extends AbstractInplaceEditor {
+
+        JTextField component = new JTextField();
+        List<?> currentValue;
+
+        {
+            component.setEditable(false);
+        }
+
+        @Override
+        public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
+            super.connect(propertyEditor, env);
+        }
+
+        @Override
+        public JComponent getComponent() {
+            return component;
+        }
+
+        @Override
+        public Object getValue() {
+            return currentValue;
+        }
+
+        @Override
+        public void setValue(Object o) {
+            currentValue = (List<?>) o;
+            component.setText(currentValue.stream().map(Object::toString).collect(Collectors.joining(", ")));
+        }
     }
 }

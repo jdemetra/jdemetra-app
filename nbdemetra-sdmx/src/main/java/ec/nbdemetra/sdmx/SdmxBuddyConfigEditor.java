@@ -16,9 +16,9 @@
  */
 package ec.nbdemetra.sdmx;
 
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import java.beans.IntrospectionException;
 import org.openide.nodes.Sheet;
 
@@ -37,6 +37,6 @@ final class SdmxBuddyConfigEditor implements IBeanEditor {
         b.withBoolean().select(bean, "keysInMetaData").name("Keys in metadata").add();
 
         sheet.put(b.build());
-        return OpenIdePropertySheetBeanEditor.editSheet(sheet, null, null);
+        return new PropertySheetDialogBuilder().editSheet(sheet);
     }
 }
