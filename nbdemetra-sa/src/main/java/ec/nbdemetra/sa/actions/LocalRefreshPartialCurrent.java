@@ -20,9 +20,9 @@ import org.openide.util.NbBundle.Messages;
 id = "ec.nbdemetra.sa.actions.LocalRefreshPartialCurrent")
 @ActionRegistration(displayName = "#CTL_LocalRefreshPartialCurrent")
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.LOCALPATH + LocalRefresh.PATH, position = 1210)
+    @ActionReference(path = MultiProcessingManager.LOCALPATH + LocalRefreshPartial.PATH, position = 1225)
 })
-@Messages("CTL_LocalRefreshPartialCurrent=Current adjustment (partial)")
+@Messages("CTL_LocalRefreshPartialCurrent=Regression coefficients")
 public final class LocalRefreshPartialCurrent implements ActionListener  {
 
     public LocalRefreshPartialCurrent() {
