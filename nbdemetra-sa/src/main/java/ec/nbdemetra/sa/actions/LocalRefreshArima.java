@@ -23,7 +23,7 @@ id = "ec.nbdemetra.sa.actions.LocalRefreshArima")
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.LOCALPATH+LocalRefreshPartial.PATH, position = 1260)
 })
-@Messages("CTL_LocalRefreshArima=Arima (+ outliers)")
+@Messages("CTL_LocalRefreshArima=+ Arima model")
 public final class LocalRefreshArima implements ActionListener {
 
     public LocalRefreshArima() {

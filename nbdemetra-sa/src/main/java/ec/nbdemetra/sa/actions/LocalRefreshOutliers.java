@@ -22,7 +22,7 @@ id = "ec.nbdemetra.sa.actions.LocalRefreshOutliers")
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.LOCALPATH+LocalRefreshPartial.PATH, position = 1250)
 })
-@Messages("CTL_LocalRefreshOutliers=Outliers")
+@Messages("CTL_LocalRefreshOutliers=+ All outliers")
 public final class LocalRefreshOutliers implements ActionListener {
 
     public LocalRefreshOutliers() {

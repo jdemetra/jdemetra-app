@@ -17,15 +17,15 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "ec.nbdemetra.sa.LocalRefreshLastOutliers")
-@ActionRegistration(displayName = "#CTL_LocalRefreshLastOutliers")
+id = "ec.nbdemetra.sa.actions.RefreshPartialCurrent")
+@ActionRegistration(displayName = "#CTL_RefreshPartialCurrent")
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.LOCALPATH+LocalRefreshPartial.PATH, position = 1240)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + RefreshPartial.PATH, position = 1225)
 })
-@Messages("CTL_LocalRefreshLastOutliers=+ Last outliers")
-public final class LocalRefreshLastOutliers implements ActionListener {
+@Messages("CTL_RefreshPartialCurrent=Regression coefficients")
+public final class RefreshPartialCurrent implements ActionListener  {
 
-     public LocalRefreshLastOutliers() {
+    public RefreshPartialCurrent() {
     }
 
     @Override
@@ -34,6 +34,6 @@ public final class LocalRefreshLastOutliers implements ActionListener {
         if (ui == null) {
             return;
         }
-        ui.refreshSelection(EstimationPolicyType.LastOutliers, false, true);
+        ui.refresh(EstimationPolicyType.FixedParameters, false, true);
     }
 }

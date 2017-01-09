@@ -91,6 +91,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
     @Override
     public void componentOpened() {
         super.componentOpened();
+        this.jTsChart1.connect();
         SwingUtilities.invokeLater(() -> {
             jSplitPane1.setDividerLocation(.3);
             jSplitPane1.setResizeWeight(.3);
@@ -100,7 +101,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
     @Override
     public void componentClosed() {
         super.componentClosed();
-        //this.jTsChart1.dispose();
+        this.jTsChart1.dispose();
     }
 
     @Override

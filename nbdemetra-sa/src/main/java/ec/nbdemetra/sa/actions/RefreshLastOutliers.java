@@ -22,7 +22,7 @@ id = "ec.nbdemetra.sa.RefreshLastOutliers")
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.CONTEXTPATH+RefreshPartial.PATH, position = 1240)
 })
-@Messages("CTL_RefreshLastOutliers=Last outliers")
+@Messages("CTL_RefreshLastOutliers=+ Last outliers")
 public final class RefreshLastOutliers implements ActionListener {
 
      public RefreshLastOutliers() {

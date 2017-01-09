@@ -20,9 +20,9 @@ import org.openide.util.NbBundle.Messages;
 id = "ec.nbdemetra.sa.actions.LocalRefreshCurrent")
 @ActionRegistration(displayName = "#CTL_LocalRefreshCurrent")
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.LOCALPATH + LocalRefresh.PATH, position = 1210)
+    @ActionReference(path = MultiProcessingManager.LOCALPATH + LocalRefresh.PATH, position = 1205)
 })
-@Messages("CTL_LocalRefreshCurrent=Current adjustment (partial)")
+@Messages("CTL_LocalRefreshCurrent=Current adjustment")
 public final class LocalRefreshCurrent implements ActionListener  {
 
     public LocalRefreshCurrent() {
@@ -34,6 +34,6 @@ public final class LocalRefreshCurrent implements ActionListener  {
         if (ui == null) {
             return;
         }
-        ui.refreshSelection(EstimationPolicyType.FixedParameters, false, true);
+        ui.refreshSelection(EstimationPolicyType.Fixed, false, true);
     }
 }
