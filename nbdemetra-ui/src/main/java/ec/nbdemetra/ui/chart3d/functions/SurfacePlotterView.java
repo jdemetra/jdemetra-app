@@ -25,7 +25,9 @@ import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.maths.realfunctions.IFunction;
 import ec.tstoolkit.maths.realfunctions.IFunctionInstance;
 import ec.tstoolkit.maths.realfunctions.IParametersDomain;
+import ec.ui.view.tsprocessing.TsViewToolkit;
 import java.awt.BorderLayout;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 /**
@@ -71,7 +73,10 @@ public class SurfacePlotterView extends JPanel {
             removeAll();
             switch (nbParams) {
                 case 0:
-                    throw new IllegalArgumentException("The given function doesn't contain any parameters");
+                    TsViewToolkit toolkit = TsViewToolkit.getInstance();
+                    JComponent msg = toolkit.getMessageViewer("The given function doesn't contain any parameters");
+                    add(msg, BorderLayout.CENTER);
+                    break;
                 case 1:
                     chart = new Functions2DChart(f, maxF, 100);
                     chart.generateData();
