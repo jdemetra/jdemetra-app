@@ -1,9 +1,22 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2017 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.ui.view;
 
+import ec.nbdemetra.ui.DemetraUI;
 import ec.satoolkit.DecompositionMode;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.timeseries.simplets.PeriodIterator;
@@ -14,13 +27,17 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.ATsView;
 import ec.ui.chart.BasicXYDataset;
 import ec.ui.chart.TsCharts;
+import ec.ui.interfaces.ITsChart.LinesThickness;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -28,6 +45,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,13 +53,17 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
-import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.plot.DatasetRenderingOrder;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 
@@ -55,18 +77,24 @@ public class SIView extends ATsView implements ClipboardOwner {
     private static final int S_INDEX = 0;
     private static final int T_INDEX = 1;
     private static final int SI_INDEX = 2;
-    private static final Stroke MARKER_STROKE = new BasicStroke(0.5f); //, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.0f, new float[]{6.0f, 6.0f}, 0.0f));
+    private static final Stroke MARKER_STROKE = new BasicStroke(0.5f);
     private static final Paint MARKER_PAINT = Color.DARK_GRAY;
     private static final float MARKER_ALPHA = .8f;
     // OTHER
     private final Map<Bornes, Graphs> graphs_;
-    private final JChartPanel chartpanel_;
+    private final JChartPanel chartPanel;
     private final XYLineAndShapeRenderer sRenderer;
     private final XYLineAndShapeRenderer tRenderer;
     private final XYLineAndShapeRenderer siRenderer1;
-    private final PreciseXYLineAndShapeRenderer siRenderer2;
-    private final JFreeChart mainchart_;
-    private final JFreeChart detailchart_;
+    private final XYLineAndShapeRenderer siRenderer2;
+    private final JFreeChart mainChart;
+    private final JFreeChart detailChart;
+    private final DecimalFormat format = new DecimalFormat("0");
+    private NumberFormat numberFormat;
+    
+    private final RevealObs revealObs;
+
+    private static XYItemEntity highlight;
 
     static class Bornes {
 
@@ -134,57 +162,46 @@ public class SIView extends ATsView implements ClipboardOwner {
     public SIView() {
         this.graphs_ = new HashMap<>();
 
-        this.sRenderer = new XYLineAndShapeRenderer(true, false);
-        sRenderer.setAutoPopulateSeriesPaint(false);
+        highlight = null;
+        revealObs = new RevealObs();
+        
+        numberFormat = DemetraUI.getDefault().getDataFormat().newNumberFormat();
 
-        this.tRenderer = new XYLineAndShapeRenderer(true, false);
-        tRenderer.setAutoPopulateSeriesPaint(false);
+        this.sRenderer = new LineRenderer(S_INDEX, true, false);
+        this.tRenderer = new LineRenderer(T_INDEX, true, false);
 
-        this.siRenderer1 = new XYLineAndShapeRenderer(false, true);
-        siRenderer1.setAutoPopulateSeriesPaint(false);
+        this.siRenderer1 = new LineRenderer(SI_INDEX, false, true);
         siRenderer1.setAutoPopulateSeriesShape(false);
-        siRenderer1.setBaseShape(new Ellipse2D.Double(-.1, -.1, 2, 2));
+        siRenderer1.setBaseShape(new Ellipse2D.Double(-2, -2, 4, 4));
         siRenderer1.setBaseShapesFilled(false);
 
-        this.siRenderer2 = new PreciseXYLineAndShapeRenderer(false, true);
-        siRenderer2.setAutoPopulateSeriesPaint(false);
+        this.siRenderer2 = new LineRenderer(SI_INDEX, false, true);
         siRenderer2.setAutoPopulateSeriesShape(false);
-        siRenderer2.setBaseShape(new Ellipse2D.Double(-.1, -.1, 2, 2));
+        siRenderer2.setBaseShape(new Ellipse2D.Double(-1, -1, 2, 2));
         siRenderer2.setBaseShapesFilled(false);
 
-        StandardXYToolTipGenerator generator = new StandardXYToolTipGenerator() {
-            final DecimalFormat format = new DecimalFormat("0");
+        mainChart = createMainChart(sRenderer, tRenderer, siRenderer2);
+        detailChart = createDetailChart(sRenderer, tRenderer, siRenderer1);
 
-            @Override
-            public String generateToolTip(XYDataset dataset, int series, int item) {
-                for (Bornes b : graphs_.keySet()) {
-                    if (dataset.getXValue(series, item) >= b.min_ && dataset.getXValue(series, item) <= b.max_) {
-                        return format.format(graphs_.get(b).S3_.getXValue(item));
-                    }
-                }
-                return null;
-            }
-        };
-        siRenderer2.setBaseToolTipGenerator(generator);
-
-        mainchart_ = createMainChart(sRenderer, tRenderer, siRenderer2);
-        detailchart_ = createDetailChart(sRenderer, tRenderer, siRenderer1);
-
-        chartpanel_ = new JChartPanel(null);
-        chartpanel_.addComponentListener(new ComponentAdapter() {
+        chartPanel = new JChartPanel(null);
+        chartPanel.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                if (chartpanel_.getChart() != null) {
-                    rescaleAxis((NumberAxis) chartpanel_.getChart().getXYPlot().getRangeAxis());
+                if (chartPanel.getChart() != null) {
+                    rescaleAxis((NumberAxis) chartPanel.getChart().getXYPlot().getRangeAxis());
                 }
             }
         });
-        chartpanel_.addMouseListener(new MouseAdapter() {
+
+        chartPanel.addChartMouseListener(new HighlightChartMouseListener2());
+        chartPanel.addKeyListener(revealObs);
+
+        chartPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-                    if (mainchart_.equals(chartpanel_.getChart())) {
-                        double x = chartpanel_.getChartX(e.getX());
+                    if (mainChart.equals(chartPanel.getChart())) {
+                        double x = chartPanel.getChartX(e.getX());
                         Graphs g = null;
                         Bornes fb = Bornes.ZERO;
                         for (Bornes b : graphs_.keySet()) {
@@ -199,18 +216,20 @@ public class SIView extends ATsView implements ClipboardOwner {
                         }
 
                         showDetail(g, fb);
-                    } else if (detailchart_.equals(chartpanel_.getChart())) {
+                    } else if (detailChart.equals(chartPanel.getChart())) {
                         showMain();
                     }
                 }
             }
         });
+        
+        Charts.enableFocusOnClick(chartPanel);
 
         onComponentPopupMenuChange();
         enableProperties();
 
         setLayout(new BorderLayout());
-        add(chartpanel_, BorderLayout.CENTER);
+        add(chartPanel, BorderLayout.CENTER);
     }
 
     private void enableProperties() {
@@ -226,7 +245,37 @@ public class SIView extends ATsView implements ClipboardOwner {
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
     private void onComponentPopupMenuChange() {
         JPopupMenu popupMenu = getComponentPopupMenu();
-        chartpanel_.setComponentPopupMenu(popupMenu != null ? popupMenu : buildMenu().getPopupMenu());
+        chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildMenu().getPopupMenu());
+    }
+    
+    @Override
+    protected void onDataFormatChange() {
+        numberFormat = DemetraUI.getDefault().getDataFormat().newNumberFormat();
+    }
+    
+    @Override
+    protected void onTsChange() {
+        setData(m_ts != null ? m_ts.getTsData() : null);
+    }
+
+    @Override
+    protected void onColorSchemeChange() {
+        sRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.BLUE));
+        tRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.RED));
+        siRenderer1.setBasePaint(themeSupport.getLineColor(KnownColor.GRAY));
+        siRenderer2.setBasePaint(themeSupport.getLineColor(KnownColor.GRAY));
+
+        XYPlot mainPlot = mainChart.getXYPlot();
+        mainPlot.setBackgroundPaint(themeSupport.getPlotColor());
+        mainPlot.setDomainGridlinePaint(themeSupport.getGridColor());
+        mainPlot.setRangeGridlinePaint(themeSupport.getGridColor());
+        mainChart.setBackgroundPaint(themeSupport.getBackColor());
+
+        XYPlot detailPlot = detailChart.getXYPlot();
+        detailPlot.setBackgroundPaint(themeSupport.getPlotColor());
+        detailPlot.setDomainGridlinePaint(themeSupport.getGridColor());
+        detailPlot.setRangeGridlinePaint(themeSupport.getGridColor());
+        detailChart.setBackgroundPaint(themeSupport.getBackColor());
     }
     //</editor-fold>
 
@@ -241,23 +290,22 @@ public class SIView extends ATsView implements ClipboardOwner {
         }));
 
         JMenu export = new JMenu("Export image to");
-        export.add(ChartCommand.printImage().toAction(chartpanel_)).setText("Printer...");
-        export.add(ChartCommand.copyImage().toAction(chartpanel_)).setText("Clipboard");
-        export.add(ChartCommand.saveImage().toAction(chartpanel_)).setText("File...");
+        export.add(ChartCommand.printImage().toAction(chartPanel)).setText("Printer...");
+        export.add(ChartCommand.copyImage().toAction(chartPanel)).setText("Clipboard");
+        export.add(ChartCommand.saveImage().toAction(chartPanel)).setText("File...");
         result.add(export);
 
         return result;
     }
 
     private void showMain() {
-        chartpanel_.setChart(mainchart_);
+        chartPanel.setChart(mainChart);
         onColorSchemeChange();
     }
 
     private void showDetail(Graphs g, Bornes fb) {
-        XYPlot plot = detailchart_.getXYPlot();
+        XYPlot plot = detailChart.getXYPlot();
 
-        //configure axis
         NumberAxis yAxis = new NumberAxis();
         yAxis.setTickLabelPaint(Color.GRAY);
         rescaleAxis(yAxis);
@@ -274,8 +322,8 @@ public class SIView extends ATsView implements ClipboardOwner {
         plot.setDataset(T_INDEX, new BasicXYDataset(Collections.singletonList(g.S1_)));
         plot.setDataset(SI_INDEX, new BasicXYDataset(Collections.singletonList(g.S3_)));
 
-        detailchart_.setTitle(g.label_);
-        chartpanel_.setChart(detailchart_);
+        detailChart.setTitle(g.label_);
+        chartPanel.setChart(detailChart);
         onColorSchemeChange();
     }
 
@@ -306,7 +354,7 @@ public class SIView extends ATsView implements ClipboardOwner {
 
     public void reset() {
         graphs_.clear();
-        chartpanel_.setChart(null);
+        chartPanel.setChart(null);
     }
 
     private void displayData(TsData seas, TsData irr, DecompositionMode mode) {
@@ -391,7 +439,7 @@ public class SIView extends ATsView implements ClipboardOwner {
             il++;
         }
 
-        XYPlot plot = mainchart_.getXYPlot();
+        XYPlot plot = mainChart.getXYPlot();
         configureAxis(plot, freq);
         plot.setDataset(S_INDEX, sDataset);
         plot.setDataset(T_INDEX, tDataset);
@@ -430,39 +478,7 @@ public class SIView extends ATsView implements ClipboardOwner {
     public void lostOwnership(Clipboard clipboard, Transferable contents) {
     }
 
-    // EVENT HANDLERS > 
-    @Override
-    protected void onTsChange() {
-        setData(m_ts != null ? m_ts.getTsData() : null);
-    }
-
-    @Override
-    protected void onColorSchemeChange() {
-        sRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.BLUE));
-        tRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.RED));
-        siRenderer1.setBasePaint(themeSupport.getLineColor(KnownColor.GRAY));
-        siRenderer2.setBasePaint(themeSupport.getLineColor(KnownColor.GRAY));
-
-        XYPlot mainPlot = mainchart_.getXYPlot();
-        mainPlot.setBackgroundPaint(themeSupport.getPlotColor());
-        mainPlot.setDomainGridlinePaint(themeSupport.getGridColor());
-        mainPlot.setRangeGridlinePaint(themeSupport.getGridColor());
-        mainchart_.setBackgroundPaint(themeSupport.getBackColor());
-
-        XYPlot detailPlot = detailchart_.getXYPlot();
-        detailPlot.setBackgroundPaint(themeSupport.getPlotColor());
-        detailPlot.setDomainGridlinePaint(themeSupport.getGridColor());
-        detailPlot.setRangeGridlinePaint(themeSupport.getGridColor());
-        detailchart_.setBackgroundPaint(themeSupport.getBackColor());
-    }
-
-    @Override
-    protected void onDataFormatChange() {
-        // do nothing?
-    }
-    // < EVENT HANDLERS
-
-    static JFreeChart createMainChart(XYLineAndShapeRenderer sRenderer, XYLineAndShapeRenderer tRenderer, PreciseXYLineAndShapeRenderer siRenderer2) {
+    static JFreeChart createMainChart(XYLineAndShapeRenderer sRenderer, XYLineAndShapeRenderer tRenderer, XYLineAndShapeRenderer siRenderer2) {
         XYPlot plot = new XYPlot();
 
         plot.setDataset(S_INDEX, Charts.emptyXYDataset());
@@ -507,5 +523,172 @@ public class SIView extends ATsView implements ClipboardOwner {
         JFreeChart result = new JFreeChart("", TsCharts.CHART_TITLE_FONT, plot, false);
         result.setPadding(TsCharts.CHART_PADDING);
         return result;
+    }
+
+    private final class HighlightChartMouseListener2 implements ChartMouseListener {
+
+        @Override
+        public void chartMouseClicked(ChartMouseEvent event) {
+        }
+
+        @Override
+        public void chartMouseMoved(ChartMouseEvent event) {
+            if (event.getEntity() instanceof XYItemEntity) {
+                XYItemEntity xxx = (XYItemEntity) event.getEntity();
+                setHighlightedObs(xxx);
+            } else {
+                setHighlightedObs(null);
+            }
+        }
+    }
+
+    private void setHighlightedObs(XYItemEntity item) {
+        if (item == null || highlight != item) {
+            highlight = item;
+            chartPanel.getChart().fireChartChanged();
+        }
+    }
+
+    private static final Shape ITEM_SHAPE = new Ellipse2D.Double(-2, -2, 4, 4);
+
+    private final class LineRenderer extends XYLineAndShapeRenderer {
+
+        private final int index;
+        private final Color color;
+
+        public LineRenderer(int index, boolean lines, boolean shapes) {
+            setBaseLinesVisible(lines);
+            setBaseShapesVisible(shapes);
+            setBaseItemLabelsVisible(true);
+            setAutoPopulateSeriesShape(false);
+            setAutoPopulateSeriesFillPaint(false);
+            setAutoPopulateSeriesOutlineStroke(false);
+            setAutoPopulateSeriesPaint(false);
+            setBaseShape(ITEM_SHAPE);
+            setUseFillPaint(true);
+            this.index = index;
+            switch (index) {
+                case S_INDEX:
+                    this.color = themeSupport.getLineColor(KnownColor.BLUE);
+                    break;
+                case T_INDEX:
+                    this.color = themeSupport.getLineColor(KnownColor.RED);
+                    break;
+                case SI_INDEX:
+                    this.color = themeSupport.getLineColor(KnownColor.GRAY);
+                    break;
+                default:
+                    this.color = themeSupport.getLineColor(KnownColor.GRAY);
+            }
+        }
+
+        @Override
+        public boolean getItemShapeVisible(int series, int item) {
+            return index == SI_INDEX || revealObs.isEnabled() || isObsHighlighted(series, item);
+        }
+
+        private boolean isObsHighlighted(int series, int item) {
+            XYPlot plot = (XYPlot) chartPanel.getChart().getPlot();
+            if (highlight != null && highlight.getDataset().equals(plot.getDataset(index))) {
+                return highlight.getSeriesIndex() == series && highlight.getItem() == item;
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public boolean isItemLabelVisible(int series, int item) {
+            return isObsHighlighted(series, item);
+        }
+
+        @Override
+        public Paint getSeriesPaint(int series) {
+            return color;
+        }
+
+        @Override
+        public Paint getItemPaint(int series, int item) {
+            return color;
+        }
+
+        @Override
+        public Paint getItemFillPaint(int series, int item) {
+            return chartPanel.getChart().getPlot().getBackgroundPaint();
+        }
+
+        @Override
+        public Stroke getSeriesStroke(int series) {
+            return TsCharts.getNormalStroke(LinesThickness.Thin);
+        }
+
+        @Override
+        public Stroke getItemOutlineStroke(int series, int item) {
+            return TsCharts.getNormalStroke(LinesThickness.Thin);
+        }
+
+        @Override
+        protected void drawItemLabel(Graphics2D g2, PlotOrientation orientation, XYDataset dataset, int series, int item, double x, double y, boolean negative) {
+            String label = generateLabel();
+            Font font = chartPanel.getFont();
+            Paint paint = chartPanel.getChart().getPlot().getBackgroundPaint();
+            Paint fillPaint = color;
+            Stroke outlineStroke = AbstractRenderer.DEFAULT_STROKE;
+            Charts.drawItemLabelAsTooltip(g2, x, y, 3d, label, font, paint, fillPaint, paint, outlineStroke);
+        }
+
+        private String generateLabel() {
+            XYDataset dataset = highlight.getDataset();
+            int series = highlight.getSeriesIndex();
+            int item = highlight.getItem();
+
+            String x = "";
+            if (dataset.getSeriesCount() == 1) {
+                x = Integer.toString((int) dataset.getXValue(series, item));
+            } else {
+                for (Bornes b : graphs_.keySet()) {
+                    if (dataset.getXValue(series, item) >= b.min_ && dataset.getXValue(series, item) <= b.max_) {
+                        x = format.format(graphs_.get(b).S3_.getXValue(item));
+                    }
+                }
+            }
+
+            double y = dataset.getYValue(series, item);
+            return x + "\nValue : " + numberFormat.format(y);
+        }
+    }
+    
+    private final class RevealObs implements KeyListener {
+
+        private boolean enabled = false;
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyChar() == 'r') {
+                setEnabled(true);
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            if (e.getKeyChar() == 'r') {
+                setEnabled(false);
+            }
+        }
+
+        private void setEnabled(boolean enabled) {
+            if (this.enabled != enabled) {
+                this.enabled = enabled;
+                firePropertyChange("revealObs", !enabled, enabled);
+                chartPanel.getChart().fireChartChanged();
+            }
+        }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
     }
 }
