@@ -17,9 +17,10 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
+import ec.nbdemetra.ui.demo.ReflectComponent;
 import ec.tstoolkit.uihelper.ModelInformationProvider;
 import ec.tstoolkit.utilities.Id;
-import ec.tstoolkit.utilities.LinearId;
+import ec.ui.view.AChartView;
 import ec.ui.view.FilterView;
 import ec.ui.view.PiView;
 import ec.ui.view.ScatterView;
@@ -36,14 +37,22 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemoComponentFactory.class)
 public final class AChartViewFactory extends DemoComponentFactory {
 
-    static final Id ID = new LinearId("(1) Main", "AChartView");
+    static final Id ID = MainFactory.ID.extend(idOf("AChartView", 2, true));
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
         return builder()
+                .put(ID, AChartViewFactory::createRoot)
                 .put(ID.extend("FilterView"), () -> new FilterView(new ModelInformationProvider(new ArrayList<>())))
                 .put(ID.extend("PiView"), () -> new PiView(new ModelInformationProvider(new ArrayList<>())))
                 .put(ID.extend("ScatterView"), () -> new ScatterView(new ModelInformationProvider(new ArrayList<>())))
                 .build();
+    }
+
+    private static Component createRoot() {
+        ReflectComponent result = new ReflectComponent();
+        result.setClazz(AChartView.class);
+        result.setExtractor(o -> ReflectComponent.getPublicMethodsOf(o, false));
+        return result;
     }
 }

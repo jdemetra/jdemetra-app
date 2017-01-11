@@ -43,7 +43,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemoComponentFactory.class)
 public final class TsCollectionFactory extends DemoComponentFactory {
 
-    public static final Id ID = TsControlFactory.ID.extend("Collection");
+    public static final Id ID = TsControlFactory.ID.extend(idOf("TsCollectionView", 0, true));
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
