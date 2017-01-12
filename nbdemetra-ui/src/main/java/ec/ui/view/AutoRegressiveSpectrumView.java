@@ -60,7 +60,10 @@ public class AutoRegressiveSpectrumView extends ARPView {
         this.lastYears = DemetraUI.getDefault().getSpectralLastYears();
         this.arcount = DEFAULT_AR_COUNT;
         this.resolution = DEFAULT_RESOLUTION;
+        initComponents();
+    }
 
+    private void initComponents() {
         onComponentPopupMenuChange();
         enableProperties();
     }

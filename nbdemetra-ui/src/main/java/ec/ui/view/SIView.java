@@ -18,6 +18,7 @@ package ec.ui.view;
 
 import ec.nbdemetra.ui.DemetraUI;
 import ec.satoolkit.DecompositionMode;
+import ec.tss.TsInformation;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.timeseries.simplets.PeriodIterator;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -85,13 +86,13 @@ public class SIView extends ATsView implements ClipboardOwner {
     private final JChartPanel chartPanel;
     private final XYLineAndShapeRenderer sRenderer;
     private final XYLineAndShapeRenderer tRenderer;
-    private final XYLineAndShapeRenderer siRenderer1;
-    private final XYLineAndShapeRenderer siRenderer2;
-    private final JFreeChart mainChart;
+    private final XYLineAndShapeRenderer siDetailRenderer;
+    private final XYLineAndShapeRenderer siMasterRenderer;
+    private final JFreeChart masterChart;
     private final JFreeChart detailChart;
     private final DecimalFormat format = new DecimalFormat("0");
     private NumberFormat numberFormat;
-    
+
     private final RevealObs revealObs;
 
     private static XYItemEntity highlight;
@@ -161,46 +162,61 @@ public class SIView extends ATsView implements ClipboardOwner {
 
     public SIView() {
         this.graphs_ = new HashMap<>();
-
         highlight = null;
-        revealObs = new RevealObs();
-        
-        numberFormat = DemetraUI.getDefault().getDataFormat().newNumberFormat();
-
+        this.revealObs = new RevealObs();
         this.sRenderer = new LineRenderer(S_INDEX, true, false);
         this.tRenderer = new LineRenderer(T_INDEX, true, false);
+        this.siDetailRenderer = new LineRenderer(SI_INDEX, false, true);
+        this.siMasterRenderer = new LineRenderer(SI_INDEX, false, true);
+        this.masterChart = createMasterChart(sRenderer, tRenderer, siMasterRenderer);
+        this.detailChart = createDetailChart(sRenderer, tRenderer, siDetailRenderer);
+        this.chartPanel = new JChartPanel(null);
+        this.numberFormat = DemetraUI.getDefault().getDataFormat().newNumberFormat();
+        initComponents();
+    }
 
-        this.siRenderer1 = new LineRenderer(SI_INDEX, false, true);
-        siRenderer1.setAutoPopulateSeriesShape(false);
-        siRenderer1.setBaseShape(new Ellipse2D.Double(-2, -2, 4, 4));
-        siRenderer1.setBaseShapesFilled(false);
+    private void initComponents() {
+        siDetailRenderer.setAutoPopulateSeriesShape(false);
+        siDetailRenderer.setBaseShape(new Ellipse2D.Double(-2, -2, 4, 4));
+        siDetailRenderer.setBaseShapesFilled(false);
 
-        this.siRenderer2 = new LineRenderer(SI_INDEX, false, true);
-        siRenderer2.setAutoPopulateSeriesShape(false);
-        siRenderer2.setBaseShape(new Ellipse2D.Double(-1, -1, 2, 2));
-        siRenderer2.setBaseShapesFilled(false);
+        siMasterRenderer.setAutoPopulateSeriesShape(false);
+        siMasterRenderer.setBaseShape(new Ellipse2D.Double(-1, -1, 2, 2));
+        siMasterRenderer.setBaseShapesFilled(false);
 
-        mainChart = createMainChart(sRenderer, tRenderer, siRenderer2);
-        detailChart = createDetailChart(sRenderer, tRenderer, siRenderer1);
+        enableRescaleOnResize();
+        enableObsHighlight();
+        enableMasterDetailSwitch();
+        Charts.enableFocusOnClick(chartPanel);
 
-        chartPanel = new JChartPanel(null);
-        chartPanel.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                if (chartPanel.getChart() != null) {
-                    rescaleAxis((NumberAxis) chartPanel.getChart().getXYPlot().getRangeAxis());
-                }
+        onComponentPopupMenuChange();
+        enableProperties();
+
+        setLayout(new BorderLayout());
+        add(chartPanel, BorderLayout.CENTER);
+    }
+
+    private void enableProperties() {
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
+    }
 
+    private void enableObsHighlight() {
         chartPanel.addChartMouseListener(new HighlightChartMouseListener2());
         chartPanel.addKeyListener(revealObs);
+    }
 
+    private void enableMasterDetailSwitch() {
         chartPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-                    if (mainChart.equals(chartPanel.getChart())) {
+                    if (masterChart.equals(chartPanel.getChart())) {
                         double x = chartPanel.getChartX(e.getX());
                         Graphs g = null;
                         Bornes fb = Bornes.ZERO;
@@ -222,22 +238,15 @@ public class SIView extends ATsView implements ClipboardOwner {
                 }
             }
         });
-        
-        Charts.enableFocusOnClick(chartPanel);
-
-        onComponentPopupMenuChange();
-        enableProperties();
-
-        setLayout(new BorderLayout());
-        add(chartPanel, BorderLayout.CENTER);
     }
 
-    private void enableProperties() {
-        addPropertyChangeListener(evt -> {
-            switch (evt.getPropertyName()) {
-                case "componentPopupMenu":
-                    onComponentPopupMenuChange();
-                    break;
+    private void enableRescaleOnResize() {
+        chartPanel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                if (chartPanel.getChart() != null) {
+                    rescaleAxis((NumberAxis) chartPanel.getChart().getXYPlot().getRangeAxis());
+                }
             }
         });
     }
@@ -247,29 +256,30 @@ public class SIView extends ATsView implements ClipboardOwner {
         JPopupMenu popupMenu = getComponentPopupMenu();
         chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildMenu().getPopupMenu());
     }
-    
+
     @Override
     protected void onDataFormatChange() {
         numberFormat = DemetraUI.getDefault().getDataFormat().newNumberFormat();
     }
-    
+
     @Override
     protected void onTsChange() {
-        setData(m_ts != null ? m_ts.getTsData() : null);
+        TsInformation ts = getTsInformation();
+        setData(ts != null ? ts.data : null);
     }
 
     @Override
     protected void onColorSchemeChange() {
         sRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.BLUE));
         tRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.RED));
-        siRenderer1.setBasePaint(themeSupport.getLineColor(KnownColor.GRAY));
-        siRenderer2.setBasePaint(themeSupport.getLineColor(KnownColor.GRAY));
+        siDetailRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.GRAY));
+        siMasterRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.GRAY));
 
-        XYPlot mainPlot = mainChart.getXYPlot();
+        XYPlot mainPlot = masterChart.getXYPlot();
         mainPlot.setBackgroundPaint(themeSupport.getPlotColor());
         mainPlot.setDomainGridlinePaint(themeSupport.getGridColor());
         mainPlot.setRangeGridlinePaint(themeSupport.getGridColor());
-        mainChart.setBackgroundPaint(themeSupport.getBackColor());
+        masterChart.setBackgroundPaint(themeSupport.getBackColor());
 
         XYPlot detailPlot = detailChart.getXYPlot();
         detailPlot.setBackgroundPaint(themeSupport.getPlotColor());
@@ -299,7 +309,7 @@ public class SIView extends ATsView implements ClipboardOwner {
     }
 
     private void showMain() {
-        chartPanel.setChart(mainChart);
+        chartPanel.setChart(masterChart);
         onColorSchemeChange();
     }
 
@@ -439,7 +449,7 @@ public class SIView extends ATsView implements ClipboardOwner {
             il++;
         }
 
-        XYPlot plot = mainChart.getXYPlot();
+        XYPlot plot = masterChart.getXYPlot();
         configureAxis(plot, freq);
         plot.setDataset(S_INDEX, sDataset);
         plot.setDataset(T_INDEX, tDataset);
@@ -478,7 +488,7 @@ public class SIView extends ATsView implements ClipboardOwner {
     public void lostOwnership(Clipboard clipboard, Transferable contents) {
     }
 
-    static JFreeChart createMainChart(XYLineAndShapeRenderer sRenderer, XYLineAndShapeRenderer tRenderer, XYLineAndShapeRenderer siRenderer2) {
+    static JFreeChart createMasterChart(XYLineAndShapeRenderer sRenderer, XYLineAndShapeRenderer tRenderer, XYLineAndShapeRenderer siRenderer2) {
         XYPlot plot = new XYPlot();
 
         plot.setDataset(S_INDEX, Charts.emptyXYDataset());
@@ -656,7 +666,7 @@ public class SIView extends ATsView implements ClipboardOwner {
             return x + "\nValue : " + numberFormat.format(y);
         }
     }
-    
+
     private final class RevealObs implements KeyListener {
 
         private boolean enabled = false;

@@ -70,7 +70,10 @@ public class PeriodogramView extends ARPView {
         this.log = DEFAULT_LOG;
         this.lastYears = DemetraUI.getDefault().getSpectralLastYears();
         this.full = DEFAULT_FULL;
-
+        initComponents();
+    }
+    
+    private void initComponents() {
         onColorSchemeChange();
         onComponentPopupMenuChange();
         enableProperties();
