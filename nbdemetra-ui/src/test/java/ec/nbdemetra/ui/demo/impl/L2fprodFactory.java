@@ -27,7 +27,6 @@ import ec.tstoolkit.descriptors.IPropertyDescriptors;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.Month;
 import ec.tstoolkit.utilities.Id;
-import ec.tstoolkit.utilities.LinearId;
 import ec.util.various.swing.BasicSwingLauncher;
 import java.awt.Component;
 import java.beans.IntrospectionException;
@@ -49,7 +48,7 @@ public final class L2fprodFactory extends DemoComponentFactory {
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
-        return ImmutableMap.of(new LinearId("(2) Other", "l2fprod"), L2fprodFactory::create);
+        return ImmutableMap.of(OtherFactory.ID.extend("l2fprod"), L2fprodFactory::create);
     }
 
     private static Component create() {

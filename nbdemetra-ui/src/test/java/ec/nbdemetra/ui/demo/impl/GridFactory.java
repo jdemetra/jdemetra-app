@@ -32,7 +32,6 @@ import ec.util.grid.swing.JGrid;
 import static ec.nbdemetra.ui.awt.SwingProperties.SPIN_FIELD_VALUE_PROPERTY;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.tstoolkit.utilities.Id;
-import ec.tstoolkit.utilities.LinearId;
 import ec.util.grid.swing.XTable;
 import java.awt.Component;
 import java.util.Map;
@@ -46,7 +45,7 @@ public final class GridFactory extends DemoComponentFactory {
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
-        return ImmutableMap.of(new LinearId("(2) Other", "JGrid"), GridFactory::create);
+        return ImmutableMap.of(OtherFactory.ID.extend("JGrid"), GridFactory::create);
     }
 
     private static Component create() {

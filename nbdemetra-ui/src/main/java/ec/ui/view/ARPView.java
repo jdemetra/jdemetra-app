@@ -17,6 +17,7 @@
 package ec.ui.view;
 
 import ec.nbdemetra.ui.ThemeSupport;
+import ec.tss.TsInformation;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.data.Periodogram;
 import ec.tstoolkit.data.Values;
@@ -32,6 +33,8 @@ import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
 import javax.swing.JMenu;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -58,18 +61,23 @@ public abstract class ARPView extends ATsView {
     protected static final float FREQ_MARKER_ALPHA = .4f;
     // OTHER
     protected final ChartPanel chartPanel;
-    protected ARPData data = null;
+    protected ARPData data;
 
     protected ARPView() {
         this.chartPanel = new ChartPanel(createARPChart());
+        this.data = null;
+        initComponents();
+    }
+
+    private void initComponents() {
         Charts.avoidScaling(chartPanel);
         chartPanel.setDomainZoomable(false);
         chartPanel.setRangeZoomable(false);
 
+        setTransferHandler(new TsTransferHandler());
+
         setLayout(new BorderLayout());
         add(chartPanel, BorderLayout.CENTER);
-
-        setTransferHandler(new TsTransferHandler());
     }
 
     public void reset() {
@@ -83,28 +91,30 @@ public abstract class ARPView extends ATsView {
         }
     }
 
+    public void setData(@Nonnull String name, @Nonnegative int freq, @Nonnull IReadDataBlock values) {
+        data = ARPData.copyOf(name, freq, values);
+        onARPDataChange();
+        onColorSchemeChange();
+    }
+
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
     @Override
     protected void onTsChange() {
-        if (m_ts == null) {
-            return;
-        }
-        
-        switch (m_ts.hasData()) {
-            case Undefined:
-                setData("Loading " + m_ts.getName(), 0, null);
-                break;
-            case Valid:
-                setData(m_ts.getName(), m_ts.getTsData().getFrequency().intValue(), m_ts.getTsData());
-                break;
+        TsInformation ts = getTsInformation();
+        if (ts == null || ts.data == null) {
+            data = null;
+            onARPDataChange();
+            onColorSchemeChange();
+        } else {
+            setData(ts.name, ts.data.getFrequency().intValue(), ts.data);
         }
     }
-    
+
     @Override
     protected void onDataFormatChange() {
         // do nothing?
     }
-    
+
     @Override
     protected void onColorSchemeChange() {
         XYPlot plot = getPlot();
@@ -112,9 +122,9 @@ public abstract class ARPView extends ATsView {
         plot.setDomainGridlinePaint(themeSupport.getGridColor());
         plot.setRangeGridlinePaint(themeSupport.getGridColor());
         chartPanel.getChart().setBackgroundPaint(themeSupport.getBackColor());
-        
+
         plot.getRenderer().setBasePaint(themeSupport.getLineColor(KnownColor.BROWN));
-        
+
         List<Marker> markers = new ArrayList<>();
         Collection rm = plot.getRangeMarkers(Layer.FOREGROUND);
         if (rm != null) {
@@ -124,32 +134,31 @@ public abstract class ARPView extends ATsView {
         if (dm != null) {
             markers.addAll(dm);
         }
-        for (Marker o : markers) {
-            if (o instanceof ExtValueMarker) {
-                ((ExtValueMarker) o).applyColorScheme(themeSupport);
-            }
-        }
+        markers.stream()
+                .filter((o) -> (o instanceof ExtValueMarker))
+                .forEach((o) -> ((ExtValueMarker) o).applyColorScheme(themeSupport));
     }
-    
+
     protected void onARPDataChange() {
         XYPlot plot = getPlot();
         reset();
-        if (data == null || data.values == null)
+        if (data == null || data.values == null) {
             return;
-        
+        }
+
         XYSeries series = computeSeries();
-        
+
         plot.setDataset(new XYSeriesCollection(series));
         chartPanel.getChart().getTitle().setText(data.name);
-        
+
         if (data.freq > 0) {
             int freq2 = data.freq / 2;
-            
+
             for (int i = 1; i <= freq2; ++i) {
                 double f = i * TWO_PI / data.freq;
                 addFreqMarker(f, KnownColor.BLUE);
             }
-            
+
             double[] tdfreq = Periodogram.getTradingDaysFrequencies(data.freq);
             if (tdfreq != null) {
                 for (int i = 0; i < tdfreq.length; ++i) {
@@ -201,12 +210,6 @@ public abstract class ARPView extends ATsView {
         return result;
     }
 
-    public void setData(String name, int freq, IReadDataBlock values) {
-        data = new ARPData(name, freq, values);
-        onARPDataChange();
-        onColorSchemeChange();
-    }
-
     static JFreeChart createARPChart() {
         JFreeChart result = ChartFactory.createXYLineChart("", "", "", Charts.emptyXYDataset(), PlotOrientation.VERTICAL, false, false, false);
         result.setPadding(TsCharts.CHART_PADDING);
@@ -225,14 +228,23 @@ public abstract class ARPView extends ATsView {
 
     protected static class ARPData {
 
+        static ARPData copyOf(String name, int freq, IReadDataBlock values) {
+            return new ARPData(name, freq, values);
+        }
+
         final String name;
         final int freq;
         final Values values;
 
-        ARPData(String name, int freq, IReadDataBlock values) {
+        private ARPData(String name, int freq, Values values) {
             this.name = name;
             this.freq = freq;
-            this.values = new Values(values);
+            this.values = values;
+        }
+
+        @Deprecated
+        ARPData(String name, int freq, IReadDataBlock values) {
+            this(name, freq, new Values(values));
         }
     }
 

@@ -29,7 +29,6 @@ import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.utilities.Id;
-import ec.tstoolkit.utilities.LinearId;
 import ec.util.completion.FileAutoCompletionSource;
 import ec.util.completion.swing.FileListCellRenderer;
 import ec.util.various.swing.BasicSwingLauncher;
@@ -59,7 +58,7 @@ public final class PropertyEditorFactory extends DemoComponentFactory {
 
     @Override
     public ImmutableMap<Id, Callable<Component>> getComponents() {
-        return builder().put(new LinearId("(2) Other", "PropertyEditor"), PropertyEditorFactory::propertySheet).build();
+        return builder().put(OtherFactory.ID.extend("PropertyEditor"), PropertyEditorFactory::propertySheet).build();
     }
 
     private static Component propertySheet() {
