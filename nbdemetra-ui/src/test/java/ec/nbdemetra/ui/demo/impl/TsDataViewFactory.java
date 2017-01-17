@@ -19,7 +19,6 @@ package ec.nbdemetra.ui.demo.impl;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.nbdemetra.ui.demo.ReflectComponent;
 import ec.tstoolkit.utilities.Id;
-import ec.tstoolkit.utilities.LinearId;
 import ec.ui.interfaces.ITsDataView;
 import ec.ui.view.res.ResidualsView;
 import java.awt.Component;
@@ -34,7 +33,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemoComponentFactory.class)
 public final class TsDataViewFactory extends DemoComponentFactory {
 
-    public static final Id ID = new LinearId("(1) Main", "TsDataView");
+    public static final Id ID = MainFactory.ID.extend(idOf("TsDataView", 1, true));
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {

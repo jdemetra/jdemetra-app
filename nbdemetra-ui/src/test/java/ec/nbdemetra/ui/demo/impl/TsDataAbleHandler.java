@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.tss.TsCollection;
+import ec.tss.TsInformation;
 import ec.ui.interfaces.ITsDataAble;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
 import ec.util.various.swing.JCommand;
@@ -60,8 +60,8 @@ public final class TsDataAbleHandler extends DemoComponentHandler.InstanceOf<ITs
         toolBar.addSeparator();
     }
 
-    private static void apply(ITsDataAble o, TsCollection col) {
-        o.setTsData(col.get(0).getTsData());
+    private static void apply(ITsDataAble o, TsInformation ts) {
+        o.setTsData(ts.data);
     }
 
     private static void clear(ITsDataAble o) {

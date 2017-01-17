@@ -21,7 +21,6 @@ import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tstoolkit.utilities.Id;
-import ec.tstoolkit.utilities.LinearId;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
@@ -40,7 +39,7 @@ public final class Grid2Factory extends DemoComponentFactory {
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
-        return builder().put(new LinearId("(2) Other", "JGrid*"), Grid2Factory::excelGrid).build();
+        return builder().put(OtherFactory.ID.extend("JGrid*"), Grid2Factory::excelGrid).build();
     }
 
     private static Component excelGrid() {

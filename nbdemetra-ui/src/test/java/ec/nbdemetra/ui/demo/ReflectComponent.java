@@ -26,7 +26,12 @@ import ec.ui.AHtmlView;
 import java.awt.BorderLayout;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.JComponent;
 
 /**
@@ -42,28 +47,35 @@ public final class ReflectComponent extends JComponent {
     }
 
     public static final String CLAZZ_PROPERTY = "clazz";
+    public static final String EXTRACTOR_PROPERTY = "extractor";
 
     private final AHtmlView htmlView;
     private Class<?> clazz;
+    private Function<Class<?>, List<Method>> extractor;
 
     public ReflectComponent() {
         this.htmlView = ComponentFactory.getDefault().newHtmlView();
         this.clazz = null;
+        this.extractor = o -> getPublicMethodsOf(o, true);
+        initComponents();
+    }
 
+    private void initComponents() {
         setLayout(new BorderLayout());
         add(NbComponents.newJScrollPane(htmlView), BorderLayout.CENTER);
 
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
                 case CLAZZ_PROPERTY:
-                    onClazzChange();
+                case EXTRACTOR_PROPERTY:
+                    onChange();
                     break;
             }
         });
     }
 
-    private void onClazzChange() {
-        htmlView.loadContent(HtmlUtil.toString(new ClazzReport(clazz)));
+    private void onChange() {
+        htmlView.loadContent(HtmlUtil.toString(new ClazzReport(clazz, extractor)));
     }
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
@@ -76,26 +88,39 @@ public final class ReflectComponent extends JComponent {
         this.clazz = clazz;
         firePropertyChange(CLAZZ_PROPERTY, old, this.clazz);
     }
+
+    public Function<Class<?>, List<Method>> getExtractor() {
+        return extractor;
+    }
+
+    public void setExtractor(Function<Class<?>, List<Method>> extractor) {
+        Function<Class<?>, List<Method>> old = this.extractor;
+        this.extractor = extractor != null ? extractor : o -> getPublicMethodsOf(o, true);
+        firePropertyChange(EXTRACTOR_PROPERTY, old, this.extractor);
+    }
     //</editor-fold>
 
     private static final class ClazzReport extends AbstractHtmlElement {
 
         private final Class clazz;
+        private final Function<Class<?>, List<Method>> extractor;
 
-        public ClazzReport(Class clazz) {
+        public ClazzReport(Class clazz, Function<Class<?>, List<Method>> extractor) {
             this.clazz = clazz;
+            this.extractor = extractor;
         }
 
         @Override
         public void write(HtmlStream stream) throws IOException {
             if (clazz != null) {
                 stream.write(HtmlTag.HEADER1, h1, clazz.getName()).newLine();
-                Method[] methods = clazz.getMethods();
-                Arrays.sort(methods, (l, r) -> l.getName().compareTo(r.getName()));
-                for (Method o : methods) {
-                    stream.write(o.getReturnType().getSimpleName());
-                    stream.write(" <b>").write(o.getName()).write("</b>");
-                    stream.write(" (");
+                stream.write("<table style='border:none;'>");
+                for (Method o : extractor.apply(clazz)) {
+                    stream.write("<tr>")
+                            .write("<td>").write(o.getReturnType().getSimpleName()).write("</td>")
+                            .write("<td align='left'>")
+                            .write("<b>").write(o.getName()).write("</b>")
+                            .write(" (");
                     Class[] parameters = o.getParameterTypes();
                     if (parameters.length > 0) {
                         stream.write(parameters[0].getSimpleName());
@@ -103,9 +128,21 @@ public final class ReflectComponent extends JComponent {
                             stream.write(", ").write(parameters[i].getSimpleName());
                         }
                     }
-                    stream.write(")").newLine();
+                    stream.write(")</td>")
+                            .write("</tr>");
                 }
+                stream.write("</table>");
             }
         }
+
+    }
+
+    public static List<Method> getPublicMethodsOf(Class<?> type, boolean inherit) {
+        return inherit
+                ? Arrays.asList(type.getMethods())
+                : Stream.of(type.getDeclaredMethods())
+                .filter(o -> Modifier.isPublic(o.getModifiers()))
+                .sorted((l, r) -> l.getName().compareTo(r.getName()))
+                .collect(Collectors.toList());
     }
 }

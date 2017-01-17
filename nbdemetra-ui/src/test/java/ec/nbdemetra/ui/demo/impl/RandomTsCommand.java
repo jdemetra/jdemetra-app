@@ -16,11 +16,11 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import ec.tss.TsCollection;
-import ec.ui.DemoUtils;
+import ec.tss.TsInformation;
 import static ec.util.various.swing.FontAwesome.FA_RANDOM;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.ext.FontAwesomeUtils;
+import internal.RandomTsBuilder;
 import java.awt.event.ActionEvent;
 import static java.beans.BeanInfo.ICON_COLOR_16x16;
 import java.util.function.BiConsumer;
@@ -40,23 +40,23 @@ import org.openide.awt.DropDownButtonFactory;
  */
 final class RandomTsCommand<C> extends JCommand<C> {
 
-    public static <X> RandomTsCommand<X> of(BiConsumer<X, TsCollection> consumer) {
+    public static <X> RandomTsCommand<X> of(BiConsumer<X, TsInformation> consumer) {
         return new RandomTsCommand<>(consumer);
     }
 
-    private final BiConsumer<C, TsCollection> consumer;
+    private final BiConsumer<C, TsInformation> consumer;
     private final BoundedRangeModel obsCountModel;
-    private final DemoUtils.RandomTsCollectionBuilder builder;
+    private final RandomTsBuilder builder;
 
-    private RandomTsCommand(BiConsumer<C, TsCollection> consumer) {
+    private RandomTsCommand(BiConsumer<C, TsInformation> consumer) {
         this.consumer = consumer;
         this.obsCountModel = new DefaultBoundedRangeModel(12 * 10, 12, 0, 12 * 100);
-        this.builder = new DemoUtils.RandomTsCollectionBuilder().withSeries(1);
+        this.builder = new RandomTsBuilder();
     }
 
     @Override
     final public void execute(C c) throws Exception {
-        consumer.accept(c, builder.withObs(obsCountModel.getValue()).build());
+        consumer.accept(c, builder.withObsCount(obsCountModel.getValue()).build());
     }
 
     @Override
