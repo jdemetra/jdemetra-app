@@ -80,6 +80,7 @@ public final class ExportSpecToWorkSpace extends AbstractViewAction<WorkspaceTsT
         if (id != null) {
             IWorkspaceItemManager wsMgr = WorkspaceFactory.getInstance().getManager(cur.getFamily());
             WorkspaceItem<IProcSpecification> ndoc = WorkspaceItem.newItem(id, wsMgr.getNextItemName(null), spec);
+            ndoc.setComments(cur.getComments());
             WorkspaceFactory.getInstance().getActiveWorkspace().add(ndoc);
         }
     }

@@ -4,11 +4,13 @@
  */
 package ec.nbdemetra.ws.nodes;
 
+import com.google.common.base.Strings;
 import ec.nbdemetra.ui.NbUtilities;
 import ec.nbdemetra.ws.IWorkspaceItemManager;
 import ec.nbdemetra.ws.Workspace;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.IDocumented;
 import ec.tstoolkit.MetaData;
 import ec.tstoolkit.utilities.Id;
@@ -45,6 +47,16 @@ public class ItemWsNode extends WsNode {
     public String getDisplayName() {
         WorkspaceItem<?> item = getItem();
         return item == null ? "" : item.getDisplayName();
+    }
+
+    @Override
+    public String getShortDescription() {
+        WorkspaceItem<?> item = getItem();
+        if (!Strings.isNullOrEmpty(item.getComments())) {
+            return MultiLineNameUtil.toHtml(item.getComments());
+        } else {
+            return null;
+        }
     }
 
     @Override

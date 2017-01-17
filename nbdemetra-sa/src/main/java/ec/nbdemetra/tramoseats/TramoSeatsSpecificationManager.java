@@ -91,6 +91,7 @@ public class TramoSeatsSpecificationManager extends AbstractWorkspaceItemManager
         TramoSeatsDocumentManager dmgr = (TramoSeatsDocumentManager) WorkspaceFactory.getInstance().getManager(TramoSeatsDocumentManager.ID);
         WorkspaceItem<TramoSeatsDocument> doc = (WorkspaceItem<TramoSeatsDocument>) dmgr.create(ws);
         doc.getElement().setSpecification(xdoc.getElement());
+        doc.setComments(xdoc.getComments());
         TramoSeatsTopComponent view = new TramoSeatsTopComponent(doc);
         view.open();
         view.requestActive();
