@@ -168,7 +168,7 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
 
         TsPeriodSelector sel = new TsPeriodSelector();
         sel.between(start.firstday(), end.lastday());
-        List<TsData> listSeries = history_.Select(info_, startDate, endDate);
+        List<TsData> listSeries = history_.select(info_, startDate, endDate);
         List<TsData> revSeries = new ArrayList<>();
 
         for (TsData t : listSeries) {
@@ -421,5 +421,19 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
         max += (Math.abs(max) * .03);
 
         range = new Range(min, max);
+    }
+
+    /**
+     * @return the diag_
+     */
+    public DiagnosticInfo getDiagnosticInfo() {
+        return diag_;
+    }
+
+    /**
+     * @param diag_ the diag_ to set
+     */
+    public void setDiagnosticInfo(DiagnosticInfo diag) {
+        this.diag_ = diag;
     }
 }

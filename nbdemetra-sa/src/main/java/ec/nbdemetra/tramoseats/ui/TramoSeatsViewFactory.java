@@ -608,6 +608,24 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             setAsync(true);
         }
     }
+    
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 604030)
+    public static class RevisionHistorySaChangesFactory extends SaDocumentViewFactory.DiagnosticsRevisionSaChangesFactory<TramoSeatsDocument> {
+
+        public RevisionHistorySaChangesFactory() {
+            super(TramoSeatsDocument.class);
+            setAsync(true);
+        }
+    }
+    
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 604040)
+    public static class RevisionHistoryTrendChangesFactory extends SaDocumentViewFactory.DiagnosticsRevisionTrendChangesFactory<TramoSeatsDocument> {
+
+        public RevisionHistoryTrendChangesFactory() {
+            super(TramoSeatsDocument.class);
+            setAsync(true);
+        }
+    }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER STABILITY VIEWS">    

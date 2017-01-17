@@ -17,8 +17,7 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.tss.TsCollection;
-import ec.tstoolkit.data.ReadDataBlock;
+import ec.tss.TsInformation;
 import ec.ui.interfaces.IReadDataBlockView;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
 import ec.util.various.swing.JCommand;
@@ -61,7 +60,7 @@ public final class ReadDataBlockViewHandler extends DemoComponentHandler.Instanc
         toolBar.addSeparator();
     }
 
-    private static void apply(IReadDataBlockView c, TsCollection col) {
-        c.setDataBlock(new ReadDataBlock(col.get(0).getTsData().internalStorage()));
+    private static void apply(IReadDataBlockView c, TsInformation ts) {
+        c.setDataBlock(ts.data);
     }
 }

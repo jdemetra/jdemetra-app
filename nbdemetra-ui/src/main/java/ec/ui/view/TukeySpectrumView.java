@@ -65,7 +65,10 @@ public class TukeySpectrumView extends ARPView {
         this.lag = DEFAULT_DIFF_LAG;
         this.log = DEFAULT_LOG;
         this.lastYears = DemetraUI.getDefault().getSpectralLastYears();
+        initComponents();
+    }
 
+    private void initComponents() {
         onComponentPopupMenuChange();
         enableProperties();
     }

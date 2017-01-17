@@ -16,15 +16,32 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import com.google.common.base.Optional;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.tss.TsCollection;
+import ec.nbdemetra.ui.demo.FakeTsProvider;
+import static ec.nbdemetra.ui.demo.impl.TsCollectionHandler.getIcon;
+import ec.tss.Ts;
+import ec.tss.TsInformation;
+import ec.tss.TsInformationType;
+import ec.tss.tsproviders.DataSet;
+import ec.tss.tsproviders.DataSource;
+import ec.tss.tsproviders.IDataSourceProvider;
+import ec.tss.tsproviders.TsProviders;
 import ec.ui.interfaces.ITsAble;
+import ec.util.various.swing.FontAwesome;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.ext.FontAwesomeUtils;
+import java.awt.Color;
 import static java.beans.BeanInfo.ICON_COLOR_16x16;
+import java.io.IOException;
+import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
+import org.openide.awt.DropDownButtonFactory;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -50,21 +67,87 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<ITsAble
 
     @Override
     public void doFillToolBar(JToolBar toolBar, ITsAble c) {
-        JButton item;
-
         toolBar.add(randomCommand.toButton(c));
+        toolBar.add(createFakeProviderButton(c));
 
-        item = toolBar.add(clearCommand.toAction(c));
+        JButton item = toolBar.add(clearCommand.toAction(c));
         item.setIcon(FontAwesomeUtils.getIcon(FA_ERASER, ICON_COLOR_16x16));
 
         toolBar.addSeparator();
     }
 
-    private static void apply(ITsAble o, TsCollection col) {
-        o.setTs(col.get(0));
+    private static void apply(ITsAble o, TsInformation ts) {
+        o.setTs(ts.toTs());
     }
 
     private static void clear(ITsAble o) {
         o.setTs(null);
+    }
+
+    private static JButton createFakeProviderButton(ITsAble view) {
+        JMenu providerMenu = TsProviders
+                .lookup(IDataSourceProvider.class, "Fake")
+                .transform(o -> createFakeProviderMenu(o, view))
+                .or(JMenu::new);
+        JButton result = DropDownButtonFactory.createDropDownButton(getIcon(FontAwesome.FA_DATABASE), providerMenu.getPopupMenu());
+        result.setToolTipText("Data sources");
+        enableTickFeedback(result);
+        return result;
+    }
+
+    private static void enableTickFeedback(JButton button) {
+        Optional<FakeTsProvider> p = TsProviders.lookup(FakeTsProvider.class, "Fake");
+        if (p.isPresent()) {
+            Icon icon1 = getIcon(FontAwesome.FA_DATABASE);
+            Icon icon2 = FontAwesome.FA_DATABASE.getIcon(Color.ORANGE.darker(), FontAwesomeUtils.toSize(ICON_COLOR_16x16));
+            p.get().addTickListener(() -> {
+                SwingUtilities.invokeLater(() -> {
+                    if (icon1.equals(button.getClientProperty("stuff"))) {
+                        button.putClientProperty("stuff", icon2);
+                        button.setIcon(icon2);
+                    } else {
+                        button.putClientProperty("stuff", icon1);
+                        button.setIcon(icon1);
+                    }
+                });
+            });
+        }
+    }
+
+    private static JMenu createFakeProviderMenu(IDataSourceProvider provider, ITsAble view) {
+        JMenu result = new JMenu();
+        for (DataSource dataSource : provider.getDataSources()) {
+            JMenu subMenu = new JMenu(provider.getDisplayName(dataSource));
+            subMenu.setIcon(getIcon(FontAwesome.FA_FOLDER));
+            try {
+                for (DataSet dataSet : provider.children(dataSource)) {
+                    JMenuItem item = subMenu.add(new AddDataSetCommand(dataSet).toAction(view));
+                    item.setText(provider.getDisplayNodeName(dataSet));
+                    item.setIcon(getIcon(FontAwesome.FA_LINE_CHART));
+                }
+            } catch (IOException ex) {
+                subMenu.add(ex.getMessage()).setIcon(getIcon(FontAwesome.FA_EXCLAMATION_CIRCLE));
+            }
+            result.add(subMenu);
+        }
+        return result;
+    }
+
+    private static final class AddDataSetCommand extends JCommand<ITsAble> {
+
+        private final DataSet dataSet;
+
+        public AddDataSetCommand(DataSet dataSet) {
+            this.dataSet = dataSet;
+        }
+
+        @Override
+        public void execute(ITsAble component) throws Exception {
+            Optional<Ts> ts = TsProviders.getTs(dataSet, TsInformationType.Definition);
+            if (ts.isPresent()) {
+                ts.get().query(TsInformationType.All);
+            }
+            component.setTs(ts.orNull());
+        }
     }
 }

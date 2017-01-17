@@ -62,6 +62,7 @@ public final class ComponentsDemo {
                 .content(ComponentsDemo::create)
                 .title("Components Demo")
                 .logLevel(Level.FINE)
+                .size(900, 600)
                 .launch();
     }
 
@@ -96,12 +97,12 @@ public final class ComponentsDemo {
         JTsList dragDrop = new JTsList();
         dragDrop.setShowHeader(false);
         dragDrop.setInformation(new ITsList.InfoType[]{ITsList.InfoType.TsIdentifier, ITsList.InfoType.Data});
-        dragDrop.setPreferredSize(new Dimension(200, 200));
+        dragDrop.setPreferredSize(new Dimension(250, 200));
         dragDrop.setTsAction(DemoTsActions.DO_NOTHING);
 
         JSplitPane left = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, NbComponents.newJScrollPane(tree), dragDrop);
         JSplitPane splitPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, main);
-        splitPane.getLeftComponent().setPreferredSize(new Dimension(200, 400));
+        splitPane.getLeftComponent().setPreferredSize(new Dimension(250, 400));
 
         result.setLayout(new BorderLayout());
         result.add(splitPane, BorderLayout.CENTER);

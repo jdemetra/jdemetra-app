@@ -35,4 +35,8 @@ public abstract class DemoComponentFactory {
     protected static ImmutableMap.Builder<Id, Callable<Component>> builder() {
         return new ImmutableMap.Builder<>();
     }
+
+    public static String idOf(String label, int order, boolean highlight) {
+        return "<html><span class='" + order + "'>" + (highlight ? "<u>" : "") + label;
+    }
 }
