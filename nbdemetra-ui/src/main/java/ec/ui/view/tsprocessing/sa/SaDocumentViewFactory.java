@@ -43,6 +43,7 @@ import ec.tstoolkit.modelling.arima.diagnostics.OneStepAheadForecastingTest;
 import ec.tstoolkit.sarima.SarimaModel;
 import ec.tstoolkit.stats.NiidTests;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
+import ec.tstoolkit.timeseries.analysis.DiagnosticInfo;
 import ec.tstoolkit.timeseries.analysis.MovingProcessing;
 import ec.tstoolkit.timeseries.analysis.RevisionHistory;
 import ec.tstoolkit.timeseries.analysis.SlidingSpans;
@@ -139,12 +140,14 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             IRREGULAR = "Irregular",
             SA_ST = "Sa series (stationary)",
             SASERIES = "SA series",
+            SASERIES_CHANGES = "SA changes",
             LASTIRREGULAR = "Irregular (last periods)",
             LASTSASERIES = "SA series (last periods)",
             TREND = "Trend",
             SEASONAL = "Seasonal",
             TRADINGDAYS = "Trading days",
-            SACHANGES = "SA series (changes)",
+            SACHANGES = "SA changes",
+            TRENDCHANGES = "Trend changes",
             REVISION = "Revisions history",
             EASTER = "Easter";
     public static final Id INPUT_SPEC = new LinearId(INPUT, SPEC),
@@ -197,6 +200,8 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             DIAGNOSTICS_SLIDING_SA = new LinearId(DIAGNOSTICS, SLIDINGSPANS, SACHANGES),
             DIAGNOSTICS_REVISION_SA = new LinearId(DIAGNOSTICS, REVISION, SASERIES),
             DIAGNOSTICS_REVISION_TREND = new LinearId(DIAGNOSTICS, REVISION, TREND),
+            DIAGNOSTICS_REVISION_SA_CHANGES = new LinearId(DIAGNOSTICS, REVISION, SACHANGES),
+            DIAGNOSTICS_REVISION_TREND_CHANGES = new LinearId(DIAGNOSTICS, REVISION, TRENDCHANGES),
             DIAGNOSTICS_STABILITY_TD = new LinearId(DIAGNOSTICS, STABILITY, TRADINGDAYS),
             DIAGNOSTICS_STABILITY_EASTER = new LinearId(DIAGNOSTICS, STABILITY, EASTER),
             DIAGNOSTICS_STABILITY_ARIMA = new LinearId(DIAGNOSTICS, STABILITY, ARIMA);
@@ -715,7 +720,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             extends ItemFactory<D, RevisionHistory> {
 
         protected DiagnosticsRevisionSaFactory(Class<D> documentType) {
-            super(documentType, DIAGNOSTICS_REVISION_SA, RevisionExtractor.INSTANCE, new RevisionHistoryUI("sa"));
+            super(documentType, DIAGNOSTICS_REVISION_SA, RevisionExtractor.INSTANCE, new RevisionHistoryUI("sa", DiagnosticInfo.RelativeDifference));
         }
     }
 
@@ -723,7 +728,23 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             extends ItemFactory<D, RevisionHistory> {
 
         protected DiagnosticsRevisionTrendFactory(Class<D> documentType) {
-            super(documentType, DIAGNOSTICS_REVISION_TREND, RevisionExtractor.INSTANCE, new RevisionHistoryUI("t"));
+            super(documentType, DIAGNOSTICS_REVISION_TREND, RevisionExtractor.INSTANCE, new RevisionHistoryUI("t", DiagnosticInfo.RelativeDifference));
+        }
+    }
+
+    protected static class DiagnosticsRevisionSaChangesFactory<D extends SaDocument<? extends ISaSpecification>>
+            extends ItemFactory<D, RevisionHistory> {
+
+        protected DiagnosticsRevisionSaChangesFactory(Class<D> documentType) {
+            super(documentType, DIAGNOSTICS_REVISION_SA_CHANGES, RevisionExtractor.INSTANCE, new RevisionHistoryUI("sa", DiagnosticInfo.PeriodToPeriodGrowthDifference));
+        }
+    }
+
+    protected static class DiagnosticsRevisionTrendChangesFactory<D extends SaDocument<? extends ISaSpecification>>
+            extends ItemFactory<D, RevisionHistory> {
+
+        protected DiagnosticsRevisionTrendChangesFactory(Class<D> documentType) {
+            super(documentType, DIAGNOSTICS_REVISION_TREND_CHANGES, RevisionExtractor.INSTANCE, new RevisionHistoryUI("t", DiagnosticInfo.PeriodToPeriodGrowthDifference));
         }
     }
 
