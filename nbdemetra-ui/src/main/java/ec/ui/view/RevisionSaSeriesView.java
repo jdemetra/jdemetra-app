@@ -173,7 +173,7 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
         List<TsData> revSeries = new ArrayList<>();
 
         for (TsData t : listSeries) {
-            revSeries.add(t.select(sel));
+            revSeries.add(transform(t, sel, activeDiag.asTsDataFunction()));
         }
 
         Point pt = new Point((int) rectangle.getX(), (int) rectangle.getY());
@@ -181,9 +181,23 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
         SwingUtilities.convertPointToScreen(pt, chartpanel_);
         popup.setLocation(pt);
         popup.setChartTitle(info_.toUpperCase() + " First estimations");
-        popup.setTsData(sRef.select(sel), revSeries);
+        popup.setTsData(transform(sRef, sel, activeDiag.asTsDataFunction()), revSeries);
         popup.setVisible(true);
         chartpanel_.repaint();
+    }
+    
+    private static TsData transform(TsData origin, TsPeriodSelector selector, TsDataFunction fn){
+        TsDomain odomain=origin.getDomain();
+        TsDomain domain=odomain.select(selector);
+        TsData s=new TsData(domain);
+        int del=domain.getStart().minus(odomain.getStart());
+        for (int i=0, j=del; i<domain.getLength(); ++i, ++j){
+            if (fn == null)
+                s.set(i, origin.get(j));
+            else
+                s.set(i, fn.apply(origin, j));
+        }
+        return s;
     }
 
     private void showRevisionsDocument(TsData s) {
@@ -211,9 +225,9 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
         TsData rev = new TsData(start, n);
         for (int i = 0; i < n; ++i) {
             double r = history_.seriesRevision(info_, rev.getDomain().get(i), activeDiag);
-            if (activeDiag != DiagnosticInfo.AbsoluteDifference && activeDiag != DiagnosticInfo.PeriodToPeriodDifference) {
-                r *= 100;
-            }
+//            if (activeDiag != DiagnosticInfo.AbsoluteDifference && activeDiag != DiagnosticInfo.PeriodToPeriodDifference) {
+//                r *= 100;
+//            }
             rev.set(i, r);
         }
         return rev;
