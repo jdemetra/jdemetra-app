@@ -11,7 +11,6 @@ import ec.nbdemetra.ws.nodes.WsNode;
 import ec.nbdemetra.ws.nodes.WsRootNode;
 import ec.tstoolkit.utilities.Id;
 import javax.swing.ActionMap;
-import javax.swing.JFrame;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -27,7 +26,6 @@ import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
 
 /**
  *
@@ -142,6 +140,7 @@ public class DemetraWsUI extends TopComponent implements ExplorerManager.Provide
                     processRemovingItem(ev);
                     break;
                 case WorkspaceFactory.Event.ITEMRENAMED:
+                case WorkspaceFactory.Event.ITEMCOMMENTS:
                     refreshItem(ev.id);
                     break;
                 default:

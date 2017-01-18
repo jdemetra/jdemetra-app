@@ -219,8 +219,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     private SwingWorker<Void, SaItem> worker;
     private final SaProcessingModel model;
     private final ListTableSelectionListener listTableListener;
-    
-    private final DeleteActionPanel deleteActionPanel; 
+
+    private final DeleteActionPanel deleteActionPanel;
 
     public SaBatchUI(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
         super(doc, controller);
@@ -519,26 +519,26 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             return;
         }
         if (interactive) {
-            deleteActionPanel.setItems(items); 
+            deleteActionPanel.setItems(items);
             NotifyDescriptor nd = new NotifyDescriptor(deleteActionPanel,
-                    "Delete confirmation", 
-                    NotifyDescriptor.YES_NO_OPTION, 
-                    NotifyDescriptor.QUESTION_MESSAGE, 
-                    null, 
+                    "Delete confirmation",
+                    NotifyDescriptor.YES_NO_OPTION,
+                    NotifyDescriptor.QUESTION_MESSAGE,
+                    null,
                     NotifyDescriptor.YES_OPTION);
-            
+
             if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.YES_OPTION) {
                 return;
             }
         }
-        
+
         List<SaItem> itemsToDelete = new ArrayList<>();
-        int[] indexToDelete = deleteActionPanel.getSelectedIndices(); 
-        for (int index : indexToDelete) { 
-            itemsToDelete.add(items[index]); 
+        int[] indexToDelete = deleteActionPanel.getSelectedIndices();
+        for (int index : indexToDelete) {
+            itemsToDelete.add(items[index]);
         }
-        getCurrentProcessing().removeAll(itemsToDelete); 
-        
+        getCurrentProcessing().removeAll(itemsToDelete);
+
         redrawAll();
         controller.setState(SaProcessingState.READY);
     }
@@ -608,7 +608,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         lsmodel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         lsmodel.addListSelectionListener(listTableListener);
 
-        XTable.setWidthAsPercentages(result, .35, .1, .1, .1, .05, .15, .05);
+        XTable.setWidthAsPercentages(result, .35, .1, .1, .1, .05, .07, .07, .06);
         result.getColumnModel().getColumn(SaProcessingModel.SERIES).setCellRenderer(new SeriesRenderer());
         result.getColumnModel().getColumn(SaProcessingModel.METHOD).setCellRenderer(new MethodRenderer());
         result.getColumnModel().getColumn(SaProcessingModel.ESTIMATION).setCellRenderer(new EstimationRenderer());
@@ -616,6 +616,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         result.getColumnModel().getColumn(SaProcessingModel.PRIORITY).setCellRenderer(new PriorityRenderer());
         result.getColumnModel().getColumn(SaProcessingModel.QUALITY).setCellRenderer(new QualityRenderer());
         result.getColumnModel().getColumn(SaProcessingModel.WARNINGS).setCellRenderer(new WarningsRenderer());
+        result.getColumnModel().getColumn(SaProcessingModel.COMMENTS).setCellRenderer(new CommentsRenderer());
 
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(result.getModel());
         sorter.setComparator(SaProcessingModel.SERIES, SaItemComparer.Name);
@@ -856,7 +857,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         @Override
         protected String getToolTipText(SaItem item) {
             String name = item.getName();
-            return !Strings.isNullOrEmpty(name) ? MultiLineNameUtil.toHtml(name) : null;
+            return !Strings.isNullOrEmpty(name) ? MultiLineNameUtil.toHtml(MultiLineNameUtil.join(name)) : null;
         }
 
         @Override
@@ -990,10 +991,48 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         }
     }
 
+    static class CommentsRenderer extends SimpleRenderer<SaItem> {
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            label.setHorizontalAlignment(JLabel.CENTER);
+            return label;
+        }
+        
+        @Override
+        protected String getText(SaItem item) {
+            return null;
+        }
+
+        @Override
+        protected String getToolTipText(SaItem item) {
+            if (!Strings.isNullOrEmpty(item.getComment())) {
+                return MultiLineNameUtil.toHtml(item.getComment());
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        protected Color getColor(SaItem item) {
+            return item.getTs().isFrozen() ? Color.gray : null;
+        }
+
+        @Override
+        public Icon getIcon(SaItem item) {
+            if (!Strings.isNullOrEmpty(item.getComment())) {
+                return DemetraUiIcon.COMMENT.getImageIcon();
+            } else {
+                return null;
+            }
+        }
+    }
+
     class SaProcessingModel extends ListTableModel<SaItem> {
 
-        static final int SERIES = 0, METHOD = 1, ESTIMATION = 2, STATUS = 3, PRIORITY = 4, QUALITY = 5, WARNINGS = 6;
-        final List<String> columnNames = Arrays.asList("Series", "Method", "Estimation", "Status", "Priority", "Quality", "Warnings");
+        static final int SERIES = 0, METHOD = 1, ESTIMATION = 2, STATUS = 3, PRIORITY = 4, QUALITY = 5, WARNINGS = 6, COMMENTS = 7;
+        final List<String> columnNames = Arrays.asList("Series", "Method", "Estimation", "Status", "Priority", "Quality", "Warnings", "Comments");
 
         @Override
         protected List<String> getColumnNames() {
