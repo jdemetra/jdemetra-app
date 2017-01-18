@@ -24,6 +24,7 @@ import ec.tstoolkit.timeseries.TsPeriodSelector;
 import ec.tstoolkit.timeseries.analysis.DiagnosticInfo;
 import ec.tstoolkit.timeseries.analysis.RevisionHistory;
 import ec.tstoolkit.timeseries.simplets.TsData;
+import ec.tstoolkit.timeseries.simplets.TsDataFunction;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.AHtmlView;
@@ -74,7 +75,7 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
     private final JFreeChart mainChart;
     private String info_ = "sa";
     private RevisionHistory history_;
-    private DiagnosticInfo diag_ = DiagnosticInfo.RelativeDifference;
+    private DiagnosticInfo diag_ = DiagnosticInfo.RelativeDifference, activeDiag=diag_;
     private int years_ = 4;
     private int minyears_ = 5;
     private int threshold_ = 2;
@@ -168,11 +169,11 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
 
         TsPeriodSelector sel = new TsPeriodSelector();
         sel.between(start.firstday(), end.lastday());
-        List<TsData> listSeries = history_.Select(info_, startDate, endDate);
+        List<TsData> listSeries = history_.select(info_, startDate, endDate);
         List<TsData> revSeries = new ArrayList<>();
 
         for (TsData t : listSeries) {
-            revSeries.add(t.select(sel));
+            revSeries.add(transform(t, sel, activeDiag.asTsDataFunction()));
         }
 
         Point pt = new Point((int) rectangle.getX(), (int) rectangle.getY());
@@ -180,13 +181,27 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
         SwingUtilities.convertPointToScreen(pt, chartpanel_);
         popup.setLocation(pt);
         popup.setChartTitle(info_.toUpperCase() + " First estimations");
-        popup.setTsData(sRef.select(sel), revSeries);
+        popup.setTsData(transform(sRef, sel, activeDiag.asTsDataFunction()), revSeries);
         popup.setVisible(true);
         chartpanel_.repaint();
     }
+    
+    private static TsData transform(TsData origin, TsPeriodSelector selector, TsDataFunction fn){
+        TsDomain odomain=origin.getDomain();
+        TsDomain domain=odomain.select(selector);
+        TsData s=new TsData(domain);
+        int del=domain.getStart().minus(odomain.getStart());
+        for (int i=0, j=del; i<domain.getLength(); ++i, ++j){
+            if (fn == null)
+                s.set(i, origin.get(j));
+            else
+                s.set(i, fn.apply(origin, j));
+        }
+        return s;
+    }
 
     private void showRevisionsDocument(TsData s) {
-        HtmlRevisionsDocument document = new HtmlRevisionsDocument(s, diag_);
+        HtmlRevisionsDocument document = new HtmlRevisionsDocument(s, activeDiag);
         document.setThreshold(threshold_);
         documentpanel_.loadContent(HtmlUtil.toString(document));
     }
@@ -209,10 +224,10 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
         }
         TsData rev = new TsData(start, n);
         for (int i = 0; i < n; ++i) {
-            double r = history_.seriesRevision(info_, rev.getDomain().get(i), diag_);
-            if (diag_ != DiagnosticInfo.AbsoluteDifference && diag_ != DiagnosticInfo.PeriodToPeriodDifference) {
-                r *= 100;
-            }
+            double r = history_.seriesRevision(info_, rev.getDomain().get(i), activeDiag);
+//            if (activeDiag != DiagnosticInfo.AbsoluteDifference && activeDiag != DiagnosticInfo.PeriodToPeriodDifference) {
+//                r *= 100;
+//            }
             rev.set(i, r);
         }
         return rev;
@@ -221,7 +236,7 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
     private void showRevisionPopup(ChartMouseEvent e) {
         XYItemEntity entity = (XYItemEntity) e.getEntity();
         TsPeriod start = firstPeriod.plus(entity.getSeriesIndex());
-        popup.setTsData(history_.tsRevision(info_, start, start), null);
+        popup.setTsData(history_.tsRevision(info_, start, start, activeDiag.asTsDataFunction()), null);
         Point p = e.getTrigger().getLocationOnScreen();
         p.translate(3, 3);
         popup.setLocation(p);
@@ -248,24 +263,30 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
         this.info_ = info_;
     }
 
-    private void addSeries(TimeSeriesCollection chartSeries, TsData data) {
+    private void addSeries(TimeSeriesCollection chartSeries, TsData data, TsPeriodSelector sel, TsDataFunction fn) {
         TimeSeries chartTs = new TimeSeries("");
-        for (int i = 0; i < data.getDomain().getLength(); ++i) {
-            if (Double.isFinite(data.get(i))) {
-                Day day = new Day(data.getDomain().get(i).middle());
-                chartTs.addOrUpdate(day, data.get(i));
+        TsDomain select = data.getDomain().select(sel);
+        for (int i = 0; i < select.getLength(); ++i) {
+            TsPeriod cur = select.get(i);
+            int pos = data.getDomain().search(cur);
+            if (pos >= 0) {
+                double x = fn.apply(data, pos);
+                if (Double.isFinite(x)) {
+                    Day day = new Day(cur.middle());
+                    chartTs.addOrUpdate(day, x);
+                }
             }
         }
         chartSeries.addSeries(chartTs);
     }
 
-    private void addStart(TimeSeriesCollection chartSeries, String name, TsPeriod start) {
+    private void addStart(TimeSeriesCollection chartSeries, String name, TsPeriod start, TsDataFunction fn) {
         TsData ts = history_.series(name, start);
         if (ts != null) {
             TimeSeries chartTs = new TimeSeries("");
             int pos = start.minus(ts.getStart());
             Day day = new Day(start.middle());
-            chartTs.add(day, ts.get(pos));
+            chartTs.add(day, fn.apply(ts, pos));
             chartSeries.addSeries(chartTs);
         }
     }
@@ -280,25 +301,26 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
         final TimeSeriesCollection chartSeries = new TimeSeriesCollection();
         sRef = history_.referenceSeries(info_);
         TsPeriodSelector selector = new TsPeriodSelector();
-        int n = sRef.getDomain().getLength();
-        int freq = sRef.getDomain().getFrequency().intValue();
+        TsDomain refdom=sRef.getDomain();
+        int n = refdom.getLength();
+        int freq = refdom.getFrequency().intValue();
         int l = years_ * freq + 1;
         int n0 = n - l;
         if (n0 < minyears_ * freq) {
             n0 = minyears_ * freq;
         }
         if (n0 < n) {
-            firstPeriod = sRef.getDomain().get(n0);
-            selector.from(sRef.getDomain().get(n0).firstday());
+            firstPeriod = refdom.get(n0);
+            selector.from(firstPeriod.firstday());
         } else {
             firstPeriod = sRef.getStart();
         }
-        addSeries(chartSeries, sRef.select(selector));
+        addSeries(chartSeries, sRef, selector, activeDiag.asTsDataFunction());
 
         final TimeSeriesCollection startSeries = new TimeSeriesCollection();
         TsDomain dom = sRef.getDomain();
         for (int i = n0; i < n - 1; ++i) {
-            addStart(startSeries, info_, dom.get(i));
+            addStart(startSeries, info_, dom.get(i), activeDiag.asTsDataFunction());
         }
 
         if (startSeries.getSeriesCount() == 0 || chartSeries.getSeriesCount() == 0) {
@@ -369,7 +391,16 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
     public void setHistory(RevisionHistory history) {
         if (this.history_ == null || !this.history_.equals(history)) {
             this.history_ = history;
+            if (history != null){
+                TsData data = history_.getReferenceInfo().getData(info_, TsData.class);
+               if (data.check(x->!Double.isFinite(x) || x>0))
+                   activeDiag=diag_;
+               else
+                   activeDiag=diag_.adaptForNegativeValues();
+                   
+            }
             chartpanel_.setChart(null);
+            
             showResults();
         }
     }
@@ -421,5 +452,19 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
         max += (Math.abs(max) * .03);
 
         range = new Range(min, max);
+    }
+
+    /**
+     * @return the diag_
+     */
+    public DiagnosticInfo getDiagnosticInfo() {
+        return diag_;
+    }
+
+    /**
+     * @param diag_ the diag_ to set
+     */
+    public void setDiagnosticInfo(DiagnosticInfo diag) {
+        this.diag_ = diag;
     }
 }

@@ -616,6 +616,24 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
             super(X13Document.class);
         }
     }
+    
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 604030)
+    public static class RevisionHistorySaChangesFactory extends SaDocumentViewFactory.DiagnosticsRevisionSaChangesFactory<X13Document> {
+
+        public RevisionHistorySaChangesFactory() {
+            super(X13Document.class);
+            setAsync(true);
+        }
+    }
+    
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 604040)
+    public static class RevisionHistoryTrendChangesFactory extends SaDocumentViewFactory.DiagnosticsRevisionTrendChangesFactory<X13Document> {
+
+        public RevisionHistoryTrendChangesFactory() {
+            super(X13Document.class);
+            setAsync(true);
+        }
+    }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER STABILITY VIEWS">    
