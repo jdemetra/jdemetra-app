@@ -4,9 +4,9 @@
  */
 package ec.nbdemetra.x13;
 
-import ec.nbdemetra.x13.actions.EditRegArimaSpec;
 import ec.nbdemetra.ws.*;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
+import ec.nbdemetra.x13.actions.EditRegArimaSpec;
 import ec.tss.modelling.documents.RegArimaDocument;
 import ec.tstoolkit.algorithm.implementation.RegArimaProcessingFactory;
 import ec.tstoolkit.modelling.arima.x13.RegArimaSpecification;
@@ -76,18 +76,12 @@ public class RegArimaSpecificationManager extends AbstractWorkspaceItemManager<R
     @Override
     public List<WorkspaceItem<RegArimaSpecification>> getDefaultItems() {
         ArrayList<WorkspaceItem<RegArimaSpecification>> defspecs = new ArrayList<>();
-        WorkspaceItem<RegArimaSpecification> rsa0 = WorkspaceItem.system(ID, "RG0", RegArimaSpecification.RG0);
-        defspecs.add(rsa0);
-        WorkspaceItem<RegArimaSpecification> rsa1 = WorkspaceItem.system(ID, "RG1", RegArimaSpecification.RG1);
-        defspecs.add(rsa1);
-        WorkspaceItem<RegArimaSpecification> rsa2 = WorkspaceItem.system(ID, "RG2c", RegArimaSpecification.RG2);
-        defspecs.add(rsa2);
-        WorkspaceItem<RegArimaSpecification> rsa3 = WorkspaceItem.system(ID, "RG3", RegArimaSpecification.RG3);
-        defspecs.add(rsa3);
-        WorkspaceItem<RegArimaSpecification> rsa4 = WorkspaceItem.system(ID, "RG4c", RegArimaSpecification.RG4);
-        defspecs.add(rsa4);
-        WorkspaceItem<RegArimaSpecification> rsa5 = WorkspaceItem.system(ID, "RG5c", RegArimaSpecification.RG5);
-        defspecs.add(rsa5);
+        defspecs.add(WorkspaceItem.system(ID, "RG0", RegArimaSpecification.RG0));
+        defspecs.add(WorkspaceItem.system(ID, "RG1", RegArimaSpecification.RG1));
+        defspecs.add(WorkspaceItem.system(ID, "RG2c", RegArimaSpecification.RG2));
+        defspecs.add(WorkspaceItem.system(ID, "RG3", RegArimaSpecification.RG3));
+        defspecs.add(WorkspaceItem.system(ID, "RG4c", RegArimaSpecification.RG4));
+        defspecs.add(WorkspaceItem.system(ID, "RG5c", RegArimaSpecification.RG5));
         return defspecs;
     }
 
@@ -95,6 +89,7 @@ public class RegArimaSpecificationManager extends AbstractWorkspaceItemManager<R
         RegArimaDocumentManager dmgr = (RegArimaDocumentManager) WorkspaceFactory.getInstance().getManager(RegArimaDocumentManager.ID);
         WorkspaceItem<RegArimaDocument> doc = (WorkspaceItem<RegArimaDocument>) dmgr.create(ws);
         doc.getElement().setSpecification(xdoc.getElement());
+        doc.setComments(xdoc.getComments());
         RegArimaTopComponent view = new RegArimaTopComponent(doc);
         view.open();
         view.requestActive();

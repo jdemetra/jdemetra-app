@@ -24,6 +24,8 @@ public class XmlWorkspaceItem {
     public String file;
     @XmlAttribute
     public boolean readOnly;
+    @XmlElement
+    public String comments;
 
     public XmlWorkspaceItem() { }
 }
