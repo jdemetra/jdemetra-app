@@ -17,7 +17,10 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.swing.JOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -221,6 +224,30 @@ public enum PropertiesPanelFactory {
                                 sp[i] = subProp;
                             }
                             p.addSubProperties(sp);
+                        }
+                    }
+
+                    if (propDesc.getPropertyType().equals(Coefficients.class)) {
+                        Coefficients coeff = (Coefficients) value;
+                        p.clearSubProperties();
+                        if (coeff.getFixedCoefficients() != null) {
+                            Map<String, double[]> map = coeff.getFixedCoefficients();
+                            if (map.size() > 0) {
+                                Property[] sp = new Property[map.size()];
+                                int i = 0;
+                                for (Entry<String, double[]> entry : map.entrySet()) {
+                                    ArrayProperty subProp = new ArrayProperty();
+                                    subProp.setDisplayName(entry.getKey());
+                                    if (entry.getValue().getClass().isArray()) {
+                                        subProp.setValue(Arrays.toString(entry.getValue()));
+                                    }
+
+                                    subProp.setEditable(false);
+                                    sp[i] = subProp;
+                                    i++;
+                                }
+                                p.addSubProperties(sp);
+                            }
                         }
                     }
                 }

@@ -46,6 +46,7 @@ public enum CustomPropertyEditorRegistry {
         register(Holidays.class, new HolidaysSelector());
         register(UserVariable.class, new UserVariableSelector());
         register(UserVariables.class, new UserVariablesEditor());
+        register(Coefficients.class, new FixedCoefficientsEditor());
 
         registerEnumEditor(OutlierType.class, new OutlierTypeSelector());
     }
