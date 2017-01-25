@@ -22,7 +22,6 @@ public class RampsEditor extends AbstractPropertyEditor {
 
     public RampsEditor() {
         editor = new JButton(new AbstractAction("...") {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 final ArrayEditorDialog<RampDescriptor> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
