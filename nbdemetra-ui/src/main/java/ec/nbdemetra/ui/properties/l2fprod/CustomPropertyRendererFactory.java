@@ -30,6 +30,7 @@ public enum CustomPropertyRendererFactory {
         registry_.registerRenderer(OutlierDefinition[].class, new ArrayRenderer());
         registry_.registerRenderer(SeasonalFilterOption[].class, new ArrayRenderer());
         registry_.registerRenderer(SigmavecOption[].class, new ArrayRenderer());
+        registry_.registerRenderer(Coefficients.class, new ArrayRenderer());
     }
 
     public PropertyRendererRegistry getRegistry() {

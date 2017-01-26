@@ -1,16 +1,30 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2017 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.x13.descriptors;
 
+import ec.nbdemetra.ui.properties.l2fprod.Coefficients;
+import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.modelling.TsVariableDescriptor;
 import ec.tstoolkit.modelling.arima.x13.RegArimaSpecification;
 import ec.tstoolkit.modelling.arima.x13.RegressionSpec;
 import ec.tstoolkit.timeseries.regression.InterventionVariable;
 import ec.tstoolkit.timeseries.regression.OutlierDefinition;
 import ec.tstoolkit.timeseries.regression.Ramp;
-import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
+import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -52,6 +66,11 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
             descs.add(desc);
         }
         desc = userdefinedDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+
+        desc = fixedCoefficientsDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -99,7 +118,18 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
     public CalendarSpecUI getCalendar() {
         return new CalendarSpecUI(core, ro_);
     }
-    private static final int CALENDAR_ID = 1, PRESPEC_ID = 1, INTERV_ID = 2, RAMPS_ID = 3, USERDEF_ID = 4;
+
+    public Coefficients getFixedCoefficients() {
+        Coefficients c = new Coefficients(inner().getAllFixedCoefficients());
+        c.setAllNames(inner().getRegressionVariableNames(TsFrequency.Undefined));
+        return c;
+    }
+
+    public void setFixedCoefficients(Coefficients coeffs) {
+        inner().setAllFixedCoefficients(coeffs.getFixedCoefficients());
+    }
+    
+    private static final int CALENDAR_ID = 1, PRESPEC_ID = 1, INTERV_ID = 2, RAMPS_ID = 3, USERDEF_ID = 4, FCOEFF_ID = 5;
 
     @Messages({
         "regressionSpecUI.prespecDesc.name=Pre-specified outliers",
@@ -166,6 +196,24 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(Bundle.regressionSpecUI_userdefinedDesc_name());
             desc.setShortDescription(Bundle.regressionSpecUI_userdefinedDesc_desc());
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "regressionSpecUI.fixedCoefficientsDesc.name=Fixed regression coefficients",
+        "regressionSpecUI.fixedCoefficientsDesc.desc="
+    })
+    private EnhancedPropertyDescriptor fixedCoefficientsDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("FixedCoefficients", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FCOEFF_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.regressionSpecUI_fixedCoefficientsDesc_name());
+            desc.setShortDescription(Bundle.regressionSpecUI_fixedCoefficientsDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
