@@ -21,6 +21,7 @@ import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.awt.JComponent2;
+import ec.tss.datatransfer.DataTransfers;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.ui.commands.TsControlCommand;
 import ec.ui.interfaces.IColorSchemeAble;
@@ -149,8 +150,7 @@ public abstract class ATsControl extends JComponent2 implements ITsControl, Clip
 
     @Deprecated
     protected Transferable getClipboardContents() {
-        Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-        return cb.getContents(this);
+        return DataTransfers.systemClipboardAsTransferable();
     }
 
     @Deprecated

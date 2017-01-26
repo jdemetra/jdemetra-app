@@ -8,6 +8,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.IParser;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -93,5 +95,55 @@ public final class DataTransfers {
     @Nonnull
     public static Stream<Transferable> asTransferableStream(@Nonnull MultiTransferObject multi) {
         return IntStream.range(0, multi.getCount()).mapToObj(multi::getTransferableAt);
+    }
+
+    @Nonnull
+    public static Transferable systemClipboardAsTransferable() {
+        return new ClipboardAsTransferable(Toolkit.getDefaultToolkit().getSystemClipboard());
+    }
+
+    /**
+     * Provides a way to avoid use of method
+     * {@link Clipboard#getContents(java.lang.Object)} that might throw
+     * OutOfMemoryError.
+     */
+    @lombok.extern.slf4j.Slf4j
+    private static final class ClipboardAsTransferable implements Transferable {
+
+        private final Clipboard clipboard;
+
+        private ClipboardAsTransferable(Clipboard clipboard) {
+            this.clipboard = clipboard;
+        }
+
+        @Override
+        public DataFlavor[] getTransferDataFlavors() {
+            try {
+                return clipboard.getAvailableDataFlavors();
+            } catch (IllegalStateException ex) {
+                log.warn("While getting data flavors from clipboard", ex);
+                return new DataFlavor[0];
+            }
+        }
+
+        @Override
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
+            try {
+                return clipboard.isDataFlavorAvailable(flavor);
+            } catch (IllegalStateException ex) {
+                log.warn("While checking data flavor from clipboard", ex);
+                return false;
+            }
+        }
+
+        @Override
+        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+            try {
+                return clipboard.getData(flavor);
+            } catch (IllegalStateException | OutOfMemoryError ex) {
+                log.warn("While getting data from clipboard", ex);
+                return new IOException(ex);
+            }
+        }
     }
 }

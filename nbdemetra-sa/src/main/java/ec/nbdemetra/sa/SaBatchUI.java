@@ -29,6 +29,7 @@ import ec.satoolkit.x13.X13Specification;
 import ec.tss.TsCollection;
 import static ec.tss.TsFactory.toTsCollection;
 import ec.tss.TsInformationType;
+import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TransferableXml;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.sa.EstimationPolicyType;
@@ -474,8 +475,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     public void paste(boolean interactive) {
-        Transferable dataobj = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
-        if (dataobj != null) {
+        Transferable dataobj = DataTransfers.systemClipboardAsTransferable();
+        if (dataobj.getTransferDataFlavors().length > 0) {
             if (pasteTs(dataobj)) {
                 redrawAll();
                 return;

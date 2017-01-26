@@ -18,11 +18,10 @@ package ec.nbdemetra.ui.tsproviders.actions;
 
 import com.google.common.base.Optional;
 import ec.tss.datatransfer.DataSourceTransferSupport;
+import ec.tss.datatransfer.DataTransfers;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.TsProviders;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Transferable;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
@@ -37,7 +36,7 @@ public final class PasteProvidersAction extends NodeAction {
 
     @Override
     protected void performAction(Node[] activatedNodes) {
-        Optional<DataSource> dataSource = DataSourceTransferSupport.getDefault().getDataSource(getTransferable(activatedNodes));
+        Optional<DataSource> dataSource = DataSourceTransferSupport.getDefault().getDataSource(DataTransfers.systemClipboardAsTransferable());
         if (dataSource.isPresent()) {
             Optional<IDataSourceLoader> loader = TsProviders.lookup(IDataSourceLoader.class, dataSource.get());
             if (loader.isPresent()) {
@@ -48,7 +47,7 @@ public final class PasteProvidersAction extends NodeAction {
 
     @Override
     protected boolean enable(Node[] activatedNodes) {
-        return DataSourceTransferSupport.getDefault().canHandle(getTransferable(activatedNodes));
+        return DataSourceTransferSupport.getDefault().canHandle(DataTransfers.systemClipboardAsTransferable());
     }
 
     @Override
@@ -59,9 +58,5 @@ public final class PasteProvidersAction extends NodeAction {
     @Override
     public HelpCtx getHelpCtx() {
         return null;
-    }
-
-    private static Transferable getTransferable(Node[] requestor) {
-        return Toolkit.getDefaultToolkit().getSystemClipboard().getContents(requestor);
     }
 }

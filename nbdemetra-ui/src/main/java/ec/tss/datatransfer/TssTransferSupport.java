@@ -84,7 +84,8 @@ public class TssTransferSupport extends ListenableBean {
 
     public TssTransferSupport() {
         this.validClipboard = false;
-        Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(event -> {
+        Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        systemClipboard.addFlavorListener(event -> {
             try {
                 boolean old = validClipboard;
                 validClipboard = canImport(((Clipboard) event.getSource()).getAvailableDataFlavors());
@@ -93,6 +94,7 @@ public class TssTransferSupport extends ListenableBean {
                 LOGGER.debug("While getting content from clipboard", ex);
             }
         });
+        validClipboard = canImport(systemClipboard.getAvailableDataFlavors());
     }
 
     /**
