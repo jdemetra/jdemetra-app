@@ -8,9 +8,8 @@ import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.actions.AbstractViewAction;
 import ec.nbdemetra.ws.ui.WorkspaceTsTopComponent;
 import ec.tss.Ts;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.Transferable;
+import ec.tss.datatransfer.DataTransfers;
+import ec.tss.datatransfer.TssTransferSupport;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
@@ -20,7 +19,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "ec.nbdemetra.sa.actions.PasteTs")
+        id = "ec.nbdemetra.sa.actions.PasteTs")
 @ActionRegistration(displayName = "#CTL_PasteTs", lazy = false)
 @ActionReferences({
     @ActionReference(path = WorkspaceFactory.TSCONTEXTPATH, position = 1310),
@@ -43,16 +42,12 @@ public final class PasteTs extends AbstractViewAction<WorkspaceTsTopComponent> {
     protected void process(WorkspaceTsTopComponent cur) {
         WorkspaceTsTopComponent top = context();
         if (top != null) {
-            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-            Transferable contents = cb.getContents(top);
-            if (contents != null) {
-                Ts s = ec.tss.datatransfer.TssTransferSupport.getDefault().toTs(contents);
-                if (s == null) {
-                    NotifyDescriptor nd = new NotifyDescriptor.Message("Unable to paste ts");
-                    DialogDisplayer.getDefault().notify(nd);
-                } else {
-                    top.setTs(s);
-                }
+            Ts s = TssTransferSupport.getDefault().toTs(DataTransfers.systemClipboardAsTransferable());
+            if (s == null) {
+                NotifyDescriptor nd = new NotifyDescriptor.Message("Unable to paste ts");
+                DialogDisplayer.getDefault().notify(nd);
+            } else {
+                top.setTs(s);
             }
         }
     }
