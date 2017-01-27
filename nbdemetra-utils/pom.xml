@@ -14,7 +14,7 @@
     <properties>
         <jna.version>4.2.1</jna.version>
         <jfreechart.version>1.0.19</jfreechart.version>
-        <jfreesvg.version>3.0</jfreesvg.version>
+        <jfreesvg.version>3.2</jfreesvg.version>
     </properties>
 
     <dependencyManagement>
