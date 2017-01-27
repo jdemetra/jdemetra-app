@@ -49,6 +49,10 @@ public class X11SpecUI extends BaseX11SpecUI {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = backcastDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         desc = lsigmaDesc();
         if (desc != null) {
             descs.add(desc);
@@ -110,6 +114,10 @@ public class X11SpecUI extends BaseX11SpecUI {
         return core.getForecastHorizon();
     }
 
+    public int getBackcastHorizon() {
+        return core.getBackcastHorizon();
+    }
+
     public boolean isSeasonal() {
         return core.isSeasonal();
     }
@@ -122,6 +130,9 @@ public class X11SpecUI extends BaseX11SpecUI {
         core.setForecastHorizon(value);
     }
 
+    public void setBackcastHorizon(int value) {
+        core.setBackcastHorizon(value);
+    }
 //    public void setUseForecast(boolean value) {
 //        if (value) {
 //            core.setForecastHorizon(-1);
@@ -244,7 +255,7 @@ public class X11SpecUI extends BaseX11SpecUI {
         return core.isExcludefcst();
     }
 
-    private static final int MODE_ID = 0, SEAS_ID = 1, FORECAST_ID = 2, LSIGMA_ID = 3, USIGMA_ID = 4, AUTOTREND_ID = 5,
+    private static final int MODE_ID = 0, SEAS_ID = 1, FORECAST_ID = 2, BACKCAST_ID = 12, LSIGMA_ID = 3, USIGMA_ID = 4, AUTOTREND_ID = 5,
             TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8, CALENDARSIGMA_ID = 9, SIGMAVEC_ID = 10, EXCLUDEFCST_ID = 11;
 
     @Messages({
@@ -356,6 +367,26 @@ public class X11SpecUI extends BaseX11SpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FORECAST_ID);
             desc.setDisplayName(Bundle.x11SpecUI_forecastDesc_name());
             desc.setShortDescription(Bundle.x11SpecUI_forecastDesc_desc());
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "x11SpecUI.backcastDesc.name=Backcasts horizon",
+        "x11SpecUI.backcastDesc.desc=[backcast(maxback)] Length of the backcasts used in X11. Negative figures are translated in years of backcasts"
+    })
+    private EnhancedPropertyDescriptor backcastDesc() {
+        try {
+            if (!x13_) {
+                return null;
+            }
+            PropertyDescriptor desc = new PropertyDescriptor("BackcastHorizon", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BACKCAST_ID);
+            desc.setDisplayName(Bundle.x11SpecUI_backcastDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_backcastDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {
