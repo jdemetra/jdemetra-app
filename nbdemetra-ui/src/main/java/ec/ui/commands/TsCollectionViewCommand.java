@@ -24,6 +24,7 @@ import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
+import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
@@ -292,8 +293,7 @@ public final class TsCollectionViewCommand {
 
         @Override
         public void execute(ITsCollectionView component) throws Exception {
-            Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(component);
-            TsCollection col = TssTransferSupport.getDefault().toTsCollection(transferable);
+            TsCollection col = TssTransferSupport.getDefault().toTsCollection(DataTransfers.systemClipboardAsTransferable());
             if (col != null) {
                 col.query(TsInformationType.All);
                 if (!col.isEmpty()) {

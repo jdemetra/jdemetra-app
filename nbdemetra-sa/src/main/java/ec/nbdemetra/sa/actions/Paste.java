@@ -30,7 +30,7 @@ public final class Paste extends AbstractViewAction<SaBatchUI> {
 
     @Override
     protected void refreshAction() {
-        enabled = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null) != null;
+        enabled = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().getAvailableDataFlavors().length > 0;
     }
 
     @Override
