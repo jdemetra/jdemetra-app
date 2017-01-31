@@ -283,7 +283,12 @@ public class CoefficientsEditorDialog extends JDialog {
             list.addListSelectionListener(event -> {
                 if (list.getSelectedValue() != null) {
                     DefaultProperty def = new DefaultProperty();
-                    def.setName(current + "[" + list.getSelectedIndex() + "]");
+                    if (list.getModel().getSize() > 1) {
+                        def.setName(current + "[" + (list.getSelectedIndex() + 1) + "]");
+                    } else {
+                        def.setName(current);
+                    }
+
                     def.setDisplayName(def.getName());
                     def.setType(Double.class);
                     def.setCategory("");

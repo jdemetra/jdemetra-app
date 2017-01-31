@@ -141,7 +141,8 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
     public void setData(Map<Integer, Map<AlgorithmDescriptor, RegArimaReport>> reports) {
         reportTB_.loadContent("");
         this.reports = reports;
-        comboBox.setVisible(reports.size() > 1);
+        long count = reports.values().stream().flatMap(r -> r.values().stream()).count();
+        comboBox.setVisible(count > 1);
         comboBox.setModel(asComboBoxModel(reports));
         comboBox.setSelectedIndex(-1);
         if (!reports.isEmpty()) {
