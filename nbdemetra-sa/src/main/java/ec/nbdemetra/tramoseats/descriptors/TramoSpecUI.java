@@ -32,7 +32,7 @@ public class TramoSpecUI extends BaseTramoSpecUI implements IObjectDescriptor<Tr
     }
 
     public TransformSpecUI getTransform() {
-        return new TransformSpecUI(core, ro_);
+        return new TransformSpecUI(core, ro_ || core.getRegression().hasFixedCoefficients());
     }
 
     public OutlierSpecUI getOutlier() {
