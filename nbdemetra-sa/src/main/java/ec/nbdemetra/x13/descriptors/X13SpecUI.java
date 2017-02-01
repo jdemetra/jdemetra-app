@@ -46,7 +46,7 @@ public class X13SpecUI implements IObjectDescriptor<X13Specification> {
     }
 
     public TransformSpecUI getTransform() {
-        return new TransformSpecUI(core.getRegArimaSpecification(), ro_);
+        return new TransformSpecUI(core.getRegArimaSpecification(), ro_ || core.getRegArimaSpecification().getRegression().hasFixedCoefficients());
     }
 
     public ArimaSpecUI getArima() {
