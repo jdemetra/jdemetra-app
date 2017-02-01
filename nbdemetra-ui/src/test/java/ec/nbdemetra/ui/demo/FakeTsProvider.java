@@ -34,9 +34,10 @@ import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import internal.RandomTsBuilder;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -60,7 +61,7 @@ public final class FakeTsProvider extends AbstractDataSourceProvider<Void> {
     private static final String NAME = "Fake";
 
     private static final IParam<DataSource, DataType> TYPE_PARAM = Params.onEnum(DataType.NORMAL, "type");
-    private static final IParam<DataSet, Integer> INDEX_PARAM = Params.onInteger(0, "index");
+    private static final IParam<DataSet, Integer> INDEX_PARAM = Params.onInteger(-1, "idx");
 
     private final HasDataHierarchy dataHierarchy;
     private final HasDataDisplayName dataDisplayName;
@@ -239,8 +240,8 @@ public final class FakeTsProvider extends AbstractDataSourceProvider<Void> {
                 .build().data;
     }
 
-    private static Map<DataType, DataSource> createDataSources() {
-        Map<DataType, DataSource> result = new HashMap<>();
+    private static SortedMap<DataType, DataSource> createDataSources() {
+        SortedMap<DataType, DataSource> result = new TreeMap<>();
         DataSource.Builder builder = DataSource.builder(NAME, "");
         for (DataType o : DataType.values()) {
             TYPE_PARAM.set(builder, o);

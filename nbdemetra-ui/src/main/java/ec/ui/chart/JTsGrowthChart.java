@@ -96,6 +96,7 @@ public class JTsGrowthChart extends ATsGrowthChart {
         chartPanel.setSeriesFormatter(new SeriesFunction<String>() {
             @Override
             public String apply(int series) {
+                TsCollection collection = getTsCollection();
                 return collection.getCount() > series ? collection.get(series).getName() : chartPanel.getDataset().getSeriesKey(series).toString();
             }
         });
@@ -113,7 +114,7 @@ public class JTsGrowthChart extends ATsGrowthChart {
         chartPanel.setLegendVisibilityPredicate(new SeriesPredicate() {
             @Override
             public boolean apply(int series) {
-                return series < collection.getCount();
+                return series < getTsCollection().getCount();
             }
         });
         chartPanel.setSeriesRenderer(SeriesFunction.always(TimeSeriesChart.RendererType.COLUMN));
@@ -195,6 +196,7 @@ public class JTsGrowthChart extends ATsGrowthChart {
 
     @Override
     protected void onCollectionChange() {
+        TsCollection collection = getTsCollection();
         TsPeriodSelector selector = computeSelector(collection, lastYears);
         growthCollection.replace(Arrays.asList(computeGrowthData(collection.toArray(), growthKind, selector)));
         chartPanel.setDataset(TsXYDatasets.from(growthCollection));
@@ -210,6 +212,7 @@ public class JTsGrowthChart extends ATsGrowthChart {
     protected void onSelectionChange() {
         selectionListener.setEnabled(false);
         selectionModel.clearSelection();
+        TsCollection collection = getTsCollection();
         for (Ts o : selection) {
             int index = collection.indexOf(o);
             selectionModel.addSelectionInterval(index, index);

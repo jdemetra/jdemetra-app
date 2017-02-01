@@ -41,6 +41,7 @@ import java.awt.event.*;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.BiConsumer;
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -121,7 +122,7 @@ public class JTsList extends ATsList {
             }
         });
 
-        table.setModel(new CustomTableModel());
+        table.setModel(new CustomTableModel(getTsCollection().toArray(), information));
         XTable.setWidthAsPercentages(table, .4, .1, .1, .1, .3);
 
         table.setDragEnabled(true);
@@ -173,7 +174,7 @@ public class JTsList extends ATsList {
     @Override
     protected void onCollectionChange() {
         selectionListener.setEnabled(false);
-        ((CustomTableModel) table.getModel()).fireTableDataChanged();
+        ((CustomTableModel) table.getModel()).setData(getTsCollection().toArray());
         selectionListener.setEnabled(true);
         onSelectionChange();
     }
@@ -218,7 +219,7 @@ public class JTsList extends ATsList {
 
     @Override
     protected void onInformationChange() {
-        ((CustomTableModel) table.getModel()).fireTableStructureChanged();
+        ((CustomTableModel) table.getModel()).setInformation(information);
     }
 
     @Override
@@ -253,10 +254,11 @@ public class JTsList extends ATsList {
         final JMenuItem unlock = new JMenuItem(new AbstractAction("Unlock") {
             @Override
             public void actionPerformed(ActionEvent arg0) {
+                TsCollection collection = getTsCollection();
                 if (collection.isLocked()) {
                     TsCollection ncol = TsFactory.instance.createTsCollection();
                     ncol.quietAppend(collection);
-                    collection = ncol;
+                    setTsCollection(ncol);
                 }
             }
         });
@@ -265,7 +267,7 @@ public class JTsList extends ATsList {
         result.addPopupMenuListener(new PopupMenuListener() {
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                boolean locked = collection.isLocked() || updateMode == TsUpdateMode.None || !interactive_;
+                boolean locked = getTsCollection().isLocked() || updateMode == TsUpdateMode.None || !interactive_;
                 unlock.setEnabled(locked);
             }
 
@@ -313,11 +315,29 @@ public class JTsList extends ATsList {
         }
     }
 
-    private final class CustomTableModel extends AbstractTableModel {
+    private static final class CustomTableModel extends AbstractTableModel {
+
+        private Ts[] data;
+        private List<InfoType> information;
+
+        public CustomTableModel(Ts[] data, List<InfoType> information) {
+            this.data = data;
+            this.information = information;
+        }
+
+        public void setData(Ts[] data) {
+            this.data = data;
+            fireTableDataChanged();
+        }
+
+        public void setInformation(List<InfoType> information) {
+            this.information = information;
+            fireTableStructureChanged();
+        }
 
         @Override
         public int getRowCount() {
-            return collection.getCount();
+            return data.length;
         }
 
         @Override
@@ -330,7 +350,7 @@ public class JTsList extends ATsList {
             if (rowIndex == -1) {
                 return null;
             }
-            Ts ts = collection.get(rowIndex);
+            Ts ts = data[rowIndex];
             switch (information.get(columnIndex)) {
                 case Name:
                     return ts.getName();
