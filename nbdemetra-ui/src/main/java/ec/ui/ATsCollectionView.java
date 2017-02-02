@@ -65,6 +65,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -193,6 +194,14 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     abstract protected void onDropContentChange();
     //</editor-fold>
 
+    private void fireTsCollectionChange(TsCollection oldCol, TsCollection newCol) {
+        // update selection to reflect changes in collection
+        Ts[] oldSelection = selection;
+        selection = retainTsCollection(selection, newCol);
+        firePropertyChange(TS_COLLECTION_PROPERTY, oldCol, newCol);
+        firePropertyChange(SELECTION_PROPERTY, oldSelection, selection);
+    }
+
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
     @Override
     public TsCollection getTsCollection() {
@@ -203,11 +212,8 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     public void setTsCollection(TsCollection collection) {
         TsCollection old = this.collection;
         this.collection = collection != null ? collection : TsFactory.instance.createTsCollection();
-        // update selection to reflect changes in collection
-        Ts[] oldSelection = this.selection;
-        this.selection = retainTsCollection(selection, this.collection);
-        firePropertyChange(TS_COLLECTION_PROPERTY, old, this.collection);
-        firePropertyChange(SELECTION_PROPERTY, oldSelection, selection);
+        fireTsCollectionChange(old, this.collection);
+        tsFactoryObserver.safeCol.set(this.collection);
     }
 
     @Override
@@ -490,13 +496,13 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
 
     protected class TsFactoryObserver implements Observer {
 
+        private final AtomicReference<TsCollection> safeCol = new AtomicReference<>(collection);
         final AtomicBoolean dirty = new AtomicBoolean(false);
 
         @OnAnyThread
         @Override
         public void update(Observable o, Object arg) {
-            // FIXME: thread access to collection
-            if (arg instanceof TsEvent && isUpdated(collection, (TsEvent) arg)) {
+            if (arg instanceof TsEvent && isUpdated(safeCol.get(), (TsEvent) arg)) {
                 dirty.set(true);
                 SwingUtilities.invokeLater(() -> {
                     if (dirty.getAndSet(false)) {
@@ -515,10 +521,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
 
         @OnEDT
         private void fireTsCollectionContentChange() {
-            Ts[] oldSelection = selection;
-            selection = retainTsCollection(selection, collection);
-            firePropertyChange(TS_COLLECTION_PROPERTY, null, collection);
-            firePropertyChange(SELECTION_PROPERTY, oldSelection, selection);
+            fireTsCollectionChange(null, collection);
         }
     }
 

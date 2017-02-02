@@ -31,6 +31,7 @@ import ec.util.various.swing.OnEDT;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
@@ -80,6 +81,7 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
         Ts old = this.m_ts;
         this.m_ts = ts;
         firePropertyChange(TS_PROPERTY, old, this.m_ts);
+        tsFactoryObserver.safeTs.set(this.m_ts);
     }
 
     @Override
@@ -106,13 +108,13 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
 
     protected class TsFactoryObserver implements Observer {
 
+        private final AtomicReference<Ts> safeTs = new AtomicReference<>(m_ts);
         final AtomicBoolean dirty = new AtomicBoolean(false);
 
         @OnAnyThread
         @Override
         public void update(Observable o, Object arg) {
-            // FIXME: thread access to m_ts
-            if (arg instanceof TsEvent && isUpdated(m_ts, (TsEvent) arg)) {
+            if (arg instanceof TsEvent && isUpdated(safeTs.get(), (TsEvent) arg)) {
                 dirty.set(true);
                 SwingUtilities.invokeLater(() -> {
                     if (dirty.getAndSet(false)) {
