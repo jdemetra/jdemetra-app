@@ -26,7 +26,6 @@ import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsEvent;
 import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.DataTransfers;
@@ -46,8 +45,7 @@ import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.ColorSchemeIcon;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
-import ec.util.various.swing.OnAnyThread;
-import ec.util.various.swing.OnEDT;
+import internal.TsEventHelper;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
@@ -64,8 +62,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -77,7 +73,6 @@ import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -131,6 +126,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         registerInputs();
         enableProperties();
 
+        tsFactoryObserver.helper.setObserved(this.collection);
         TsFactory.instance.addObserver(tsFactoryObserver);
     }
 
@@ -213,7 +209,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         TsCollection old = this.collection;
         this.collection = collection != null ? collection : TsFactory.instance.createTsCollection();
         fireTsCollectionChange(old, this.collection);
-        tsFactoryObserver.safeCol.set(this.collection);
+        tsFactoryObserver.helper.setObserved(this.collection);
     }
 
     @Override
@@ -496,30 +492,13 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
 
     protected class TsFactoryObserver implements Observer {
 
-        private final AtomicReference<TsCollection> safeCol = new AtomicReference<>(collection);
-        final AtomicBoolean dirty = new AtomicBoolean(false);
+        private final TsEventHelper<TsCollection> helper = TsEventHelper.onTsCollection(this::fireTsCollectionContentChange);
 
-        @OnAnyThread
         @Override
         public void update(Observable o, Object arg) {
-            if (arg instanceof TsEvent && isUpdated(safeCol.get(), (TsEvent) arg)) {
-                dirty.set(true);
-                SwingUtilities.invokeLater(() -> {
-                    if (dirty.getAndSet(false)) {
-                        fireTsCollectionContentChange();
-                    }
-                });
-            }
+            helper.process(o, arg);
         }
 
-        @OnAnyThread
-        private boolean isUpdated(TsCollection observed, TsEvent evt) {
-            return observed != null
-                    && ((evt.isCollection() && observed.equals(evt.tscollection))
-                    || (evt.isSeries() && observed.contains(evt.ts)));
-        }
-
-        @OnEDT
         private void fireTsCollectionContentChange() {
             fireTsCollectionChange(null, collection);
         }
