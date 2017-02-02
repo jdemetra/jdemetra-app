@@ -3,8 +3,6 @@
 <filesystem>
     <folder name="Actions">
         <folder name="Edit">
-            <file name="ec-nbdemetra-ui-nodes-actions-CopyAsCsvSourceAction.instance_hidden"/>
-            <file name="ec-nbdemetra-ui-nodes-actions-CopySourceAction.instance"/>
         </folder>
         <folder name="Tools">
             <file name="ec-nbdemetra-ui-calendars-AddNationalCalendarProvider.instance_hidden"/>
@@ -15,12 +13,8 @@
             <file name="ec-nbdemetra-ui-calendars-actions-AddCalendarAction.instance">
                 <attr name="noIconInMenu" boolvalue="false"/>
             </file>
-            <file name="ec-nbdemetra-ui-calendars-actions-AddNationalCalendarAction.instance_hidden"/>
             <file name="ec-nbdemetra-ui-calendars-actions-CloneCalendarAction.instance"/>
             <file name="ec-nbdemetra-ui-calendars-actions-EditCalendarAction.instance"/>
-            <file name="ec-nbdemetra-ui-calendars-actions-EditNationalCalendarAction.instance_hidden"/>
-            <file name="ec-nbdemetra-ui-calendars-actions-ForkCalendarAction.instance_hidden"/>
-            <file name="ec-nbdemetra-ui-calendars-actions-NewNationalCalendarAction.instance_hidden"/>
         </folder>
     </folder>
     <folder name="Menu">

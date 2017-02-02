@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.properties.l2fprod;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ import java.util.Map;
 public class Coefficients {
 
     private Map<String, double[]> fixedCoefficients;
-    private String[] AllNames;
+    private String[] allNames;
 
     public Coefficients() {
         fixedCoefficients = new LinkedHashMap<>();
@@ -35,13 +36,20 @@ public class Coefficients {
     public Coefficients(Map<String, double[]> fixed) {
         this.fixedCoefficients = new LinkedHashMap<>(fixed);
     }
+    
+    public Coefficients(Coefficients copy) {
+        if (copy.allNames != null) {
+            allNames = Arrays.copyOf(copy.allNames, copy.allNames.length);
+        }
+        fixedCoefficients = new LinkedHashMap<>(copy.fixedCoefficients);    
+    }
 
-    public void setAllNames(String[] AllNames) {
-        this.AllNames = AllNames;
+    public void setAllNames(String[] allNames) {
+        this.allNames = allNames;
     }
 
     public String[] getAllNames() {
-        return AllNames;
+        return allNames;
     }
 
     public Map<String, double[]> getFixedCoefficients() {
@@ -50,5 +58,15 @@ public class Coefficients {
 
     public void setFixedCoefficients(Map<String, double[]> fixedCoefficients) {
         this.fixedCoefficients = new LinkedHashMap<>(fixedCoefficients);
+    }
+
+    @Override
+    protected Coefficients clone() {
+        Coefficients clone = new Coefficients();
+        if (allNames != null) {
+            clone.setAllNames(Arrays.copyOf(allNames, allNames.length));
+        }
+        clone.setFixedCoefficients(new LinkedHashMap<>(fixedCoefficients));
+        return clone;
     }
 }

@@ -6,6 +6,7 @@ package ec.nbdemetra.ui.properties.l2fprod;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import ec.nbdemetra.ui.DemetraUI;
+import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.properties.l2fprod.CheckComboBox.CheckListItem;
 import ec.tstoolkit.timeseries.Day;
@@ -20,8 +21,6 @@ import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,7 +86,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                         pane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
                         OutliersModel model = new OutliersModel(first, last, frequency,
-                                definitions_ != null ? definitions_ : new HashMap<>());
+                                definitions_ != null ? new HashMap<>(definitions_) : new HashMap<>());
                         final JTable table = new JTable(model);
                         table.getTableHeader().setReorderingAllowed(false);
                         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -102,16 +101,16 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                         BoxLayout subLayout = new BoxLayout(subPane, BoxLayout.LINE_AXIS);
                         subPane.setLayout(subLayout);
                         subPane.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
+
+                        JButton clearButton = new JButton("Clear", DemetraUiIcon.BROOM);
+                        clearButton.addActionListener(event -> {
+                            OutliersModel mdl = (OutliersModel) table.getModel();
+                            table.setModel(new OutliersModel(mdl.getFirstYear(), mdl.getLastYear(), mdl.getFreq(),
+                                    new HashMap<>()));
+                        });
+                        clearButton.setFocusPainted(false);
+                        subPane.add(clearButton);
                         subPane.add(Box.createHorizontalGlue());
-                        subPane.add(new JButton(new AbstractAction("Clear") {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                OutliersModel model = (OutliersModel) table.getModel();
-                                table.setModel(new OutliersModel(model.getFirstYear(), model.getLastYear(), model.getFreq(),
-                                        new HashMap<>()));
-                            }
-                        }));
-                        pane.add(subPane, BorderLayout.SOUTH);
 
                         if (null == UserInterfaceContext.INSTANCE.getDomain()) {
                             JPanel topPane = new JPanel();
@@ -173,26 +172,20 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
 
                         final JDialog dialog = new JDialog(ancestor);
                         dialog.setContentPane(pane);
-                        dialog.addWindowListener(new WindowAdapter() {
-                            @Override
-                            public void windowClosing(WindowEvent e) {
-                                TableCellEditor cellEditor = table.getCellEditor();
-                                if (cellEditor != null) {
-                                    cellEditor.stopCellEditing();
-                                }
-                                Map<Day, List<OutlierDefinition>> old = definitions_;
-                                Map<Day, List<OutlierDefinition>> modelDefs = ((OutliersModel) table.getModel()).getDefinitions();
-                                OutlierDefinition[] list = modelDefs
-                                        .values()
-                                        .stream()
-                                        .flatMap(x -> x.stream())
-                                        .toArray(size -> new OutlierDefinition[size]);
-                                setValue(list);
-                                OutlierDefinitionsEditor.this.firePropertyChange(old, definitions_);
-                            }
+
+                        JButton doneButton = new JButton("Done");
+                        doneButton.addActionListener(event -> {
+                            dialog.setVisible(false);
+                            closeDialog(table);
                         });
+                        doneButton.setFocusPainted(false);
+                        subPane.add(doneButton);
+
+                        pane.add(subPane, BorderLayout.SOUTH);
+
                         dialog.pack();
                         dialog.setModal(true);
+                        dialog.setLocationRelativeTo(ancestor);
                         dialog.setVisible(true);
                         break;
 
@@ -209,6 +202,22 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                 }
             }
         });
+    }
+
+    private void closeDialog(JTable table) {
+        TableCellEditor cellEditor = table.getCellEditor();
+        if (cellEditor != null) {
+            cellEditor.stopCellEditing();
+        }
+        Map<Day, List<OutlierDefinition>> old = definitions_;
+        Map<Day, List<OutlierDefinition>> modelDefs = ((OutliersModel) table.getModel()).getDefinitions();
+        OutlierDefinition[] list = modelDefs
+                .values()
+                .stream()
+                .flatMap(x -> x.stream())
+                .toArray(size -> new OutlierDefinition[size]);
+        setValue(list);
+        OutlierDefinitionsEditor.this.firePropertyChange(old, definitions_);
     }
 
     private void setDescriptors(List<OutlierDescriptor> elements) {

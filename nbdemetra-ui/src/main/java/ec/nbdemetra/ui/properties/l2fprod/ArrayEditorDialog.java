@@ -10,6 +10,8 @@ import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import javax.swing.*;
 /**
  *
  * @author Demortier Jeremy
+ * @author Mats Maggi
  */
 public class ArrayEditorDialog<T> extends JDialog {
 
@@ -58,16 +61,6 @@ public class ArrayEditorDialog<T> extends JDialog {
         pane.add(psp, BorderLayout.CENTER);
         psp.setPreferredSize(new Dimension(250, 200));
         psp.setBorder(BorderFactory.createEtchedBorder());
-
-        list.addListSelectionListener(event -> {
-            if (list.getSelectedValue() != null) {
-                model.setProperties(PropertiesPanelFactory.INSTANCE.createProperties(list.getSelectedValue()));
-                cur_ = (T) list.getSelectedValue();
-            } else {
-                cur_ = null;
-                model.setProperties(new Property[]{});
-            }
-        });
 
         psp.addFocusListener(new FocusListener() {
 
@@ -115,7 +108,7 @@ public class ArrayEditorDialog<T> extends JDialog {
                     list.setSelectedValue(o, true);
                     list.invalidate();
                 });
-                
+
             } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 System.err.println(ex.getMessage());
             }
@@ -124,6 +117,7 @@ public class ArrayEditorDialog<T> extends JDialog {
         final JButton deleteButton = new JButton(DemetraUiIcon.LIST_REMOVE_16);
         deleteButton.setPreferredSize(new Dimension(30, 30));
         deleteButton.setFocusPainted(false);
+        deleteButton.setEnabled(false);
         deleteButton.addActionListener(event -> {
             try {
                 if (cur_ == null) {
@@ -135,12 +129,34 @@ public class ArrayEditorDialog<T> extends JDialog {
                     list.setModel(JLists.modelOf(elementsList_));
                     list.invalidate();
                 });
-                
+
             } catch (Exception ex) {
                 System.err.println(ex.getMessage());
             }
         });
         buttonPane.add(deleteButton);
+
+        final JButton clearButton = new JButton(DemetraUiIcon.BROOM);
+        clearButton.setToolTipText("Clear");
+        clearButton.setPreferredSize(new Dimension(30, 30));
+        clearButton.setFocusPainted(false);
+        clearButton.setEnabled(false);
+        clearButton.addActionListener(event -> {
+            try {
+                if (list.getModel() != null) {
+                    dirty_ = true;
+                    elementsList_.clear();
+                    SwingUtilities.invokeLater(() -> {
+                        list.setModel(JLists.modelOf(elementsList_));
+                        list.invalidate();
+                    });
+                }
+            } catch (Exception ex) {
+                System.err.println(ex.getMessage());
+            }
+        });
+        buttonPane.add(clearButton);
+
         buttonPane.add(Box.createGlue());
         final JButton okButton = new JButton("Done");
         okButton.setPreferredSize(new Dimension(60, 27));
@@ -153,9 +169,34 @@ public class ArrayEditorDialog<T> extends JDialog {
         pane.add(buttonPane, BorderLayout.SOUTH);
         pane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
+        list.addListSelectionListener(event -> {
+            if (list.getSelectedValue() != null) {
+                deleteButton.setEnabled(true);
+                model.setProperties(PropertiesPanelFactory.INSTANCE.createProperties(list.getSelectedValue()));
+                cur_ = (T) list.getSelectedValue();
+            } else {
+                deleteButton.setEnabled(false);
+                cur_ = null;
+                model.setProperties(new Property[]{});
+            }
+        });
+        
+        list.addPropertyChangeListener(evt -> {
+            clearButton.setEnabled(list.getModel() != null && list.getModel().getSize() > 0);
+        });
+        
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+                super.windowClosing(we);
+                elementsList_ = Lists.newArrayList(elements);
+            }
+        });
+
         setMinimumSize(new Dimension(400, 200));
         setContentPane(pane);
         pack();
+        setLocationRelativeTo(owner);
         setModal(true);
     }
 }

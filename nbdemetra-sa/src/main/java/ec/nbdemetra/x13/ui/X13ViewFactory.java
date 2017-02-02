@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.x13.ui;
 
+import ec.nbdemetra.sa.DiagnosticsMatrixView;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.ISeriesDecomposition;
 import ec.satoolkit.x11.DefaultSeasonalFilteringStrategy;
@@ -19,7 +20,6 @@ import ec.tss.html.implementation.HtmlMstatistics;
 import ec.tss.html.implementation.HtmlX11Diagnostics;
 import ec.tss.sa.documents.X13Document;
 import ec.tstoolkit.algorithm.CompositeResults;
-import ec.tstoolkit.modelling.ModellingDictionary;
 import ec.tstoolkit.timeseries.analysis.SlidingSpans;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.DefaultInformationExtractor;
@@ -27,6 +27,7 @@ import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.InformationExtractor;
 import ec.tstoolkit.utilities.LinearId;
 import ec.ui.view.tsprocessing.ComposedProcDocumentItemFactory;
+import ec.ui.view.tsprocessing.DefaultItemUI;
 import ec.ui.view.tsprocessing.HtmlItemUI;
 import ec.ui.view.tsprocessing.IProcDocumentView;
 import ec.ui.view.tsprocessing.IProcDocumentViewFactory;
@@ -44,7 +45,10 @@ import ec.ui.view.tsprocessing.sa.SaTableUI;
 import ec.ui.view.tsprocessing.sa.SeasonalityTestUI;
 import ec.ui.view.tsprocessing.sa.SiRatioUI;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.swing.JComponent;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -424,6 +428,46 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER DIAGNOSTICS VIEWS">
+    private static class DiagnosticsMatrixExtractor extends DefaultInformationExtractor<X13Document, Map<String, CompositeResults>> {
+
+        public static final DiagnosticsMatrixExtractor INSTANCE = new DiagnosticsMatrixExtractor();
+
+        @Override
+        public Map<String, CompositeResults> retrieve(X13Document source) {
+            if (source.getInput() == null) {
+                return null;
+            }
+
+            Map<String, CompositeResults> results = new LinkedHashMap<>();
+            X13Specification currentSpec = source.getSpecification();
+            results.put("[C] " + currentSpec.toString(), source.getResults());
+
+            for (X13Specification spec : X13Specification.allSpecifications()) {
+                if (!spec.equals(currentSpec)) {
+                    source.setSpecification(spec);
+                    source.clear();
+                    results.put(spec.toString(), source.getResults());
+                }
+            }
+
+            return results;
+        }
+    };
+
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 600001)
+    public static class DiagnosticsMatrixFactory extends ItemFactory<Map<String, CompositeResults>> {
+
+        public DiagnosticsMatrixFactory() {
+            super(DIAGNOSTICS_MATRIX, DiagnosticsMatrixExtractor.INSTANCE, new DefaultItemUI<IProcDocumentView<X13Document>, Map<String, CompositeResults>>() {
+                @Override
+                public JComponent getView(IProcDocumentView<X13Document> host, Map<String, CompositeResults> information) {
+                    return new DiagnosticsMatrixView(information);
+                }
+
+            });
+        }
+    }
+
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 600000)
     public static class DiagnosticsSummaryFactory extends SaDocumentViewFactory.DiagnosticsSummaryFactory<X13Document> {
 
@@ -616,7 +660,7 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
             super(X13Document.class);
         }
     }
-    
+
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 604030)
     public static class RevisionHistorySaChangesFactory extends SaDocumentViewFactory.DiagnosticsRevisionSaChangesFactory<X13Document> {
 
@@ -625,7 +669,7 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
             setAsync(true);
         }
     }
-    
+
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 604040)
     public static class RevisionHistoryTrendChangesFactory extends SaDocumentViewFactory.DiagnosticsRevisionTrendChangesFactory<X13Document> {
 
