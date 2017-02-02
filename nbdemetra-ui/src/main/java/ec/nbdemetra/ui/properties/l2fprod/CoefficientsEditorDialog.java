@@ -30,6 +30,8 @@ import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,7 +65,7 @@ public class CoefficientsEditorDialog extends JDialog {
     public CoefficientsEditorDialog(final Window owner, Coefficients elements) {
         super(owner);
 
-        coefficients = elements;
+        coefficients = new Coefficients(elements);
 
         final JPanel pane = new JPanel(new BorderLayout());
         pane.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
@@ -83,7 +85,7 @@ public class CoefficientsEditorDialog extends JDialog {
         addButton.setPreferredSize(new Dimension(30, 30));
         addButton.setFocusPainted(false);
         addButton.addActionListener(evt -> {
-            NewCoefficientDialog ncd = new NewCoefficientDialog();
+            NewCoefficientDialog ncd = new NewCoefficientDialog(this);
             ncd.setTitle("Add new variable");
             ncd.setVisible(true);
             if (ncd.getSelection() != null) {
@@ -126,6 +128,28 @@ public class CoefficientsEditorDialog extends JDialog {
             }
         });
         buttonPane.add(deleteButton);
+        
+        final JButton clearButton = new JButton(DemetraUiIcon.BROOM);
+        clearButton.setToolTipText("Clear");
+        clearButton.setPreferredSize(new Dimension(30, 30));
+        clearButton.setFocusPainted(false);
+        clearButton.setEnabled(false);
+        clearButton.addActionListener(event -> {
+            try {
+                if (list.getModel() != null) {
+                    dirty = true;
+                    coefficients.getFixedCoefficients().clear();
+                    SwingUtilities.invokeLater(() -> {
+                        list.setModel(JLists.modelOf(coefficients.getFixedCoefficients().keySet().toArray(new String[keys.size()])));
+                        list.invalidate();
+                        updateAvailableNames();
+                    });
+                }
+            } catch (Exception ex) {
+                System.err.println(ex.getMessage());
+            }
+        });
+        buttonPane.add(clearButton);
 
         final JButton editButton = new JButton(DemetraUiIcon.PREFERENCES);
         editButton.setEnabled(false);
@@ -166,16 +190,28 @@ public class CoefficientsEditorDialog extends JDialog {
                 current = null;
             }
         });
+        
+        list.addPropertyChangeListener(evt -> {
+            clearButton.setEnabled(list.getModel() != null && list.getModel().getSize() > 0);
+        });
 
         addPropertyChangeListener(AVAILABLE_NAMES, (PropertyChangeEvent pce) -> {
             addButton.setEnabled(!availableNames.isEmpty());
+        });
+        
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+                super.windowClosing(we);
+                coefficients = elements;
+            }
         });
 
         updateAvailableNames();
 
         setMinimumSize(new Dimension(200, 200));
         setContentPane(pane);
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(owner);
         pack();
         setModal(true);
     }
@@ -205,7 +241,7 @@ public class CoefficientsEditorDialog extends JDialog {
 
         private final JComboBox combo;
 
-        public NewCoefficientDialog() {
+        public NewCoefficientDialog(JDialog owner) {
             final JPanel pane = new JPanel(new BorderLayout());
             pane.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
@@ -231,7 +267,7 @@ public class CoefficientsEditorDialog extends JDialog {
             pane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
             setContentPane(pane);
-            setLocationRelativeTo(null);
+            setLocationRelativeTo(owner);
             pack();
             setModal(true);
         }
@@ -283,7 +319,12 @@ public class CoefficientsEditorDialog extends JDialog {
             list.addListSelectionListener(event -> {
                 if (list.getSelectedValue() != null) {
                     DefaultProperty def = new DefaultProperty();
-                    def.setName(current + "[" + list.getSelectedIndex() + "]");
+                    if (list.getModel().getSize() > 1) {
+                        def.setName(current + "[" + (list.getSelectedIndex() + 1) + "]");
+                    } else {
+                        def.setName(current);
+                    }
+
                     def.setDisplayName(def.getName());
                     def.setType(Double.class);
                     def.setCategory("");

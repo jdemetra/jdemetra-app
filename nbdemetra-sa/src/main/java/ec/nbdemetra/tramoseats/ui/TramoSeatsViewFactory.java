@@ -5,11 +5,7 @@
 package ec.nbdemetra.tramoseats.ui;
 
 import com.google.common.collect.Iterables;
-import ec.ui.view.tsprocessing.WkFinalEstimatorsUI;
-import ec.ui.view.tsprocessing.WkInformation;
-import ec.ui.view.tsprocessing.WkComponentsUI;
-import ec.ui.view.tsprocessing.UcarimaUI;
-import ec.ui.view.tsprocessing.EstimationUI;
+import ec.nbdemetra.sa.DiagnosticsMatrixView;
 import ec.satoolkit.ComponentDescriptor;
 import ec.satoolkit.diagnostics.SignificantSeasonalityTest;
 import ec.satoolkit.diagnostics.StationaryVarianceDecomposition;
@@ -23,7 +19,6 @@ import ec.tss.html.implementation.HtmlStationaryVarianceDecomposition;
 import ec.tss.html.implementation.HtmlTramoSeatsGrowthRates;
 import ec.tss.sa.documents.TramoSeatsDocument;
 import ec.tstoolkit.algorithm.CompositeResults;
-import ec.tstoolkit.algorithm.IProcResults;
 import ec.tstoolkit.arima.ArimaModel;
 import ec.tstoolkit.arima.IArimaModel;
 import ec.tstoolkit.modelling.ComponentInformation;
@@ -32,13 +27,14 @@ import ec.tstoolkit.modelling.ModellingDictionary;
 import ec.tstoolkit.modelling.SeriesInfo;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.tstoolkit.sarima.SarimaModel;
-import ec.tstoolkit.timeseries.TsPeriodSelector;
 import ec.tstoolkit.timeseries.analysis.SlidingSpans;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.ucarima.UcarimaModel;
 import ec.tstoolkit.utilities.*;
 import ec.ui.view.tsprocessing.ArimaUI;
 import ec.ui.view.tsprocessing.ComposedProcDocumentItemFactory;
+import ec.ui.view.tsprocessing.DefaultItemUI;
+import ec.ui.view.tsprocessing.EstimationUI;
 import ec.ui.view.tsprocessing.GenericTableUI;
 import ec.ui.view.tsprocessing.HtmlItemUI;
 import ec.ui.view.tsprocessing.IProcDocumentView;
@@ -48,13 +44,19 @@ import ec.ui.view.tsprocessing.PooledItemUI;
 import ec.ui.view.tsprocessing.ProcDocumentItemFactory;
 import ec.ui.view.tsprocessing.SlidingSpansDetailUI;
 import ec.ui.view.tsprocessing.SlidingSpansUI;
+import ec.ui.view.tsprocessing.UcarimaUI;
+import ec.ui.view.tsprocessing.WkComponentsUI;
+import ec.ui.view.tsprocessing.WkFinalEstimatorsUI;
+import ec.ui.view.tsprocessing.WkInformation;
 import ec.ui.view.tsprocessing.sa.ModelBasedUI;
 import ec.ui.view.tsprocessing.sa.SaDocumentViewFactory;
 import static ec.ui.view.tsprocessing.sa.SaDocumentViewFactory.saExtractor;
 import static ec.ui.view.tsprocessing.sa.SaDocumentViewFactory.ssExtractor;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.swing.JComponent;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -557,6 +559,46 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER DIAGNOSTICS VIEWS">
+    private static class DiagnosticsMatrixExtractor extends DefaultInformationExtractor<TramoSeatsDocument, Map<String, CompositeResults>> {
+
+        public static final DiagnosticsMatrixExtractor INSTANCE = new DiagnosticsMatrixExtractor();
+
+        @Override
+        public Map<String, CompositeResults> retrieve(TramoSeatsDocument source) {
+            if (source.getInput() == null) {
+                return null;
+            }
+
+            Map<String, CompositeResults> results = new LinkedHashMap<>();
+            TramoSeatsSpecification currentSpec = source.getSpecification();
+            results.put("[C] " + currentSpec.toString(), source.getResults());
+
+            for (TramoSeatsSpecification spec : TramoSeatsSpecification.allSpecifications()) {
+                if (!spec.equals(currentSpec)) {
+                    source.setSpecification(spec);
+                    source.clear();
+                    results.put(spec.toString(), source.getResults());
+                }
+            }
+
+            return results;
+        }
+    };
+
+    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 600001)
+    public static class DiagnosticsMatrixFactory extends ItemFactory<Map<String, CompositeResults>> {
+
+        public DiagnosticsMatrixFactory() {
+            super(DIAGNOSTICS_MATRIX, DiagnosticsMatrixExtractor.INSTANCE, new DefaultItemUI<IProcDocumentView<TramoSeatsDocument>, Map<String, CompositeResults>>() {
+                @Override
+                public JComponent getView(IProcDocumentView<TramoSeatsDocument> host, Map<String, CompositeResults> information) {
+                    return new DiagnosticsMatrixView(information);
+                }
+
+            });
+        }
+    }
+
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 600000)
     public static class DiagnosticsSummaryFactory extends SaDocumentViewFactory.DiagnosticsSummaryFactory<TramoSeatsDocument> {
 
@@ -608,7 +650,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             setAsync(true);
         }
     }
-    
+
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 604030)
     public static class RevisionHistorySaChangesFactory extends SaDocumentViewFactory.DiagnosticsRevisionSaChangesFactory<TramoSeatsDocument> {
 
@@ -617,7 +659,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             setAsync(true);
         }
     }
-    
+
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 604040)
     public static class RevisionHistoryTrendChangesFactory extends SaDocumentViewFactory.DiagnosticsRevisionTrendChangesFactory<TramoSeatsDocument> {
 

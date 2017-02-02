@@ -110,8 +110,8 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             TABLE = "Table",
             SI_RATIO = "S-I ratio",
             SA_TREND = "Sa, trend",
-            C_S_I = "Cal., sea., irr.", 
-            LOG="Processing log";
+            C_S_I = "Cal., sea., irr.",
+            LOG = "Processing log";
     public static final String PROCESSING = "Processing",
             FCASTS = "Forecasts",
             OSAMPLE = "Out-of-sample test",
@@ -149,7 +149,8 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             SACHANGES = "SA changes",
             TRENDCHANGES = "Trend changes",
             REVISION = "Revisions history",
-            EASTER = "Easter";
+            EASTER = "Easter",
+            MATRIX = "Matrix";
     public static final Id INPUT_SPEC = new LinearId(INPUT, SPEC),
             INPUT_SERIES = new LinearId(INPUT, SERIES),
             MAIN_SUMMARY = new LinearId(MAIN),
@@ -204,7 +205,8 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             DIAGNOSTICS_REVISION_TREND_CHANGES = new LinearId(DIAGNOSTICS, REVISION, TRENDCHANGES),
             DIAGNOSTICS_STABILITY_TD = new LinearId(DIAGNOSTICS, STABILITY, TRADINGDAYS),
             DIAGNOSTICS_STABILITY_EASTER = new LinearId(DIAGNOSTICS, STABILITY, EASTER),
-            DIAGNOSTICS_STABILITY_ARIMA = new LinearId(DIAGNOSTICS, STABILITY, ARIMA);
+            DIAGNOSTICS_STABILITY_ARIMA = new LinearId(DIAGNOSTICS, STABILITY, ARIMA),
+            DIAGNOSTICS_MATRIX = new LinearId(DIAGNOSTICS, MATRIX);
 
     public static InformationExtractor<SaDocument<? extends ISaSpecification>, ISaSpecification> specExtractor() {
         return SpecExtractor.INSTANCE;
@@ -393,6 +395,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             super(documentType, id, extractor, new SeasonalityTestUI2(header, control));
         }
     }
+
     protected static class ProcessingLogFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
@@ -437,7 +440,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             }, new SiRatioUI());
         }
     }
- 
+
     protected static class LogFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
@@ -492,28 +495,27 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             super(documentType, PREPROCESSING_REGS, pmExtractor(), new RegressorsUI());
         }
     }
-    
-    static String[] generateFullItems( List<SeriesInfo> infos){
-        List<String> names=new ArrayList<>();
-        for (SeriesInfo info : infos){
-            if (info.info == ComponentInformation.Value){
+
+    static String[] generateFullItems(List<SeriesInfo> infos) {
+        List<String> names = new ArrayList<>();
+        for (SeriesInfo info : infos) {
+            if (info.info == ComponentInformation.Value) {
                 StringBuilder y = new StringBuilder();
                 y.append(DocumentManager.COMPOSITE).append(info.name).append("=,").append(info.name)
-                    .append(',').append(info.name).append(SeriesInfo.F_SUFFIX);
+                        .append(',').append(info.name).append(SeriesInfo.F_SUFFIX);
                 names.add(y.toString());
             }
         }
         return Jdk6.Collections.toArray(names, String.class);
-    } 
+    }
 
     protected static class PreprocessingDetFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
-        
 
         protected PreprocessingDetFactory(Class<D> documentType) {
-            super(documentType, PREPROCESSING_DET, saExtractor(), 
-                new GenericTableUI(false, 
-                    generateFullItems(ModellingDictionary.getDeterministicSeries())));
+            super(documentType, PREPROCESSING_DET, saExtractor(),
+                    new GenericTableUI(false,
+                            generateFullItems(ModellingDictionary.getDeterministicSeries())));
         }
     }
     //</editor-fold>
@@ -977,8 +979,8 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
 
         @Override
         public StationaryVarianceDecomposition retrieve(SaDocument source) {
-            StationaryVarianceDecomposition decomp=new StationaryVarianceDecomposition();
-            if (decomp.process(source.getResults())){
+            StationaryVarianceDecomposition decomp = new StationaryVarianceDecomposition();
+            if (decomp.process(source.getResults())) {
                 return decomp;
             } else {
                 return null;
@@ -1078,7 +1080,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             }
             if (nlast != 0) {
                 TsPeriodSelector selector = new TsPeriodSelector();
-                selector.last(nlast * info.s.getFrequency().intValue()+info.del);
+                selector.last(nlast * info.s.getFrequency().intValue() + info.del);
                 info.s = info.s.select(selector);
             }
             if (info.s.getLength() < 4 * info.s.getFrequency().intValue()) {
