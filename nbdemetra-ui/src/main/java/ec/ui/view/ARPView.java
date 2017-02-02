@@ -187,7 +187,12 @@ public abstract class ARPView extends ATsView {
         // Configure range axis
         double max = series.getMaxY();
         double min = series.getMinY();
-        double inset = 3 * (max - min) / 100;
+        double inset;
+        if (max == min) {
+            inset = 1;
+        } else {
+            inset = 3 * (max - min) / 100;
+        }
         getPlot().getRangeAxis().setRange(min - inset, max + inset);
 
         // Configure domain axis

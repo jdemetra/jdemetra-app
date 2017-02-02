@@ -95,9 +95,11 @@ public final class DifferencingTopComponent extends TopComponent implements ITsV
         toolBar.add(dropDataLabel, 1);
         toolBar.add(tsLabel, 2);
         acView = new AutoCorrelationsView();
-        acView.setKind(AutoCorrelationsView.ACKind.Partial);
+        acView.setKind(AutoCorrelationsView.ACKind.Normal);
         periodogramView = new PeriodogramView();
         periodogramView.setTransferHandler(null);
+        periodogramView.setDifferencingOrder(0);
+        periodogramView.setLogTransformation(false);
         grid = new JTsGrid();
         grid.setMode(Mode.SINGLETS);
         grid.setTsUpdateMode(TsUpdateMode.None);
