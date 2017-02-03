@@ -150,7 +150,7 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
     public static class MainChartsLowFactory extends SaDocumentViewFactory.MainChartsLowFactory<X13Document> {
 
         public MainChartsLowFactory() {
-            super(X13Document.class);
+            super(X13Document.class, GenericSaProcessingFactory.FINAL);
         }
     }
 
@@ -158,7 +158,7 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
     public static class MainChartsHighFactory extends SaDocumentViewFactory.MainChartsHighFactory<X13Document> {
 
         public MainChartsHighFactory() {
-            super(X13Document.class);
+            super(X13Document.class, GenericSaProcessingFactory.FINAL);
         }
     }
 
@@ -166,7 +166,7 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
     public static class MainTableFactory extends SaDocumentViewFactory.MainTableFactory<X13Document> {
 
         public MainTableFactory() {
-            super(X13Document.class);
+            super(X13Document.class, GenericSaProcessingFactory.FINAL);
         }
     }
 
