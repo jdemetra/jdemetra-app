@@ -17,7 +17,6 @@
 package ec.ui;
 
 import ec.tss.Ts;
-import ec.tss.TsEvent;
 import ec.tss.TsFactory;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
@@ -26,13 +25,10 @@ import ec.ui.interfaces.IColorSchemeAble;
 import ec.ui.interfaces.ITsView;
 import static ec.ui.interfaces.ITsView.TS_PROPERTY;
 import ec.util.chart.ColorScheme;
-import ec.util.various.swing.OnAnyThread;
-import ec.util.various.swing.OnEDT;
+import internal.TsEventHelper;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
-import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 
 /**
@@ -52,6 +48,8 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
         this.tsFactoryObserver = new TsFactoryObserver();
 
         enableProperties();
+
+        tsFactoryObserver.helper.setObserved(this.m_ts);
         TsFactory.instance.addObserver(tsFactoryObserver);
     }
 
@@ -80,6 +78,7 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
         Ts old = this.m_ts;
         this.m_ts = ts;
         firePropertyChange(TS_PROPERTY, old, this.m_ts);
+        tsFactoryObserver.helper.setObserved(this.m_ts);
     }
 
     @Override
@@ -106,30 +105,13 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
 
     protected class TsFactoryObserver implements Observer {
 
-        final AtomicBoolean dirty = new AtomicBoolean(false);
+        private final TsEventHelper<Ts> helper = TsEventHelper.onTs(this::fireTsContentChange);
 
-        @OnAnyThread
         @Override
         public void update(Observable o, Object arg) {
-            // FIXME: thread access to m_ts
-            if (arg instanceof TsEvent && isUpdated(m_ts, (TsEvent) arg)) {
-                dirty.set(true);
-                SwingUtilities.invokeLater(() -> {
-                    if (dirty.getAndSet(false)) {
-                        fireTsContentChange();
-                    }
-                });
-            }
+            helper.process(o, arg);
         }
 
-        @OnAnyThread
-        private boolean isUpdated(Ts observed, TsEvent evt) {
-            return observed != null
-                    && ((evt.isSeries() && evt.ts.equals(observed))
-                    || (evt.isCollection() && evt.tscollection.contains(observed)));
-        }
-
-        @OnEDT
         private void fireTsContentChange() {
             firePropertyChange(TS_PROPERTY, null, m_ts);
         }

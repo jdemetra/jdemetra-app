@@ -143,6 +143,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
         chartPanel.setSeriesFormatter(new SeriesFunction<String>() {
             @Override
             public String apply(int series) {
+                TsCollection collection = getTsCollection();
                 return collection.getCount() > series ? collection.get(series).getName() : chartPanel.getDataset().getSeriesKey(series).toString();
             }
         });
@@ -169,7 +170,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
         chartPanel.setLegendVisibilityPredicate(new SeriesPredicate() {
             @Override
             public boolean apply(int series) {
-                return series < collection.getCount();
+                return series < getTsCollection().getCount();
             }
         });
     }
@@ -252,7 +253,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
     @Override
     protected void onCollectionChange() {
         selectionListener.setEnabled(false);
-        Ts[] tss = collection.toArray();
+        Ts[] tss = getTsCollection().toArray();
         dataFeatureModel.setData(tss);
         chartPanel.setDataset(TsXYDatasets.from(tss));
         updateNoDataMessage();
@@ -282,6 +283,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
 
     @Override
     protected void onDropContentChange() {
+        TsCollection collection = getTsCollection();
         Ts[] tss = Arrays2.concat(collection.toArray(), dropContent);
         dataFeatureModel.setData(tss);
         chartPanel.setDataset(TsXYDatasets.from(tss));
@@ -361,6 +363,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
 
     private void updateNoDataMessage() {
         if (getTsUpdateMode().isReadOnly()) {
+            TsCollection collection = getTsCollection();
             switch (collection.getCount()) {
                 case 0:
                     chartPanel.setNoDataMessage("No data");

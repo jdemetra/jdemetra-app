@@ -21,6 +21,7 @@ import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
 import ec.tss.Ts;
+import ec.tss.TsCollection;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tstoolkit.data.DescriptiveStatistics;
@@ -212,7 +213,7 @@ public class JTsGrid extends ATsGrid {
     @Override
     protected void onCollectionChange() {
         selectionListener.setEnabled(false);
-        dataFeatureModel.setData(collection.toArray());
+        dataFeatureModel.setData(getTsCollection().toArray());
         updateGridModel();
         updateComboModel();
         updateNoDataMessage();
@@ -387,6 +388,7 @@ public class JTsGrid extends ATsGrid {
     private void updateNoDataMessage() {
         String message;
         if (getTsUpdateMode().isReadOnly()) {
+            TsCollection collection = getTsCollection();
             switch (collection.getCount()) {
                 case 0:
                     message = "No data";
@@ -406,6 +408,7 @@ public class JTsGrid extends ATsGrid {
     }
 
     private void updateGridModel() {
+        TsCollection collection = getTsCollection();
         int index = mode == Mode.SINGLETS ? Math.min(singleTsIndex, collection.getCount() - 1) : -1;
         grid.setModel(new GridModelAdapter(TsGridData.create(collection, index, orientation, chronology, dataFeatureModel)));
     }
@@ -431,6 +434,7 @@ public class JTsGrid extends ATsGrid {
     }
 
     private void updateSelection() {
+        TsCollection collection = getTsCollection();
         if (mode == Mode.MULTIPLETS) {
             selectionListener.changeSelection(orientation == Orientation.NORMAL ? grid.getColumnSelectionModel() : grid.getRowSelectionModel());
         } else if (!collection.isEmpty()) {
@@ -443,6 +447,7 @@ public class JTsGrid extends ATsGrid {
     }
 
     private void updateComboModel() {
+        TsCollection collection = getTsCollection();
         if (mode == Mode.SINGLETS && collection.getCount() > 1) {
             combo.setModel(new DefaultComboBoxModel(collection.toArray()));
             combo.setVisible(true);
@@ -527,6 +532,7 @@ public class JTsGrid extends ATsGrid {
 
         @Override
         protected void selectionChanged(ListSelectionModel model) {
+            TsCollection collection = getTsCollection();
             if (mode == Mode.MULTIPLETS) {
                 super.selectionChanged(model);
             } else if (collection.getCount() > singleTsIndex) {

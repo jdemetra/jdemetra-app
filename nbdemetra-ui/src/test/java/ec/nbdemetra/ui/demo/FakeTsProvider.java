@@ -19,8 +19,11 @@ package ec.nbdemetra.ui.demo;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import ec.tss.ITsProvider;
 import ec.tss.TsAsyncMode;
+import ec.tss.TsCollection;
 import ec.tss.TsCollectionInformation;
+import ec.tss.TsFactory;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import ec.tss.TsMoniker;
@@ -28,28 +31,38 @@ import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.HasDataDisplayName;
 import ec.tss.tsproviders.HasDataHierarchy;
-import ec.tss.tsproviders.utils.AbstractDataSourceProvider;
+import ec.tss.tsproviders.HasDataMoniker;
+import ec.tss.tsproviders.HasDataSourceList;
+import ec.tss.tsproviders.IDataSourceListener;
+import ec.tss.tsproviders.IDataSourceProvider;
+import ec.tss.tsproviders.cursor.HasTsCursor;
+import ec.tss.tsproviders.cursor.TsCursor;
+import ec.tss.tsproviders.cursor.TsCursorAsFiller;
 import ec.tss.tsproviders.utils.IParam;
+import ec.tss.tsproviders.utils.OptionalTsData;
 import ec.tss.tsproviders.utils.Params;
+import ec.tss.tsproviders.utils.TsFillerAsProvider;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import internal.RandomTsBuilder;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Philippe Charles
  */
-public final class FakeTsProvider extends AbstractDataSourceProvider<Void> {
+@lombok.extern.slf4j.Slf4j
+public final class FakeTsProvider implements IDataSourceProvider {
 
     private enum DataType {
 
@@ -60,29 +73,28 @@ public final class FakeTsProvider extends AbstractDataSourceProvider<Void> {
     private static final String NAME = "Fake";
 
     private static final IParam<DataSource, DataType> TYPE_PARAM = Params.onEnum(DataType.NORMAL, "type");
-    private static final IParam<DataSet, Integer> INDEX_PARAM = Params.onInteger(0, "index");
+    private static final IParam<DataSet, Integer> INDEX_PARAM = Params.onInteger(-1, "idx");
 
-    private final HasDataHierarchy dataHierarchy;
-    private final HasDataDisplayName dataDisplayName;
-    private final RandomTsBuilder tsBuilder;
-    private final List<TsData> normalData;
+    private final FakeSupport fakeSupport;
+    private final HasDataSourceList listSupport;
+    private final HasDataMoniker monikerSupport;
+    private final ITsProvider tsSupport;
+
     private final ConcurrentLinkedDeque<Runnable> onTick;
     private final Service updater;
 
     public FakeTsProvider() {
-        super(LoggerFactory.getLogger(FakeTsProvider.class), NAME, TsAsyncMode.Dynamic);
+        this.fakeSupport = new FakeSupport();
+        this.listSupport = HasDataSourceList.of(NAME, createDataSources());
+        this.monikerSupport = HasDataMoniker.usingUri(NAME);
+        this.tsSupport = TsFillerAsProvider.of(NAME, TsAsyncMode.Dynamic, TsCursorAsFiller.of(log, fakeSupport, monikerSupport, fakeSupport));
 
-        this.dataHierarchy = new FakeDataHierarchy();
-        this.dataDisplayName = new FakeDataDisplayName();
-        this.tsBuilder = new RandomTsBuilder();
-        this.normalData = createNormalData(tsBuilder, getSeriesCount(DataType.NORMAL));
-
-        Map<DataType, DataSource> dataSources = createDataSources();
-        dataSources.values().forEach(support::open);
+        final TsMoniker updatingMoniker = toMoniker(getDataSources().stream().filter(o -> TYPE_PARAM.get(o).equals(DataType.UPDATING)).findFirst().get());
 
         this.onTick = new ConcurrentLinkedDeque<>();
         this.updater = new AbstractExecutionThreadService() {
-            final TsMoniker updatingMoniker = toMoniker(dataSources.get(DataType.UPDATING));
+
+            private final TsCollection hardRef = TsFactory.instance.createTsCollection("", updatingMoniker, TsInformationType.None);
 
             @Override
             protected Executor executor() {
@@ -93,203 +105,142 @@ public final class FakeTsProvider extends AbstractDataSourceProvider<Void> {
             protected void run() throws Exception {
                 while (isRunning()) {
                     onTick.forEach(Runnable::run);
-                    queryTsCollection(updatingMoniker, TsInformationType.All);
-                    TimeUnit.SECONDS.sleep(3);
+                    queryTsCollection(hardRef.getMoniker(), TsInformationType.All);
+                    TimeUnit.SECONDS.sleep(1);
                 }
             }
-        }.startAsync();
+        };
+        updater.startAsync();
     }
+
+    //<editor-fold defaultstate="collapsed" desc="ITsProvider">
+    @Override
+    public String getSource() {
+        return tsSupport.getSource();
+    }
+
+    @Override
+    public void clearCache() {
+        tsSupport.clearCache();
+    }
+
+    @Override
+    public void dispose() {
+        updater.stopAsync();
+        tsSupport.dispose();
+    }
+
+    @Override
+    public boolean get(TsCollectionInformation info) {
+        return tsSupport.get(info);
+    }
+
+    @Override
+    public boolean get(TsInformation info) {
+        return tsSupport.get(info);
+    }
+
+    @Override
+    public TsAsyncMode getAsyncMode() {
+        return tsSupport.getAsyncMode();
+    }
+
+    @Override
+    public boolean queryTs(TsMoniker ts, TsInformationType type) {
+        return tsSupport.queryTs(ts, type);
+    }
+
+    @Override
+    public boolean queryTsCollection(TsMoniker collection, TsInformationType info) {
+        return tsSupport.queryTsCollection(collection, info);
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="IDataSourceProvider">
+    @Override
+    public String getDisplayName() {
+        return "DotStat";
+    }
+
+    @Override
+    public List<DataSource> getDataSources() {
+        return listSupport.getDataSources();
+    }
+
+    @Override
+    public List<DataSet> children(DataSource dataSource) throws IllegalArgumentException, IOException {
+        return fakeSupport.children(dataSource);
+    }
+
+    @Override
+    public List<DataSet> children(DataSet parent) throws IllegalArgumentException, IOException {
+        return fakeSupport.children(parent);
+    }
+
+    @Override
+    public void addDataSourceListener(IDataSourceListener listener) {
+        listSupport.addDataSourceListener(listener);
+    }
+
+    @Override
+    public void removeDataSourceListener(IDataSourceListener listener) {
+        listSupport.removeDataSourceListener(listener);
+    }
+
+    @Override
+    public TsMoniker toMoniker(DataSource dataSource) throws IllegalArgumentException {
+        return monikerSupport.toMoniker(dataSource);
+    }
+
+    @Override
+    public TsMoniker toMoniker(DataSet dataSet) throws IllegalArgumentException {
+        return monikerSupport.toMoniker(dataSet);
+    }
+
+    @Override
+    public DataSet toDataSet(TsMoniker moniker) throws IllegalArgumentException {
+        return monikerSupport.toDataSet(moniker);
+    }
+
+    @Override
+    public DataSource toDataSource(TsMoniker moniker) throws IllegalArgumentException {
+        return monikerSupport.toDataSource(moniker);
+    }
+
+    @Override
+    public String getDisplayName(DataSource dataSource) throws IllegalArgumentException {
+        return fakeSupport.getDisplayName(dataSource);
+    }
+
+    @Override
+    public String getDisplayName(DataSet dataSet) throws IllegalArgumentException {
+        return fakeSupport.getDisplayName(dataSet);
+    }
+
+    @Override
+    public String getDisplayNodeName(DataSet dataSet) throws IllegalArgumentException {
+        return fakeSupport.getDisplayNodeName(dataSet);
+    }
+    //</editor-fold>
 
     public void addTickListener(Runnable r) {
         onTick.add(r);
     }
 
-    @Override
-    protected Void loadFromDataSource(DataSource key) throws Exception {
-        return null;
-    }
-
-    @Override
-    protected void fillCollection(TsCollectionInformation info, DataSource dataSource) throws IOException {
-        sleep(info.type);
-        switch (TYPE_PARAM.get(dataSource)) {
-            case NORMAL:
-                DataSet.Builder b1 = DataSet.builder(dataSource, DataSet.Kind.SERIES);
-                for (int i = 0; i < getSeriesCount(DataType.NORMAL); i++) {
-                    INDEX_PARAM.set(b1, i);
-                    TsInformation item = newTsInformation(b1.build(), info.type);
-                    if (info.type.needsData()) {
-                        item.data = normalData.get(i);
-                    }
-                    info.items.add(item);
-                }
-                break;
-            case FAILING_META:
-                throw new IOException("Cannot load datasource");
-            case FAILING_DATA:
-                if (info.type.needsData()) {
-                    throw new IOException("Cannot load datasource");
-                }
-                DataSet.Builder b2 = DataSet.builder(dataSource, DataSet.Kind.SERIES);
-                for (int i = 0; i < getSeriesCount(DataType.FAILING_DATA); i++) {
-                    INDEX_PARAM.set(b2, i);
-                    info.items.add(newTsInformation(b2.build(), info.type));
-                }
-                break;
-            case UPDATING:
-                DataSet.Builder b3 = DataSet.builder(dataSource, DataSet.Kind.SERIES);
-                for (int i = 0; i < getSeriesCount(DataType.UPDATING); i++) {
-                    INDEX_PARAM.set(b3, i);
-                    TsInformation item = newTsInformation(b3.build(), info.type);
-                    if (info.type.needsData()) {
-                        item.data = createData(tsBuilder, DataType.UPDATING, i);
-                    }
-                    info.items.add(item);
-                }
-                break;
-            default:
-                throw new IOException("???");
-        }
-    }
-
-    @Override
-    protected void fillCollection(TsCollectionInformation info, DataSet dataSet) throws IOException {
-        throw new IOException("Not supported yet.");
-    }
-
-    @Override
-    protected void fillSeries(TsInformation info, DataSet dataSet) throws IOException {
-        sleep(info.type);
-        fillSeries(info, TYPE_PARAM.get(dataSet.getDataSource()), INDEX_PARAM.get(dataSet));
-    }
-
-    private void fillSeries(TsInformation info, DataType type, int seriesIndex) throws IOException {
-        info.name = getSeriesName(type, seriesIndex);
-        switch (type) {
-            case NORMAL:
-                if (info.type.needsData()) {
-                    info.data = normalData.get(seriesIndex);
-                }
-                break;
-            case FAILING_META:
-                throw new IOException("Cannot load dataset");
-            case FAILING_DATA:
-                if (info.type.needsData()) {
-                    throw new IOException("Cannot load dataset");
-                }
-                break;
-            case UPDATING:
-                if (info.type.needsData()) {
-                    info.data = createData(tsBuilder, DataType.UPDATING, seriesIndex);
-                }
-                break;
-            default:
-                throw new IOException("???");
-        }
-    }
-
-    @Override
-    public List<DataSet> children(DataSource dataSource) throws IllegalArgumentException, IOException {
-        return dataHierarchy.children(dataSource);
-    }
-
-    @Override
-    public List<DataSet> children(DataSet parent) throws IllegalArgumentException, IOException {
-        return dataHierarchy.children(parent);
-    }
-
-    @Override
-    public String getDisplayName(DataSource dataSource) throws IllegalArgumentException {
-        return dataDisplayName.getDisplayName(dataSource);
-    }
-
-    @Override
-    public String getDisplayName(DataSet dataSet) throws IllegalArgumentException {
-        return dataDisplayName.getDisplayName(dataSet);
-    }
-
-    @Override
-    public String getDisplayNodeName(DataSet dataSet) throws IllegalArgumentException {
-        return dataDisplayName.getDisplayNodeName(dataSet);
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        updater.stopAsync();
-    }
-
-    private static void sleep(TsInformationType type) {
-        try {
-            TimeUnit.MILLISECONDS.sleep(type.needsData() ? 2000 : 150);
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    private static List<TsData> createNormalData(RandomTsBuilder tsBuilder, int seriesCount) {
-        return IntStream.range(0, seriesCount)
-                .mapToObj(o -> createData(tsBuilder, DataType.NORMAL, o))
-                .collect(Collectors.toList());
-    }
-
-    private static TsData createData(RandomTsBuilder tsBuilder, DataType dataType, int seriesIndex) {
-        return tsBuilder
-                .withObsCount(getObsCount(dataType, seriesIndex))
-                .build().data;
-    }
-
-    private static Map<DataType, DataSource> createDataSources() {
-        Map<DataType, DataSource> result = new HashMap<>();
+    private static List<DataSource> createDataSources() {
+        List<DataSource> result = new ArrayList<>();
         DataSource.Builder builder = DataSource.builder(NAME, "");
         for (DataType o : DataType.values()) {
             TYPE_PARAM.set(builder, o);
-            result.put(o, builder.build());
+            result.add(builder.build());
         }
         return result;
     }
 
-    private static int getSeriesCount(DataType type) {
-        return 3;
-    }
+    private static final class FakeSupport implements HasTsCursor, HasDataHierarchy, HasDataDisplayName {
 
-    private static int getObsCount(DataType type, int seriesIndex) {
-        switch (seriesIndex) {
-            case 0:
-                return 24;
-            case 1:
-                return 12 * 5;
-            case 2:
-                return 12 * 10;
-            default:
-                throw new RuntimeException();
-        }
-    }
-
-    private static String getSeriesName(DataType type, int seriesIndex) {
-        return "={" + type + "#" + seriesIndex + "}=";
-    }
-
-    private static final class FakeDataHierarchy implements HasDataHierarchy {
-
-        @Override
-        public List<DataSet> children(DataSource dataSource) throws IllegalArgumentException, IOException {
-            DataSet.Builder builder = DataSet.builder(dataSource, DataSet.Kind.SERIES);
-            return IntStream.range(0, getSeriesCount(TYPE_PARAM.get(dataSource)))
-                    .mapToObj(o -> {
-                        INDEX_PARAM.set(builder, o);
-                        return builder.build();
-                    })
-                    .collect(Collectors.toList());
-        }
-
-        @Override
-        public List<DataSet> children(DataSet parent) throws IllegalArgumentException, IOException {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    private static final class FakeDataDisplayName implements HasDataDisplayName {
+        private final FakeConfig config = new FakeConfig();
+        private final FakeData data = new FakeData(config);
 
         @Override
         public String getDisplayName(DataSource dataSource) throws IllegalArgumentException {
@@ -301,7 +252,7 @@ public final class FakeTsProvider extends AbstractDataSourceProvider<Void> {
                 case FAILING_DATA:
                     return "Exception on data";
                 case UPDATING:
-                    return "Auto updating data";
+                    return "Auto updating";
                 default:
                     throw new IllegalArgumentException();
             }
@@ -309,12 +260,166 @@ public final class FakeTsProvider extends AbstractDataSourceProvider<Void> {
 
         @Override
         public String getDisplayName(DataSet dataSet) throws IllegalArgumentException {
-            return getDisplayName(dataSet.getDataSource()) + " " + getDisplayNodeName(dataSet);
+            return getDisplayName(dataSet.getDataSource()) + " (" + getDisplayNodeName(dataSet) + ")";
         }
 
         @Override
         public String getDisplayNodeName(DataSet dataSet) throws IllegalArgumentException {
-            return "#" + INDEX_PARAM.get(dataSet);
+            int obsCount = config.getObsCount(TYPE_PARAM.get(dataSet.getDataSource()), INDEX_PARAM.get(dataSet));
+            return obsCount >= 0 ? ("#" + obsCount) : "no data";
+        }
+
+        @Override
+        public List<DataSet> children(DataSource dataSource) throws IllegalArgumentException, IOException {
+            List<DataSet> result = new ArrayList<>();
+            try (TsCursor<DataSet> cursor = data.getData(TYPE_PARAM.get(dataSource), TsInformationType.Definition).transform(getDataSetFunc(dataSource))) {
+                while (cursor.nextSeries()) {
+                    result.add(cursor.getSeriesId());
+                }
+            }
+            return result;
+        }
+
+        @Override
+        public List<DataSet> children(DataSet parent) throws IllegalArgumentException, IOException {
+            throw new IllegalArgumentException("Invalid hierarchy");
+        }
+
+        @Override
+        public TsCursor<DataSet> getData(DataSource dataSource, TsInformationType type) throws IllegalArgumentException, IOException {
+            return data.getData(TYPE_PARAM.get(dataSource), type).transform(getDataSetFunc(dataSource));
+        }
+
+        @Override
+        public TsCursor<DataSet> getData(DataSet dataSet, TsInformationType type) throws IllegalArgumentException, IOException {
+            if (!dataSet.getKind().equals(DataSet.Kind.SERIES)) {
+                throw new IllegalArgumentException("Invalid hierarchy");
+            }
+            int seriesIndex = INDEX_PARAM.get(dataSet);
+            return data.getData(TYPE_PARAM.get(dataSet.getDataSource()), type).filter(o -> o == seriesIndex).transform(o -> dataSet);
+        }
+
+        private static Function<Integer, DataSet> getDataSetFunc(DataSource dataSource) {
+            DataSet.Builder b = DataSet.builder(dataSource, DataSet.Kind.SERIES);
+            return o -> {
+                INDEX_PARAM.set(b, o);
+                return b.build();
+            };
+        }
+    }
+
+    private static final class FakeData {
+
+        private final FakeConfig config;
+        private final Function<Integer, OptionalTsData> normalData;
+        private final Function<Integer, OptionalTsData> updatingData;
+
+        public FakeData(FakeConfig config) {
+            RandomTsBuilder tsBuilder = new RandomTsBuilder();
+            this.config = config;
+            normalData = createData(tsBuilder, config, DataType.NORMAL)::get;
+            updatingData = shiftingValues(createData(tsBuilder, config, DataType.UPDATING));
+        }
+
+        private Iterator<Integer> seriesIndexIterator(DataType dt) {
+            return IntStream.range(0, config.getSeriesCount(dt)).iterator();
+        }
+
+        public TsCursor<Integer> getData(DataType dt, TsInformationType type) throws IOException {
+            Iterator<Integer> iter = seriesIndexIterator(dt);
+            switch (dt) {
+                case NORMAL:
+                    sleep(type);
+                    return type.encompass(TsInformationType.Data)
+                            ? TsCursor.from(iter, normalData)
+                            : TsCursor.from(iter);
+                case FAILING_META:
+                    sleep(type);
+                    if (type.encompass(TsInformationType.MetaData)) {
+                        throw new IOException("Cannot load meta");
+                    }
+                    return TsCursor.from(iter);
+                case FAILING_DATA:
+                    sleep(type);
+                    if (type.encompass(TsInformationType.Data)) {
+                        throw new IOException("Cannot load data");
+                    }
+                    return TsCursor.from(iter);
+                case UPDATING:
+                    return type.encompass(TsInformationType.Data)
+                            ? TsCursor.from(iter, updatingData)
+                            : TsCursor.from(iter);
+                default:
+                    throw new IllegalArgumentException("Invalid data type");
+            }
+        }
+
+        private static void sleep(TsInformationType type) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(type.needsData() ? 2000 : 150);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        private static List<OptionalTsData> createData(RandomTsBuilder tsBuilder, FakeConfig config, DataType dt) {
+            return IntStream.range(0, config.getSeriesCount(dt))
+                    .mapToObj(o -> createData(tsBuilder, config, dt, o))
+                    .collect(Collectors.toList());
+        }
+
+        private static OptionalTsData createData(RandomTsBuilder tsBuilder, FakeConfig config, DataType dt, int seriesIndex) {
+            int obsCount = config.getObsCount(dt, seriesIndex);
+            return obsCount >= 0
+                    ? OptionalTsData.present(tsBuilder.withObsCount(obsCount).build().data)
+                    : OptionalTsData.absent("No data");
+        }
+
+        private static Function<Integer, OptionalTsData> shiftingValues(List<OptionalTsData> list) {
+            return o -> {
+                OptionalTsData result = shiftValues(list.get(o));
+                list.set(o, result);
+                return result;
+            };
+        }
+
+        private static OptionalTsData shiftValues(OptionalTsData input) {
+            if (input.isPresent()) {
+                TsData data = input.get();
+                shiftValues(data);
+                return OptionalTsData.present(data);
+            }
+            return input;
+        }
+
+        private static void shiftValues(TsData data) {
+            if (data.getObsCount() > 1) {
+                double[] values = data.internalStorage();
+                double first = values[0];
+                System.arraycopy(values, 1, values, 0, values.length - 1);
+                values[values.length - 1] = first;
+            }
+        }
+    }
+
+    private static final class FakeConfig {
+
+        private final EnumMap<DataType, int[]> obsCounts;
+
+        public FakeConfig() {
+            this.obsCounts = new EnumMap<>(DataType.class);
+            obsCounts.put(DataType.NORMAL, new int[]{-1, 0, 24, 60, 120});
+            obsCounts.put(DataType.FAILING_META, new int[]{24});
+            obsCounts.put(DataType.FAILING_DATA, new int[]{24});
+            obsCounts.put(DataType.UPDATING, new int[]{-1, 0, 24, 60, 120});
+        }
+
+        public int getSeriesCount(DataType type) {
+            return obsCounts.get(type).length;
+        }
+
+        public int getObsCount(DataType type, int seriesIndex) {
+            return obsCounts.get(type)[seriesIndex];
         }
     }
 }
