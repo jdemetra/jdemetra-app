@@ -243,10 +243,11 @@ public class JTsCheckLastList extends ATsList {
         final JMenuItem unlock = new JMenuItem(new AbstractAction("Unlock") {
             @Override
             public void actionPerformed(ActionEvent arg0) {
+                TsCollection collection = getTsCollection();
                 if (collection.isLocked()) {
                     TsCollection ncol = TsFactory.instance.createTsCollection();
                     ncol.quietAppend(collection);
-                    collection = ncol;
+                    setTsCollection(ncol);
                 }
             }
         });
@@ -255,7 +256,7 @@ public class JTsCheckLastList extends ATsList {
         result.addPopupMenuListener(new PopupMenuListener() {
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                boolean locked = collection.isLocked() || updateMode == TsUpdateMode.None || !interactive_;
+                boolean locked = getTsCollection().isLocked() || updateMode == TsUpdateMode.None || !interactive_;
                 unlock.setEnabled(locked);
             }
 
@@ -277,7 +278,7 @@ public class JTsCheckLastList extends ATsList {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 int rowIndex = table.convertRowIndexToModel(row);
                 JLabel c = (JLabel) super.prepareRenderer(renderer, row, column);
-                if (collection.getCount() > row) {
+                if (getTsCollection().getCount() > row) {
                     if (!isCellSelected(row, column)) {
                         c.setBackground(Color.WHITE);
                         c.setForeground(Color.BLACK);
@@ -381,6 +382,7 @@ public class JTsCheckLastList extends ATsList {
         selectionListener.setEnabled(false);
         Map<String, AnomalyItem> temp = new HashMap<>();
         items2.clear();
+        TsCollection collection = getTsCollection();
         for (int i = 0; i < collection.getCount(); i++) {
             String name = collection.get(i).getName();
             if (map.containsKey(name)) {

@@ -26,7 +26,6 @@ import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsEvent;
 import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.DataTransfers;
@@ -40,11 +39,13 @@ import ec.ui.commands.TsCollectionViewCommand;
 import ec.ui.interfaces.IColorSchemeAble;
 import static ec.ui.interfaces.ITsCollectionAble.TS_COLLECTION_PROPERTY;
 import ec.ui.interfaces.ITsCollectionView;
+import static ec.ui.interfaces.ITsCollectionView.SELECTION_PROPERTY;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.ColorSchemeIcon;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
+import internal.TsEventHelper;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
@@ -61,7 +62,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -73,7 +73,6 @@ import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -127,6 +126,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         registerInputs();
         enableProperties();
 
+        tsFactoryObserver.helper.setObserved(this.collection);
         TsFactory.instance.addObserver(tsFactoryObserver);
     }
 
@@ -190,6 +190,14 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     abstract protected void onDropContentChange();
     //</editor-fold>
 
+    private void fireTsCollectionChange(TsCollection oldCol, TsCollection newCol) {
+        // update selection to reflect changes in collection
+        Ts[] oldSelection = selection;
+        selection = retainTsCollection(selection, newCol);
+        firePropertyChange(TS_COLLECTION_PROPERTY, oldCol, newCol);
+        firePropertyChange(SELECTION_PROPERTY, oldSelection, selection);
+    }
+
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
     @Override
     public TsCollection getTsCollection() {
@@ -200,11 +208,8 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     public void setTsCollection(TsCollection collection) {
         TsCollection old = this.collection;
         this.collection = collection != null ? collection : TsFactory.instance.createTsCollection();
-        // update selection to reflect changes in collection
-        Ts[] oldSelection = this.selection;
-        this.selection = retainTsCollection(selection);
-        firePropertyChange(TS_COLLECTION_PROPERTY, old, this.collection);
-        firePropertyChange(SELECTION_PROPERTY, oldSelection, selection);
+        fireTsCollectionChange(old, this.collection);
+        tsFactoryObserver.helper.setObserved(this.collection);
     }
 
     @Override
@@ -215,7 +220,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     @Override
     public void setSelection(Ts[] tss) {
         Ts[] old = this.selection;
-        this.selection = tss != null ? retainTsCollection(tss) : DEFAULT_SELECTION;
+        this.selection = tss != null ? retainTsCollection(tss, collection) : DEFAULT_SELECTION;
         firePropertyChange(SELECTION_PROPERTY, old, this.selection);
     }
 
@@ -251,7 +256,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     // TODO: set this method public?
     protected void setDropContent(Ts[] dropContent) {
         Ts[] old = this.dropContent;
-        this.dropContent = dropContent != null ? removeTsCollection(dropContent) : DEFAULT_DROP_CONTENT;
+        this.dropContent = dropContent != null ? removeTsCollection(dropContent, collection) : DEFAULT_DROP_CONTENT;
         firePropertyChange(DROP_CONTENT_PROPERTY, old, this.dropContent);
     }
     //</editor-fold>
@@ -272,13 +277,23 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         return TssTransferSupport.getDefault().fromTsCollection(col);
     }
 
+    @Deprecated
     protected Ts[] retainTsCollection(Ts[] tss) {
+        return retainTsCollection(tss, collection);
+    }
+
+    private static Ts[] retainTsCollection(Ts[] tss, TsCollection collection) {
         List<Ts> tmp = Lists.newArrayList(tss);
         tmp.retainAll(Arrays.asList(collection.toArray()));
         return Iterables.toArray(tmp, Ts.class);
     }
 
+    @Deprecated
     protected Ts[] removeTsCollection(Ts[] tss) {
+        return removeTsCollection(tss, collection);
+    }
+
+    private static Ts[] removeTsCollection(Ts[] tss, TsCollection collection) {
         List<Ts> tmp = Lists.newArrayList(tss);
         tmp.removeAll(Arrays.asList(collection.toArray()));
         return Iterables.toArray(tmp, Ts.class);
@@ -477,28 +492,15 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
 
     protected class TsFactoryObserver implements Observer {
 
-        final AtomicBoolean dirty = new AtomicBoolean(false);
+        private final TsEventHelper<TsCollection> helper = TsEventHelper.onTsCollection(this::fireTsCollectionContentChange);
 
         @Override
         public void update(Observable o, Object arg) {
-            if (arg instanceof TsEvent) {
-                TsEvent event = (TsEvent) arg;
-                if ((event.isCollection() && collection.equals(event.tscollection))
-                        || (event.isSeries() && collection.contains(event.ts))) {
-                    if (!dirty.getAndSet(true)) {
-                        SwingUtilities.invokeLater(() -> {
-                            //                            if (dirty.getAndSet(false)) {
-                            // update selection to reflect changes in collection
-                            dirty.set(false);
-                            Ts[] oldSelection = selection;
-                            selection = retainTsCollection(selection);
-                            firePropertyChange(TS_COLLECTION_PROPERTY, null, collection);
-                            firePropertyChange(SELECTION_PROPERTY, oldSelection, selection);
-//                            }
-                        });
-                    }
-                }
-            }
+            helper.process(o, arg);
+        }
+
+        private void fireTsCollectionContentChange() {
+            fireTsCollectionChange(null, collection);
         }
     }
 

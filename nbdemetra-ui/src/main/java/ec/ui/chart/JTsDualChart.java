@@ -60,6 +60,6 @@ public class JTsDualChart extends JTsChart {
 
     public void reset() {
         subTss_.clear();
-        collection.clear();
+        getTsCollection().clear();
     }
 }
