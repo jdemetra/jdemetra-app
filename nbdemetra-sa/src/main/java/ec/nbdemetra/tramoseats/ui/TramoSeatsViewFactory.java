@@ -7,6 +7,7 @@ package ec.nbdemetra.tramoseats.ui;
 import com.google.common.collect.Iterables;
 import ec.nbdemetra.sa.DiagnosticsMatrixView;
 import ec.satoolkit.ComponentDescriptor;
+import ec.satoolkit.GenericSaProcessingFactory;
 import ec.satoolkit.diagnostics.SignificantSeasonalityTest;
 import ec.satoolkit.diagnostics.StationaryVarianceDecomposition;
 import ec.satoolkit.seats.SeatsResults;
