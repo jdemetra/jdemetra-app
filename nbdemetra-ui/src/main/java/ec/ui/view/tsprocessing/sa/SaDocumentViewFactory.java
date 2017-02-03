@@ -20,6 +20,7 @@ import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.chart3d.functions.SurfacePlotterUI;
 import ec.nbdemetra.ui.chart3d.functions.SurfacePlotterUI.Functions;
 import ec.satoolkit.DecompositionMode;
+import ec.satoolkit.GenericSaProcessingFactory;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.ISeriesDecomposition;
 import ec.satoolkit.diagnostics.StationaryVarianceDecomposition;
@@ -33,6 +34,7 @@ import ec.tss.sa.documents.SaDocument;
 import ec.tss.sa.documents.SaDocumentProcessing;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.arima.IArimaModel;
+import ec.tstoolkit.information.InformationSet;
 import ec.tstoolkit.modelling.ComponentInformation;
 import ec.tstoolkit.modelling.ComponentType;
 import ec.tstoolkit.modelling.ModellingDictionary;
@@ -308,69 +310,100 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     protected static class MainChartsLowFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
-        private static String[] generateItems() {
+        private static String[] generateItems(String prefix) {
+            String sy=InformationSet.concatenate(prefix,ModellingDictionary.Y);
+            String st=InformationSet.concatenate(prefix,ModellingDictionary.T);
+            String ssa=InformationSet.concatenate(prefix,ModellingDictionary.SA);
             StringBuilder y = new StringBuilder();
-            y.append(DocumentManager.COMPOSITE).append("Series=,").append(ModellingDictionary.Y)
-                    .append(',').append(ModellingDictionary.Y).append(SeriesInfo.F_SUFFIX);
+            y.append(DocumentManager.COMPOSITE).append("Series=")
+//                    .append(sy).append(SeriesInfo.B_SUFFIX)
+                    .append(',').append(sy)
+                    .append(',').append(sy).append(SeriesInfo.F_SUFFIX);
             StringBuilder t = new StringBuilder();
-            t.append(DocumentManager.COMPOSITE).append("Trend=,").append(ModellingDictionary.T)
-                    .append(',').append(ModellingDictionary.T).append(SeriesInfo.F_SUFFIX);
+            t.append(DocumentManager.COMPOSITE).append("Trend=")
+                    .append(',').append(st)
+                    .append(',').append(st).append(SeriesInfo.F_SUFFIX);
             StringBuilder sa = new StringBuilder();
-            sa.append(DocumentManager.COMPOSITE).append("Seasonally adjusted=,").append(ModellingDictionary.SA)
-                    .append(',').append(ModellingDictionary.SA).append(SeriesInfo.F_SUFFIX);
+            sa.append(DocumentManager.COMPOSITE).append("Seasonally adjusted=")
+                    .append(',').append(ssa)
+                    .append(',').append(ssa).append(SeriesInfo.F_SUFFIX);
             return new String[]{y.toString(), t.toString(), sa.toString()};
         }
-
         protected MainChartsLowFactory(Class<D> documentType) {
-            super(documentType, MAIN_CHARTS_LOW, saExtractor(), new ChartUI(generateItems()));
+            this(documentType, null);
+        }
+
+        protected MainChartsLowFactory(Class<D> documentType, String prefix) {
+            super(documentType, MAIN_CHARTS_LOW, saExtractor(), new ChartUI(generateItems(prefix)));
         }
     }
 
     protected static class MainChartsHighFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
-        private static String[] generateItems() {
+        private static String[] generateItems(String prefix) {
             StringBuilder cal = new StringBuilder();
             cal.append(DocumentManager.COMPOSITE).append("Calendar effects=,").append(ModellingDictionary.CAL)
                     .append(',').append(ModellingDictionary.CAL).append(SeriesInfo.F_SUFFIX);
             StringBuilder s = new StringBuilder();
             s.append(DocumentManager.COMPOSITE).append("Seas (component)=,").append(ModellingDictionary.S_CMP)
                     .append(',').append(ModellingDictionary.S_CMP).append(SeriesInfo.F_SUFFIX);
+            String si=InformationSet.concatenate(prefix,ModellingDictionary.I);
             StringBuilder i = new StringBuilder();
-            i.append(DocumentManager.COMPOSITE).append("Irregular=,").append(ModellingDictionary.I)
-                    .append(',').append(ModellingDictionary.I).append(SeriesInfo.F_SUFFIX);
+            i.append(DocumentManager.COMPOSITE).append("Irregular=")
+                    .append(',').append(si)
+                    .append(',').append(si).append(SeriesInfo.F_SUFFIX);
             return new String[]{cal.toString(), s.toString(), i.toString()};
         }
 
         protected MainChartsHighFactory(Class<D> documentType) {
-            super(documentType, MAIN_CHARTS_HIGH, saExtractor(), new ChartUI(generateItems()));
+            this(documentType, null);
+        }
+        
+        protected MainChartsHighFactory(Class<D> documentType, String prefix) {
+            super(documentType, MAIN_CHARTS_HIGH, saExtractor(), new ChartUI(generateItems(prefix)));
         }
     }
 
     protected static class MainTableFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
-        private static String[] generateItems() {
+        private static String[] generateItems(String prefix) {
+            String sy=InformationSet.concatenate(prefix,ModellingDictionary.Y);
+            String st=InformationSet.concatenate(prefix,ModellingDictionary.T);
+            String ssa=InformationSet.concatenate(prefix,ModellingDictionary.SA);
+            String ss=InformationSet.concatenate(prefix,ModellingDictionary.S);
+            String si=InformationSet.concatenate(prefix,ModellingDictionary.I);
             StringBuilder y = new StringBuilder();
-            y.append(DocumentManager.COMPOSITE).append("Series=,").append(ModellingDictionary.Y)
-                    .append(',').append(ModellingDictionary.Y).append(SeriesInfo.F_SUFFIX);
+            y.append(DocumentManager.COMPOSITE).append("Series=")
+//                    .append(sy).append(SeriesInfo.B_SUFFIX)
+                    .append(',').append(sy)
+                    .append(',').append(sy).append(SeriesInfo.F_SUFFIX);
             StringBuilder t = new StringBuilder();
-            t.append(DocumentManager.COMPOSITE).append("Trend=,").append(ModellingDictionary.T)
-                    .append(',').append(ModellingDictionary.T).append(SeriesInfo.F_SUFFIX);
+            t.append(DocumentManager.COMPOSITE).append("Trend=")
+                    .append(',').append(st)
+                    .append(',').append(st).append(SeriesInfo.F_SUFFIX);
             StringBuilder sa = new StringBuilder();
-            sa.append(DocumentManager.COMPOSITE).append("Seasonally adjusted=,").append(ModellingDictionary.SA)
-                    .append(',').append(ModellingDictionary.SA).append(SeriesInfo.F_SUFFIX);
+            sa.append(DocumentManager.COMPOSITE).append("Seasonally adjusted=")
+                    .append(',').append(ssa)
+                    .append(',').append(ssa).append(SeriesInfo.F_SUFFIX);
             StringBuilder s = new StringBuilder();
-            s.append(DocumentManager.COMPOSITE).append("Seasonal=,").append(ModellingDictionary.S)
-                    .append(',').append(ModellingDictionary.S).append(SeriesInfo.F_SUFFIX);
+            s.append(DocumentManager.COMPOSITE).append("Seasonal=")
+                    .append(',').append(ss)
+                    .append(',').append(ss).append(SeriesInfo.F_SUFFIX);
             StringBuilder i = new StringBuilder();
-            i.append(DocumentManager.COMPOSITE).append("Irregular=,").append(ModellingDictionary.I)
-                    .append(',').append(ModellingDictionary.I).append(SeriesInfo.F_SUFFIX);
+            i.append(DocumentManager.COMPOSITE).append("Irregular=")
+                    .append(',').append(si)
+                    .append(',').append(si).append(SeriesInfo.F_SUFFIX);
             return new String[]{y.toString(), sa.toString(), t.toString(), s.toString(), i.toString()};
         }
 
         protected MainTableFactory(Class<D> documentType) {
-            super(documentType, MAIN_TABLE, saExtractor(), new GenericTableUI(false, generateItems()));
+            this(documentType, null);
+        }
+
+        protected MainTableFactory(Class<D> documentType, String prefix) {
+            super(documentType, MAIN_TABLE, saExtractor(), new GenericTableUI(false, generateItems(prefix)));
 //            super(documentType, MAIN_TABLE, saExtractor(), new SaTableUI(ModellingDictionary.getFinalSeries(), null));
         }
     }

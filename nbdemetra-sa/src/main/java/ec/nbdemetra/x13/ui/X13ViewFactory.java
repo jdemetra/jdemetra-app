@@ -6,6 +6,7 @@ package ec.nbdemetra.x13.ui;
 
 import ec.nbdemetra.sa.DiagnosticsMatrixView;
 import ec.satoolkit.DecompositionMode;
+import ec.satoolkit.GenericSaProcessingFactory;
 import ec.satoolkit.ISeriesDecomposition;
 import ec.satoolkit.x11.DefaultSeasonalFilteringStrategy;
 import ec.satoolkit.x11.Mstatistics;
