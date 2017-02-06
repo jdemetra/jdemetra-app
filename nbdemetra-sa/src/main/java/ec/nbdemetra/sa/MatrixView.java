@@ -11,20 +11,14 @@ import ec.nbdemetra.ws.WorkspaceItem;
 import ec.satoolkit.algorithm.implementation.X13ProcessingFactory;
 import ec.satoolkit.x11.Mstatistics;
 import ec.tss.ITsIdentified;
-import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.formatters.TableFormatter;
 import ec.tss.sa.SaItem;
 import ec.tss.sa.SaProcessing;
 import ec.tss.sa.diagnostics.*;
 import ec.tstoolkit.algorithm.AlgorithmDescriptor;
-import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.IProcResults;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.information.InformationSet;
-import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.grid.JTsGrid;
-import ec.ui.interfaces.ITsCollectionView;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.JGrid;
 import ec.util.grid.swing.ext.TableGridCommand;
@@ -62,8 +56,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
     private final JToolBar toolBarRepresentation;
     // subcomponents
     private final JComboBox<Entry<Integer, AlgorithmDescriptor>> comboBox;
-    private final JGrid resMatrix_, calMatrix_, armaMatrix_, outMatrix_, testMatrix_;
-    private final JTsGrid customMatrix_;
+    private final JGrid resMatrix_, calMatrix_, armaMatrix_, outMatrix_, testMatrix_, customMatrix_;
     private final JTabbedPane matrixTabPane_;
     // data
     private List<SaItem> saItems;
@@ -75,7 +68,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         this.saItems = new ArrayList<>();
         this.demetraUI = DemetraUI.getDefault();
         this.comboBox = new JComboBox<>();
-        this.selectedComponents = demetraUI.getSelectedSeriesFields();
+        this.selectedComponents = demetraUI.getSelectedDiagFields();
 
         comboBox.setRenderer(JLists.cellRendererOf((label, value) -> {
             if (value != null) {
@@ -97,9 +90,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         matrixTabPane_.addTab("Outliers", outMatrix_ = createMatrix());
         matrixTabPane_.addTab("Arma", armaMatrix_ = createMatrix());
         matrixTabPane_.addTab("Tests", testMatrix_ = createMatrix());
-        matrixTabPane_.addTab("Custom", customMatrix_ = new JTsGrid());
-
-        customMatrix_.setTsUpdateMode(ITsCollectionView.TsUpdateMode.None);
+        matrixTabPane_.addTab("Custom", customMatrix_ = createMatrix());
 
         toolBarRepresentation = NbComponents.newInnerToolbar();
         toolBarRepresentation.addSeparator();
@@ -107,10 +98,10 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
         visualRepresentation = matrixTabPane_;
 
-        demetraUI.addPropertyChangeListener(DemetraUI.SELECTED_SERIES_FIELDS_PROPERTY, evt -> {
-            selectedComponents = demetraUI.getSelectedSeriesFields();
+        demetraUI.addPropertyChangeListener(DemetraUI.SELECTED_DIAG_FIELDS_PROPERTY, evt -> {
+            selectedComponents = demetraUI.getSelectedDiagFields();
             Entry<Integer, AlgorithmDescriptor> item = (Entry<Integer, AlgorithmDescriptor>) comboBox.getSelectedItem();
-            customMatrix_.setTsCollection(createTsCollection(item.getValue(), item.getKey()));
+            customMatrix_.setModel(new TableModelAdapter(createTableModel(item.getValue(), item.getKey(), selectedComponents, selectedComponents)));
         });
 
         updateData(Collections.<SaItem>emptyList());
@@ -168,10 +159,12 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
     @Override
     public void componentOpened() {
+
     }
 
     @Override
     public void componentClosed() {
+        clearMatrices();
     }
 
     @Override
@@ -228,41 +221,20 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         outMatrix_.setModel(null);
         armaMatrix_.setModel(null);
         testMatrix_.setModel(null);
-        customMatrix_.getTsCollection().clear();
+        customMatrix_.setModel(null);
     }
 
     private void updateMatrix(AlgorithmDescriptor desc, int freq) {
-        new SwingWorker() {
-            @Override
-            protected Object doInBackground() throws Exception {
-                resMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(MAIN_TITLE), Arrays.asList(MAIN))));
-                calMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(CALENDAR_TITLE), Arrays.asList(CALENDAR))));
-                armaMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(ARMA_TITLE), Arrays.asList(ARMA))));
-                outMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(OUTLIERS_TITLE), Arrays.asList(OUTLIERS))));
-                testMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(TESTS_TITLE), Arrays.asList(TESTS))));
-                customMatrix_.setTsCollection(createTsCollection(desc, freq));
-                return true;
-            }
-        }.execute();
+        resMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(MAIN_TITLE), Arrays.asList(MAIN))));
+        calMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(CALENDAR_TITLE), Arrays.asList(CALENDAR))));
+        armaMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(ARMA_TITLE), Arrays.asList(ARMA))));
+        outMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(OUTLIERS_TITLE), Arrays.asList(OUTLIERS))));
+        testMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(TESTS_TITLE), Arrays.asList(TESTS))));
+        customMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, selectedComponents, selectedComponents)));
     }
+
     private static final String[] MAIN = {"espan.n", "decomposition.seasonality", "adjust", "log", "arima.mean", "arima.p", "arima.d", "arima.q", "arima.bp", "arima.bd", "arima.bq", "likelihood.bicc", "residuals.ser", "residuals.lb", "decomposition.seasfilter", "decomposition.trendfilter"};
     private static final String[] MAIN_TITLE = {"N", "Seasonal", "Adjust", "Log", "Mean", "P", "D", "Q", "BP", "BD", "BQ", "BIC", "SE(res)", "Q-val", "Seas filter", "Trend filter"};
-
-    private TsCollection createTsCollection(AlgorithmDescriptor method, int freq) {
-        TsCollection collection = TsFactory.instance.createTsCollection();
-        for (SaItem sa : this.saItems) {
-            if (sa.getEstimationMethod().equals(method) && sa.getTsData() != null && sa.getTsData().getFrequency().intValue() == freq) {
-                CompositeResults cr = sa.process();
-                for (String component : selectedComponents) {
-                    TsData data = cr.getData(component, TsData.class);
-                    if (data != null) {
-                        collection.add(TsFactory.instance.createTs("[" + component + "] " + sa.getName(), sa.getMetaData(), data));
-                    }
-                }
-            }
-        }
-        return collection;
-    }
 
     private TableModel createTableModel(AlgorithmDescriptor method, int freq, List<String> titles, List<String> items) {
         DefaultTableModel rslt = new DefaultTableModel();
