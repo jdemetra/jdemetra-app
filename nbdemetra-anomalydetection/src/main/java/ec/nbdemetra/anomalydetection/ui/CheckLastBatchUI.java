@@ -397,7 +397,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
     // </editor-fold>
 
     private void generateReport() {
-        CheckLastReportAction.process(list.getItems2(), list.getReportParameters());
+        CheckLastReportAction.process(list.getItems(), list.getReportParameters());
     }
 
     // <editor-fold defaultstate="collapsed" desc="Thread stuff">
@@ -439,9 +439,9 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
         }
 
         List<Callable<Void>> createTasks() {
-            if (list.getItems2() != null && list.getItems2().size() > 0) {
-                List<Callable<Void>> result = new ArrayList(list.getItems2().size());
-                for (final AnomalyItem o : list.getItems2()) {
+            if (list.getItems() != null && list.getItems().size() > 0) {
+                List<Callable<Void>> result = new ArrayList(list.getItems().size());
+                for (final AnomalyItem o : list.getItems()) {
                     if (o.getTsData() != null) {
                         if (!o.isProcessed()) {
                             result.add(() -> {
@@ -470,7 +470,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
             progressCount += chunks.size();
             if (progressHandle != null) {
                 if (!chunks.isEmpty()) {
-                    progressHandle.progress(100 * progressCount / list.getItems2().size());
+                    progressHandle.progress(100 * progressCount / list.getItems().size());
                 }
             }
         }
@@ -480,7 +480,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
         switch (getState()) {
             case DONE:
                 runButton.setEnabled(true);
-                if (!list.getItems2().isEmpty()) {
+                if (!list.getItems().isEmpty()) {
                     reportButton.setEnabled(true);
                 }
                 makeBusy(false);
@@ -546,7 +546,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
     }
 
     private void onCollectionChange() {
-        int nbElements = list.getItems2() != null ? list.getItems2().size() : 0;
+        int nbElements = list.getItems() != null ? list.getItems().size() : 0;
         itemsLabel.setText(nbElements == 0 ? "No items" : nbElements + (nbElements < 2 ? " item" : " items"));
         summary.set(null, list.getCheckLast().getEstimatedModel());
         summary.repaint();
