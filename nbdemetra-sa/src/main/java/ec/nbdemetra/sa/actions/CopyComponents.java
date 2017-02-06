@@ -70,7 +70,7 @@ public final class CopyComponents extends AbstractViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null;
+        enabled = ui != null && ui.getSelectionCount() > 0;
     }
 
     @Override
