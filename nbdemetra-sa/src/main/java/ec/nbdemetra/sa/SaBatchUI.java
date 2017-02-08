@@ -137,7 +137,6 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         for (PropertyChangeListener listener : this.getPropertyChangeListeners()) {
             this.removePropertyChangeListener(listener);
         }
-        getCurrentProcessing().clear();
         super.componentClosed();
     }
 
@@ -915,7 +914,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         protected String getText(SaItem item) {
             if (item.getEstimationSpecification() == null) {
                 return null;
-            } else if (item.getEstimationPolicy() == EstimationPolicyType.FixedParameters) {
+            } else if (item.getEstimationPolicy() == EstimationPolicyType.Fixed) {
                 return "Current";
             } else if (item.getEstimationPolicy() == EstimationPolicyType.Complete) {
                 return "Concurrent";

@@ -29,7 +29,8 @@ public class CalendarSpecUI extends BaseTramoSpecUI{
     }
 
     public TradingDaysSpecUI getTradingDays(){
-        return new TradingDaysSpecUI(core, ro_);
+        return new TradingDaysSpecUI(core, ro_ || core.getRegression().hasFixedCoefficients("td")
+        || core.getRegression().hasFixedCoefficients("lp"));
     }
 
     public void setTradingDays(TradingDaysSpecUI spec){
@@ -37,7 +38,7 @@ public class CalendarSpecUI extends BaseTramoSpecUI{
     }
 
     public EasterSpecUI getEaster(){
-        return new EasterSpecUI(core, ro_);
+        return new EasterSpecUI(core, ro_ || core.getRegression().hasFixedCoefficients("easter"));
     }
 
     public void setEaster(EasterSpecUI spec){

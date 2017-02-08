@@ -7,6 +7,7 @@ package ec.nbdemetra.tramoseats.ui;
 import com.google.common.collect.Iterables;
 import ec.nbdemetra.sa.DiagnosticsMatrixView;
 import ec.satoolkit.ComponentDescriptor;
+import ec.satoolkit.GenericSaProcessingFactory;
 import ec.satoolkit.diagnostics.SignificantSeasonalityTest;
 import ec.satoolkit.diagnostics.StationaryVarianceDecomposition;
 import ec.satoolkit.seats.SeatsResults;
@@ -187,7 +188,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
     public static class MainChartsLowFactory extends SaDocumentViewFactory.MainChartsLowFactory<TramoSeatsDocument> {
 
         public MainChartsLowFactory() {
-            super(TramoSeatsDocument.class);
+            super(TramoSeatsDocument.class, GenericSaProcessingFactory.FINAL);
         }
     }
 
@@ -195,7 +196,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
     public static class MainChartsHighFactory extends SaDocumentViewFactory.MainChartsHighFactory<TramoSeatsDocument> {
 
         public MainChartsHighFactory() {
-            super(TramoSeatsDocument.class);
+            super(TramoSeatsDocument.class, GenericSaProcessingFactory.FINAL);
         }
     }
 
@@ -203,7 +204,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
     public static class MainTableFactory extends SaDocumentViewFactory.MainTableFactory<TramoSeatsDocument> {
 
         public MainTableFactory() {
-            super(TramoSeatsDocument.class);
+            super(TramoSeatsDocument.class, GenericSaProcessingFactory.FINAL);
         }
     }
 

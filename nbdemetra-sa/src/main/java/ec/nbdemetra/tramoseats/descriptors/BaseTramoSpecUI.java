@@ -28,4 +28,5 @@ public abstract class BaseTramoSpecUI implements IPropertyDescriptors {
     public TramoSpecification getCore() {
         return core;
     }
+    
 }

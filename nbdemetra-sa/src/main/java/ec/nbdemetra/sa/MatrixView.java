@@ -26,6 +26,8 @@ import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,14 +63,13 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
     // data
     private List<SaItem> saItems;
     private List<String> selectedComponents;
-    private final DemetraUI demetraUI;
+    private PropertyChangeListener listener;
 
     public MatrixView(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
         super(doc, controller);
         this.saItems = new ArrayList<>();
-        this.demetraUI = DemetraUI.getDefault();
         this.comboBox = new JComboBox<>();
-        this.selectedComponents = demetraUI.getSelectedDiagFields();
+        this.selectedComponents = DemetraUI.getDefault().getSelectedDiagFields();
 
         comboBox.setRenderer(JLists.cellRendererOf((label, value) -> {
             if (value != null) {
@@ -98,11 +99,11 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
         visualRepresentation = matrixTabPane_;
 
-        demetraUI.addPropertyChangeListener(DemetraUI.SELECTED_DIAG_FIELDS_PROPERTY, evt -> {
-            selectedComponents = demetraUI.getSelectedDiagFields();
+        listener = (PropertyChangeEvent evt) -> {
+            selectedComponents = DemetraUI.getDefault().getSelectedDiagFields();
             Entry<Integer, AlgorithmDescriptor> item = (Entry<Integer, AlgorithmDescriptor>) comboBox.getSelectedItem();
             customMatrix_.setModel(new TableModelAdapter(createTableModel(item.getValue(), item.getKey(), selectedComponents, selectedComponents)));
-        });
+        };
 
         updateData(Collections.<SaItem>emptyList());
 
@@ -159,32 +160,15 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
     @Override
     public void componentOpened() {
-
+        super.componentOpened();
+        DemetraUI.getDefault().addPropertyChangeListener(DemetraUI.SELECTED_DIAG_FIELDS_PROPERTY, listener);
     }
 
     @Override
     public void componentClosed() {
+        DemetraUI.getDefault().removePropertyChangeListener(DemetraUI.SELECTED_DIAG_FIELDS_PROPERTY, listener);
         clearMatrices();
-    }
-
-    @Override
-    public void componentShowing() {
-    }
-
-    @Override
-    public void componentHidden() {
-    }
-
-    @Override
-    public void componentActivated() {
-    }
-
-    @Override
-    public void componentDeactivated() {
-    }
-
-    @Override
-    public void setMultiViewCallback(MultiViewElementCallback callback) {
+        super.componentClosed();
     }
 
     @Override

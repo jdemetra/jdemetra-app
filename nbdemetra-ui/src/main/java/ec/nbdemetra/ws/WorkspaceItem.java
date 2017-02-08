@@ -99,7 +99,7 @@ public class WorkspaceItem<T> implements IModifiable, Comparable<WorkspaceItem> 
     
     public static <T> WorkspaceItem<T> item(Id family, String name, String id, String comments) {
         WorkspaceItem<T> item = new WorkspaceItem(family, name, id);
-        item.setComments(comments);
+        item.comments_=comments;
         item.status_ = Status.Undefined;
         return item;
     }
@@ -150,6 +150,11 @@ public class WorkspaceItem<T> implements IModifiable, Comparable<WorkspaceItem> 
     }
 
     public void setComments(String comments) {
+        if (comments == null && comments_ == null)
+            return;
+        if (comments != null && comments.equals(comments_))
+            return;
+            
         this.comments_ = comments;
         dirty_ = true;
     }

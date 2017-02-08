@@ -46,7 +46,7 @@ public class RegArimaSpecUI implements IObjectDescriptor<RegArimaSpecification> 
     }
 
     public TransformSpecUI getTransform() {
-        return new TransformSpecUI(core, ro_);
+        return new TransformSpecUI(core, ro_ || core.getRegression().hasFixedCoefficients());
     }
 
     public ArimaSpecUI getArima() {
