@@ -20,10 +20,11 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.interfaces.ITsCollectionView;
 import java.awt.Image;
 import java.beans.BeanInfo;
+import java.beans.PropertyVetoException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
@@ -39,31 +40,72 @@ import org.openide.util.lookup.Lookups;
  */
 public class ControlNode {
 
+    private static final Node VOID = new AbstractNodeBuilder().name("void").build();
+
     public static Node onComponentOpened(final ExplorerManager mgr, final ITsCollectionView view) {
-
-//        AbstractNode root = new AbstractNode(Children.create(new Custom(view), false));
-        TsCollectionNode root = new TsCollectionNode(view.getTsCollection());
-        mgr.setRootContext(root);
-
-        view.addPropertyChangeListener(ITsCollectionView.SELECTION_PROPERTY, evt -> {
-            try {
-                List<Ts> selection = Arrays.asList(view.getSelection());
-                if (selection.isEmpty()) {
-                    mgr.setSelectedNodes(new Node[]{mgr.getRootContext()});
-                } else {
-                    mgr.setSelectedNodes(Arrays.stream(mgr.getRootContext().getChildren().getNodes())
-                            .filter(o -> selection.contains(o.getLookup().lookup(Ts.class)))
-                            .toArray(Node[]::new));
-                }
-            } catch (Exception ex) {
-                Exceptions.printStackTrace(ex);
+        view.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case ITsCollectionView.SELECTION_PROPERTY:
+                    onSelectionChange(mgr, view);
+                    break;
+                case ITsCollectionView.TS_COLLECTION_PROPERTY:
+                    onCollectionChange(mgr, view);
+                    break;
             }
         });
-        view.addPropertyChangeListener(ITsCollectionView.TS_COLLECTION_PROPERTY, evt -> {
-            mgr.setRootContext(new TsCollectionNode(view.getTsCollection()));
-        });
+        onCollectionChange(mgr, view);
+        onSelectionChange(mgr, view);
 
-        return root;
+        return VOID;
+    }
+
+    private static void onSelectionChange(ExplorerManager mgr, ITsCollectionView view) {
+        Ts[] selection = view.getSelection();
+        if (selection.length == 0) {
+            selectSingleIfReadonly(mgr, view);
+        } else {
+            selectNodes(mgr, selection);
+        }
+    }
+
+    private static void onCollectionChange(ExplorerManager mgr, ITsCollectionView view) {
+        mgr.setRootContext(new TsCollectionNode(view.getTsCollection()));
+        selectSingleIfReadonly(mgr, view);
+    }
+
+    private static boolean isReadonly(ITsCollectionView view) {
+        return view.getTsUpdateMode() == ITsCollectionView.TsUpdateMode.None;
+    }
+
+    private static Ts getSingleOrNull(ITsCollectionView view) {
+        Ts[] result = view.getTsCollection().toArray();
+        return result.length == 1 ? result[0] : null;
+    }
+
+    private static void selectSingleIfReadonly(ExplorerManager mgr, ITsCollectionView view) {
+        if (isReadonly(view)) {
+            Ts single = getSingleOrNull(view);
+            if (single != null) {
+                selectNodes(mgr, single);
+                return;
+            }
+        }
+        selectNodes(mgr);
+    }
+
+    private static void selectNodes(ExplorerManager mgr, Ts... tss) {
+        try {
+            if (tss.length == 0) {
+                mgr.setSelectedNodes(new Node[]{mgr.getRootContext()});
+            } else {
+                HashSet<Ts> selection = new HashSet<>(Arrays.asList(tss));
+                mgr.setSelectedNodes(Arrays.stream(mgr.getRootContext().getChildren().getNodes())
+                        .filter(o -> selection.contains(o.getLookup().lookup(Ts.class)))
+                        .toArray(Node[]::new));
+            }
+        } catch (PropertyVetoException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     static class TsCollectionNode extends AbstractNode {
