@@ -4,23 +4,27 @@
  */
 package ec.nbdemetra.ui.nodes;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.TsProviders;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
+import ec.tstoolkit.MetaData;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.interfaces.ITsCollectionView;
+import java.awt.Image;
+import java.beans.BeanInfo;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.TreeMap;
+import java.util.Map;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
@@ -67,38 +71,19 @@ public class ControlNode {
         TsCollectionNode(TsCollection col) {
             super(new TsCollectionChildren(col), Lookups.singleton(col));
             setName(col.getName());
+            setDisplayName(MultiLineNameUtil.last(col.getName()));
+            setShortDescription(MultiLineNameUtil.toHtml(col.getName()));
         }
 
         @Override
         protected Sheet createSheet() {
             TsCollection col = getLookup().lookup(TsCollection.class);
-            Sheet result = new Sheet();
             NodePropertySetBuilder b = new NodePropertySetBuilder();
-
-            b.reset("Collection");
-            b.with(String.class).select(col, "getName", null).display("Name").add();
-            if (!col.getMoniker().isAnonymous()) {
-                Optional<IDataSourceProvider> provider = TsProviders.lookup(IDataSourceProvider.class, col.getMoniker());
-                b.with(String.class).selectConst("Provider", provider.isPresent() ? provider.get().getDisplayName() : col.getMoniker().getSource()).add();
-//                b.with(String.class).select("Unique ID", ts.getMoniker().getId()).add();
-            }
-            b.withEnum(TsInformationType.class).select(col, "getInformationType", null).display("Information type").add();
-            b.withBoolean().select(col, "isLocked", null).display("Locked").add();
-            b.withInt().select(col, "getCount", null).display("Series count").add();
-            if (col.hasMetaData() == TsStatus.Invalid) {
-                b.withEnum(TsStatus.class).select(col, "hasMetaData", null).display("Meta data status").add();
-            }
-            result.put(b.build());
-
+            Sheet result = new Sheet();
+            result.put(getDefinitionSheetSet(col, b));
             if (col.hasMetaData() == TsStatus.Valid) {
-                b.reset("Meta data");
-                // using treemap to order entries
-                for (Entry<String, String> o : new TreeMap<>(col.getMetaData()).entrySet()) {
-                    b.with(String.class).selectConst(o.getKey(), o.getValue()).add();
-                }
-                result.put(b.build());
+                result.put(getMetaSheetSet(col.getMetaData(), b));
             }
-
             return result;
         }
 
@@ -132,53 +117,118 @@ public class ControlNode {
         TsNode(Ts ts) {
             super(Children.LEAF, Lookups.singleton(ts));
             setName(ts.getName());
+            setDisplayName(MultiLineNameUtil.last(ts.getName()));
+            setShortDescription(MultiLineNameUtil.toHtml(ts.getName()));
+        }
+
+        @Override
+        public Image getOpenedIcon(int type) {
+            return getIcon(type);
+        }
+
+        @Override
+        public Image getIcon(int type) {
+            Ts ts = getLookup().lookup(Ts.class);
+            return DataSourceProviderBuddySupport.getDefault().get(ts.getMoniker()).getIcon(BeanInfo.ICON_COLOR_16x16, false);
         }
 
         @Override
         protected Sheet createSheet() {
             Ts ts = getLookup().lookup(Ts.class);
-            Sheet result = new Sheet();
             NodePropertySetBuilder b = new NodePropertySetBuilder();
-
-            b.reset("Time series");
-            b.with(String.class).select(ts, "getName", null).display("Name").add();
-            if (!ts.getMoniker().isAnonymous()) {
-                Optional<IDataSourceProvider> provider = TsProviders.lookup(IDataSourceProvider.class, ts.getMoniker());
-                b.with(String.class).selectConst("Provider", provider.isPresent() ? provider.get().getDisplayName() : ts.getMoniker().getSource()).add();
-//                b.with(String.class).select("Unique ID", ts.getMoniker().getId()).add();
-            }
-            b.withEnum(TsInformationType.class).select(ts, "getInformationType", null).display("Information type").add();
-            b.withBoolean().select(ts, "isFrozen", null).display("Frozen").add();
-            if (ts.hasData() == TsStatus.Invalid) {
-                b.withEnum(TsStatus.class).select(ts, "hasData", null).display("Data status").add();
-                b.with(String.class).selectConst("InvalidDataCause", ts.getInvalidDataCause()).display("Invalid data cause").add();
-            }
-            if (ts.hasMetaData() == TsStatus.Invalid) {
-                b.withEnum(TsStatus.class).select(ts, "hasMetaData", null).display("Meta data status").add();
-            }
-            result.put(b.build());
-
+            Sheet result = new Sheet();
+            result.put(getDefinitionSheetSet(ts, b));
             if (ts.hasData() == TsStatus.Valid) {
-                b.reset("Data");
-                TsData data = ts.getTsData();
-                b.withEnum(TsFrequency.class).select(data, "getFrequency", null).display("Frequency").add();
-                b.with(TsPeriod.class).select(data, "getStart", null).display("First period").add();
-                b.with(TsPeriod.class).select(data, "getLastPeriod", null).display("Last period").add();
-                b.withInt().select(data, "getObsCount", null).display("Obs count").add();
-                b.with(TsData.class).select(ts, "getTsData", null).display("Values").add();
-                result.put(b.build());
+                result.put(getDataSheetSet(ts, b));
             }
-
             if (ts.hasMetaData() == TsStatus.Valid) {
-                b.reset("Meta data");
-                // using treemap to order entries
-                for (Entry<String, String> o : new TreeMap<>(ts.getMetaData()).entrySet()) {
-                    b.with(String.class).selectConst(o.getKey(), o.getValue()).add();
-                }
-                result.put(b.build());
+                result.put(getMetaSheetSet(ts.getMetaData(), b));
             }
-
             return result;
         }
+    }
+
+    private static Sheet.Set getDefinitionSheetSet(TsCollection col, NodePropertySetBuilder b) {
+        b.reset("Collection");
+
+        b.with(String.class)
+                .select(col, "getName", null)
+                .display("Name")
+                .add();
+
+        if (!col.getMoniker().isAnonymous()) {
+            String providerName = col.getMoniker().getSource();
+            if (providerName != null) {
+                b.with(String.class).selectConst("Provider", getProviderDisplayName(providerName)).add();
+            }
+        }
+
+        b.withEnum(TsInformationType.class).select(col, "getInformationType", null).display("Information type").add();
+        b.withBoolean().select(col, "isLocked", null).display("Locked").add();
+        b.withInt().select(col, "getCount", null).display("Series count").add();
+
+        if (col.hasMetaData() == TsStatus.Invalid) {
+            b.withEnum(TsStatus.class).select(col, "hasMetaData", null).display("Meta data status").add();
+        }
+
+        return b.build();
+    }
+
+    public static Sheet.Set getDefinitionSheetSet(Ts ts, NodePropertySetBuilder b) {
+        b.reset("Time series");
+
+        b.with(String.class)
+                .selectConst("name", MultiLineNameUtil.join(ts.getName()))
+                .display("Name")
+                .description(MultiLineNameUtil.toHtml(ts.getName()))
+                .add();
+
+        if (ts.isFrozen() || !ts.getMoniker().isAnonymous()) {
+            String providerName = ts.isFrozen() ? ts.getMetaData().get(MetaData.SOURCE) : ts.getMoniker().getSource();
+            if (providerName != null) {
+                b.with(String.class).selectConst("Provider", getProviderDisplayName(providerName)).add();
+            }
+        }
+
+        b.withEnum(TsInformationType.class).select(ts, "getInformationType", null).display("Information type").add();
+        b.withBoolean().select(ts, "isFrozen", null).display("Frozen").add();
+
+        if (ts.hasData() == TsStatus.Invalid) {
+            b.withEnum(TsStatus.class).select(ts, "hasData", null).display("Data status").add();
+            b.with(String.class).selectConst("InvalidDataCause", ts.getInvalidDataCause()).display("Invalid data cause").add();
+        }
+
+        if (ts.hasMetaData() == TsStatus.Invalid) {
+            b.withEnum(TsStatus.class).select(ts, "hasMetaData", null).display("Meta data status").add();
+        }
+
+        return b.build();
+    }
+
+    private static String getProviderDisplayName(String providerName) {
+        return TsProviders.lookup(IDataSourceProvider.class, providerName)
+                .transform(IDataSourceProvider::getDisplayName)
+                .or(providerName);
+    }
+
+    private static Sheet.Set getDataSheetSet(Ts ts, NodePropertySetBuilder b) {
+        b.reset("Data");
+        TsData data = ts.getTsData();
+        b.withEnum(TsFrequency.class).select(data, "getFrequency", null).display("Frequency").add();
+        b.with(TsPeriod.class).select(data, "getStart", null).display("First period").add();
+        b.with(TsPeriod.class).select(data, "getLastPeriod", null).display("Last period").add();
+        b.withInt().select(data, "getObsCount", null).display("Obs count").add();
+        b.with(TsData.class).select(ts, "getTsData", null).display("Values").add();
+        return b.build();
+    }
+
+    private static Sheet.Set getMetaSheetSet(MetaData md, NodePropertySetBuilder b) {
+        b.reset("Meta data");
+        md.entrySet().stream()
+                .sorted(Comparator.comparing(Map.Entry::getKey))
+                .forEach(o -> {
+                    b.with(String.class).selectConst(o.getKey(), o.getValue()).add();
+                });
+        return b.build();
     }
 }
