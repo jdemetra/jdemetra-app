@@ -137,7 +137,6 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         for (PropertyChangeListener listener : this.getPropertyChangeListeners()) {
             this.removePropertyChangeListener(listener);
         }
-        getCurrentProcessing().clear();
         super.componentClosed();
     }
 
