@@ -62,15 +62,23 @@ public class TsDataValuesPropertyEditor extends PropertyEditorSupport {
     @Override
     public void paintValue(Graphics gfx, Rectangle box) {
         TsData data = (TsData) getValue();
-        if (data.getObsCount() > 1) {
-            sparkLinePainter.getXYPlot().setDataset(TsCharts.newSparklineDataset(data));
-            sparkLinePainter.draw((Graphics2D) gfx, box);
-        } else {
-            DataFormat dataFormat = DemetraUI.getDefault().getDataFormat();
-            String str = "Single: " + dataFormat.numberFormatter().formatAsString(data.get(0));
-            singleValuePainter.setText(str);
-            singleValuePainter.setBounds(box);
-            singleValuePainter.paint(gfx);
+        switch (data.getObsCount()) {
+            case 0:
+                singleValuePainter.setText("No obs");
+                singleValuePainter.setBounds(box);
+                singleValuePainter.paint(gfx);
+                break;
+            case 1:
+                DataFormat dataFormat = DemetraUI.getDefault().getDataFormat();
+                String str = "Single: " + dataFormat.numberFormatter().formatAsString(data.get(0));
+                singleValuePainter.setText(str);
+                singleValuePainter.setBounds(box);
+                singleValuePainter.paint(gfx);
+                break;
+            default:
+                sparkLinePainter.getXYPlot().setDataset(TsCharts.newSparklineDataset(data));
+                sparkLinePainter.draw((Graphics2D) gfx, box);
+                break;
         }
     }
 }

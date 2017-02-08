@@ -23,6 +23,8 @@ import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.awt.TableColumnModelAdapter;
 import ec.tss.*;
+import ec.tss.tsproviders.utils.DataFormat;
+import ec.tss.tsproviders.utils.Formatters.Formatter;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
@@ -90,6 +92,7 @@ public class JTsList extends ATsList {
     }
 
     private void initTable() {
+        onDataFormatChange();
         onUpdateModeChange();
         onTransferHandlerChange();
         onComponentPopupMenuChange();
@@ -106,7 +109,6 @@ public class JTsList extends ATsList {
             table.setGridColor(newGridColor);
         }
 
-        table.setDefaultRenderer(TsData.class, new TsDataTableCellRenderer());
         table.setDefaultRenderer(TsPeriod.class, new TsPeriodTableCellRenderer());
         table.setDefaultRenderer(TsFrequency.class, new TsFrequencyTableCellRenderer());
         table.setDefaultRenderer(TsIdentifier.class, new TsIdentifierTableCellRenderer());
@@ -163,7 +165,7 @@ public class JTsList extends ATsList {
     //<editor-fold defaultstate="collapsed" desc="Events handlers">
     @Override
     protected void onDataFormatChange() {
-        // do nothing
+        table.setDefaultRenderer(TsData.class, new TsDataTableCellRenderer(themeSupport.getDataFormat()));
     }
 
     @Override
@@ -449,10 +451,12 @@ public class JTsList extends ATsList {
 
     private static final class TsDataTableCellRenderer implements TableCellRenderer {
 
+        private final Formatter<Number> formatter;
         private final TsSparklineCellRenderer dataRenderer;
         private final DefaultTableCellRenderer labelRenderer;
 
-        public TsDataTableCellRenderer() {
+        public TsDataTableCellRenderer(DataFormat obsFormat) {
+            this.formatter = obsFormat.numberFormatter();
             this.dataRenderer = new TsSparklineCellRenderer();
             this.labelRenderer = new DefaultTableCellRenderer();
             labelRenderer.setForeground(StandardSwingColor.TEXT_FIELD_INACTIVE_FOREGROUND.value());
@@ -462,8 +466,24 @@ public class JTsList extends ATsList {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             if (value instanceof TsData) {
-                return dataRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                TsData data = (TsData) value;
+                switch (data.getObsCount()) {
+                    case 0:
+                        return renderUsingLabel(table, "No obs", isSelected, hasFocus, row, column);
+                    case 1:
+                        return renderUsingLabel(table, "Single: " + formatter.format(data.get(0)), isSelected, hasFocus, row, column);
+                    default:
+                        return renderUsingSparkline(table, value, isSelected, hasFocus, row, column);
+                }
             }
+            return renderUsingLabel(table, value, isSelected, hasFocus, row, column);
+        }
+
+        private Component renderUsingSparkline(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            return dataRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        }
+
+        private Component renderUsingLabel(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             labelRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             labelRenderer.setToolTipText(labelRenderer.getText());
             return labelRenderer;
