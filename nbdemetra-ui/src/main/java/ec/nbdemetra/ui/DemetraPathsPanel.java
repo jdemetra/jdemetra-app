@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
@@ -185,16 +186,19 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
             setDisplayName(loader.getDisplayName());
         }
 
+        private Optional<Image> lookupIcon(int type, boolean opened) {
+            IFileLoader o = getLookup().lookup(IFileLoader.class);
+            return DataSourceProviderBuddySupport.getDefault().getIcon(o.getSource(), type, opened);
+        }
+
         @Override
         public Image getIcon(int type) {
-            IFileLoader loader = getLookup().lookup(IFileLoader.class);
-            return DataSourceProviderBuddySupport.getDefault().get(loader).getIcon(type, false);
+            return lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
         }
 
         @Override
         public Image getOpenedIcon(int type) {
-            IFileLoader loader = getLookup().lookup(IFileLoader.class);
-            return DataSourceProviderBuddySupport.getDefault().get(loader).getIcon(type, true);
+            return lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
         }
     }
 

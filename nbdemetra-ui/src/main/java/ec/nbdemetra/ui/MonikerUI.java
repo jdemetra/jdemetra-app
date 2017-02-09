@@ -60,8 +60,10 @@ public class MonikerUI {
 
     @Deprecated
     public Icon getIcon(DataSource dataSource) {
-        Image result = DataSourceProviderBuddySupport.getDefault().get(dataSource.getProviderName()).getIcon(BeanInfo.ICON_COLOR_16x16, false);
-        return result != null ? ImageUtilities.image2Icon(result) : null;
+        return DataSourceProviderBuddySupport.getDefault()
+                .getIcon(dataSource.getProviderName(), BeanInfo.ICON_COLOR_16x16, false)
+                .map(ImageUtilities::image2Icon)
+                .orElse(null);
     }
 
     @Deprecated

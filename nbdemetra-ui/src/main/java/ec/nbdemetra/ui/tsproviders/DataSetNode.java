@@ -82,7 +82,6 @@ abstract public class DataSetNode extends AbstractNode {
         this.actionPath = actionPath;
         // 2. Abilities
         {
-            abilities.add(DataSourceProviderBuddySupport.getDefault().get(dataSet));
             switch (dataSet.getKind()) {
                 case COLLECTION:
                     abilities.add(new ReloadableImpl());
@@ -103,21 +102,27 @@ abstract public class DataSetNode extends AbstractNode {
         return Nodes.actionsForPath(actionPath);
     }
 
+    private java.util.Optional<Image> lookupIcon(int type, boolean opened) {
+        DataSet o = getLookup().lookup(DataSet.class);
+        return DataSourceProviderBuddySupport.getDefault().getIcon(o, type, opened);
+    }
+
     @Override
     public Image getIcon(int type) {
-        Image image = getLookup().lookup(IDataSourceProviderBuddy.class).getIcon(getLookup().lookup(DataSet.class), type, false);
+        Image image = lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
         return getLookup().lookup(NodeAnnotator.Support.class).annotateIcon(this, image);
     }
 
     @Override
     public Image getOpenedIcon(int type) {
-        Image image = getLookup().lookup(IDataSourceProviderBuddy.class).getIcon(getLookup().lookup(DataSet.class), type, true);
+        Image image = lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
         return getLookup().lookup(NodeAnnotator.Support.class).annotateIcon(this, image);
     }
 
     @Override
     protected Sheet createSheet() {
-        return getLookup().lookup(IDataSourceProviderBuddy.class).createSheet(getLookup().lookup(DataSet.class));
+        DataSet o = getLookup().lookup(DataSet.class);
+        return DataSourceProviderBuddySupport.getDefault().get(o).createSheet(o);
     }
 
     @Override

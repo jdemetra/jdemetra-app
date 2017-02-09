@@ -27,6 +27,7 @@ import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceProvider;
 import internal.FrozenTsHelper;
 import java.awt.Image;
+import java.io.IOException;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -91,6 +92,26 @@ public class DataSourceProviderBuddySupport {
     @Nonnull
     public IDataSourceProviderBuddy get(@Nonnull TsMoniker moniker) {
         return get(moniker.getSource());
+    }
+
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull String providerName, int type, boolean opened) {
+        return Optional.ofNullable(get(providerName).getIcon(type, opened));
+    }
+
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull DataSource dataSource, int type, boolean opened) {
+        return Optional.ofNullable(get(dataSource).getIcon(dataSource, type, opened));
+    }
+
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull DataSet dataSet, int type, boolean opened) {
+        return Optional.ofNullable(get(dataSet).getIcon(dataSet, type, opened));
+    }
+
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull String providerName, @Nonnull IOException ex, int type, boolean opened) {
+        return Optional.ofNullable(get(providerName).getIcon(ex, type, opened));
     }
 
     @Nonnull

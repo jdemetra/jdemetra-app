@@ -77,7 +77,7 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
                 }
                 break;
         }
-        return super.getIcon(dataSet, type, opened);
+        return null;
     }
 
     @Messages({

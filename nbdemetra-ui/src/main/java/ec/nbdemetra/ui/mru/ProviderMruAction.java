@@ -21,7 +21,6 @@ import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.TsProviders;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
@@ -115,8 +114,10 @@ public final class ProviderMruAction extends AbstractAction implements Presenter
         }
 
         Icon getIcon(DataSourceProviderBuddySupport support, DataSource dataSource) {
-            Image result = support.get(dataSource).getIcon(dataSource, BeanInfo.ICON_COLOR_16x16, false);
-            return result != null ? ImageUtilities.image2Icon(result) : null;
+            return support
+                    .getIcon(dataSource, BeanInfo.ICON_COLOR_16x16, false)
+                    .map(ImageUtilities::image2Icon)
+                    .orElse(null);
         }
 
         boolean isLoadable(DataSource dataSource) {

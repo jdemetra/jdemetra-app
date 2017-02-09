@@ -97,7 +97,6 @@ public final class DataSourceNode extends AbstractNode {
                 new ProxyLookup(Lookups.singleton(dataSource), new AbstractLookup(abilities)));
         // 2. Abilities
         {
-            abilities.add(DataSourceProviderBuddySupport.getDefault().get(dataSource));
             abilities.add(new ReloadableImpl());
             abilities.add(NodeAnnotator.Support.getDefault());
             abilities.add(new NameableImpl());
@@ -124,21 +123,27 @@ public final class DataSourceNode extends AbstractNode {
         fireOpenedIconChange();
     }
 
+    private java.util.Optional<Image> lookupIcon(int type, boolean opened) {
+        DataSource o = getLookup().lookup(DataSource.class);
+        return DataSourceProviderBuddySupport.getDefault().getIcon(o, type, opened);
+    }
+
     @Override
     public Image getIcon(int type) {
-        Image image = getLookup().lookup(IDataSourceProviderBuddy.class).getIcon(getLookup().lookup(DataSource.class), type, false);
+        Image image = lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
         return getLookup().lookup(NodeAnnotator.Support.class).annotateIcon(this, image);
     }
 
     @Override
     public Image getOpenedIcon(int type) {
-        Image image = getLookup().lookup(IDataSourceProviderBuddy.class).getIcon(getLookup().lookup(DataSource.class), type, true);
+        Image image = lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
         return getLookup().lookup(NodeAnnotator.Support.class).annotateIcon(this, image);
     }
 
     @Override
     protected Sheet createSheet() {
-        return getLookup().lookup(IDataSourceProviderBuddy.class).createSheet(getLookup().lookup(DataSource.class));
+        DataSource o = getLookup().lookup(DataSource.class);
+        return DataSourceProviderBuddySupport.getDefault().get(o).createSheet(o);
     }
 
     @Override

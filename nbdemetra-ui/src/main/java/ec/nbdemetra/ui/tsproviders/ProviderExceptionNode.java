@@ -47,16 +47,19 @@ final class ProviderExceptionNode extends ExceptionNode {
         return TsProviders.lookup(IDataSourceProvider.class, providerName).get().getDisplayName(ex);
     }
 
+    private java.util.Optional<Image> lookupIcon(int type, boolean opened) {
+        IOException o = getLookup().lookup(IOException.class);
+        return DataSourceProviderBuddySupport.getDefault().getIcon(providerName, o, type, opened);
+    }
+
     @Override
     public Image getIcon(int type) {
-        IOException ex = getLookup().lookup(IOException.class);
-        return DataSourceProviderBuddySupport.getDefault().get(providerName).getIcon(ex, type, false);
+        return lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
     }
 
     @Override
     public Image getOpenedIcon(int type) {
-        IOException ex = getLookup().lookup(IOException.class);
-        return DataSourceProviderBuddySupport.getDefault().get(providerName).getIcon(ex, type, true);
+        return lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
     }
 
     @Override
