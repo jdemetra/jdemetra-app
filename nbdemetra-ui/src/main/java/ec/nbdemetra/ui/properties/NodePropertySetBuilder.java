@@ -288,12 +288,12 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
         /**
          *
          * @param name a non-null name
-         * @param value a non-null value
+         * @param value a nullable value
          * @return
          * @since 2.2.0
          */
         @Nonnull
-        public NEXT_STEP selectConst(@Nonnull String name, @Nonnull T value) {
+        public NEXT_STEP selectConst(@Nonnull String name, @Nullable T value) {
             return next.apply(new ConstProperty<>(value, name, valueType, null, null));
         }
 

@@ -18,14 +18,18 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.interfaces.ITsCollectionView;
+import internal.FrozenTsHelper;
+import ec.nbdemetra.ui.properties.LocalDateTimePropertyEditor;
 import java.awt.Image;
 import java.beans.BeanInfo;
 import java.beans.PropertyVetoException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
+import javax.annotation.Nonnull;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
@@ -123,9 +127,7 @@ public class ControlNode {
             NodePropertySetBuilder b = new NodePropertySetBuilder();
             Sheet result = new Sheet();
             result.put(getDefinitionSheetSet(col, b));
-            if (col.hasMetaData() == TsStatus.Valid) {
-                result.put(getMetaSheetSet(col.getMetaData(), b));
-            }
+            result.put(getMetaSheetSet(col, b));
             return result;
         }
 
@@ -180,12 +182,8 @@ public class ControlNode {
             NodePropertySetBuilder b = new NodePropertySetBuilder();
             Sheet result = new Sheet();
             result.put(getDefinitionSheetSet(ts, b));
-            if (ts.hasData() == TsStatus.Valid) {
-                result.put(getDataSheetSet(ts, b));
-            }
-            if (ts.hasMetaData() == TsStatus.Valid) {
-                result.put(getMetaSheetSet(ts.getMetaData(), b));
-            }
+            result.put(getDataSheetSet(ts, b));
+            result.put(getMetaSheetSet(ts, b));
             return result;
         }
     }
@@ -216,7 +214,21 @@ public class ControlNode {
         return b.build();
     }
 
-    public static Sheet.Set getDefinitionSheetSet(Ts ts, NodePropertySetBuilder b) {
+    private static Sheet.Set getMetaSheetSet(TsCollection col, NodePropertySetBuilder b) {
+        b.reset("Meta data");
+        MetaData md = col.getMetaData();
+        if (md != null) {
+            md.entrySet().stream()
+                    .sorted(Comparator.comparing(Map.Entry::getKey))
+                    .forEach(o -> b.with(String.class).selectConst(o.getKey(), o.getValue()).add());
+        } else {
+            b.withEnum(TsStatus.class).select(col, "hasMetaData", null).display("Meta data status").add();
+        }
+        return b.build();
+    }
+
+    @Nonnull
+    public static Sheet.Set getDefinitionSheetSet(@Nonnull Ts ts, @Nonnull NodePropertySetBuilder b) {
         b.reset("Time series");
 
         b.with(String.class)
@@ -226,51 +238,68 @@ public class ControlNode {
                 .add();
 
         if (ts.isFrozen() || !ts.getMoniker().isAnonymous()) {
-            String providerName = ts.isFrozen() ? ts.getMetaData().get(MetaData.SOURCE) : ts.getMoniker().getSource();
+            String providerName = FrozenTsHelper.getSource(ts);
             if (providerName != null) {
                 b.with(String.class).selectConst("Provider", getProviderDisplayName(providerName)).add();
             }
         }
 
         b.withEnum(TsInformationType.class).select(ts, "getInformationType", null).display("Information type").add();
-        b.withBoolean().select(ts, "isFrozen", null).display("Frozen").add();
+        b.with(LocalDateTime.class)
+                .selectConst("snapshot", FrozenTsHelper.getTimestamp(ts))
+                .attribute(LocalDateTimePropertyEditor.NULL_STRING, "Latest")
+                .display("Snapshot")
+                .add();
 
-        if (ts.hasData() == TsStatus.Invalid) {
+        return b.build();
+    }
+
+    private static Sheet.Set getDataSheetSet(Ts ts, NodePropertySetBuilder b) {
+        b.reset("Data");
+        TsData data = ts.getTsData();
+        if (data != null) {
+            b.withEnum(TsFrequency.class).select(data, "getFrequency", null).display("Frequency").add();
+            b.with(TsPeriod.class).select(data, "getStart", null).display("First period").add();
+            b.with(TsPeriod.class).select(data, "getLastPeriod", null).display("Last period").add();
+            b.withInt().select(data, "getObsCount", null).display("Obs count").add();
+            b.with(TsData.class).selectConst("values", data).display("Values").add();
+        } else {
             b.withEnum(TsStatus.class).select(ts, "hasData", null).display("Data status").add();
             b.with(String.class).selectConst("InvalidDataCause", ts.getInvalidDataCause()).display("Invalid data cause").add();
         }
+        return b.build();
+    }
 
-        if (ts.hasMetaData() == TsStatus.Invalid) {
+    private static Sheet.Set getMetaSheetSet(Ts ts, NodePropertySetBuilder b) {
+        b.reset("Meta data");
+        MetaData md = ts.getMetaData();
+        if (md != null) {
+            md.entrySet().stream()
+                    .filter(o -> !isFreezeKey(o.getKey()))
+                    .sorted(Comparator.comparing(Map.Entry::getKey))
+                    .forEach(o -> b.with(String.class).selectConst(o.getKey(), o.getValue()).add());
+        } else {
             b.withEnum(TsStatus.class).select(ts, "hasMetaData", null).display("Meta data status").add();
         }
-
         return b.build();
+    }
+
+    private static boolean isFreezeKey(String key) {
+        switch (key) {
+            case Ts.SOURCE_OLD:
+            case Ts.ID_OLD:
+            case MetaData.SOURCE:
+            case MetaData.ID:
+            case MetaData.DATE:
+                return true;
+            default:
+                return false;
+        }
     }
 
     private static String getProviderDisplayName(String providerName) {
         return TsProviders.lookup(IDataSourceProvider.class, providerName)
                 .transform(IDataSourceProvider::getDisplayName)
                 .or(providerName);
-    }
-
-    private static Sheet.Set getDataSheetSet(Ts ts, NodePropertySetBuilder b) {
-        b.reset("Data");
-        TsData data = ts.getTsData();
-        b.withEnum(TsFrequency.class).select(data, "getFrequency", null).display("Frequency").add();
-        b.with(TsPeriod.class).select(data, "getStart", null).display("First period").add();
-        b.with(TsPeriod.class).select(data, "getLastPeriod", null).display("Last period").add();
-        b.withInt().select(data, "getObsCount", null).display("Obs count").add();
-        b.with(TsData.class).select(ts, "getTsData", null).display("Values").add();
-        return b.build();
-    }
-
-    private static Sheet.Set getMetaSheetSet(MetaData md, NodePropertySetBuilder b) {
-        b.reset("Meta data");
-        md.entrySet().stream()
-                .sorted(Comparator.comparing(Map.Entry::getKey))
-                .forEach(o -> {
-                    b.with(String.class).selectConst(o.getKey(), o.getValue()).add();
-                });
-        return b.build();
     }
 }
