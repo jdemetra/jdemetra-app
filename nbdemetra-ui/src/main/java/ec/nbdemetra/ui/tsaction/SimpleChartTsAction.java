@@ -22,13 +22,11 @@ import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.Ts;
-import ec.tss.TsMoniker;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.TsProviders;
 import ec.ui.interfaces.ITsChart;
 import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
-import java.awt.Image;
 import java.beans.BeanInfo;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -62,7 +60,7 @@ public class SimpleChartTsAction extends AbstractNamedService implements ITsActi
             if (provider.isPresent()) {
                 DataSet dataSet = provider.get().toDataSet(ts.getMoniker());
                 if (dataSet != null) {
-                    c.setIcon(getIcon(ts.getMoniker()));
+                    c.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false).orElse(null));
                     c.setDisplayName(provider.get().getDisplayNodeName(dataSet));
                 }
             } else {
@@ -77,9 +75,5 @@ public class SimpleChartTsAction extends AbstractNamedService implements ITsActi
             c.open();
         }
         c.requestActive();
-    }
-
-    private static Image getIcon(TsMoniker moniker) {
-        return DataSourceProviderBuddySupport.getDefault().get(moniker).getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false);
     }
 }

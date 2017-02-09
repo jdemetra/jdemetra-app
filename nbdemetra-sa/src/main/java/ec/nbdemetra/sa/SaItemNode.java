@@ -13,7 +13,7 @@ import ec.tss.sa.SaItem;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.MetaData;
 import java.awt.Image;
-import java.beans.BeanInfo;
+import java.util.Optional;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Sheet;
@@ -32,15 +32,19 @@ public class SaItemNode extends AbstractNode {
         setShortDescription(MultiLineNameUtil.toHtml(item.getName()));
     }
 
+    private Optional<Image> lookupIcon(int type, boolean opened) {
+        SaItem item = getLookup().lookup(SaItem.class);
+        return DataSourceProviderBuddySupport.getDefault().getIcon(item.getMoniker(), type, opened);
+    }
+
     @Override
     public Image getOpenedIcon(int type) {
-        return getIcon(type);
+        return lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
     }
 
     @Override
     public Image getIcon(int type) {
-        SaItem item = getLookup().lookup(SaItem.class);
-        return DataSourceProviderBuddySupport.getDefault().get(item.getMoniker()).getIcon(BeanInfo.ICON_COLOR_16x16, false);
+        return lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
     }
 
     @Override

@@ -23,7 +23,6 @@ import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tools.GridTopComponent;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.Ts;
-import ec.tss.TsMoniker;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.ui.interfaces.ITsChart.LinesThickness;
 import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
@@ -64,7 +63,7 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
             MultiViewDescription[] descriptions = {new ChartTab(ts), new GridTab(ts)};
             c = MultiViewFactory.createMultiView(descriptions, descriptions[0], null);
             c.setName(name);
-            c.setIcon(getIcon(ts.getMoniker()));
+            c.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false).orElse(null));
             applyText(ts.getName(), c);
             c.open();
         }
@@ -82,10 +81,6 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
             c.setDisplayName(MultiLineNameUtil.lastWithMax(text, 40));
             c.setToolTipText(MultiLineNameUtil.toHtml(text));
         }
-    }
-
-    private static Image getIcon(TsMoniker moniker) {
-        return DataSourceProviderBuddySupport.getDefault().get(moniker).getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false);
     }
 
     static class ChartTab implements MultiViewDescription, Serializable {

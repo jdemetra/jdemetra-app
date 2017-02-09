@@ -17,6 +17,8 @@
 package internal;
 
 import ec.tss.Ts;
+import ec.tss.TsFactory;
+import ec.tss.TsMoniker;
 import ec.tstoolkit.MetaData;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,6 +31,10 @@ import javax.annotation.Nullable;
  * @author Philippe Charles
  */
 public final class FrozenTsHelper {
+
+    private FrozenTsHelper() {
+        // static class
+    }
 
     @Nullable
     public static String getSource(@Nonnull Ts ts) {
@@ -49,6 +55,12 @@ public final class FrozenTsHelper {
         return result != null ? result : md.get(Ts.SOURCE_OLD);
     }
 
+    @Nullable
+    private static String getId(@Nonnull MetaData md) {
+        String result = md.get(MetaData.ID);
+        return result != null ? result : md.get(Ts.ID_OLD);
+    }
+
     private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ROOT);
 
     @Nullable
@@ -61,5 +73,29 @@ public final class FrozenTsHelper {
     private static LocalDateTime getTimestamp(@Nonnull MetaData md) {
         String dateAsString = md.get(MetaData.DATE);
         return dateAsString != null ? LocalDateTime.parse(dateAsString, TIMESTAMP_FORMATTER) : null;
+    }
+
+    @Nullable
+    public static TsMoniker getOriginalMoniker(@Nonnull TsMoniker moniker) {
+        if (!moniker.isAnonymous()) {
+            return moniker;
+        }
+        Ts ts = TsFactory.instance.getTs(moniker);
+        if (ts == null) {
+            return null;
+        }
+        MetaData md = ts.getMetaData();
+        if (md == null) {
+            return null;
+        }
+        String source = getSource(md);
+        if (source == null) {
+            return null;
+        }
+        String id = getId(md);
+        if (id == null) {
+            return null;
+        }
+        return new TsMoniker(source, id);
     }
 }

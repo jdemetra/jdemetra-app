@@ -21,7 +21,6 @@ import ec.ui.interfaces.ITsCollectionView;
 import internal.FrozenTsHelper;
 import ec.nbdemetra.ui.properties.LocalDateTimePropertyEditor;
 import java.awt.Image;
-import java.beans.BeanInfo;
 import java.beans.PropertyVetoException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -29,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
@@ -165,15 +165,19 @@ public class ControlNode {
             setShortDescription(MultiLineNameUtil.toHtml(ts.getName()));
         }
 
+        private Optional<Image> lookupIcon(int type, boolean opened) {
+            Ts ts = getLookup().lookup(Ts.class);
+            return DataSourceProviderBuddySupport.getDefault().getIcon(ts.getMoniker(), type, opened);
+        }
+
         @Override
         public Image getOpenedIcon(int type) {
-            return getIcon(type);
+            return lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
         }
 
         @Override
         public Image getIcon(int type) {
-            Ts ts = getLookup().lookup(Ts.class);
-            return DataSourceProviderBuddySupport.getDefault().get(ts.getMoniker()).getIcon(BeanInfo.ICON_COLOR_16x16, false);
+            return lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
         }
 
         @Override

@@ -25,6 +25,9 @@ import ec.tss.TsMoniker;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceProvider;
+import internal.FrozenTsHelper;
+import java.awt.Image;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.openide.util.Lookup;
@@ -88,6 +91,12 @@ public class DataSourceProviderBuddySupport {
     @Nonnull
     public IDataSourceProviderBuddy get(@Nonnull TsMoniker moniker) {
         return get(moniker.getSource());
+    }
+
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull TsMoniker moniker, int type, boolean opened) {
+        TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
+        return original != null ? Optional.ofNullable(get(original).getIcon(moniker, type, opened)) : Optional.empty();
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">

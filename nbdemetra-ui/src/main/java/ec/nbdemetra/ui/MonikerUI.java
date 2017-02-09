@@ -47,8 +47,10 @@ public class MonikerUI {
 
     @Nullable
     public Icon getIcon(@Nonnull TsMoniker moniker) {
-        Image result = DataSourceProviderBuddySupport.getDefault().get(moniker).getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false);
-        return result != null ? ImageUtilities.image2Icon(result) : null;
+        return DataSourceProviderBuddySupport.getDefault()
+                .getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false)
+                .map(ImageUtilities::image2Icon)
+                .orElse(null);
     }
 
     @Deprecated
@@ -64,12 +66,16 @@ public class MonikerUI {
 
     @Deprecated
     public Image getImage(Ts ts) {
-        return DataSourceProviderBuddySupport.getDefault().get(ts.getMoniker()).getIcon(BeanInfo.ICON_COLOR_16x16, false);
+        return DataSourceProviderBuddySupport.getDefault()
+                .getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false)
+                .orElse(null);
     }
 
     @Deprecated
     public Icon getIcon(Ts ts) {
-        Image result = DataSourceProviderBuddySupport.getDefault().get(ts.getMoniker()).getIcon(BeanInfo.ICON_COLOR_16x16, false);
-        return result != null ? ImageUtilities.image2Icon(result) : null;
+        return DataSourceProviderBuddySupport.getDefault()
+                .getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false)
+                .map(ImageUtilities::image2Icon)
+                .orElse(null);
     }
 }
