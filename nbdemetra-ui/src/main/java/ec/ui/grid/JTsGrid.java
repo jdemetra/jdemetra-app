@@ -24,6 +24,7 @@ import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IFormatter;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import static ec.ui.ATsControl.FORMAT_ACTION;
@@ -146,6 +147,7 @@ public class JTsGrid extends ATsGrid {
         grid.setDragEnabled(true);
         grid.setRowRenderer(new CustomRowRenderer(grid));
         grid.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        grid.setColumnRenderer(new CustomColumnRenderer(grid));
     }
 
     private void applyDesignTimeProperties() {
@@ -580,7 +582,32 @@ public class JTsGrid extends ATsGrid {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             Component result = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             if (result instanceof JLabel) {
-                ((JLabel) result).setHorizontalAlignment(JLabel.TRAILING);
+                JLabel label = (JLabel) result;
+                String text = label.getText();
+                label.setText(MultiLineNameUtil.join(text));
+                label.setToolTipText(MultiLineNameUtil.toHtml(text));
+                label.setHorizontalAlignment(JLabel.TRAILING);
+            }
+            return result;
+        }
+    }
+
+    private static final class CustomColumnRenderer implements TableCellRenderer {
+
+        private final TableCellRenderer delegate;
+
+        public CustomColumnRenderer(JGrid grid) {
+            this.delegate = grid.getColumnRenderer();
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component result = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (result instanceof JLabel) {
+                JLabel label = (JLabel) result;
+                String text = label.getText();
+                label.setText(MultiLineNameUtil.join(text));
+                label.setToolTipText(MultiLineNameUtil.toHtml(text));
             }
             return result;
         }
