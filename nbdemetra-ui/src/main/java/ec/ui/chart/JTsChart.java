@@ -18,7 +18,6 @@ package ec.ui.chart;
 
 import com.google.common.base.Converter;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
@@ -362,23 +361,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
     //</editor-fold>
 
     private void updateNoDataMessage() {
-        if (getTsUpdateMode().isReadOnly()) {
-            TsCollection collection = getTsCollection();
-            switch (collection.getCount()) {
-                case 0:
-                    chartPanel.setNoDataMessage("No data");
-                    break;
-                case 1:
-                    String cause = collection.get(0).getInvalidDataCause();
-                    chartPanel.setNoDataMessage("Invalid data: " + Strings.nullToEmpty(cause));
-                    break;
-                default:
-                    chartPanel.setNoDataMessage("Invalid data");
-                    break;
-            }
-        } else {
-            chartPanel.setNoDataMessage("Drop data here");
-        }
+        chartPanel.setNoDataMessage(getNoDataMessage(getTsCollection(), getTsUpdateMode()));
     }
 
     @Override

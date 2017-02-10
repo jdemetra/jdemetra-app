@@ -16,6 +16,7 @@
  */
 package ec.ui;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import ec.nbdemetra.ui.DemetraUI;
@@ -28,6 +29,7 @@ import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
+import ec.tss.TsStatus;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TsDragRenderer;
 import ec.tss.datatransfer.TssTransferHandler;
@@ -629,6 +631,36 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
                 return true;
             }
             return false;
+        }
+    }
+
+    protected static String getNoDataMessage(TsCollection input, TsUpdateMode updateMode) {
+        Ts[] col = input.toArray();
+        switch (col.length) {
+            case 0:
+                return updateMode.isReadOnly() ? "No data" : "Drop data here";
+            case 1:
+                Ts single = col[0];
+                switch (single.hasData()) {
+                    case Invalid:
+                        String cause = single.getInvalidDataCause();
+                        return !Strings.isNullOrEmpty(cause) ? cause : "Invalid data without cause";
+                    case Undefined:
+                        return "Loading" + System.lineSeparator() + single.getName();
+                    case Valid:
+                        return "No obs";
+                }
+            default:
+                int[] counter = new int[TsStatus.values().length];
+                Arrays.fill(counter, 0);
+                Stream.of(col).forEach(o -> counter[o.hasData().ordinal()]++);
+                if (counter[TsStatus.Invalid.ordinal()] == col.length) {
+                    return "Invalid data";
+                }
+                if (counter[TsStatus.Undefined.ordinal()] > 1) {
+                    return "Loading " + counter[TsStatus.Undefined.ordinal()] + " series";
+                }
+                return "Nothing to display";
         }
     }
 }

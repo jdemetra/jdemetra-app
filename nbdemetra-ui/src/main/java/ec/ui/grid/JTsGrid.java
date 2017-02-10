@@ -16,7 +16,6 @@
  */
 package ec.ui.grid;
 
-import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
@@ -388,25 +387,8 @@ public class JTsGrid extends ATsGrid {
     //</editor-fold>
 
     private void updateNoDataMessage() {
-        String message;
-        if (getTsUpdateMode().isReadOnly()) {
-            TsCollection collection = getTsCollection();
-            switch (collection.getCount()) {
-                case 0:
-                    message = "No data";
-                    break;
-                case 1:
-                    String cause = collection.get(0).getInvalidDataCause();
-                    message = "<html><center><b>Invalid data</b><br>" + Strings.nullToEmpty(cause);
-                    break;
-                default:
-                    message = "Invalid data";
-                    break;
-            }
-        } else {
-            message = "Drop data here";
-        }
-        grid.setNoDataRenderer(new XTable.DefaultNoDataRenderer(message));
+        String msg = getNoDataMessage(getTsCollection(), getTsUpdateMode());
+        grid.setNoDataRenderer(new XTable.DefaultNoDataRenderer(msg.replace(System.lineSeparator(), " ")));
     }
 
     private void updateGridModel() {
