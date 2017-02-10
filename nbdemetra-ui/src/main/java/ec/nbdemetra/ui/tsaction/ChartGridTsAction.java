@@ -23,6 +23,7 @@ import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tools.GridTopComponent;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.Ts;
+import ec.tss.TsInformationType;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.ui.interfaces.ITsChart.LinesThickness;
 import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
@@ -57,6 +58,7 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
 
     @Override
     public void open(Ts ts) {
+        ts.query(TsInformationType.All);
         String name = NAME + ts.getMoniker().toString();
         TopComponent c = NbComponents.findTopComponentByName(name);
         if (c == null) {

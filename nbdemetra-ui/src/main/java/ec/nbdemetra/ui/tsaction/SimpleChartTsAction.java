@@ -22,6 +22,7 @@ import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.Ts;
+import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.TsProviders;
@@ -50,6 +51,7 @@ public class SimpleChartTsAction extends AbstractNamedService implements ITsActi
 
     @Override
     public void open(Ts ts) {
+        ts.query(TsInformationType.All);
         String name = NAME + ts.getMoniker().toString();
         ChartTopComponent c = NbComponents.findTopComponentByNameAndClass(name, ChartTopComponent.class);
         if (c == null) {

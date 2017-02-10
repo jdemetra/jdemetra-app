@@ -170,7 +170,7 @@ abstract public class DataSetNode extends AbstractNode {
 
         @Override
         public void open() {
-            Optional<Ts> data = TsProviders.getTs(getLookup().lookup(DataSet.class), TsInformationType.Data);
+            Optional<Ts> data = TsProviders.getTs(getLookup().lookup(DataSet.class), TsInformationType.None);
             if (data.isPresent()) {
                 DemetraUI.getDefault().getTsAction().open(data.get());
             }

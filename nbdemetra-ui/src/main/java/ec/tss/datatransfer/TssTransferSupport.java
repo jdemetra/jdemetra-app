@@ -23,6 +23,8 @@ import com.google.common.collect.Sets;
 import ec.nbdemetra.core.GlobalService;
 import ec.nbdemetra.ui.awt.ListenableBean;
 import ec.tss.*;
+import ec.tss.datatransfer.impl.LocalObjectTssTransferHandler;
+import ec.tss.tsproviders.utils.FunctionWithIO;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -310,6 +312,17 @@ public class TssTransferSupport extends ListenableBean {
                 .orElse(null);
     }
 
+    /**
+     * Checks if a transferable represents time series (to avoid useless loading
+     * of Ts).
+     *
+     * @param transferable
+     * @return
+     */
+    public boolean isTssTransferable(@Nonnull Transferable transferable) {
+        return transferable.isDataFlavorSupported(LocalObjectTssTransferHandler.DATA_FLAVOR);
+    }
+
     @Deprecated
     public static boolean isMultiFlavor(@Nonnull DataFlavor[] dataFlavors) {
         return DataTransfers.isMultiFlavor(dataFlavors);
@@ -363,55 +376,21 @@ public class TssTransferSupport extends ListenableBean {
         return null;
     }
 
+    @OnEDT
     private static <T> Transferable asTransferable(T data, Stream<? extends TssTransferHandler> allHandlers, TransferHelper<T> helper) {
-        return new CustomAdapter(data, allHandlers, helper);
+        return new DataTransfers.CustomAdapter<>(
+                getHandlersByFlavor(data, allHandlers, helper),
+                getTransferDataLoader(data, helper));
     }
 
-    private static final class CustomAdapter<T> implements Transferable {
+    private static <T> Map<DataFlavor, List<TssTransferHandler>> getHandlersByFlavor(T data, Stream<? extends TssTransferHandler> allHandlers, TransferHelper<T> helper) {
+        return allHandlers
+                .filter(o -> helper.canTransferData(data, o))
+                .collect(Collectors.groupingBy(TssTransferHandler::getDataFlavor));
+    }
 
-        private final T data;
-        private final Map<DataFlavor, TssTransferHandler> handlers;
-        private final TransferHelper<T> helper;
-        private final Map<DataFlavor, Object> cache;
-
-        CustomAdapter(T data, Stream<? extends TssTransferHandler> allHandlers, TransferHelper<T> helper) {
-            this.data = data;
-            this.handlers = new HashMap<>();
-            allHandlers
-                    .filter(o -> helper.canTransferData(data, o))
-                    .forEach(o -> {
-                        if (!handlers.containsKey(o.getDataFlavor())) {
-                            handlers.put(o.getDataFlavor(), o);
-                        }
-                    });
-            this.helper = helper;
-            this.cache = new HashMap<>();
-        }
-
-        @Override
-        public DataFlavor[] getTransferDataFlavors() {
-            return Iterables.toArray(handlers.keySet(), DataFlavor.class);
-        }
-
-        @Override
-        public boolean isDataFlavorSupported(DataFlavor flavor) {
-            return handlers.containsKey(flavor);
-        }
-
-        @Override
-        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-            Object result = cache.get(flavor);
-            if (result == null) {
-                TssTransferHandler handler = handlers.get(flavor);
-                if (handler == null) {
-                    throw new UnsupportedFlavorException(flavor);
-                }
-                LOGGER.debug("Getting transfer data using '{}'", handler.getName());
-                result = helper.getTransferData(data, handler);
-                cache.put(flavor, result);
-            }
-            return result;
-        }
+    private static <T> FunctionWithIO<TssTransferHandler, Object> getTransferDataLoader(T data, TransferHelper<T> helper) {
+        return o -> helper.getTransferData(data, o);
     }
 
     private interface TransferHelper<T> {

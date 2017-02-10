@@ -23,6 +23,7 @@ import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.TsProviders;
+import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 import javax.annotation.Nonnull;
@@ -58,13 +59,11 @@ public final class CollectionNode extends DataSetNode {
 
     @Override
     public Transferable clipboardCopy() throws IOException {
-        // Transferable#getTransferData(DataFlavor) might be called by the system clipboard
-        // Therefore, we load the data directly in the following call
-        return getData(TsInformationType.All);
+        return getData(SHOULD_BE_NONE);
     }
 
     @Override
     public Transferable drag() throws IOException {
-        return getData(TsInformationType.Definition);
+        return getData(SHOULD_BE_NONE);
     }
 }

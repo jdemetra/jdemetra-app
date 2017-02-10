@@ -36,6 +36,7 @@ import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.TsProviders;
+import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -161,14 +162,12 @@ public final class DataSourceNode extends AbstractNode {
 
     @Override
     public Transferable clipboardCopy() throws IOException {
-        // Transferable#getTransferData(DataFlavor) might be called by the system clipboard
-        // Therefore, we load the data directly in the following call
-        return getData(TsInformationType.All);
+        return getData(SHOULD_BE_NONE);
     }
 
     @Override
     public Transferable drag() throws IOException {
-        ExTransferable data = ExTransferable.create(getData(TsInformationType.Definition));
+        ExTransferable data = ExTransferable.create(getData(SHOULD_BE_NONE));
 
         DataSource dataSource = getLookup().lookup(DataSource.class);
         Optional<File> file = TsProviders.tryGetFile(dataSource);

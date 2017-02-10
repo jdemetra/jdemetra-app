@@ -7,6 +7,7 @@ package ec.tss.datatransfer.impl;
 import com.google.common.base.Optional;
 import ec.tss.datatransfer.DataSourceTransferHandler;
 import ec.tss.datatransfer.DataTransfers;
+import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.utils.Parsers;
 import java.awt.datatransfer.Transferable;
@@ -33,7 +34,7 @@ public abstract class ParserTransferHandler extends DataSourceTransferHandler {
 
     @Override
     public Optional<DataSource> getDataSource(Transferable t) {
-        return DataTransfers.tryParse(t, getParser());
+        return !TssTransferSupport.getDefault().isTssTransferable(t) ? DataTransfers.tryParse(t, getParser()) : Optional.absent();
     }
 
     @Override

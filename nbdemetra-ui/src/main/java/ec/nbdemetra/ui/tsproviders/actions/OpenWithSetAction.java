@@ -71,7 +71,7 @@ public final class OpenWithSetAction extends AbstractAction implements Presenter
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            Optional<Ts> data = TsProviders.getTs(dataSet, TsInformationType.Data);
+            Optional<Ts> data = TsProviders.getTs(dataSet, TsInformationType.None);
             if (data.isPresent()) {
                 tsAction.open(data.get());
             }

@@ -20,7 +20,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = TssTransferHandler.class, position = 0)
 public class LocalObjectTssTransferHandler extends TssTransferHandler {
 
-    private static final DataFlavor LOCAL_TSCOL = DataTransfers.newLocalObjectDataFlavor(TsCollection.class);
+    public static final DataFlavor DATA_FLAVOR = DataTransfers.newLocalObjectDataFlavor(LocalObjectTssTransferHandler.class);
 
     public LocalObjectTssTransferHandler() {
     }
@@ -37,7 +37,7 @@ public class LocalObjectTssTransferHandler extends TssTransferHandler {
 
     @Override
     public DataFlavor getDataFlavor() {
-        return LOCAL_TSCOL;
+        return DATA_FLAVOR;
     }
 
     @Override
