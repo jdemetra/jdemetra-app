@@ -208,7 +208,7 @@ public final class ResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnost
 
     private static final class ConfigConverter extends Converter<ResidualSeasonalityDiagnosticsConfiguration, Config> {
 
-        private final IParam<Config, Boolean> enabledParam = Params.onBoolean(true, "enabled");
+        private final IParam<Config, Boolean> enabledParam = Params.onBoolean(false, "enabled");
         private final IParam<Config, Double> saSevereParam = Params.onDouble(.01, "sasevere");
         private final IParam<Config, Double> saBadParam = Params.onDouble(.05, "saBad");
         private final IParam<Config, Double> saUncertainParam = Params.onDouble(.1, "saUncertain");

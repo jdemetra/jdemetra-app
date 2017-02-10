@@ -83,7 +83,7 @@ public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
         return configurator.editConfig(config);
     }
 
-        @Override
+    @Override
     public void reset() {
         lookup().setProperties(new ResidualsDiagnosticsConfiguration());
     }
@@ -130,21 +130,21 @@ public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
                 .display(Bundle.residualsDiagnostics_uncertain_display())
                 .description(Bundle.residualsDiagnostics_uncertain_description())
                 .add();
-        
+
         b.withDouble()
                 .select(config, "nIIDBad")
                 .display(Bundle.residualsDiagnostics_bad_display())
                 .description(Bundle.residualsDiagnostics_bad_description())
                 .add();
         sheet.put(b.build());
-        
+
         b.reset("specTDTestCat").display(Bundle.residualsDiagnostics_specTDTestCategory_display());
         b.withDouble()
                 .select(config, "specTDUncertain")
                 .display(Bundle.residualsDiagnostics_uncertain_display())
                 .description(Bundle.residualsDiagnostics_uncertain_description())
                 .add();
-        
+
         b.withDouble()
                 .select(config, "specTDBad")
                 .display(Bundle.residualsDiagnostics_bad_display())
@@ -156,14 +156,14 @@ public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
                 .description(Bundle.residualsDiagnostics_severe_description())
                 .add();
         sheet.put(b.build());
-        
+
         b.reset("specSeasTestCat").display(Bundle.residualsDiagnostics_specSeasTestCategory_display());
         b.withDouble()
                 .select(config, "specSeasUncertain")
                 .display(Bundle.residualsDiagnostics_uncertain_display())
                 .description(Bundle.residualsDiagnostics_uncertain_description())
                 .add();
-        
+
         b.withDouble()
                 .select(config, "specSeasBad")
                 .display(Bundle.residualsDiagnostics_bad_display())
@@ -248,7 +248,7 @@ public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
         @Messages({"residualsDiagnostics.edit.title=Edit Regarima residuals",
             "residualsDiagnostics.edit.errorTitle=Invalid Input",
             "residualsDiagnostics.edit.errorMessage=\nWould you like to modify your choice?"
-                })
+        })
         @Override
         public boolean editBean(Object bean) throws IntrospectionException {
             Sheet sheet = createSheet((ResidualsDiagnosticsConfiguration) bean);
@@ -258,11 +258,11 @@ public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
                     return false;
                 }
                 try {
-                    ((ResidualsDiagnosticsConfiguration)bean).check();
+                    ((ResidualsDiagnosticsConfiguration) bean).check();
                     return true;
                 } catch (BaseException ex) {
                     String message = ex.getMessage() + Bundle.residualsDiagnostics_edit_errorMessage();
-                    if(JOptionPane.showConfirmDialog(null, message , Bundle.residualsDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION){
+                    if (JOptionPane.showConfirmDialog(null, message, Bundle.residualsDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
                         return false;
                     }
                 }
