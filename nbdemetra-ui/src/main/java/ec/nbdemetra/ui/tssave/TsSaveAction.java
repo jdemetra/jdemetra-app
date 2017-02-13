@@ -18,9 +18,8 @@ package ec.nbdemetra.ui.tssave;
 
 import ec.nbdemetra.ui.actions.AbilityAction;
 import ec.nbdemetra.ui.nodes.Nodes;
-import ec.tss.Ts;
+import ec.tss.TsCollection;
 import java.awt.event.ActionEvent;
-import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
@@ -91,9 +90,7 @@ public final class TsSaveAction extends AbilityAction<ITsSavable> implements Pre
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            o.save(data.stream()
-                    .flatMap(o -> Arrays.stream(o.getAllTs()))
-                    .toArray(Ts[]::new));
+            o.save(data.stream().map(ITsSavable::getTsCollection).toArray(TsCollection[]::new));
         }
     }
 }

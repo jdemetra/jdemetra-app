@@ -7,8 +7,12 @@ package ec.nbdemetra.ui.tssave;
 
 import ec.nbdemetra.ui.ns.INamedService;
 import ec.tss.Ts;
+import ec.tss.TsCollection;
+import ec.tss.TsInformationType;
 import ec.tstoolkit.design.ServiceDefinition;
 import ec.util.various.swing.OnEDT;
+import java.util.function.Function;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -20,5 +24,19 @@ import javax.annotation.Nonnull;
 public interface ITsSave extends INamedService {
 
     @OnEDT
-    void save(@Nonnull Ts[] ts);
+    void save(@Nonnull Ts[] input);
+
+    /**
+     *
+     * @param input
+     * @since 2.2.0
+     */
+    @OnEDT
+    default void save(@Nonnull TsCollection[] input) {
+        Function<TsCollection, Stream<Ts>> toStream = o -> {
+            o.load(TsInformationType.Definition);
+            return Stream.of(o.toArray());
+        };
+        save(Stream.of(input).flatMap(toStream).toArray(Ts[]::new));
+    }
 }

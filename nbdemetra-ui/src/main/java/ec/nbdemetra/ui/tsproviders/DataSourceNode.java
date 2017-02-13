@@ -28,6 +28,7 @@ import static ec.nbdemetra.ui.tsproviders.DataSourceNode.ACTION_PATH;
 import ec.nbdemetra.ui.tssave.ITsSavable;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
+import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TssTransferSupport;
@@ -272,8 +273,15 @@ public final class DataSourceNode extends AbstractNode {
 
         @Override
         public Ts[] getAllTs() {
-            Optional<TsCollection> result = TsProviders.getTsCollection(getLookup().lookup(DataSource.class), TsInformationType.All);
-            return result.isPresent() ? result.get().toArray() : new Ts[0];
+            TsCollection result = getTsCollection();
+            result.load(TsInformationType.Definition);
+            return result.toArray();
+        }
+
+        @Override
+        public TsCollection getTsCollection() {
+            return TsProviders.getTsCollection(getLookup().lookup(DataSource.class), SHOULD_BE_NONE)
+                    .or(TsFactory.instance::createTsCollection);
         }
     }
 

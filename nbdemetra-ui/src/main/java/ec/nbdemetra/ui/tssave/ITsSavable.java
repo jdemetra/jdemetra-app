@@ -17,6 +17,10 @@
 package ec.nbdemetra.ui.tssave;
 
 import ec.tss.Ts;
+import ec.tss.TsCollection;
+import ec.tss.TsFactory;
+import java.util.Arrays;
+import javax.annotation.Nonnull;
 
 /**
  *
@@ -24,5 +28,19 @@ import ec.tss.Ts;
  */
 public interface ITsSavable {
 
+    @Deprecated
+    @Nonnull
     Ts[] getAllTs();
+
+    /**
+     *
+     * @return a non-null collection
+     * @since 2.2.0
+     */
+    @Nonnull
+    default TsCollection getTsCollection() {
+        TsCollection result = TsFactory.instance.createTsCollection();
+        result.quietAppend(Arrays.asList(getAllTs()));
+        return result;
+    }
 }

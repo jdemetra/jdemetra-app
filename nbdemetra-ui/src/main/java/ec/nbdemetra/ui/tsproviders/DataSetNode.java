@@ -25,11 +25,13 @@ import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.tssave.ITsSavable;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
+import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
+import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.List;
@@ -181,8 +183,15 @@ abstract public class DataSetNode extends AbstractNode {
 
         @Override
         public Ts[] getAllTs() {
-            Optional<TsCollection> result = TsProviders.getTsCollection(getLookup().lookup(DataSet.class), TsInformationType.All);
-            return result.isPresent() ? result.get().toArray() : new Ts[0];
+            TsCollection result = getTsCollection();
+            result.load(TsInformationType.Definition);
+            return result.toArray();
+        }
+
+        @Override
+        public TsCollection getTsCollection() {
+            return TsProviders.getTsCollection(getLookup().lookup(DataSet.class), SHOULD_BE_NONE)
+                    .or(TsFactory.instance::createTsCollection);
         }
     }
 
