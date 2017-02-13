@@ -35,7 +35,7 @@ import javax.swing.SwingUtilities;
 public final class TsEventHelper<T> {
 
     // TODO: replace by None when code can deal with it
-    public static final TsInformationType SHOULD_BE_NONE = TsInformationType.Definition;
+    public static final TsInformationType SHOULD_BE_NONE = TsInformationType.None;
 
     public static TsEventHelper<Ts> onTs(Runnable updaterOnEDT) {
         AtomicReference<Ts> safeTs = new AtomicReference<>();

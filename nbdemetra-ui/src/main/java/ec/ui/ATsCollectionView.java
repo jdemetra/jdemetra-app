@@ -32,7 +32,6 @@ import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TsDragRenderer;
-import ec.tss.datatransfer.TssTransferHandler;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.datatransfer.impl.LocalObjectTssTransferHandler;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
@@ -50,24 +49,18 @@ import ec.util.various.swing.JCommand;
 import internal.TsEventHelper;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.BeanInfo;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JCheckBoxMenuItem;
@@ -80,7 +73,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
-import org.openide.util.datatransfer.MultiTransferObject;
 
 public abstract class ATsCollectionView extends ATsControl implements ITsCollectionView {
 
@@ -559,43 +551,6 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
 
     public class TsCollectionTransferHandler extends TransferHandler {
 
-        @Nullable
-        private Stream<Ts> peekCollection(@Nonnull Transferable transferable) {
-            Optional<MultiTransferObject> multi = DataTransfers.getMultiTransferObject(transferable);
-            if (multi.isPresent()) {
-                return DataTransfers.asTransferableStream(multi.get())
-                        .map(o -> peek(o))
-                        .filter(o -> o != null)
-                        .flatMap(Function.identity());
-            }
-            return peek(transferable);
-        }
-
-        private Stream<Ts> peek(Transferable t) {
-            TssTransferHandler handler = Lookup.getDefault().lookup(LocalObjectTssTransferHandler.class);
-            if (handler != null) {
-                DataFlavor dataFlavor = handler.getDataFlavor();
-                if (t.isDataFlavorSupported(dataFlavor)) {
-                    try {
-                        Object data = t.getTransferData(dataFlavor);
-                        if (handler.canImportTsCollection(data)) {
-                            return handler.importTsCollection(data).stream();
-                        }
-                    } catch (UnsupportedFlavorException | IOException ex) {
-                    }
-                }
-            }
-            return null;
-        }
-
-        private boolean mayChangeContent(TransferSupport support) {
-            Stream<Ts> newContent = peekCollection(support.getTransferable());
-            if (newContent != null) {
-                return !newContent.allMatch(collection::contains); // YES/NO
-            }
-            return true; // MAYBE
-        }
-
         @Override
         public int getSourceActions(JComponent c) {
             TsDragRenderer r = selection.length < 10 ? TsDragRenderer.asChart() : TsDragRenderer.asCount();
@@ -613,7 +568,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         public boolean canImport(TransferSupport support) {
             boolean result = !ATsCollectionView.this.getTsUpdateMode().isReadOnly()
                     && TssTransferSupport.getDefault().canImport(support.getDataFlavors())
-                    && mayChangeContent(support);
+                    && TransferChange.of(support.getTransferable(), getTsCollection()).mayChangeContent();
             if (result && support.isDrop()) {
                 support.setDropAction(COPY);
             }
@@ -622,15 +577,59 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
 
         @Override
         public boolean importData(TransferSupport support) {
-            TsCollection col = TssTransferSupport.getDefault().toTsCollection(support.getTransferable());
-            if (col != null) {
-                col.query(TsInformationType.All);
-                if (!col.isEmpty()) {
-                    getTsUpdateMode().update(getTsCollection(), col);
-                }
-                return true;
+            return DataTransfers.getMultiTransferables(support.getTransferable())
+                    .map(TssTransferSupport.getDefault()::toTsCollection)
+                    .filter(Objects::nonNull)
+                    .peek(this::importData)
+                    .count() > 0;
+        }
+
+        private void importData(TsCollection source) {
+            if (TransferChange.isNotYetLoaded(source)) {
+                // TODO: put load in a separate thread
+                source.load(TsInformationType.Definition);
             }
-            return false;
+            if (!source.isEmpty()) {
+                source.query(TsInformationType.All);
+                getTsUpdateMode().update(getTsCollection(), source);
+            }
+        }
+    }
+
+    private enum TransferChange {
+        YES, NO, MAYBE;
+
+        public boolean mayChangeContent() {
+            return this != NO;
+        }
+
+        public static TransferChange of(Transferable source, TsCollection target) {
+            LocalObjectTssTransferHandler handler = Lookup.getDefault().lookup(LocalObjectTssTransferHandler.class);
+            return handler != null ? of(handler, source, target) : MAYBE;
+        }
+
+        private static TransferChange of(LocalObjectTssTransferHandler handler, Transferable source, TsCollection target) {
+            return DataTransfers.getMultiTransferables(source)
+                    .map(handler::peekTsCollection)
+                    .filter(Objects::nonNull)
+                    .map(o -> of(o, target))
+                    .filter(TransferChange::mayChangeContent)
+                    .findFirst()
+                    .orElse(NO);
+        }
+
+        private static TransferChange of(TsCollection source, TsCollection target) {
+            if (isNotYetLoaded(source)) {
+                return MAYBE;
+            }
+            if (!source.stream().allMatch(target::contains)) {
+                return YES;
+            }
+            return NO;
+        }
+
+        public static boolean isNotYetLoaded(TsCollection o) {
+            return !o.getMoniker().isAnonymous() && o.isEmpty();
         }
     }
 

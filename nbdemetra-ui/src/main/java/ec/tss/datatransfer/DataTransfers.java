@@ -89,6 +89,13 @@ public final class DataTransfers {
     }
 
     @Nonnull
+    public static Stream<Transferable> getMultiTransferables(@Nonnull Transferable t) {
+        return DataTransfers.getMultiTransferObject(t)
+                .map(DataTransfers::asTransferableStream)
+                .orElse(Stream.of(t));
+    }
+
+    @Nonnull
     public static java.util.Optional<MultiTransferObject> getMultiTransferObject(@Nonnull Transferable t) {
         if (isMultiFlavor(t.getTransferDataFlavors())) {
             try {

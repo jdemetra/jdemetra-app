@@ -102,12 +102,14 @@ public final class TxtTsSave implements ITsSave {
     @OnAnyThread
     private static File store(TsCollection[] data, File file, OptionsBean options, ProgressHandle ph) throws IOException {
         ph.start();
-        ph.progress("Initializing content");
+        ph.progress("Loading time series");
         TsCollection content = TsFactory.instance.createTsCollection();
         for (TsCollection col : data) {
             col.load(TsInformationType.All);
             content.quietAppend(col);
         }
+
+        ph.progress("Creating content");
         TxtTssTransferHandler handler = new TxtTssTransferHandler();
         Config config = handler.getConfig().toBuilder()
                 .put("beginPeriod", options.beginPeriod)
@@ -116,9 +118,9 @@ public final class TxtTsSave implements ITsSave {
                 .put("vertical", options.vertical)
                 .build();
         handler.setConfig(config);
-        ph.progress("Creating content");
         String stringContent = handler.tsCollectionToString(content);
-        ph.progress("Writing content");
+
+        ph.progress("Writing file");
         Files.write(stringContent, file, StandardCharsets.UTF_8);
         return file;
     }

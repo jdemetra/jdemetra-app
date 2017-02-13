@@ -103,7 +103,7 @@ public final class SpreadsheetTsSave implements ITsSave {
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
     @OnAnyThread
     private static File store(TsCollection[] data, File file, TsExportOptions options, ProgressHandle ph) throws IOException {
-        ph.progress("Initializing content");
+        ph.progress("Loading time series");
         TsCollectionInformation content = new TsCollectionInformation();
         for (TsCollection col : data) {
             col.load(TsInformationType.All);
@@ -111,12 +111,15 @@ public final class SpreadsheetTsSave implements ITsSave {
                 content.items.add(new TsInformation(o, TsInformationType.All));
             }
         }
+
         ph.progress("Creating content");
         ArraySheet sheet = SpreadSheetFactory.getDefault().fromTsCollectionInfo(content, options);
-        ph.progress("Writing content");
+
+        ph.progress("Writing file");
         getFactoryByFile(file)
                 .orElseThrow(() -> new IOException("Cannot find spreadsheet factory"))
                 .store(file, sheet.toBook());
+
         return file;
     }
 

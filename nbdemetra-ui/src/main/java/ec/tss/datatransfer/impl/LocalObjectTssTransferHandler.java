@@ -10,7 +10,12 @@ import ec.tss.datatransfer.TssTransferHandler;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -98,5 +103,20 @@ public class LocalObjectTssTransferHandler extends TssTransferHandler {
     @Override
     public Table<?> importTable(Object obj) throws IOException, ClassCastException {
         return (Table<?>) obj;
+    }
+
+    @Nullable
+    public TsCollection peekTsCollection(@Nonnull Transferable t) {
+        if (t.isDataFlavorSupported(DATA_FLAVOR)) {
+            try {
+                Object data = t.getTransferData(DATA_FLAVOR);
+                if (canImportTsCollection(data)) {
+                    return importTsCollection(data);
+                }
+            } catch (UnsupportedFlavorException | IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+        return null;
     }
 }
