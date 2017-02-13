@@ -28,6 +28,7 @@ import static ec.nbdemetra.ui.tsproviders.DataSourceNode.ACTION_PATH;
 import ec.nbdemetra.ui.tssave.ITsSavable;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
+import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TssTransferSupport;
@@ -36,6 +37,7 @@ import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.TsProviders;
+import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -97,7 +99,6 @@ public final class DataSourceNode extends AbstractNode {
                 new ProxyLookup(Lookups.singleton(dataSource), new AbstractLookup(abilities)));
         // 2. Abilities
         {
-            abilities.add(DataSourceProviderBuddySupport.getDefault().get(dataSource));
             abilities.add(new ReloadableImpl());
             abilities.add(NodeAnnotator.Support.getDefault());
             abilities.add(new NameableImpl());
@@ -124,21 +125,27 @@ public final class DataSourceNode extends AbstractNode {
         fireOpenedIconChange();
     }
 
+    private java.util.Optional<Image> lookupIcon(int type, boolean opened) {
+        DataSource o = getLookup().lookup(DataSource.class);
+        return DataSourceProviderBuddySupport.getDefault().getIcon(o, type, opened);
+    }
+
     @Override
     public Image getIcon(int type) {
-        Image image = getLookup().lookup(IDataSourceProviderBuddy.class).getIcon(getLookup().lookup(DataSource.class), type, false);
+        Image image = lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
         return getLookup().lookup(NodeAnnotator.Support.class).annotateIcon(this, image);
     }
 
     @Override
     public Image getOpenedIcon(int type) {
-        Image image = getLookup().lookup(IDataSourceProviderBuddy.class).getIcon(getLookup().lookup(DataSource.class), type, true);
+        Image image = lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
         return getLookup().lookup(NodeAnnotator.Support.class).annotateIcon(this, image);
     }
 
     @Override
     protected Sheet createSheet() {
-        return getLookup().lookup(IDataSourceProviderBuddy.class).createSheet(getLookup().lookup(DataSource.class));
+        DataSource o = getLookup().lookup(DataSource.class);
+        return DataSourceProviderBuddySupport.getDefault().get(o).createSheet(o);
     }
 
     @Override
@@ -156,14 +163,12 @@ public final class DataSourceNode extends AbstractNode {
 
     @Override
     public Transferable clipboardCopy() throws IOException {
-        // Transferable#getTransferData(DataFlavor) might be called by the system clipboard
-        // Therefore, we load the data directly in the following call
-        return getData(TsInformationType.All);
+        return getData(SHOULD_BE_NONE);
     }
 
     @Override
     public Transferable drag() throws IOException {
-        ExTransferable data = ExTransferable.create(getData(TsInformationType.Definition));
+        ExTransferable data = ExTransferable.create(getData(SHOULD_BE_NONE));
 
         DataSource dataSource = getLookup().lookup(DataSource.class);
         Optional<File> file = TsProviders.tryGetFile(dataSource);
@@ -268,8 +273,15 @@ public final class DataSourceNode extends AbstractNode {
 
         @Override
         public Ts[] getAllTs() {
-            Optional<TsCollection> result = TsProviders.getTsCollection(getLookup().lookup(DataSource.class), TsInformationType.All);
-            return result.isPresent() ? result.get().toArray() : new Ts[0];
+            TsCollection result = getTsCollection();
+            result.load(TsInformationType.Definition);
+            return result.toArray();
+        }
+
+        @Override
+        public TsCollection getTsCollection() {
+            return TsProviders.getTsCollection(getLookup().lookup(DataSource.class), SHOULD_BE_NONE)
+                    .or(TsFactory.instance::createTsCollection);
         }
     }
 

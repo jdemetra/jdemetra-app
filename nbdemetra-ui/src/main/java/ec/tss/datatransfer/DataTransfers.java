@@ -6,8 +6,10 @@ package ec.tss.datatransfer;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
+import ec.tss.tsproviders.utils.FunctionWithIO;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.IParser;
+import ec.util.various.swing.OnAnyThread;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -16,7 +18,13 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -78,6 +86,13 @@ public final class DataTransfers {
 
     public static boolean isMultiFlavor(@Nonnull DataFlavor[] dataFlavors) {
         return dataFlavors.length == 1 && dataFlavors[0] == ExTransferable.multiFlavor;
+    }
+
+    @Nonnull
+    public static Stream<Transferable> getMultiTransferables(@Nonnull Transferable t) {
+        return DataTransfers.getMultiTransferObject(t)
+                .map(DataTransfers::asTransferableStream)
+                .orElse(Stream.of(t));
     }
 
     @Nonnull
@@ -144,6 +159,92 @@ public final class DataTransfers {
                 log.warn("While getting data from clipboard", ex);
                 return new IOException(ex);
             }
+        }
+    }
+
+    static final class CustomAdapter<HANDLER> implements Transferable {
+
+        private final Map<DataFlavor, List<HANDLER>> roHandlersByFlavor;
+        private final FunctionWithIO<HANDLER, Object> transferDataLoader;
+        private final ConcurrentMap<DataFlavor, Object> cache;
+
+        CustomAdapter(Map<DataFlavor, List<HANDLER>> roHandlersByFlavor, FunctionWithIO<HANDLER, Object> transferDataLoader) {
+            this.roHandlersByFlavor = Objects.requireNonNull(roHandlersByFlavor);
+            this.transferDataLoader = Objects.requireNonNull(transferDataLoader);
+            this.cache = new ConcurrentHashMap<>();
+        }
+
+        @Override
+        public DataFlavor[] getTransferDataFlavors() {
+            return roHandlersByFlavor.keySet().toArray(new DataFlavor[roHandlersByFlavor.size()]);
+        }
+
+        @Override
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
+            return roHandlersByFlavor.containsKey(flavor);
+        }
+
+        @OnAnyThread
+        @Override
+        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+            // drag&drop on EDT but copy-paste (clipboard) on another thread !
+            try {
+                return cache.computeIfAbsent(flavor, this::loadTransferDataUnchecked);
+            } catch (UncheckedIOException ex) {
+                throw ex.getCause();
+            } catch (UncheckedUnsupportedFlavorException ex) {
+                throw ex.getCause();
+            }
+        }
+
+        @OnAnyThread
+        private Object loadTransferDataUnchecked(DataFlavor flavor) {
+            try {
+                return loadTransferData(flavor);
+            } catch (IOException ex) {
+                throw new UncheckedIOException(ex);
+            } catch (UnsupportedFlavorException ex) {
+                throw new UncheckedUnsupportedFlavorException(ex);
+            }
+        }
+
+        @OnAnyThread
+        private Object loadTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+            List<HANDLER> list = roHandlersByFlavor.get(flavor);
+            if (list == null || list.isEmpty()) {
+                throw new UnsupportedFlavorException(flavor);
+            }
+            Iterator<HANDLER> handlers = list.iterator();
+            try {
+                return transferDataLoader.apply(handlers.next());
+            } catch (IOException ex) {
+                return loadNext(handlers, ex);
+            }
+        }
+
+        @OnAnyThread
+        private Object loadNext(Iterator<HANDLER> handlers, IOException root) throws IOException {
+            if (!handlers.hasNext()) {
+                throw root;
+            }
+            try {
+                return transferDataLoader.apply(handlers.next());
+            } catch (IOException ex) {
+                root.addSuppressed(ex);
+                return loadNext(handlers, root);
+            }
+        }
+    }
+
+    private static final class UncheckedUnsupportedFlavorException extends RuntimeException {
+
+        private UncheckedUnsupportedFlavorException(UnsupportedFlavorException cause) {
+            super(cause);
+        }
+
+        @Override
+        public UnsupportedFlavorException getCause() {
+            return (UnsupportedFlavorException) super.getCause();
         }
     }
 }

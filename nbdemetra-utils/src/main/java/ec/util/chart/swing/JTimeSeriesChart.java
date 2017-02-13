@@ -916,7 +916,7 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
 
         private final Font titleFont = new Font(Font.SANS_SERIF, Font.ITALIC, 13);
         private final Font axisFont = new Font(Font.SANS_SERIF, Font.PLAIN, 10);
-        private final Font noDataMessageFont = new Font(Font.SANS_SERIF, Font.ITALIC, 13);
+        private final Font noDataMessageFont = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
         private final Font seriesFont = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
 
         @Override

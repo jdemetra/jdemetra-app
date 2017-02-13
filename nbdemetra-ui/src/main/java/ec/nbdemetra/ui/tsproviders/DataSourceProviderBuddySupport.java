@@ -25,6 +25,10 @@ import ec.tss.TsMoniker;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceProvider;
+import internal.FrozenTsHelper;
+import java.awt.Image;
+import java.io.IOException;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.openide.util.Lookup;
@@ -88,6 +92,32 @@ public class DataSourceProviderBuddySupport {
     @Nonnull
     public IDataSourceProviderBuddy get(@Nonnull TsMoniker moniker) {
         return get(moniker.getSource());
+    }
+
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull String providerName, int type, boolean opened) {
+        return Optional.ofNullable(get(providerName).getIcon(type, opened));
+    }
+
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull DataSource dataSource, int type, boolean opened) {
+        return Optional.ofNullable(get(dataSource).getIcon(dataSource, type, opened));
+    }
+
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull DataSet dataSet, int type, boolean opened) {
+        return Optional.ofNullable(get(dataSet).getIcon(dataSet, type, opened));
+    }
+
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull String providerName, @Nonnull IOException ex, int type, boolean opened) {
+        return Optional.ofNullable(get(providerName).getIcon(ex, type, opened));
+    }
+
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull TsMoniker moniker, int type, boolean opened) {
+        TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
+        return original != null ? Optional.ofNullable(get(original).getIcon(moniker, type, opened)) : Optional.empty();
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">

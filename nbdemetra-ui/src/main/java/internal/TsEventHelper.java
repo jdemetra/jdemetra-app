@@ -19,6 +19,7 @@ package internal;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsEvent;
+import ec.tss.TsInformationType;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
 import java.util.Observable;
@@ -32,6 +33,9 @@ import javax.swing.SwingUtilities;
  * @author Philippe Charles
  */
 public final class TsEventHelper<T> {
+
+    // TODO: replace by None when code can deal with it
+    public static final TsInformationType SHOULD_BE_NONE = TsInformationType.None;
 
     public static TsEventHelper<Ts> onTs(Runnable updaterOnEDT) {
         AtomicReference<Ts> safeTs = new AtomicReference<>();

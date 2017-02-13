@@ -96,6 +96,7 @@ public class JTsAnomalyGrid extends JComponent {
         grid = new JTsGrid();
         outliers = new ArrayList<>();
         grid.setCellRenderer(new AnomalyCellRenderer(grid.getCellRenderer()));
+        grid.setFreezeOnImport(true);
 
         // Listening to a data change to calculate the new outliers
         grid.addPropertyChangeListener(evt -> {

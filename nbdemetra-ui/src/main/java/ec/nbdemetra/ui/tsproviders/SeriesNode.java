@@ -63,14 +63,12 @@ public final class SeriesNode extends DataSetNode {
 
     @Override
     public Transferable clipboardCopy() throws IOException {
-        // Transferable#getTransferData(DataFlavor) might be called by the system clipboard
-        // Therefore, we load the data directly in the following call
-        return getData(TsInformationType.All);
+        return getData(TsInformationType.None);
     }
 
     @Override
     public Transferable drag() throws IOException {
-        return getData(TsInformationType.Definition);
+        return getData(TsInformationType.None);
     }
 
     @Override

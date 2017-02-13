@@ -27,8 +27,10 @@ import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
+import ec.tss.TsInformationType;
 import ec.tss.datatransfer.impl.TxtTssTransferHandler;
 import ec.tss.tsproviders.common.txt.TxtFileFilter;
+import ec.util.various.swing.OnAnyThread;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -77,7 +79,14 @@ public final class TxtTsSave implements ITsSave {
     }
 
     @Override
-    public void save(Ts[] ts) {
+    public void save(Ts[] input) {
+        TsCollection col = TsFactory.instance.createTsCollection();
+        col.quietAppend(Arrays.asList(input));
+        save(new TsCollection[]{col});
+    }
+
+    @Override
+    public void save(TsCollection[] input) {
         File target = fileChooserBuilder.showSaveDialog();
         if (target != null && optionsEditor.editBean(optionsBean)) {
             new SingleFileExporter()
@@ -85,15 +94,22 @@ public final class TxtTsSave implements ITsSave {
                     .progressLabel("Saving to text file")
                     .onErrorNotify("Saving to text file failed")
                     .onSussessNotify("Text file saved")
-                    .execAsync((f, ph) -> store(ts, f, optionsBean, ph));
+                    .execAsync((f, ph) -> store(input, f, optionsBean, ph));
         }
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    private static File store(Ts[] data, File file, OptionsBean options, ProgressHandle ph) throws IOException {
+    @OnAnyThread
+    private static File store(TsCollection[] data, File file, OptionsBean options, ProgressHandle ph) throws IOException {
         ph.start();
-        ph.progress("Initializing content");
-        TsCollection col = Arrays.stream(data).collect(TsFactory.toTsCollection());
+        ph.progress("Loading time series");
+        TsCollection content = TsFactory.instance.createTsCollection();
+        for (TsCollection col : data) {
+            col.load(TsInformationType.All);
+            content.quietAppend(col);
+        }
+
+        ph.progress("Creating content");
         TxtTssTransferHandler handler = new TxtTssTransferHandler();
         Config config = handler.getConfig().toBuilder()
                 .put("beginPeriod", options.beginPeriod)
@@ -102,10 +118,10 @@ public final class TxtTsSave implements ITsSave {
                 .put("vertical", options.vertical)
                 .build();
         handler.setConfig(config);
-        ph.progress("Creating content");
-        String content = handler.tsCollectionToString(col);
-        ph.progress("Writing content");
-        Files.write(content, file, StandardCharsets.UTF_8);
+        String stringContent = handler.tsCollectionToString(content);
+
+        ph.progress("Writing file");
+        Files.write(stringContent, file, StandardCharsets.UTF_8);
         return file;
     }
 

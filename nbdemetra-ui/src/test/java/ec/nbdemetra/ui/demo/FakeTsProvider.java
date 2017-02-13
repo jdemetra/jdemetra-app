@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.demo;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -42,13 +43,16 @@ import ec.tss.tsproviders.utils.IParam;
 import ec.tss.tsproviders.utils.OptionalTsData;
 import ec.tss.tsproviders.utils.Params;
 import ec.tss.tsproviders.utils.TsFillerAsProvider;
+import ec.tstoolkit.timeseries.TsPeriodSelector;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import internal.RandomTsBuilder;
+import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -56,12 +60,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
 @lombok.extern.slf4j.Slf4j
+@ServiceProvider(service = ITsProvider.class)
 public final class FakeTsProvider implements IDataSourceProvider {
 
     private enum DataType {
@@ -157,11 +163,6 @@ public final class FakeTsProvider implements IDataSourceProvider {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="IDataSourceProvider">
-    @Override
-    public String getDisplayName() {
-        return "DotStat";
-    }
-
     @Override
     public List<DataSource> getDataSources() {
         return listSupport.getDataSources();
@@ -260,7 +261,7 @@ public final class FakeTsProvider implements IDataSourceProvider {
 
         @Override
         public String getDisplayName(DataSet dataSet) throws IllegalArgumentException {
-            return getDisplayName(dataSet.getDataSource()) + " (" + getDisplayNodeName(dataSet) + ")";
+            return getDisplayName(dataSet.getDataSource()) + System.lineSeparator() + getDisplayNodeName(dataSet);
         }
 
         @Override
@@ -315,14 +316,25 @@ public final class FakeTsProvider implements IDataSourceProvider {
         private final Function<Integer, OptionalTsData> updatingData;
 
         public FakeData(FakeConfig config) {
-            RandomTsBuilder tsBuilder = new RandomTsBuilder();
             this.config = config;
-            normalData = createData(tsBuilder, config, DataType.NORMAL)::get;
-            updatingData = shiftingValues(createData(tsBuilder, config, DataType.UPDATING));
+            normalData = createData(config, DataType.NORMAL)::get;
+            updatingData = shiftingValues(createData(config, DataType.UPDATING));
         }
 
         private Iterator<Integer> seriesIndexIterator(DataType dt) {
             return IntStream.range(0, config.getSeriesCount(dt)).iterator();
+        }
+
+        private Function<Integer, OptionalTsData> getDataFunc(Function<Integer, OptionalTsData> delegate, TsInformationType type) {
+            return type.encompass(TsInformationType.Data)
+                    ? delegate
+                    : o -> OptionalTsData.absent("Data not requested");
+        }
+
+        private Function<Integer, Map<String, String>> getMetaFunc(DataType dt, TsInformationType type) {
+            return type.encompass(TsInformationType.MetaData)
+                    ? o -> ImmutableMap.of("Type", dt.name(), "Index", String.valueOf(o))
+                    : o -> Collections.emptyMap();
         }
 
         public TsCursor<Integer> getData(DataType dt, TsInformationType type) throws IOException {
@@ -330,9 +342,7 @@ public final class FakeTsProvider implements IDataSourceProvider {
             switch (dt) {
                 case NORMAL:
                     sleep(type);
-                    return type.encompass(TsInformationType.Data)
-                            ? TsCursor.from(iter, normalData)
-                            : TsCursor.from(iter);
+                    return TsCursor.from(iter, getDataFunc(normalData, type), getMetaFunc(dt, type));
                 case FAILING_META:
                     sleep(type);
                     if (type.encompass(TsInformationType.MetaData)) {
@@ -346,9 +356,7 @@ public final class FakeTsProvider implements IDataSourceProvider {
                     }
                     return TsCursor.from(iter);
                 case UPDATING:
-                    return type.encompass(TsInformationType.Data)
-                            ? TsCursor.from(iter, updatingData)
-                            : TsCursor.from(iter);
+                    return TsCursor.from(iter, getDataFunc(updatingData, type), getMetaFunc(dt, type));
                 default:
                     throw new IllegalArgumentException("Invalid data type");
             }
@@ -362,17 +370,23 @@ public final class FakeTsProvider implements IDataSourceProvider {
             }
         }
 
-        private static List<OptionalTsData> createData(RandomTsBuilder tsBuilder, FakeConfig config, DataType dt) {
+        private static List<OptionalTsData> createData(FakeConfig config, DataType dt) {
             return IntStream.range(0, config.getSeriesCount(dt))
-                    .mapToObj(o -> createData(tsBuilder, config, dt, o))
+                    .mapToObj(o -> createData(config, dt, o))
                     .collect(Collectors.toList());
         }
 
-        private static OptionalTsData createData(RandomTsBuilder tsBuilder, FakeConfig config, DataType dt, int seriesIndex) {
+        private static OptionalTsData createData(FakeConfig config, DataType dt, int seriesIndex) {
             int obsCount = config.getObsCount(dt, seriesIndex);
             return obsCount >= 0
-                    ? OptionalTsData.present(tsBuilder.withObsCount(obsCount).build().data)
+                    ? OptionalTsData.present(TsData.random(TsFrequency.Monthly).select(selector(obsCount)))
                     : OptionalTsData.absent("No data");
+        }
+
+        private static TsPeriodSelector selector(int obsCount) {
+            TsPeriodSelector result = new TsPeriodSelector();
+            result.first(obsCount);
+            return result;
         }
 
         private static Function<Integer, OptionalTsData> shiftingValues(List<OptionalTsData> list) {
@@ -408,7 +422,7 @@ public final class FakeTsProvider implements IDataSourceProvider {
 
         public FakeConfig() {
             this.obsCounts = new EnumMap<>(DataType.class);
-            obsCounts.put(DataType.NORMAL, new int[]{-1, 0, 24, 60, 120});
+            obsCounts.put(DataType.NORMAL, new int[]{-1, 0, 1, 24, 60, 120});
             obsCounts.put(DataType.FAILING_META, new int[]{24});
             obsCounts.put(DataType.FAILING_DATA, new int[]{24});
             obsCounts.put(DataType.UPDATING, new int[]{-1, 0, 24, 60, 120});

@@ -24,7 +24,6 @@ import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.IFileLoader;
 import ec.tss.tsproviders.TsProviders;
 import ec.util.list.swing.JLists;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -87,8 +86,9 @@ public final class OpenProvidersAction extends AbstractAction implements Present
     }
 
     private static void renderLoader(JLabel label, Object value) {
-        label.setText(((IDataSourceLoader) value).getDisplayName());
-        label.setIcon(ImageUtilities.image2Icon(DataSourceProviderBuddySupport.getDefault().get((IDataSourceLoader) value).getIcon(BeanInfo.ICON_COLOR_16x16, false)));
+        IDataSourceLoader loader = (IDataSourceLoader) value;
+        label.setText(loader.getDisplayName());
+        label.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(loader.getSource(), BeanInfo.ICON_COLOR_16x16, false).map(ImageUtilities::image2Icon).orElse(null));
     }
 
     private static final Ordering<IDataSourceProvider> ON_CLASS_SIMPLENAME = Ordering.natural().onResultOf(o -> o.getClass().getSimpleName());
@@ -99,10 +99,10 @@ public final class OpenProvidersAction extends AbstractAction implements Present
 
         public AbstractActionImpl(IFileLoader loader) {
             super(loader.getDisplayName());
-            Image image = DataSourceProviderBuddySupport.getDefault().get(loader).getIcon(BeanInfo.ICON_COLOR_16x16, false);
-            if (image != null) {
-                super.putValue(Action.SMALL_ICON, ImageUtilities.image2Icon(image));
-            }
+            DataSourceProviderBuddySupport.getDefault()
+                    .getIcon(loader.getSource(), BeanInfo.ICON_COLOR_16x16, false)
+                    .map(ImageUtilities::image2Icon)
+                    .ifPresent(o -> super.putValue(Action.SMALL_ICON, o));
             this.loader = loader;
         }
 

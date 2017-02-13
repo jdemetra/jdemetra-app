@@ -23,6 +23,7 @@ import ec.tss.TsCollection;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.design.ServiceDefinition;
 import ec.tstoolkit.maths.matrices.Matrix;
+import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
@@ -66,7 +67,7 @@ public abstract class TssTransferHandler implements INamedService {
         return false;
     }
 
-    @OnEDT
+    @OnAnyThread
     @Nonnull
     public Object exportTsCollection(@Nonnull TsCollection col) throws IOException {
         throw new UnsupportedOperationException();
@@ -90,7 +91,7 @@ public abstract class TssTransferHandler implements INamedService {
         return false;
     }
 
-    @OnEDT
+    @OnAnyThread
     @Nonnull
     public Object exportMatrix(@Nonnull Matrix matrix) throws IOException {
         throw new UnsupportedOperationException();
@@ -114,7 +115,7 @@ public abstract class TssTransferHandler implements INamedService {
         return false;
     }
 
-    @OnEDT
+    @OnAnyThread
     @Nonnull
     public Object exportTable(@Nonnull Table<?> table) throws IOException {
         throw new UnsupportedOperationException();

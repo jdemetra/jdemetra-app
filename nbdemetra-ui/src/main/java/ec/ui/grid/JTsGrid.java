@@ -16,7 +16,6 @@
  */
 package ec.ui.grid;
 
-import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
@@ -24,6 +23,7 @@ import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IFormatter;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import static ec.ui.ATsControl.FORMAT_ACTION;
@@ -146,6 +146,7 @@ public class JTsGrid extends ATsGrid {
         grid.setDragEnabled(true);
         grid.setRowRenderer(new CustomRowRenderer(grid));
         grid.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        grid.setColumnRenderer(new CustomColumnRenderer(grid));
     }
 
     private void applyDesignTimeProperties() {
@@ -386,25 +387,8 @@ public class JTsGrid extends ATsGrid {
     //</editor-fold>
 
     private void updateNoDataMessage() {
-        String message;
-        if (getTsUpdateMode().isReadOnly()) {
-            TsCollection collection = getTsCollection();
-            switch (collection.getCount()) {
-                case 0:
-                    message = "No data";
-                    break;
-                case 1:
-                    String cause = collection.get(0).getInvalidDataCause();
-                    message = "<html><center><b>Invalid data</b><br>" + Strings.nullToEmpty(cause);
-                    break;
-                default:
-                    message = "Invalid data";
-                    break;
-            }
-        } else {
-            message = "Drop data here";
-        }
-        grid.setNoDataRenderer(new XTable.DefaultNoDataRenderer(message));
+        String msg = getNoDataMessage(getTsCollection(), getTsUpdateMode());
+        grid.setNoDataRenderer(new XTable.DefaultNoDataRenderer(msg.replace(System.lineSeparator(), " ")));
     }
 
     private void updateGridModel() {
@@ -580,7 +564,32 @@ public class JTsGrid extends ATsGrid {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             Component result = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             if (result instanceof JLabel) {
-                ((JLabel) result).setHorizontalAlignment(JLabel.TRAILING);
+                JLabel label = (JLabel) result;
+                String text = label.getText();
+                label.setText(MultiLineNameUtil.join(text));
+                label.setToolTipText(MultiLineNameUtil.toHtml(text));
+                label.setHorizontalAlignment(JLabel.TRAILING);
+            }
+            return result;
+        }
+    }
+
+    private static final class CustomColumnRenderer implements TableCellRenderer {
+
+        private final TableCellRenderer delegate;
+
+        public CustomColumnRenderer(JGrid grid) {
+            this.delegate = grid.getColumnRenderer();
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component result = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (result instanceof JLabel) {
+                JLabel label = (JLabel) result;
+                String text = label.getText();
+                label.setText(MultiLineNameUtil.join(text));
+                label.setToolTipText(MultiLineNameUtil.toHtml(text));
             }
             return result;
         }

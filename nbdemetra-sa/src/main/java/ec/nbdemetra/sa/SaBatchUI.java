@@ -875,12 +875,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         @Override
         protected String getToolTipText(SaItem item) {
             String name = item.getName();
-            return !Strings.isNullOrEmpty(name) ? MultiLineNameUtil.toHtml(MultiLineNameUtil.join(name)) : null;
-        }
-
-        @Override
-        protected Color getColor(SaItem item) {
-            return item.getTs().isFrozen() ? Color.gray : null;
+            return !Strings.isNullOrEmpty(name) ? MultiLineNameUtil.toHtml(name) : null;
         }
 
         @Override

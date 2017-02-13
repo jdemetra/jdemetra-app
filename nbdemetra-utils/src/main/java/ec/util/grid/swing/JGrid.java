@@ -183,6 +183,10 @@ public final class JGrid extends AGrid {
         main.setDefaultRenderer(aClass, tableCellRenderer);
     }
 
+    public TableCellRenderer getColumnRenderer() {
+        return main.getTableHeader().getDefaultRenderer();
+    }
+
     public void setColumnRenderer(TableCellRenderer renderer) {
         main.getTableHeader().setDefaultRenderer(renderer);
     }

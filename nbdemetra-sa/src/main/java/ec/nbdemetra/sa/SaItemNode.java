@@ -6,12 +6,18 @@
 package ec.nbdemetra.sa;
 
 import ec.nbdemetra.ui.NbUtilities;
+import ec.nbdemetra.ui.nodes.ControlNode;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.sa.SaItem;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.MetaData;
+import java.awt.Image;
+import java.util.Optional;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Sheet;
+import org.openide.util.lookup.Lookups;
 
 /**
  *
@@ -19,37 +25,44 @@ import org.openide.nodes.Sheet;
  */
 public class SaItemNode extends AbstractNode {
 
-    private final SaItem item;
-
     public SaItemNode(SaItem item) {
-        super(Children.create(new SaItemChildFactory(), false));
-        this.item = item;
+        super(Children.create(new SaItemChildFactory(), false), Lookups.singleton(item));
+        setName(item.getName());
+        setDisplayName(MultiLineNameUtil.last(item.getName()));
+        setShortDescription(MultiLineNameUtil.toHtml(item.getName()));
+    }
+
+    private Optional<Image> lookupIcon(int type, boolean opened) {
+        SaItem item = getLookup().lookup(SaItem.class);
+        return DataSourceProviderBuddySupport.getDefault().getIcon(item.getMoniker(), type, opened);
     }
 
     @Override
-    public String getDisplayName() {
-        return item.getName();
+    public Image getOpenedIcon(int type) {
+        return lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
+    }
 
+    @Override
+    public Image getIcon(int type) {
+        return lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
     }
 
     @Override
     protected Sheet createSheet() {
-        Sheet sheet = super.createSheet();
-        NodePropertySetBuilder b = new NodePropertySetBuilder().name("Time series");
-        b.with(String.class).select("Time series name", item.getTs().getRawName()).add();
-        b.withBoolean().select("Is frozen", item.getTs().isFrozen()).add();
-        sheet.put(b.build());
+        SaItem item = getLookup().lookup(SaItem.class);
+        NodePropertySetBuilder b = new NodePropertySetBuilder();
+        Sheet sheet = new Sheet();
+        sheet.put(getDefinitionSheetSet(item, b));
 
-        MetaData metaData = item.getMetaData();
-
-        if (MetaData.isNullOrEmpty(metaData)) {
-            return sheet;
+        if (!MetaData.isNullOrEmpty(item.getMetaData())) {
+            Sheet.Set info = NbUtilities.createMetadataPropertiesSet(item.getMetaData());
+            sheet.put(info);
         }
-
-        Sheet.Set info = NbUtilities.createMetadataPropertiesSet(metaData);
-        sheet.put(info);
 
         return sheet;
     }
 
+    private static Sheet.Set getDefinitionSheetSet(SaItem item, NodePropertySetBuilder b) {
+        return ControlNode.getDefinitionSheetSet(item.getTs(), b);
+    }
 }

@@ -25,11 +25,13 @@ import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.tssave.ITsSavable;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
+import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
+import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.List;
@@ -82,7 +84,6 @@ abstract public class DataSetNode extends AbstractNode {
         this.actionPath = actionPath;
         // 2. Abilities
         {
-            abilities.add(DataSourceProviderBuddySupport.getDefault().get(dataSet));
             switch (dataSet.getKind()) {
                 case COLLECTION:
                     abilities.add(new ReloadableImpl());
@@ -103,21 +104,27 @@ abstract public class DataSetNode extends AbstractNode {
         return Nodes.actionsForPath(actionPath);
     }
 
+    private java.util.Optional<Image> lookupIcon(int type, boolean opened) {
+        DataSet o = getLookup().lookup(DataSet.class);
+        return DataSourceProviderBuddySupport.getDefault().getIcon(o, type, opened);
+    }
+
     @Override
     public Image getIcon(int type) {
-        Image image = getLookup().lookup(IDataSourceProviderBuddy.class).getIcon(getLookup().lookup(DataSet.class), type, false);
+        Image image = lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
         return getLookup().lookup(NodeAnnotator.Support.class).annotateIcon(this, image);
     }
 
     @Override
     public Image getOpenedIcon(int type) {
-        Image image = getLookup().lookup(IDataSourceProviderBuddy.class).getIcon(getLookup().lookup(DataSet.class), type, true);
+        Image image = lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
         return getLookup().lookup(NodeAnnotator.Support.class).annotateIcon(this, image);
     }
 
     @Override
     protected Sheet createSheet() {
-        return getLookup().lookup(IDataSourceProviderBuddy.class).createSheet(getLookup().lookup(DataSet.class));
+        DataSet o = getLookup().lookup(DataSet.class);
+        return DataSourceProviderBuddySupport.getDefault().get(o).createSheet(o);
     }
 
     @Override
@@ -165,7 +172,7 @@ abstract public class DataSetNode extends AbstractNode {
 
         @Override
         public void open() {
-            Optional<Ts> data = TsProviders.getTs(getLookup().lookup(DataSet.class), TsInformationType.Data);
+            Optional<Ts> data = TsProviders.getTs(getLookup().lookup(DataSet.class), TsInformationType.None);
             if (data.isPresent()) {
                 DemetraUI.getDefault().getTsAction().open(data.get());
             }
@@ -176,8 +183,15 @@ abstract public class DataSetNode extends AbstractNode {
 
         @Override
         public Ts[] getAllTs() {
-            Optional<TsCollection> result = TsProviders.getTsCollection(getLookup().lookup(DataSet.class), TsInformationType.All);
-            return result.isPresent() ? result.get().toArray() : new Ts[0];
+            TsCollection result = getTsCollection();
+            result.load(TsInformationType.Definition);
+            return result.toArray();
+        }
+
+        @Override
+        public TsCollection getTsCollection() {
+            return TsProviders.getTsCollection(getLookup().lookup(DataSet.class), SHOULD_BE_NONE)
+                    .or(TsFactory.instance::createTsCollection);
         }
     }
 

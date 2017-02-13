@@ -141,6 +141,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
         toolBarRepresentation.add(Box.createHorizontalGlue());
         toolBarRepresentation.addSeparator();
         inputList = new JTsList();
+        inputList.setFreezeOnImport(true);
         initList();
         saChart = new JTsChart();
         mainPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, inputList, saChart);
