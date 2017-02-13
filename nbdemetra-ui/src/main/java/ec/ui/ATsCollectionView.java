@@ -95,6 +95,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     protected static final TsUpdateMode DEFAULT_UPDATEMODE = TsUpdateMode.Append;
     protected static final Ts[] DEFAULT_SELECTION = new Ts[0];
     protected static final Ts[] DEFAULT_DROP_CONTENT = new Ts[0];
+    private static final boolean DEFAULT_FREEZE_ON_IMPORT = false;
 
     // PROPERTIES
     protected TsCollection collection;
@@ -102,6 +103,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     protected ITsAction tsAction;
     protected Ts[] selection;
     protected Ts[] dropContent;
+    private boolean freezeOnImport;
 
     // OTHER
     protected final TsFactoryObserver tsFactoryObserver;
@@ -114,6 +116,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         this.tsAction = null;
         this.selection = DEFAULT_SELECTION;
         this.dropContent = DEFAULT_DROP_CONTENT;
+        this.freezeOnImport = DEFAULT_FREEZE_ON_IMPORT;
         this.tsFactoryObserver = new TsFactoryObserver();
 
         registerActions();
@@ -245,6 +248,18 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         ITsAction old = this.tsAction;
         this.tsAction = tsAction;
         firePropertyChange(TS_ACTION_PROPERTY, old, this.tsAction);
+    }
+
+    @Override
+    public boolean isFreezeOnImport() {
+        return freezeOnImport;
+    }
+
+    @Override
+    public void setFreezeOnImport(boolean freezeOnImport) {
+        boolean old = this.freezeOnImport;
+        this.freezeOnImport = freezeOnImport;
+        firePropertyChange(FREEZE_ON_IMPORT_PROPERTY, old, this.freezeOnImport);
     }
 
     // TODO: set this method public?
@@ -585,13 +600,18 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         }
 
         private void importData(TsCollection source) {
-            if (TransferChange.isNotYetLoaded(source)) {
-                // TODO: put load in a separate thread
-                source.load(TsInformationType.Definition);
-            }
-            if (!source.isEmpty()) {
-                source.query(TsInformationType.All);
-                getTsUpdateMode().update(getTsCollection(), source);
+            if (freezeOnImport) {
+                source.load(TsInformationType.All);
+                getTsUpdateMode().update(getTsCollection(), source.stream().map(Ts::freeze).collect(TsFactory.toTsCollection()));
+            } else {
+                if (TransferChange.isNotYetLoaded(source)) {
+                    // TODO: put load in a separate thread
+                    source.load(TsInformationType.Definition);
+                }
+                if (!source.isEmpty()) {
+                    source.query(TsInformationType.All);
+                    getTsUpdateMode().update(getTsCollection(), source);
+                }
             }
         }
     }

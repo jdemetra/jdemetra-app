@@ -242,7 +242,7 @@ public final class DifferencingTopComponent extends TopComponent implements ITsV
 
     @Override
     public void setTs(Ts s) {
-        ts_ = s;
+        ts_ = s.freeze();
         ts_.load(TsInformationType.All);
         refreshHeader();
         showTests();

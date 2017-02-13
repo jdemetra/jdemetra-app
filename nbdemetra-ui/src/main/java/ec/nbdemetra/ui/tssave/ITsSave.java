@@ -35,7 +35,7 @@ public interface ITsSave extends INamedService {
     default void save(@Nonnull TsCollection[] input) {
         Function<TsCollection, Stream<Ts>> toStream = o -> {
             o.load(TsInformationType.Definition);
-            return Stream.of(o.toArray());
+            return o.stream();
         };
         save(Stream.of(input).flatMap(toStream).toArray(Ts[]::new));
     }

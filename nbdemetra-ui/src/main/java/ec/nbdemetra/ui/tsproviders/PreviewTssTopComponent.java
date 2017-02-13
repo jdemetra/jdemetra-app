@@ -24,15 +24,15 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//ec.nbdemetra.ui//PreviewTss//EN",
-autostore = false)
+        autostore = false)
 @TopComponent.Description(preferredID = "PreviewTssTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_ALWAYS)
+        //iconBase="SET/PATH/TO/ICON/HERE", 
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 @TopComponent.Registration(mode = "explorer", openAtStartup = false)
 @ActionID(category = "Window", id = "ec.nbdemetra.core.PreviewTssTopComponent")
 @ActionReference(path = "Menu/Window", position = 301)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_PreviewTssAction",
-preferredID = "PreviewTssTopComponent")
+        preferredID = "PreviewTssTopComponent")
 @NbBundle.Messages({
     "CTL_PreviewTssAction=Preview TimeSeries",
     "CTL_PreviewTssTopComponent=Preview Window",
@@ -115,17 +115,12 @@ public final class PreviewTssTopComponent extends TopComponent implements Lookup
     public void resultChanged(LookupEvent le) {
         if (le.getSource().equals(lookupResult)) {
             jTsChart1.getTsCollection().clear();
-            for (DataSetNode o : lookupResult.allInstances()) {
-//                if (o instanceof CollectionNode) {
-//                    jTsChart1.getTsCollection().append(((CollectionNode) o).getData(TsInformationType.Data));
-//                } else 
-                if (o instanceof SeriesNode) {
-                    Optional<Ts> data = TsProviders.getTs(o.getLookup().lookup(DataSet.class), TsInformationType.Data);
-                    if (data.isPresent()) {
-                        jTsChart1.getTsCollection().add(data.get());
-                    }
-                }
-            }
+            lookupResult.allInstances().stream()
+                    .filter(o -> o instanceof SeriesNode)
+                    .map(o -> TsProviders.getTs(o.getLookup().lookup(DataSet.class), TsInformationType.None))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .forEach(jTsChart1.getTsCollection()::quietAdd);
         }
     }
 }

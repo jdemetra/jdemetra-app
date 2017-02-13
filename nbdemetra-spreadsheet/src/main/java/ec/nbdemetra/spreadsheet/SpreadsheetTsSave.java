@@ -107,9 +107,7 @@ public final class SpreadsheetTsSave implements ITsSave {
         TsCollectionInformation content = new TsCollectionInformation();
         for (TsCollection col : data) {
             col.load(TsInformationType.All);
-            for (Ts o : col.toArray()) {
-                content.items.add(new TsInformation(o, TsInformationType.All));
-            }
+            col.stream().map(o -> new TsInformation(o, TsInformationType.All)).forEach(content.items::add);
         }
 
         ph.progress("Creating content");
