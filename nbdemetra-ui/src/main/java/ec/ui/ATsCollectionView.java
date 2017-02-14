@@ -61,6 +61,8 @@ import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JCheckBoxMenuItem;
@@ -631,14 +633,16 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         private static TransferChange of(LocalObjectTssTransferHandler handler, Transferable source, TsCollection target) {
             return DataTransfers.getMultiTransferables(source)
                     .map(handler::peekTsCollection)
-                    .filter(Objects::nonNull)
                     .map(o -> of(o, target))
                     .filter(TransferChange::mayChangeContent)
                     .findFirst()
                     .orElse(NO);
         }
 
-        private static TransferChange of(TsCollection source, TsCollection target) {
+        private static TransferChange of(@Nullable TsCollection source, @Nonnull TsCollection target) {
+            if (source == null) {
+                return MAYBE;
+            }
             if (isNotYetLoaded(source)) {
                 return MAYBE;
             }
