@@ -157,9 +157,8 @@ public final class XmlssTssTransferHandler extends TssTransferHandler implements
 
         @Override
         public Book toBook(Object input) throws IOException {
-            // FIXME: there is a bug here with some chars at the end of the stream
             byte[] bytes = (byte[]) input;
-            try (ByteArrayInputStream stream = new ByteArrayInputStream(bytes, 0, bytes.length - 2)) {
+            try (ByteArrayInputStream stream = new ByteArrayInputStream(bytes)) {
                 return bookFactory.load(stream);
             }
         }

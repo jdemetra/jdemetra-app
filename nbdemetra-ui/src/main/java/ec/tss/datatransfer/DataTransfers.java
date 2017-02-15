@@ -90,9 +90,15 @@ public final class DataTransfers {
 
     @Nonnull
     public static Stream<Transferable> getMultiTransferables(@Nonnull Transferable t) {
-        return DataTransfers.getMultiTransferObject(t)
+        return getMultiTransferObject(t)
                 .map(DataTransfers::asTransferableStream)
                 .orElse(Stream.of(t));
+
+    }
+
+    @Nonnull
+    public static Stream<DataFlavor> getMultiDataFlavors(@Nonnull Transferable t) {
+        return getMultiTransferables(t).flatMap(o -> Stream.of(o.getTransferDataFlavors()));
     }
 
     @Nonnull

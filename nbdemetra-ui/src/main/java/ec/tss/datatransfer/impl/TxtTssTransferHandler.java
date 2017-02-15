@@ -110,7 +110,11 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
 
     @Override
     public TsCollection importTsCollection(Object obj) throws IOException {
-        return tsCollectionFromString((String) obj);
+        TsCollection result = tsCollectionFromString((String) obj);
+        if (result != null) {
+            return result;
+        }
+        throw new IOException("Cannot parse collection");
     }
 
     @Override
