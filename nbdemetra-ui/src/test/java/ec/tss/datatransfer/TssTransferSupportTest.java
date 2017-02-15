@@ -16,7 +16,9 @@
  */
 package ec.tss.datatransfer;
 
+import ec.tss.TsCollection;
 import ec.tss.TsFactory;
+import ec.tss.datatransfer.impl.LocalObjectTssTransferHandler;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -24,10 +26,12 @@ import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.Test;
-import org.openide.util.Lookup;
+import org.openide.util.datatransfer.ExTransferable;
 import org.openide.util.lookup.Lookups;
 import org.slf4j.helpers.NOPLogger;
 
@@ -40,7 +44,7 @@ public class TssTransferSupportTest {
     @Test
     @SuppressWarnings("null")
     public void testEmpty() {
-        TssTransferSupport empty = new TssTransferSupport(Lookup.EMPTY, NOPLogger.NOP_LOGGER, false);
+        TssTransferSupport empty = of();
 
         assertThat(empty.stream()).isEmpty();
 
@@ -53,8 +57,10 @@ public class TssTransferSupportTest {
         assertThatThrownBy(() -> empty.toTable(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.toTs(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.toTsCollection(null)).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> empty.toTsCollectionStream(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.toTsData(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.isTssTransferable(null)).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> empty.canImport((Transferable) null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.canImport((DataFlavor[]) null)).isInstanceOf(NullPointerException.class);
 
         assertThat(empty.fromMatrix(new Matrix(1, 1)).getTransferDataFlavors()).isEmpty();
@@ -65,17 +71,49 @@ public class TssTransferSupportTest {
     }
 
     @Test
+    public void testContent() {
+        LocalObjectTransferable<TsCollection> col = new LocalObjectTransferable<>(TsFactory.instance.createTsCollection());
+        Transferable multi = new ExTransferable.Multi(new Transferable[]{col});
+
+        TssTransferSupport local = of(new LocalObjectTssTransferHandler());
+        assertThat(local.canImport(col)).isTrue();
+        assertThat(local.canImport(multi)).isTrue();
+        assertThat(local.toTsCollection(col)).isEqualTo(col.getValue());
+        assertThat(local.toTsCollection(multi)).isNull();
+        assertThat(local.toTsCollectionStream(col)).containsExactly(col.getValue());
+        assertThat(local.toTsCollectionStream(multi)).containsExactly(col.getValue());
+
+        TssTransferSupport empty = of();
+        assertThat(empty.canImport(col)).isFalse();
+        assertThat(empty.canImport(multi)).isFalse();
+        assertThat(empty.toTsCollection(col)).isNull();
+        assertThat(empty.toTsCollectionStream(col)).isEmpty();
+
+        TssTransferSupport valid = of(new CustomHandler(DataFlavor.stringFlavor));
+        assertThat(valid.canImport(col)).isFalse();
+        assertThat(valid.canImport(multi)).isFalse();
+        assertThat(valid.toTsCollection(col)).isNull();
+        assertThat(valid.toTsCollectionStream(col)).isEmpty();
+
+        TssTransferSupport invalid = of(new CustomHandler(LocalObjectTssTransferHandler.DATA_FLAVOR));
+        assertThat(invalid.canImport(col)).isTrue();
+        assertThat(invalid.canImport(multi)).isTrue();
+        assertThat(invalid.toTsCollection(col)).isNull();
+        assertThat(invalid.toTsCollectionStream(col)).isEmpty();
+    }
+
+    @Test
     public void testInvalidHandler() {
         Transferable t = new StringSelection("hello");
 
-        assertThat(of(new InvalidHandler() {
+        assertThat(of(new CustomHandler(DataFlavor.stringFlavor) {
             @Override
             public boolean canExportMatrix(Matrix matrix) {
                 return true;
             }
         }).toMatrix(t)).isNull();
 
-        assertThat(of(new InvalidHandler() {
+        assertThat(of(new CustomHandler(DataFlavor.stringFlavor) {
             @Override
             public boolean canExportMatrix(Matrix matrix) {
                 return true;
@@ -87,7 +125,7 @@ public class TssTransferSupportTest {
             }
         }).toMatrix(t)).isNull();
 
-        assertThat(of(new InvalidHandler() {
+        assertThat(of(new CustomHandler(DataFlavor.stringFlavor) {
             @Override
             public DataFlavor getDataFlavor() {
                 throw new RuntimeException();
@@ -95,20 +133,45 @@ public class TssTransferSupportTest {
         }).toMatrix(t)).isNull();
     }
 
-    private static TssTransferSupport of(TssTransferHandler handler) {
-        return new TssTransferSupport(Lookups.singleton(handler), NOPLogger.NOP_LOGGER, false);
+    private static TssTransferSupport of(TssTransferHandler... handlers) {
+        return new TssTransferSupport(Lookups.fixed((Object[]) handlers), NOPLogger.NOP_LOGGER, false);
     }
 
-    private static class InvalidHandler extends TssTransferHandler {
+    private static class CustomHandler extends TssTransferHandler {
+
+        private final DataFlavor df;
+
+        public CustomHandler(DataFlavor df) {
+            this.df = df;
+        }
 
         @Override
         public DataFlavor getDataFlavor() {
-            return DataFlavor.stringFlavor;
+            return df;
         }
 
         @Override
         public String getName() {
             return "xxx";
+        }
+    }
+
+    private static class LocalObjectTransferable<T> extends ExTransferable.Single {
+
+        private final T data;
+
+        public LocalObjectTransferable(T data) {
+            super(LocalObjectTssTransferHandler.DATA_FLAVOR);
+            this.data = data;
+        }
+
+        @Override
+        protected Object getData() throws IOException, UnsupportedFlavorException {
+            return data;
+        }
+
+        T getValue() {
+            return data;
         }
     }
 }

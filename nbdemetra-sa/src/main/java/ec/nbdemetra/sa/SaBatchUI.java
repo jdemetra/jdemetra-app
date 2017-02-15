@@ -495,9 +495,11 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     private boolean pasteTs(Transferable dataobj) {
-        TsCollection coll = ec.tss.datatransfer.TssTransferSupport.getDefault().toTsCollection(dataobj);
-        if (coll != null) {
-            getCurrentProcessing().addRange(defaultSpecification, coll);
+        long count = TssTransferSupport.getDefault()
+                .toTsCollectionStream(dataobj)
+                .peek(o -> getCurrentProcessing().addRange(defaultSpecification, o))
+                .count();
+        if (count > 0) {
             controller.setState(SaProcessingState.READY);
             return true;
         } else {
@@ -1148,7 +1150,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         public boolean canImport(TransferSupport support) {
-            boolean result = TssTransferSupport.getDefault().canImport(support.getDataFlavors());
+            boolean result = TssTransferSupport.getDefault().canImport(support.getTransferable());
             if (result && support.isDrop()) {
                 support.setDropAction(COPY);
             }
@@ -1157,15 +1159,16 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         public boolean importData(TransferSupport support) {
-            TsCollection col = TssTransferSupport.getDefault().toTsCollection(support.getTransferable());
-            if (col != null) {
-                // FIXME: use of TsCollection#query(...) brings bugs in SaItem#process()
-                //col.query(TsInformationType.All);
-                col.load(TsInformationType.All);
-                if (!col.isEmpty()) {
-                    getCurrentProcessing().addRange(defaultSpecification, col);
-                    redrawAll();
-                }
+            // FIXME: use of TsCollection#query(...) brings bugs in SaItem#process()
+            //col.query(TsInformationType.All);
+            long count = TssTransferSupport.getDefault()
+                    .toTsCollectionStream(support.getTransferable())
+                    .peek(o -> o.load(TsInformationType.All))
+                    .filter(o -> !o.isEmpty())
+                    .peek(o -> getCurrentProcessing().addRange(defaultSpecification, o))
+                    .count();
+            if (count > 0) {
+                redrawAll();
                 return true;
             }
             return false;

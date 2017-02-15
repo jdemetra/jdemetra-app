@@ -57,9 +57,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -71,6 +71,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
+import static javax.swing.TransferHandler.COPY;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.openide.util.ImageUtilities;
@@ -583,39 +584,58 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
 
         @Override
         public boolean canImport(TransferSupport support) {
-            boolean result = !ATsCollectionView.this.getTsUpdateMode().isReadOnly()
-                    && TssTransferSupport.getDefault().canImport(support.getDataFlavors())
-                    && TransferChange.of(support.getTransferable(), getTsCollection()).mayChangeContent();
-            if (result && support.isDrop()) {
-                support.setDropAction(COPY);
+            if (ATsCollectionView.canImport(ATsCollectionView.this, support::getTransferable)) {
+                if (support.isDrop()) {
+                    support.setDropAction(COPY);
+                }
+                return true;
             }
-            return result;
+            return false;
         }
 
         @Override
         public boolean importData(TransferSupport support) {
-            return DataTransfers.getMultiTransferables(support.getTransferable())
-                    .map(TssTransferSupport.getDefault()::toTsCollection)
-                    .filter(Objects::nonNull)
-                    .peek(this::importData)
+            return ATsCollectionView.importData(ATsCollectionView.this, support::getTransferable);
+        }
+    }
+
+    public static boolean canImport(@Nonnull ITsCollectionView view, @Nonnull Supplier<Transferable> toData) {
+        if (!view.getTsUpdateMode().isReadOnly()) {
+            Transferable t = toData.get();
+            return TssTransferSupport.getDefault().canImport(t)
+                    && TransferChange.of(t, view.getTsCollection()).mayChangeContent();
+        }
+        return false;
+    }
+
+    public static boolean importData(@Nonnull ITsCollectionView view, @Nonnull Supplier<Transferable> toData) {
+        if (!view.getTsUpdateMode().isReadOnly()) {
+            return TssTransferSupport.getDefault()
+                    .toTsCollectionStream(toData.get())
+                    .peek(o -> importData(view, o))
                     .count() > 0;
         }
+        return false;
+    }
 
-        private void importData(TsCollection source) {
-            if (freezeOnImport) {
-                source.load(TsInformationType.All);
-                getTsUpdateMode().update(getTsCollection(), source.stream().map(Ts::freeze).collect(TsFactory.toTsCollection()));
-            } else {
-                if (TransferChange.isNotYetLoaded(source)) {
-                    // TODO: put load in a separate thread
-                    source.load(TsInformationType.Definition);
-                }
-                if (!source.isEmpty()) {
-                    source.query(TsInformationType.All);
-                    getTsUpdateMode().update(getTsCollection(), source);
-                }
+    private static void importData(ITsCollectionView view, TsCollection data) {
+        if (view.isFreezeOnImport()) {
+            data.load(TsInformationType.All);
+            view.getTsUpdateMode().update(view.getTsCollection(), freezedCopyOf(data));
+        } else {
+            if (TransferChange.isNotYetLoaded(data)) {
+                // TODO: put load in a separate thread
+                data.load(TsInformationType.Definition);
+            }
+            if (!data.isEmpty()) {
+                data.query(TsInformationType.All);
+                view.getTsUpdateMode().update(view.getTsCollection(), data);
             }
         }
+    }
+
+    private static TsCollection freezedCopyOf(TsCollection input) {
+        return input.stream().map(Ts::freeze).collect(TsFactory.toTsCollection());
     }
 
     private enum TransferChange {

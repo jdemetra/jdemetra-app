@@ -196,7 +196,7 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
 
         @Override
         public boolean canImport(TransferHandler.TransferSupport support) {
-            boolean result = TssTransferSupport.getDefault().canImport(support.getDataFlavors());
+            boolean result = TssTransferSupport.getDefault().canImport(support.getTransferable());
             if (result && support.isDrop()) {
                 support.setDropAction(COPY);
             }
@@ -205,26 +205,23 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            TsCollection col = TssTransferSupport.getDefault().toTsCollection(support.getTransferable());
-            if (col != null) {
-                col.query(TsInformationType.All);
-                if (!col.isEmpty()) {
-                    appendTsVariables(col);
-                }
-                return true;
-            }
-            return false;
+            return TssTransferSupport.getDefault()
+                    .toTsCollectionStream(support.getTransferable())
+                    .peek(o -> o.query(TsInformationType.All))
+                    .filter(o -> !o.isEmpty())
+                    .peek(JTsVariableList.this::appendTsVariables)
+                    .count() > 0;
         }
     }
 
     public void appendTsVariables(TsCollection coll) {
         for (Ts s : coll) {
-            String name=variables.nextName();
+            String name = variables.nextName();
             TsVariable var;
             if (s.getMoniker().isAnonymous()) {
-                var=new TsVariable(s.getName(), s.getTsData());
+                var = new TsVariable(s.getName(), s.getTsData());
             } else {
-                var=new DynamicTsVariable(s.getName(), s.getMoniker(), s.getTsData());
+                var = new DynamicTsVariable(s.getName(), s.getMoniker(), s.getTsData());
             }
             var.setName(name);
             variables.set(name, var);
@@ -447,8 +444,8 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
 
     private static Ts toTs(TsVariable variable) {
         return variable instanceof DynamicTsVariable
-        ? TsFactory.instance.createTs(variable.getDescription(), ((DynamicTsVariable) variable).getMoniker(), TsInformationType.All)
-        : TsFactory.instance.createTs(variable.getDescription(), null, variable.getTsData());
+                ? TsFactory.instance.createTs(variable.getDescription(), ((DynamicTsVariable) variable).getMoniker(), TsInformationType.All)
+                : TsFactory.instance.createTs(variable.getDescription(), null, variable.getTsData());
     }
 
     private static final class OpenCommand extends JCommand<JTsVariableList> {

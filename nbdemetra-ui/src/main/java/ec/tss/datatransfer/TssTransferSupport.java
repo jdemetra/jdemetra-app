@@ -46,7 +46,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.openide.util.Lookup;
-import org.openide.util.datatransfer.MultiTransferObject;
 import org.openide.util.lookup.ServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +106,7 @@ public class TssTransferSupport extends ListenableBean {
      *
      * @return true if the data in the clipboard is importable; false otherwise
      */
+    @OnEDT
     public boolean isValidClipboard() {
         return validClipboard;
     }
@@ -156,6 +156,12 @@ public class TssTransferSupport extends ListenableBean {
     public boolean canImport(@Nonnull DataFlavor... dataFlavors) {
         // multiFlavor means "maybe", not "yes"
         return DataTransfers.isMultiFlavor(dataFlavors) || stream().anyMatch(onDataFlavors(dataFlavors));
+    }
+
+    @OnEDT
+    public boolean canImport(@Nonnull Transferable transferable) {
+        Set<DataFlavor> dataFlavors = DataTransfers.getMultiDataFlavors(transferable).collect(Collectors.toSet());
+        return stream().anyMatch(onDataFlavors(dataFlavors));
     }
 
     /**
@@ -276,14 +282,20 @@ public class TssTransferSupport extends ListenableBean {
     @Nullable
     public TsCollection toTsCollection(@Nonnull Transferable transferable) {
         Preconditions.checkNotNull(transferable);
-        Optional<MultiTransferObject> multi = DataTransfers.getMultiTransferObject(transferable);
-        if (multi.isPresent()) {
-            List<TssTransferHandler> all = stream().collect(Collectors.toList());
-            return DataTransfers.asTransferableStream(multi.get())
-                    .flatMap(o -> findTsCollection(all.stream(), o, logger).map(TsCollection::stream).orElse(Stream.empty()))
-                    .collect(TsFactory.toTsCollection());
-        }
-        return findTsCollection(stream(), transferable, logger).orElse(null);
+        return stream()
+                .filter(onDataFlavors(transferable.getTransferDataFlavors()))
+                .map(o -> toTsCollection(o, transferable, logger))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+    }
+
+    @OnEDT
+    @Nonnull
+    public Stream<TsCollection> toTsCollectionStream(@Nonnull Transferable transferable) {
+        return DataTransfers.getMultiTransferables(transferable)
+                .map(this::toTsCollection)
+                .filter(Objects::nonNull);
     }
 
     /**
@@ -359,14 +371,6 @@ public class TssTransferSupport extends ListenableBean {
             clipboard.addFlavorListener(this);
             validClipboard = isValid(clipboard);
         }
-    }
-
-    private static Optional<TsCollection> findTsCollection(Stream<? extends TssTransferHandler> stream, Transferable t, Logger logger) {
-        return stream
-                .filter(onDataFlavors(t.getTransferDataFlavors()))
-                .map(o -> toTsCollection(o, t, logger))
-                .filter(Objects::nonNull)
-                .findFirst();
     }
 
     private static void logUnexpected(Logger logger, TssTransferHandler o, RuntimeException unexpected, String context) {
@@ -505,8 +509,11 @@ public class TssTransferSupport extends ListenableBean {
     }
 
     private static Predicate<TssTransferHandler> onDataFlavors(DataFlavor[] dataFlavors) {
-        final Set<DataFlavor> list = Sets.newHashSet(dataFlavors);
-        return o -> list.contains((DataFlavor) (o != null ? getDataFlavorOrNull(o) : null));
+        return onDataFlavors(Sets.newHashSet(dataFlavors));
+    }
+
+    private static Predicate<TssTransferHandler> onDataFlavors(Set<DataFlavor> dataFlavors) {
+        return o -> dataFlavors.contains((DataFlavor) (o != null ? getDataFlavorOrNull(o) : null));
     }
     //</editor-fold>
 }

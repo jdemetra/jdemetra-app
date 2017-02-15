@@ -33,6 +33,7 @@ import ec.util.chart.swing.JTimeSeriesChartCommand;
 import ec.util.chart.swing.SelectionMouseListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
@@ -138,9 +139,15 @@ public class JTsGrowthChart extends ATsGrowthChart {
             chartPanel.getDropTarget().addDropTargetListener(new DropTargetAdapter() {
                 @Override
                 public void dragEnter(DropTargetDragEvent dtde) {
-                    if (!getTsUpdateMode().isReadOnly() && TssTransferSupport.getDefault().canImport(dtde.getCurrentDataFlavors())) {
-                        TsCollection col = TssTransferSupport.getDefault().toTsCollection(dtde.getTransferable());
-                        setDropContent(col != null ? col.toArray() : null);
+                    if (!getTsUpdateMode().isReadOnly()) {
+                        Transferable t = dtde.getTransferable();
+                        if (TssTransferSupport.getDefault().canImport(t)) {
+                            Ts[] dropContent = TssTransferSupport.getDefault()
+                                    .toTsCollectionStream(t)
+                                    .flatMap(TsCollection::stream)
+                                    .toArray(Ts[]::new);
+                            setDropContent(dropContent != null ? dropContent : null);
+                        }
                     }
                 }
 

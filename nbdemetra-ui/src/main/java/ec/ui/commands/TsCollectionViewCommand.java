@@ -23,7 +23,6 @@ import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
-import ec.tss.TsInformationType;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
@@ -32,6 +31,7 @@ import ec.tss.tsproviders.TsProviders;
 import ec.tstoolkit.design.UtilityClass;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.utilities.Arrays2;
+import ec.ui.ATsCollectionView;
 import static ec.ui.interfaces.ITsCollectionAble.TS_COLLECTION_PROPERTY;
 import ec.ui.interfaces.ITsCollectionView;
 import static ec.ui.interfaces.ITsCollectionView.SELECTION_PROPERTY;
@@ -293,13 +293,7 @@ public final class TsCollectionViewCommand {
 
         @Override
         public void execute(ITsCollectionView component) throws Exception {
-            TsCollection col = TssTransferSupport.getDefault().toTsCollection(DataTransfers.systemClipboardAsTransferable());
-            if (col != null) {
-                col.query(TsInformationType.All);
-                if (!col.isEmpty()) {
-                    component.getTsUpdateMode().update(component.getTsCollection(), col);
-                }
-            }
+            ATsCollectionView.importData(component, DataTransfers::systemClipboardAsTransferable);
         }
 
         @Override
