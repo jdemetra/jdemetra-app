@@ -99,11 +99,11 @@ public final class DataSourceNode extends AbstractNode {
                 new ProxyLookup(Lookups.singleton(dataSource), new AbstractLookup(abilities)));
         // 2. Abilities
         {
-            abilities.add(new ReloadableImpl());
             abilities.add(NodeAnnotator.Support.getDefault());
             abilities.add(new NameableImpl());
             abilities.add(new TsSavableImpl());
             if (TsProviders.lookup(IDataSourceLoader.class, dataSource).isPresent()) {
+                abilities.add(new ReloadableImpl());
                 abilities.add(new EditableImpl());
                 abilities.add(new ClosableImpl());
                 abilities.add(new ExportableAsXmlImpl());
@@ -210,7 +210,9 @@ public final class DataSourceNode extends AbstractNode {
 
         @Override
         public void reload() {
-            setChildren(Children.create(new DataSourceChildFactory(getLookup().lookup(DataSource.class)), true));
+            DataSource dataSource = getLookup().lookup(DataSource.class);
+            TsProviders.lookup(IDataSourceProvider.class, dataSource).get().reload(dataSource);
+            setChildren(Children.create(new DataSourceChildFactory(dataSource), true));
         }
     }
 

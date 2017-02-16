@@ -91,7 +91,7 @@ public final class FakeTsProvider implements IDataSourceProvider {
 
     public FakeTsProvider() {
         this.fakeSupport = new FakeSupport();
-        this.listSupport = HasDataSourceList.of(NAME, createDataSources());
+        this.listSupport = HasDataSourceList.of(NAME, log, createDataSources());
         this.monikerSupport = HasDataMoniker.usingUri(NAME);
         this.tsSupport = TsFillerAsProvider.of(NAME, TsAsyncMode.Dynamic, TsCursorAsFiller.of(log, fakeSupport, monikerSupport, fakeSupport));
 
@@ -163,6 +163,11 @@ public final class FakeTsProvider implements IDataSourceProvider {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="IDataSourceProvider">
+    @Override
+    public void reload(DataSource dataSource) throws IllegalArgumentException {
+        listSupport.reload(dataSource);
+    }
+
     @Override
     public List<DataSource> getDataSources() {
         return listSupport.getDataSources();

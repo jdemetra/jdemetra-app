@@ -37,7 +37,6 @@ import org.openide.awt.ActionReferences;
  * @author Philippe Charles
  */
 @ActionReferences({
-    @ActionReference(path = ACTION_PATH, position = 1340, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ReloadAction")),
     @ActionReference(path = ACTION_PATH, position = 1420, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "org.openide.actions.CopyAction")),
     @ActionReference(path = ACTION_PATH, position = 1425, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction"))
 })

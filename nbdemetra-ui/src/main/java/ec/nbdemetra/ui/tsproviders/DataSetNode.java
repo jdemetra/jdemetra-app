@@ -18,7 +18,6 @@ package ec.nbdemetra.ui.tsproviders;
 
 import com.google.common.base.Optional;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.IReloadable;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
@@ -86,7 +85,6 @@ abstract public class DataSetNode extends AbstractNode {
         {
             switch (dataSet.getKind()) {
                 case COLLECTION:
-                    abilities.add(new ReloadableImpl());
                     break;
                 case SERIES:
                     abilities.add(new OpenableImpl());
@@ -157,14 +155,6 @@ abstract public class DataSetNode extends AbstractNode {
                 return new ProviderExceptionNode((IOException) ex, dataSet.getDataSource().getProviderName());
             }
             return super.createExceptionNode(ex);
-        }
-    }
-
-    private final class ReloadableImpl implements IReloadable {
-
-        @Override
-        public void reload() {
-            setChildren(Children.create(new DataSetChildFactory(getLookup().lookup(DataSet.class)), true));
         }
     }
 
