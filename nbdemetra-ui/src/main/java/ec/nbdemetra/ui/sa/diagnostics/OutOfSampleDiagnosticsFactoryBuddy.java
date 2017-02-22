@@ -177,8 +177,8 @@ public final class OutOfSampleDiagnosticsFactoryBuddy extends SaDiagnosticsFacto
         private final IParam<Config, Double> badParam = Params.onDouble(.01, "bad");
         private final IParam<Config, Double> uncertainParam = Params.onDouble(.1, "uncertain");
         private final IParam<Config, Double> lengthParam = Params.onDouble(.01, "length");
-        private final IParam<Config, Boolean> menabledParam = Params.onBoolean(true, "menabled");
-        private final IParam<Config, Boolean> venabledParam = Params.onBoolean(true, "venabled");
+        private final IParam<Config, Boolean> menabledParam = Params.onBoolean(false, "menabled");
+        private final IParam<Config, Boolean> venabledParam = Params.onBoolean(false, "venabled");
         
         @Override
         protected Config doForward(OutOfSampleDiagnosticsConfiguration a) {

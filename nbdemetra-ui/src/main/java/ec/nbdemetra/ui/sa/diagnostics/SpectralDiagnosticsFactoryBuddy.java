@@ -167,7 +167,7 @@ public final class SpectralDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryB
 
     private static final class ConfigConverter extends Converter<SpectralDiagnosticsConfiguration, Config> {
 
-        private final IParam<Config, Boolean> enabledParam = Params.onBoolean(true, "enabled");
+        private final IParam<Config, Boolean> enabledParam = Params.onBoolean(false, "enabled");
         private final IParam<Config, Boolean> strictParam = Params.onBoolean(true, "strict");
         private final IParam<Config, Double> sensParam = Params.onDouble(6.0 / 52, "sensitivity");
         private final IParam<Config, Integer> lengthParam = Params.onInteger(8, "length");

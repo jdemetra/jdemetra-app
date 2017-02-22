@@ -102,19 +102,18 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
 
     public void setOption(TradingDaysSpecType value) {
         TradingDaysSpec spec = inner();
-        spec.disable();
         switch (value) {
             case None:
+        spec.disable();
                 break;
             case Default:
-                spec.disable();
                 spec.setTradingDaysType(TradingDaysType.TradingDays);
                 spec.setLengthOfPeriod(LengthOfPeriodType.LeapYear);
                 spec.setTest(RegressionTestSpec.Remove);
                 spec.setAutoAdjust(true);
+                spec.setHolidays(null);
                 break;
             case Holidays:
-                spec.disable();
                 spec.setTradingDaysType(TradingDaysType.TradingDays);
                 spec.setLengthOfPeriod(LengthOfPeriodType.LeapYear);
                 spec.setTest(RegressionTestSpec.Remove);
@@ -122,7 +121,6 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
                 spec.setHolidays(GregorianCalendarManager.DEF);
                 break;
             case UserDefined:
-                spec.disable();
                 spec.setUserVariables(new String[]{});
                 spec.setTest(RegressionTestSpec.Remove);
                 break;
