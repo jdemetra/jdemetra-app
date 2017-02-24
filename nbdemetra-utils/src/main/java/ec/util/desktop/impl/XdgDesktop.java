@@ -104,8 +104,8 @@ public class XdgDesktop extends AwtDesktop {
 
     @Nullable
     private File getKnownFolderByName(@Nonnull String xdgFolderName) {
-        String result = system.getEnv(xdgFolderName);
-        return result != null && !result.isEmpty() ? new File(result) : new File(config.get(xdgFolderName));
+        File result = Util.fileFromPathname(system.getEnv(xdgFolderName));
+        return result != null ? result : Util.fileFromPathname(config.get(xdgFolderName));
     }
 
     @Override
