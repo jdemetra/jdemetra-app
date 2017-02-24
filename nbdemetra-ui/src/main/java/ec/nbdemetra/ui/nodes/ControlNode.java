@@ -20,6 +20,8 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.interfaces.ITsCollectionView;
 import internal.FrozenTsHelper;
 import ec.nbdemetra.ui.properties.LocalDateTimePropertyEditor;
+import ec.tss.TsMoniker;
+import ec.tss.tsproviders.DataSet;
 import java.awt.Image;
 import java.beans.PropertyVetoException;
 import java.time.LocalDateTime;
@@ -201,10 +203,7 @@ public class ControlNode {
                 .add();
 
         if (!col.getMoniker().isAnonymous()) {
-            String providerName = col.getMoniker().getSource();
-            if (providerName != null) {
-                b.with(String.class).selectConst("Provider", getProviderDisplayName(providerName)).add();
-            }
+            addDataSourceProperties(col.getMoniker(), b);
         }
 
         b.withEnum(TsInformationType.class).select(col, "getInformationType", null).display("Information type").add();
@@ -242,10 +241,7 @@ public class ControlNode {
                 .add();
 
         if (ts.isFrozen() || !ts.getMoniker().isAnonymous()) {
-            String providerName = FrozenTsHelper.getSource(ts);
-            if (providerName != null) {
-                b.with(String.class).selectConst("Provider", getProviderDisplayName(providerName)).add();
-            }
+            addDataSourceProperties(ts.getMoniker(), b);
         }
 
         b.withEnum(TsInformationType.class).select(ts, "getInformationType", null).display("Information type").add();
@@ -301,9 +297,29 @@ public class ControlNode {
         }
     }
 
-    private static String getProviderDisplayName(String providerName) {
-        return TsProviders.lookup(IDataSourceProvider.class, providerName)
-                .transform(IDataSourceProvider::getDisplayName)
-                .or(providerName);
+    private static void addDataSourceProperties(TsMoniker moniker, NodePropertySetBuilder b) {
+        TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
+        if (original != null) {
+            String providerName = original.getSource();
+            if (providerName != null) {
+                IDataSourceProvider p = TsProviders.lookup(IDataSourceProvider.class, providerName).orNull();
+                b.with(String.class).selectConst("Provider", getProviderDisplayName(p, providerName)).add();
+                b.with(String.class).selectConst("Data source", getDataSourceDisplayName(p, original, "unavailable")).add();
+            }
+        }
+    }
+
+    private static String getProviderDisplayName(IDataSourceProvider provider, String fallback) {
+        return provider != null ? provider.getDisplayName() : fallback;
+    }
+
+    private static String getDataSourceDisplayName(IDataSourceProvider provider, TsMoniker moniker, String fallback) {
+        if (provider != null) {
+            DataSet dataSet = provider.toDataSet(moniker);
+            if (dataSet != null) {
+                return provider.getDisplayName(dataSet.getDataSource());
+            }
+        }
+        return fallback;
     }
 }
