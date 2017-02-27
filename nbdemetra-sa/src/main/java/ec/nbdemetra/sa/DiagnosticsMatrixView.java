@@ -21,9 +21,9 @@ import ec.nbdemetra.ui.DemetraUI;
 import ec.satoolkit.algorithm.implementation.X13ProcessingFactory;
 import ec.satoolkit.x11.Mstatistics;
 import ec.tss.formatters.TableFormatter;
-import ec.tss.sa.diagnostics.CoherenceDiagnostics;
-import ec.tss.sa.diagnostics.ResidualsDiagnostics;
-import ec.tss.sa.diagnostics.SpectralDiagnostics;
+import ec.tss.sa.diagnostics.CoherenceDiagnosticsFactory;
+import ec.tss.sa.diagnostics.ResidualsDiagnosticsFactory;
+import ec.tss.sa.diagnostics.SpectralDiagnosticsFactory;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.IProcResults;
 import ec.tstoolkit.data.Table;
@@ -232,11 +232,11 @@ public class DiagnosticsMatrixView extends JPanel {
 
     private static final String[] TESTS = new String[]{
         "residuals.skewness:-3", "residuals.kurtosis:-3", "residuals.lb:-3", "residuals.seaslb:-3", "residuals.lb2:-3",
-        InformationSet.item(CoherenceDiagnostics.NAME, CoherenceDiagnostics.BIAS) + ":-2",
-        InformationSet.item(ResidualsDiagnostics.NAME, ResidualsDiagnostics.TD_PEAK) + ":-2",
-        InformationSet.item(ResidualsDiagnostics.NAME, ResidualsDiagnostics.S_PEAK) + ":-2",
-        InformationSet.item(SpectralDiagnostics.NAME, SpectralDiagnostics.TD),
-        InformationSet.item(SpectralDiagnostics.NAME, SpectralDiagnostics.SEAS),
+        InformationSet.item(CoherenceDiagnosticsFactory.NAME, CoherenceDiagnosticsFactory.BIAS) + ":-2",
+        InformationSet.item(ResidualsDiagnosticsFactory.NAME, ResidualsDiagnosticsFactory.TD_PEAK) + ":-2",
+        InformationSet.item(ResidualsDiagnosticsFactory.NAME, ResidualsDiagnosticsFactory.S_PEAK) + ":-2",
+        InformationSet.item(SpectralDiagnosticsFactory.NAME, SpectralDiagnosticsFactory.TD),
+        InformationSet.item(SpectralDiagnosticsFactory.NAME, SpectralDiagnosticsFactory.SEAS),
         InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M1),
         InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M2),
         InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M3),
