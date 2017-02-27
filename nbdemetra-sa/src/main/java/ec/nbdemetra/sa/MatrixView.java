@@ -41,7 +41,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
-import org.netbeans.core.spi.multiview.MultiViewElementCallback;
 
 /**
  *
@@ -292,11 +291,11 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
     private static final String[] TESTS = new String[]{
         "residuals.skewness:-3", "residuals.kurtosis:-3", "residuals.lb:-3", "residuals.seaslb:-3", "residuals.lb2:-3",
-        InformationSet.item(CoherenceDiagnostics.NAME, CoherenceDiagnostics.BIAS) + ":-2",
-        InformationSet.item(ResidualsDiagnostics.NAME, ResidualsDiagnostics.TD_PEAK) + ":-2",
-        InformationSet.item(ResidualsDiagnostics.NAME, ResidualsDiagnostics.S_PEAK) + ":-2",
-        InformationSet.item(SpectralDiagnostics.NAME, SpectralDiagnostics.TD),
-        InformationSet.item(SpectralDiagnostics.NAME, SpectralDiagnostics.SEAS),
+        InformationSet.item(CoherenceDiagnosticsFactory.NAME, CoherenceDiagnosticsFactory.BIAS) + ":-2",
+        InformationSet.item(ResidualsDiagnosticsFactory.NAME, ResidualsDiagnosticsFactory.TD_PEAK) + ":-2",
+        InformationSet.item(ResidualsDiagnosticsFactory.NAME, ResidualsDiagnosticsFactory.S_PEAK) + ":-2",
+        InformationSet.item(SpectralDiagnosticsFactory.NAME, SpectralDiagnosticsFactory.TD),
+        InformationSet.item(SpectralDiagnosticsFactory.NAME, SpectralDiagnosticsFactory.SEAS),
         InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M1),
         InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M2),
         InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M3),
