@@ -67,7 +67,7 @@ public final class CopySpecToWorkSpace extends AbstractViewAction<SaBatchUI> {
 
     @Override
     protected void process(SaBatchUI cur) {
-        IProcSpecification spec = cur.getSelection()[0].getActiveSpecification();
+        IProcSpecification spec = cur.getSelection()[0].getEstimationSpecification();
         LinearId id;
         Class mgr;
         if (spec instanceof TramoSeatsSpecification) {
