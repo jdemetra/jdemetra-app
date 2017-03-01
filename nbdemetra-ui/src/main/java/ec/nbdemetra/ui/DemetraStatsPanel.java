@@ -79,7 +79,7 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         editDiagnostic.setEnabled(false);
         resetDiagnostic.setEnabled(false);
 
-        allDiagFields.addAll(BasicConfiguration.allDetails(false, SaManager.instance.getProcessors()));
+        allDiagFields.addAll(BasicConfiguration.allSingleSaDetails(false));
         allSeriesFields.addAll(BasicConfiguration.allSeries(false, SaManager.instance.getProcessors()));
 
         selectedDiagFields = new ArrayList<>(allDiagFields);
