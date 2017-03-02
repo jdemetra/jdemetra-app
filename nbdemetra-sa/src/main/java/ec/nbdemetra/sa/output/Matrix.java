@@ -17,6 +17,7 @@
 package ec.nbdemetra.sa.output;
 
 import ec.nbdemetra.ui.properties.ListSelectionEditor;
+import ec.tss.sa.SaManager;
 import ec.tss.sa.output.BasicConfiguration;
 import java.util.Arrays;
 
@@ -27,6 +28,6 @@ import java.util.Arrays;
 public class Matrix extends ListSelectionEditor<String> {
 
     public Matrix() {
-        super(Arrays.asList(BasicConfiguration.allDetails));
+        super(BasicConfiguration.allDetails(true, SaManager.instance.getProcessors(), SaManager.instance.getDiagnostics()));
     }
 }

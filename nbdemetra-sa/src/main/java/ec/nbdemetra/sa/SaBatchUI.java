@@ -909,14 +909,22 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         protected String getText(SaItem item) {
-            if (item.getEstimationSpecification() == null) {
-                return null;
-            } else if (item.getEstimationPolicy() == EstimationPolicyType.Fixed) {
-                return "Current";
-            } else if (item.getEstimationPolicy() == EstimationPolicyType.Complete) {
-                return "Concurrent";
-            } else {
-                return item.getEstimationPolicy().name();
+            switch (item.getEstimationPolicy()){
+                case Fixed:
+                    return "Fixed model";
+                case FixedParameters:
+                    return "Reg. coefficients";
+                case FreeParameters:
+                    return "Arima parameters";
+                case LastOutliers:
+                    return "Last outliers";
+                case Outliers:
+                    return "Outliers";
+                case Outliers_StochasticComponent:
+                    return "Arima model";
+                case Complete:
+                    return "Concurrent";
+                default: return null;
             }
         }
     }
