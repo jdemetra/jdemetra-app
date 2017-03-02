@@ -17,15 +17,15 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "ec.nbdemetra.sa.actions.RefreshPartialCurrent")
-@ActionRegistration(displayName = "#CTL_RefreshPartialCurrent")
+id = "ec.nbdemetra.sa.actions.RefreshFixedModel")
+@ActionRegistration(displayName = "#CTL_RefreshFixedModel")
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + RefreshPartial.PATH, position = 1225)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + RefreshPartial.PATH, position = 1205)
 })
-@Messages("CTL_RefreshPartialCurrent=Regression coefficients")
-public final class RefreshPartialCurrent implements ActionListener  {
+@Messages("CTL_RefreshFixedModel=Fixed model")
+public final class RefreshFixedModel implements ActionListener  {
 
-    public RefreshPartialCurrent() {
+    public RefreshFixedModel() {
     }
 
     @Override
@@ -34,6 +34,6 @@ public final class RefreshPartialCurrent implements ActionListener  {
         if (ui == null) {
             return;
         }
-        ui.refresh(EstimationPolicyType.FixedParameters, false, true);
+        ui.refresh(EstimationPolicyType.Fixed, false, true);
     }
 }

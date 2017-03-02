@@ -112,9 +112,9 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     static final IParam<Config, Boolean> POPUP_MENU_ICONS_VISIBLE = Params.onBoolean(false, POPUP_MENU_ICONS_VISIBLE_PROPERTY);
     static final IParam<Config, PrespecificiedOutliersEditor> PRESPECIFIED_OUTLIERS_EDITOR = Params.onEnum(PrespecificiedOutliersEditor.CALENDAR_GRID, PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY);
     static final IParam<Config, String[]> SELECTED_DIAG_FIELDS = Params.onStringArray(SELECTED_DIAG_FIELDS_PROPERTY,
-            BasicConfiguration.allDetails(false, SaManager.instance.getProcessors()).stream().toArray(String[]::new));
+            BasicConfiguration.allSingleSaDetails(false).stream().toArray(String[]::new));
     static final IParam<Config, String[]> SELECTED_SERIES_FIELDS = Params.onStringArray(SELECTED_SERIES_FIELDS_PROPERTY,
-            BasicConfiguration.allSeries(false, SaManager.instance.getProcessors()).stream().toArray(String[]::new));
+            BasicConfiguration.allSaSeries(false).stream().toArray(String[]::new));
 
     // INTERNAL STUFF
     private static final Ordering<ColorScheme> COLOR_SCHEME_ORDERING = Ordering.natural().onResultOf(o -> o.getDisplayName());

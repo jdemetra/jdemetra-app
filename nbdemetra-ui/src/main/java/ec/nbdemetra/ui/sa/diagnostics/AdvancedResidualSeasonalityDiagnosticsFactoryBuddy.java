@@ -228,7 +228,7 @@ public final class AdvancedResidualSeasonalityDiagnosticsFactoryBuddy extends Sa
             AdvancedResidualSeasonalityDiagnosticsConfiguration result = new AdvancedResidualSeasonalityDiagnosticsConfiguration();
             result.setEnabled(enabledParam.get(b));
             result.setFTest(fTestParam.get(b));
-            result.setQsTest(fTestParam.get(b));
+            result.setQsTest(qsTestParam.get(b));
             result.setFTestLastYears(fTestLastYearsParam.get(b));
             result.setQsTestLastYears(qsTestLastYearsParam.get(b));
             result.setSevereThreshold(severeParam.get(b));

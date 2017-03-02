@@ -17,6 +17,7 @@
 package ec.nbdemetra.sa.output;
 
 import ec.nbdemetra.ui.properties.ListSelectionEditor;
+import ec.tss.sa.SaManager;
 import ec.tss.sa.output.BasicConfiguration;
 import java.util.Arrays;
 
@@ -27,6 +28,6 @@ import java.util.Arrays;
 public class Series extends ListSelectionEditor<String> {
 
     public Series() {
-        super(Arrays.asList(BasicConfiguration.allSeries));
+        super(BasicConfiguration.allSeries(true, SaManager.instance.getProcessors()));
     }
 }
