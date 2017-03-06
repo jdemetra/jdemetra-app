@@ -102,8 +102,8 @@ public final class DataSourceNode extends AbstractNode {
             abilities.add(NodeAnnotator.Support.getDefault());
             abilities.add(new NameableImpl());
             abilities.add(new TsSavableImpl());
+            abilities.add(new ReloadableImpl());
             if (TsProviders.lookup(IDataSourceLoader.class, dataSource).isPresent()) {
-                abilities.add(new ReloadableImpl());
                 abilities.add(new EditableImpl());
                 abilities.add(new ClosableImpl());
                 abilities.add(new ExportableAsXmlImpl());
@@ -178,6 +178,10 @@ public final class DataSourceNode extends AbstractNode {
         return data;
     }
 
+    private static void notifyMissingProvider(String providerName) {
+        DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message("Cannot find provider '" + providerName + "'"));
+    }
+
     private static final class DataSourceChildFactory extends FailSafeChildFactory {
 
         private final DataSource dataSource;
@@ -211,8 +215,13 @@ public final class DataSourceNode extends AbstractNode {
         @Override
         public void reload() {
             DataSource dataSource = getLookup().lookup(DataSource.class);
-            TsProviders.lookup(IDataSourceProvider.class, dataSource).get().reload(dataSource);
-            setChildren(Children.create(new DataSourceChildFactory(dataSource), true));
+            Optional<IDataSourceProvider> provider = TsProviders.lookup(IDataSourceProvider.class, dataSource);
+            if (provider.isPresent()) {
+                provider.get().reload(dataSource);
+                setChildren(Children.create(new DataSourceChildFactory(dataSource), true));
+            } else {
+                notifyMissingProvider(dataSource.getProviderName());
+            }
         }
     }
 
