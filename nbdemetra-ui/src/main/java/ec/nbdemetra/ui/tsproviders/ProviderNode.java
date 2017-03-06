@@ -77,6 +77,9 @@ public final class ProviderNode extends AbstractNode {
                 abilities.add(new OpenableImpl());
                 abilities.add(new ImportableDataSource());
             }
+            DataSourceProviderBuddySupport.getDefault()
+                    .getConfigurable(provider.getSource())
+                    .ifPresent(abilities::add);
         }
         // 3. Name and display name
         setName(provider.getSource());
