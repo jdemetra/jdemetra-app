@@ -21,6 +21,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import ec.nbdemetra.core.GlobalService;
+import ec.nbdemetra.ui.IConfigurable;
 import ec.tss.TsMoniker;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
@@ -94,30 +95,89 @@ public class DataSourceProviderBuddySupport {
         return get(moniker.getSource());
     }
 
+    /**
+     * Gets an icon for a provider.
+     *
+     * @param providerName
+     * @param type
+     * @param opened
+     * @return an optional icon
+     * @since 2.2.0
+     */
     @Nonnull
     public Optional<Image> getIcon(@Nonnull String providerName, int type, boolean opened) {
         return Optional.ofNullable(get(providerName).getIcon(type, opened));
     }
 
+    /**
+     * Gets an icon for a data source.
+     *
+     * @param dataSource
+     * @param type
+     * @param opened
+     * @return an optional icon
+     * @since 2.2.0
+     */
     @Nonnull
     public Optional<Image> getIcon(@Nonnull DataSource dataSource, int type, boolean opened) {
         return Optional.ofNullable(get(dataSource).getIcon(dataSource, type, opened));
     }
 
+    /**
+     * Gets an icon for a data set.
+     *
+     * @param dataSet
+     * @param type
+     * @param opened
+     * @return an optional icon
+     * @since 2.2.0
+     */
     @Nonnull
     public Optional<Image> getIcon(@Nonnull DataSet dataSet, int type, boolean opened) {
         return Optional.ofNullable(get(dataSet).getIcon(dataSet, type, opened));
     }
 
+    /**
+     * Gets an icon for an exception thrown by a provider.
+     *
+     * @param providerName
+     * @param ex
+     * @param type
+     * @param opened
+     * @return an optional icon
+     * @since 2.2.0
+     */
     @Nonnull
     public Optional<Image> getIcon(@Nonnull String providerName, @Nonnull IOException ex, int type, boolean opened) {
         return Optional.ofNullable(get(providerName).getIcon(ex, type, opened));
     }
 
+    /**
+     * Gets an icon for a moniker.
+     *
+     * @param moniker
+     * @param type
+     * @param opened
+     * @return an optional icon
+     * @since 2.2.0
+     */
     @Nonnull
     public Optional<Image> getIcon(@Nonnull TsMoniker moniker, int type, boolean opened) {
         TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
         return original != null ? Optional.ofNullable(get(original).getIcon(moniker, type, opened)) : Optional.empty();
+    }
+
+    /**
+     * Gets a configurable for a provider.
+     *
+     * @param providerName
+     * @return an optional configurable
+     * @since 2.2.0
+     */
+    @Nonnull
+    public Optional<IConfigurable> getConfigurable(@Nonnull String providerName) {
+        IDataSourceProviderBuddy buddy = get(providerName);
+        return buddy instanceof IConfigurable ? Optional.of((IConfigurable) buddy) : Optional.empty();
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
