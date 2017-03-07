@@ -83,7 +83,8 @@ import org.openide.util.lookup.ProxyLookup;
     @ActionReference(path = ACTION_PATH, position = 1350, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.RenameAction")),
     @ActionReference(path = ACTION_PATH, position = 1410, id = @ActionID(category = "Edit", id = "org.openide.actions.CopyAction"), separatorBefore = 1400),
     @ActionReference(path = ACTION_PATH, position = 1415, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction")),
-    @ActionReference(path = ACTION_PATH, position = 1430, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ExportAction"))
+    @ActionReference(path = ACTION_PATH, position = 1430, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ExportAction")),
+    @ActionReference(path = ACTION_PATH, position = 1701, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.ShowInFolderAction"), separatorBefore = 1700)
 })
 public final class DataSourceNode extends AbstractNode {
 
