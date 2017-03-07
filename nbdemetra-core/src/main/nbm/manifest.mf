@@ -1,5 +1,4 @@
 Manifest-Version: 1.0
 OpenIDE-Module-Install: ec/nbdemetra/core/Installer.class
 OpenIDE-Module-Localizing-Bundle: ec/nbdemetra/core/Bundle.properties
-OpenIDE-Module-Layer: ec/nbdemetra/core/layer.xml
 OpenIDE-Module-Display-Category: Platform
