@@ -140,7 +140,7 @@ public class AwtDesktop implements Desktop {
     @Deprecated
     @Nonnull
     protected static File checkFile(File file) throws NullPointerException, IllegalArgumentException {
-        return Util.checkFile(file);
+        return Util.checkFileValidation(file);
     }
 
     @Deprecated

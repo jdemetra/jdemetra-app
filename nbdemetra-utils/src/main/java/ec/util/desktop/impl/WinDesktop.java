@@ -83,7 +83,7 @@ public class WinDesktop extends AwtDesktop {
 
     @Override
     public void showInFolder(File file) throws IOException {
-        Util.checkFile(file);
+        Util.checkFileValidation(file);
         showInFolder(system, file);
     }
 
