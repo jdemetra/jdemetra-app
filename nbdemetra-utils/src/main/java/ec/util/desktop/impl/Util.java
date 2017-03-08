@@ -63,14 +63,14 @@ final class Util {
      *
      * @param file the file to check
      * @return the validated file
+     * @throws NullPointerException if file is null
+     * @throws IllegalArgumentException if file doesn't exist
      * @throws SecurityException If a security manager exists and its
      * {@link SecurityManager#checkRead(java.lang.String)} method denies read
      * access to the file
-     * @throws NullPointerException if file is null
-     * @throws IllegalArgumentException if file doesn't exist
      */
     @Nonnull
-    public static File checkFile(@Nonnull File file) throws NullPointerException, IllegalArgumentException {
+    public static File checkFileValidation(@Nonnull File file) throws NullPointerException, IllegalArgumentException, SecurityException {
         Objects.requireNonNull(file, "File must not be null");
         if (!file.exists()) {
             throw new IllegalArgumentException("The file: " + file.getPath() + " doesn't exist.");

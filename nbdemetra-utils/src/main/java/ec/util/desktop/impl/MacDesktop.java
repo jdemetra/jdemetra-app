@@ -66,9 +66,9 @@ public class MacDesktop extends AwtDesktop {
 
     @Override
     public void showInFolder(File file) throws IOException {
-        Util.checkFile(file);
+        Util.checkFileValidation(file);
         // https://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man1/open.1.html
-        system.exec("open", "-R", "'" + file.getAbsolutePath() + "'");
+        system.exec("open", "-R", file.getAbsolutePath());
     }
 
     @Override
