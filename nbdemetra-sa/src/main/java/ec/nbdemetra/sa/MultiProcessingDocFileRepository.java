@@ -8,7 +8,6 @@ import ec.nbdemetra.ws.AbstractFileItemRepository;
 import ec.nbdemetra.ws.IWorkspaceItemRepository;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.tss.sa.SaProcessing;
-import ec.tss.xml.sa.XmlSaProcessing;
 import java.text.DateFormat;
 import java.util.Date;
 import org.openide.util.lookup.ServiceProvider;
@@ -20,45 +19,27 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = IWorkspaceItemRepository.class)
 public class MultiProcessingDocFileRepository extends AbstractFileItemRepository<MultiProcessingDocument> {
 
+    @Deprecated
     public static final String REPOSITORY = "SAProcessing";
 
     @Override
     public boolean load(WorkspaceItem<MultiProcessingDocument> item) {
-        String sfile = fullName(item, REPOSITORY, false);
-        if (sfile == null) {
-            return false;
-        }
-        SaProcessing doc = loadInfo(sfile, SaProcessing.class);
-        if (doc == null) {
-            doc = loadLegacy(sfile, XmlSaProcessing.class);
-        }
-        if (doc != null){
-            
-        item.setElement(MultiProcessingDocument.open(doc));
-        item.resetDirty();
-        }
-        return doc != null;
+        return loadFile(item, (SaProcessing o) -> {
+            item.setElement(MultiProcessingDocument.open(o));
+            item.resetDirty();
+        });
     }
 
     @Override
     public boolean save(WorkspaceItem<MultiProcessingDocument> item) {
-        SaProcessing current = item.getElement().getCurrent();
-        current.getMetaData().put(SaProcessing.TIMESTAMP, DateFormat.getDateTimeInstance().format(new Date()));
-        String sfile = fullName(item, REPOSITORY, true);
-        if (sfile == null) {
-            return false;
-        }
-        if ( saveInfo(sfile, item.getElement().getCurrent())){
-            item.resetDirty();
-            return true;
-        }else {
-            return false;
-        }
+        SaProcessing o = item.getElement().getCurrent();
+        o.getMetaData().put(SaProcessing.TIMESTAMP, DateFormat.getDateTimeInstance().format(new Date()));
+        return storeFile(item, o, item::resetDirty);
     }
 
     @Override
     public boolean delete(WorkspaceItem<MultiProcessingDocument> doc) {
-        return delete(doc, REPOSITORY);
+        return deleteFile(doc);
     }
 
     @Override

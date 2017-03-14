@@ -54,7 +54,7 @@ public class WorkspaceItem<T> implements IModifiable, Comparable<WorkspaceItem> 
         }
 
         public boolean canBeSaved() {
-            return this == New || this == Valid;
+            return this == New || this == Valid || this == Undefined;
         }
 
         public boolean hasStorage() {
@@ -157,6 +157,7 @@ public class WorkspaceItem<T> implements IModifiable, Comparable<WorkspaceItem> 
             
         this.comments_ = comments;
         dirty_ = true;
+        status_ = Status.Undefined;
     }
 
     public boolean load() {
