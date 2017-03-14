@@ -54,6 +54,10 @@
             <artifactId>demetra-utils</artifactId>
         </dependency>
         <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-workspace</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
@@ -102,6 +106,10 @@
                         <publicPackage>com.google.common.*</publicPackage>
                         <publicPackage>org.apache.commons.logging.*</publicPackage>
                         <publicPackage>javax.annotation.*</publicPackage>
+                        <publicPackage>ec.demetra.workspace</publicPackage>
+                        <publicPackage>ec.demetra.workspace.file</publicPackage>
+                        <publicPackage>ec.demetra.workspace.file.spi</publicPackage>
+                        <publicPackage>ec.demetra.workspace.file.util</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

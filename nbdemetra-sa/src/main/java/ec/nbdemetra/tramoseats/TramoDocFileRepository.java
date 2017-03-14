@@ -19,6 +19,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = IWorkspaceItemRepository.class)
 public final class TramoDocFileRepository extends DefaultFileItemRepository<TramoDocument> {
 
+    @Deprecated
     public static final String REPOSITORY = "TramoDoc";
 
     @Override
@@ -27,14 +28,30 @@ public final class TramoDocFileRepository extends DefaultFileItemRepository<Tram
     }
 
     @Override
-    public Class<TramoDocument> getSupportedType() {
-        return TramoDocument.class;
+    public boolean load(WorkspaceItem<TramoDocument> item) {
+        return loadFile(item, (TramoDocument o) -> {
+            item.setElement(o);
+            item.resetDirty();
+        });
     }
 
     @Override
     public boolean save(WorkspaceItem<TramoDocument> doc) {
         TramoDocument element = doc.getElement();
         element.getMetaData().put(MetaData.DATE, new Date().toString());
-        return super.save(doc);
+        return storeFile(doc, element, () -> {
+            doc.resetDirty();
+            doc.getElement().resetDirty();
+        });
+    }
+
+    @Override
+    public boolean delete(WorkspaceItem<TramoDocument> doc) {
+        return deleteFile(doc);
+    }
+
+    @Override
+    public Class<TramoDocument> getSupportedType() {
+        return TramoDocument.class;
     }
 }

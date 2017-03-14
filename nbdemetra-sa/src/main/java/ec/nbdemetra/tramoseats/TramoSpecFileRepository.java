@@ -17,37 +17,25 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = IWorkspaceItemRepository.class)
 public class TramoSpecFileRepository extends AbstractFileItemRepository<TramoSpecification> {
 
+    @Deprecated
     public static final String REPOSITORY = "TramoSpec";
 
     @Override
     public boolean load(WorkspaceItem<TramoSpecification> item) {
-        String sfile = this.fullName(item, REPOSITORY, false);
-        if (sfile == null) {
-            return false;
-        }
-        TramoSpecification spec = AbstractFileItemRepository.loadInfo(sfile, TramoSpecification.class);
-        item.setElement(spec);
-        item.resetDirty();
-        return spec != null;
-
+        return loadFile(item, (TramoSpecification o) -> {
+            item.setElement(o);
+            item.resetDirty();
+        });
     }
 
     @Override
     public boolean save(WorkspaceItem<TramoSpecification> item) {
-        String sfile = this.fullName(item, REPOSITORY, true);
-        if (sfile == null) {
-            return false;
-        }
-        if(saveInfo(sfile, item.getElement())){
-            item.resetDirty();
-            return true;
-        }else
-            return false;
+        return storeFile(item, item.getElement(), item::resetDirty);
     }
 
     @Override
     public boolean delete(WorkspaceItem<TramoSpecification> doc) {
-        return delete(doc, REPOSITORY);
+        return deleteFile(doc);
     }
 
     @Override

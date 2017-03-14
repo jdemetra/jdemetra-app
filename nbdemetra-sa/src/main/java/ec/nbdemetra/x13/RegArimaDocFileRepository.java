@@ -19,22 +19,39 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = IWorkspaceItemRepository.class)
 public class RegArimaDocFileRepository extends DefaultFileItemRepository<RegArimaDocument> {
 
+    @Deprecated
     public static final String REPOSITORY = "RegArimaDoc";
+
+    @Override
+    public String getRepository() {
+        return REPOSITORY;
+    }
+
+    @Override
+    public boolean load(WorkspaceItem<RegArimaDocument> item) {
+        return loadFile(item, (RegArimaDocument o) -> {
+            item.setElement(o);
+            item.resetDirty();
+        });
+    }
 
     @Override
     public boolean save(WorkspaceItem<RegArimaDocument> doc) {
         RegArimaDocument element = doc.getElement();
         element.getMetaData().put(MetaData.DATE, new Date().toString());
-        return super.save(doc);
+        return storeFile(doc, element, () -> {
+            doc.resetDirty();
+            doc.getElement().resetDirty();
+        });
+    }
+
+    @Override
+    public boolean delete(WorkspaceItem<RegArimaDocument> doc) {
+        return deleteFile(doc);
     }
 
     @Override
     public Class<RegArimaDocument> getSupportedType() {
         return RegArimaDocument.class;
-    }
-
-    @Override
-    public String getRepository() {
-        return REPOSITORY;
     }
 }

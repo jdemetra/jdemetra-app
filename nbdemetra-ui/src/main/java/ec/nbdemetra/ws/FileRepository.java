@@ -17,10 +17,10 @@
 package ec.nbdemetra.ws;
 
 import com.google.common.base.StandardSystemProperty;
-import com.google.common.base.Throwables;
+import ec.demetra.workspace.WorkspaceFamily;
+import ec.demetra.workspace.file.FileFormat;
+import ec.demetra.workspace.file.FileWorkspace;
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
-import ec.nbdemetra.ws.xml.XmlGenericWorkspace;
-import ec.nbdemetra.ws.xml.compatibility.XmlWorkspace;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.DataSource.Builder;
 import ec.tss.xml.calendar.XmlCalendars;
@@ -28,26 +28,25 @@ import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
 import ec.tstoolkit.timeseries.calendars.IGregorianCalendarProvider;
 import ec.tstoolkit.timeseries.regression.TsVariables;
+import ec.tstoolkit.utilities.LinearId;
 import ec.tstoolkit.utilities.NameManager;
 import ec.tstoolkit.utilities.Paths;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.Desktop.KnownFolder;
 import ec.util.desktop.DesktopManager;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileChooserBuilder;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -63,19 +62,12 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
 
     public static final String NAME = "File", FILENAME = "fileName", VERSION = "20120925";
 
-    private static final JAXBContext XML_GENERIC_WS_CONTEXT;
-    private static final JAXBContext XML_WS_CONTEXT;
+    @Deprecated
     private static final FileChooserBuilder CALENDAR_FILE_CHOOSER;
 
     static {
-        try {
-            XML_GENERIC_WS_CONTEXT = JAXBContext.newInstance(XmlGenericWorkspace.class);
-            XML_WS_CONTEXT = JAXBContext.newInstance(XmlWorkspace.class);
-            CALENDAR_FILE_CHOOSER = new FileChooserBuilder(CalendarDocumentManager.class)
-                    .setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Xml files", "xml"));
-        } catch (JAXBException ex) {
-            throw Throwables.propagate(ex);
-        }
+        CALENDAR_FILE_CHOOSER = new FileChooserBuilder(CalendarDocumentManager.class)
+                .setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Xml files", "xml"));
     }
 
     private final Lookup.Result<IWorkspaceItemRepository> repositoryLookup;
@@ -88,7 +80,8 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
                 .setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Xml files", "xml"));
     }
 
-    public static DataSource encode(File file) {
+    @Nonnull
+    public static DataSource encode(@Nullable File file) {
         Builder builder = DataSource.builder(NAME, VERSION);
         if (file != null) {
             String sfile = file.getAbsolutePath();
@@ -98,7 +91,8 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         return builder.build();
     }
 
-    public static File decode(DataSource source) {
+    @Nullable
+    public static File decode(@Nonnull DataSource source) {
         if (!source.getProviderName().equals(NAME)) {
             return null;
         }
@@ -123,18 +117,19 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
 
     @Override
     public boolean saveAs(Workspace ws) {
-        java.io.File file = wsFileChooser.showSaveDialog();
-        if (file != null) {
-            try {
-                ws.loadAll();
-                ws.setName(Paths.changeExtension(file.getName(), null));
-                ws.setDataSource(encode(file));
-                return save(ws, true);
-            } catch (Exception ex) {
-                return false;
-            }
+        File file = wsFileChooser.showSaveDialog();
+        if (file == null) {
+            return false;
         }
-        return false;
+
+        try {
+            ws.loadAll();
+            ws.setName(Paths.changeExtension(file.getName(), null));
+            ws.setDataSource(encode(file));
+            return save(ws, true);
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     @Override
@@ -143,24 +138,21 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         if (file == null) {
             return saveAs(ws);
         }
-        try (FileOutputStream stream = new FileOutputStream(file)) {
-            try (OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
 
-                Marshaller marshaller = XML_GENERIC_WS_CONTEXT.createMarshaller();
-                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-                XmlGenericWorkspace xws = new XmlGenericWorkspace();
-                if (!xws.from(ws)) {
-                    return false;
-                }
-                marshaller.marshal(xws, writer);
-                ws.resetDirty();
-                writer.flush();
-                saveContext(ws);
-                return true;
-            }
-        } catch (Exception ex) {
+        Path target = file.toPath();
+        try (FileWorkspace storage = Files.exists(target)
+                ? FileWorkspace.open(target)
+                : FileWorkspace.create(target, FileFormat.GENERIC)) {
+            storage.setName(ws.getName());
+            storeCalendar(storage, ws.getContext().getGregorianCalendars());
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
             return false;
         }
+
+        ws.resetDirty();
+        ws.getContext().resetDirty();
+        return true;
     }
 
     @Override
@@ -172,17 +164,18 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     @Override
     public Workspace open() {
         java.io.File file = wsFileChooser.showOpenDialog();
-        if (file != null) {
-            Workspace ws = new Workspace(encode(file), Paths.changeExtension(file.getName(), null));
-            if (!load(ws)) {
-                NotifyDescriptor nd = new NotifyDescriptor.Message(file.getName() + " is not a valid workspace!");
-                DialogDisplayer.getDefault().notify(nd);
-                return null;
-            } else {
-                return ws;
-            }
+        if (file == null) {
+            return null;
         }
-        return null;
+
+        Workspace ws = new Workspace(encode(file), Paths.changeExtension(file.getName(), null));
+        if (!load(ws)) {
+            NotifyDescriptor nd = new NotifyDescriptor.Message(file.getName() + " is not a valid workspace!");
+            DialogDisplayer.getDefault().notify(nd);
+            return null;
+        } else {
+            return ws;
+        }
     }
 
     @Override
@@ -190,53 +183,67 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         if (!(ws.getRepository() instanceof FileRepository)) {
             return false;
         }
-        if (loadWorkspace(ws)) {
-            loadContext(ws);
-            return true;
-        }
-        if (loadLegacyWorkspace(ws)) {
-            loadContext(ws);
-            return true;
-        }
-        return false;
-    }
 
-    private boolean loadLegacyWorkspace(Workspace ws) {
         File file = decode(ws.getDataSource());
-        try {
-            Unmarshaller unmarshaller = XML_WS_CONTEXT.createUnmarshaller();
-            XmlWorkspace xws = (XmlWorkspace) unmarshaller.unmarshal(file);
-            if (xws == null) {
-                return false;
-            }
-            if (!xws.load(ws)) {
-                return false;
-            }
-            ws.resetDirty();
-            return true;
-        } catch (Exception ex) {
+        if (file == null || !file.exists()) {
             return false;
         }
+
+        try (FileWorkspace storage = FileWorkspace.open(file.toPath())) {
+            ws.setName(storage.getName());
+            loadCalendars(storage, ws);
+            loadItems(storage.getItems(), ws);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+            return false;
+        }
+
+        ws.resetDirty();
+        ws.getContext().resetDirty();
+        return true;
     }
 
-    private boolean loadWorkspace(Workspace ws) {
-        File file = decode(ws.getDataSource());
+    private static void loadItems(Collection<ec.demetra.workspace.WorkspaceItem> items, Workspace ws) {
+        items.forEach(o -> {
+            if (!o.getFamily().equals(WorkspaceFamily.UTIL_CAL)) {
+                WorkspaceItem<?> witem = WorkspaceItem.item(new LinearId(o.getFamily().toString().split("@")), o.getLabel(), o.getId(), o.getComments());
+                ws.quietAdd(witem);
+                IWorkspaceItemManager<?> manager = WorkspaceFactory.getInstance().getManager(witem.getFamily());
+                if (manager != null && manager.isAutoLoad()) {
+                    witem.load();
+                }
+            }
+        });
+    }
+
+    private static final ec.demetra.workspace.WorkspaceItem CAL_ID = ec.demetra.workspace.WorkspaceItem.builder().family(WorkspaceFamily.UTIL_CAL).id("Calendars").build();
+
+    private static void storeCalendar(FileWorkspace storage, GregorianCalendarManager value) {
         try {
-            Unmarshaller unmarshaller = XML_GENERIC_WS_CONTEXT.createUnmarshaller();
-            XmlGenericWorkspace xws = (XmlGenericWorkspace) unmarshaller.unmarshal(file);
-            if (xws == null) {
-                return false;
-            }
-            if (!xws.to(ws)) {
-                return false;
-            }
-            ws.resetDirty();
-            return true;
-        } catch (Exception ex) {
-            return false;
+            storage.store(CAL_ID, value);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
         }
     }
 
+    private static void loadCalendars(FileWorkspace storage, Workspace ws) {
+        try {
+            GregorianCalendarManager source = (GregorianCalendarManager) storage.load(CAL_ID);
+            GregorianCalendarManager target = ws.getContext().getGregorianCalendars();
+            for (String name : source.getNames()) {
+                IGregorianCalendarProvider cal = source.get(name);
+                target.set(name, cal);
+                if (ws.searchDocument(cal) == null) {
+                    WorkspaceItem<IGregorianCalendarProvider> item = WorkspaceItem.system(CalendarDocumentManager.ID, name, cal);
+                    ws.add(item);
+                }
+            }
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    @Deprecated
     public static String getRepositoryRootFolder(Workspace ws) {
         File id = decode(ws.getDataSource());
         if (id == null) {
@@ -250,6 +257,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         }
     }
 
+    @Deprecated
     public static String getRepositoryFolder(Workspace ws, String repository, boolean create) {
         String root = getRepositoryRootFolder(ws);
         File frepo = new File(root, repository);
@@ -277,17 +285,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         initialize();
     }
 
-    private void loadContext(Workspace ws) {
-        loadCalendars(ws, getCalendarsFile(ws, false));
-        loadVariables(ws, getVariablesFile(ws, false));
-        ws.getContext().resetDirty();
-    }
-
-    private void saveContext(Workspace ws) {
-        saveCalendars(ws, getCalendarsFile(ws, true));
-        ws.getContext().resetDirty();
-    }
-
+    @Deprecated
     public static void importCalendars(Workspace ws) {
         java.io.File file = CALENDAR_FILE_CHOOSER.showOpenDialog();
         if (file != null) {
@@ -295,6 +293,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         }
     }
 
+    @Deprecated
     public static boolean loadCalendars(Workspace ws, String file) {
         GregorianCalendarManager wsMgr = ws.getContext().getGregorianCalendars();
         XmlCalendars xml = AbstractFileItemRepository.loadXmlLegacy(file, XmlCalendars.class);
@@ -319,6 +318,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         return true;
     }
 
+    @Deprecated
     public static boolean loadVariables(Workspace ws, String file) {
         NameManager<TsVariables> wsMgr = ws.getContext().getTsVariableManagers();
         TsVariables mgr = AbstractFileItemRepository.loadLegacy(file, ec.tss.xml.legacy.XmlTsVariables.class);
@@ -330,24 +330,11 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         }
     }
 
+    @Deprecated
     public static boolean saveCalendars(Workspace ws, String file) {
         GregorianCalendarManager wsMgr = ws.getContext().getGregorianCalendars();
         return AbstractFileItemRepository.saveLegacy(file, wsMgr, XmlCalendars.class);
     }
-
-    private static String getCalendarsFile(Workspace ws, boolean create) {
-        String folder = getRepositoryFolder(ws, CALENDARS_REPOSITORY, create);
-        return Paths.concatenate(folder, CALENDARS);
-    }
-    private static final String CALENDARS_REPOSITORY = "Calendars";
-    private static final String CALENDARS = "Calendars.xml";
-
-    private static String getVariablesFile(Workspace ws, boolean create) {
-        String folder = getRepositoryFolder(ws, VARIABLES_REPOSITORY, create);
-        return Paths.concatenate(folder, VARIABLES);
-    }
-    private static final String VARIABLES_REPOSITORY = "Variables";
-    private static final String VARIABLES = "Variables.xml";
 
     private static File getDefaultWorkingDirectory(Desktop desktop, UnaryOperator<String> properties) {
         File documents = getDocumentsDirectory(desktop).orElseGet(() -> getUserHome(properties));

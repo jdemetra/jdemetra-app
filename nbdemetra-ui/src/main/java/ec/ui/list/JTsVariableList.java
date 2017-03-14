@@ -234,16 +234,18 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            String text = (String) value;
-            if (text.isEmpty()) {
-                result.setText(" ");
-                result.setToolTipText(null);
-            } else if (text.startsWith("<html>")) {
-                result.setText(text);
-                result.setToolTipText(text);
-            } else {
-                result.setText(MultiLineNameUtil.join(text));
-                result.setToolTipText(MultiLineNameUtil.toHtml(text));
+            if (value instanceof String) {
+                String text = (String) value;
+                if (text.isEmpty()) {
+                    result.setText(" ");
+                    result.setToolTipText(null);
+                } else if (text.startsWith("<html>")) {
+                    result.setText(text);
+                    result.setToolTipText(text);
+                } else {
+                    result.setText(MultiLineNameUtil.join(text));
+                    result.setToolTipText(MultiLineNameUtil.toHtml(text));
+                }
             }
             return result;
         }

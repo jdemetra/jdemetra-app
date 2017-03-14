@@ -15,41 +15,31 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Jean Palate
  */
 @ServiceProvider(service = IWorkspaceItemRepository.class)
-public class RegArimaSpecFileRepository extends AbstractFileItemRepository<RegArimaSpecification>{
+public class RegArimaSpecFileRepository extends AbstractFileItemRepository<RegArimaSpecification> {
 
-   public static final String REPOSITORY = "RegArimaSpec";
-    
+    @Deprecated
+    public static final String REPOSITORY = "RegArimaSpec";
+
     @Override
     public boolean load(WorkspaceItem<RegArimaSpecification> item) {
-        String sfile= this.fullName(item, REPOSITORY, false);
-        if (sfile == null)
-            return false;
-       RegArimaSpecification spec = AbstractFileItemRepository.loadInfo(sfile, RegArimaSpecification.class);
-        item.setElement(spec);
-        item.resetDirty();
-        return spec != null;
+        return loadFile(item, (RegArimaSpecification o) -> {
+            item.setElement(o);
+            item.resetDirty();
+        });
     }
 
     @Override
     public boolean save(WorkspaceItem<RegArimaSpecification> item) {
-        String sfile= this.fullName(item, REPOSITORY, true);
-        if (sfile == null)
-            return false;
-        if(saveInfo(sfile, item.getElement())){
-            item.resetDirty();
-            return true;
-        }else
-            return false;
+        return storeFile(item, item.getElement(), item::resetDirty);
     }
 
     @Override
     public boolean delete(WorkspaceItem<RegArimaSpecification> doc) {
-        return delete(doc, REPOSITORY);
+        return deleteFile(doc);
     }
 
     @Override
     public Class<RegArimaSpecification> getSupportedType() {
         return RegArimaSpecification.class;
     }
-  
 }
