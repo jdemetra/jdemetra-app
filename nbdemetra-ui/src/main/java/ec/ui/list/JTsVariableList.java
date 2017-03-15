@@ -207,7 +207,7 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
         public boolean importData(TransferHandler.TransferSupport support) {
             return TssTransferSupport.getDefault()
                     .toTsCollectionStream(support.getTransferable())
-                    .peek(o -> o.query(TsInformationType.All))
+                    .peek(o -> o.load(TsInformationType.All))
                     .filter(o -> !o.isEmpty())
                     .peek(JTsVariableList.this::appendTsVariables)
                     .count() > 0;
@@ -445,9 +445,13 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
     }
 
     private static Ts toTs(TsVariable variable) {
+        String name = variable.getDescription();
+        if (name == null) {
+            name = variable.getName();
+        }
         return variable instanceof DynamicTsVariable
-                ? TsFactory.instance.createTs(variable.getDescription(), ((DynamicTsVariable) variable).getMoniker(), TsInformationType.All)
-                : TsFactory.instance.createTs(variable.getDescription(), null, variable.getTsData());
+                ? TsFactory.instance.createTs(name, ((DynamicTsVariable) variable).getMoniker(), TsInformationType.None)
+                : TsFactory.instance.createTs(name, null, variable.getTsData());
     }
 
     private static final class OpenCommand extends JCommand<JTsVariableList> {
