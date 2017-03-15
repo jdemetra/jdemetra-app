@@ -206,7 +206,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     private static void loadItems(Collection<ec.demetra.workspace.WorkspaceItem> items, Workspace ws) {
         items.forEach(o -> {
             if (!o.getFamily().equals(WorkspaceFamily.UTIL_CAL)) {
-                WorkspaceItem<?> witem = WorkspaceItem.item(new LinearId(o.getFamily().toString().split("@")), o.getLabel(), o.getId(), o.getComments());
+                WorkspaceItem<?> witem = WorkspaceItem.item(LinearId.of(o.getFamily()), o.getLabel(), o.getId(), o.getComments());
                 ws.quietAdd(witem);
                 IWorkspaceItemManager<?> manager = WorkspaceFactory.getInstance().getManager(witem.getFamily());
                 if (manager != null && manager.isAutoLoad()) {
