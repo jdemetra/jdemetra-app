@@ -704,6 +704,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         SaItem item = selection[0];
         SaItem nitem = new SaItem(doc.getSpecification().clone(), EstimationPolicyType.Interactive, null, doc.getInput());
         nitem.setMetaData(item.getMetaData());
+        nitem.setName(item.getRawName());
         nitem.unsafeFill(doc.getResults());
         selection[0] = nitem;
         getCurrentProcessing().replace(item, nitem);
