@@ -95,7 +95,7 @@ public final class ToolsPersistence {
         }
     }
 
-    private static final IFormatter<Content> CONTENT_FORMATTER = Formatters.onJAXB(ContentBean.class, false).compose2(o -> o.toBean());
+    private static final IFormatter<Content> CONTENT_FORMATTER = Formatters.onJAXB(ContentBean.class, false).compose(Content::toBean);
     private static final IParser<Content> CONTENT_PARSER = Parsers.onJAXB(ContentBean.class).andThen(Content::fromBean);
 
     private static class Content {

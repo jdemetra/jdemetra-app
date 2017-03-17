@@ -18,11 +18,11 @@ package ec.util.completion.ext;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Streams;
 import ec.util.completion.AbstractAutoCompletionSource;
 import ec.util.completion.AutoCompletionSources;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 
 /**
@@ -48,7 +48,7 @@ public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletio
 
     @Override
     protected List<?> getValues(String term, Iterable<T> allValues) {
-        return (List<?>) StreamSupport.stream(allValues.spliterator(), false)
+        return (List<?>) Streams.stream(allValues)
                 .filter(getFilter(term)::apply)
                 .limit(getLimitSize())
                 .sorted(getSorter())

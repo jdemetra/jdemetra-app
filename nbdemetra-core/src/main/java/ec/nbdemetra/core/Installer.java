@@ -18,6 +18,7 @@ package ec.nbdemetra.core;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Streams;
 import ec.tss.DynamicTsVariable;
 import ec.tss.ITsProvider;
 import ec.tss.TsFactory;
@@ -42,7 +43,6 @@ import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -108,7 +108,7 @@ public final class Installer extends ModuleInstall {
 
         final Preferences prefs = prefs();
         final IParser<File[]> pathsParser = Parsers.onJAXB(PathsBean.class).andThen(o -> o.paths != null ? o.paths : new File[0]);
-        final IFormatter<File[]> pathsFormatter = Formatters.onJAXB(PathsBean.class, false).compose2(PathsBean::create);
+        final IFormatter<File[]> pathsFormatter = Formatters.onJAXB(PathsBean.class, false).compose(PathsBean::create);
 
         ProvidersStep() {
             super(ITsProvider.class);
@@ -144,7 +144,7 @@ public final class Installer extends ModuleInstall {
         }
 
         private static String toString(Iterable<? extends ITsProvider> providers) {
-            return StreamSupport.stream(providers.spliterator(), false)
+            return Streams.stream(providers)
                     .map(o -> o.getSource() + "(" + o.getClass().getName() + ")")
                     .collect(Collectors.joining(", "));
         }

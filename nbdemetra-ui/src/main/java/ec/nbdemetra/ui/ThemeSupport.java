@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.ui;
 
-import com.google.common.base.Objects;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.ui.interfaces.IDisposable;
 import ec.util.chart.ColorScheme;
@@ -15,6 +14,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import org.openide.util.WeakListeners;
 
@@ -46,7 +46,7 @@ public abstract class ThemeSupport extends SwingColorSchemeSupport implements ID
     }
 
     public void setLocalColorScheme(@Nullable ColorScheme localColorScheme) {
-        if (!Objects.equal(this.localColorScheme, localColorScheme)) {
+        if (!Objects.equals(this.localColorScheme, localColorScheme)) {
             this.localColorScheme = localColorScheme;
             colorSchemeChanged();
         }
@@ -68,7 +68,7 @@ public abstract class ThemeSupport extends SwingColorSchemeSupport implements ID
     }
 
     public void setLocalDataFormat(@Nullable DataFormat localDataFormat) {
-        if (!Objects.equal(this.localDataFormat, localDataFormat)) {
+        if (!Objects.equals(this.localDataFormat, localDataFormat)) {
             this.localDataFormat = localDataFormat;
             dataFormatChanged();
         }

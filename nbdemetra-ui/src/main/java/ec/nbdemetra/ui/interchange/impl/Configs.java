@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.interchange.impl;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.StandardSystemProperty;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
@@ -28,7 +27,7 @@ import ec.nbdemetra.ui.interchange.Importable;
 import ec.tss.tsproviders.utils.Formatters;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.tstoolkit.design.Immutable;
-import ec.tstoolkit.utilities.GuavaCollectors;
+import ec.tstoolkit.design.VisibleForTesting;
 import java.io.IOException;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -124,7 +123,7 @@ public final class Configs {
         return new Configs(
                 StandardSystemProperty.USER_NAME.value(),
                 System.currentTimeMillis(),
-                exportables.stream().map(o -> o.exportConfig()).collect(GuavaCollectors.toImmutableList())
+                exportables.stream().map(Exportable::exportConfig).collect(ImmutableList.toImmutableList())
         );
     }
 
@@ -167,8 +166,8 @@ public final class Configs {
         }
 
         final Parsers.Parser<Configs> defaultParser = Parsers.wrap(Parsers.<ConfigsBean>onJAXB(BEAN_CONTEXT).andThen(ConfigsBean::toId));
-        final Formatters.Formatter<Configs> defaultFormatter = Formatters.wrap(Formatters.<ConfigsBean>onJAXB(BEAN_CONTEXT, false).compose2(Configs::toBean));
-        final Formatters.Formatter<Configs> formattedOutputFormatter = Formatters.wrap(Formatters.<ConfigsBean>onJAXB(BEAN_CONTEXT, true).compose2(Configs::toBean));
+        final Formatters.Formatter<Configs> defaultFormatter = Formatters.<ConfigsBean>onJAXB(BEAN_CONTEXT, false).compose(Configs::toBean);
+        final Formatters.Formatter<Configs> formattedOutputFormatter = Formatters.<ConfigsBean>onJAXB(BEAN_CONTEXT, true).compose(Configs::toBean);
     }
     //</editor-fold>
 }

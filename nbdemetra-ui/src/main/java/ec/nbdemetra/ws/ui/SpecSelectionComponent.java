@@ -17,7 +17,6 @@
 package ec.nbdemetra.ws.ui;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
 import ec.nbdemetra.ui.awt.JComponent2;
 import ec.nbdemetra.ui.calendars.CustomDialogDescriptor;
@@ -38,6 +37,7 @@ import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.util.function.Predicate;
 import javax.swing.tree.TreeSelectionModel;
 import org.openide.DialogDescriptor;
 import org.openide.explorer.ExplorerManager;
@@ -200,7 +200,7 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
         SYSTEM_ONLY;
 
         @Override
-        public boolean apply(Node input) {
+        public boolean test(Node input) {
             return !(input instanceof ItemWsNode)
                     || ((ItemWsNode) input).getItem().getStatus() == WorkspaceItem.Status.System;
         }

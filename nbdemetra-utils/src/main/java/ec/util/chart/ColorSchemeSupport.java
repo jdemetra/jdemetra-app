@@ -220,9 +220,9 @@ public abstract class ColorSchemeSupport<T> {
         List<T> areaColors = colorScheme.getAreaColors().stream().map(this::toColor).collect(Collectors.toList());
         List<T> lineColors = colorScheme.getLineColors().stream().map(this::toColor).collect(Collectors.toList());
         Map<KnownColor, T> areaKnownColors = new EnumMap<>(KnownColor.class);
-        colorScheme.getAreaKnownColors().entrySet().forEach(o -> areaKnownColors.put(o.getKey(), toColor(o.getValue())));
+        colorScheme.getAreaKnownColors().forEach((k, v) -> areaKnownColors.put(k, toColor(v)));
         Map<KnownColor, T> lineKnownColors = new EnumMap<>(KnownColor.class);
-        colorScheme.getLineKnownColors().entrySet().forEach(o -> lineKnownColors.put(o.getKey(), toColor(o.getValue())));
+        colorScheme.getLineKnownColors().forEach((k, v) -> lineKnownColors.put(k, toColor(v)));
         T backColor = toColor(colorScheme.getBackColor());
         T plotColor = toColor(colorScheme.getPlotColor());
         T gridColor = toColor(colorScheme.getGridColor());

@@ -19,11 +19,10 @@ package ec.nbdemetra.ui.awt;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Ordering;
-import com.google.common.primitives.Ints;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -157,13 +156,8 @@ public final class KeyStrokes {
         }
     }
 
-    private static Ordering<KeyStroke> orderingUsingKeyTextLength() {
-        return new Ordering<KeyStroke>() {
-            @Override
-            public int compare(KeyStroke left, KeyStroke right) {
-                return Ints.compare(KeyEvent.getKeyText(left.getKeyCode()).length(), KeyEvent.getKeyText(right.getKeyCode()).length());
-            }
-        };
+    private static Comparator<KeyStroke> orderingUsingKeyTextLength() {
+        return (l, r) -> Integer.compare(KeyEvent.getKeyText(l.getKeyCode()).length(), KeyEvent.getKeyText(r.getKeyCode()).length());
     }
     //</editor-fold>
 }

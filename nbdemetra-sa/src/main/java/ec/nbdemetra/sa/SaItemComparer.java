@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.sa;
 
-import com.google.common.primitives.Ints;
 import ec.tss.sa.SaItem;
 import java.util.Comparator;
 
@@ -18,7 +17,7 @@ public enum SaItemComparer implements Comparator<SaItem> {
 
                 @Override
                 public int compare(SaItem x, SaItem y) {
-                    return Ints.compare(x.getKey(), y.getKey());
+                    return Integer.compare(x.getKey(), y.getKey());
                 }
             },
     Name {
@@ -43,14 +42,14 @@ public enum SaItemComparer implements Comparator<SaItem> {
 
                 @Override
                 public int compare(SaItem x, SaItem y) {
-                    return Ints.compare(x.getQuality().intValue(), y.getQuality().intValue());
+                    return Integer.compare(x.getQuality().intValue(), y.getQuality().intValue());
                 }
             },
     Priority {
 
                 @Override
                 public int compare(SaItem x, SaItem y) {
-                    return Ints.compare(x.getPriority(), y.getPriority());
+                    return Integer.compare(x.getPriority(), y.getPriority());
                 }
             },
     Status {

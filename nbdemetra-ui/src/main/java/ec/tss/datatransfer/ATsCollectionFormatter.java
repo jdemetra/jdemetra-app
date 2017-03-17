@@ -24,7 +24,6 @@ import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.TsCollection;
-import ec.tstoolkit.utilities.GuavaCollectors;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
@@ -141,5 +140,5 @@ public abstract class ATsCollectionFormatter extends AbstractNamedService implem
 
     private static final ImmutableList<TssTransferHandler> LEGACY_HANDLERS = Lookup.getDefault().lookupAll(ITsCollectionFormatter.class).stream()
             .map(o -> (TssTransferHandler) (o instanceof IConfigurable ? new TssTransferHandlerAdapter2(o) : new TssTransferHandlerAdapter(o)))
-            .collect(GuavaCollectors.toImmutableList());
+            .collect(ImmutableList.toImmutableList());
 }

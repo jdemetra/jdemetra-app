@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.properties;
 
-import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import static ec.nbdemetra.ui.properties.Util.attr;
@@ -28,6 +27,7 @@ import java.beans.PropertyEditorManager;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import org.openide.explorer.propertysheet.ExPropertyEditor;
