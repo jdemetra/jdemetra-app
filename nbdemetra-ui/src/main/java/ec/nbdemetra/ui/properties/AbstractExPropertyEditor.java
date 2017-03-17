@@ -16,9 +16,9 @@
  */
 package ec.nbdemetra.ui.properties;
 
-import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import java.beans.PropertyEditorSupport;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import org.openide.explorer.propertysheet.ExPropertyEditor;
 import org.openide.explorer.propertysheet.InplaceEditor;

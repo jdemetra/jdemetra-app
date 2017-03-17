@@ -17,7 +17,6 @@
 package ec.nbdemetra.ui.tsproviders;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Ordering;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.nodes.Nodes;
@@ -33,6 +32,7 @@ import java.awt.datatransfer.Transferable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -246,9 +246,9 @@ public final class ProvidersNode extends AbstractNode {
         }
     }
 
-    private static final Ordering<IDataSourceProvider> ON_CLASS_SIMPLENAME = Ordering.natural().onResultOf(o -> o.getClass().getSimpleName());
+    private static final Comparator<IDataSourceProvider> ON_CLASS_SIMPLENAME = Comparator.comparing(o -> o.getClass().getSimpleName());
 
-    private static final Ordering<DataSource> ON_TO_STRING = Ordering.natural().onResultOf(o -> o.toString());
+    private static final Comparator<DataSource> ON_TO_STRING = Comparator.comparing(Object::toString);
 
     public static boolean isProvidersNode(Node[] activatedNodes) {
         return activatedNodes != null && activatedNodes.length == 0;

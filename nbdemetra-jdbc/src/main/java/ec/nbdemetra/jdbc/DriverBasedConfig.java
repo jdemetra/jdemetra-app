@@ -209,9 +209,9 @@ public final class DriverBasedConfig implements IConfig {
             }
         }
 
-        final Parsers.Parser<DriverBasedConfig> defaultParser = Parsers.wrap(Parsers.<ConnectionBean>onJAXB(BEAN_CONTEXT).andThen(o -> o.toId()));
-        final Formatters.Formatter<DriverBasedConfig> defaultFormatter = Formatters.wrap(Formatters.<ConnectionBean>onJAXB(BEAN_CONTEXT, false).compose2(DriverBasedConfig::toBean));
-        final Formatters.Formatter<DriverBasedConfig> formattedOutputFormatter = Formatters.wrap(Formatters.<ConnectionBean>onJAXB(BEAN_CONTEXT, true).compose2(DriverBasedConfig::toBean));
+        final Parsers.Parser<DriverBasedConfig> defaultParser = Parsers.wrap(Parsers.<ConnectionBean>onJAXB(BEAN_CONTEXT).andThen(ConnectionBean::toId));
+        final Formatters.Formatter<DriverBasedConfig> defaultFormatter = Formatters.<ConnectionBean>onJAXB(BEAN_CONTEXT, false).compose(DriverBasedConfig::toBean);
+        final Formatters.Formatter<DriverBasedConfig> formattedOutputFormatter = Formatters.<ConnectionBean>onJAXB(BEAN_CONTEXT, true).compose(DriverBasedConfig::toBean);
     }
     //</editor-fold>
 }

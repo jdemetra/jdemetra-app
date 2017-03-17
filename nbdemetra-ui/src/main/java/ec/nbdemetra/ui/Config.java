@@ -239,8 +239,8 @@ public final class Config implements IConfig, Serializable {
         }
 
         final Parsers.Parser<Config> defaultParser = Parsers.wrap(Parsers.<ConfigBean>onJAXB(BEAN_CONTEXT).andThen(ConfigBean::toId));
-        final Formatters.Formatter<Config> defaultFormatter = Formatters.wrap(Formatters.<ConfigBean>onJAXB(BEAN_CONTEXT, false).compose2(Config::toBean));
-        final Formatters.Formatter<Config> formattedOutputFormatter = Formatters.wrap(Formatters.<ConfigBean>onJAXB(BEAN_CONTEXT, true).compose2(Config::toBean));
+        final Formatters.Formatter<Config> defaultFormatter = Formatters.<ConfigBean>onJAXB(BEAN_CONTEXT, false).compose(Config::toBean);
+        final Formatters.Formatter<Config> formattedOutputFormatter = Formatters.<ConfigBean>onJAXB(BEAN_CONTEXT, true).compose(Config::toBean);
     }
     //</editor-fold>
 }

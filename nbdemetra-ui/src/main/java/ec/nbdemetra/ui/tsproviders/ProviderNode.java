@@ -19,7 +19,6 @@ package ec.nbdemetra.ui.tsproviders;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Ordering;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.interchange.Importable;
@@ -30,6 +29,7 @@ import java.awt.Image;
 import java.awt.datatransfer.Transferable;
 import java.beans.IntrospectionException;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.swing.Action;
@@ -153,7 +153,9 @@ public final class ProviderNode extends AbstractNode {
 
         @Override
         protected boolean createKeys(List<DataSource> list) {
-            list.addAll(ON_TO_STRING.sortedCopy(provider.getDataSources()));
+            provider.getDataSources().stream()
+                    .sorted(Comparator.comparing(Object::toString))
+                    .forEach(list::add);
             return true;
         }
 
@@ -239,6 +241,4 @@ public final class ProviderNode extends AbstractNode {
             return null;
         }
     }
-
-    private static final Ordering<DataSource> ON_TO_STRING = Ordering.natural().onResultOf(o -> o.toString());
 }

@@ -17,13 +17,13 @@
 package ec.nbdemetra.ui.nodes;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.awt.JProperty;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.nodes.FilterNode;
@@ -106,7 +106,7 @@ public class DecoratedNode extends FilterNode {
         protected Node[] createNodes(Node key) {
             List<Node> result = new ArrayList<>();
             for (Node o : super.createNodes(key)) {
-                if (filter.apply(((DecoratedNode) o).getOriginal())) {
+                if (filter.test(((DecoratedNode) o).getOriginal())) {
                     result.add(o);
                 }
             }

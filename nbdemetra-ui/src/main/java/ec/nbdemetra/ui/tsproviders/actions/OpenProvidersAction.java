@@ -17,7 +17,6 @@
 package ec.nbdemetra.ui.tsproviders.actions;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Ordering;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.IDataSourceProvider;
@@ -28,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.io.File;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -62,9 +62,9 @@ public final class OpenProvidersAction extends AbstractAction implements Present
     @Override
     public JMenuItem getPopupPresenter() {
         JMenu result = new JMenu(Bundle.CTL_OpenProvidersAction());
-        for (IFileLoader o : TsProviders.all().filter(IFileLoader.class).toSortedList(ON_CLASS_SIMPLENAME)) {
-            result.add(new AbstractActionImpl(o));
-        }
+        TsProviders.all().filter(IFileLoader.class).stream()
+                .sorted(ON_CLASS_SIMPLENAME)
+                .forEach(o -> result.add(new AbstractActionImpl(o)));
         return result;
     }
 
@@ -91,7 +91,7 @@ public final class OpenProvidersAction extends AbstractAction implements Present
         label.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(loader.getSource(), BeanInfo.ICON_COLOR_16x16, false).map(ImageUtilities::image2Icon).orElse(null));
     }
 
-    private static final Ordering<IDataSourceProvider> ON_CLASS_SIMPLENAME = Ordering.natural().onResultOf(o -> o.getClass().getSimpleName());
+    private static final Comparator<IDataSourceProvider> ON_CLASS_SIMPLENAME = Comparator.comparing(o -> o.getClass().getSimpleName());
 
     private static final class AbstractActionImpl extends AbstractAction {
 

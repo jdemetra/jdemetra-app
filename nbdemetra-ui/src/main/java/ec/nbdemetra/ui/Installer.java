@@ -18,7 +18,6 @@ package ec.nbdemetra.ui;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import ec.nbdemetra.core.InstallerStep;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.ui.interchange.InterchangeBroker;
@@ -180,7 +179,7 @@ public final class Installer extends ModuleInstall {
 
             @Override
             public Iterator<DataSource> iterator() {
-                return dataSources != null ? dataSources.iterator() : Iterators.<DataSource>emptyIterator();
+                return dataSources != null ? dataSources.iterator() : Collections.emptyIterator();
             }
         }
     }
