@@ -313,7 +313,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
                 menu.add(subMenu);
             }
         }
-        menu.add(new AddDataSourceCommand(DataSource.builder("Missing", "").build()).toAction(view)).setText("Missing provider");
+        menu.add(new AddDataSourceCommand(DataSource.of("Missing", "")).toAction(view)).setText("Missing provider");
         JButton result = DropDownButtonFactory.createDropDownButton(getIcon(FontAwesome.FA_DATABASE), menu.getPopupMenu());
         result.setToolTipText("Data sources");
         return result;
