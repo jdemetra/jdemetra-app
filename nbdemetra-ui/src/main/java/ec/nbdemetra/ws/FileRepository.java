@@ -22,7 +22,6 @@ import ec.demetra.workspace.file.FileFormat;
 import ec.demetra.workspace.file.FileWorkspace;
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
 import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.DataSource.Builder;
 import ec.tss.xml.calendar.XmlCalendars;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
@@ -82,13 +81,12 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
 
     @Nonnull
     public static DataSource encode(@Nullable File file) {
-        Builder builder = DataSource.builder(NAME, VERSION);
         if (file != null) {
             String sfile = file.getAbsolutePath();
             sfile = Paths.changeExtension(sfile, "xml");
-            builder.put(FILENAME, sfile);
+            return DataSource.of(NAME, VERSION, FILENAME, sfile);
         }
-        return builder.build();
+        return DataSource.of(NAME, VERSION);
     }
 
     @Nullable
