@@ -237,8 +237,7 @@ public final class FakeTsProvider implements IDataSourceProvider {
         List<DataSource> result = new ArrayList<>();
         DataSource.Builder builder = DataSource.builder(NAME, "");
         for (DataType o : DataType.values()) {
-            TYPE_PARAM.set(builder, o);
-            result.add(builder.build());
+            result.add(builder.put(TYPE_PARAM, o).build());
         }
         return result;
     }
@@ -307,10 +306,7 @@ public final class FakeTsProvider implements IDataSourceProvider {
 
         private static Function<Integer, DataSet> getDataSetFunc(DataSource dataSource) {
             DataSet.Builder b = DataSet.builder(dataSource, DataSet.Kind.SERIES);
-            return o -> {
-                INDEX_PARAM.set(b, o);
-                return b.build();
-            };
+            return o -> b.put(INDEX_PARAM, o).build();
         }
     }
 

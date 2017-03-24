@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.mru;
 
+import ec.nbdemetra.ws.FileRepository;
 import ec.nbdemetra.ws.IWorkspaceRepository;
 import ec.nbdemetra.ws.Workspace;
 import ec.nbdemetra.ws.WorkspaceFactory;
@@ -23,8 +24,8 @@ import ec.tss.tsproviders.DataSource;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -78,6 +79,7 @@ public final class WorkspaceMruAction extends AbstractAction implements Presente
 
         @Override
         public JComponent[] getMenuPresenters() {
+            updateMenu();
             return new JComponent[]{this};
         }
 
@@ -89,43 +91,74 @@ public final class WorkspaceMruAction extends AbstractAction implements Presente
         private void updateMenu() {
             removeAll();
             if (MruList.getWorkspacesInstance().isEmpty()) {
-                this.setEnabled(false);
+                setEnabled(false);
                 return;
             }
-            this.setEnabled(true);
-            for (final SourceId item : MruList.getWorkspacesInstance()) {
-                Action action = new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (!WorkspaceFactory.getInstance().closeWorkspace(true)) {
-                            return;
-                        }
-                        IWorkspaceRepository repository = WorkspaceFactory.getInstance().getRepository(item.getDataSource().getProviderName());
-                        if (repository != null) {
-                            Workspace ws = new Workspace(item.dataSource, item.label);
-                            if (repository.load(ws)) {
-                                WorkspaceFactory.getInstance().setActiveWorkspace(ws, WorkspaceFactory.Event.OPEN);
-                            }
-                        }
-                    }
-                };
-                action.putValue(Action.NAME, item.getLabel());
-                //            action.putValue(Action.SMALL_ICON, DemetraUI.getInstance().getMonikerUI().getIcon(item.getDataSource()));
-                JMenuItem jMenuItem = new JMenuItem(action);
-                jMenuItem.setEnabled(isLoadable(item.getDataSource()));
-                add(jMenuItem);
+            setEnabled(true);
+            for (SourceId item : MruList.getWorkspacesInstance()) {
+                WorkspaceStatus status = WorkspaceStatus.get(item.getDataSource());
+                JMenuItem menuItem = new JMenuItem(new OpenAction(item));
+                menuItem.setText(item.getLabel());
+                menuItem.setEnabled(status.equals(WorkspaceStatus.LOADABLE));
+                menuItem.setToolTipText(status.name());
+                add(menuItem);
             }
             add(new JSeparator());
-            add(new JMenuItem(new AbstractAction("Clear") {
-                @Override
-                public void actionPerformed(ActionEvent ae) {
-                    MruList.getWorkspacesInstance().clear();
-                }
-            }));
+            add(new JMenuItem(ClearAction.INSTANCE)).setText("Clear");
+        }
+    }
+
+    private static final class OpenAction extends AbstractAction {
+
+        private final SourceId item;
+
+        OpenAction(SourceId item) {
+            this.item = item;
         }
 
-        boolean isLoadable(DataSource dataSource) {
-            return WorkspaceFactory.getInstance().getRepository(dataSource.getProviderName()) != null;
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (!WorkspaceFactory.getInstance().closeWorkspace(true)) {
+                return;
+            }
+            IWorkspaceRepository repository = WorkspaceFactory.getInstance().getRepository(item.getDataSource().getProviderName());
+            if (repository != null) {
+                Workspace ws = new Workspace(item.dataSource, item.label);
+                if (repository.load(ws)) {
+                    WorkspaceFactory.getInstance().setActiveWorkspace(ws, WorkspaceFactory.Event.OPEN);
+                }
+            }
+        }
+    }
+
+    private static final class ClearAction extends AbstractAction {
+
+        static final ClearAction INSTANCE = new ClearAction();
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            MruList.getWorkspacesInstance().clear();
+        }
+    }
+
+    private enum WorkspaceStatus {
+        LOADABLE, FILE_MISSING, LOADED, UNLOADABLE;
+
+        static WorkspaceStatus get(DataSource dataSource) {
+            if (WorkspaceFactory.getInstance().getRepository(dataSource.getProviderName()) == null) {
+                return UNLOADABLE;
+            }
+            File file = FileRepository.decode(dataSource);
+            if (file == null) {
+                return UNLOADABLE;
+            }
+            if (dataSource.equals(WorkspaceFactory.getInstance().getActiveWorkspace().getDataSource())) {
+                return LOADED;
+            }
+            if (!file.exists()) {
+                return FILE_MISSING;
+            }
+            return LOADABLE;
         }
     }
 }
