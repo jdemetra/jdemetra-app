@@ -7,6 +7,7 @@ package ec.nbdemetra.ui.properties.l2fprod;
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import ec.tstoolkit.modelling.TsVariableDescriptor;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -24,7 +25,7 @@ public class TsVariableDescriptorsEditor extends AbstractPropertyEditor {
         editor = new JButton(new AbstractAction("...") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                 final ArrayEditorDialog<TsVariableDescriptorUI> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
+                final ArrayEditorDialog<TsVariableDescriptorUI> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
                         null != descriptors_ ? getDescriptors() : new TsVariableDescriptorUI[]{}, TsVariableDescriptorUI.class);
                 dialog.setTitle("Variables");
                 dialog.setVisible(true);
@@ -45,10 +46,15 @@ public class TsVariableDescriptorsEditor extends AbstractPropertyEditor {
 
     private void setDescriptors(List<TsVariableDescriptorUI> elements) {
         TsVariableDescriptor[] old = descriptors_;
-        descriptors_ = new TsVariableDescriptor[elements.size()];
-        for (int i = 0; i < descriptors_.length; ++i) {
-            descriptors_[i] = elements.get(i).getCore();
+        // check that the descriptors are well-formed
+        List<TsVariableDescriptor> ldesc = new ArrayList<>();
+        for (int i = 0; i < elements.size(); ++i) {
+            TsVariableDescriptor cur = elements.get(i).getCore();
+            if (cur.getName() != null) {
+                ldesc.add(cur);
+            }
         }
+        descriptors_ = ldesc.toArray(new TsVariableDescriptor[ldesc.size()]);
         firePropertyChange(old, descriptors_);
     }
 
@@ -62,10 +68,14 @@ public class TsVariableDescriptorsEditor extends AbstractPropertyEditor {
         if (null != value && value instanceof TsVariableDescriptor[]) {
             TsVariableDescriptor[] old = descriptors_;
             TsVariableDescriptor[] ndesc = (TsVariableDescriptor[]) value;
-            descriptors_ = new TsVariableDescriptor[ndesc.length];
+            // check that the descriptors are well-formed
+            List<TsVariableDescriptor> ldesc = new ArrayList<>();
             for (int i = 0; i < ndesc.length; ++i) {
-                descriptors_[i] = ndesc[i].clone();
+                if (ndesc[i].getName() != null) {
+                    ldesc.add(ndesc[i].clone());
+                }
             }
+            descriptors_ = ldesc.toArray(new TsVariableDescriptor[ldesc.size()]);
             firePropertyChange(old, descriptors_);
         }
     }
