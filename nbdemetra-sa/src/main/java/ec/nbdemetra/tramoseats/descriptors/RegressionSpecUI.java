@@ -6,6 +6,7 @@ package ec.nbdemetra.tramoseats.descriptors;
 
 import ec.nbdemetra.ui.properties.l2fprod.Coefficients;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
+import ec.tstoolkit.modelling.DefaultTransformationType;
 import ec.tstoolkit.modelling.TsVariableDescriptor;
 import ec.tstoolkit.modelling.arima.tramo.RegressionSpec;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
@@ -199,7 +200,8 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(Bundle.regressionSpecUI_fixedCoefficientsDesc_name());
             desc.setShortDescription(Bundle.regressionSpecUI_fixedCoefficientsDesc_desc());
-            edesc.setReadOnly(ro_);
+            // Disabled when the transformation is on "auto"
+            edesc.setReadOnly(ro_ || core.getTransform().getFunction() == DefaultTransformationType.Auto);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
