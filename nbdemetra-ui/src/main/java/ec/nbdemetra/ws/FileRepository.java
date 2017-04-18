@@ -138,11 +138,15 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         }
 
         Path target = file.toPath();
-        try (FileWorkspace storage = Files.exists(target)
+        boolean exist = Files.exists(target);
+        try (FileWorkspace storage = exist
                 ? FileWorkspace.open(target)
                 : FileWorkspace.create(target, FileFormat.GENERIC)) {
             storage.setName(ws.getName());
             storeCalendar(storage, ws.getContext().getGregorianCalendars());
+            if (exist) {
+                removeDeletedItems(storage, ws);
+            }
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
             return false;
@@ -216,28 +220,28 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
 
     private static final ec.demetra.workspace.WorkspaceItem CAL_ID = ec.demetra.workspace.WorkspaceItem.builder().family(WorkspaceFamily.UTIL_CAL).id("Calendars").build();
 
-    private static void storeCalendar(FileWorkspace storage, GregorianCalendarManager value) {
-        try {
-            storage.store(CAL_ID, value);
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
+    private static void storeCalendar(FileWorkspace storage, GregorianCalendarManager value) throws IOException {
+        storage.store(CAL_ID, value);
+    }
+
+    private static void loadCalendars(FileWorkspace storage, Workspace ws) throws IOException {
+        GregorianCalendarManager source = (GregorianCalendarManager) storage.load(CAL_ID);
+        GregorianCalendarManager target = ws.getContext().getGregorianCalendars();
+        for (String name : source.getNames()) {
+            IGregorianCalendarProvider cal = source.get(name);
+            target.set(name, cal);
+            if (ws.searchDocument(cal) == null) {
+                WorkspaceItem<IGregorianCalendarProvider> item = WorkspaceItem.system(CalendarDocumentManager.ID, name, cal);
+                ws.add(item);
+            }
         }
     }
 
-    private static void loadCalendars(FileWorkspace storage, Workspace ws) {
-        try {
-            GregorianCalendarManager source = (GregorianCalendarManager) storage.load(CAL_ID);
-            GregorianCalendarManager target = ws.getContext().getGregorianCalendars();
-            for (String name : source.getNames()) {
-                IGregorianCalendarProvider cal = source.get(name);
-                target.set(name, cal);
-                if (ws.searchDocument(cal) == null) {
-                    WorkspaceItem<IGregorianCalendarProvider> item = WorkspaceItem.system(CalendarDocumentManager.ID, name, cal);
-                    ws.add(item);
-                }
+    private static void removeDeletedItems(FileWorkspace storage, Workspace ws) throws IOException {
+        for (ec.demetra.workspace.WorkspaceItem o : storage.getItems()) {
+            if (ws.searchDocument(LinearId.of(o.getFamily()), o.getId()) == null) {
+                storage.delete(o);
             }
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
         }
     }
 
