@@ -266,7 +266,7 @@ public class DiagnosticsMatrixView extends JPanel {
 
         @Override
         public int getColumnCount() {
-            return source.getColumnCount() - 1;
+            return Math.max(source.getColumnCount() - 1, 0);
         }
 
         @Override
