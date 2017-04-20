@@ -239,10 +239,18 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
 
     private static void removeDeletedItems(FileWorkspace storage, Workspace ws) throws IOException {
         for (ec.demetra.workspace.WorkspaceItem o : storage.getItems()) {
-            if (ws.searchDocument(LinearId.of(o.getFamily()), o.getId()) == null) {
+            if (!isCalendar(o) && isDeleted(ws, o)) {
                 storage.delete(o);
             }
         }
+    }
+
+    private static boolean isCalendar(ec.demetra.workspace.WorkspaceItem o) {
+        return WorkspaceFamily.UTIL_CAL.equals(o.getFamily());
+    }
+
+    private static boolean isDeleted(Workspace ws, ec.demetra.workspace.WorkspaceItem o) {
+        return ws.searchDocument(LinearId.of(o.getFamily()), o.getId()) == null;
     }
 
     @Deprecated
