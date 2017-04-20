@@ -26,7 +26,9 @@ import ec.nbdemetra.x13.X13SpecificationManager;
 import ec.satoolkit.x13.X13Specification;
 import ec.tss.tsproviders.utils.Formatters;
 import ec.tss.tsproviders.utils.IFormatter;
+import ec.tss.xml.information.XmlInformationSet;
 import ec.tss.xml.x13.XmlX13Specification;
+import ec.tstoolkit.information.InformationSet;
 import java.util.List;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
@@ -107,12 +109,13 @@ public class ExportX13Spec extends NodeAction implements Presenter.Popup {
         @Override
         public Config exportConfig() {
             final WorkspaceItem<X13Specification> xdoc = input.getWorkspace().searchDocument(input.lookup(), X13Specification.class);
-            XmlX13Specification spec = new XmlX13Specification();
-            spec.copy(xdoc.getElement());
+           InformationSet set = xdoc.getElement().write(true);
+            XmlInformationSet xmlSet = new XmlInformationSet();
+            xmlSet.copy(set);
 
-            IFormatter<XmlX13Specification> formatter = Formatters.onJAXB(XmlX13Specification.class, true);
+            IFormatter<XmlInformationSet> formatter = Formatters.onJAXB(XmlInformationSet.class, true);
             Config.Builder b = Config.builder(X13Specification.class.getName(), input.getDisplayName(), "1.0.0")
-                    .put("specification", formatter.formatAsString(spec));
+                    .put("specification", formatter.formatAsString(xmlSet));
             return b.build();
         }
     }
