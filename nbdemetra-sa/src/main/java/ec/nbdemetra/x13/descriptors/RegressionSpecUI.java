@@ -18,6 +18,7 @@ package ec.nbdemetra.x13.descriptors;
 
 import ec.nbdemetra.ui.properties.l2fprod.Coefficients;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
+import ec.tstoolkit.modelling.DefaultTransformationType;
 import ec.tstoolkit.modelling.TsVariableDescriptor;
 import ec.tstoolkit.modelling.arima.x13.RegArimaSpecification;
 import ec.tstoolkit.modelling.arima.x13.RegressionSpec;
@@ -214,7 +215,7 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(Bundle.regressionSpecUI_fixedCoefficientsDesc_name());
             desc.setShortDescription(Bundle.regressionSpecUI_fixedCoefficientsDesc_desc());
-            edesc.setReadOnly(ro_);
+            edesc.setReadOnly(ro_ || core.getTransform().getFunction() == DefaultTransformationType.Auto);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

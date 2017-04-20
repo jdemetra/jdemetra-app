@@ -27,7 +27,9 @@ import ec.nbdemetra.ws.Workspace;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
+import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.regression.TsVariables;
+import ec.tstoolkit.utilities.NameManager;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -86,11 +88,26 @@ public final class ImportVariablesAction extends SingleNodeAction<ItemWsNode> im
         @Override
         public void importConfig(Config config) throws IllegalArgumentException {
             TsVariables value = CONVERTER.convert(config);
+            if (value == null || value.isEmpty()) {
+                return;
+            }
             Workspace ws = WorkspaceFactory.getInstance().getActiveWorkspace();
             VariablesDocumentManager mgr = WorkspaceFactory.getInstance().getManager(VariablesDocumentManager.class);
             WorkspaceItem<TsVariables> item = mgr.create(ws);
-            item.setElement(value);
-            item.setDisplayName(config.getName());
+            TsVariables element = item.getElement();
+            String[] all = value.unlockedNames();
+            if (all != null) {
+                for (String s : all) {
+                    element.set(s, value.get(s));
+                }
+            }
+            // add the variables into the active processingcontext
+            NameManager<TsVariables> vars = ProcessingContext.getActiveContext().getTsVariableManagers();
+            String name = config.getName();
+            if (!name.equals(item.getDisplayName()) && !vars.contains(name)) {
+                vars.rename(item.getDisplayName(), name);
+                item.setDisplayName(name);
+            }
         }
     }
 }

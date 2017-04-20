@@ -20,6 +20,7 @@ import ec.tss.html.implementation.HtmlStationaryVarianceDecomposition;
 import ec.tss.html.implementation.HtmlTramoSeatsGrowthRates;
 import ec.tss.sa.documents.TramoSeatsDocument;
 import ec.tstoolkit.algorithm.CompositeResults;
+import ec.tstoolkit.algorithm.IProcessing;
 import ec.tstoolkit.arima.ArimaModel;
 import ec.tstoolkit.arima.IArimaModel;
 import ec.tstoolkit.modelling.ComponentInformation;
@@ -576,12 +577,13 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
             for (TramoSeatsSpecification spec : TramoSeatsSpecification.allSpecifications()) {
                 if (!spec.equals(currentSpec)) {
-                    source.setSpecification(spec);
-                    source.clear();
-                    results.put(spec.toString(), source.getResults());
+                    IProcessing<TsData, CompositeResults> proc = source.getProcessor().generateProcessing(spec, source.getContext());
+                    CompositeResults rslt = proc.process(source.getSeries());
+                    if (rslt != null) {
+                        results.put(spec.toString(), rslt);
+                    }
                 }
             }
-
             return results;
         }
     };

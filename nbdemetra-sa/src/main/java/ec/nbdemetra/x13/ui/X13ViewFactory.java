@@ -21,6 +21,7 @@ import ec.tss.html.implementation.HtmlMstatistics;
 import ec.tss.html.implementation.HtmlX11Diagnostics;
 import ec.tss.sa.documents.X13Document;
 import ec.tstoolkit.algorithm.CompositeResults;
+import ec.tstoolkit.algorithm.IProcessing;
 import ec.tstoolkit.timeseries.analysis.SlidingSpans;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.DefaultInformationExtractor;
@@ -445,12 +446,13 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
 
             for (X13Specification spec : X13Specification.allSpecifications()) {
                 if (!spec.equals(currentSpec)) {
-                    source.setSpecification(spec);
-                    source.clear();
-                    results.put(spec.toString(), source.getResults());
+                    IProcessing<TsData, CompositeResults> proc = source.getProcessor().generateProcessing(spec, source.getContext());
+                    CompositeResults rslt = proc.process(source.getSeries());
+                    if (rslt != null) {
+                        results.put(spec.toString(), rslt);
+                    }
                 }
             }
-
             return results;
         }
     };
