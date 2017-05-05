@@ -24,7 +24,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 import javax.annotation.Nonnull;
 
 /**
@@ -102,7 +101,7 @@ public abstract class ExtAutoCompletionSource implements AutoCompletionSource {
         Builder<T> postProcessor(@Nonnull BiFunction<List<T>, String, List<T>> processor);
 
         @Nonnull
-        Builder<T> behavior(@Nonnull Function<String, Behavior> behavior);
+        Builder<T> behavior(@Nonnull Function<? super String, Behavior> behavior);
 
         @Nonnull
         default Builder<T> behavior(@Nonnull Behavior behavior) {
@@ -115,14 +114,14 @@ public abstract class ExtAutoCompletionSource implements AutoCompletionSource {
 
         @Nonnull
         Builder<T> cache(
-                @Nonnull ConcurrentMap<String, List<T>> cache,
-                @Nonnull UnaryOperator<String> toKey,
-                @Nonnull Function<String, Behavior> behavior);
+                @Nonnull ConcurrentMap cache,
+                @Nonnull Function<? super String, Object> toKey,
+                @Nonnull Function<? super String, Behavior> behavior);
 
         @Nonnull
         default Builder<T> cache(
-                @Nonnull ConcurrentMap<String, List<T>> cache,
-                @Nonnull UnaryOperator<String> toKey,
+                @Nonnull ConcurrentMap cache,
+                @Nonnull Function<? super String, Object> toKey,
                 @Nonnull Behavior behavior) {
             Objects.requireNonNull(behavior);
             return cache(cache, toKey, o -> behavior);
@@ -186,11 +185,11 @@ public abstract class ExtAutoCompletionSource implements AutoCompletionSource {
 
         private final Loader<T> loader;
         private BiFunction<List<T>, String, List<T>> processor;
-        private Function<String, Behavior> behavior;
+        private Function<? super String, Behavior> behavior;
         private Function<T, String> toString;
-        private ConcurrentMap<String, List<T>> cache;
-        private UnaryOperator<String> toKey;
-        private Function<String, Behavior> cacheBehavior;
+        private ConcurrentMap cache;
+        private Function<? super String, Object> toKey;
+        private Function<? super String, Behavior> cacheBehavior;
 
         public BuilderImpl(Loader<T> loader) {
             this.loader = loader;
@@ -209,7 +208,7 @@ public abstract class ExtAutoCompletionSource implements AutoCompletionSource {
         }
 
         @Override
-        public Builder<T> behavior(Function<String, Behavior> behavior) {
+        public Builder<T> behavior(Function<? super String, Behavior> behavior) {
             this.behavior = Objects.requireNonNull(behavior);
             return this;
         }
@@ -222,9 +221,9 @@ public abstract class ExtAutoCompletionSource implements AutoCompletionSource {
 
         @Override
         public Builder<T> cache(
-                ConcurrentMap<String, List<T>> cache,
-                UnaryOperator<String> toKey,
-                Function<String, Behavior> behavior) {
+                ConcurrentMap cache,
+                Function<? super String, Object> toKey,
+                Function<? super String, Behavior> behavior) {
             this.cache = Objects.requireNonNull(cache);
             this.toKey = Objects.requireNonNull(toKey);
             this.cacheBehavior = Objects.requireNonNull(behavior);
@@ -234,8 +233,8 @@ public abstract class ExtAutoCompletionSource implements AutoCompletionSource {
         @Override
         public ExtAutoCompletionSource build() {
             return cache != null
-                    ? new CachedExtAutoCompletionSource(loader, processor, behavior, toString, cache, toKey, cacheBehavior)
-                    : new DefaultExtAutoCompletionSource(loader, processor, behavior, toString);
+                    ? new CachedExtAutoCompletionSource<>(loader, processor, behavior, toString, cache, toKey, cacheBehavior)
+                    : new DefaultExtAutoCompletionSource<>(loader, processor, behavior, toString);
         }
     }
 
@@ -243,13 +242,13 @@ public abstract class ExtAutoCompletionSource implements AutoCompletionSource {
 
         private final Loader<T> loader;
         private final BiFunction<List<T>, String, List<T>> processor;
-        private final Function<String, Behavior> behavior;
+        private final Function<? super String, Behavior> behavior;
         private final Function<T, String> toString;
 
         public DefaultExtAutoCompletionSource(
                 Loader<T> loader,
                 BiFunction<List<T>, String, List<T>> consumer,
-                Function<String, Behavior> behavior,
+                Function<? super String, Behavior> behavior,
                 Function<T, String> toString) {
             this.loader = loader;
             this.processor = consumer;
@@ -282,15 +281,15 @@ public abstract class ExtAutoCompletionSource implements AutoCompletionSource {
 
         private final Loader<T> loader;
         private final BiFunction<List<T>, String, List<T>> processor;
-        private final Function<String, Behavior> behavior;
+        private final Function<? super String, Behavior> behavior;
         private final Function<T, String> toString;
-        private final ConcurrentMap<String, List<T>> cache;
-        private final UnaryOperator<String> toKey;
-        private final Function<String, Behavior> cacheBehavior;
+        private final ConcurrentMap cache;
+        private final Function<? super String, Object> toKey;
+        private final Function<? super String, Behavior> cacheBehavior;
 
         public CachedExtAutoCompletionSource(Loader<T> loader, BiFunction<List<T>, String, List<T>> consumer,
-                Function<String, Behavior> behavior, Function<T, String> toString,
-                ConcurrentMap<String, List<T>> cache, UnaryOperator<String> toKey, Function<String, Behavior> cacheBehavior) {
+                Function<? super String, Behavior> behavior, Function<T, String> toString,
+                ConcurrentMap cache, Function<? super String, Object> toKey, Function<? super String, Behavior> cacheBehavior) {
             this.loader = loader;
             this.processor = consumer;
             this.behavior = behavior;
@@ -302,8 +301,8 @@ public abstract class ExtAutoCompletionSource implements AutoCompletionSource {
 
         @Override
         public Request getRequest(String term) {
-            String key = toKey.apply(term);
-            List<T> values = cache.get(key);
+            Object key = toKey.apply(term);
+            List<T> values = (List<T>) cache.get(key);
             if (values == null) {
                 return new BasicRequest(term, () -> behavior.apply(term), () -> {
                     List<T> data = loader.load(term);
@@ -327,8 +326,8 @@ public abstract class ExtAutoCompletionSource implements AutoCompletionSource {
 
         @Override
         public List<?> getValues(String term) throws Exception {
-            String key = toKey.apply(term);
-            List<T> values = cache.get(key);
+            Object key = toKey.apply(term);
+            List<T> values = (List<T>) cache.get(key);
             if (values == null) {
                 values = loader.load(term);
                 cache.put(key, values);
