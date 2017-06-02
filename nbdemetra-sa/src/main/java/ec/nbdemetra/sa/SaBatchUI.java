@@ -629,6 +629,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         lsmodel.addListSelectionListener(listTableListener);
 
         XTable.setWidthAsPercentages(result, .35, .1, .1, .1, .05, .07, .07, .06);
+        result.setAutoCreateColumnsFromModel(false);
         result.getColumnModel().getColumn(SaProcessingModel.SERIES).setCellRenderer(new SeriesRenderer());
         result.getColumnModel().getColumn(SaProcessingModel.METHOD).setCellRenderer(new MethodRenderer());
         result.getColumnModel().getColumn(SaProcessingModel.ESTIMATION).setCellRenderer(new EstimationRenderer());
