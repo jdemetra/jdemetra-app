@@ -86,7 +86,9 @@ public class DiagnosticsMatrixView extends JPanel {
         });
 
         customMatrix.setNoDataRenderer(new XTable.DefaultNoDataRenderer("Please select diagnostics components in the options"));
-
+        calMatrix.setNoDataRenderer(new XTable.DefaultNoDataRenderer("No significant calendar effect found for any specification"));
+        outMatrix.setNoDataRenderer(new XTable.DefaultNoDataRenderer("No outlier found for any specification"));
+        
         SwingWorker sw = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
