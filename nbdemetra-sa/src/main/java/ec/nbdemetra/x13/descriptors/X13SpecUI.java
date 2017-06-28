@@ -62,6 +62,7 @@ public class X13SpecUI implements IObjectDescriptor<X13Specification> {
     }
 
     public X11SpecUI getX11() {
+        core.checkMode();
         return new X11SpecUI(core.getX11Specification(), (domain_ != null ? domain_.getFrequency() : TsFrequency.Undefined),
                 core.getRegArimaSpecification().getBasic().isPreprocessing(), ro_);
     }

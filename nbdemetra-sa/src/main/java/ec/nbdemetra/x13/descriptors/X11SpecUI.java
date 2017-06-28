@@ -285,6 +285,9 @@ public class X11SpecUI extends BaseX11SpecUI {
     })
     private EnhancedPropertyDescriptor excludefcstDesc() {
         try {
+            if (!x13_) {
+                return null;
+            }
             PropertyDescriptor desc = new PropertyDescriptor("excludefcst", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, EXCLUDEFCST_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
@@ -329,7 +332,8 @@ public class X11SpecUI extends BaseX11SpecUI {
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(Bundle.x11SpecUI_modeDesc_name());
             desc.setShortDescription(Bundle.x11SpecUI_modeDesc_desc());
-            edesc.setReadOnly(ro_);
+            edesc.setReadOnly(ro_ || (x13_ && !core.getMode().isMultiplicative()));
+//            edesc.setReadOnly(ro_ || x13_ ); De-activate selection of the decomposition, which is defined by the transformation option (log-additive can't be used)
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
