@@ -22,16 +22,14 @@ import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
 import ec.ui.grid.JTsGrid;
+import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JList;
+import javax.swing.JLabel;
 
 /**
  * Component combining a standard <code>JTsGrid</code> and a
@@ -53,22 +51,18 @@ public class JTsComboGrid extends JComponent {
 
         if (collections != null && !collections.isEmpty()) {
             series = new JComboBox();
-            series.setRenderer(new TsIdentifierRenderer());
+            series.setRenderer(JLists.cellRendererOf(JTsComboGrid::renderTsIdentifier));
             generateComboBox();
             grid = new JTsGrid();
 
-            series.addItemListener(new ItemListener() {
-
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-                    if (e.getStateChange() == ItemEvent.SELECTED) {
-                        Object item = e.getItem();
-                        if (item != null) {
-                            if (item instanceof Ts) {
-                                grid.setTsCollection(collections.get((Ts) item));
-                            } else {
-                                showAllTs();
-                            }
+            series.addItemListener(event -> {
+                if (event.getStateChange() == ItemEvent.SELECTED) {
+                    Object item = event.getItem();
+                    if (item != null) {
+                        if (item instanceof Ts) {
+                            grid.setTsCollection(collections.get((Ts) item));
+                        } else {
+                            showAllTs();
                         }
                     }
                 }
@@ -86,7 +80,7 @@ public class JTsComboGrid extends JComponent {
         for (Map.Entry<Ts, TsCollection> entry : collections.entrySet()) {
             TsCollection c = entry.getValue();
             for (int i = 0; i < c.getCount(); i++) {
-                coll.add(c.get(i).rename(entry.getKey().getName() + " (" + c.get(i).getName() + ")"));
+                coll.quietAdd(c.get(i).rename(entry.getKey().getName() + " (" + c.get(i).getName() + ")"));
             }
         }
         grid.setTsCollection(coll);
@@ -112,23 +106,14 @@ public class JTsComboGrid extends JComponent {
         series.setSelectedIndex(0);
     }
 
-    private static class TsIdentifierRenderer extends DefaultListCellRenderer {
-
-        final MonikerUI monikerUI = MonikerUI.getDefault();
-
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            if (value instanceof String) {
-                setText(String.valueOf(value));
-                setIcon(DemetraUiIcon.DOCUMENT_TASK_16);
-            } else {
-                Ts ts = (Ts) value;
-                setText(ts.getName());
-                setIcon(monikerUI.getIcon(ts.getMoniker()));
-            }
-            return this;
+    private static void renderTsIdentifier(JLabel label, Object value) {
+        if (value instanceof String) {
+            label.setText(String.valueOf(value));
+            label.setIcon(DemetraUiIcon.DOCUMENT_TASK_16);
+        } else {
+            Ts ts = (Ts) value;
+            label.setText(ts.getName());
+            label.setIcon(MonikerUI.getDefault().getIcon(ts.getMoniker()));
         }
     }
-
 }

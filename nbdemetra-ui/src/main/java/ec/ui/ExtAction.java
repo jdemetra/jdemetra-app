@@ -17,7 +17,6 @@
 package ec.ui;
 
 import java.awt.Component;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
@@ -48,14 +47,11 @@ public abstract class ExtAction extends AbstractAction {
 
     protected void bind(Component c, final IActionBinder binder) {
         binder.set(ExtAction.this);
-        c.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                for (String o : binder.propertyNames()) {
-                    if (o.equals(evt.getPropertyName())) {
-                        binder.set(ExtAction.this);
-                        break;
-                    }
+        c.addPropertyChangeListener(evt -> {
+            for (String o : binder.propertyNames()) {
+                if (o.equals(evt.getPropertyName())) {
+                    binder.set(ExtAction.this);
+                    break;
                 }
             }
         });
@@ -120,12 +116,9 @@ public abstract class ExtAction extends AbstractAction {
         return c;
     }
 
-    private static final PropertyChangeListener HIDE = new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            if ("enabled".equals(evt.getPropertyName()) && evt.getSource() instanceof JComponent) {
-                ((JComponent) evt.getSource()).setVisible((Boolean) evt.getNewValue());
-            }
+    private static final PropertyChangeListener HIDE = evt -> {
+        if ("enabled".equals(evt.getPropertyName()) && evt.getSource() instanceof JComponent) {
+            ((JComponent) evt.getSource()).setVisible((Boolean) evt.getNewValue());
         }
     };
 }

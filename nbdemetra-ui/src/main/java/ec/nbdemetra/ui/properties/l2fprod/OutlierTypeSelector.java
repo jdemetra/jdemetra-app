@@ -18,19 +18,19 @@ package ec.nbdemetra.ui.properties.l2fprod;
 
 import com.l2fprod.common.beans.editor.ComboBoxPropertyEditor;
 import ec.tstoolkit.timeseries.regression.OutlierType;
+import ec.util.list.swing.JLists;
 import java.awt.Color;
 import java.awt.Component;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
+import static javax.swing.SwingConstants.CENTER;
 
 /**
  *
  * @author Mats Maggi
  */
 public class OutlierTypeSelector extends ComboBoxPropertyEditor {
-    
+
     public OutlierTypeSelector() {
     }
 
@@ -39,34 +39,23 @@ public class OutlierTypeSelector extends ComboBoxPropertyEditor {
         OutlierType[] types = new OutlierType[]{OutlierType.AO, OutlierType.LS, OutlierType.TC, OutlierType.SO};
 
         setAvailableValues(types);
-        JComboBox box = (JComboBox)super.getCustomEditor();
-        box.setRenderer(new OutlierComboRenderer());
-        
+        JComboBox box = (JComboBox) super.getCustomEditor();
+        box.setRenderer(JLists.cellRendererOf(OutlierTypeSelector::renderOutlierType));
+
         return box;
     }
-}
 
-class OutlierComboRenderer extends DefaultListCellRenderer {
-
-    private JLabel label_;
-
-    public OutlierComboRenderer() {
-        label_ = new JLabel();
-        label_.setHorizontalAlignment(CENTER);
-    }
-
-    @Override
-    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+    private static void renderOutlierType(JLabel label, Object value) {
+        label.setHorizontalAlignment(CENTER);
         if (null != value) {
             OutlierType oType = (OutlierType) value;
-            label_.setText(oType.toString());
-            label_.setBackground(ColorChooser.getColor(oType));
-            label_.setForeground(ColorChooser.getForeColor(oType));
-            label_.setOpaque(true);
+            label.setText(oType.toString());
+            label.setBackground(ColorChooser.getColor(oType.name()));
+            label.setForeground(ColorChooser.getForeColor(oType.name()));
+            label.setOpaque(true);
         } else {
-            label_.setBackground(Color.white);
-            label_.setText("");
+            label.setBackground(Color.white);
+            label.setText("");
         }
-        return label_;
     }
 }

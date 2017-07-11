@@ -55,7 +55,7 @@ public class AnomalyItem {
             return this == NotProcessable;
         }
     }
-    private Integer id_ = new Integer(0);
+    private Integer id_ = 0;
     private Ts ts_;
     private int backCount;
     private Double[] absoluteError, relativeError;
@@ -173,8 +173,8 @@ public class AnomalyItem {
 
             if (ok) {
                 for (int i = 0; i < check.getBackCount(); i++) {
-                    relativeError[i] = check.getScore(i);
-                    absoluteError[i] = check.getForecastsValues()[i] - d.get(d.getLength() - (i + 1));
+                    relativeError[i] = check.getRelativeError(i);
+                    absoluteError[i] = check.getAbsoluteError(i);
                 }
 
                 status_ = Status.Processed;

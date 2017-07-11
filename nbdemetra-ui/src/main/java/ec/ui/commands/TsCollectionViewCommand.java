@@ -17,15 +17,13 @@
 package ec.ui.commands;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
-import ec.tss.TsInformationType;
+import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
@@ -33,6 +31,7 @@ import ec.tss.tsproviders.TsProviders;
 import ec.tstoolkit.design.UtilityClass;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.utilities.Arrays2;
+import ec.ui.ATsCollectionView;
 import static ec.ui.interfaces.ITsCollectionAble.TS_COLLECTION_PROPERTY;
 import ec.ui.interfaces.ITsCollectionView;
 import static ec.ui.interfaces.ITsCollectionView.SELECTION_PROPERTY;
@@ -42,11 +41,9 @@ import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.List;
 import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -296,14 +293,7 @@ public final class TsCollectionViewCommand {
 
         @Override
         public void execute(ITsCollectionView component) throws Exception {
-            Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(component);
-            TsCollection col = TssTransferSupport.getDefault().toTsCollection(transferable);
-            if (col != null) {
-                col.query(TsInformationType.All);
-                if (!col.isEmpty()) {
-                    component.getTsUpdateMode().update(component.getTsCollection(), col);
-                }
-            }
+            ATsCollectionView.importData(component, DataTransfers::systemClipboardAsTransferable);
         }
 
         @Override
@@ -313,12 +303,7 @@ public final class TsCollectionViewCommand {
                 result.withWeakPropertyChangeListener((Component) c, UDPATE_MODE_PROPERTY);
             }
             TssTransferSupport source = TssTransferSupport.getDefault();
-            PropertyChangeListener realListener = new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    result.refreshActionState();
-                }
-            };
+            PropertyChangeListener realListener = evt -> result.refreshActionState();
             result.putValue("TssTransferSupport", realListener);
             source.addPropertyChangeListener(TssTransferSupport.VALID_CLIPBOARD_PROPERTY, WeakListeners.propertyChange(realListener, source));
             return result;
@@ -401,14 +386,9 @@ public final class TsCollectionViewCommand {
 
         @Override
         public void execute(ITsCollectionView component) throws Exception {
-            TsCollection col = component.getTsCollection();
-            List<Ts> tmp = Lists.newArrayListWithCapacity(col.getCount());
-            for (Ts o : col) {
-                if (o.getTsData() != null && o.getTsData().getFrequency() == freq) {
-                    tmp.add(o);
-                }
-            }
-            component.setSelection(Iterables.toArray(tmp, Ts.class));
+            component.setSelection(component.getTsCollection().stream()
+                    .filter(o -> o.getTsData() != null && o.getTsData().getFrequency() == freq)
+                    .toArray(Ts[]::new));
         }
     }
 

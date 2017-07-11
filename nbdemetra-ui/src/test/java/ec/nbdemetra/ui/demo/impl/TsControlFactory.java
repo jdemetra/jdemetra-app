@@ -17,10 +17,10 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
+import ec.nbdemetra.ui.demo.ReflectComponent;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.Id;
-import ec.tstoolkit.utilities.LinearId;
 import ec.ui.DemoUtils;
 import ec.ui.interfaces.ITsControl;
 import ec.ui.view.MarginView;
@@ -36,29 +36,24 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemoComponentFactory.class)
 public final class TsControlFactory extends DemoComponentFactory {
 
-    public static final Id ID = new LinearId("(1) Main", "TsControl");
+    public static final Id ID = MainFactory.ID.extend(idOf("TsControl", 0, true));
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
         return builder()
-                .put(ID, reflect(ITsControl.class))
-                .put(ID.extend("MarginView"), marginView())
+                .put(ID, () -> ReflectComponent.of(ITsControl.class))
+                .put(ID.extend("MarginView"), TsControlFactory::marginView)
                 .build();
     }
 
-    private static Callable<Component> marginView() {
-        return new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                MarginView result = new MarginView();
-                TsData series = DemoUtils.randomTsCollection(1).get(0).getTsData();
-                DescriptiveStatistics stats = new DescriptiveStatistics(series);
-                double val = (stats.getMax() - stats.getMin()) / 2;
-                TsData lower = series.drop(14, 0).minus(val);
-                TsData upper = series.drop(14, 0).plus(val);
-                result.setData(series, lower, upper);
-                return result;
-            }
-        };
+    private static Component marginView() {
+        MarginView result = new MarginView();
+        TsData series = DemoUtils.randomTsCollection(1).get(0).getTsData();
+        DescriptiveStatistics stats = new DescriptiveStatistics(series);
+        double val = (stats.getMax() - stats.getMin()) / 2;
+        TsData lower = series.drop(14, 0).minus(val);
+        TsData upper = series.drop(14, 0).plus(val);
+        result.setData(series, lower, upper);
+        return result;
     }
 }

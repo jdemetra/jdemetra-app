@@ -6,7 +6,7 @@ package ec.nbdemetra.core;
 
 import com.google.common.base.Optional;
 import ec.tss.tsproviders.utils.IFormatter;
-import ec.tss.tsproviders.utils.Parsers;
+import ec.tss.tsproviders.utils.IParser;
 import java.util.prefs.Preferences;
 
 /**
@@ -22,8 +22,8 @@ public final class InstallerSteps {
 
     @Deprecated
     public static void restoreAll(IInstallerStep... steps) {
-        for (int i = 0; i < steps.length; i++) {
-            steps[i].restore();
+        for (IInstallerStep step : steps) {
+            step.restore();
         }
     }
 
@@ -35,7 +35,7 @@ public final class InstallerSteps {
     }
 
     @Deprecated
-    public static <X> Optional<X> tryGet(Preferences prefs, String key, Parsers.Parser<X> parser) {
+    public static <X> Optional<X> tryGet(Preferences prefs, String key, IParser<X> parser) {
         return InstallerStep.tryGet(prefs, key, parser);
     }
 

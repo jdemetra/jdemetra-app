@@ -27,7 +27,7 @@ public class SparklineCellRenderer implements ListCellRenderer, TableCellRendere
     protected final TableCellRenderer tableCellRenderer;
 
     public SparklineCellRenderer() {
-        this.sparkline = Charts.avoidScaling(new ChartPanel(Charts.createSparkLineChart(null)));
+        this.sparkline = Charts.avoidScaling(new ChartPanel(Charts.createSparkLineChart(Charts.emptyXYDataset())));
         this.listCellRenderer = new DefaultListCellRenderer();
         this.tableCellRenderer = new DefaultTableCellRenderer();
     }

@@ -16,14 +16,10 @@
  */
 package ec.nbdemetra.ui.tssave;
 
-import com.google.common.base.Predicates;
-import ec.nbdemetra.ui.Jdk6Functions;
 import ec.nbdemetra.ui.actions.AbilityAction;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import java.awt.event.ActionEvent;
-import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
@@ -42,7 +38,7 @@ import org.openide.util.actions.Presenter;
  */
 @ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction")
 @ActionRegistration(displayName = "#CTL_TsSaveAction", lazy = false)
-@Messages("CTL_TsSaveAction=Save")
+@Messages("CTL_TsSaveAction=Save to")
 public final class TsSaveAction extends AbilityAction<ITsSavable> implements Presenter.Popup {
 
     public TsSaveAction() {
@@ -65,8 +61,8 @@ public final class TsSaveAction extends AbilityAction<ITsSavable> implements Pre
 
     private static List<ITsSavable> getAll(Node[] activatedNodes) {
         return Nodes.asIterable(activatedNodes)
-                .transform(Jdk6Functions.lookupNode(ITsSavable.class))
-                .filter(Predicates.notNull())
+                .transform(o -> o.getLookup().lookup(ITsSavable.class))
+                .filter(o -> o != null)
                 .toList();
     }
 
@@ -94,11 +90,7 @@ public final class TsSaveAction extends AbilityAction<ITsSavable> implements Pre
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            TsCollection col = TsFactory.instance.createTsCollection();
-            for (ITsSavable x : data) {
-                col.append(Arrays.asList(x.getAllTs()));
-            }
-            o.save(col.toArray());
+            o.save(data.stream().map(ITsSavable::getTsCollection).toArray(TsCollection[]::new));
         }
     }
 }

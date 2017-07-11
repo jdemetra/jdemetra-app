@@ -5,6 +5,7 @@
 package ec.nbdemetra.ui.nodes;
 
 import ec.nbdemetra.core.GlobalService;
+import ec.tstoolkit.design.ServiceDefinition;
 import java.awt.Image;
 import javax.annotation.Nonnull;
 import org.openide.nodes.Node;
@@ -15,6 +16,7 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author Philippe Charles
  */
+@ServiceDefinition
 public interface NodeAnnotator {
 
     Image annotateIcon(Node node, Image image);

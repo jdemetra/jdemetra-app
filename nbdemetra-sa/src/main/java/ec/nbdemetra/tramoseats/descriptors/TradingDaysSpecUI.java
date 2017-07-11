@@ -105,30 +105,27 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
 
     public void setOption(TradingDaysSpecType value) {
         TradingDaysSpec spec = inner();
-        spec.disable();
         switch (value) {
             case None:
+                spec.disable();
                 break;
             case Default:
-                spec.disable();
                 spec.setTradingDaysType(TradingDaysType.TradingDays);
                 spec.setLeapYear(true);
+                spec.setHolidays(null);
                 spec.setTest(true);
                 break;
             case Stock:
-                spec.disable();
                 spec.setStockTradingDays(31);
                 spec.setTest(true);
                 break;
             case Holidays:
-                spec.disable();
                 spec.setTradingDaysType(TradingDaysType.TradingDays);
                 spec.setLeapYear(true);
                 spec.setHolidays(GregorianCalendarManager.DEF);
                 spec.setTest(true);
                 break;
             case UserDefined:
-                spec.disable();
                 spec.setUserVariables(new String[]{});
                 spec.setTest(true);
                 break;
@@ -227,6 +224,9 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
         "tradingDaysSpecUI.automaticDesc.desc= The calendar effects can be added to the model manually, through the Option, tradingDays and LeapYear parameters (Unused ); or automatically, where the  choice of the number of calendar variables is based on  F Test or Wald test.  In both cases for an automatic choice the model with higher F value is chosen, provided that it is higher than Pftd."
     })
     private EnhancedPropertyDescriptor autoDesc() {
+        if (getOption() != TradingDaysSpecType.Default && getOption() != TradingDaysSpecType.Holidays) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("automatic", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AUTO_ID);

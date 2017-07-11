@@ -16,7 +16,6 @@
  */
 package ec.util.grid.swing.ext;
 
-import com.google.common.collect.FluentIterable;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
@@ -30,11 +29,11 @@ import ec.util.spreadsheet.helpers.ArrayBook;
 import ec.util.various.swing.JCommand;
 import java.awt.Component;
 import java.awt.Font;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.AbstractList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.JTabbedPane;
 
 /**
@@ -72,26 +71,23 @@ public final class SpreadSheetView extends javax.swing.JPanel implements IColorS
         this.invertColors = false;
         this.model = ArrayBook.builder().build();
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case COLOR_SCHEME_PROPERTY:
-                        onColorSchemeChange();
-                        break;
-                    case ZOOM_RATIO_PROPERTY:
-                        onZoomRatioChange();
-                        break;
-                    case INVERT_COLORS_PROPERTY:
-                        onInvertColorsChange();
-                        break;
-                    case MODEL_PROPERTY:
-                        onModelChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case COLOR_SCHEME_PROPERTY:
+                    onColorSchemeChange();
+                    break;
+                case ZOOM_RATIO_PROPERTY:
+                    onZoomRatioChange();
+                    break;
+                case INVERT_COLORS_PROPERTY:
+                    onInvertColorsChange();
+                    break;
+                case MODEL_PROPERTY:
+                    onModelChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }
@@ -114,17 +110,15 @@ public final class SpreadSheetView extends javax.swing.JPanel implements IColorS
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
     private void onColorSchemeChange() {
         SheetCellRenderer cellRenderer = new SheetCellRenderer(dataFormat, themeSupport, invertColors);
-        for (JGrid grid : asList(tabbedPane).filter(JGrid.class)) {
-            grid.setGridColor(themeSupport.getGridColor());
-            grid.setDefaultRenderer(Object.class, cellRenderer);
-        }
+        gridStream().forEach(o -> {
+            o.setGridColor(themeSupport.getGridColor());
+            o.setDefaultRenderer(Object.class, cellRenderer);
+        });
     }
 
     private void onZoomRatioChange() {
         Font font = computeFont(getFont(), zoomRatio);
-        for (JGrid grid : asList(tabbedPane).filter(JGrid.class)) {
-            grid.setFont(font);
-        }
+        gridStream().forEach(o -> o.setFont(font));
     }
 
     private void onInvertColorsChange() {
@@ -132,11 +126,9 @@ public final class SpreadSheetView extends javax.swing.JPanel implements IColorS
     }
 
     private void onModelChange() {
-        List<JGrid> old = asList(tabbedPane).filter(JGrid.class).toList();
+        List<JGrid> old = gridStream().collect(Collectors.toList());
         tabbedPane.removeAll();
-        for (JGrid o : old) {
-            gridPool.recycle(o);
-        }
+        old.stream().forEach(o -> gridPool.recycle(o));
         for (int s = 0; s < model.getSheetCount(); s++) {
             Sheet sheet = model.getSheet(s);
             JGrid grid = gridPool.getOrCreate();
@@ -150,9 +142,7 @@ public final class SpreadSheetView extends javax.swing.JPanel implements IColorS
     }
 
     private void onComponentPopupMenuChange() {
-        for (JGrid c : asList(tabbedPane).filter(JGrid.class)) {
-            c.setComponentPopupMenu(getComponentPopupMenu());
-        }
+        gridStream().forEach(o -> o.setComponentPopupMenu(getComponentPopupMenu()));
     }
     //</editor-fold>
 
@@ -215,6 +205,12 @@ public final class SpreadSheetView extends javax.swing.JPanel implements IColorS
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
+    private Stream<JGrid> gridStream() {
+        return asStream(tabbedPane)
+                .filter(JGrid.class::isInstance)
+                .map(JGrid.class::cast);
+    }
+
     private static final class GridPoolFactory implements IPool.Factory<JGrid> {
 
         private final SheetGridCommand copy = SheetGridCommand.copySelection(false, false);
@@ -250,8 +246,8 @@ public final class SpreadSheetView extends javax.swing.JPanel implements IColorS
         return font;
     }
 
-    private static FluentIterable<Component> asList(final JTabbedPane pane) {
-        return FluentIterable.from(new AbstractList<Component>() {
+    private static Stream<Component> asStream(final JTabbedPane pane) {
+        return new AbstractList<Component>() {
             @Override
             public Component get(int index) {
                 return pane.getComponentAt(index);
@@ -261,7 +257,7 @@ public final class SpreadSheetView extends javax.swing.JPanel implements IColorS
             public int size() {
                 return pane.getTabCount();
             }
-        });
+        }.stream();
     }
 
     private static final class ZoomRatioCmd extends JCommand<SpreadSheetView> {

@@ -20,7 +20,6 @@ import com.google.common.collect.ImmutableMap;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.utilities.Id;
-import ec.tstoolkit.utilities.LinearId;
 import ec.ui.list.JTsVariableList;
 import java.awt.Component;
 import java.util.Map;
@@ -32,13 +31,8 @@ public final class TsVariableListFactory extends DemoComponentFactory {
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
-        Id id = new LinearId("(1) Main", "TsVariableList");
-        Callable<Component> callable = new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                return new JTsVariableList(new TsVariables());
-            }
-        };
+        Id id = MainFactory.ID.extend("TsVariableList");
+        Callable<Component> callable = () -> new JTsVariableList(new TsVariables());
         return ImmutableMap.of(id, callable);
     }
 }

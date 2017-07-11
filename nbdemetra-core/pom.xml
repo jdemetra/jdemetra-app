@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.joinup.sat</groupId>
         <artifactId>nbdemetra-parent</artifactId>
-        <version>2.1.0</version>
+        <version>2.2.0</version>
     </parent>
 
     <artifactId>nbdemetra-core</artifactId>
@@ -52,6 +52,10 @@
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
             <artifactId>demetra-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-workspace</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -102,6 +106,10 @@
                         <publicPackage>com.google.common.*</publicPackage>
                         <publicPackage>org.apache.commons.logging.*</publicPackage>
                         <publicPackage>javax.annotation.*</publicPackage>
+                        <publicPackage>ec.demetra.workspace</publicPackage>
+                        <publicPackage>ec.demetra.workspace.file</publicPackage>
+                        <publicPackage>ec.demetra.workspace.file.spi</publicPackage>
+                        <publicPackage>ec.demetra.workspace.file.util</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

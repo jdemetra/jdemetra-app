@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.tss.TsCollection;
+import ec.tss.TsInformation;
 import ec.ui.interfaces.ITsDataAble;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
 import ec.util.various.swing.JCommand;
@@ -34,13 +34,13 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemoComponentHandler.class)
 public final class TsDataAbleHandler extends DemoComponentHandler.InstanceOf<ITsDataAble> {
 
-    private final RandomCommand randomCommand;
-    private final ClearCommand clearCommand;
+    private final RandomTsCommand<ITsDataAble> randomCommand;
+    private final JCommand<ITsDataAble> clearCommand;
 
     public TsDataAbleHandler() {
         super(ITsDataAble.class);
-        this.randomCommand = new RandomCommand();
-        this.clearCommand = new ClearCommand();
+        this.randomCommand = RandomTsCommand.of(TsDataAbleHandler::apply);
+        this.clearCommand = JCommand.of(TsDataAbleHandler::clear);
     }
 
     @Override
@@ -60,21 +60,11 @@ public final class TsDataAbleHandler extends DemoComponentHandler.InstanceOf<ITs
         toolBar.addSeparator();
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Commands">
-    private static final class RandomCommand extends RandomTsCollectionCommand<ITsDataAble> {
-
-        @Override
-        protected void apply(ITsDataAble c, TsCollection col) {
-            c.setTsData(col.get(0).getTsData());
-        }
+    private static void apply(ITsDataAble o, TsInformation ts) {
+        o.setTsData(ts.data);
     }
 
-    private static final class ClearCommand extends JCommand<ITsDataAble> {
-
-        @Override
-        public void execute(ITsDataAble c) throws Exception {
-            c.setTsData(null);
-        }
+    private static void clear(ITsDataAble o) {
+        o.setTsData(null);
     }
-    //</editor-fold>
 }

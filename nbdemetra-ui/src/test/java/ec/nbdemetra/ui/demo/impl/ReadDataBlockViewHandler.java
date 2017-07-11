@@ -17,8 +17,7 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.tss.TsCollection;
-import ec.tstoolkit.data.ReadDataBlock;
+import ec.tss.TsInformation;
 import ec.ui.interfaces.IReadDataBlockView;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
 import ec.util.various.swing.JCommand;
@@ -35,13 +34,13 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemoComponentHandler.class)
 public final class ReadDataBlockViewHandler extends DemoComponentHandler.InstanceOf<IReadDataBlockView> {
 
-    private final RandomCommand randomCommand;
-    private final ResetCommand resetCommand;
+    private final RandomTsCommand<IReadDataBlockView> randomCommand;
+    private final JCommand<IReadDataBlockView> resetCommand;
 
     public ReadDataBlockViewHandler() {
         super(IReadDataBlockView.class);
-        this.randomCommand = new RandomCommand();
-        resetCommand = new ResetCommand();
+        this.randomCommand = RandomTsCommand.of(ReadDataBlockViewHandler::apply);
+        this.resetCommand = JCommand.of(IReadDataBlockView::reset);
     }
 
     @Override
@@ -61,21 +60,7 @@ public final class ReadDataBlockViewHandler extends DemoComponentHandler.Instanc
         toolBar.addSeparator();
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Commands">
-    private static final class RandomCommand extends RandomTsCollectionCommand<IReadDataBlockView> {
-
-        @Override
-        protected void apply(IReadDataBlockView c, TsCollection col) {
-            c.setDataBlock(new ReadDataBlock(col.get(0).getTsData().getValues().internalStorage()));
-        }
+    private static void apply(IReadDataBlockView c, TsInformation ts) {
+        c.setDataBlock(ts.data);
     }
-
-    private static final class ResetCommand extends JCommand<IReadDataBlockView> {
-
-        @Override
-        public void execute(IReadDataBlockView component) throws Exception {
-            component.reset();
-        }
-    }
-    //</editor-fold>
 }

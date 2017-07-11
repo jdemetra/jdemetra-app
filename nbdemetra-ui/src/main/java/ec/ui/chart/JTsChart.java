@@ -18,22 +18,17 @@ package ec.ui.chart;
 
 import com.google.common.base.Converter;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.Jdk6Functions;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.completion.JAutoCompletionService;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.datatransfer.TssTransferSupport;
@@ -58,6 +53,7 @@ import ec.util.chart.swing.JTimeSeriesChartCommand;
 import ec.util.various.swing.FontAwesome;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
@@ -147,6 +143,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
         chartPanel.setSeriesFormatter(new SeriesFunction<String>() {
             @Override
             public String apply(int series) {
+                TsCollection collection = getTsCollection();
                 return collection.getCount() > series ? collection.get(series).getName() : chartPanel.getDataset().getSeriesKey(series).toString();
             }
         });
@@ -173,7 +170,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
         chartPanel.setLegendVisibilityPredicate(new SeriesPredicate() {
             @Override
             public boolean apply(int series) {
-                return series < collection.getCount();
+                return series < getTsCollection().getCount();
             }
         });
     }
@@ -195,9 +192,15 @@ public class JTsChart extends ATsChart implements IConfigurable {
             chartPanel.getDropTarget().addDropTargetListener(new DropTargetAdapter() {
                 @Override
                 public void dragEnter(DropTargetDragEvent dtde) {
-                    if (!getTsUpdateMode().isReadOnly() && TssTransferSupport.getDefault().canImport(dtde.getCurrentDataFlavors())) {
-                        TsCollection col = TssTransferSupport.getDefault().toTsCollection(dtde.getTransferable());
-                        setDropContent(col != null ? col.toArray() : null);
+                    if (!getTsUpdateMode().isReadOnly()) {
+                        Transferable t = dtde.getTransferable();
+                        if (TssTransferSupport.getDefault().canImport(t)) {
+                            Ts[] dropContent = TssTransferSupport.getDefault()
+                                    .toTsCollectionStream(t)
+                                    .flatMap(TsCollection::stream)
+                                    .toArray(Ts[]::new);
+                            setDropContent(dropContent != null ? dropContent : null);
+                        }
                     }
                 }
 
@@ -225,20 +228,17 @@ public class JTsChart extends ATsChart implements IConfigurable {
     }
 
     private void enableProperties() {
-        this.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case HOVERED_OBS_PROPERTY:
-                        onHoveredObsChange();
-                        break;
-                    case "transferHandler":
-                        onTransferHandlerChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        this.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case HOVERED_OBS_PROPERTY:
+                    onHoveredObsChange();
+                    break;
+                case "transferHandler":
+                    onTransferHandlerChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }
@@ -259,7 +259,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
     @Override
     protected void onCollectionChange() {
         selectionListener.setEnabled(false);
-        Ts[] tss = collection.toArray();
+        Ts[] tss = getTsCollection().toArray();
         dataFeatureModel.setData(tss);
         chartPanel.setDataset(TsXYDatasets.from(tss));
         updateNoDataMessage();
@@ -289,6 +289,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
 
     @Override
     protected void onDropContentChange() {
+        TsCollection collection = getTsCollection();
         Ts[] tss = Arrays2.concat(collection.toArray(), dropContent);
         dataFeatureModel.setData(tss);
         chartPanel.setDataset(TsXYDatasets.from(tss));
@@ -367,22 +368,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
     //</editor-fold>
 
     private void updateNoDataMessage() {
-        if (getTsUpdateMode().isReadOnly()) {
-            switch (collection.getCount()) {
-                case 0:
-                    chartPanel.setNoDataMessage("No data");
-                    break;
-                case 1:
-                    String cause = collection.get(0).getInvalidDataCause();
-                    chartPanel.setNoDataMessage("Invalid data: " + Strings.nullToEmpty(cause));
-                    break;
-                default:
-                    chartPanel.setNoDataMessage("Invalid data");
-                    break;
-            }
-        } else {
-            chartPanel.setNoDataMessage("Drop data here");
-        }
+        chartPanel.setNoDataMessage(getNoDataMessage(getTsCollection(), getTsUpdateMode()));
     }
 
     @Override
@@ -436,8 +422,10 @@ public class JTsChart extends ATsChart implements IConfigurable {
             if (colorSchemeName.isEmpty()) {
                 return null;
             }
-            Predicate<ColorScheme> predicate = Predicates.compose(Predicates.equalTo(colorSchemeName), Jdk6Functions.colorSchemeName());
-            return Iterables.tryFind(DemetraUI.getDefault().getColorSchemes(), predicate).orNull();
+            return DemetraUI.getDefault().getColorSchemes().stream()
+                    .filter(o -> colorSchemeName.equals(o.getName()))
+                    .findFirst()
+                    .orElse(null);
         }
     }
 
@@ -516,7 +504,7 @@ public class JTsChart extends ATsChart implements IConfigurable {
             b.withAutoCompletion().selectField(bean, "colorSchemeName").servicePath(JAutoCompletionService.COLOR_SCHEME_PATH).promptText(DemetraUI.getDefault().getColorSchemeName()).display("Color scheme").add();
 
             sheet.put(b.build());
-            return OpenIdePropertySheetBeanEditor.editSheet(sheet, "Configure chart", null);
+            return new PropertySheetDialogBuilder().title("Configure chart").editSheet(sheet);
         }
     }
 

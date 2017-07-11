@@ -13,10 +13,9 @@ import ec.tss.html.implementation.HtmlRegArimaReport;
 import ec.tss.sa.RegArimaReport;
 import ec.tstoolkit.algorithm.AlgorithmDescriptor;
 import ec.ui.AHtmlView;
+import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,6 @@ import javax.swing.*;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
-import org.openide.windows.TopComponent;
 
 /**
  *
@@ -47,27 +45,18 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
         this.reportTB_ = ComponentFactory.getDefault().newHtmlView();
 
         this.comboBox = new JComboBox<>();
-        comboBox.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                JLabel result = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value != null) {
-                    Map.Entry<Integer, AlgorithmDescriptor> item = (Map.Entry<Integer, AlgorithmDescriptor>) value;
-                    result.setText(TaggedTreeNode.freqName(item.getKey()) + " > " + item.getValue().name);
-                }
-                return result;
+        comboBox.setRenderer(JLists.cellRendererOf((label, value) -> {
+            if (value != null) {
+                label.setText(TaggedTreeNode.freqName(value.getKey()) + " > " + value.getValue().name);
             }
-        });
-        comboBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED && e.getItem() != null) {
-                    Map.Entry<Integer, AlgorithmDescriptor> item = (Map.Entry<Integer, AlgorithmDescriptor>) e.getItem();
-                    HtmlRegArimaReport report = new HtmlRegArimaReport(item.getValue().name, reports.get(item.getKey()).get(item.getValue()));
-                    reportTB_.loadContent(HtmlUtil.toString(report));
-                } else {
-                    reportTB_.loadContent("");
-                }
+        }));
+        comboBox.addItemListener(event -> {
+            if (event.getStateChange() == ItemEvent.SELECTED && event.getItem() != null) {
+                Map.Entry<Integer, AlgorithmDescriptor> item = (Map.Entry<Integer, AlgorithmDescriptor>) event.getItem();
+                HtmlRegArimaReport report = new HtmlRegArimaReport(item.getValue().name, reports.get(item.getKey()).get(item.getValue()));
+                reportTB_.loadContent(HtmlUtil.toString(report));
+            } else {
+                reportTB_.loadContent("");
             }
         });
 
@@ -152,7 +141,8 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
     public void setData(Map<Integer, Map<AlgorithmDescriptor, RegArimaReport>> reports) {
         reportTB_.loadContent("");
         this.reports = reports;
-        comboBox.setVisible(reports.size() > 1);
+        long count = reports.values().stream().flatMap(r -> r.values().stream()).count();
+        comboBox.setVisible(count > 1);
         comboBox.setModel(asComboBoxModel(reports));
         comboBox.setSelectedIndex(-1);
         if (!reports.isEmpty()) {

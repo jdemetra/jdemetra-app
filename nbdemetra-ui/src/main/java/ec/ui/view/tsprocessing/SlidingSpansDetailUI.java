@@ -37,7 +37,7 @@ public class SlidingSpansDetailUI<V extends IProcDocumentView<?>> extends Defaul
             if (!mul) {
                 TsData s = information.getReferenceInfo().getData(info_, TsData.class);
                 if (s != null) {
-                    DescriptiveStatistics stats = new DescriptiveStatistics(s.getValues());
+                    DescriptiveStatistics stats = new DescriptiveStatistics(s);
                     threshold = Math.sqrt(stats.getSumSquare() / stats.getDataCount());
                 }
             }

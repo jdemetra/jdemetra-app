@@ -20,7 +20,6 @@ import static ec.util.chart.swing.SwingColorSchemeSupport.withAlpha;
 import ec.util.grid.CellIndex;
 import static ec.util.grid.swing.AGrid.HOVERED_CELL_PROPERTY;
 import ec.util.various.swing.LineBorder2;
-import static ec.util.various.swing.ModernUI.withEmptyBorders;
 import static ec.util.various.swing.StandardSwingColor.TABLE_BACKGROUND;
 import static ec.util.various.swing.StandardSwingColor.TABLE_FOREGROUND;
 import static ec.util.various.swing.StandardSwingColor.TABLE_HEADER_BACKGROUND;
@@ -35,8 +34,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DragGestureEvent;
-import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
@@ -49,11 +46,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
+import javax.swing.CellRendererPane;
 import javax.swing.JComponent;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import javax.swing.JLabel;
@@ -75,6 +72,8 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import static ec.util.various.swing.ModernUI.withEmptyBorders;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A grid component for Swing that differs from a JTable by adding a row header.
@@ -128,7 +127,7 @@ public final class JGrid extends AGrid {
         enableProperties();
 
         setLayout(new BorderLayout());
-        add(new JLayer<>(scrollPane, new NoDataUI()), BorderLayout.CENTER);
+        add(new JLayer<>(scrollPane, new DropUI()), BorderLayout.CENTER);
     }
 
     private void initComponents() {
@@ -153,12 +152,9 @@ public final class JGrid extends AGrid {
         fct.getFixedTable().setShowGrid(false);
 
         // FixedColumnTable#makeColumns(int) doesn't use zoomRatio, so we have to apply it afterwards
-        internalModel.addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                if (e.getType() == TableModelEvent.UPDATE) {
-                    applyZoomRatioOnColumnsWidth();
-                }
+        internalModel.addTableModelListener(evt -> {
+            if (evt.getType() == TableModelEvent.UPDATE) {
+                applyZoomRatioOnColumnsWidth();
             }
         });
 
@@ -185,6 +181,10 @@ public final class JGrid extends AGrid {
 
     public void setDefaultRenderer(Class<?> aClass, TableCellRenderer tableCellRenderer) {
         main.setDefaultRenderer(aClass, tableCellRenderer);
+    }
+
+    public TableCellRenderer getColumnRenderer() {
+        return main.getTableHeader().getDefaultRenderer();
     }
 
     public void setColumnRenderer(TableCellRenderer renderer) {
@@ -350,53 +350,50 @@ public final class JGrid extends AGrid {
 
     //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case MODEL_PROPERTY:
-                        onModelChange();
-                        break;
-                    case ROW_SELECTION_ALLOWED_PROPERTY:
-                        onRowSelectionAllowedChange();
-                        break;
-                    case COLUMN_SELECTION_ALLOWED_PROPERTY:
-                        onColumnSelectionAllowedChange();
-                        break;
-                    case HOVERED_CELL_PROPERTY:
-                        onHoveredCellChange();
-                        break;
-                    case SELECTED_CELL_PROPERTY:
-                        onSelectedCellChange();
-                        break;
-                    case CROSSHAIR_VISIBLE_PROPERTY:
-                        onCrosshairVisibleChange();
-                        break;
-                    case DRAG_ENABLED_PROPERTY:
-                        onDragEnabledChange();
-                        break;
-                    case GRID_COLOR_PROPERTY:
-                        onGridColorChange();
-                        break;
-                    case NO_DATA_RENDERER_PROPERTY:
-                        onNoDataRendererChange();
-                        break;
-                    case ROW_SELECTION_MODEL_PROPERTY:
-                        onRowSelectionModelChange();
-                        break;
-                    case COLUMN_SELECTION_MODEL_PROPERTY:
-                        onColumnSelectionModelChange();
-                        break;
-                    case "font":
-                        onFontChange();
-                        break;
-                    case "transferHandler":
-                        onTransferHandlerChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case MODEL_PROPERTY:
+                    onModelChange();
+                    break;
+                case ROW_SELECTION_ALLOWED_PROPERTY:
+                    onRowSelectionAllowedChange();
+                    break;
+                case COLUMN_SELECTION_ALLOWED_PROPERTY:
+                    onColumnSelectionAllowedChange();
+                    break;
+                case HOVERED_CELL_PROPERTY:
+                    onHoveredCellChange();
+                    break;
+                case SELECTED_CELL_PROPERTY:
+                    onSelectedCellChange();
+                    break;
+                case CROSSHAIR_VISIBLE_PROPERTY:
+                    onCrosshairVisibleChange();
+                    break;
+                case DRAG_ENABLED_PROPERTY:
+                    onDragEnabledChange();
+                    break;
+                case GRID_COLOR_PROPERTY:
+                    onGridColorChange();
+                    break;
+                case NO_DATA_RENDERER_PROPERTY:
+                    onNoDataRendererChange();
+                    break;
+                case ROW_SELECTION_MODEL_PROPERTY:
+                    onRowSelectionModelChange();
+                    break;
+                case COLUMN_SELECTION_MODEL_PROPERTY:
+                    onColumnSelectionModelChange();
+                    break;
+                case "font":
+                    onFontChange();
+                    break;
+                case "transferHandler":
+                    onTransferHandlerChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }
@@ -435,14 +432,11 @@ public final class JGrid extends AGrid {
 
     private static void enableDragOnHeader(final JTableHeader tableHeader) {
         DragSource dragSource = DragSource.getDefaultDragSource();
-        dragSource.createDefaultDragGestureRecognizer(tableHeader, DnDConstants.ACTION_COPY_OR_MOVE, new DragGestureListener() {
-            @Override
-            public void dragGestureRecognized(DragGestureEvent dge) {
-                if (tableHeader.getResizingColumn() == null) {
-                    TransferHandler transferHandler = tableHeader.getTransferHandler();
-                    if (transferHandler != null) {
-                        transferHandler.exportAsDrag(tableHeader, dge.getTriggerEvent(), TransferHandler.COPY);
-                    }
+        dragSource.createDefaultDragGestureRecognizer(tableHeader, DnDConstants.ACTION_COPY_OR_MOVE, evt -> {
+            if (tableHeader.getResizingColumn() == null) {
+                TransferHandler transferHandler = tableHeader.getTransferHandler();
+                if (transferHandler != null) {
+                    transferHandler.exportAsDrag(tableHeader, evt.getTriggerEvent(), TransferHandler.COPY);
                 }
             }
         });
@@ -588,22 +582,23 @@ public final class JGrid extends AGrid {
         }
     }
 
-    private final class NoDataUI extends LayerUI<JScrollPane> {
+    private final class DropUI extends LayerUI<JScrollPane> {
 
-        private static final String HAS_DROP_LOCATION_PROPERTY = "hasDropLocation";
+        private static final String DROP_PROPERTY = "drop";
 
-        private boolean hasDropLocation = false;
+        private final CellRendererPane cellRendererPane = new CellRendererPane();
+        private boolean drop = false;
         private DropTarget dropTarget = null;
 
-        private void setHasDropLocation(boolean hasDropLocation) {
-            boolean old = this.hasDropLocation;
-            this.hasDropLocation = hasDropLocation;
-            firePropertyChange(HAS_DROP_LOCATION_PROPERTY, old, this.hasDropLocation);
+        private void setDrop(boolean hasDropLocation) {
+            boolean old = this.drop;
+            this.drop = hasDropLocation;
+            firePropertyChange(DROP_PROPERTY, old, this.drop);
         }
 
         @Override
         public void applyPropertyChange(PropertyChangeEvent evt, JLayer<? extends JScrollPane> l) {
-            if (evt.getPropertyName().equals(HAS_DROP_LOCATION_PROPERTY)) {
+            if (evt.getPropertyName().equals(DROP_PROPERTY)) {
                 l.repaint();
             }
         }
@@ -620,45 +615,48 @@ public final class JGrid extends AGrid {
 
                 @Override
                 public void dragEnter(DropTargetDragEvent dtde) {
-                    super.dragEnter(dtde);
-                    // FIXME: value still set to true even if import refused
-                    setHasDropLocation(true);
+                    final AtomicBoolean drop = new AtomicBoolean(false);
+                    DropTargetDragEvent dropEvent = new DropTargetDragEvent(dtde.getDropTargetContext(), dtde.getLocation(), dtde.getDropAction(), dtde.getSourceActions()) {
+                        @Override
+                        public void acceptDrag(int dragOperation) {
+                            super.acceptDrag(dragOperation);
+                            drop.set(true);
+                        }
+                    };
+                    super.dragEnter(dropEvent);
+                    setDrop(drop.get());
                 }
 
                 @Override
                 public void dragExit(DropTargetEvent dte) {
                     super.dragExit(dte);
-                    setHasDropLocation(false);
+                    setDrop(false);
                 }
 
                 @Override
                 public void drop(DropTargetDropEvent dtde) {
                     super.drop(dtde);
-                    setHasDropLocation(false);
+                    setDrop(false);
                 }
             });
-            PropertyChangeListener listener = new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    switch (evt.getPropertyName()) {
-                        case "dropLocation":
-                            JTable table = (JTable) evt.getSource();
-                            setHasDropLocation(table.getDropLocation() != null);
-                            break;
-                    }
-                }
-            };
-            main.addPropertyChangeListener(listener);
-            fct.getFixedTable().addPropertyChangeListener(listener);
+            main.addPropertyChangeListener(this::onPropertyChangeInTable);
+            fct.getFixedTable().addPropertyChangeListener(this::onPropertyChangeInTable);
+        }
+
+        private void onPropertyChangeInTable(PropertyChangeEvent evt) {
+            switch (evt.getPropertyName()) {
+                case "dropLocation":
+                    JTable table = (JTable) evt.getSource();
+                    setDrop(table.getDropLocation() != null);
+                    break;
+            }
         }
 
         @Override
         public void paint(Graphics g, JComponent c) {
             super.paint(g, c);
-            if (!internalModel.hasData()/* || hasDropLocation*/) {
-                Component renderer = noDataRenderer.getNoDataRendererComponent(main, hasDropLocation);
-                renderer.setSize(scrollPane.getSize());
-                renderer.paint(g);
+            if (!internalModel.hasData() || drop) {
+                cellRendererPane.paintComponent(g, noDataRenderer.getNoDataRendererComponent(main, drop), c, 0, 0, c.getWidth(), c.getHeight());
             }
         }
     }

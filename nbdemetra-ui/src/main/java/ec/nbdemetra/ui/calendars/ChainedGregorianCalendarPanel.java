@@ -7,7 +7,6 @@ package ec.nbdemetra.ui.calendars;
 import com.google.common.collect.Lists;
 import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
 import ec.nbdemetra.ui.awt.JPanel2;
-import ec.nbdemetra.ui.awt.JProperty;
 import ec.nbdemetra.ui.awt.ListenerState;
 import ec.nbdemetra.ui.properties.ComboBoxPropertyEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
@@ -16,7 +15,6 @@ import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import javax.swing.event.DocumentEvent;
@@ -42,10 +40,10 @@ public class ChainedGregorianCalendarPanel extends JPanel2 implements ExplorerMa
     public static final String SECOND_CALENDAR_PROPERTY = "secondCalendar";
     public static final String DAY_BREAK_PROPERTY = "dayBreak";
     // PROPERTIES
-    protected final JProperty< String> calendarName;
-    protected final JProperty<String> firstCalendar;
-    protected final JProperty<String> secondCalendar;
-    protected final JProperty<Day> dayBreak;
+    private String calendarName;
+    private String firstCalendar;
+    private String secondCalendar;
+    private Day dayBreak;
     // OTHER
     final ExplorerManager em;
     final NameTextFieldListener nameTextFieldListener;
@@ -54,10 +52,10 @@ public class ChainedGregorianCalendarPanel extends JPanel2 implements ExplorerMa
      * Creates new form NationalCalendarPanel
      */
     public ChainedGregorianCalendarPanel() {
-        this.calendarName = newProperty(CALENDAR_NAME_PROPERTY, JProperty.nullTo(""), null);
-        this.firstCalendar = newProperty(FIRST_CALENDAR_PROPERTY, JProperty.nullTo(""), null);
-        this.secondCalendar = newProperty(SECOND_CALENDAR_PROPERTY, JProperty.nullTo(""), null);
-        this.dayBreak = newProperty(DAY_BREAK_PROPERTY, null);
+        this.calendarName = "";
+        this.firstCalendar = "";
+        this.secondCalendar = "";
+        this.dayBreak = null;
 
         this.em = new ExplorerManager();
 
@@ -74,23 +72,20 @@ public class ChainedGregorianCalendarPanel extends JPanel2 implements ExplorerMa
 
         nameTextField.getDocument().addDocumentListener(nameTextFieldListener);
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case CALENDAR_NAME_PROPERTY:
-                        onCalendarNameChange();
-                        break;
-                    case FIRST_CALENDAR_PROPERTY:
-                        onFirstCalendarChange();
-                        break;
-                    case SECOND_CALENDAR_PROPERTY:
-                        onSecondCalendarChange();
-                        break;
-                    case DAY_BREAK_PROPERTY:
-                        onDayBreakChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case CALENDAR_NAME_PROPERTY:
+                    onCalendarNameChange();
+                    break;
+                case FIRST_CALENDAR_PROPERTY:
+                    onFirstCalendarChange();
+                    break;
+                case SECOND_CALENDAR_PROPERTY:
+                    onSecondCalendarChange();
+                    break;
+                case DAY_BREAK_PROPERTY:
+                    onDayBreakChange();
+                    break;
             }
         });
     }
@@ -146,7 +141,7 @@ public class ChainedGregorianCalendarPanel extends JPanel2 implements ExplorerMa
     protected void onCalendarNameChange() {
         if (nameTextFieldListener.state == ListenerState.READY) {
             nameTextFieldListener.state = ListenerState.SUSPENDED;
-            nameTextField.setText(calendarName.get());
+            nameTextField.setText(calendarName);
             nameTextFieldListener.state = ListenerState.READY;
         }
     }
@@ -163,35 +158,43 @@ public class ChainedGregorianCalendarPanel extends JPanel2 implements ExplorerMa
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
     public String getCalendarName() {
-        return calendarName.get();
+        return calendarName;
     }
 
     public void setCalendarName(String calendarName) {
-        this.calendarName.set(calendarName);
+        String old = this.calendarName;
+        this.calendarName = calendarName != null ? calendarName : "";
+        firePropertyChange(CALENDAR_NAME_PROPERTY, old, this.calendarName);
     }
 
     public String getFirstCalendar() {
-        return firstCalendar.get();
+        return firstCalendar;
     }
 
     public void setFirstCalendar(String firstCalendar) {
-        this.firstCalendar.set(firstCalendar);
+        String old = this.firstCalendar;
+        this.firstCalendar = firstCalendar;
+        firePropertyChange(FIRST_CALENDAR_PROPERTY, old, this.firstCalendar);
     }
 
     public String getSecondCalendar() {
-        return secondCalendar.get();
+        return secondCalendar;
     }
 
     public void setSecondCalendar(String secondCalendar) {
-        this.secondCalendar.set(secondCalendar);
+        String old = this.secondCalendar;
+        this.secondCalendar = secondCalendar;
+        firePropertyChange(SECOND_CALENDAR_PROPERTY, old, this.secondCalendar);
     }
 
     public Day getDayBreak() {
-        return dayBreak.get();
+        return dayBreak;
     }
 
     public void setDayBreak(Day dayBreak) {
-        this.dayBreak.set(dayBreak);
+        Day old = this.dayBreak;
+        this.dayBreak = dayBreak;
+        firePropertyChange(DAY_BREAK_PROPERTY, old, this.dayBreak);
     }
 
     @Override

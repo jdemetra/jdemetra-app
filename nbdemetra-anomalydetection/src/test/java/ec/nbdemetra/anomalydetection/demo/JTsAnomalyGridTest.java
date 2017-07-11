@@ -16,8 +16,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -30,7 +28,7 @@ import org.openide.awt.DropDownButtonFactory;
  *
  * @author maggima
  */
-public class JTsAnomalyGridTest extends JPanel {
+public final class JTsAnomalyGridTest extends JPanel {
 
     public static void main(String[] args) {
 
@@ -54,12 +52,9 @@ public class JTsAnomalyGridTest extends JPanel {
             menuItem.setState(i == 1);
             addPopup.add(menuItem);
         }
-        view.addPropertyChangeListener(ITsGrid.ZOOM_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                for (Component o : addPopup.getComponents()) {
-                    ((JCheckBoxMenuItem) o).setState(view.getZoomPercentage() == Integer.parseInt(o.getName()));
-                }
+        view.addPropertyChangeListener(ITsGrid.ZOOM_PROPERTY, evt -> {
+            for (Component o : addPopup.getComponents()) {
+                ((JCheckBoxMenuItem) o).setState(view.getZoomPercentage() == Integer.parseInt(o.getName()));
             }
         });
 
@@ -90,12 +85,9 @@ public class JTsAnomalyGridTest extends JPanel {
         comps.add(p, BorderLayout.NORTH);
 
         summ = new AnomalyDetectionSummary();
-        g.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals(ITsGrid.SELECTION_PROPERTY)) {
-                    set(g.getModelOfSelection());
-                }
+        g.addPropertyChangeListener(evt -> {
+            if (evt.getPropertyName().equals(ITsGrid.SELECTION_PROPERTY)) {
+                set(g.getModelOfSelection());
             }
         });
 

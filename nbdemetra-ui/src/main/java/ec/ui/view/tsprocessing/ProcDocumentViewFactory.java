@@ -4,9 +4,7 @@
  */
 package ec.ui.view.tsprocessing;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.DefaultInformationExtractor;
 import ec.tstoolkit.utilities.Id;
@@ -77,9 +75,9 @@ public abstract class ProcDocumentViewFactory<D extends IProcDocument> implement
 
         @Override
         public void refresh() {
-            for (ComposedProcDocumentItemFactory o : Iterables.filter(itemFactories.values(), ComposedProcDocumentItemFactory.class)) {
-                o.getInformationExtractor().flush(document_);
-            }
+            itemFactories.values().stream()
+                    .filter(ComposedProcDocumentItemFactory.class::isInstance)
+                    .forEach(o -> ((ComposedProcDocumentItemFactory) o).getInformationExtractor().flush(document_));
         }
 
         @Override
@@ -103,7 +101,7 @@ public abstract class ProcDocumentViewFactory<D extends IProcDocument> implement
         }
     }
     //
-    private final LinkedHashMap<Id, ProcDocumentItemFactory> itemFactories = Maps.newLinkedHashMap();
+    private final LinkedHashMap<Id, ProcDocumentItemFactory> itemFactories = new LinkedHashMap();
     private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
 
     /**

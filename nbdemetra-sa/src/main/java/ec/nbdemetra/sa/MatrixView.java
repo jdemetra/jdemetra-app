@@ -5,6 +5,7 @@
 package ec.nbdemetra.sa;
 
 import com.google.common.collect.Maps;
+import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.satoolkit.algorithm.implementation.X13ProcessingFactory;
@@ -21,15 +22,16 @@ import ec.tstoolkit.information.InformationSet;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.JGrid;
 import ec.util.grid.swing.ext.TableGridCommand;
+import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,7 +41,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
-import org.netbeans.core.spi.multiview.MultiViewElementCallback;
 
 /**
  *
@@ -56,36 +57,30 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
     private final JToolBar toolBarRepresentation;
     // subcomponents
     private final JComboBox<Entry<Integer, AlgorithmDescriptor>> comboBox;
-    private final JGrid resMatrix_, calMatrix_, armaMatrix_, outMatrix_, testMatrix_;
+    private final JGrid resMatrix_, calMatrix_, armaMatrix_, outMatrix_, testMatrix_, customMatrix_;
     private final JTabbedPane matrixTabPane_;
     // data
     private List<SaItem> saItems;
+    private List<String> selectedComponents;
+    private PropertyChangeListener listener;
 
     public MatrixView(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
         super(doc, controller);
         this.saItems = new ArrayList<>();
-
         this.comboBox = new JComboBox<>();
-        comboBox.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                JLabel result = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value != null) {
-                    Entry<Integer, AlgorithmDescriptor> item = (Entry<Integer, AlgorithmDescriptor>) value;
-                    result.setText(TaggedTreeNode.freqName(item.getKey()) + " > " + item.getValue().name);
-                }
-                return result;
+        this.selectedComponents = DemetraUI.getDefault().getSelectedDiagFields();
+
+        comboBox.setRenderer(JLists.cellRendererOf((label, value) -> {
+            if (value != null) {
+                label.setText(TaggedTreeNode.freqName(value.getKey()) + " > " + value.getValue().name);
             }
-        });
-        comboBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED && e.getItem() != null) {
-                    Entry<Integer, AlgorithmDescriptor> item = (Entry<Integer, AlgorithmDescriptor>) e.getItem();
-                    updateMatrix(item.getValue(), item.getKey());
-                } else {
-                    clearMatrices();
-                }
+        }));
+        comboBox.addItemListener(event -> {
+            if (event.getStateChange() == ItemEvent.SELECTED && event.getItem() != null) {
+                Entry<Integer, AlgorithmDescriptor> item = (Entry<Integer, AlgorithmDescriptor>) event.getItem();
+                updateMatrix(item.getValue(), item.getKey());
+            } else {
+                clearMatrices();
             }
         });
 
@@ -95,12 +90,19 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         matrixTabPane_.addTab("Outliers", outMatrix_ = createMatrix());
         matrixTabPane_.addTab("Arma", armaMatrix_ = createMatrix());
         matrixTabPane_.addTab("Tests", testMatrix_ = createMatrix());
+        matrixTabPane_.addTab("Custom", customMatrix_ = createMatrix());
 
         toolBarRepresentation = NbComponents.newInnerToolbar();
         toolBarRepresentation.addSeparator();
         toolBarRepresentation.add(comboBox);
 
         visualRepresentation = matrixTabPane_;
+
+        listener = (PropertyChangeEvent evt) -> {
+            selectedComponents = DemetraUI.getDefault().getSelectedDiagFields();
+            Entry<Integer, AlgorithmDescriptor> item = (Entry<Integer, AlgorithmDescriptor>) comboBox.getSelectedItem();
+            customMatrix_.setModel(new TableModelAdapter(createTableModel(item.getValue(), item.getKey(), selectedComponents, selectedComponents)));
+        };
 
         updateData(Collections.<SaItem>emptyList());
 
@@ -157,30 +159,15 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
     @Override
     public void componentOpened() {
+        super.componentOpened();
+        DemetraUI.getDefault().addPropertyChangeListener(DemetraUI.SELECTED_DIAG_FIELDS_PROPERTY, listener);
     }
 
     @Override
     public void componentClosed() {
-    }
-
-    @Override
-    public void componentShowing() {
-    }
-
-    @Override
-    public void componentHidden() {
-    }
-
-    @Override
-    public void componentActivated() {
-    }
-
-    @Override
-    public void componentDeactivated() {
-    }
-
-    @Override
-    public void setMultiViewCallback(MultiViewElementCallback callback) {
+        DemetraUI.getDefault().removePropertyChangeListener(DemetraUI.SELECTED_DIAG_FIELDS_PROPERTY, listener);
+        clearMatrices();
+        super.componentClosed();
     }
 
     @Override
@@ -202,7 +189,8 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
     private void updateData(List<SaItem> saItems) {
         this.saItems = saItems;
         Map<Integer, List<AlgorithmDescriptor>> methods = getCurrentProcessing().methods();
-        comboBox.setVisible(methods.size() > 1);
+        long count = methods.values().stream().flatMap(m -> m.stream()).count();
+        comboBox.setVisible(count > 1);
         comboBox.setModel(asComboBoxModel(methods));
         comboBox.setSelectedIndex(-1);
         if (!methods.isEmpty()) {
@@ -216,6 +204,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         outMatrix_.setModel(null);
         armaMatrix_.setModel(null);
         testMatrix_.setModel(null);
+        customMatrix_.setModel(null);
     }
 
     private void updateMatrix(AlgorithmDescriptor desc, int freq) {
@@ -224,12 +213,14 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         armaMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(ARMA_TITLE), Arrays.asList(ARMA))));
         outMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(OUTLIERS_TITLE), Arrays.asList(OUTLIERS))));
         testMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(TESTS_TITLE), Arrays.asList(TESTS))));
+        customMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, selectedComponents, selectedComponents)));
     }
+
     private static final String[] MAIN = {"espan.n", "decomposition.seasonality", "adjust", "log", "arima.mean", "arima.p", "arima.d", "arima.q", "arima.bp", "arima.bd", "arima.bq", "likelihood.bicc", "residuals.ser", "residuals.lb", "decomposition.seasfilter", "decomposition.trendfilter"};
     private static final String[] MAIN_TITLE = {"N", "Seasonal", "Adjust", "Log", "Mean", "P", "D", "Q", "BP", "BD", "BQ", "BIC", "SE(res)", "Q-val", "Seas filter", "Trend filter"};
 
     private TableModel createTableModel(AlgorithmDescriptor method, int freq, List<String> titles, List<String> items) {
-        DefaultTableModel result = new DefaultTableModel();
+        DefaultTableModel rslt = new DefaultTableModel();
         List<ITsIdentified> names = new ArrayList<>();
         List<IProcResults> rslts = new ArrayList<>();
         for (SaItem sa : this.saItems) {
@@ -245,7 +236,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         boolean[] ok = new boolean[ncols];
         int nused = 0;
 
-        result.addColumn("Series");
+        rslt.addColumn("Series");
 
         for (int idx = 0; idx < titles.size(); ++idx) {
             if (srslts.column(idx).isEmpty()) {
@@ -253,7 +244,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
             } else {
                 ++nused;
                 ok[idx] = true;
-                result.addColumn(titles.get(idx));
+                rslt.addColumn(titles.get(idx));
             }
         }
         if (nused == 0) {
@@ -268,77 +259,12 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
                     row[++k] = srslts.get(i, j);
                 }
             }
-            result.addRow(row);
+            rslt.addRow(row);
         }
 
-        return result;
+        return rslt;
     }
 
-    private TableModel createTestModel(AlgorithmDescriptor method, int freq, List<String> titles, List<String> items) {
-        DefaultTableModel model = new DefaultTableModel();
-        List<ITsIdentified> names = new ArrayList<>();
-        List<IProcResults> rslts = new ArrayList<>();
-        List<InformationSet> drslts = new ArrayList<>();
-        for (SaItem sa : this.saItems) {
-            if (sa.getEstimationMethod().equals(method) && sa.getTsData() != null && sa.getTsData().getFrequency().intValue() == freq) {
-                rslts.add(sa.process());
-                drslts.add(sa.getDiagnostics());
-                names.add(sa.getTs());
-            }
-        }
-
-        TableFormatter formatter = new TableFormatter();
-        Table<String> srslts = formatter.formatProcResults(rslts, items, true);
-        Table<String> sdrslts = formatter.formatInformation(drslts, items, true);
-        int ncols = srslts.getColumnsCount() + sdrslts.getColumnsCount();
-        boolean[] ok = new boolean[ncols];
-
-        model.addColumn("Series");
-        HashSet<String> used = new HashSet<>();
-
-        int icol = 0;
-        for (int idx = 0; idx < srslts.getColumnsCount(); ++idx, ++icol) {
-            if (srslts.column(idx).isEmpty()) {
-                ok[icol] = false;
-            } else {
-                used.add(titles.get(idx));
-                ok[icol] = true;
-                model.addColumn(titles.get(idx));
-            }
-        }
-        for (int idx = 0; idx < sdrslts.getColumnsCount(); ++idx, ++icol) {
-            if (sdrslts.column(idx).isEmpty() || used.contains(titles.get(idx))) {
-                ok[icol] = false;
-            } else {
-                used.add(titles.get(idx));
-                ok[icol] = true;
-                model.addColumn(titles.get(idx));
-            }
-        }
-        if (used.isEmpty()) {
-            return new DefaultTableModel();
-        }
-        int nused = used.size();
-
-        for (int i = 0; i < names.size(); ++i) {
-            String[] row = new String[nused + 1];
-            row[0] = names.get(i).getName();
-            int k = 0, l = 0;
-            for (int j = 0; j < srslts.getColumnsCount(); ++j, ++l) {
-                if (ok[l]) {
-                    row[++k] = srslts.get(i, j);
-                }
-            }
-            for (int j = 0; j < sdrslts.getColumnsCount(); ++j, ++l) {
-                if (ok[l]) {
-                    row[++k] = sdrslts.get(i, j);
-                }
-            }
-            model.addRow(row);
-        }
-
-        return model;
-    }
     private static final String[] CALENDAR = {"adjust", "regression.lp:2", "regression.td(1):2", "regression.td(2):2",
         "regression.td(3):2", "regression.td(4):2", "regression.td(5):2", "regression.td(6):2", "regression.td(7):2", "regression.easter:2"};
     private static final String[] CALENDAR_TITLE = {"Adjust", "Leap Year", "T-Stat", "TD(1)", "T-Stat", "TD(2)", "T-Stat", "TD(3)", "T-Stat", "TD(4)", "T-Stat", "TD(5)", "T-Stat", "TD(6)", "T-Stat", "TD(7)", "T-Stat", "Easter", "T-Stat"
@@ -365,24 +291,11 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
     private static final String[] TESTS = new String[]{
         "residuals.skewness:-3", "residuals.kurtosis:-3", "residuals.lb:-3", "residuals.seaslb:-3", "residuals.lb2:-3",
-        InformationSet.item(CoherenceDiagnostics.NAME, CoherenceDiagnostics.BIAS) + ":-2",
-        InformationSet.item(ResidualsDiagnostics.NAME, ResidualsDiagnostics.TD_PEAK) + ":-2",
-        InformationSet.item(ResidualsDiagnostics.NAME, ResidualsDiagnostics.S_PEAK) + ":-2",
-        InformationSet.item(SpectralDiagnostics.NAME, SpectralDiagnostics.TD),
-        InformationSet.item(SpectralDiagnostics.NAME, SpectralDiagnostics.SEAS),
-        //        InformationSet.item(MDiagnostics.NAME, MDiagnostics.M1),
-        //        InformationSet.item(MDiagnostics.NAME, MDiagnostics.M2),
-        //        InformationSet.item(MDiagnostics.NAME, MDiagnostics.M3),
-        //        InformationSet.item(MDiagnostics.NAME, MDiagnostics.M4),
-        //        InformationSet.item(MDiagnostics.NAME, MDiagnostics.M5),
-        //        InformationSet.item(MDiagnostics.NAME, MDiagnostics.M6),
-        //        InformationSet.item(MDiagnostics.NAME, MDiagnostics.M7),
-        //        InformationSet.item(MDiagnostics.NAME, MDiagnostics.M8),
-        //        InformationSet.item(MDiagnostics.NAME, MDiagnostics.M9),
-        //        InformationSet.item(MDiagnostics.NAME, MDiagnostics.M10),
-        //        InformationSet.item(MDiagnostics.NAME, MDiagnostics.M11),
-        //        InformationSet.item(MDiagnostics.NAME, MDiagnostics.Q) + ":-2",
-        //        InformationSet.item(MDiagnostics.NAME, MDiagnostics.Q2) + ":-2",};
+        InformationSet.item(CoherenceDiagnosticsFactory.NAME, CoherenceDiagnosticsFactory.BIAS) + ":-2",
+        InformationSet.item(ResidualsDiagnosticsFactory.NAME, ResidualsDiagnosticsFactory.TD_PEAK) + ":-2",
+        InformationSet.item(ResidualsDiagnosticsFactory.NAME, ResidualsDiagnosticsFactory.S_PEAK) + ":-2",
+        InformationSet.item(SpectralDiagnosticsFactory.NAME, SpectralDiagnosticsFactory.TD),
+        InformationSet.item(SpectralDiagnosticsFactory.NAME, SpectralDiagnosticsFactory.SEAS),
         InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M1),
         InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M2),
         InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M3),
@@ -397,57 +310,6 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.Q),
         InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.Q2)};
 
-//    private void updateTests(JLabel[] cur, SaItem item, AlgorithmDescriptor m, InformationSet details) {
-//        InformationSet res = details.getSubSet(RegArimaDictionary.RESIDUALS);
-//        if (res != null) {
-//            Double test = res.get(RegArimaDictionary.SKEW, Double.class);
-//            cur[SKEWNESS].setText(test != null ? df3.format(test) : "");
-//            test = res.get(RegArimaDictionary.KURT, Double.class);
-//            cur[KURTOSIS].setText(test != null ? df3.format(test) : "");
-//            test = res.get(RegArimaDictionary.LB, Double.class);
-//            cur[LB].setText(test != null ? df3.format(test) : "");
-//            test = res.get(RegArimaDictionary.SEASLB, Double.class);
-//            cur[LBS].setText(test != null ? df3.format(test) : "");
-//            test = res.get(RegArimaDictionary.LB2, Double.class);
-//            cur[LB2].setText(test != null ? df3.format(test) : "");
-//        }
-//
-//        InformationSet sum = item.getDiagnostics();
-//        if (sum != null) {
-//            ProcDiagnostic diag = sum.search(new String[]{CoherenceDiagnostics.NAME, CoherenceDiagnostics.BIAS}, ProcDiagnostic.class);
-//            cur[MAXBIAS].setText(diag != null ? df3.format(diag.value) : "");
-//            diag = sum.search(new String[]{ResidualsDiagnostics.NAME, ResidualsDiagnostics.TD_PEAK}, ProcDiagnostic.class);
-//            cur[TD_PEAK].setText(diag != null ? df3.format(diag.value) : "");
-//            diag = sum.search(new String[]{ResidualsDiagnostics.NAME, ResidualsDiagnostics.S_PEAK}, ProcDiagnostic.class);
-//            cur[S_PEAK].setText(diag != null ? df3.format(diag.value) : "");
-//            diag = sum.search(new String[]{SpectralDiagnostics.NAME, SpectralDiagnostics.TD}, ProcDiagnostic.class);
-//            cur[TD_VPEAK].setText((diag != null && diag.quality.isLower(ProcQuality.Uncertain)) ? "X" : "");
-//            diag = sum.search(new String[]{SpectralDiagnostics.NAME, SpectralDiagnostics.SEAS}, ProcDiagnostic.class);
-//            cur[S_VPEAK].setText((diag != null && diag.quality.isLower(ProcQuality.Uncertain)) ? "X" : "");
-//        } else {
-//            for (int i = MAXBIAS; i <= S_VPEAK; ++i) {
-//                cur[i].setText("");
-//            }
-//        }
-//        if (m.equals(TramoSeatsProcessor.DESCRIPTOR)) {
-//            if (sum != null) {
-//                ProcDiagnostic diag = sum.search(new String[]{SeatsDiagnostics.NAME, SeatsDiagnostics.SEAS_VAR}, ProcDiagnostic.class);
-//                cur[S_VAR].setText(diag != null ? df3.format(diag.value) : "");
-//                diag = sum.search(new String[]{SeatsDiagnostics.NAME, SeatsDiagnostics.IRR_VAR}, ProcDiagnostic.class);
-//                cur[I_VAR].setText(diag != null ? df3.format(diag.value) : "");
-//                diag = sum.search(new String[]{SeatsDiagnostics.NAME, SeatsDiagnostics.SEAS_I_CORR}, ProcDiagnostic.class);
-//                cur[SI_CORR].setText(diag != null ? df3.format(diag.value) : "");
-//            } else {
-//                for (int i = S_VAR; i <= SI_CORR; ++i) {
-//                    cur[i].setText("");
-//                }
-//            }
-//        } else {
-//            if (sum != null) {
-//                InformationSet mstats = sum.subSet(MDiagnostics.NAME);
-//            }
-//        }
-//    }
     private static final class TableModelAdapter extends AbstractGridModel {
 
         private final TableModel source;

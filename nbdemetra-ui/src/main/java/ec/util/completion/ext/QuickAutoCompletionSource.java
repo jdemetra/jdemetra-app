@@ -17,11 +17,13 @@
 package ec.util.completion.ext;
 
 import com.google.common.base.Predicate;
-import static com.google.common.collect.Iterables.*;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Streams;
 import ec.util.completion.AbstractAutoCompletionSource;
 import ec.util.completion.AutoCompletionSources;
 import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 /**
  * An implementation of AutoCompletionSource that allows to quickly construct a
@@ -29,10 +31,13 @@ import java.util.List;
  *
  * @author Philippe Charles
  * @param <T>
+ * @Deprecated use {@link ec.util.completion.ExtAutoCompletionSource} instead
  */
+@Deprecated
 public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletionSource<T> {
 
-    public static <X> QuickAutoCompletionSource<X> from(final Iterable<X> list) {
+    @Nonnull
+    public static <X> QuickAutoCompletionSource<X> from(@Nonnull Iterable<X> list) {
         return new QuickAutoCompletionSource<X>() {
             @Override
             protected Iterable<X> getAllValues() throws Exception {
@@ -43,7 +48,11 @@ public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletio
 
     @Override
     protected List<?> getValues(String term, Iterable<T> allValues) {
-        return getSorter().sortedCopy(limit(filter(allValues, getFilter(term)), getLimitSize()));
+        return (List<?>) Streams.stream(allValues)
+                .filter(getFilter(term)::apply)
+                .limit(getLimitSize())
+                .sorted(getSorter())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -57,14 +66,10 @@ public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletio
      * #matches(ec.util.completion.AbstractAutoCompletionSource.TermMatcher,
      * java.lang.Object)
      */
-    protected Predicate<T> getFilter(final String term) {
+    @Nonnull
+    protected Predicate<T> getFilter(@Nonnull String term) {
         final TermMatcher termMatcher = createTermMatcher(term);
-        return new Predicate<T>() {
-            @Override
-            public boolean apply(T input) {
-                return matches(termMatcher, input);
-            }
-        };
+        return o -> matches(termMatcher, o);
     }
 
     /**
@@ -73,6 +78,7 @@ public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletio
      *
      * @return a new ordering
      */
+    @Nonnull
     protected Ordering getSorter() {
         return Ordering.from(this);
     }
@@ -98,11 +104,6 @@ public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletio
     @Deprecated
     static protected Predicate<String> getLoosePredicate(String term) {
         final String tmp = AutoCompletionSources.normalize(term);
-        return new Predicate<String>() {
-            @Override
-            public boolean apply(String input) {
-                return input != null && AutoCompletionSources.normalize(input).contains(tmp);
-            }
-        };
+        return o -> o != null && AutoCompletionSources.normalize(o).contains(tmp);
     }
 }

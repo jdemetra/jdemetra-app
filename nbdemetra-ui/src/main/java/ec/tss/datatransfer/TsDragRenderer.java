@@ -4,7 +4,6 @@
  */
 package ec.tss.datatransfer;
 
-import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import ec.nbdemetra.ui.ComponentFactory;
 import ec.nbdemetra.ui.awt.TransferHandlers;
@@ -18,6 +17,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.function.Supplier;
 import static javax.swing.BorderFactory.*;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,7 +44,7 @@ public abstract class TsDragRenderer {
 
     private static class ChartRenderer extends TsDragRenderer {
 
-        final Supplier<ATsChart> supplier = Suppliers.memoize(ChartSupplier.INSTANCE);
+        final Supplier<ATsChart> supplier = Suppliers.memoize(ChartRenderer::createChart);
 
         @Override
         public Component getTsDragRendererComponent(List<? extends Ts> selection) {
@@ -54,14 +54,8 @@ public abstract class TsDragRenderer {
             result.setTsCollection(col);
             return result;
         }
-    }
 
-    private static class ChartSupplier implements Supplier<ATsChart> {
-
-        public static final ChartSupplier INSTANCE = new ChartSupplier();
-
-        @Override
-        public ATsChart get() {
+        private static ATsChart createChart() {
             ATsChart c = ComponentFactory.getDefault().newTsChart();
             c.setPreferredSize(new Dimension(150, 90));
             c.setAxisVisible(false);

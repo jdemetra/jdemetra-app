@@ -4,12 +4,10 @@
  */
 package ec.nbdemetra.ui.properties.l2fprod;
 
-import ec.nbdemetra.ui.properties.ListSelection;
+import ec.util.list.swing.JListSelection;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -21,10 +19,11 @@ import javax.swing.JPanel;
 /**
  *
  * @author Jean Palate
+ * @param <T>
  */
 public class ListSelectionDialog<T> extends JDialog {
 
-    private ListSelection<T> list;
+    private final JListSelection<T> list;
 
     public ListSelectionDialog(final Window owner) {
         super(owner);
@@ -32,7 +31,7 @@ public class ListSelectionDialog<T> extends JDialog {
         final JPanel pane = new JPanel(new BorderLayout());
         pane.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
-        list = new ListSelection<>();
+        list = new JListSelection<>();
         list.setPreferredSize(new Dimension(150, 200));
         pane.add(list, BorderLayout.NORTH);
 
@@ -43,12 +42,7 @@ public class ListSelectionDialog<T> extends JDialog {
         final JButton okButton = new JButton("Done");
         okButton.setPreferredSize(new Dimension(60, 27));
         okButton.setFocusPainted(false);
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        });
+        okButton.addActionListener(event -> setVisible(false));
         buttonPane.add(okButton);
         buttonPane.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
         pane.add(buttonPane, BorderLayout.SOUTH);
@@ -58,17 +52,22 @@ public class ListSelectionDialog<T> extends JDialog {
         setContentPane(pane);
         pack();
         setModal(true);
+
+        setLocationRelativeTo(null);
     }
 
     public List<T> getSelection() {
-        return list.getSelection();
+        return list.getSelectedValues();
     }
 
     public void set(List<T> input) {
-        list.set(input);
+        list.getSourceModel().clear();
+        list.getTargetModel().clear();
+        input.forEach(list.getSourceModel()::addElement);
     }
 
     public void set(List<T> input, List<T> sel) {
-        list.set(input, sel);
+        set(input);
+        sel.forEach(list.getTargetModel()::addElement);
     }
 }

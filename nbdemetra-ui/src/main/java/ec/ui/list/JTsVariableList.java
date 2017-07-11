@@ -1,17 +1,17 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  *
  * http://ec.europa.eu/idabc/eupl
  *
- * Unless required by applicable law or agreed to in writing, software 
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.ui.list;
@@ -196,7 +196,7 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
 
         @Override
         public boolean canImport(TransferHandler.TransferSupport support) {
-            boolean result = TssTransferSupport.getDefault().canImport(support.getDataFlavors());
+            boolean result = TssTransferSupport.getDefault().canImport(support.getTransferable());
             if (result && support.isDrop()) {
                 support.setDropAction(COPY);
             }
@@ -205,25 +205,26 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            TsCollection col = TssTransferSupport.getDefault().toTsCollection(support.getTransferable());
-            if (col != null) {
-                col.query(TsInformationType.All);
-                if (!col.isEmpty()) {
-                    appendTsVariables(col);
-                }
-                return true;
-            }
-            return false;
+            return TssTransferSupport.getDefault()
+                    .toTsCollectionStream(support.getTransferable())
+                    .peek(o -> o.load(TsInformationType.All))
+                    .filter(o -> !o.isEmpty())
+                    .peek(JTsVariableList.this::appendTsVariables)
+                    .count() > 0;
         }
     }
 
     public void appendTsVariables(TsCollection coll) {
         for (Ts s : coll) {
+            String name = variables.nextName();
+            TsVariable var;
             if (s.getMoniker().isAnonymous()) {
-                variables.set(variables.nextName(), new TsVariable(s.getName(), s.getTsData()));
+                var = new TsVariable(s.getName(), s.getTsData());
             } else {
-                variables.set(variables.nextName(), new DynamicTsVariable(s.getName(), s.getMoniker(), s.getTsData()));
+                var = new DynamicTsVariable(s.getName(), s.getMoniker(), s.getTsData());
             }
+            var.setName(name);
+            variables.set(name, var);
         }
         ((CustomTableModel) table.getModel()).fireTableStructureChanged();
     }
@@ -233,16 +234,18 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            String text = (String) value;
-            if (text.isEmpty()) {
-                result.setText(" ");
-                result.setToolTipText(null);
-            } else if (text.startsWith("<html>")) {
-                result.setText(text);
-                result.setToolTipText(text);
-            } else {
-                result.setText(MultiLineNameUtil.join(text));
-                result.setToolTipText(MultiLineNameUtil.toHtml(text));
+            if (value instanceof String) {
+                String text = (String) value;
+                if (text.isEmpty()) {
+                    result.setText(" ");
+                    result.setToolTipText(null);
+                } else if (text.startsWith("<html>")) {
+                    result.setText(text);
+                    result.setToolTipText(text);
+                } else {
+                    result.setText(MultiLineNameUtil.join(text));
+                    result.setToolTipText(MultiLineNameUtil.toHtml(text));
+                }
             }
             return result;
         }
@@ -442,9 +445,13 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
     }
 
     private static Ts toTs(TsVariable variable) {
+        String name = variable.getDescription();
+        if (name == null) {
+            name = variable.getName();
+        }
         return variable instanceof DynamicTsVariable
-                ? TsFactory.instance.getTs(((DynamicTsVariable) variable).getMoniker())
-                : TsFactory.instance.createTs(variable.getDescription(), null, variable.getTsData());
+                ? TsFactory.instance.createTs(name, ((DynamicTsVariable) variable).getMoniker(), TsInformationType.None)
+                : TsFactory.instance.createTs(name, null, variable.getTsData());
     }
 
     private static final class OpenCommand extends JCommand<JTsVariableList> {

@@ -16,12 +16,9 @@
  */
 package ec.nbdemetra.ui.actions;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import ec.nbdemetra.ui.Jdk6Functions;
-import ec.nbdemetra.ui.Jdk6Predicates;
 import ec.nbdemetra.ui.nodes.Nodes;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
@@ -33,24 +30,24 @@ import org.openide.util.actions.NodeAction;
  */
 public abstract class AbilityAction<T> extends NodeAction {
 
-    final Predicate<Node> predicate;
-    final Function<Node, T> function;
+    private final Predicate<Node> predicate;
+    private final Function<Node, T> function;
 
     protected AbilityAction(Class<T> ability) {
-        this.predicate = Jdk6Predicates.lookupNode(ability);
-        this.function = Jdk6Functions.lookupNode(ability);
+        this.predicate = o -> o.getLookup().lookup(ability) != null;
+        this.function = o -> o.getLookup().lookup(ability);
     }
 
     abstract protected void performAction(Iterable<T> items);
 
     @Override
     protected void performAction(Node[] activatedNodes) {
-        performAction(Nodes.asIterable(activatedNodes).transform(function).filter(Predicates.notNull()));
+        performAction(Nodes.asIterable(activatedNodes).transform(function::apply).filter(o -> o != null));
     }
 
     @Override
     protected boolean enable(Node[] activatedNodes) {
-        return Nodes.asIterable(activatedNodes).anyMatch(predicate);
+        return Nodes.asIterable(activatedNodes).anyMatch(predicate::test);
     }
 
     @Override

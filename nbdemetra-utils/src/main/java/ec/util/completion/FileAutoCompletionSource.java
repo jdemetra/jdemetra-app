@@ -92,12 +92,7 @@ public class FileAutoCompletionSource implements AutoCompletionSource {
 
     FileFilter normalizedFilter(String term) {
         final String normalizedTerm = getNormalizedString(term);
-        return new FileFilter() {
-            @Override
-            public boolean accept(File o) {
-                return (fileFilter == null || fileFilter.accept(o)) && getNormalizedString(o.getPath()).startsWith(normalizedTerm);
-            }
-        };
+        return (File o) -> (fileFilter == null || fileFilter.accept(o)) && getNormalizedString(o.getPath()).startsWith(normalizedTerm);
     }
 
     String getNormalizedString(String input) {

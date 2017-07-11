@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ui.properties;
 
@@ -9,8 +21,6 @@ import ec.nbdemetra.ui.awt.SwingProperties;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.util.completion.AutoCompletionSources;
 import java.awt.GridLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
@@ -38,11 +48,8 @@ public class DataFormatComponent extends AutoCompletedComboBox<DataFormat> {
 
         datePattern = (JTextField) add(new JTextField());
         preview = (JLabel) add(new JLabel());
-        preview.addPropertyChangeListener(SwingProperties.LABEL_TEXT_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                firePropertyChange(PREVIEW_PROPERTY, removePrefix((String) evt.getOldValue()), removePrefix((String) evt.getNewValue()));
-            }
+        preview.addPropertyChangeListener(SwingProperties.LABEL_TEXT_PROPERTY, evt -> {
+            firePropertyChange(PREVIEW_PROPERTY, removePrefix((String) evt.getOldValue()), removePrefix((String) evt.getNewValue()));
         });
 
         Previewer previewer = new Previewer();

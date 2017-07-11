@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.properties;
 
 import com.toedter.components.JSpinField;
+import static ec.nbdemetra.ui.properties.Util.attr;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyEditor;
@@ -37,43 +38,46 @@ public class JSpinFieldPropertyEditor extends AbstractExPropertyEditor {
 
     @Override
     protected InplaceEditor createInplaceEditor() {
-        return new AbstractInplaceEditor() {
-            final JSpinField component = new JSpinField() {
-                {
-                    textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), "FIRE_ACTION_PERFORMED");
-                    textField.getActionMap().put("FIRE_ACTION_PERFORMED", new AbstractAction() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            if (textField.getText().equals(Integer.toString(value))) {
-                                fireActionPerformed(COMMAND_SUCCESS);
-                            }
+        return new JSpinFieldInplaceEditor();
+    }
+
+    private static final class JSpinFieldInplaceEditor extends AbstractInplaceEditor {
+
+        final JSpinField component = new JSpinField() {
+            {
+                textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), "FIRE_ACTION_PERFORMED");
+                textField.getActionMap().put("FIRE_ACTION_PERFORMED", new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (textField.getText().equals(Integer.toString(value))) {
+                            fireActionPerformed(COMMAND_SUCCESS);
                         }
-                    });
-                    spinner.setBorder(null);
-                }
-            };
-
-            @Override
-            public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
-                component.setMaximum(getAttribute(env, MAX_ATTRIBUTE, Integer.class, Integer.MAX_VALUE));
-                component.setMinimum(getAttribute(env, MIN_ATTRIBUTE, Integer.class, Integer.MIN_VALUE));
-                super.connect(propertyEditor, env);
-            }
-
-            @Override
-            public JComponent getComponent() {
-                return component;
-            }
-
-            @Override
-            public Object getValue() {
-                return component.getValue();
-            }
-
-            @Override
-            public void setValue(Object o) {
-                component.setValue((Integer) o);
+                    }
+                });
+                spinner.setBorder(null);
             }
         };
+
+        @Override
+        public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
+            component.setMaximum(attr(env, MAX_ATTRIBUTE, Integer.class).orElse(Integer.MAX_VALUE));
+            component.setMinimum(attr(env, MIN_ATTRIBUTE, Integer.class).orElse(Integer.MIN_VALUE));
+            super.connect(propertyEditor, env);
+        }
+
+        @Override
+        public JComponent getComponent() {
+            return component;
+        }
+
+        @Override
+        public Object getValue() {
+            return component.getValue();
+        }
+
+        @Override
+        public void setValue(Object o) {
+            component.setValue((Integer) o);
+        }
     }
 }

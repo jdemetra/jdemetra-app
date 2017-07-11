@@ -17,7 +17,6 @@
 package ec.nbdemetra.anomalydetection.ui;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.anomalydetection.ControlNode;
@@ -27,9 +26,9 @@ import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IActiveView;
 import ec.nbdemetra.ui.NbComponents;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.nbdemetra.ui.tools.ToolsPersistence;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -42,9 +41,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -66,7 +64,6 @@ import static javax.swing.SwingWorker.StateValue.DONE;
 import static javax.swing.SwingWorker.StateValue.PENDING;
 import static javax.swing.SwingWorker.StateValue.STARTED;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
@@ -77,7 +74,6 @@ import org.openide.awt.DropDownButtonFactory;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.nodes.Node;
-import org.openide.util.Cancellable;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
@@ -139,33 +135,27 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
         summary = new CheckLastSummary();
         toolBarRepresentation = createToolBar();
 
-        list.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case JTsCheckLastList.COLOR_VALUES:
-                        refreshNode();
-                        break;
-                    case COLLECTION_CHANGE:
-                        onCollectionChange();
-                        break;
-                    case SELECTION_PROPERTY:
-                        onSelectionChange();
-                        break;
-                    case JTsCheckLastList.NB_CHECK_LAST:
-                        onNbCheckLastChange();
-                        break;
-                }
+        list.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case JTsCheckLastList.COLOR_VALUES:
+                    refreshNode();
+                    break;
+                case COLLECTION_CHANGE:
+                    onCollectionChange();
+                    break;
+                case SELECTION_PROPERTY:
+                    onSelectionChange();
+                    break;
+                case JTsCheckLastList.NB_CHECK_LAST:
+                    onNbCheckLastChange();
+                    break;
             }
         });
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String p = evt.getPropertyName();
-                if (p.equals(STATE_PROPERTY)) {
-                    onStateChange();
-                }
+        addPropertyChangeListener(evt -> {
+            String p = evt.getPropertyName();
+            if (p.equals(STATE_PROPERTY)) {
+                onStateChange();
             }
         });
 
@@ -222,7 +212,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
         prefButton = toolBar.add(new AbstractAction("", DemetraUiIcon.PREFERENCES) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                OpenIdePropertySheetBeanEditor.editNode(n, "Properties", null);
+                new PropertySheetDialogBuilder().title("Properties").editNode(n);
             }
         });
         prefButton.setToolTipText("Open the properties dialog");
@@ -261,7 +251,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     TramoSpecification s = TramoSpecification.TR0.clone();
-                    JCheckBoxMenuItem source = (JCheckBoxMenuItem)e.getSource();
+                    JCheckBoxMenuItem source = (JCheckBoxMenuItem) e.getSource();
                     try {
                         s = (TramoSpecification) TramoSpecification.class.getDeclaredField(source.getText()).get(new TramoSpecification());
                     } catch (IllegalAccessException | NoSuchFieldException | SecurityException ex) {
@@ -270,21 +260,18 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
                     view.setSpec(s);
                 }
             });
-            menuItem.setState(i == specs.length-1);
-            menuItem.setEnabled(i != specs.length-1);
+            menuItem.setState(i == specs.length - 1);
+            menuItem.setEnabled(i != specs.length - 1);
             addPopup.add(menuItem);
         }
-        view.addPropertyChangeListener(JTsCheckLastList.SPEC_CHANGE, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                refreshNode();
-                for (Component o : addPopup.getComponents()) {
-                    JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
-                    item.setState(view.getSpec().toString().equals(o.getName()));
-                    item.setEnabled(!item.isSelected());
-                    defSpecLabel.setText(view.getSpec().toLongString());
-                    reportButton.setEnabled(false);
-                }
+        view.addPropertyChangeListener(JTsCheckLastList.SPEC_CHANGE, evt -> {
+            refreshNode();
+            for (Component o : addPopup.getComponents()) {
+                JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
+                item.setState(view.getSpec().toString().equals(o.getName()));
+                item.setEnabled(!item.isSelected());
+                defSpecLabel.setText(view.getSpec().toLongString());
+                reportButton.setEnabled(false);
             }
         });
 
@@ -310,15 +297,12 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
             menuItem.setEnabled(i != 1);
             addPopup.add(menuItem);
         }
-        view.addPropertyChangeListener(JTsCheckLastList.NB_CHECK_LAST, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                refreshNode();
-                for (Component o : addPopup.getComponents()) {
-                    JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
-                    item.setState(view.getLastChecks() == Integer.parseInt(item.getName()));
-                    item.setEnabled(!item.isSelected());
-                }
+        view.addPropertyChangeListener(JTsCheckLastList.NB_CHECK_LAST, evt -> {
+            refreshNode();
+            for (Component o : addPopup.getComponents()) {
+                JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
+                item.setState(view.getLastChecks() == Integer.parseInt(item.getName()));
+                item.setEnabled(!item.isSelected());
             }
         });
 
@@ -413,7 +397,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
     // </editor-fold>
 
     private void generateReport() {
-        CheckLastReportAction.process(list.getItems2(), list.getReportParameters());
+        CheckLastReportAction.process(list.getItems(), list.getReportParameters());
     }
 
     // <editor-fold defaultstate="collapsed" desc="Thread stuff">
@@ -455,24 +439,21 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
         }
 
         List<Callable<Void>> createTasks() {
-            if (list.getItems2() != null && list.getItems2().size() > 0) {
-                List<Callable<Void>> result = Lists.newArrayListWithCapacity(list.getItems2().size());
-                for (final AnomalyItem o : list.getItems2()) {
+            if (list.getItems() != null && list.getItems().size() > 0) {
+                List<Callable<Void>> result = new ArrayList(list.getItems().size());
+                for (final AnomalyItem o : list.getItems()) {
                     if (o.getTsData() != null) {
                         if (!o.isProcessed()) {
-                            result.add(new Callable<Void>() {
-                                @Override
-                                public Void call() throws Exception {
-                                    if (isCancelled()) {
-                                        return null;
-                                    }
-                                    CheckLast c = new CheckLast(list.getSpec().build());
-                                    c.setBackCount(list.getLastChecks());
-                                    o.process(c);
-                                    publish(o);
-                                    list.put(o.getTs().getName(), o);
+                            result.add(() -> {
+                                if (isCancelled()) {
                                     return null;
                                 }
+                                CheckLast c = new CheckLast(list.getSpec().build());
+                                c.setBackCount(list.getLastChecks());
+                                o.process(c);
+                                publish(o);
+                                list.put(o.getTs().getName(), o);
+                                return null;
                             });
                         }
                     }
@@ -489,7 +470,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
             progressCount += chunks.size();
             if (progressHandle != null) {
                 if (!chunks.isEmpty()) {
-                    progressHandle.progress(100 * progressCount / list.getItems2().size());
+                    progressHandle.progress(100 * progressCount / list.getItems().size());
                 }
             }
         }
@@ -499,7 +480,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
         switch (getState()) {
             case DONE:
                 runButton.setEnabled(true);
-                if (!list.getItems2().isEmpty()) {
+                if (!list.getItems().isEmpty()) {
                     reportButton.setEnabled(true);
                 }
                 makeBusy(false);
@@ -515,12 +496,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
             case STARTED:
                 runButton.setEnabled(false);
                 reportButton.setEnabled(false);
-                progressHandle = ProgressHandleFactory.createHandle("Processing Check Last...", new Cancellable() {
-                    @Override
-                    public boolean cancel() {
-                        return worker.cancel(true);
-                    }
-                });
+                progressHandle = ProgressHandle.createHandle("Processing Check Last...", () -> worker.cancel(true));
                 progressHandle.start(100);
                 break;
         }
@@ -529,11 +505,8 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
     public boolean start(boolean local) {
         makeBusy(true);
         worker = new SwingWorkerImpl();
-        worker.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                firePropertyChange(STATE_PROPERTY, null, worker.getState());
-            }
+        worker.addPropertyChangeListener(evt -> {
+            firePropertyChange(STATE_PROPERTY, null, worker.getState());
         });
         worker.execute();
         return true;
@@ -558,24 +531,22 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
             AnomalyItem a = list.getMap().get(ts[0].getName());
             if (a.isInvalid() || a.isNotProcessable()) {
                 summary.set(null, null);
-            } else {
-                if (a.getTsData() != null) {
-                    CheckLast cl = new CheckLast(list.getSpec().build());
-                    cl.setBackCount(list.getLastChecks());
-                    cl.check(a.getTsData());
-                    summary.set(a, cl.getEstimatedModel());
-                }
+            } else if (a.getTsData() != null) {
+                CheckLast cl = new CheckLast(list.getSpec().build());
+                cl.setBackCount(list.getLastChecks());
+                cl.check(a.getTsData());
+                summary.set(a, cl.getEstimatedModel());
             }
 
             TsCollection col = TsFactory.instance.createTsCollection();
-            col.add(a.getTs());
+            col.quietAdd(a.getTs());
             chart.setTsCollection(col);
         }
         summary.repaint();
     }
 
     private void onCollectionChange() {
-        int nbElements = list.getItems2() != null ? list.getItems2().size() : 0;
+        int nbElements = list.getItems() != null ? list.getItems().size() : 0;
         itemsLabel.setText(nbElements == 0 ? "No items" : nbElements + (nbElements < 2 ? " item" : " items"));
         summary.set(null, list.getCheckLast().getEstimatedModel());
         summary.repaint();

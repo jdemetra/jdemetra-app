@@ -24,8 +24,6 @@ import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
 import ec.util.various.swing.JCommand;
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -33,7 +31,6 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JMenu;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 import org.openide.DialogDescriptor;
@@ -69,18 +66,15 @@ public class ExceptionPanel extends JComponent implements IDialogDescriptorProvi
         editorPane.setEditorKit(editor);
         editorPane.setCaretPosition(0);
         editorPane.setEditable(false);
-        editorPane.addHyperlinkListener(new HyperlinkListener() {
-            @Override
-            public void hyperlinkUpdate(HyperlinkEvent e) {
-                if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                    Desktop desktop = DesktopManager.get();
-                    if (desktop.isSupported(Desktop.Action.SHOW_IN_FOLDER)) {
-                        try {
-                            File file = Utilities.toFile(e.getURL().toURI());
-                            DesktopManager.get().showInFolder(file);
-                        } catch (URISyntaxException | IOException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
+        editorPane.addHyperlinkListener(event -> {
+            if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                Desktop desktop = DesktopManager.get();
+                if (desktop.isSupported(Desktop.Action.SHOW_IN_FOLDER)) {
+                    try {
+                        File file = Utilities.toFile(event.getURL().toURI());
+                        DesktopManager.get().showInFolder(file);
+                    } catch (URISyntaxException | IOException ex) {
+                        Exceptions.printStackTrace(ex);
                     }
                 }
             }
@@ -90,13 +84,10 @@ public class ExceptionPanel extends JComponent implements IDialogDescriptorProvi
         setLayout(new BorderLayout());
         add(NbComponents.newJScrollPane(editorPane), BorderLayout.CENTER);
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String p = evt.getPropertyName();
-                if (p.equals(EXCEPTION_PROPERTY)) {
-                    onExceptionChange();
-                }
+        addPropertyChangeListener(evt -> {
+            String p = evt.getPropertyName();
+            if (p.equals(EXCEPTION_PROPERTY)) {
+                onExceptionChange();
             }
         });
     }

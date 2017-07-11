@@ -20,6 +20,7 @@ import ec.nbdemetra.sa.MultiProcessingDocument;
 import ec.nbdemetra.sa.MultiProcessingManager;
 import ec.nbdemetra.sa.SaBatchUI;
 import ec.nbdemetra.sa.output.OutputPanel;
+import ec.nbdemetra.ui.SingleFileExporter;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ws.WorkspaceItem;
@@ -29,13 +30,18 @@ import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.SaItem;
 import ec.tss.sa.SaProcessing;
 import ec.tss.sa.documents.SaDocument;
+import ec.tss.sa.output.CsvMatrixOutputConfiguration;
+import ec.tss.sa.output.CsvOutputConfiguration;
+import ec.tss.sa.output.SpreadsheetOutputConfiguration;
+import ec.tss.sa.output.TxtOutputConfiguration;
 import ec.tstoolkit.algorithm.IOutput;
 import ec.tstoolkit.utilities.LinearId;
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import javax.annotation.Nullable;
 import javax.swing.SwingWorker;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -82,29 +88,60 @@ public final class Output extends AbstractViewAction<SaBatchUI> {
             List<ISaOutputFactory> outputs = panel.getFactories();
             LinearId id = new LinearId(doc.getOwner().getName(), doc.getDisplayName());
             for (ISaOutputFactory output : outputs) {
-                save(output, id, processing);
+                File target = getExportFolder(output);
+                if (target != null) {
+                    new SingleFileExporter()
+                            .file(target)
+                            .progressLabel("Saving to " + output.getDescription())
+                            .onErrorNotify("Saving to " + output.getDescription() + " failed")
+                            .onSussessNotify("Saving to " + output.getDescription() + " done")
+                            .execAsync((f, ph) -> store(output, id, processing, ph));
+                } else {
+                    save(output, id, processing);
+                }
             }
         }
     }
 
-    private void save(final ISaOutputFactory output, final LinearId id, final SaProcessing processing) {
+    @Nullable
+    private File getExportFolder(ISaOutputFactory output) {
+        Object result = output.getProperties();
+        if (result instanceof CsvMatrixOutputConfiguration) {
+            return ((CsvMatrixOutputConfiguration) result).getFolder();
+        }
+        if (result instanceof CsvOutputConfiguration) {
+            return ((CsvOutputConfiguration) result).getFolder();
+        }
+        if (result instanceof SpreadsheetOutputConfiguration) {
+            return ((SpreadsheetOutputConfiguration) result).getFolder();
+        }
+        if (result instanceof TxtOutputConfiguration) {
+            return ((TxtOutputConfiguration) result).getFolder();
+        }
+        return null;
+    }
+
+    private static void store(ISaOutputFactory output, LinearId id, SaProcessing processing, ProgressHandle ph) throws Exception {
+        ph.start();
+        ph.progress("Initializing");
+        IOutput<SaDocument<ISaSpecification>> sadoc = output.create();
+        ph.progress("Starting");
+        sadoc.start(id);
+        ph.progress("Processing");
+        for (SaItem cur : processing.toArray()) {
+            sadoc.process(cur.toDocument());
+        }
+        ph.progress("Ending");
+        sadoc.end(id);
+    }
+
+    private void save(ISaOutputFactory output, LinearId id, SaProcessing processing) {
         new SwingWorker<Void, String>() {
-            final ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Saving to " + output.getName());
+            final ProgressHandle progressHandle = ProgressHandle.createHandle("Saving to " + output.getName());
 
             @Override
             protected Void doInBackground() throws Exception {
-                progressHandle.start();
-                progressHandle.progress("Initializing");
-                IOutput<SaDocument<ISaSpecification>> sadoc = output.create();
-                progressHandle.progress("Starting");
-                sadoc.start(id);
-                progressHandle.progress("Processing");
-                for (SaItem cur : processing.toArray()) {
-                    SaDocument<ISaSpecification> cdoc = cur.toDocument();
-                    sadoc.process(cdoc);
-                }
-                progressHandle.progress("Ending");
-                sadoc.end(id);
+                store(output, id, processing, progressHandle);
                 return null;
             }
 

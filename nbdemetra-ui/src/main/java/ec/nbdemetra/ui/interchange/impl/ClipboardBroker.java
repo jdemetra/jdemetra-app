@@ -24,7 +24,6 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.List;
@@ -100,10 +99,9 @@ public class ClipboardBroker extends InterchangeBroker {
     }
 
     private static String readString(@Nonnull Clipboard clipboard) throws IOException {
-        Transferable t = clipboard.getContents(null);
-        if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+        if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
             try {
-                return (String) t.getTransferData(DataFlavor.stringFlavor);
+                return (String) clipboard.getData(DataFlavor.stringFlavor);
             } catch (UnsupportedFlavorException ex) {
                 throw Throwables.propagate(ex);
             }

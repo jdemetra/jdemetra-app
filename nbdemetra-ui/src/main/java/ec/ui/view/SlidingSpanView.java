@@ -29,8 +29,6 @@ import ec.util.chart.swing.ext.MatrixChartCommand;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import javax.swing.Box;
@@ -112,23 +110,20 @@ public class SlidingSpanView extends JComponent implements IColorSchemeAble {
 
         themeSupport.register();
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case SLIDING_SPANS_PROPERTY:
-                        onSlidingSpansChange();
-                        break;
-                    case INFO_NAME_PROPERTY:
-                        onInfoNameChange();
-                        break;
-                    case THRESHOLD_PROPERTY:
-                        onThresholdChange();
-                        break;
-                    case INFO_PROPERTY:
-                        onInfoChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case SLIDING_SPANS_PROPERTY:
+                    onSlidingSpansChange();
+                    break;
+                case INFO_NAME_PROPERTY:
+                    onInfoNameChange();
+                    break;
+                case THRESHOLD_PROPERTY:
+                    onThresholdChange();
+                    break;
+                case INFO_PROPERTY:
+                    onInfoChange();
+                    break;
             }
         });
 
@@ -144,11 +139,11 @@ public class SlidingSpanView extends JComponent implements IColorSchemeAble {
 
         clear();
         TsData data = slidingSpans.Statistics(infoName, info);
-        if (data == null || data.getValues().getMissingValuesCount() == data.getValues().getLength()) {
+        if (data == null || data.getMissingValuesCount() == data.getLength()) {
             return;
         }
 
-        DescriptiveStatistics stats = new DescriptiveStatistics(new DataBlock(data.getValues().internalStorage()));
+        DescriptiveStatistics stats = new DescriptiveStatistics(new DataBlock(data.internalStorage()));
         if (stats.isConstant()) {
             return;
         }
@@ -256,14 +251,14 @@ public class SlidingSpanView extends JComponent implements IColorSchemeAble {
         NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
         switch (mode) {
             case Multiplicative:
-                xAxis.setTickUnit(new NumberTickUnit(0.02));
+                xAxis.setTickUnit(new NumberTickUnit(0.02), true, false);
                 xAxis.setRange(0, 0.1);
-                yAxis.setTickUnit(new PercentageTickUnit(0.05));
+                yAxis.setTickUnit(new PercentageTickUnit(0.05), true, false);
                 break;
             case Additive:
                 Range rng = calcRange(xvalues);
-                xAxis.setTickUnit(new NumberTickUnit(calcTick(rng)));
-                yAxis.setTickUnit(new PercentageTickUnit(0.05));
+                xAxis.setTickUnit(new NumberTickUnit(calcTick(rng)), true, false);
+                yAxis.setTickUnit(new PercentageTickUnit(0.05), true, false);
                 break;
         }
     }
@@ -347,7 +342,7 @@ public class SlidingSpanView extends JComponent implements IColorSchemeAble {
 
         DateAxis domainAxis = new DateAxis();
         //dateAxis.setTickMarkPosition(DateTickMarkPosition.MIDDLE);
-        domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.YEAR, 1));
+        domainAxis.setTickUnit(new DateTickUnit(DateTickUnitType.YEAR, 1), true, false);
         domainAxis.setDateFormatOverride(new SimpleDateFormat("yyyy-MM"));
         domainAxis.setTickLabelPaint(TsCharts.CHART_TICK_LABEL_COLOR);
         plot.setDomainAxis(domainAxis);

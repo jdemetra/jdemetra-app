@@ -18,41 +18,38 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
 
 @ActionID(category = "SaProcessing",
-id = "ec.nbdemetra.sa.actions.LocalRefresh")
-@ActionRegistration(displayName = "#CTL_LocalRefresh", lazy=false)
+        id = "ec.nbdemetra.sa.actions.LocalRefresh")
+@ActionRegistration(displayName = "#CTL_LocalRefresh", lazy = false)
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.LOCALPATH, position = 1200),
     @ActionReference(path = "Shortcuts", name = "r")
 })
 @Messages("CTL_LocalRefresh=Refresh")
 public final class LocalRefresh extends AbstractViewAction<SaBatchUI> implements Presenter.Popup {
-    
-    public static final String PATH="/Refresh";
 
-     public LocalRefresh(){
+    public static final String PATH = "/Refresh";
+
+    public LocalRefresh() {
         super(SaBatchUI.class);
     }
-    
+
     @Override
     public JMenuItem getPopupPresenter() {
         refreshAction();
-        JMenu menu=new JMenu(Bundle.CTL_Refresh());
+        JMenu menu = new JMenu(Bundle.CTL_Refresh());
         menu.setEnabled(enabled);
-        Menus.fillMenu(menu, MultiProcessingManager.LOCALPATH+PATH);
+        Menus.fillMenu(menu, MultiProcessingManager.LOCALPATH + PATH);
         return menu;
     }
 
     @Override
     protected void refreshAction() {
-        SaBatchUI ui=context();
-        if (ui == null)
-            enabled=false;
-        else
-            enabled=!ui.getDocument().getElement().isNew() && ui.getSelectionCount() > 0;
-     }
+        SaBatchUI ui = context();
+        enabled = ui != null && ui.getSelectionCount() > 0;
+//            enabled=!ui.getDocument().getElement().isNew() && ui.getSelectionCount() > 0;
+    }
 
     @Override
     protected void process(SaBatchUI cur) {
     }
-
 }

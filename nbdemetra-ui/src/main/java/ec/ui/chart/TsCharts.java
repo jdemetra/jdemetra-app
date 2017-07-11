@@ -67,12 +67,7 @@ public final class TsCharts {
 
     @Deprecated
     public static XYSeriesLabelGenerator getXYSeriesLabelGenerator(final TsCollection col) {
-        return new XYSeriesLabelGenerator() {
-            @Override
-            public String generateLabel(XYDataset dataset, int series) {
-                return col.get(series).getName();
-            }
-        };
+        return (XYDataset dataset, int series) -> col.get(series).getName();
     }
 
     public static XYDataset newSparklineDataset(TsData data) {

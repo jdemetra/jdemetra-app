@@ -17,14 +17,13 @@
 package ec.nbdemetra.ui.nodes;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.awt.JProperty;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.nodes.FilterNode;
@@ -43,13 +42,13 @@ public class DecoratedNode extends FilterNode {
     protected final JProperty<Function<Node, Action>> preferredActionDecorator;
 
     public DecoratedNode(Node original) {
-        this(original, Predicates.<Node>alwaysTrue());
+        this(original, o -> true);
     }
 
     public DecoratedNode(Node original, Predicate<Node> filter) {
         super(original, original.isLeaf() ? Children.LEAF : new DecoratedChildren(original, filter));
-        this.htmlDecorator = newProperty(HTML_DECORATOR_PROPERTY, JProperty.<Function<Node, String>>nullTo(Html.DEFAULT), null);
-        this.preferredActionDecorator = newProperty(PREFERRED_ACTION_DECORATOR_PROPERTY, JProperty.<Function<Node, Action>>nullTo(PreferredAction.DEFAULT), null);
+        this.htmlDecorator = newProperty(HTML_DECORATOR_PROPERTY, (o, n) -> n != null ? n : Html.DEFAULT, null);
+        this.preferredActionDecorator = newProperty(PREFERRED_ACTION_DECORATOR_PROPERTY, (o, n) -> n != null ? n : PreferredAction.DEFAULT, null);
     }
 
     @Override
@@ -107,7 +106,7 @@ public class DecoratedNode extends FilterNode {
         protected Node[] createNodes(Node key) {
             List<Node> result = new ArrayList<>();
             for (Node o : super.createNodes(key)) {
-                if (filter.apply(((DecoratedNode)o).getOriginal())) {
+                if (filter.test(((DecoratedNode) o).getOriginal())) {
                     result.add(o);
                 }
             }
@@ -118,43 +117,39 @@ public class DecoratedNode extends FilterNode {
     public enum Html implements Function<Node, String> {
 
         DEFAULT {
-                    @Override
-                    public String apply(Node input) {
-                        return input.getHtmlDisplayName();
-                    }
-                },
+            @Override
+            public String apply(Node input) {
+                return input.getHtmlDisplayName();
+            }
+        },
         BOLD {
-                    @Override
-                    public String apply(Node node) {
-                        return "<b>" + node.getDisplayName() + "</b>";
-                    }
-                };
+            @Override
+            public String apply(Node node) {
+                return "<b>" + node.getDisplayName() + "</b>";
+            }
+        };
     }
 
     public enum PreferredAction implements Function<Node, Action> {
 
         DEFAULT {
-                    @Override
-                    public Action apply(Node input) {
-                        return input.getPreferredAction();
-                    }
-                },
+            @Override
+            public Action apply(Node input) {
+                return input.getPreferredAction();
+            }
+        },
         DO_NOTHING {
-                    @Override
-                    public Action apply(Node input) {
-                        return doNothing;
-                    }
-                    final Action doNothing = new AbstractAction() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                        }
-                    };
+            @Override
+            public Action apply(Node input) {
+                return doNothing;
+            }
+            final Action doNothing = new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
                 }
-    }
-    public static final Function<DecoratedNode, Node> TO_ORIGINAL = new Function<DecoratedNode, Node>() {
-        @Override
-        public Node apply(DecoratedNode input) {
-            return input.getOriginal();
+            };
         }
-    };
+    }
+
+    public static final Function<DecoratedNode, Node> TO_ORIGINAL = o -> o.getOriginal();
 }

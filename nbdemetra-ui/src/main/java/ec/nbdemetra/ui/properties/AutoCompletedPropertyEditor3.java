@@ -1,15 +1,31 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2015 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ui.properties;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.completion.JAutoCompletionService;
+import static ec.nbdemetra.ui.properties.Util.attr;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.swing.JAutoCompletion;
 import ec.util.various.swing.TextPrompt;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.beans.PropertyEditor;
+import java.util.Optional;
+import java.util.concurrent.Callable;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
@@ -30,62 +46,99 @@ public class AutoCompletedPropertyEditor3 extends AbstractExPropertyEditor {
     public static final String SOURCE_ATTRIBUTE = "source";
     public static final String CELL_RENDERER_ATTRIBUTE = "cellRenderer";
     public static final String PROMPT_TEXT_ATTRIBUTE = "promptText";
+    public static final String DEFAULT_VALUE_SUPPLIER_ATTRIBUTE = "defaultValueSupplier";
+
+    private final AutoCompletedComponent customEditor;
+    private PropertyEnv currentEnv;
+
+    public AutoCompletedPropertyEditor3() {
+        this.customEditor = new AutoCompletedComponent();
+        this.currentEnv = null;
+
+        customEditor.setPreferredSize(new Dimension(300, 180));
+        customEditor.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case AutoCompletedComponent.VALUE_PROPERTY:
+                    setValue(customEditor.getValue());
+                    break;
+                case AutoCompletedComponent.RUNNING_PROPERTY:
+                    currentEnv.setState(customEditor.isRunning() ? PropertyEnv.STATE_INVALID : PropertyEnv.STATE_VALID);
+                    break;
+            }
+        });
+    }
 
     @Override
     protected InplaceEditor createInplaceEditor() {
-        return new AbstractInplaceEditor() {
-            JTextField component;
+        return new AC3InplaceEditor();
+    }
 
-            @Override
-            public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
-                component = new JTextField();
-                Optional<String> servicePath = getAttribute(env, SERVICE_PATH_ATTRIBUTE, String.class);
-                JAutoCompletion completion = servicePath.isPresent() ? JAutoCompletionService.forPathBind(servicePath.get(), component) : new JAutoCompletion(component);
-                Optional<Boolean> autoFocus = getAttribute(env, AUTO_FOCUS_ATTRIBUTE, Boolean.class);
-                if (autoFocus.isPresent()) {
-                    completion.setAutoFocus(autoFocus.get());
-                }
-                Optional<Integer> delay = getAttribute(env, DELAY_ATTRIBUTE, Integer.class);
-                if (delay.isPresent()) {
-                    completion.setDelay(delay.get());
-                }
-                Optional<Integer> minLength = getAttribute(env, MIN_LENGTH_ATTRIBUTE, Integer.class);
-                if (minLength.isPresent()) {
-                    completion.setMinLength(minLength.get());
-                }
-                Optional<String> separator = getAttribute(env, SEPARATOR_ATTRIBUTE, String.class);
-                if (separator.isPresent()) {
-                    completion.setSeparator(separator.get());
-                }
-                Optional<AutoCompletionSource> source = getAttribute(env, SOURCE_ATTRIBUTE, AutoCompletionSource.class);
-                if (source.isPresent()) {
-                    completion.setSource(source.get());
-                }
-                Optional<ListCellRenderer> cellRenderer = getAttribute(env, CELL_RENDERER_ATTRIBUTE, ListCellRenderer.class);
-                if (cellRenderer.isPresent()) {
-                    completion.getList().setCellRenderer(cellRenderer.get());
-                }
-                Optional<String> promptText = getAttribute(env, PROMPT_TEXT_ATTRIBUTE, String.class);
-                if (promptText.isPresent()) {
-                    new TextPrompt(promptText.get(), component).setEnabled(false);
-                }
-                super.connect(propertyEditor, env);
-            }
+    @Override
+    public void attachEnv(PropertyEnv env) {
+        super.attachEnv(env);
+        currentEnv = env;
+    }
 
-            @Override
-            public JComponent getComponent() {
-                return component;
-            }
+    @Override
+    public String getAsText() {
+        Optional<String> separator = attr(currentEnv, SEPARATOR_ATTRIBUTE, String.class);
+        return separator.isPresent()
+                ? super.getAsText().replace(separator.get(), " \u27A1 ")
+                : super.getAsText();
+    }
 
-            @Override
-            public Object getValue() {
-                return component.getText();
-            }
+    @Override
+    public boolean supportsCustomEditor() {
+        return attr(currentEnv, SEPARATOR_ATTRIBUTE, String.class).isPresent();
+    }
 
-            @Override
-            public void setValue(Object o) {
-                component.setText((String) o);
-            }
-        };
+    @Override
+    public Component getCustomEditor() {
+        customEditor.setValue((String) getValue());
+        customEditor.setAutoCompletion(o -> applyAutoCompletion(currentEnv, o));
+        attr(currentEnv, SEPARATOR_ATTRIBUTE, String.class).ifPresent(customEditor::setSeparator);
+        attr(currentEnv, DEFAULT_VALUE_SUPPLIER_ATTRIBUTE, Callable.class).ifPresent(customEditor::setDefaultValueSupplier);
+        return customEditor;
+    }
+
+    private static void applyAutoCompletion(PropertyEnv env, JTextField component) {
+        Optional<String> servicePath = attr(env, SERVICE_PATH_ATTRIBUTE, String.class);
+        JAutoCompletion completion = servicePath.isPresent()
+                ? JAutoCompletionService.forPathBind(servicePath.get(), component)
+                : new JAutoCompletion(component);
+        attr(env, AUTO_FOCUS_ATTRIBUTE, Boolean.class).ifPresent(completion::setAutoFocus);
+        attr(env, DELAY_ATTRIBUTE, Integer.class).ifPresent(completion::setDelay);
+        attr(env, MIN_LENGTH_ATTRIBUTE, Integer.class).ifPresent(completion::setMinLength);
+        attr(env, SEPARATOR_ATTRIBUTE, String.class).ifPresent(completion::setSeparator);
+        attr(env, SOURCE_ATTRIBUTE, AutoCompletionSource.class).ifPresent(completion::setSource);
+        attr(env, CELL_RENDERER_ATTRIBUTE, ListCellRenderer.class).ifPresent(completion.getList()::setCellRenderer);
+        attr(env, PROMPT_TEXT_ATTRIBUTE, String.class).ifPresent(o -> new TextPrompt(o, component).setEnabled(false));
+    }
+
+    private static final class AC3InplaceEditor extends AbstractInplaceEditor {
+
+        private JTextField component;
+
+        @Override
+        public void connect(PropertyEditor propertyEditor, PropertyEnv env) {
+            component = new JTextField();
+            applyAutoCompletion(env, component);
+            super.connect(propertyEditor, env);
+        }
+
+        @Override
+        public JComponent getComponent() {
+            return component;
+        }
+
+        @Override
+        public Object getValue() {
+            return component.getText();
+        }
+
+        @Override
+        public void setValue(Object o) {
+            component.setText((String) o);
+        }
     }
 }

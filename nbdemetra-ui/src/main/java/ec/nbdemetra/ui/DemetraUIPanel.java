@@ -16,11 +16,10 @@
  */
 package ec.nbdemetra.ui;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.ns.INamedService;
 import ec.nbdemetra.ui.properties.DataFormatComponent2;
+import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor;
 import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.tss.Ts;
 import ec.ui.ATsChart;
@@ -33,6 +32,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.util.stream.Collectors;
+import javax.swing.DefaultComboBoxModel;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
@@ -51,6 +52,8 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         colorSchemePreviewer.setTsAction(new PreviewTsAction());
         colorSchemePreviewer.setTsUpdateMode(TsUpdateMode.None);
         chartPreviewPanel.add(colorSchemePreviewer);
+
+        outliersEditorCB.setModel(new DefaultComboBoxModel(OutlierDefinitionsEditor.PrespecificiedOutliersEditor.values()));
     }
 
     /**
@@ -63,14 +66,22 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         chartsPanel = new javax.swing.JPanel();
-        chartPreviewPanel = new javax.swing.JPanel();
-        dataFormatComponent = new ec.nbdemetra.ui.properties.DataFormatComponent2();
+        jPanel2 = new javax.swing.JPanel();
         colorSchemeChoicePanel = new ec.nbdemetra.ui.ns.NamedServiceChoicePanel();
-        dataFormatLabel = new javax.swing.JLabel();
         colorSchemeLabel = new javax.swing.JLabel();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 32767));
+        chartPreviewPanel = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        dataFormatLabel = new javax.swing.JLabel();
+        dataFormatComponent = new ec.nbdemetra.ui.properties.DataFormatComponent2();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
         growthChartsPanel = new javax.swing.JPanel();
         growthLastYears = new javax.swing.JSpinner();
         lastYearsLabel = new javax.swing.JLabel();
+        outliersEditorPanel = new javax.swing.JPanel();
+        lastYearsLabel1 = new javax.swing.JLabel();
+        outliersEditorCB = new javax.swing.JComboBox<>();
         htmlFontPanel = new javax.swing.JPanel();
         smallRadio = new javax.swing.JRadioButton();
         normalRadio = new javax.swing.JRadioButton();
@@ -78,50 +89,41 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         popupMenuPanel = new javax.swing.JPanel();
         iconsVisibleCB = new javax.swing.JCheckBox();
 
+        setPreferredSize(new java.awt.Dimension(367, 426));
+        setLayout(new java.awt.BorderLayout());
+
         chartsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.chartsPanel.border.title"))); // NOI18N
+        chartsPanel.setLayout(new java.awt.BorderLayout(0, 15));
 
-        chartPreviewPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
-        chartPreviewPanel.setLayout(new java.awt.BorderLayout());
-
-        org.openide.awt.Mnemonics.setLocalizedText(dataFormatLabel, org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.dataFormatLabel.text")); // NOI18N
+        jPanel2.setLayout(new java.awt.BorderLayout(10, 0));
+        jPanel2.add(colorSchemeChoicePanel, java.awt.BorderLayout.CENTER);
 
         org.openide.awt.Mnemonics.setLocalizedText(colorSchemeLabel, org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.colorSchemeLabel.text")); // NOI18N
+        jPanel2.add(colorSchemeLabel, java.awt.BorderLayout.WEST);
+        jPanel2.add(filler2, java.awt.BorderLayout.LINE_END);
 
-        javax.swing.GroupLayout chartsPanelLayout = new javax.swing.GroupLayout(chartsPanel);
-        chartsPanel.setLayout(chartsPanelLayout);
-        chartsPanelLayout.setHorizontalGroup(
-            chartsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(chartsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(chartsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(chartsPanelLayout.createSequentialGroup()
-                        .addComponent(colorSchemeLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(colorSchemeChoicePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(chartsPanelLayout.createSequentialGroup()
-                        .addGroup(chartsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(chartsPanelLayout.createSequentialGroup()
-                                .addComponent(dataFormatLabel)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(dataFormatComponent, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(chartPreviewPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 497, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 43, Short.MAX_VALUE))))
-        );
-        chartsPanelLayout.setVerticalGroup(
-            chartsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(chartsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(chartsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(colorSchemeChoicePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(colorSchemeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(chartPreviewPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(chartsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(dataFormatComponent, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(dataFormatLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-        );
+        chartsPanel.add(jPanel2, java.awt.BorderLayout.NORTH);
+
+        chartPreviewPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        chartPreviewPanel.setMaximumSize(new java.awt.Dimension(100, 150));
+        chartPreviewPanel.setMinimumSize(new java.awt.Dimension(100, 150));
+        chartPreviewPanel.setPreferredSize(new java.awt.Dimension(100, 150));
+        chartPreviewPanel.setLayout(new java.awt.BorderLayout());
+        chartsPanel.add(chartPreviewPanel, java.awt.BorderLayout.CENTER);
+
+        jPanel3.setLayout(new java.awt.BorderLayout(10, 0));
+
+        org.openide.awt.Mnemonics.setLocalizedText(dataFormatLabel, org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.dataFormatLabel.text")); // NOI18N
+        jPanel3.add(dataFormatLabel, java.awt.BorderLayout.WEST);
+        jPanel3.add(dataFormatComponent, java.awt.BorderLayout.CENTER);
+
+        chartsPanel.add(jPanel3, java.awt.BorderLayout.SOUTH);
+
+        add(chartsPanel, java.awt.BorderLayout.CENTER);
+
+        jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
 
         growthChartsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.growthChartsPanel.border.title"))); // NOI18N
 
@@ -142,117 +144,96 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         );
         growthChartsPanelLayout.setVerticalGroup(
             growthChartsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(growthChartsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(lastYearsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(growthLastYears, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(growthChartsPanelLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(growthChartsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lastYearsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(growthLastYears, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
+        jPanel1.add(growthChartsPanel);
+
+        outliersEditorPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.outliersEditorPanel.border.title"))); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(lastYearsLabel1, org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.lastYearsLabel1.text")); // NOI18N
+
+        javax.swing.GroupLayout outliersEditorPanelLayout = new javax.swing.GroupLayout(outliersEditorPanel);
+        outliersEditorPanel.setLayout(outliersEditorPanelLayout);
+        outliersEditorPanelLayout.setHorizontalGroup(
+            outliersEditorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(outliersEditorPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lastYearsLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(outliersEditorCB, 0, 105, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        outliersEditorPanelLayout.setVerticalGroup(
+            outliersEditorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(outliersEditorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(lastYearsLabel1)
+                .addComponent(outliersEditorCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jPanel1.add(outliersEditorPanel);
+
+        jPanel4.add(jPanel1);
+
         htmlFontPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.htmlFontPanel.border.title"))); // NOI18N
+        htmlFontPanel.setLayout(new java.awt.GridLayout(1, 0));
 
         buttonGroup1.add(smallRadio);
         org.openide.awt.Mnemonics.setLocalizedText(smallRadio, org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.smallRadio.text")); // NOI18N
         smallRadio.setEnabled(false);
         smallRadio.setFocusPainted(false);
+        htmlFontPanel.add(smallRadio);
 
         buttonGroup1.add(normalRadio);
         normalRadio.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(normalRadio, org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.normalRadio.text")); // NOI18N
         normalRadio.setFocusPainted(false);
+        htmlFontPanel.add(normalRadio);
 
         buttonGroup1.add(bigRadio);
         org.openide.awt.Mnemonics.setLocalizedText(bigRadio, org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.bigRadio.text")); // NOI18N
         bigRadio.setEnabled(false);
         bigRadio.setFocusPainted(false);
+        htmlFontPanel.add(bigRadio);
 
-        javax.swing.GroupLayout htmlFontPanelLayout = new javax.swing.GroupLayout(htmlFontPanel);
-        htmlFontPanel.setLayout(htmlFontPanelLayout);
-        htmlFontPanelLayout.setHorizontalGroup(
-            htmlFontPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(htmlFontPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(smallRadio)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(normalRadio)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(bigRadio)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        htmlFontPanelLayout.setVerticalGroup(
-            htmlFontPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(htmlFontPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(smallRadio)
-                .addComponent(normalRadio)
-                .addComponent(bigRadio))
-        );
+        jPanel4.add(htmlFontPanel);
 
-        popupMenuPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.popupMenuPanel.border.title"))); // NOI18N
+        popupMenuPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.popupMenuPanel.border.title_1"))); // NOI18N
         popupMenuPanel.setPreferredSize(new java.awt.Dimension(562, 46));
+        popupMenuPanel.setLayout(new java.awt.BorderLayout());
 
         org.openide.awt.Mnemonics.setLocalizedText(iconsVisibleCB, org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.iconsVisibleCB.text")); // NOI18N
         iconsVisibleCB.setFocusPainted(false);
+        popupMenuPanel.add(iconsVisibleCB, java.awt.BorderLayout.CENTER);
 
-        javax.swing.GroupLayout popupMenuPanelLayout = new javax.swing.GroupLayout(popupMenuPanel);
-        popupMenuPanel.setLayout(popupMenuPanelLayout);
-        popupMenuPanelLayout.setHorizontalGroup(
-            popupMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(popupMenuPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(iconsVisibleCB)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        popupMenuPanelLayout.setVerticalGroup(
-            popupMenuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(popupMenuPanelLayout.createSequentialGroup()
-                .addComponent(iconsVisibleCB)
-                .addGap(0, 1, Short.MAX_VALUE))
-        );
+        jPanel4.add(popupMenuPanel);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(chartsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(growthChartsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(htmlFontPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(popupMenuPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(chartsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(growthChartsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(htmlFontPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(popupMenuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
-        );
+        add(jPanel4, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
 
     void load() {
         DemetraUI demetraUI = DemetraUI.getDefault();
-        Function<ColorScheme, INamedService> toNamedService = new Function<ColorScheme, INamedService>() {
-            @Override
-            public INamedService apply(final ColorScheme input) {
-                return new ColorSchemeNamedService(input);
-            }
-        };
-        colorSchemeChoicePanel.setContent(Iterables.transform(demetraUI.getColorSchemes(), toNamedService));
+        colorSchemeChoicePanel.setContent(demetraUI.getColorSchemes().stream().map(o -> new ColorSchemeNamedService(o)).collect(Collectors.toList()));
         colorSchemeChoicePanel.getExplorerManager().addVetoableChangeListener(this);
         colorSchemeChoicePanel.setSelectedServiceName(demetraUI.getColorSchemeName());
         dataFormatComponent.setDataFormat(demetraUI.getDataFormat());
         dataFormatComponent.addPropertyChangeListener(this);
         growthLastYears.setValue(demetraUI.getGrowthLastYears());
         iconsVisibleCB.setSelected(demetraUI.getPopupMenuIconsVisible());
+        outliersEditorCB.setSelectedItem(demetraUI.getPrespecifiedOutliersEditor());
     }
 
     void store() {
         DemetraUI demetraUI = DemetraUI.getDefault();
         demetraUI.setColorSchemeName(colorSchemeChoicePanel.getSelectedServiceName());
         demetraUI.setDataFormat(dataFormatComponent.getDataFormat());
-        demetraUI.setGrowthLastYears((Integer)growthLastYears.getValue());
+        demetraUI.setGrowthLastYears((Integer) growthLastYears.getValue());
         demetraUI.setPopupMenuIconsVisible(iconsVisibleCB.isSelected());
+        demetraUI.setPrespecifiedOutliersEditor((OutlierDefinitionsEditor.PrespecificiedOutliersEditor) outliersEditorCB.getSelectedItem());
     }
 
     boolean valid() {
@@ -330,12 +311,20 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
     private javax.swing.JLabel colorSchemeLabel;
     private ec.nbdemetra.ui.properties.DataFormatComponent2 dataFormatComponent;
     private javax.swing.JLabel dataFormatLabel;
+    private javax.swing.Box.Filler filler2;
     private javax.swing.JPanel growthChartsPanel;
     private javax.swing.JSpinner growthLastYears;
     private javax.swing.JPanel htmlFontPanel;
     private javax.swing.JCheckBox iconsVisibleCB;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JLabel lastYearsLabel;
+    private javax.swing.JLabel lastYearsLabel1;
     private javax.swing.JRadioButton normalRadio;
+    private javax.swing.JComboBox<String> outliersEditorCB;
+    private javax.swing.JPanel outliersEditorPanel;
     private javax.swing.JPanel popupMenuPanel;
     private javax.swing.JRadioButton smallRadio;
     // End of variables declaration//GEN-END:variables

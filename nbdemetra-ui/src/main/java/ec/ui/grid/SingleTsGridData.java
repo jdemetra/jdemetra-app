@@ -19,6 +19,7 @@ package ec.ui.grid;
 import com.google.common.base.Supplier;
 import ec.tss.TsCollection;
 import ec.tstoolkit.data.DescriptiveStatistics;
+import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.data.Values;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
@@ -33,7 +34,7 @@ import ec.util.grid.CellIndex;
 final class SingleTsGridData extends TsGridData implements Supplier<DescriptiveStatistics> {
 
     private final int seriesIndex;
-    private final Values data;
+    private final IReadDataBlock data;
     private final TsDomain domain;
     private final int startYear;
     private final int startPosition;
@@ -42,7 +43,7 @@ final class SingleTsGridData extends TsGridData implements Supplier<DescriptiveS
 
     public SingleTsGridData(TsCollection col, int seriesIndex, DataFeatureModel dataFeatureModel) {
         this.seriesIndex = seriesIndex;
-        this.data = col.get(seriesIndex).getTsData().getValues();
+        this.data = col.get(seriesIndex).getTsData();
         this.domain = col.get(seriesIndex).getTsData().getDomain();
         this.startYear = domain.getStart().getYear();
         this.startPosition = domain.getStart().getPosition();

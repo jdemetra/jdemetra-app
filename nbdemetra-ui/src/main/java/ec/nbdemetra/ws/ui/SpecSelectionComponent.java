@@ -17,11 +17,8 @@
 package ec.nbdemetra.ws.ui;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
 import ec.nbdemetra.ui.awt.JComponent2;
-import ec.nbdemetra.ui.awt.JProperty;
 import ec.nbdemetra.ui.calendars.CustomDialogDescriptor;
 import ec.nbdemetra.ui.nodes.DecoratedNode;
 import ec.nbdemetra.ws.WorkspaceFactory;
@@ -38,9 +35,9 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.util.function.Predicate;
 import javax.swing.tree.TreeSelectionModel;
 import org.openide.DialogDescriptor;
 import org.openide.explorer.ExplorerManager;
@@ -56,13 +53,13 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
     public static final Id SPECS_ID = new LinearId(GenericSaProcessingFactory.FAMILY, WorkspaceFactory.SPECIFICATIONS);
     public static final String SPECIFICATION_PROPERTY = "specification";
     public static final String ICON_PROPERTY = "icon";
-    //
+
     private final BeanTreeView tree;
     private final ExplorerManager em;
     private final SelectionListener selectionListener;
-    //
-    private final JProperty<ISaSpecification> specification;
-    private final JProperty<Image> icon;
+
+    private ISaSpecification specification;
+    private Image icon;
 
     public SpecSelectionComponent() {
         this(false);
@@ -72,13 +69,13 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
         this.tree = new BeanTreeView();
         this.em = new ExplorerManager();
         this.selectionListener = new SelectionListener();
-        this.specification = newProperty(SPECIFICATION_PROPERTY, null);
-        this.icon = newProperty(ICON_PROPERTY, null);
+        this.specification = null;
+        this.icon = null;
 
         tree.setRootVisible(false);
         tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
-        DecoratedNode root = new DecoratedNode(new DummyWsNode(WorkspaceFactory.getInstance().getActiveWorkspace(), SPECS_ID), showSystemOnly ? ItemWsNodeFilter.SYSTEM_ONLY : Predicates.<Node>alwaysTrue());
+        DecoratedNode root = new DecoratedNode(new DummyWsNode(WorkspaceFactory.getInstance().getActiveWorkspace(), SPECS_ID), showSystemOnly ? ItemWsNodeFilter.SYSTEM_ONLY : (o -> true));
         for (DecoratedNode o : root.breadthFirstIterable()) {
             o.setPreferredActionDecorator(DecoratedNode.PreferredAction.DO_NOTHING);
         }
@@ -90,19 +87,16 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
         setPreferredSize(new Dimension(225, 300));
 
         em.addVetoableChangeListener(selectionListener);
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String p = evt.getPropertyName();
-                if (p.equals(SPECIFICATION_PROPERTY)) {
-                    onSpecificationChange();
-                }
+        addPropertyChangeListener(evt -> {
+            String p = evt.getPropertyName();
+            if (p.equals(SPECIFICATION_PROPERTY)) {
+                onSpecificationChange();
             }
         });
     }
 
     boolean isCurrentSpecificationNode(Node o) {
-        return o instanceof ItemWsNode && ((ItemWsNode) o).getItem().getElement().equals(specification.get());
+        return o instanceof ItemWsNode && ((ItemWsNode) o).getItem().getElement().equals(specification);
     }
 
     class SelectionListener implements VetoableChangeListener {
@@ -131,12 +125,7 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
 //            ((DecoratedNode) o).setHtmlDecorator(null);
 //        }
         DecoratedNode root = (DecoratedNode) em.getRootContext();
-        Optional<DecoratedNode> node = root.breadthFirstIterable().firstMatch(new Predicate<DecoratedNode>() {
-            @Override
-            public boolean apply(DecoratedNode input) {
-                return isCurrentSpecificationNode(input.getOriginal());
-            }
-        });
+        Optional<DecoratedNode> node = root.breadthFirstIterable().firstMatch(o -> isCurrentSpecificationNode(o.getOriginal()));
         if (node.isPresent()) {
 //            node.get().setHtmlDecorator(DecoratedNode.Html.BOLD);
             try {
@@ -155,19 +144,23 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
     }
 
     public ISaSpecification getSpecification() {
-        return specification.get();
+        return specification;
     }
 
     public void setSpecification(ISaSpecification specification) {
-        this.specification.set(specification);
+        ISaSpecification old = this.specification;
+        this.specification = specification;
+        firePropertyChange(SPECIFICATION_PROPERTY, old, this.specification);
     }
 
     public Image getIcon() {
-        return icon.get();
+        return icon;
     }
 
     public void setIcon(Image icon) {
-        this.icon.set(icon);
+        Image old = this.icon;
+        this.icon = icon;
+        firePropertyChange(ICON_PROPERTY, old, this.icon);
     }
     //</editor-fold>
 
@@ -207,7 +200,7 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
         SYSTEM_ONLY;
 
         @Override
-        public boolean apply(Node input) {
+        public boolean test(Node input) {
             return !(input instanceof ItemWsNode)
                     || ((ItemWsNode) input).getItem().getStatus() == WorkspaceItem.Status.System;
         }

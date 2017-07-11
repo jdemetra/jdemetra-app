@@ -5,6 +5,8 @@
 package ec.nbdemetra.ws;
 
 import com.google.common.base.Throwables;
+import ec.demetra.workspace.WorkspaceFamily;
+import ec.demetra.workspace.file.FileWorkspace;
 import ec.tss.xml.IXmlConverter;
 import ec.tss.xml.information.XmlInformationSet;
 import ec.tstoolkit.information.InformationSet;
@@ -13,12 +15,15 @@ import ec.tstoolkit.utilities.IModifiable;
 import ec.tstoolkit.utilities.Paths;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -26,6 +31,7 @@ import javax.xml.bind.Unmarshaller;
  */
 public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceItemRepository<D> {
 
+    @Deprecated
     static final JAXBContext XML_INFORMATION_SET_CONTEXT;
 
     static {
@@ -36,6 +42,62 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
         }
     }
 
+    private static ec.demetra.workspace.WorkspaceItem toFileItem(WorkspaceItem item) {
+        return ec.demetra.workspace.WorkspaceItem.builder()
+                .family(WorkspaceFamily.of(item.getFamily()))
+                .id(item.getIdentifier())
+                .label(item.getDisplayName())
+                .readOnly(item.isReadOnly())
+                .comments(item.getComments())
+                .build();
+    }
+
+    private static File decodeFile(WorkspaceItem<?> item) {
+        Workspace owner = item.getOwner();
+        return owner != null ? FileRepository.decode(owner.getDataSource()) : null;
+    }
+
+    protected static <D, R> boolean loadFile(WorkspaceItem<?> item, Consumer<R> onSuccess) {
+        File file = decodeFile(item);
+        if (file != null) {
+            try (FileWorkspace storage = FileWorkspace.open(file.toPath())) {
+                onSuccess.accept((R) storage.load(toFileItem(item)));
+                return true;
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+        return false;
+    }
+
+    protected static <D, R> boolean storeFile(WorkspaceItem<?> item, R value, Runnable onSuccess) {
+        File file = decodeFile(item);
+        if (file != null) {
+            try (FileWorkspace storage = FileWorkspace.open(file.toPath())) {
+                storage.store(toFileItem(item), value);
+                onSuccess.run();
+                return true;
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+        return false;
+    }
+
+    protected static <D, R> boolean deleteFile(WorkspaceItem<?> item) {
+        File file = decodeFile(item);
+        if (file != null) {
+            try (FileWorkspace storage = FileWorkspace.open(file.toPath())) {
+                storage.delete(toFileItem(item));
+                return true;
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+        return false;
+    }
+
+    @Deprecated
     protected String fullName(WorkspaceItem<D> item, String repo, boolean createDir) {
         if (item.getOwner() == null) {
             return null;
@@ -46,18 +108,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
         return sfile;
     }
 
-//    protected <X extends IXmlConverter<D>> boolean loadXml(WorkspaceItem<D> item, String repo, Class<X> xclass) {
-//        String sfile = fullName(item, repo, false);
-//        if (sfile == null) {
-//            return false;
-//        }
-//        D el=loadLegacy(sfile, xclass);
-//        if (el == null)
-//            el=LoadInfo(sfile, this.)
-//        item.setElement(el);
-//        item.setDirty(false);
-//        return el != null;
-//    }
+    @Deprecated
     public static <S, X extends IXmlConverter<S>> S loadLegacy(String sfile, Class<X> xclass) {
         File file = new File(sfile);
         if (!file.exists()) {
@@ -78,6 +129,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
         }
     }
 
+    @Deprecated
     public static <X> X loadXmlLegacy(String sfile, Class<X> xclass) {
         File file = new File(sfile);
         if (!file.exists()) {
@@ -98,6 +150,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
         }
     }
 
+    @Deprecated
     public static <X extends InformationSetSerializable> X loadInfo(String sfile, Class<X> xclass) {
         File file = new File(sfile);
         if (!file.exists()) {
@@ -120,17 +173,10 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
         }
     }
 
-//    protected <X extends IXmlConverter<D>> boolean saveXml(WorkspaceItem item, String repo, Class<X> xclass) {
-//        String sfile = fullName(item, repo, true);
-//        if (sfile == null) {
-//            return false;
-//        }
-//        return saveLegacy(sfile, item, xclass);
-//    }
+    @Deprecated
     public static <T, X extends IXmlConverter<T>> boolean saveLegacy(String sfile, WorkspaceItem item, Class<X> xclass) {
         File file = new File(sfile);
         try (FileOutputStream stream = new FileOutputStream(file)) {
-            //XMLOutputFactory factory=XMLOutputFactory.newInstance();
             try (OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
 
                 JAXBContext context = JAXBContext.newInstance(xclass);
@@ -148,10 +194,10 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
         }
     }
 
+    @Deprecated
     public static <T extends IModifiable, X extends IXmlConverter<T>> boolean saveLegacy(String sfile, T item, Class<X> xclass) {
         File file = new File(sfile);
         try (FileOutputStream stream = new FileOutputStream(file)) {
-            //XMLOutputFactory factory=XMLOutputFactory.newInstance();
             try (OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
 
                 JAXBContext context = JAXBContext.newInstance(xclass);
@@ -169,10 +215,10 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
         }
     }
 
+    @Deprecated
     public static <T extends InformationSetSerializable> boolean saveInfo(String sfile, T item) {
         File file = new File(sfile);
         try (FileOutputStream stream = new FileOutputStream(file)) {
-            //XMLOutputFactory factory=XMLOutputFactory.newInstance();
             try (OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
 
                 Marshaller marshaller = XML_INFORMATION_SET_CONTEXT.createMarshaller();
@@ -192,6 +238,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
         }
     }
 
+    @Deprecated
     protected boolean delete(WorkspaceItem<D> doc, String repo) {
         String sfile = fullName(doc, repo, false);
         if (sfile == null) {

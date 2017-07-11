@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2017 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ws;
 
@@ -12,6 +24,7 @@ import org.openide.windows.TopComponent;
 /**
  *
  * @author Kristof Bayens
+ * @author Mats Maggi
  */
 public class WorkspaceItem<T> implements IModifiable, Comparable<WorkspaceItem> {
 
@@ -41,7 +54,7 @@ public class WorkspaceItem<T> implements IModifiable, Comparable<WorkspaceItem> 
         }
 
         public boolean canBeSaved() {
-            return this == New || this == Valid;
+            return this == New || this == Valid || this == Undefined;
         }
 
         public boolean hasStorage() {
@@ -57,6 +70,7 @@ public class WorkspaceItem<T> implements IModifiable, Comparable<WorkspaceItem> 
     private String id_;
     private Status status_ = Status.Undefined;
     private TopComponent view_;
+    private String comments_;
 
     public static <T> WorkspaceItem<T> system(Id family, String name, T element) {
         WorkspaceItem<T> item = new WorkspaceItem(family, name, element);
@@ -79,6 +93,13 @@ public class WorkspaceItem<T> implements IModifiable, Comparable<WorkspaceItem> 
 
     public static <T> WorkspaceItem<T> item(Id family, String name, String id) {
         WorkspaceItem<T> item = new WorkspaceItem(family, name, id);
+        item.status_ = Status.Undefined;
+        return item;
+    }
+    
+    public static <T> WorkspaceItem<T> item(Id family, String name, String id, String comments) {
+        WorkspaceItem<T> item = new WorkspaceItem(family, name, id);
+        item.comments_=comments;
         item.status_ = Status.Undefined;
         return item;
     }
@@ -124,6 +145,21 @@ public class WorkspaceItem<T> implements IModifiable, Comparable<WorkspaceItem> 
         return element_;
     }
 
+    public String getComments() {
+        return comments_;
+    }
+
+    public void setComments(String comments) {
+        if (comments == null && comments_ == null)
+            return;
+        if (comments != null && comments.equals(comments_))
+            return;
+            
+        this.comments_ = comments;
+        dirty_ = true;
+        status_ = Status.Undefined;
+    }
+
     public boolean load() {
         if (!status_.canBeLoaded()) {
             return false;
@@ -145,6 +181,7 @@ public class WorkspaceItem<T> implements IModifiable, Comparable<WorkspaceItem> 
             closeView();
             this.element_ = null;
             status_ = Status.Undefined;
+            comments_ = null;
             return true;
         } else {
             return false;
@@ -157,6 +194,7 @@ public class WorkspaceItem<T> implements IModifiable, Comparable<WorkspaceItem> 
         }
         element_ = null;
         status_ = Status.Undefined;
+        comments_ = null;
         return load();
     }
 

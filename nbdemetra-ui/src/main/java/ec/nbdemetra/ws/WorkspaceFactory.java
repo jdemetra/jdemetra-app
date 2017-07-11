@@ -62,6 +62,7 @@ public class WorkspaceFactory implements LookupListener {
 
         public static final int UNDEFINED = 0, NEW = 1, OPEN = 2, SAVE = 3, SAVEAS = 4, CLOSE = 5, SORT = 6,
                 ADDINGITEM = 10, ITEMADDED = 11, OPENITEM = 12, REMOVINGITEM = 13, ITEMREMOVED = 14, CLOSEITEM = 15, ITEMCHANGED = 16, ITEMRENAMED = 17,
+                ITEMCOMMENTS = 18,
                 MANAGERS_CHANGED = 99;
         
         public final Workspace workspace;

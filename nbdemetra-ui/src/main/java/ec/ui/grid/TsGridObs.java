@@ -16,13 +16,13 @@
  */
 package ec.ui.grid;
 
-import com.google.common.base.Supplier;
 import ec.tss.Ts;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.design.FlyweightPattern;
 import ec.tstoolkit.timeseries.simplets.TsDataTableInfo;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.chart.DataFeatureModel;
+import java.util.function.Supplier;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 

@@ -30,8 +30,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ThreadFactory;
 import javax.swing.AbstractAction;
@@ -57,7 +55,6 @@ import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
 import org.openide.nodes.Sheet.Set;
 import org.openide.util.ImageUtilities;
-import org.openide.util.NbBundle;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.slf4j.Logger;
@@ -144,6 +141,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
         toolBarRepresentation.add(Box.createHorizontalGlue());
         toolBarRepresentation.addSeparator();
         inputList = new JTsList();
+        inputList.setFreezeOnImport(true);
         initList();
         saChart = new JTsChart();
         mainPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, inputList, saChart);
@@ -156,10 +154,8 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
         add(toolBarRepresentation, BorderLayout.NORTH);
         add(visualRepresentation, BorderLayout.CENTER);
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String p = evt.getPropertyName();
+        addPropertyChangeListener(evt -> {
+            String p = evt.getPropertyName();
 //                if (p.equals(DEFAULT_SPECIFICATION_PROPERTY)) {
 //                    onDefaultSpecificationChange();
 //                }
@@ -172,7 +168,6 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
 //                else if (p.equals(SELECTION_PROPERTY)) {
 //                    onSelectionChange();
 //                }
-            }
         });
 
 
@@ -181,21 +176,17 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     }
 
     private void initList() {
-        inputList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-
-                TsData sum = null;
-                for (Ts s : inputList.getTsCollection()) {
-                    if (s.hasData() == TsStatus.Undefined) {
-                        s.load(TsInformationType.Data);
-                    }
-                    sum = TsData.add(sum, s.getTsData());
+        inputList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, evt -> {
+            TsData sum = null;
+            for (Ts s : inputList.getTsCollection()) {
+                if (s.hasData() == TsStatus.Undefined) {
+                    s.load(TsInformationType.Data);
                 }
-                Ts t = TsFactory.instance.createTs("Total", null, sum);
-                saChart.getTsCollection().replace(t);
-                clear();
+                sum = TsData.add(sum, s.getTsData());
             }
+            Ts t = TsFactory.instance.createTs("Total", null, sum);
+            saChart.getTsCollection().replace(t);
+            clear();
         });
     }
 
@@ -215,14 +206,11 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     @Override
     public void componentOpened() {
         // TODO add custom code on component opening
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                mainPane.setDividerLocation(.5);
-                mainPane.setResizeWeight(.5);
-                visualRepresentation.setDividerLocation(.4);
-                visualRepresentation.setResizeWeight(.4);
-            }
+        SwingUtilities.invokeLater(() -> {
+            mainPane.setDividerLocation(.5);
+            mainPane.setResizeWeight(.5);
+            visualRepresentation.setDividerLocation(.4);
+            visualRepresentation.setResizeWeight(.4);
         });
     }
 

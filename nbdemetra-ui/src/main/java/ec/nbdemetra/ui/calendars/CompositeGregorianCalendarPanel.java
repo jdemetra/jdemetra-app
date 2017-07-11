@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
 import ec.nbdemetra.ui.awt.JPanel2;
-import ec.nbdemetra.ui.awt.JProperty;
 import ec.nbdemetra.ui.awt.ListenableBean;
 import ec.nbdemetra.ui.awt.ListenerState;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
@@ -50,8 +49,8 @@ public class CompositeGregorianCalendarPanel extends JPanel2 implements Explorer
     public static final String CALENDAR_NAME_PROPERTY = "calendarName";
     public static final String WEIGHTED_ITEMS_PROPERTY = "weightedItems";
     // PROPERTIES
-    protected final JProperty<String> calendarName;
-    protected final JProperty<ImmutableList<WeightedItem<String>>> weightedItems;
+    private String calendarName;
+    private ImmutableList<WeightedItem<String>> weightedItems;
     // OTHER
     final ExplorerManager em;
     final NameTextFieldListener nameTextFieldListener;
@@ -63,8 +62,8 @@ public class CompositeGregorianCalendarPanel extends JPanel2 implements Explorer
      */
     public CompositeGregorianCalendarPanel(String initialCalendarName) {
         this.initialCalendarName = initialCalendarName;
-        this.calendarName = newProperty(CALENDAR_NAME_PROPERTY, JProperty.nullTo(""), initialCalendarName);
-        this.weightedItems = newProperty(WEIGHTED_ITEMS_PROPERTY, JProperty.nullTo(ImmutableList.<WeightedItem<String>>of()), null);
+        this.calendarName = initialCalendarName != null ? initialCalendarName : "";
+        this.weightedItems = ImmutableList.of();
 
         this.em = new ExplorerManager();
 
@@ -81,20 +80,17 @@ public class CompositeGregorianCalendarPanel extends JPanel2 implements Explorer
         WeightedItemNode template = new WeightedItemNode(new WeightedItemBean(""));
         treeTableView1.setProperties(template.getPropertySets()[0].getProperties());
 
-        nameTextField.setText(calendarName.get());
+        nameTextField.setText(calendarName);
         nameTextField.getDocument().addDocumentListener(nameTextFieldListener);
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case CompositeGregorianCalendarPanel.CALENDAR_NAME_PROPERTY:
-                        onCalendarNameChange();
-                        break;
-                    case CompositeGregorianCalendarPanel.WEIGHTED_ITEMS_PROPERTY:
-                        onWeightedItemsChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case CompositeGregorianCalendarPanel.CALENDAR_NAME_PROPERTY:
+                    onCalendarNameChange();
+                    break;
+                case CompositeGregorianCalendarPanel.WEIGHTED_ITEMS_PROPERTY:
+                    onWeightedItemsChange();
+                    break;
             }
         });
     }
@@ -150,7 +146,7 @@ public class CompositeGregorianCalendarPanel extends JPanel2 implements Explorer
     protected void onCalendarNameChange() {
         if (nameTextFieldListener.state == ListenerState.READY) {
             nameTextFieldListener.state = ListenerState.SUSPENDED;
-            nameTextField.setText(calendarName.get());
+            nameTextField.setText(calendarName);
             nameTextFieldListener.state = ListenerState.READY;
         }
     }
@@ -159,14 +155,14 @@ public class CompositeGregorianCalendarPanel extends JPanel2 implements Explorer
         if (childFactory.state == ListenerState.READY) {
             childFactory.state = ListenerState.SUSPENDED;
             Map<String, Double> tmp = new HashMap<>();
-            for (WeightedItem<String> o : weightedItems.get()) {
+            for (WeightedItem<String> o : weightedItems) {
                 tmp.put(o.item, o.weight);
             }
             for (WeightedItemBean o : childFactory.beans) {
                 Double weight = tmp.get(o.getName());
                 if (weight != null) {
                     o.setUsed(true);
-                    o.setWeight(weight.doubleValue());
+                    o.setWeight(weight);
                 } else {
                     o.setUsed(false);
                     o.setWeight(0);
@@ -180,19 +176,23 @@ public class CompositeGregorianCalendarPanel extends JPanel2 implements Explorer
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
     public String getCalendarName() {
-        return calendarName.get();
+        return calendarName;
     }
 
     public void setCalendarName(String calendarName) {
-        this.calendarName.set(calendarName);
+        String old = this.calendarName;
+        this.calendarName = calendarName != null ? calendarName : "";
+        firePropertyChange(CALENDAR_NAME_PROPERTY, old, this.calendarName);
     }
 
     public ImmutableList<WeightedItem<String>> getWeightedItems() {
-        return weightedItems.get();
+        return weightedItems;
     }
 
     public void setWeightedItems(ImmutableList<WeightedItem<String>> weightedItems) {
-        this.weightedItems.set(weightedItems);
+        ImmutableList<WeightedItem<String>> old = this.weightedItems;
+        this.weightedItems = weightedItems != null ? weightedItems : ImmutableList.of();
+        firePropertyChange(WEIGHTED_ITEMS_PROPERTY, old, this.weightedItems);
     }
     //</editor-fold>
 
@@ -208,44 +208,50 @@ public class CompositeGregorianCalendarPanel extends JPanel2 implements Explorer
         public static final String USED_PROPERTY = "used";
         public static final String WEIGHT_PROPERTY = "weight";
         // PROPERTIES
-        protected final JProperty<String> name;
-        protected final JProperty<Boolean> used;
-        protected final JProperty<Double> weight;
+        private String name;
+        private boolean used;
+        private double weight;
 
         public WeightedItemBean(String name) {
-            this.name = newProperty(NAME_PROPERTY, name);
-            this.used = newProperty(USED_PROPERTY, false);
-            this.weight = newProperty(WEIGHT_PROPERTY, 0d);
+            this.name = name;
+            this.used = false;
+            this.weight = 0d;
         }
 
         //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
         public String getName() {
-            return name.get();
+            return name;
         }
 
         public void setName(String name) {
-            this.name.set(name);
+            String old = this.name;
+            this.name = name;
+            firePropertyChange(NAME_PROPERTY, old, this.name);
         }
 
         public boolean isUsed() {
-            return used.get();
+            return used;
         }
 
         public void setUsed(boolean used) {
-            this.used.set(used);
+            boolean old = this.used;
+            this.used = used;
+            firePropertyChange(USED_PROPERTY, old, this.used);
         }
 
         public double getWeight() {
-            return weight.get();
+            return weight;
         }
 
         public void setWeight(double weight) {
-            this.weight.set(weight);
+            double old = this.weight;
+            this.weight = weight;
+            firePropertyChange(WEIGHT_PROPERTY, old, this.weight);
         }
         //</editor-fold>
 
         public WeightedItem<String> toItem() {
-            return new WeightedItem<>(name.get(), weight.get());
+            return new WeightedItem<>(name, weight);
         }
     }
 

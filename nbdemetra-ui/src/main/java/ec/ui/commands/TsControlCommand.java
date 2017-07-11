@@ -16,7 +16,6 @@
  */
 package ec.ui.commands;
 
-import com.google.common.base.Objects;
 import ec.nbdemetra.ui.properties.DataFormatComponent2;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.design.UtilityClass;
@@ -25,8 +24,7 @@ import ec.ui.interfaces.ITsPrinter;
 import ec.util.various.swing.JCommand;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
@@ -91,7 +89,7 @@ public final class TsControlCommand {
 
         @Override
         public boolean isSelected(ITsControl component) {
-            return Objects.equal(dataFormat, component.getDataFormat());
+            return Objects.equals(dataFormat, component.getDataFormat());
         }
     }
 
@@ -108,13 +106,10 @@ public final class TsControlCommand {
             p.setBorder(BorderFactory.createEmptyBorder(25, 10, 10, 10));
             p.add(editor);
             NotifyDescriptor descriptor = new NotifyDescriptor(p, "Edit data format", NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.INFORMATION_MESSAGE, null, null);
-            descriptor.addPropertyChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    String p = evt.getPropertyName();
-                    if (p.equals("value")) {
-                        editor.setPreviewVisible(false);
-                    }
+            descriptor.addPropertyChangeListener(evt -> {
+                String p1 = evt.getPropertyName();
+                if (p1.equals("value")) {
+                    editor.setPreviewVisible(false);
                 }
             });
             editor.setDataFormat(component.getDataFormat());

@@ -17,8 +17,6 @@
 package ec.nbdemetra.ui.calendars.actions;
 
 import com.google.common.base.Converter;
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
 import ec.nbdemetra.ui.interchange.ExportAction;
@@ -52,18 +50,6 @@ import org.openide.util.actions.Presenter;
 public final class ExportCalendarAction extends NodeAction implements Presenter.Popup {
 
     private static final Converter<IGregorianCalendarProvider, Config> CONVERTER = new CalendarConfig();
-    private static final Predicate<ItemWsNode> IS_EXPORTABLE = new Predicate<ItemWsNode>() {
-        @Override
-        public boolean apply(ItemWsNode input) {
-            return !input.getDisplayName().equals(GregorianCalendarManager.DEF);
-        }
-    };
-    private static final Function<ItemWsNode, Exportable> TO_EXPORTABLE = new Function<ItemWsNode, Exportable>() {
-        @Override
-        public Exportable apply(final ItemWsNode input) {
-            return new ExportableCalendar(input);
-        }
-    };
 
     @Override
     public JMenuItem getPopupPresenter() {
@@ -78,7 +64,7 @@ public final class ExportCalendarAction extends NodeAction implements Presenter.
 
     @Override
     protected boolean enable(Node[] activatedNodes) {
-        return !Nodes.asIterable(activatedNodes).filter(ItemWsNode.class).filter(IS_EXPORTABLE).isEmpty();
+        return !Nodes.asIterable(activatedNodes).filter(ItemWsNode.class).filter(ExportCalendarAction::isExportable).isEmpty();
     }
 
     @Override
@@ -91,11 +77,15 @@ public final class ExportCalendarAction extends NodeAction implements Presenter.
         return null;
     }
 
+    private static boolean isExportable(ItemWsNode o) {
+        return !o.getDisplayName().equals(GregorianCalendarManager.DEF);
+    }
+
     private static List<Exportable> getExportables(Node[] activatedNodes) {
         return Nodes.asIterable(activatedNodes)
                 .filter(ItemWsNode.class)
-                .filter(IS_EXPORTABLE)
-                .transform(TO_EXPORTABLE)
+                .filter(ExportCalendarAction::isExportable)
+                .transform(o -> (Exportable) new ExportableCalendar(o))
                 .toList();
     }
 

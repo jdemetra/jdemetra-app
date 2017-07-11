@@ -1,16 +1,24 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ui;
 
-import static ec.nbdemetra.ui.Jdk6Functions.*;
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.ns.NamedServiceNode;
 import ec.tss.datatransfer.TssTransferSupport;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 
@@ -25,13 +33,10 @@ final class DemetraDataTransferPanel extends javax.swing.JPanel implements Explo
         initComponents();
 //        treeTableView1.setProperties(new LocalObjectTsCollectionFormatter().createSheet().toArray()[0].getProperties());
         editButton.setEnabled(false);
-        em.addVetoableChangeListener(new VetoableChangeListener() {
-            @Override
-            public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-                if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
-                    Node[] nodes = (Node[]) evt.getNewValue();
-                    editButton.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IConfigurable.class) != null);
-                }
+        em.addVetoableChangeListener(evt -> {
+            if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
+                Node[] nodes = (Node[]) evt.getNewValue();
+                editButton.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IConfigurable.class) != null);
             }
         });
     }
@@ -84,7 +89,7 @@ final class DemetraDataTransferPanel extends javax.swing.JPanel implements Explo
     }// </editor-fold>//GEN-END:initComponents
 
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
-      em.getSelectedNodes()[0].getPreferredAction().actionPerformed(evt);
+        em.getSelectedNodes()[0].getPreferredAction().actionPerformed(evt);
     }//GEN-LAST:event_editButtonActionPerformed
 
     @Override
@@ -93,8 +98,10 @@ final class DemetraDataTransferPanel extends javax.swing.JPanel implements Explo
     }
 
     void load() {
-        Iterable<NamedServiceNode> nodes = TssTransferSupport.getDefault().all().transform(namedServiceToNode());
-        em.setRootContext(new AbstractNodeBuilder().add(nodes).name("Data Transfer handler").build());
+        em.setRootContext(new AbstractNodeBuilder()
+                .add(TssTransferSupport.getDefault().stream().map(o -> new NamedServiceNode(o)))
+                .name("Data Transfer handler")
+                .build());
     }
 
     void store() {

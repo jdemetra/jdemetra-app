@@ -25,9 +25,9 @@ import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IConfigurable;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
@@ -35,10 +35,10 @@ import ec.tss.TsStatus;
 import ec.tss.datatransfer.TssTransferHandler;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IParam;
+import ec.tss.tsproviders.utils.IParser;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tss.tsproviders.utils.Params;
 import ec.tss.tsproviders.utils.Parsers;
-import ec.tss.tsproviders.utils.Parsers.Parser;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
 import java.awt.datatransfer.DataFlavor;
@@ -50,7 +50,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import org.openide.nodes.Sheet;
-import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -111,7 +110,11 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
 
     @Override
     public TsCollection importTsCollection(Object obj) throws IOException {
-        return tsCollectionFromString((String) obj);
+        TsCollection result = tsCollectionFromString((String) obj);
+        if (result != null) {
+            return result;
+        }
+        throw new IOException("Cannot parse collection");
     }
 
     @Override
@@ -263,8 +266,8 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
     }
 
     public TsCollection tsCollectionFromString(String text) throws IOException {
-        Parser<Date> periodParser = FALLBACK_PARSER.get();
-        Parser<Number> valueParser = Parsers.onNumberFormat(numberFormat);
+        IParser<Date> periodParser = FALLBACK_PARSER.get();
+        IParser<Number> valueParser = Parsers.onNumberFormat(numberFormat);
 
         TsCollection result = null;
         try {
@@ -279,7 +282,7 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
                 if (cols < colarray.length) {
                     cols = colarray.length;
                 }
-                datesAreVertical = periodParser.tryParse(colarray[0]).isPresent();
+                datesAreVertical = periodParser.parseValue(colarray[0]).isPresent();
             }
 
             if (cols < 1 || rows < 1) {
@@ -299,7 +302,7 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
                 String[] colarray = rowarray[i].split("\\t");
                 for (int j = 0; j < colarray.length; j++) {
                     if (((j == 0 && datesAreVertical) || (i == 0 && !datesAreVertical))
-                            && periodParser.tryParse(colarray[j]).isPresent()) {
+                            && periodParser.parseValue(colarray[j]).isPresent()) {
                         dates[(datesAreVertical ? i : j)] = periodParser.parse(colarray[j]);
                     } else if ((j == 0 && !datesAreVertical)
                             || (i == 0 && datesAreVertical)) {
@@ -339,9 +342,9 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
         }
         return result;
     }
-    private static final ThreadLocal<Parsers.Parser<Date>> FALLBACK_PARSER = new ThreadLocal<Parsers.Parser<Date>>() {
+    private static final ThreadLocal<IParser<Date>> FALLBACK_PARSER = new ThreadLocal<IParser<Date>>() {
         @Override
-        protected Parsers.Parser<Date> initialValue() {
+        protected IParser<Date> initialValue() {
             ImmutableList.Builder<Parsers.Parser<Date>> list = ImmutableList.builder();
             for (String o : FALLBACK_FORMATS) {
                 list.add(new DataFormat(Locale.ROOT, o, null).dateParser());
@@ -455,8 +458,10 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
             b.withBoolean().selectField(bean, "exportTable").display("Allow export").add();
             sheet.put(b.build());
 
-            return OpenIdePropertySheetBeanEditor.editSheet(sheet, "Configure Tab-delimited values",
-                    ImageUtilities.icon2Image(DemetraUiIcon.CLIPBOARD_PASTE_DOCUMENT_TEXT_16));
+            return new PropertySheetDialogBuilder()
+                    .title("Configure Tab-delimited values")
+                    .icon(DemetraUiIcon.CLIPBOARD_PASTE_DOCUMENT_TEXT_16)
+                    .editSheet(sheet);
         }
     }
 

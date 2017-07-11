@@ -16,13 +16,14 @@
  */
 package ec.ui.grid;
 
-import com.google.common.base.Strings;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
 import ec.tss.Ts;
+import ec.tss.TsCollection;
 import ec.tss.tsproviders.utils.DataFormat;
-import ec.tss.tsproviders.utils.Formatters.Formatter;
+import ec.tss.tsproviders.utils.IFormatter;
+import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import static ec.ui.ATsControl.FORMAT_ACTION;
@@ -41,8 +42,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -62,8 +61,6 @@ import javax.swing.JTable;
 import javax.swing.JToolTip;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -149,6 +146,7 @@ public class JTsGrid extends ATsGrid {
         grid.setDragEnabled(true);
         grid.setRowRenderer(new CustomRowRenderer(grid));
         grid.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        grid.setColumnRenderer(new CustomColumnRenderer(grid));
     }
 
     private void applyDesignTimeProperties() {
@@ -159,12 +157,7 @@ public class JTsGrid extends ATsGrid {
 
     //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
     private void enableSingleTsSelection() {
-        combo.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setSingleTsIndex(combo.getSelectedIndex());
-            }
-        });
+        combo.addItemListener(event -> setSingleTsIndex(combo.getSelectedIndex()));
     }
 
     private void enableOpenOnDoubleClick() {
@@ -176,32 +169,29 @@ public class JTsGrid extends ATsGrid {
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case USE_COLOR_SCHEME_PROPERTY:
-                        onUseColorSchemeChange();
-                        break;
-                    case SHOW_BARS_PROPERTY:
-                        onShowBarsChange();
-                        break;
-                    case CELL_RENDERER_PROPERTY:
-                        onCellRendererChange();
-                        break;
-                    case CROSSHAIR_VISIBLE_PROPERTY:
-                        onCrosshairVisibleChange();
-                        break;
-                    case HOVERED_OBS_PROPERTY:
-                        onHoveredObsChange();
-                        break;
-                    case "transferHandler":
-                        onTransferHandlerChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case USE_COLOR_SCHEME_PROPERTY:
+                    onUseColorSchemeChange();
+                    break;
+                case SHOW_BARS_PROPERTY:
+                    onShowBarsChange();
+                    break;
+                case CELL_RENDERER_PROPERTY:
+                    onCellRendererChange();
+                    break;
+                case CROSSHAIR_VISIBLE_PROPERTY:
+                    onCrosshairVisibleChange();
+                    break;
+                case HOVERED_OBS_PROPERTY:
+                    onHoveredObsChange();
+                    break;
+                case "transferHandler":
+                    onTransferHandlerChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }
@@ -224,7 +214,7 @@ public class JTsGrid extends ATsGrid {
     @Override
     protected void onCollectionChange() {
         selectionListener.setEnabled(false);
-        dataFeatureModel.setData(collection.toArray());
+        dataFeatureModel.setData(getTsCollection().toArray());
         updateGridModel();
         updateComboModel();
         updateNoDataMessage();
@@ -397,27 +387,12 @@ public class JTsGrid extends ATsGrid {
     //</editor-fold>
 
     private void updateNoDataMessage() {
-        String message;
-        if (getTsUpdateMode().isReadOnly()) {
-            switch (collection.getCount()) {
-                case 0:
-                    message = "No data";
-                    break;
-                case 1:
-                    String cause = collection.get(0).getInvalidDataCause();
-                    message = "<html><center><b>Invalid data</b><br>" + Strings.nullToEmpty(cause);
-                    break;
-                default:
-                    message = "Invalid data";
-                    break;
-            }
-        } else {
-            message = "Drop data here";
-        }
-        grid.setNoDataRenderer(new XTable.DefaultNoDataRenderer(message));
+        String msg = getNoDataMessage(getTsCollection(), getTsUpdateMode());
+        grid.setNoDataRenderer(new XTable.DefaultNoDataRenderer(msg.replace(System.lineSeparator(), " ")));
     }
 
     private void updateGridModel() {
+        TsCollection collection = getTsCollection();
         int index = mode == Mode.SINGLETS ? Math.min(singleTsIndex, collection.getCount() - 1) : -1;
         grid.setModel(new GridModelAdapter(TsGridData.create(collection, index, orientation, chronology, dataFeatureModel)));
     }
@@ -443,6 +418,7 @@ public class JTsGrid extends ATsGrid {
     }
 
     private void updateSelection() {
+        TsCollection collection = getTsCollection();
         if (mode == Mode.MULTIPLETS) {
             selectionListener.changeSelection(orientation == Orientation.NORMAL ? grid.getColumnSelectionModel() : grid.getRowSelectionModel());
         } else if (!collection.isEmpty()) {
@@ -455,6 +431,7 @@ public class JTsGrid extends ATsGrid {
     }
 
     private void updateComboModel() {
+        TsCollection collection = getTsCollection();
         if (mode == Mode.SINGLETS && collection.getCount() > 1) {
             combo.setModel(new DefaultComboBoxModel(collection.toArray()));
             combo.setVisible(true);
@@ -523,18 +500,8 @@ public class JTsGrid extends ATsGrid {
         final JSlider slider = new JSlider(10, 200, 100);
         {
             slider.setPreferredSize(new Dimension(50, slider.getPreferredSize().height));
-            slider.addChangeListener(new ChangeListener() {
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    setZoomRatio(slider.getValue());
-                }
-            });
-            addPropertyChangeListener(ZOOM_PROPERTY, new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    slider.setValue(getZoomRatio());
-                }
-            });
+            slider.addChangeListener(event -> setZoomRatio(slider.getValue()));
+            addPropertyChangeListener(ZOOM_PROPERTY, evt -> slider.setValue(getZoomRatio()));
         }
         zoom.add(slider);
         for (int o : new int[]{200, 100, 75, 50, 25}) {
@@ -549,6 +516,7 @@ public class JTsGrid extends ATsGrid {
 
         @Override
         protected void selectionChanged(ListSelectionModel model) {
+            TsCollection collection = getTsCollection();
             if (mode == Mode.MULTIPLETS) {
                 super.selectionChanged(model);
             } else if (collection.getCount() > singleTsIndex) {
@@ -596,7 +564,32 @@ public class JTsGrid extends ATsGrid {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             Component result = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             if (result instanceof JLabel) {
-                ((JLabel) result).setHorizontalAlignment(JLabel.TRAILING);
+                JLabel label = (JLabel) result;
+                String text = label.getText();
+                label.setText(MultiLineNameUtil.join(text));
+                label.setToolTipText(MultiLineNameUtil.toHtml(text));
+                label.setHorizontalAlignment(JLabel.TRAILING);
+            }
+            return result;
+        }
+    }
+
+    private static final class CustomColumnRenderer implements TableCellRenderer {
+
+        private final TableCellRenderer delegate;
+
+        public CustomColumnRenderer(JGrid grid) {
+            this.delegate = grid.getColumnRenderer();
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component result = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (result instanceof JLabel) {
+                JLabel label = (JLabel) result;
+                String text = label.getText();
+                label.setText(MultiLineNameUtil.join(text));
+                label.setToolTipText(MultiLineNameUtil.toHtml(text));
             }
             return result;
         }
@@ -605,9 +598,9 @@ public class JTsGrid extends ATsGrid {
     private static final class CustomCellRenderer extends BarTableCellRenderer {
 
         private final TableCellRenderer delegate;
-        private final Formatter<? super TsPeriod> periodFormatter;
+        private final IFormatter<? super TsPeriod> periodFormatter;
         private final JToolTip toolTip;
-        private Formatter<? super Number> valueFormatter;
+        private IFormatter<? super Number> valueFormatter;
         private SwingColorSchemeSupport colorSchemeSupport;
         private boolean showBars;
 
@@ -760,7 +753,7 @@ public class JTsGrid extends ATsGrid {
         }
     }
 
-    private static final class TsPeriodFormatter extends Formatter<TsPeriod> {
+    private static final class TsPeriodFormatter implements IFormatter<TsPeriod> {
 
         private final static TsPeriodFormatter INSTANCE = new TsPeriodFormatter();
 

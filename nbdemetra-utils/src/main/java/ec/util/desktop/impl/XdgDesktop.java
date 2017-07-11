@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * A generic {@link Desktop} implementation for Linux.<p>
@@ -103,8 +104,8 @@ public class XdgDesktop extends AwtDesktop {
 
     @Nullable
     private File getKnownFolderByName(@Nonnull String xdgFolderName) {
-        String result = system.getEnv(xdgFolderName);
-        return result != null && !result.isEmpty() ? new File(result) : new File(config.get(xdgFolderName));
+        File result = Util.fileFromPathname(system.getEnv(xdgFolderName));
+        return result != null ? result : Util.fileFromPathname(config.get(xdgFolderName));
     }
 
     @Override
@@ -118,6 +119,7 @@ public class XdgDesktop extends AwtDesktop {
         return Util.toFiles(p, Charset.defaultCharset());
     }
 
+    @ServiceProvider(service = Desktop.Factory.class)
     public static class Factory implements Desktop.Factory {
 
         @Override

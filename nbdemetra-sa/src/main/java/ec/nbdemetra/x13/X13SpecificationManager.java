@@ -4,9 +4,9 @@
  */
 package ec.nbdemetra.x13;
 
-import ec.nbdemetra.x13.actions.EditX13Spec;
 import ec.nbdemetra.ws.*;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
+import ec.nbdemetra.x13.actions.EditX13Spec;
 import ec.satoolkit.algorithm.implementation.X13ProcessingFactory;
 import ec.satoolkit.x13.X13Specification;
 import ec.tss.sa.documents.X13Document;
@@ -99,6 +99,7 @@ public class X13SpecificationManager extends AbstractWorkspaceItemManager<X13Spe
         X13DocumentManager dmgr = (X13DocumentManager) WorkspaceFactory.getInstance().getManager(X13DocumentManager.ID);
         WorkspaceItem<X13Document> doc = (WorkspaceItem<X13Document>) dmgr.create(ws);
         doc.getElement().setSpecification(xdoc.getElement());
+        doc.setComments(xdoc.getComments());
         X13TopComponent view = new X13TopComponent(doc);
         view.open();
         view.requestActive();

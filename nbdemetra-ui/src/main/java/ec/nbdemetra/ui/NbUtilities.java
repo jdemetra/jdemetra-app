@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ui;
 
+import ec.nbdemetra.ui.nodes.StringProperty;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.DataSource;
 import ec.tstoolkit.MetaData;
@@ -12,7 +13,6 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
@@ -32,19 +32,21 @@ public class NbUtilities {
         List<String> keys = new ArrayList<>(md.keySet());
         Collections.sort(keys);
         for (final String key : keys) {
-            String dname=key.charAt(0) == '@' ? key.substring(1) :key;
-             b.with(String.class).select(key, md.get(key)).name(key).display(dname).add();
+            if (key.charAt(0) == '@') {
+                String dname = key.substring(1);
+                b.with(String.class).selectConst(key, md.get(key)).name(key).display(dname).add();
+            } else {
+                b.with(String.class).select(new StringProperty(key, md)).name(key).display(key).add();
+            }
         }
         return b.build();
     }
-    
+
     public static Sheet.Set creatDataSourcePropertiesSet(final DataSource dataSource) {
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("Data source");
         b.with(String.class).select(dataSource, "getProviderName", null).display("Source").add();
         b.with(String.class).select(dataSource, "getVersion", null).display("Version").add();
-        for (Map.Entry<String, String> o : dataSource.getParams().entrySet()) {
-            b.with(String.class).select(o.getKey(), o.getValue()).add();
-        }
+        dataSource.forEach((k, v) -> b.with(String.class).selectConst(k, v).add());
         return b.build();
     }
 

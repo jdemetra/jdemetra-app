@@ -24,8 +24,6 @@ import ec.tstoolkit.dstats.ProbabilityType;
 import ec.util.chart.ColorScheme.KnownColor;
 import java.awt.BasicStroke;
 import java.awt.Stroke;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.JPopupMenu;
 import org.jfree.data.xy.XYSeries;
 
@@ -72,42 +70,42 @@ public class PeriodogramView extends ARPView {
         this.log = DEFAULT_LOG;
         this.lastYears = DemetraUI.getDefault().getSpectralLastYears();
         this.full = DEFAULT_FULL;
-
+        initComponents();
+    }
+    
+    private void initComponents() {
         onColorSchemeChange();
         onComponentPopupMenuChange();
         enableProperties();
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case LIMIT_VISIBLE_PROPERTY:
-                        onLimitVisibleChange();
-                        break;
-                    case WINDOW_LENGTH_PROPERTY:
-                        onWindowLengthChange();
-                        break;
-                    case LOG_PROPERTY:
-                        onLogChange();
-                        break;
-                    case DIFF_PROPERTY:
-                        onDiffChange();
-                        break;
-                    case DIFF_LAG_PROPERTY:
-                        onDiffChange();
-                        break;
-                    case LASTYEARS_PROPERTY:
-                        onLastYearsChange();
-                        break;
-                    case FULL_PROPERTY:
-                        onFullChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case LIMIT_VISIBLE_PROPERTY:
+                    onLimitVisibleChange();
+                    break;
+                case WINDOW_LENGTH_PROPERTY:
+                    onWindowLengthChange();
+                    break;
+                case LOG_PROPERTY:
+                    onLogChange();
+                    break;
+                case DIFF_PROPERTY:
+                    onDiffChange();
+                    break;
+                case DIFF_LAG_PROPERTY:
+                    onDiffChange();
+                    break;
+                case LASTYEARS_PROPERTY:
+                    onLastYearsChange();
+                    break;
+                case FULL_PROPERTY:
+                    onFullChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }

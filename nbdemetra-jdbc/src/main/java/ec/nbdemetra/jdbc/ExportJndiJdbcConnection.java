@@ -21,7 +21,6 @@ import ec.nbdemetra.ui.interchange.ExportAction;
 import ec.nbdemetra.ui.interchange.Exportable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
@@ -74,12 +73,7 @@ public final class ExportJndiJdbcConnection extends NodeAction implements Presen
     private static List<Exportable> getExportables(Node[] activatedNodes) {
         List<Exportable> result = new ArrayList<>();
         for (final Node o : activatedNodes) {
-            result.add(new Exportable() {
-                @Override
-                public Config exportConfig() {
-                    return toConfig(getConnectionBean(o));
-                }
-            });
+            result.add(() -> toConfig(getConnectionBean(o)));
         }
         return result;
     }
@@ -94,9 +88,7 @@ public final class ExportJndiJdbcConnection extends NodeAction implements Presen
                 .put("driverClass", conn.getDriverClass())
                 .put("databaseUrl", conn.getDatabaseUrl())
                 .put("schema", conn.getSchema());
-        for (Map.Entry<String, String> o : conn.getParams().entrySet()) {
-            result.put("prop_" + o.getKey(), o.getValue());
-        }
+        conn.forEach((k, v) -> result.put("prop_" + k, v));
         return result.build();
     }
 }

@@ -23,7 +23,7 @@ import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.DemoTsActions;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
+import ec.tss.TsCollectionInformation;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
 import ec.tss.tsproviders.DataSet;
@@ -32,19 +32,17 @@ import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.TsProviders;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import ec.ui.DemoUtils;
 import ec.ui.commands.TsCollectionViewCommand;
 import ec.ui.interfaces.ITsCollectionView;
 import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.ext.FontAwesomeUtils;
+import internal.RandomTsBuilder;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.BeanInfo;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +50,7 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.stream.IntStream;
 import javax.swing.*;
 import org.openide.awt.DropDownButtonFactory;
 import org.openide.util.lookup.ServiceProvider;
@@ -63,31 +62,31 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemoComponentHandler.class)
 public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<ITsCollectionView> {
 
-    private static final DemoUtils.RandomTsCollectionBuilder BUILDER = new DemoUtils.RandomTsCollectionBuilder();
+    private static final RandomTsBuilder BUILDER = new RandomTsBuilder();
 
-    private final TsCollection col;
+    private final TsCollectionInformation col;
 
     public TsCollectionHandler() {
         super(ITsCollectionView.class);
-        col = TsFactory.instance.createTsCollection();
+        col = new TsCollectionInformation();
 
         int nbrYears = 3;
 
-        BUILDER.withSeries(1).withForecast(2);
-        for (TsFrequency o : EnumSet.complementOf(EnumSet.of(TsFrequency.Undefined))) {
-            col.quietAdd(BUILDER.withFrequency(o).withObs(nbrYears * o.intValue()).build().get(0).rename(o.name()));
-        }
+        BUILDER.withForecastCount(2);
+        EnumSet.complementOf(EnumSet.of(TsFrequency.Undefined)).forEach((o) -> {
+            col.items.add(BUILDER.withStart(new TsPeriod(o, 2010, 0)).withObsCount(nbrYears * o.intValue()).withName(o.name()).build());
+        });
 
-        BUILDER.withFrequency(TsFrequency.Monthly);
-        col.quietAdd(BUILDER.withObs(nbrYears * 12).withMissingValues(3).build().get(0).rename("Missing"));
-        col.quietAdd(BUILDER.withObs(0).withMissingValues(0).build().get(0).rename("Empty"));
-        col.quietAdd(BUILDER.withStatus(TsStatus.Invalid).build().get(0).rename("Invalid"));
-        col.quietAdd(BUILDER.withStatus(TsStatus.Undefined).build().get(0).rename("Undefined"));
+        BUILDER.withStart(new TsPeriod(TsFrequency.Monthly, 2010, 0));
+        col.items.add(BUILDER.withObsCount(nbrYears * 12).withMissingCount(3).withName("Missing").build());
+        col.items.add(BUILDER.withObsCount(0).withMissingCount(0).withName("Empty").build());
+        col.items.add(BUILDER.withStatus(TsStatus.Invalid).withName("Invalid").build());
+        col.items.add(BUILDER.withStatus(TsStatus.Undefined).withName("Undefined").build());
     }
 
     @Override
     public void doConfigure(ITsCollectionView c) {
-        c.getTsCollection().append(col);
+        col.items.forEach(o -> c.getTsCollection().add(o.toTs()));
         c.setTsAction(DemoTsActions.SHOW_DIALOG);
     }
 
@@ -123,16 +122,16 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         }
 
         @Override
-        public void execute(ITsCollectionView component) throws Exception {
-            component.getTsCollection().append(BUILDER
-                    .withSeries(size)
-                    .withObs(24)
-                    .withStartPeriod(startPeriod)
+        public void execute(ITsCollectionView c) throws Exception {
+            BUILDER
+                    .withObsCount(24)
+                    .withStart(startPeriod)
                     .withStatus(TsStatus.Valid)
-                    .withForecast(3)
-                    .withNaming(DemoUtils.TsNamingScheme.DEFAULT)
-                    .withMissingValues(0)
-                    .build());
+                    .withForecastCount(3)
+                    .withMissingCount(0);
+            IntStream.range(0, size)
+                    .mapToObj(o -> BUILDER.withName("S" + o).build().toTs())
+                    .forEach(c.getTsCollection()::add);
         }
     }
 
@@ -148,15 +147,16 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         @Override
         public void execute(ITsCollectionView c) throws Exception {
             if (JOptionPane.showConfirmDialog((Component) c, panel, "Add time series", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-                c.getTsCollection().append(BUILDER
-                        .withSeries(panel.getSeriesCount())
-                        .withObs(panel.getObsCount())
-                        .withStartPeriod(panel.getStartPeriod())
+                BUILDER
+                        .withObsCount(panel.getObsCount())
+                        .withStart(panel.getStartPeriod())
                         .withStatus(panel.getTsStatus())
-                        .withForecast(panel.getForecastCount())
-                        .withNaming(panel.getNaming())
-                        .withMissingValues(panel.getMissingValues())
-                        .build());
+                        .withForecastCount(panel.getForecastCount())
+                        //                        .withNaming(panel.getNaming())
+                        .withMissingCount(panel.getMissingValues());
+                IntStream.range(0, panel.getSeriesCount())
+                        .mapToObj(o -> BUILDER.withName("S" + o).build().toTs())
+                        .forEach(c.getTsCollection()::add);
             }
         }
     }
@@ -281,14 +281,11 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
 
     static JLabel createSizeLabel(final ITsCollectionView view) {
         final JLabel result = new JLabel(" [0/0] ");
-        view.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case ITsCollectionView.SELECTION_PROPERTY:
-                        result.setText(" [" + view.getSelectionSize() + "/" + view.getTsCollection().getCount() + "] ");
-                        break;
-                }
+        view.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case ITsCollectionView.SELECTION_PROPERTY:
+                    result.setText(" [" + view.getSelectionSize() + "/" + view.getTsCollection().getCount() + "] ");
+                    break;
             }
         });
         return result;
@@ -316,7 +313,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
                 menu.add(subMenu);
             }
         }
-        menu.add(new AddDataSourceCommand(DataSource.builder("Missing", "").build()).toAction(view)).setText("Missing provider");
+        menu.add(new AddDataSourceCommand(DataSource.of("Missing", "")).toAction(view)).setText("Missing provider");
         JButton result = DropDownButtonFactory.createDropDownButton(getIcon(FontAwesome.FA_DATABASE), menu.getPopupMenu());
         result.setToolTipText("Data sources");
         return result;

@@ -17,13 +17,10 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.chart.JTsChart;
 import ec.ui.html.JHtmlPane;
 import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.JMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.text.html.StyleSheet;
-import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -79,12 +76,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
         ((JHtmlPane) jEditorPane1).setStyleSheet(ss);
 
         node = new InternalNode();
-        jTsChart1.addPropertyChangeListener(JTsChart.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                showTests();
-            }
-        });
+        jTsChart1.addPropertyChangeListener(JTsChart.TS_COLLECTION_PROPERTY, evt -> showTests());
         associateLookup(ExplorerUtils.createLookup(ActiveViewManager.getInstance().getExplorerManager(), getActionMap()));
     }
 
@@ -99,19 +91,17 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
     @Override
     public void componentOpened() {
         super.componentOpened();
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                jSplitPane1.setDividerLocation(.3);
-                jSplitPane1.setResizeWeight(.3);
-            }
+        this.jTsChart1.connect();
+        SwingUtilities.invokeLater(() -> {
+            jSplitPane1.setDividerLocation(.3);
+            jSplitPane1.setResizeWeight(.3);
         });
     }
 
     @Override
     public void componentClosed() {
         super.componentClosed();
-        //this.jTsChart1.dispose();
+        this.jTsChart1.dispose();
     }
 
     @Override

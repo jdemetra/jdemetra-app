@@ -17,7 +17,7 @@
 package ec.util.grid.swing.ext;
 
 import ec.tss.tsproviders.utils.DataFormat;
-import ec.tss.tsproviders.utils.Formatters.Formatter;
+import ec.tss.tsproviders.utils.IFormatter;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.spreadsheet.Cell;
@@ -39,8 +39,8 @@ import javax.swing.table.TableCellRenderer;
  */
 public final class SheetCellRenderer implements TableCellRenderer {
 
-    private final Formatter<Number> numberFormat;
-    private final Formatter<Date> dateFormat;
+    private final IFormatter<Number> numberFormat;
+    private final IFormatter<Date> dateFormat;
     private final SwingColorSchemeSupport colorSchemeSupport;
     private final boolean invertColors;
     private final DefaultTableCellRenderer2 delegate;

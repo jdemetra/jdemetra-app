@@ -44,7 +44,8 @@ public final class Refresh extends AbstractViewAction<SaBatchUI> implements Pres
 
     @Override
     protected void refreshAction() {
-        enabled=context() != null && !context().getDocument().getElement().isNew();
+        enabled=context() != null;
+//        enabled=context() != null && !context().getDocument().getElement().isNew();
      }
 
     @Override

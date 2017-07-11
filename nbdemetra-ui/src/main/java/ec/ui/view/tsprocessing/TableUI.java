@@ -15,18 +15,16 @@ import javax.swing.JComponent;
  *
  * @author Jean Palate
  */
-public class TableUI< V extends IProcDocumentView<?>>  extends DefaultItemUI<V, List<NamedObject<TsData>>> {
+public class TableUI< V extends IProcDocumentView<?>> extends DefaultItemUI<V, List<NamedObject<TsData>>> {
 
     public TableUI() {
     }
 
     @Override
     public JComponent getView(V host, List<NamedObject<TsData>> document) {
-
-        TsCollection items = TsFactory.instance.createTsCollection();
-        for (NamedObject<TsData> item : document) {
-            items.add(TsFactory.instance.createTs(item.name, null, item.object));
-        }
+        TsCollection items = document.stream()
+                .map(o -> TsFactory.instance.createTs(o.name, null, o.object))
+                .collect(TsFactory.toTsCollection());
         return host.getToolkit().getGrid(items.clean(true));
     }
 }

@@ -16,12 +16,15 @@
  */
 package ec.nbdemetra.ui.completion;
 
+import com.google.common.base.Suppliers;
 import ec.util.completion.AutoCompletionSource;
-import ec.util.completion.ext.QuickAutoCompletionSource;
+import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.text.JTextComponent;
@@ -35,7 +38,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = JAutoCompletionService.class, path = JAutoCompletionService.DATE_PATTERN_PATH)
 public class DatePatternAutoCompletionService extends JAutoCompletionService {
 
-    private final AutoCompletionSource source = new DatePatternLetterSource();
+    private final AutoCompletionSource source = datePatternLetterSource();
     private final ListCellRenderer renderer = new DatePatternLetterRenderer();
 
     @Override
@@ -99,19 +102,24 @@ public class DatePatternAutoCompletionService extends JAutoCompletionService {
         }
     }
 
-    private static class DatePatternLetterSource extends QuickAutoCompletionSource<DatePatternLetter> {
+    private static AutoCompletionSource datePatternLetterSource() {
+        return ExtAutoCompletionSource
+                .builder(Suppliers.memoize(DatePatternAutoCompletionService::getDatePatternLetters)::get)
+                .behavior(AutoCompletionSource.Behavior.SYNC)
+                .postProcessor(DatePatternAutoCompletionService::getDatePatternLetter)
+                .build();
+    }
 
-        final List<DatePatternLetter> locales = Arrays.asList(DatePatternLetter.values());
+    private static List<DatePatternLetter> getDatePatternLetters() {
+        return Arrays.asList(DatePatternLetter.values());
+    }
 
-        @Override
-        protected Iterable<DatePatternLetter> getAllValues() throws Exception {
-            return locales;
-        }
-
-        @Override
-        protected boolean matches(TermMatcher termMatcher, DatePatternLetter input) {
-            return termMatcher.matches(input.name()) || termMatcher.matches(input.dateComponent);
-        }
+    private static List<DatePatternLetter> getDatePatternLetter(List<DatePatternLetter> allValues, String term) {
+        Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
+        return allValues.stream()
+                .filter(o -> filter.test(o.name()) || filter.test(o.dateComponent))
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     private static class DatePatternLetterRenderer extends CustomListCellRenderer<DatePatternLetter> {

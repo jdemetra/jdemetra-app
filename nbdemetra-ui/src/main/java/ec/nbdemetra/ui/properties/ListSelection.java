@@ -1,12 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * ListSelection.java
+ * Copyright 2013 National Bank of Belgium
  *
- * Created on 14-Sep-2012, 14:35:07
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ui.properties;
 
@@ -25,7 +31,9 @@ import org.openide.util.ImageUtilities;
  *
  * @author Jean Palate
  * @param <T>
+ * @deprecated use {@link ec.util.list.swing.JListSelection} instead
  */
+@Deprecated
 public class ListSelection<T> extends javax.swing.JPanel {
 
     public static final String SEL_CHANGED = "SelectionChanged";

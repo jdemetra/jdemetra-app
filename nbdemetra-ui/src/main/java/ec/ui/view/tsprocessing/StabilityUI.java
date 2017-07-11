@@ -42,11 +42,11 @@ public class StabilityUI<V extends IProcDocumentView<?>> extends PooledItemUI<V,
     protected void init(StabilityView c, V host, MovingProcessing information) {
         c.reset();
         boolean empty = true;
-        for (int i = 0; i < items.length; i++) {
-            Map<TsDomain, Double> movingInfo = information.movingInfo(items[i]);
+        for (String item : items) {
+            Map<TsDomain, Double> movingInfo = information.movingInfo(item);
             if (isDefined(movingInfo)) {
                 empty = false;
-                c.add(items[i], movingInfo, null, false);
+                c.add(item, movingInfo, null, false);
             }
         }
         if (empty) {
@@ -71,7 +71,7 @@ public class StabilityUI<V extends IProcDocumentView<?>> extends PooledItemUI<V,
         }
 
         for (Map.Entry<TsDomain, Double> d : data.entrySet()) {
-            if (DescriptiveStatistics.isFinite(d.getValue())) {
+            if (Double.isFinite(d.getValue())) {
                 return true;
             }
         }

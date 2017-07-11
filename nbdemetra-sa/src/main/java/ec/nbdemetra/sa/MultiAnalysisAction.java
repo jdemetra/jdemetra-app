@@ -7,25 +7,10 @@ package ec.nbdemetra.sa;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
-import ec.tss.sa.RegArimaReport;
-import ec.tss.sa.SaItem;
-import ec.tstoolkit.algorithm.AlgorithmDescriptor;
-import ec.tstoolkit.algorithm.CompositeResults;
-import ec.tstoolkit.information.InformationSet;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import javax.swing.SwingUtilities;
-import org.netbeans.core.spi.multiview.CloseOperationHandler;
-import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewFactory;
@@ -34,9 +19,6 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 
@@ -79,29 +61,25 @@ public final class MultiAnalysisAction implements ActionListener {
 
         processingView.setDefaultSpecification(demetraUI.getDefaultSASpec());
 
-        controller.addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (controller.getState()) {
-                    case DONE:
-                        result.makeBusy(false);
-                        result.setAttentionHighlight(true);
-                        break;
-                    case STARTED:
-                        result.makeBusy(true);
-                        break;
-                    case CANCELLED:
-                        result.makeBusy(false);
-                        break;
-                    case READY:
-                        result.makeBusy(false);
-                        result.setAttentionHighlight(false);
-                        break;
-                    case PENDING:
-                        result.makeBusy(false);
-                        break;
-                }
+        controller.addPropertyChangeListener(evt -> {
+            switch (controller.getState()) {
+                case DONE:
+                    result.makeBusy(false);
+                    result.setAttentionHighlight(true);
+                    break;
+                case STARTED:
+                    result.makeBusy(true);
+                    break;
+                case CANCELLED:
+                    result.makeBusy(false);
+                    break;
+                case READY:
+                    result.makeBusy(false);
+                    result.setAttentionHighlight(false);
+                    break;
+                case PENDING:
+                    result.makeBusy(false);
+                    break;
             }
         });
         return result;

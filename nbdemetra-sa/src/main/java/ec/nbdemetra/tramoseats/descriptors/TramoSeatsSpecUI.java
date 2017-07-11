@@ -45,7 +45,7 @@ public class TramoSeatsSpecUI implements IObjectDescriptor<TramoSeatsSpecificati
     }
 
     public TransformSpecUI getTransform() {
-        return new TransformSpecUI(core.getTramoSpecification(), ro_);
+        return new TransformSpecUI(core.getTramoSpecification(), ro_ || core.getTramoSpecification().getRegression().hasFixedCoefficients());
     }
 
     public ArimaSpecUI getArima() {

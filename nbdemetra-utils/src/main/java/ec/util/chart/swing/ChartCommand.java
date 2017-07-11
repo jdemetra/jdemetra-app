@@ -113,12 +113,7 @@ public abstract class ChartCommand extends JCommand<ChartPanel> {
         }
 
         public void registerChartChange(JFreeChart source) {
-            ChartChangeListener realListener = new ChartChangeListener() {
-                @Override
-                public void chartChanged(ChartChangeEvent event) {
-                    refreshActionState();
-                }
-            };
+            ChartChangeListener realListener = event -> refreshActionState();
             putValue("ChartChangeListener", realListener);
             source.addChangeListener(new WeakChartChangeListener(realListener) {
                 @Override

@@ -42,7 +42,9 @@ public enum DemetraUiIcon implements Icon {
     PREFERENCES("preferences-system_16x16.png"),
     EXCLAMATION_MARK_16("nodes/exclamation-red.png"),
     BLOG_16("blog_16x16.png"),
-    WARNING("nodes/warning.png");
+    WARNING("nodes/warning.png"),
+    COMMENT("comment_16x16.png"),
+    BROOM("broom_16x16.png");
     
     final String path;
 

@@ -19,25 +19,23 @@ package ec.nbdemetra.spreadsheet;
 import ec.util.various.swing.BasicFileViewer;
 import ec.util.various.swing.BasicSwingLauncher;
 import java.awt.Component;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 /**
  *
  * @author Philippe Charles
  */
-final class SpreadSheetProfilerDemo implements Callable<Component> {
+final class SpreadSheetProfilerDemo {
 
     public static void main(String[] args) {
         new BasicSwingLauncher()
-                .content(new SpreadSheetProfilerDemo())
+                .content(SpreadSheetProfilerDemo::create)
                 .title("SpreadSheet Profiler")
                 .logLevel(Level.FINE)
                 .launch();
     }
 
-    @Override
-    public Component call() throws Exception {
+    private static Component create() {
         BasicFileViewer result = new BasicFileViewer();
         result.setFileHandler(new SpreadSheetBasicFileHandler());
         return result;

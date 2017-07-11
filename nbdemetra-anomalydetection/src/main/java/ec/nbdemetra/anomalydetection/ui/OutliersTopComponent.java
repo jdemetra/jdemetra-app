@@ -22,9 +22,9 @@ import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IActiveView;
 import ec.nbdemetra.ui.NbComponents;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.ui.interfaces.ITsGrid;
 import ec.util.chart.ObsIndex;
@@ -144,20 +144,17 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
         });
 
         chart = new AnomalyDetectionChart();
-        chart.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case AnomalyDetectionChart.HOVERED_OBS_PROPERTY:
-                        int obs = (Integer) evt.getNewValue();
-                        AnomalyDetectionChart.Model model = chart.getModel();
-                        if (obs == -1 || model == null) {
-                            grid.setHoveredObs(ObsIndex.NULL);
-                        } else {
-                            grid.setHoveredObs(ObsIndex.valueOf(grid.getTsCollection().indexOf(model.getTs()), obs));
-                        }
-                        break;
-                }
+        chart.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case AnomalyDetectionChart.HOVERED_OBS_PROPERTY:
+                    int obs = (Integer) evt.getNewValue();
+                    AnomalyDetectionChart.Model model = chart.getModel();
+                    if (obs == -1 || model == null) {
+                        grid.setHoveredObs(ObsIndex.NULL);
+                    } else {
+                        grid.setHoveredObs(ObsIndex.valueOf(grid.getTsCollection().indexOf(model.getTs()), obs));
+                    }
+                    break;
             }
         });
 
@@ -250,7 +247,7 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
         prefButton = result.add(new AbstractAction("", DemetraUiIcon.PREFERENCES) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                OpenIdePropertySheetBeanEditor.editNode(node, "Properties", null);
+                new PropertySheetDialogBuilder().title("Properties").editNode(node);
             }
         });
         prefButton.setToolTipText("Open the properties dialog");
@@ -281,14 +278,11 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
             menuItem.setEnabled(i != 1);
             addPopup.add(menuItem);
         }
-        grid.addPropertyChangeListener(ITsGrid.ZOOM_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                for (Component o : addPopup.getComponents()) {
-                    JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
-                    item.setState(grid.getZoomPercentage() == Integer.parseInt(o.getName()));
-                    item.setEnabled(!item.isSelected());
-                }
+        grid.addPropertyChangeListener(ITsGrid.ZOOM_PROPERTY, evt -> {
+            for (Component o : addPopup.getComponents()) {
+                JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
+                item.setState(grid.getZoomPercentage() == Integer.parseInt(o.getName()));
+                item.setEnabled(!item.isSelected());
             }
         });
 

@@ -18,8 +18,8 @@ package ec.nbdemetra.ui;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import ec.nbdemetra.core.InstallerStep;
+import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.ui.interchange.InterchangeBroker;
 import ec.nbdemetra.ui.mru.MruProvidersStep;
 import ec.nbdemetra.ui.mru.MruWorkspacesStep;
@@ -33,6 +33,8 @@ import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.utils.Formatters;
+import ec.tss.tsproviders.utils.IFormatter;
+import ec.tss.tsproviders.utils.IParser;
 import ec.tss.tsproviders.utils.Parsers;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import java.util.stream.Stream;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.jfree.chart.ChartFactory;
@@ -65,7 +68,8 @@ public final class Installer extends ModuleInstall {
             new PersistOpenedDataSourcesStep(),
             new InterchangeStep(),
             new ProviderBuddiesStep(),
-            new DiagnosticsBuddiesStep());
+            new DiagnosticsBuddiesStep(),
+            new OutputBuddiesStep());
 
     @Override
     public void restored() {
@@ -112,7 +116,7 @@ public final class Installer extends ModuleInstall {
 
         @Override
         protected void onClose(Lookup.Result<TssTransferHandler> lookup) {
-            storeConfig(TssTransferSupport.getDefault().all().toList(), prefs());
+            storeConfig(TssTransferSupport.getDefault().stream(), prefs());
         }
     }
 
@@ -137,7 +141,7 @@ public final class Installer extends ModuleInstall {
         public void restore() {
             if (DemetraUI.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
-                Parsers.Parser<DataSourcesBean> parser = Parsers.onJAXB(DataSourcesBean.class);
+                IParser<DataSourcesBean> parser = Parsers.onJAXB(DataSourcesBean.class);
                 for (IDataSourceLoader o : TsProviders.all().filter(IDataSourceLoader.class)) {
                     Optional<DataSourcesBean> value = tryGet(prefs, o.getSource(), parser);
                     if (value.isPresent()) {
@@ -153,7 +157,7 @@ public final class Installer extends ModuleInstall {
         public void close() {
             if (DemetraUI.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
-                Formatters.Formatter<DataSourcesBean> formatter = Formatters.onJAXB(DataSourcesBean.class, false);
+                IFormatter<DataSourcesBean> formatter = Formatters.onJAXB(DataSourcesBean.class, false);
                 for (IDataSourceLoader o : TsProviders.all().filter(IDataSourceLoader.class)) {
                     DataSourcesBean value = new DataSourcesBean();
                     value.dataSources = o.getDataSources();
@@ -175,7 +179,7 @@ public final class Installer extends ModuleInstall {
 
             @Override
             public Iterator<DataSource> iterator() {
-                return dataSources != null ? dataSources.iterator() : Iterators.<DataSource>emptyIterator();
+                return dataSources != null ? dataSources.iterator() : Collections.emptyIterator();
             }
         }
     }
@@ -198,6 +202,13 @@ public final class Installer extends ModuleInstall {
 
         DiagnosticsBuddiesStep() {
             super(SaDiagnosticsFactoryBuddy.class);
+        }
+    }
+
+    private static final class OutputBuddiesStep extends ConfigStep<INbOutputFactory> {
+
+        OutputBuddiesStep() {
+            super(INbOutputFactory.class);
         }
     }
 
@@ -226,7 +237,7 @@ public final class Installer extends ModuleInstall {
     //</editor-fold>
 
     public static void loadConfig(Collection<?> list, Preferences root) {
-        Parsers.Parser<Config> parser = Config.xmlParser();
+        IParser<Config> parser = Config.xmlParser();
         for (IConfigurable o : Iterables.filter(list, IConfigurable.class)) {
             Config current = o.getConfig();
             try {
@@ -244,12 +255,18 @@ public final class Installer extends ModuleInstall {
     }
 
     public static void storeConfig(Collection<?> list, Preferences root) {
+        storeConfig(list.stream(), root);
+    }
+
+    private static void storeConfig(Stream<?> stream, Preferences root) {
         Formatters.Formatter<Config> formatter = Config.xmlFormatter(false);
-        for (IConfigurable o : Iterables.filter(list, IConfigurable.class)) {
-            Config current = o.getConfig();
-            Preferences domain = root.node(current.getDomain());
-            InstallerStep.tryPut(domain, current.getName(), formatter, current);
-        }
+        stream
+                .filter(IConfigurable.class::isInstance)
+                .forEach(o -> {
+                    Config current = ((IConfigurable) o).getConfig();
+                    Preferences domain = root.node(current.getDomain());
+                    InstallerStep.tryPut(domain, current.getName(), formatter, current);
+                });
         try {
             root.flush();
         } catch (BackingStoreException ex) {

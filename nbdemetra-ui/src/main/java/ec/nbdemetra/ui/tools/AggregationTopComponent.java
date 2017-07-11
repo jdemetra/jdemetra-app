@@ -14,8 +14,6 @@ import ec.ui.chart.JTsChart;
 import ec.ui.interfaces.ITsCollectionView;
 import ec.ui.list.JTsList;
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.JSplitPane;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -103,20 +101,16 @@ public final class AggregationTopComponent extends TopComponent {
     }
 
     private void initList() {
-        inputList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-
-                TsData sum = null;
-                for (Ts s : inputList.getTsCollection()) {
-                    if (s.hasData() == TsStatus.Undefined) {
-                        s.load(TsInformationType.Data);
-                    }
-                    sum = TsData.add(sum, s.getTsData());
+        inputList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, evt -> {
+            TsData sum = null;
+            for (Ts s : inputList.getTsCollection()) {
+                if (s.hasData() == TsStatus.Undefined) {
+                    s.load(TsInformationType.Data);
                 }
-                Ts t = TsFactory.instance.createTs("Total", null, sum);
-                aggChart.getTsCollection().replace(t);
+                sum = TsData.add(sum, s.getTsData());
             }
+            Ts t = TsFactory.instance.createTs("Total", null, sum);
+            aggChart.getTsCollection().replace(t);
         });
     }
  }

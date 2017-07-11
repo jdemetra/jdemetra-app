@@ -16,8 +16,6 @@
  */
 package ec.util.completion.swing;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -80,7 +78,7 @@ public class FileListCellRenderer extends CustomListCellRenderer<File> {
 
     static class IconTask implements Callable<Icon> {
 
-        static final JFileChooser fileChooser = new JFileChooser();
+        static final JFileChooser FILE_CHOOSER = new JFileChooser();
         final File file;
 
         public IconTask(File file) {
@@ -89,7 +87,7 @@ public class FileListCellRenderer extends CustomListCellRenderer<File> {
 
         @Override
         public Icon call() {
-            return fileChooser.getIcon(file);
+            return FILE_CHOOSER.getIcon(file);
         }
 
         @Override
@@ -189,12 +187,7 @@ public class FileListCellRenderer extends CustomListCellRenderer<File> {
         final Timer evictor;
 
         DefaultFilter(long delay, TimeUnit unit) {
-            this.evictor = new Timer((int) TimeUnit.MILLISECONDS.convert(delay, unit), new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    clear();
-                }
-            });
+            this.evictor = new Timer((int) TimeUnit.MILLISECONDS.convert(delay, unit), evt -> clear());
             evictor.setRepeats(false);
         }
 

@@ -16,8 +16,14 @@
  */
 package ec.util.completion;
 
+import ec.util.completion.AutoCompletionSource.Behavior;
 import java.text.Normalizer;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 
 public final class AutoCompletionSources {
@@ -26,7 +32,7 @@ public final class AutoCompletionSources {
         // static class
     }
 
-    private static final AutoCompletionSource NONE = of(false);
+    private static final AutoCompletionSource NONE = ExtAutoCompletionSource.builder(() -> Collections.emptyList()).behavior(Behavior.NONE).build();
 
     @Nonnull
     public static AutoCompletionSource empty() {
@@ -35,12 +41,23 @@ public final class AutoCompletionSources {
 
     @Nonnull
     public static <T> AutoCompletionSource of(boolean strict, @Nonnull T... list) {
-        return new DefaultAutoCompletion(strict, Arrays.asList(list));
+        return of(strict, Arrays.asList(list));
     }
 
     @Nonnull
     public static <T> AutoCompletionSource of(boolean strict, @Nonnull Iterable<T> list) {
-        return new DefaultAutoCompletion(strict, list);
+        UnaryOperator<String> normalizer = strict ? UnaryOperator.identity() : AutoCompletionSources::normalize;
+        return ExtAutoCompletionSource
+                .builder(term -> {
+                    String normalizedTerm = normalizer.apply(term);
+                    return StreamSupport.stream(list.spliterator(), false)
+                            .filter(o -> o != null && normalizer.apply(o.toString()).contains(normalizedTerm))
+                            .sorted(Comparator.comparing(Object::toString))
+                            .collect(Collectors.toList());
+                })
+                .behavior(Behavior.SYNC)
+                .valueToString(Object::toString)
+                .build();
     }
 
     /**
@@ -65,27 +82,4 @@ public final class AutoCompletionSources {
     public static String normalize(@Nonnull String input) {
         return removeDiacritics(input).toLowerCase();
     }
-
-    //<editor-fold defaultstate="collapsed" desc="Internal implementation">
-    private static final class DefaultAutoCompletion<T> extends AbstractAutoCompletionSource<T> {
-        
-        private final boolean strict;
-        private final Iterable<T> availableValues;
-        
-        DefaultAutoCompletion(boolean strict, Iterable<T> availableValues) {
-            this.strict = strict;
-            this.availableValues = availableValues;
-        }
-        
-        @Override
-        protected Iterable<T> getAllValues() throws Exception {
-            return availableValues;
-        }
-        
-        @Override
-        protected String getNormalizedString(String input) {
-            return strict ? input : normalize(input);
-        }
-    }
-    //</editor-fold>
 }

@@ -95,9 +95,11 @@ public final class DifferencingTopComponent extends TopComponent implements ITsV
         toolBar.add(dropDataLabel, 1);
         toolBar.add(tsLabel, 2);
         acView = new AutoCorrelationsView();
-        acView.setKind(AutoCorrelationsView.ACKind.Partial);
+        acView.setKind(AutoCorrelationsView.ACKind.Normal);
         periodogramView = new PeriodogramView();
         periodogramView.setTransferHandler(null);
+        periodogramView.setDifferencingOrder(0);
+        periodogramView.setLogTransformation(false);
         grid = new JTsGrid();
         grid.setMode(Mode.SINGLETS);
         grid.setTsUpdateMode(TsUpdateMode.None);
@@ -154,14 +156,11 @@ public final class DifferencingTopComponent extends TopComponent implements ITsV
     @Override
     public void componentOpened() {
         super.componentOpened();
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                splitter2.setDividerLocation(.5);
-                splitter2.setResizeWeight(.5);
-                splitter1.setDividerLocation(.5);
-                splitter1.setResizeWeight(.5);
-            }
+        SwingUtilities.invokeLater(() -> {
+            splitter2.setDividerLocation(.5);
+            splitter2.setResizeWeight(.5);
+            splitter1.setDividerLocation(.5);
+            splitter1.setResizeWeight(.5);
         });
     }
 
@@ -243,7 +242,7 @@ public final class DifferencingTopComponent extends TopComponent implements ITsV
 
     @Override
     public void setTs(Ts s) {
-        ts_ = s;
+        ts_ = s.freeze();
         ts_.load(TsInformationType.All);
         refreshHeader();
         showTests();

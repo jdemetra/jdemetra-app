@@ -41,10 +41,10 @@ public class ModelBasedUI< V extends IProcDocumentView<?>> extends HtmlItemUI<V,
             TsData sa = decomposition.getSeries(ComponentType.SeasonallyAdjusted, ComponentInformation.Value);
 
             double[][] data = new double[][]{
-                t == null ? null : t.getValues().internalStorage(),
-                sa == null ? null : sa.getValues().internalStorage(),
-                s == null ? null : s.getValues().internalStorage(),
-                i == null ? null : i.getValues().internalStorage()
+                t == null ? null : t.internalStorage(),
+                sa == null ? null : sa.internalStorage(),
+                s == null ? null : s.internalStorage(),
+                i == null ? null : i.internalStorage()
             };
             WienerKolmogorovDiagnostics diags = WienerKolmogorovDiagnostics.make(ucm, err, data, cmps);
             if (diags != null) {

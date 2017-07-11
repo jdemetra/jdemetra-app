@@ -16,13 +16,13 @@
  */
 package ec.nbdemetra.ui.awt;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Maps;
 import java.util.AbstractSet;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.swing.InputMap;
 import javax.swing.KeyStroke;
@@ -48,13 +48,11 @@ public final class InputMaps {
 
     @Nonnull
     public static Map<KeyStroke, Object> asMap(@Nonnull InputMap inputMap, boolean includeParentKeys) {
-        return Maps.asMap(asKeySet(inputMap, includeParentKeys), asKeyToValueFunction(inputMap));
+        return asKeySet(inputMap, includeParentKeys).stream().collect(Collectors.toMap(o -> o, o -> inputMap.get(o)));
     }
 
     public static void copyEntries(@Nonnull InputMap source, boolean includeParentKeys, @Nonnull InputMap destination) {
-        for (Map.Entry<KeyStroke, Object> o : asMap(source, includeParentKeys).entrySet()) {
-            destination.put(o.getKey(), o.getValue());
-        }
+        asMap(source, includeParentKeys).forEach((k, v) -> destination.put(k, v));
     }
 
     //<editor-fold defaultstate="collapsed" desc="Internal implementation">
@@ -64,7 +62,7 @@ public final class InputMaps {
             @Override
             public Iterator<KeyStroke> iterator() {
                 KeyStroke[] keys = includeParentKeys ? inputMap.allKeys() : inputMap.keys();
-                return keys != null ? Iterators.forArray(keys) : Iterators.<KeyStroke>emptyIterator();
+                return keys != null ? Arrays.asList(keys).iterator() : Collections.emptyIterator();
             }
 
             @Override
@@ -77,16 +75,6 @@ public final class InputMaps {
                     }
                 }
                 return result;
-            }
-        };
-    }
-
-    @Nonnull
-    private static Function<KeyStroke, Object> asKeyToValueFunction(@Nonnull final InputMap inputMap) {
-        return new Function<KeyStroke, Object>() {
-            @Override
-            public Object apply(KeyStroke input) {
-                return inputMap.get(input);
             }
         };
     }

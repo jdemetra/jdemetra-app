@@ -48,7 +48,7 @@ public class AddProductTable extends XTable {
     private final DemetraUI demetraUI = DemetraUI.getDefault();
 
     public AddProductTable() {
-        model = new ProductTableModel(new ArrayList<Product>());
+        model = new ProductTableModel(new ArrayList<>());
 
         setModel(model);
 

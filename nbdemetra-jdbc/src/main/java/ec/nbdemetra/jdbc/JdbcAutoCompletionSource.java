@@ -12,7 +12,9 @@ import java.sql.Connection;
 /**
  *
  * @author Philippe Charles
+ * @Deprecated use {@link ec.util.completion.ExtAutoCompletionSource} instead
  */
+@Deprecated
 public abstract class JdbcAutoCompletionSource<T> extends QuickAutoCompletionSource<T> {
 
     protected final ConnectionSupplier supplier;

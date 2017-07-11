@@ -8,8 +8,6 @@ import ec.tss.documents.MultiTsDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import ec.ui.list.JTsList;
 import java.awt.Font;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JToolBar;
@@ -49,12 +47,9 @@ public class MultiTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocu
         toolBar.add(new JToolBar.Separator(), 3);
         toolBar.add(specLabel, 4);
         
-        tsList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (!quietRefresh) {
-                    getDocument().setInput(tsList.getTsCollection().toArray());
-                }
+        tsList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, evt -> {
+            if (!quietRefresh) {
+                getDocument().setInput(tsList.getTsCollection().toArray());
             }
         });
     }

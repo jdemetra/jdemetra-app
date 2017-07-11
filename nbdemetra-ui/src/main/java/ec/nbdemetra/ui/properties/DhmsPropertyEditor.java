@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ui.properties;
 
@@ -18,7 +30,7 @@ import javax.swing.border.EmptyBorder;
  */
 public class DhmsPropertyEditor extends PropertyEditorSupport {
 
-    final JLabel painter;
+    private final JLabel painter;
 
     public DhmsPropertyEditor() {
         this.painter = new JLabel();
@@ -48,7 +60,7 @@ public class DhmsPropertyEditor extends PropertyEditorSupport {
         painter.setBounds(box);
         painter.paint(gfx);
     }
-    //
+
     private final static long ONE_SECOND = 1000;
     private final static long SECONDS = 60;
     private final static long MINUTES = 60;
@@ -69,6 +81,8 @@ public class DhmsPropertyEditor extends PropertyEditorSupport {
      * converts time (in milliseconds) to human-readable format "<w> days, <x>
      * hours, <y> minutes and (z) seconds"
      *
+     * @param duration
+     * @return
      * @see http://www.rgagnon.com/javadetails/java-0585.html
      */
     public static String millisToLongDhms(long duration) {
@@ -100,6 +114,8 @@ public class DhmsPropertyEditor extends PropertyEditorSupport {
     /**
      * converts time (in milliseconds) to human-readable format "<dd:>hh:mm:ss"
      *
+     * @param duration
+     * @return
      * @see http://www.rgagnon.com/javadetails/java-0585.html
      */
     public static String millisToShortDhms(long duration) {

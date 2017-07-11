@@ -36,23 +36,7 @@ public abstract class DemoComponentFactory {
         return new ImmutableMap.Builder<>();
     }
 
-    protected static Callable<Component> newInstance(final Class<? extends Component> clazz) {
-        return new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                return clazz.newInstance();
-            }
-        };
-    }
-
-    protected static Callable<Component> reflect(final Class<?> clazz) {
-        return new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                ReflectComponent c = new ReflectComponent();
-                c.setClazz(clazz);
-                return c;
-            }
-        };
+    public static String idOf(String label, int order, boolean highlight) {
+        return "<html><span class='" + order + "'>" + (highlight ? "<u>" : "") + label;
     }
 }

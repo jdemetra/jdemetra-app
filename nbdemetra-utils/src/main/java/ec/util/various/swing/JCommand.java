@@ -23,6 +23,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.ref.WeakReference;
 import java.util.EventListener;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
@@ -41,6 +42,16 @@ import javax.swing.event.ListSelectionListener;
  * @param <C> the type of component on which the command is executed
  */
 public abstract class JCommand<C> {
+
+    @Nonnull
+    public static <X> JCommand<X> of(@Nonnull Consumer<X> consumer) {
+        return new JCommand<X>() {
+            @Override
+            public void execute(X component) throws Exception {
+                consumer.accept(component);
+            }
+        };
+    }
 
     private static final Logger LOGGER = Logger.getLogger(JCommand.class.getName());
 
@@ -149,12 +160,7 @@ public abstract class JCommand<C> {
          */
         @Nonnull
         public ActionAdapter withWeakPropertyChangeListener(@Nonnull Component source, @Nonnull String... properties) {
-            PropertyChangeListener realListener = new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    refreshActionState();
-                }
-            };
+            PropertyChangeListener realListener = evt -> refreshActionState();
             putValue("PropertyChangeListener", realListener);
             if (properties.length > 0) {
                 for (final String property : properties) {
@@ -185,12 +191,7 @@ public abstract class JCommand<C> {
          */
         @Nonnull
         public ActionAdapter withWeakListSelectionListener(@Nonnull ListSelectionModel source) {
-            ListSelectionListener realListener = new ListSelectionListener() {
-                @Override
-                public void valueChanged(ListSelectionEvent e) {
-                    refreshActionState();
-                }
-            };
+            ListSelectionListener realListener = evt -> refreshActionState();
             putValue("ListSelectionListener", realListener);
             source.addListSelectionListener(new WeakListSelectionListener(realListener) {
                 @Override

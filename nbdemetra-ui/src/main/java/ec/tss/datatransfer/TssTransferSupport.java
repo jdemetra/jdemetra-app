@@ -17,16 +17,19 @@
 package ec.tss.datatransfer;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import ec.nbdemetra.core.GlobalService;
 import ec.nbdemetra.ui.awt.ListenableBean;
 import ec.tss.*;
+import ec.tss.datatransfer.impl.LocalObjectTssTransferHandler;
+import ec.tss.tsproviders.utils.FunctionWithIO;
 import ec.tstoolkit.data.Table;
+import ec.tstoolkit.design.VisibleForTesting;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.timeseries.simplets.TsData;
+import ec.util.various.swing.OnEDT;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -36,11 +39,13 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.*;
+import static java.util.Objects.requireNonNull;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.openide.util.Lookup;
-import org.openide.util.datatransfer.ExTransferable;
-import org.openide.util.datatransfer.MultiTransferObject;
 import org.openide.util.lookup.ServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +64,6 @@ import org.slf4j.LoggerFactory;
 public class TssTransferSupport extends ListenableBean {
 
     public static final String VALID_CLIPBOARD_PROPERTY = "validClipboard";
-    //
-    private static final Logger LOGGER = LoggerFactory.getLogger(TssTransferSupport.class);
 
     /**
      * A convenient method to get the current single instance of
@@ -79,23 +82,23 @@ public class TssTransferSupport extends ListenableBean {
     public static TssTransferSupport getInstance() {
         return getDefault();
     }
-    //
+
+    private final ClipboardValidator clipboardValidator;
+    private final Lookup lookup;
+    private final Logger logger;
     private boolean validClipboard;
 
     public TssTransferSupport() {
-        this.validClipboard = false;
-        Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(new FlavorListener() {
-            @Override
-            public void flavorsChanged(FlavorEvent e) {
-                try {
-                    boolean old = validClipboard;
-                    validClipboard = canImport(((Clipboard) e.getSource()).getAvailableDataFlavors());
-                    firePropertyChange(VALID_CLIPBOARD_PROPERTY, old, validClipboard);
-                } catch (Exception ex) {
-                    LOGGER.debug("While getting content from clipboard", ex);
-                }
-            }
-        });
+        this(Lookup.getDefault(), LoggerFactory.getLogger(TssTransferSupport.class), false);
+        clipboardValidator.register(Toolkit.getDefaultToolkit().getSystemClipboard());
+    }
+
+    @VisibleForTesting
+    TssTransferSupport(Lookup lookup, Logger logger, boolean validClipboard) {
+        this.clipboardValidator = new ClipboardValidator();
+        this.lookup = lookup;
+        this.logger = logger;
+        this.validClipboard = validClipboard;
     }
 
     /**
@@ -103,18 +106,37 @@ public class TssTransferSupport extends ListenableBean {
      *
      * @return true if the data in the clipboard is importable; false otherwise
      */
+    @OnEDT
     public boolean isValidClipboard() {
         return validClipboard;
+    }
+
+    private void setValidClipboard(boolean validClipboard) {
+        boolean old = this.validClipboard;
+        this.validClipboard = validClipboard;
+        firePropertyChange(VALID_CLIPBOARD_PROPERTY, old, this.validClipboard);
     }
 
     /**
      * Retrieves a list of all available TssTransferHandler.
      *
      * @return a non-null list of TssTransferHandler
+     * @deprecated use {@link #streamAll()} instead
      */
+    @Deprecated
     @Nonnull
     public FluentIterable<? extends TssTransferHandler> all() {
-        return FluentIterable.from(Iterables.concat(Lookup.getDefault().lookupAll(TssTransferHandler.class), ATsCollectionFormatter.getLegacyHandlers()));
+        return FluentIterable.from(Iterables.concat(lookup.lookupAll(TssTransferHandler.class), ATsCollectionFormatter.getLegacyHandlers()));
+    }
+
+    /**
+     * Retrieves a list of all available TssTransferHandler.
+     *
+     * @return a non-null stream of TssTransferHandler
+     */
+    @Nonnull
+    public Stream<? extends TssTransferHandler> stream() {
+        return Stream.concat(lookup.lookupAll(TssTransferHandler.class).stream(), ATsCollectionFormatter.getLegacyHandlers().stream());
     }
 
     /**
@@ -130,9 +152,16 @@ public class TssTransferSupport extends ListenableBean {
         return new ArrayList<>();
     }
 
+    @OnEDT
     public boolean canImport(@Nonnull DataFlavor... dataFlavors) {
         // multiFlavor means "maybe", not "yes"
-        return isMultiFlavor(dataFlavors) || all().anyMatch(onDataFlavors(dataFlavors));
+        return DataTransfers.isMultiFlavor(dataFlavors) || stream().anyMatch(onDataFlavors(dataFlavors));
+    }
+
+    @OnEDT
+    public boolean canImport(@Nonnull Transferable transferable) {
+        Set<DataFlavor> dataFlavors = DataTransfers.getMultiDataFlavors(transferable).collect(Collectors.toSet());
+        return stream().anyMatch(onDataFlavors(dataFlavors));
     }
 
     /**
@@ -141,6 +170,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param data a non-null {@link TsData}
      * @return a never-null {@link Transferable}
      */
+    @OnEDT
     @Nonnull
     public Transferable fromTsData(@Nonnull TsData data) {
         Preconditions.checkNotNull(data);
@@ -153,6 +183,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param ts a non-null {@link Ts}
      * @return a never-null {@link Transferable}
      */
+    @OnEDT
     @Nonnull
     public Transferable fromTs(@Nonnull Ts ts) {
         Preconditions.checkNotNull(ts);
@@ -167,10 +198,11 @@ public class TssTransferSupport extends ListenableBean {
      * @param col a non-null {@link TsCollection}
      * @return a never-null {@link Transferable}
      */
+    @OnEDT
     @Nonnull
     public Transferable fromTsCollection(@Nonnull TsCollection col) {
         Preconditions.checkNotNull(col);
-        return asTransferable(col, all(), TsCollectionHelper.INSTANCE);
+        return asTransferable(col, stream(), TsCollectionHelper.INSTANCE);
     }
 
     /**
@@ -179,10 +211,11 @@ public class TssTransferSupport extends ListenableBean {
      * @param matrix a non-null {@link Matrix}
      * @return a never-null {@link Transferable}
      */
+    @OnEDT
     @Nonnull
     public Transferable fromMatrix(@Nonnull Matrix matrix) {
         Preconditions.checkNotNull(matrix);
-        return asTransferable(matrix, all(), MatrixHelper.INSTANCE);
+        return asTransferable(matrix, stream(), MatrixHelper.INSTANCE);
     }
 
     /**
@@ -191,10 +224,11 @@ public class TssTransferSupport extends ListenableBean {
      * @param table a non-null {@link Table}
      * @return a never-null {@link Transferable}
      */
+    @OnEDT
     @Nonnull
     public Transferable fromTable(@Nonnull Table<?> table) {
         Preconditions.checkNotNull(table);
-        return asTransferable(table, all(), TableHelper.INSTANCE);
+        return asTransferable(table, stream(), TableHelper.INSTANCE);
     }
 
     /**
@@ -203,6 +237,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param transferable a non-null object
      * @return a {@link TsData} if possible, <code>null</code> otherwise
      */
+    @OnEDT
     @Nullable
     public TsData toTsData(@Nonnull Transferable transferable) {
         Ts ts = toTs(transferable);
@@ -225,6 +260,7 @@ public class TssTransferSupport extends ListenableBean {
      * @param transferable a non-null object
      * @return a {@link Ts} if possible, <code>null</code> otherwise
      */
+    @OnEDT
     @Nullable
     public Ts toTs(@Nonnull Transferable transferable) {
         TsCollection col = toTsCollection(transferable);
@@ -242,38 +278,24 @@ public class TssTransferSupport extends ListenableBean {
      * @param transferable a non-null object
      * @return a {@link TsCollection} if possible, <code>null</code> otherwise
      */
+    @OnEDT
     @Nullable
     public TsCollection toTsCollection(@Nonnull Transferable transferable) {
         Preconditions.checkNotNull(transferable);
-        if (isMultiFlavor(transferable.getTransferDataFlavors())) {
-            try {
-                MultiTransferObject multi = (MultiTransferObject) transferable.getTransferData(ExTransferable.multiFlavor);
-                TsCollection result = TsFactory.instance.createTsCollection();
-                for (int i = 0; i < multi.getCount(); i++) {
-                    TsCollection item = toTsCollection(multi.getTransferableAt(i));
-                    if (item != null) {
-                        result.append(item);
-                    }
-                }
-                return result;
-            } catch (UnsupportedFlavorException | IOException ex) {
-                LOGGER.error("While getting multiFlavor", ex);
-            }
-            return null;
-        } else {
-            for (TssTransferHandler o : all().filter(onDataFlavors(transferable.getTransferDataFlavors()))) {
-                try {
-                    Object transferData = transferable.getTransferData(o.getDataFlavor());
-                    if (o.canImportTsCollection(transferData)) {
-                        LOGGER.debug("Getting collection using '{}'", o.getName());
-                        return o.importTsCollection(transferData);
-                    }
-                } catch (UnsupportedFlavorException | IOException ex) {
-                    LOGGER.error("While getting collection using '" + o.getName() + "'", ex);
-                }
-            }
-            return null;
-        }
+        return stream()
+                .filter(onDataFlavors(transferable.getTransferDataFlavors()))
+                .map(o -> toTsCollection(o, transferable, logger))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+    }
+
+    @OnEDT
+    @Nonnull
+    public Stream<TsCollection> toTsCollectionStream(@Nonnull Transferable transferable) {
+        return DataTransfers.getMultiTransferables(transferable)
+                .map(this::toTsCollection)
+                .filter(Objects::nonNull);
     }
 
     /**
@@ -282,21 +304,16 @@ public class TssTransferSupport extends ListenableBean {
      * @param transferable a non-null object
      * @return a {@link Matrix} if possible, <code>null</code> otherwise
      */
+    @OnEDT
     @Nullable
     public Matrix toMatrix(@Nonnull Transferable transferable) {
         Preconditions.checkNotNull(transferable);
-        for (TssTransferHandler o : all().filter(onDataFlavors(transferable.getTransferDataFlavors()))) {
-            try {
-                Object transferData = transferable.getTransferData(o.getDataFlavor());
-                if (o.canImportMatrix(transferData)) {
-                    LOGGER.debug("Getting matrix using '{}'", o.getName());
-                    return o.importMatrix(transferData);
-                }
-            } catch (UnsupportedFlavorException | IOException ex) {
-                LOGGER.error("While getting matrix using '" + o.getName() + "'", ex);
-            }
-        }
-        return null;
+        return stream()
+                .filter(onDataFlavors(transferable.getTransferDataFlavors()))
+                .map(o -> toMatrix(o, transferable, logger))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
     }
 
     /**
@@ -305,75 +322,138 @@ public class TssTransferSupport extends ListenableBean {
      * @param transferable a non-null object
      * @return a {@link Table} if possible, <code>null</code> otherwise
      */
+    @OnEDT
     @Nullable
     public Table<?> toTable(@Nonnull Transferable transferable) {
         Preconditions.checkNotNull(transferable);
-        for (TssTransferHandler o : all().filter(onDataFlavors(transferable.getTransferDataFlavors()))) {
+        return stream()
+                .filter(onDataFlavors(transferable.getTransferDataFlavors()))
+                .map(o -> toTable(o, transferable, logger))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Checks if a transferable represents time series (to avoid useless loading
+     * of Ts).
+     *
+     * @param transferable
+     * @return
+     */
+    public boolean isTssTransferable(@Nonnull Transferable transferable) {
+        return transferable.isDataFlavorSupported(LocalObjectTssTransferHandler.DATA_FLAVOR);
+    }
+
+    @Deprecated
+    public static boolean isMultiFlavor(@Nonnull DataFlavor[] dataFlavors) {
+        return DataTransfers.isMultiFlavor(dataFlavors);
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Implementation details">
+    private final class ClipboardValidator implements FlavorListener {
+
+        private boolean isValid(Clipboard clipboard) {
             try {
-                Object transferData = transferable.getTransferData(o.getDataFlavor());
-                if (o.canImportTable(transferData)) {
-                    LOGGER.debug("Getting table using '{}'", o.getName());
-                    return o.importTable(transferData);
-                }
-            } catch (UnsupportedFlavorException | IOException ex) {
-                LOGGER.error("While getting table using '" + o.getName() + "'", ex);
+                return canImport(clipboard.getAvailableDataFlavors());
+            } catch (IllegalStateException ex) {
+                logger.debug("While getting content from clipboard", ex);
+                return true; // means "maybe", not "yes"
             }
+        }
+
+        @Override
+        public void flavorsChanged(FlavorEvent e) {
+            setValidClipboard(isValid((Clipboard) e.getSource()));
+        }
+
+        public void register(Clipboard clipboard) {
+            clipboard.addFlavorListener(this);
+            validClipboard = isValid(clipboard);
+        }
+    }
+
+    private static void logUnexpected(Logger logger, TssTransferHandler o, RuntimeException unexpected, String context) {
+        logger.info("Unexpected exception while " + context + " using '" + getIdOrClassName(o) + "'", unexpected);
+    }
+
+    private static void logExpected(Logger logger, TssTransferHandler o, Exception expected, String context) {
+        logger.debug("While " + context + " using '" + getIdOrClassName(o) + "'", expected);
+    }
+
+    private static String getIdOrClassName(TssTransferHandler handler) {
+        try {
+            return requireNonNull(handler.getName());
+        } catch (RuntimeException unexpected) {
+            return handler.getClass().getName();
+        }
+    }
+
+    private static DataFlavor getDataFlavorOrNull(TssTransferHandler handler) {
+        try {
+            return handler.getDataFlavor();
+        } catch (RuntimeException unexpected) {
+            return null;
+        }
+    }
+
+    private static TsCollection toTsCollection(TssTransferHandler o, Transferable t, Logger logger) {
+        try {
+            Object data = t.getTransferData(requireNonNull(o.getDataFlavor()));
+            if (o.canImportTsCollection(data)) {
+                return requireNonNull(o.importTsCollection(data));
+            }
+        } catch (UnsupportedFlavorException | IOException ex) {
+            logExpected(logger, o, ex, "getting collection");
+        } catch (RuntimeException ex) {
+            logUnexpected(logger, o, ex, "getting collection");
         }
         return null;
     }
 
-    public static boolean isMultiFlavor(DataFlavor[] dataFlavors) {
-        return dataFlavors.length == 1 && dataFlavors[0] == ExTransferable.multiFlavor;
+    private static Matrix toMatrix(TssTransferHandler o, Transferable t, Logger logger) {
+        try {
+            Object data = t.getTransferData(requireNonNull(o.getDataFlavor()));
+            if (o.canImportMatrix(data)) {
+                return requireNonNull(o.importMatrix(data));
+            }
+        } catch (UnsupportedFlavorException | IOException ex) {
+            logExpected(logger, o, ex, "getting matrix");
+        } catch (RuntimeException ex) {
+            logUnexpected(logger, o, ex, "getting matrix");
+        }
+        return null;
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    private static <T> Transferable asTransferable(T data, FluentIterable<? extends TssTransferHandler> allHandlers, TransferHelper<T> helper) {
-        return new CustomAdapter(data, allHandlers, helper);
+    private static Table<?> toTable(TssTransferHandler o, Transferable t, Logger logger) {
+        try {
+            Object data = t.getTransferData(requireNonNull(o.getDataFlavor()));
+            if (o.canImportTable(data)) {
+                return requireNonNull(o.importTable(data));
+            }
+        } catch (UnsupportedFlavorException | IOException ex) {
+            logExpected(logger, o, ex, "getting table");
+        } catch (RuntimeException ex) {
+            logUnexpected(logger, o, ex, "getting table");
+        }
+        return null;
     }
 
-    private static final class CustomAdapter<T> implements Transferable {
+    @OnEDT
+    private static <T> Transferable asTransferable(T data, Stream<? extends TssTransferHandler> allHandlers, TransferHelper<T> helper) {
+        return new DataTransfers.CustomAdapter<>(
+                getHandlersByFlavor(data, allHandlers, helper),
+                getTransferDataLoader(data, helper));
+    }
 
-        private final T data;
-        private final Map<DataFlavor, TssTransferHandler> handlers;
-        private final TransferHelper<T> helper;
-        private final Map<DataFlavor, Object> cache;
+    private static <T> Map<DataFlavor, List<TssTransferHandler>> getHandlersByFlavor(T data, Stream<? extends TssTransferHandler> allHandlers, TransferHelper<T> helper) {
+        return allHandlers
+                .filter(o -> helper.canTransferData(data, o))
+                .collect(Collectors.groupingBy(TssTransferSupport::getDataFlavorOrNull));
+    }
 
-        CustomAdapter(T data, FluentIterable<? extends TssTransferHandler> allHandlers, TransferHelper<T> helper) {
-            this.data = data;
-            this.handlers = new HashMap<>();
-            for (TssTransferHandler o : allHandlers) {
-                if (helper.canTransferData(data, o) && !handlers.containsKey(o.getDataFlavor())) {
-                    handlers.put(o.getDataFlavor(), o);
-                }
-            }
-            this.helper = helper;
-            this.cache = new HashMap<>();
-        }
-
-        @Override
-        public DataFlavor[] getTransferDataFlavors() {
-            return Iterables.toArray(handlers.keySet(), DataFlavor.class);
-        }
-
-        @Override
-        public boolean isDataFlavorSupported(DataFlavor flavor) {
-            return handlers.containsKey(flavor);
-        }
-
-        @Override
-        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-            Object result = cache.get(flavor);
-            if (result == null) {
-                TssTransferHandler handler = handlers.get(flavor);
-                if (handler == null) {
-                    throw new UnsupportedFlavorException(flavor);
-                }
-                LOGGER.debug("Getting transfer data using '{}'", handler.getName());
-                result = helper.getTransferData(data, handler);
-                cache.put(flavor, result);
-            }
-            return result;
-        }
+    private static <T> FunctionWithIO<TssTransferHandler, Object> getTransferDataLoader(T data, TransferHelper<T> helper) {
+        return o -> helper.getTransferData(data, o);
     }
 
     private interface TransferHelper<T> {
@@ -429,13 +509,11 @@ public class TssTransferSupport extends ListenableBean {
     }
 
     private static Predicate<TssTransferHandler> onDataFlavors(DataFlavor[] dataFlavors) {
-        final Set<DataFlavor> list = Sets.newHashSet(dataFlavors);
-        return new Predicate<TssTransferHandler>() {
-            @Override
-            public boolean apply(TssTransferHandler input) {
-                return list.contains(input != null ? input.getDataFlavor() : null);
-            }
-        };
+        return onDataFlavors(Sets.newHashSet(dataFlavors));
+    }
+
+    private static Predicate<TssTransferHandler> onDataFlavors(Set<DataFlavor> dataFlavors) {
+        return o -> dataFlavors.contains((DataFlavor) (o != null ? getDataFlavorOrNull(o) : null));
     }
     //</editor-fold>
 }

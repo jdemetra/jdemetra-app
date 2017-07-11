@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui;
 
-import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
@@ -32,6 +31,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.SortedMap;
+import javax.annotation.Nonnull;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -73,11 +73,6 @@ public final class Config implements IConfig, Serializable {
     }
 
     @Override
-    public String get(String key) {
-        return params.get(key);
-    }
-
-    @Override
     public SortedMap<String, String> getParams() {
         return params;
     }
@@ -101,11 +96,20 @@ public final class Config implements IConfig, Serializable {
 
     @Override
     public String toString() {
-        MoreObjects.ToStringHelper helper = MoreObjects.toStringHelper(domain + "/" + name + "(" + version + ")");
-        for (Map.Entry<String, String> o : params.entrySet()) {
-            helper.add(o.getKey(), o.getValue());
-        }
-        return helper.toString();
+        MoreObjects.ToStringHelper result = MoreObjects.toStringHelper(domain + "/" + name + "(" + version + ")");
+        forEach(result::add);
+        return result.toString();
+    }
+
+    /**
+     * Creates a new builder with the content of this config.
+     *
+     * @return a non-null builder
+     * @since 2.2.0
+     */
+    @Nonnull
+    public Config.Builder toBuilder() {
+        return new Builder(domain, name, version).putAll(params);
     }
 
     @VisibleForTesting
@@ -132,9 +136,9 @@ public final class Config implements IConfig, Serializable {
         return new Builder(domain, name, version);
     }
 
+    @Deprecated
     public static Config.Builder builder(Config config) {
-        Objects.requireNonNull(config, "config");
-        return new Builder(config.getDomain(), config.getName(), config.getVersion()).putAll(config.getParams());
+        return config.toBuilder();
     }
 
     /**
@@ -220,12 +224,7 @@ public final class Config implements IConfig, Serializable {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    private static final ThreadLocal<Xml> XML = new ThreadLocal<Xml>() {
-        @Override
-        protected Xml initialValue() {
-            return new Xml();
-        }
-    };
+    private static final ThreadLocal<Xml> XML = ThreadLocal.withInitial(Xml::new);
 
     private static final class Xml {
 
@@ -238,22 +237,10 @@ public final class Config implements IConfig, Serializable {
                 throw Throwables.propagate(ex);
             }
         }
-        final static Function<ConfigBean, Config> FROM_BEAN = new Function<ConfigBean, Config>() {
-            @Override
-            public Config apply(ConfigBean input) {
-                return input.toId();
-            }
-        };
-        final static Function<Config, ConfigBean> TO_BEAN = new Function<Config, ConfigBean>() {
-            @Override
-            public ConfigBean apply(Config input) {
-                return input.toBean();
-            }
-        };
 
-        final Parsers.Parser<Config> defaultParser = Parsers.<ConfigBean>onJAXB(BEAN_CONTEXT).compose(FROM_BEAN);
-        final Formatters.Formatter<Config> defaultFormatter = Formatters.<ConfigBean>onJAXB(BEAN_CONTEXT, false).compose(TO_BEAN);
-        final Formatters.Formatter<Config> formattedOutputFormatter = Formatters.<ConfigBean>onJAXB(BEAN_CONTEXT, true).compose(TO_BEAN);
+        final Parsers.Parser<Config> defaultParser = Parsers.wrap(Parsers.<ConfigBean>onJAXB(BEAN_CONTEXT).andThen(ConfigBean::toId));
+        final Formatters.Formatter<Config> defaultFormatter = Formatters.<ConfigBean>onJAXB(BEAN_CONTEXT, false).compose(Config::toBean);
+        final Formatters.Formatter<Config> formattedOutputFormatter = Formatters.<ConfigBean>onJAXB(BEAN_CONTEXT, true).compose(Config::toBean);
     }
     //</editor-fold>
 }

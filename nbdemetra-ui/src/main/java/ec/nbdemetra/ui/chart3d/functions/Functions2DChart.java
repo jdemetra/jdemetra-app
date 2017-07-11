@@ -107,11 +107,11 @@ public class Functions2DChart extends ATsView {
 
         float xMin = ((float) p.get(0) - epsilon);
         double dMin=d.lbound(0);
-        if (DescriptiveStatistics.isFinite(dMin) && xMin < dMin)
+        if (Double.isFinite(dMin) && xMin < dMin)
             xMin=(float) dMin;
         float xMax = ((float) p.get(0) + epsilon);
         double dMax=d.ubound(0);
-        if (DescriptiveStatistics.isFinite(dMax) && xMax > dMax)
+        if (Double.isFinite(dMax) && xMax > dMax)
             xMax=(float) dMax;
         float stepX = (xMax - xMin) / (steps-1);    // Calculates the "distance" between each point
 

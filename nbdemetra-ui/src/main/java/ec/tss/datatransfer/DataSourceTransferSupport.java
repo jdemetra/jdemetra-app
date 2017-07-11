@@ -17,7 +17,6 @@
 package ec.tss.datatransfer;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import ec.nbdemetra.core.GlobalService;
 import ec.tss.tsproviders.DataSource;
@@ -52,16 +51,16 @@ public class DataSourceTransferSupport {
     }
 
     public boolean canHandle(@Nonnull Transferable t) {
-        return all().anyMatch(canHandlePredicate(t));
+        return all().anyMatch(o -> o != null ? o.canHandle(t) : false);
     }
 
     public boolean canHandle(@Nonnull Transferable t, @Nonnull String providerName) {
-        return all().anyMatch(canHandlePredicate(t, providerName));
+        return all().anyMatch(o -> o != null ? o.canHandle(t, providerName) : false);
     }
 
     @Nonnull
     public Optional<DataSource> getDataSource(@Nonnull Transferable t) {
-        for (DataSourceTransferHandler o : all().filter(canHandlePredicate(t))) {
+        for (DataSourceTransferHandler o : all().filter(o -> o != null ? o.canHandle(t) : false)) {
             Optional<DataSource> dataSource = o.getDataSource(t);
             if (dataSource.isPresent()) {
                 return dataSource;
@@ -72,30 +71,12 @@ public class DataSourceTransferSupport {
 
     @Nonnull
     public Optional<DataSource> getDataSource(@Nonnull Transferable t, @Nonnull String providerName) {
-        for (DataSourceTransferHandler o : all().filter(canHandlePredicate(t, providerName))) {
+        for (DataSourceTransferHandler o : all().filter(o -> o != null ? o.canHandle(t, providerName) : false)) {
             Optional<DataSource> dataSource = o.getDataSource(t, providerName);
             if (dataSource.isPresent()) {
                 return dataSource;
             }
         }
         return Optional.absent();
-    }
-
-    private static Predicate<DataSourceTransferHandler> canHandlePredicate(final Transferable t) {
-        return new Predicate<DataSourceTransferHandler>() {
-            @Override
-            public boolean apply(DataSourceTransferHandler input) {
-                return input != null ? input.canHandle(t) : false;
-            }
-        };
-    }
-
-    private static Predicate<DataSourceTransferHandler> canHandlePredicate(final Transferable t, final String providerName) {
-        return new Predicate<DataSourceTransferHandler>() {
-            @Override
-            public boolean apply(DataSourceTransferHandler input) {
-                return input != null ? input.canHandle(t, providerName) : false;
-            }
-        };
     }
 }

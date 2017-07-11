@@ -114,7 +114,10 @@ public final class ProviderMruAction extends AbstractAction implements Presenter
         }
 
         Icon getIcon(DataSourceProviderBuddySupport support, DataSource dataSource) {
-            return ImageUtilities.image2Icon(support.get(dataSource).getIcon(dataSource, BeanInfo.ICON_COLOR_16x16, false));
+            return support
+                    .getIcon(dataSource, BeanInfo.ICON_COLOR_16x16, false)
+                    .map(ImageUtilities::image2Icon)
+                    .orElse(null);
         }
 
         boolean isLoadable(DataSource dataSource) {

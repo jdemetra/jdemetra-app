@@ -65,6 +65,10 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
     public void setFunction(DefaultTransformationType value) {
         inner().setFunction(value);
         core.getRegression().getTradingDays().setAutoAdjust(value == DefaultTransformationType.Auto);
+        if (value == DefaultTransformationType.None && inner().getAdjust() != LengthOfPeriodType.None){
+            inner().setAdjust(LengthOfPeriodType.None);
+            core.getRegression().getTradingDays().setLengthOfPeriod(LengthOfPeriodType.LeapYear);
+        }
     }
 
     public double getAic() {

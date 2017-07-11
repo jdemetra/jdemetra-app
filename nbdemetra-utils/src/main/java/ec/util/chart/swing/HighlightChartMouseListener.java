@@ -4,7 +4,6 @@
  */
 package ec.util.chart.swing;
 
-import java.util.List;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.entity.ChartEntity;
@@ -41,9 +40,7 @@ public class HighlightChartMouseListener implements ChartMouseListener {
 
     private void highlight(XYPlot plot, XYItemEntity entity) {
         if (plot instanceof CombinedDomainXYPlot) {
-            for (XYPlot o : (List<XYPlot>) ((CombinedDomainXYPlot) plot).getSubplots()) {
-                highlight(o, entity);
-            }
+            ((CombinedDomainXYPlot) plot).getSubplots().forEach(o -> highlight((XYPlot) o, entity));
         } else {
             XYItemRenderer r = plot.getRendererForDataset(entity.getDataset());
             if (r instanceof HighlightedXYItemRenderer2) {
@@ -54,9 +51,7 @@ public class HighlightChartMouseListener implements ChartMouseListener {
 
     private void reset(XYPlot plot) {
         if (plot instanceof CombinedDomainXYPlot) {
-            for (XYPlot o : (List<XYPlot>) ((CombinedDomainXYPlot) plot).getSubplots()) {
-                reset(o);
-            }
+            ((CombinedDomainXYPlot) plot).getSubplots().forEach(o -> reset((XYPlot) o));
         } else {
             for (int i = 0; i < plot.getRendererCount(); i++) {
                 XYItemRenderer r = plot.getRenderer(i);

@@ -28,8 +28,6 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDataTable;
 import ec.ui.commands.TsGrowthChartCommand;
 import ec.ui.interfaces.ITsGrowthChart;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.ActionMap;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -74,20 +72,17 @@ public abstract class ATsGrowthChart extends ATsChart implements ITsGrowthChart 
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case GROWTH_KIND_PROPERTY:
-                        onGrowthKindChange();
-                        break;
-                    case LAST_YEARS_PROPERTY:
-                        onLastYearsChange();
-                        break;
-                    case USE_TOOL_LAYOUT_PROPERTY:
-                        onUseToolLayoutChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case GROWTH_KIND_PROPERTY:
+                    onGrowthKindChange();
+                    break;
+                case LAST_YEARS_PROPERTY:
+                    onLastYearsChange();
+                    break;
+                case USE_TOOL_LAYOUT_PROPERTY:
+                    onUseToolLayoutChange();
+                    break;
             }
         });
     }
@@ -173,8 +168,11 @@ public abstract class ATsGrowthChart extends ATsChart implements ITsGrowthChart 
         }
         TsData result = input.cleanExtremities();
         result = result.pctVariation(kind == GrowthKind.PreviousPeriod ? 1 : result.getFrequency().intValue());
+        if (result == null) {
+            return null;
+        }
         result = result.select(selector);
-        result.getValues().mul(.01);
+        result.apply(x -> x * .01);
         return result;
     }
 

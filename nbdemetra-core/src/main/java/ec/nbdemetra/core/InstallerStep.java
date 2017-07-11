@@ -7,7 +7,7 @@ package ec.nbdemetra.core;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import ec.tss.tsproviders.utils.IFormatter;
-import ec.tss.tsproviders.utils.Parsers;
+import ec.tss.tsproviders.utils.IParser;
 import java.util.prefs.Preferences;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -97,12 +97,12 @@ public abstract class InstallerStep {
         }
     }
 
-    public static <X> Optional<X> tryGet(Preferences prefs, String key, Parsers.Parser<X> parser) {
+    public static <X> Optional<X> tryGet(Preferences prefs, String key, IParser<X> parser) {
         String stringValue = prefs.get(key, null);
         if (stringValue == null) {
-            return Optional.<X>absent();
+            return Optional.absent();
         }
-        return parser.tryParse(stringValue);
+        return Optional.fromNullable(parser.parse(stringValue));
     }
 
     public static <X> boolean tryPut(Preferences prefs, String key, IFormatter<X> formatter, X value) {

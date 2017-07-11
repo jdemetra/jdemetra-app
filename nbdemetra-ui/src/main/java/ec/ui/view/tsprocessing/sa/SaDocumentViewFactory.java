@@ -20,6 +20,7 @@ import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.chart3d.functions.SurfacePlotterUI;
 import ec.nbdemetra.ui.chart3d.functions.SurfacePlotterUI.Functions;
 import ec.satoolkit.DecompositionMode;
+import ec.satoolkit.GenericSaProcessingFactory;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.ISeriesDecomposition;
 import ec.satoolkit.diagnostics.StationaryVarianceDecomposition;
@@ -33,6 +34,7 @@ import ec.tss.sa.documents.SaDocument;
 import ec.tss.sa.documents.SaDocumentProcessing;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.arima.IArimaModel;
+import ec.tstoolkit.information.InformationSet;
 import ec.tstoolkit.modelling.ComponentInformation;
 import ec.tstoolkit.modelling.ComponentType;
 import ec.tstoolkit.modelling.ModellingDictionary;
@@ -43,6 +45,7 @@ import ec.tstoolkit.modelling.arima.diagnostics.OneStepAheadForecastingTest;
 import ec.tstoolkit.sarima.SarimaModel;
 import ec.tstoolkit.stats.NiidTests;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
+import ec.tstoolkit.timeseries.analysis.DiagnosticInfo;
 import ec.tstoolkit.timeseries.analysis.MovingProcessing;
 import ec.tstoolkit.timeseries.analysis.RevisionHistory;
 import ec.tstoolkit.timeseries.analysis.SlidingSpans;
@@ -109,8 +112,8 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             TABLE = "Table",
             SI_RATIO = "S-I ratio",
             SA_TREND = "Sa, trend",
-            C_S_I = "Cal., sea., irr.", 
-            LOG="Processing log";
+            C_S_I = "Cal., sea., irr.",
+            LOG = "Processing log";
     public static final String PROCESSING = "Processing",
             FCASTS = "Forecasts",
             OSAMPLE = "Out-of-sample test",
@@ -139,14 +142,17 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             IRREGULAR = "Irregular",
             SA_ST = "Sa series (stationary)",
             SASERIES = "SA series",
+            SASERIES_CHANGES = "SA changes",
             LASTIRREGULAR = "Irregular (last periods)",
             LASTSASERIES = "SA series (last periods)",
             TREND = "Trend",
             SEASONAL = "Seasonal",
             TRADINGDAYS = "Trading days",
-            SACHANGES = "SA series (changes)",
+            SACHANGES = "SA changes",
+            TRENDCHANGES = "Trend changes",
             REVISION = "Revisions history",
-            EASTER = "Easter";
+            EASTER = "Easter",
+            MATRIX = "Matrix";
     public static final Id INPUT_SPEC = new LinearId(INPUT, SPEC),
             INPUT_SERIES = new LinearId(INPUT, SERIES),
             MAIN_SUMMARY = new LinearId(MAIN),
@@ -197,9 +203,12 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             DIAGNOSTICS_SLIDING_SA = new LinearId(DIAGNOSTICS, SLIDINGSPANS, SACHANGES),
             DIAGNOSTICS_REVISION_SA = new LinearId(DIAGNOSTICS, REVISION, SASERIES),
             DIAGNOSTICS_REVISION_TREND = new LinearId(DIAGNOSTICS, REVISION, TREND),
+            DIAGNOSTICS_REVISION_SA_CHANGES = new LinearId(DIAGNOSTICS, REVISION, SACHANGES),
+            DIAGNOSTICS_REVISION_TREND_CHANGES = new LinearId(DIAGNOSTICS, REVISION, TRENDCHANGES),
             DIAGNOSTICS_STABILITY_TD = new LinearId(DIAGNOSTICS, STABILITY, TRADINGDAYS),
             DIAGNOSTICS_STABILITY_EASTER = new LinearId(DIAGNOSTICS, STABILITY, EASTER),
-            DIAGNOSTICS_STABILITY_ARIMA = new LinearId(DIAGNOSTICS, STABILITY, ARIMA);
+            DIAGNOSTICS_STABILITY_ARIMA = new LinearId(DIAGNOSTICS, STABILITY, ARIMA),
+            DIAGNOSTICS_MATRIX = new LinearId(DIAGNOSTICS, MATRIX);
 
     public static InformationExtractor<SaDocument<? extends ISaSpecification>, ISaSpecification> specExtractor() {
         return SpecExtractor.INSTANCE;
@@ -301,69 +310,100 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     protected static class MainChartsLowFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
-        private static String[] generateItems() {
+        private static String[] generateItems(String prefix) {
+            String sy=InformationSet.concatenate(prefix,ModellingDictionary.Y);
+            String st=InformationSet.concatenate(prefix,ModellingDictionary.T);
+            String ssa=InformationSet.concatenate(prefix,ModellingDictionary.SA);
             StringBuilder y = new StringBuilder();
-            y.append(DocumentManager.COMPOSITE).append("Series=,").append(ModellingDictionary.Y)
-                    .append(',').append(ModellingDictionary.Y).append(SeriesInfo.F_SUFFIX);
+            y.append(DocumentManager.COMPOSITE).append("Series=")
+//                    .append(sy).append(SeriesInfo.B_SUFFIX)
+                    .append(',').append(sy)
+                    .append(',').append(sy).append(SeriesInfo.F_SUFFIX);
             StringBuilder t = new StringBuilder();
-            t.append(DocumentManager.COMPOSITE).append("Trend=,").append(ModellingDictionary.T)
-                    .append(',').append(ModellingDictionary.T).append(SeriesInfo.F_SUFFIX);
+            t.append(DocumentManager.COMPOSITE).append("Trend=")
+                    .append(',').append(st)
+                    .append(',').append(st).append(SeriesInfo.F_SUFFIX);
             StringBuilder sa = new StringBuilder();
-            sa.append(DocumentManager.COMPOSITE).append("Seasonally adjusted=,").append(ModellingDictionary.SA)
-                    .append(',').append(ModellingDictionary.SA).append(SeriesInfo.F_SUFFIX);
+            sa.append(DocumentManager.COMPOSITE).append("Seasonally adjusted=")
+                    .append(',').append(ssa)
+                    .append(',').append(ssa).append(SeriesInfo.F_SUFFIX);
             return new String[]{y.toString(), t.toString(), sa.toString()};
         }
-
         protected MainChartsLowFactory(Class<D> documentType) {
-            super(documentType, MAIN_CHARTS_LOW, saExtractor(), new ChartUI(generateItems()));
+            this(documentType, null);
+        }
+
+        protected MainChartsLowFactory(Class<D> documentType, String prefix) {
+            super(documentType, MAIN_CHARTS_LOW, saExtractor(), new ChartUI(generateItems(prefix)));
         }
     }
 
     protected static class MainChartsHighFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
-        private static String[] generateItems() {
+        private static String[] generateItems(String prefix) {
             StringBuilder cal = new StringBuilder();
             cal.append(DocumentManager.COMPOSITE).append("Calendar effects=,").append(ModellingDictionary.CAL)
                     .append(',').append(ModellingDictionary.CAL).append(SeriesInfo.F_SUFFIX);
             StringBuilder s = new StringBuilder();
             s.append(DocumentManager.COMPOSITE).append("Seas (component)=,").append(ModellingDictionary.S_CMP)
                     .append(',').append(ModellingDictionary.S_CMP).append(SeriesInfo.F_SUFFIX);
+            String si=InformationSet.concatenate(prefix,ModellingDictionary.I);
             StringBuilder i = new StringBuilder();
-            i.append(DocumentManager.COMPOSITE).append("Irregular=,").append(ModellingDictionary.I)
-                    .append(',').append(ModellingDictionary.I).append(SeriesInfo.F_SUFFIX);
+            i.append(DocumentManager.COMPOSITE).append("Irregular=")
+                    .append(',').append(si)
+                    .append(',').append(si).append(SeriesInfo.F_SUFFIX);
             return new String[]{cal.toString(), s.toString(), i.toString()};
         }
 
         protected MainChartsHighFactory(Class<D> documentType) {
-            super(documentType, MAIN_CHARTS_HIGH, saExtractor(), new ChartUI(generateItems()));
+            this(documentType, null);
+        }
+        
+        protected MainChartsHighFactory(Class<D> documentType, String prefix) {
+            super(documentType, MAIN_CHARTS_HIGH, saExtractor(), new ChartUI(generateItems(prefix)));
         }
     }
 
     protected static class MainTableFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
-        private static String[] generateItems() {
+        private static String[] generateItems(String prefix) {
+            String sy=InformationSet.concatenate(prefix,ModellingDictionary.Y);
+            String st=InformationSet.concatenate(prefix,ModellingDictionary.T);
+            String ssa=InformationSet.concatenate(prefix,ModellingDictionary.SA);
+            String ss=InformationSet.concatenate(prefix,ModellingDictionary.S);
+            String si=InformationSet.concatenate(prefix,ModellingDictionary.I);
             StringBuilder y = new StringBuilder();
-            y.append(DocumentManager.COMPOSITE).append("Series=,").append(ModellingDictionary.Y)
-                    .append(',').append(ModellingDictionary.Y).append(SeriesInfo.F_SUFFIX);
+            y.append(DocumentManager.COMPOSITE).append("Series=")
+//                    .append(sy).append(SeriesInfo.B_SUFFIX)
+                    .append(',').append(sy)
+                    .append(',').append(sy).append(SeriesInfo.F_SUFFIX);
             StringBuilder t = new StringBuilder();
-            t.append(DocumentManager.COMPOSITE).append("Trend=,").append(ModellingDictionary.T)
-                    .append(',').append(ModellingDictionary.T).append(SeriesInfo.F_SUFFIX);
+            t.append(DocumentManager.COMPOSITE).append("Trend=")
+                    .append(',').append(st)
+                    .append(',').append(st).append(SeriesInfo.F_SUFFIX);
             StringBuilder sa = new StringBuilder();
-            sa.append(DocumentManager.COMPOSITE).append("Seasonally adjusted=,").append(ModellingDictionary.SA)
-                    .append(',').append(ModellingDictionary.SA).append(SeriesInfo.F_SUFFIX);
+            sa.append(DocumentManager.COMPOSITE).append("Seasonally adjusted=")
+                    .append(',').append(ssa)
+                    .append(',').append(ssa).append(SeriesInfo.F_SUFFIX);
             StringBuilder s = new StringBuilder();
-            s.append(DocumentManager.COMPOSITE).append("Seasonal=,").append(ModellingDictionary.S)
-                    .append(',').append(ModellingDictionary.S).append(SeriesInfo.F_SUFFIX);
+            s.append(DocumentManager.COMPOSITE).append("Seasonal=")
+                    .append(',').append(ss)
+                    .append(',').append(ss).append(SeriesInfo.F_SUFFIX);
             StringBuilder i = new StringBuilder();
-            i.append(DocumentManager.COMPOSITE).append("Irregular=,").append(ModellingDictionary.I)
-                    .append(',').append(ModellingDictionary.I).append(SeriesInfo.F_SUFFIX);
+            i.append(DocumentManager.COMPOSITE).append("Irregular=")
+                    .append(',').append(si)
+                    .append(',').append(si).append(SeriesInfo.F_SUFFIX);
             return new String[]{y.toString(), sa.toString(), t.toString(), s.toString(), i.toString()};
         }
 
         protected MainTableFactory(Class<D> documentType) {
-            super(documentType, MAIN_TABLE, saExtractor(), new GenericTableUI(false, generateItems()));
+            this(documentType, null);
+        }
+
+        protected MainTableFactory(Class<D> documentType, String prefix) {
+            super(documentType, MAIN_TABLE, saExtractor(), new GenericTableUI(false, generateItems(prefix)));
 //            super(documentType, MAIN_TABLE, saExtractor(), new SaTableUI(ModellingDictionary.getFinalSeries(), null));
         }
     }
@@ -372,7 +412,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             extends ItemFactory<D, D> {
 
         protected InputFactory(Class<D> documentType) {
-            super(documentType, INPUT_SERIES, new ProcDocumentViewFactory.DoNothingExtractor<D>(), new DefaultItemUI<IProcDocumentView<D>, D>() {
+            super(documentType, INPUT_SERIES, new ProcDocumentViewFactory.DoNothingExtractor<>(), new DefaultItemUI<IProcDocumentView<D>, D>() {
                 @Override
                 public JComponent getView(IProcDocumentView<D> host, D information) {
                     return host.getToolkit().getGrid(information.getInput()); //To change body of generated methods, choose Tools | Templates.
@@ -388,6 +428,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             super(documentType, id, extractor, new SeasonalityTestUI2(header, control));
         }
     }
+
     protected static class ProcessingLogFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
@@ -432,7 +473,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             }, new SiRatioUI());
         }
     }
- 
+
     protected static class LogFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
@@ -487,28 +528,27 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             super(documentType, PREPROCESSING_REGS, pmExtractor(), new RegressorsUI());
         }
     }
-    
-    static String[] generateFullItems( List<SeriesInfo> infos){
-        List<String> names=new ArrayList<>();
-        for (SeriesInfo info : infos){
-            if (info.info == ComponentInformation.Value){
+
+    static String[] generateFullItems(List<SeriesInfo> infos) {
+        List<String> names = new ArrayList<>();
+        for (SeriesInfo info : infos) {
+            if (info.info == ComponentInformation.Value) {
                 StringBuilder y = new StringBuilder();
                 y.append(DocumentManager.COMPOSITE).append(info.name).append("=,").append(info.name)
-                    .append(',').append(info.name).append(SeriesInfo.F_SUFFIX);
+                        .append(',').append(info.name).append(SeriesInfo.F_SUFFIX);
                 names.add(y.toString());
             }
         }
         return Jdk6.Collections.toArray(names, String.class);
-    } 
+    }
 
     protected static class PreprocessingDetFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
-        
 
         protected PreprocessingDetFactory(Class<D> documentType) {
-            super(documentType, PREPROCESSING_DET, saExtractor(), 
-                new GenericTableUI(false, 
-                    generateFullItems(ModellingDictionary.getDeterministicSeries())));
+            super(documentType, PREPROCESSING_DET, saExtractor(),
+                    new GenericTableUI(false,
+                            generateFullItems(ModellingDictionary.getDeterministicSeries())));
         }
     }
     //</editor-fold>
@@ -611,7 +651,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
                         return null;
                     }
                     TsData res = pp.getFullResiduals();
-                    return new NiidTests(res.getValues(), res.getFrequency().intValue(),
+                    return new NiidTests(res, res.getFrequency().intValue(),
                             pp.description.getArimaComponent().getFreeParametersCount(), true);
                 }
             }, new ResidualsStatsUI());
@@ -715,7 +755,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             extends ItemFactory<D, RevisionHistory> {
 
         protected DiagnosticsRevisionSaFactory(Class<D> documentType) {
-            super(documentType, DIAGNOSTICS_REVISION_SA, RevisionExtractor.INSTANCE, new RevisionHistoryUI("sa"));
+            super(documentType, DIAGNOSTICS_REVISION_SA, RevisionExtractor.INSTANCE, new RevisionHistoryUI("sa", DiagnosticInfo.RelativeDifference));
         }
     }
 
@@ -723,7 +763,23 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             extends ItemFactory<D, RevisionHistory> {
 
         protected DiagnosticsRevisionTrendFactory(Class<D> documentType) {
-            super(documentType, DIAGNOSTICS_REVISION_TREND, RevisionExtractor.INSTANCE, new RevisionHistoryUI("t"));
+            super(documentType, DIAGNOSTICS_REVISION_TREND, RevisionExtractor.INSTANCE, new RevisionHistoryUI("t", DiagnosticInfo.RelativeDifference));
+        }
+    }
+
+    protected static class DiagnosticsRevisionSaChangesFactory<D extends SaDocument<? extends ISaSpecification>>
+            extends ItemFactory<D, RevisionHistory> {
+
+        protected DiagnosticsRevisionSaChangesFactory(Class<D> documentType) {
+            super(documentType, DIAGNOSTICS_REVISION_SA_CHANGES, RevisionExtractor.INSTANCE, new RevisionHistoryUI("sa", DiagnosticInfo.PeriodToPeriodGrowthDifference));
+        }
+    }
+
+    protected static class DiagnosticsRevisionTrendChangesFactory<D extends SaDocument<? extends ISaSpecification>>
+            extends ItemFactory<D, RevisionHistory> {
+
+        protected DiagnosticsRevisionTrendChangesFactory(Class<D> documentType) {
+            super(documentType, DIAGNOSTICS_REVISION_TREND_CHANGES, RevisionExtractor.INSTANCE, new RevisionHistoryUI("t", DiagnosticInfo.PeriodToPeriodGrowthDifference));
         }
     }
 
@@ -956,8 +1012,8 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
 
         @Override
         public StationaryVarianceDecomposition retrieve(SaDocument source) {
-            StationaryVarianceDecomposition decomp=new StationaryVarianceDecomposition();
-            if (decomp.process(source.getResults())){
+            StationaryVarianceDecomposition decomp = new StationaryVarianceDecomposition();
+            if (decomp.process(source.getResults())) {
                 return decomp;
             } else {
                 return null;
@@ -1057,7 +1113,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             }
             if (nlast != 0) {
                 TsPeriodSelector selector = new TsPeriodSelector();
-                selector.last(nlast * info.s.getFrequency().intValue()+info.del);
+                selector.last(nlast * info.s.getFrequency().intValue() + info.del);
                 info.s = info.s.select(selector);
             }
             if (info.s.getLength() < 4 * info.s.getFrequency().intValue()) {

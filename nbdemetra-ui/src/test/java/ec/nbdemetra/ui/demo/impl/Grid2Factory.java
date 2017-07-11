@@ -19,9 +19,8 @@ package ec.nbdemetra.ui.demo.impl;
 import com.google.common.collect.ImmutableMap;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.tss.tsproviders.utils.DataFormat;
-import ec.tss.tsproviders.utils.Formatters.Formatter;
+import ec.tss.tsproviders.utils.IFormatter;
 import ec.tstoolkit.utilities.Id;
-import ec.tstoolkit.utilities.LinearId;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
@@ -40,22 +39,17 @@ public final class Grid2Factory extends DemoComponentFactory {
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
-        return builder().put(new LinearId("(2) Other", "JGrid*"), excelGrid()).build();
+        return builder().put(OtherFactory.ID.extend("JGrid*"), Grid2Factory::excelGrid).build();
     }
 
-    private static Callable<Component> excelGrid() {
-        return new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                JGrid result = new JGrid();
-                result.setModel(new ExcelModel());
-                result.setRowSelectionAllowed(true);
-                result.setColumnSelectionAllowed(true);
-                result.setDragEnabled(true);
-                result.setDefaultRenderer(Object.class, new ExcelCellRenderer(result));
-                return result;
-            }
-        };
+    private static Component excelGrid() {
+        JGrid result = new JGrid();
+        result.setModel(new ExcelModel());
+        result.setRowSelectionAllowed(true);
+        result.setColumnSelectionAllowed(true);
+        result.setDragEnabled(true);
+        result.setDefaultRenderer(Object.class, new ExcelCellRenderer(result));
+        return result;
     }
 
     private static final class ExcelModel extends AbstractGridModel implements GridModel {
@@ -101,8 +95,8 @@ public final class Grid2Factory extends DemoComponentFactory {
     private static final class ExcelCellRenderer implements TableCellRenderer {
 
         final TableCellRenderer delegate;
-        final Formatter<Number> numberFormatter = DataFormat.DEFAULT.numberFormatter();
-        final Formatter<Date> dateFormatter = DataFormat.DEFAULT.dateFormatter();
+        final IFormatter<Number> numberFormatter = DataFormat.DEFAULT.numberFormatter();
+        final IFormatter<Date> dateFormatter = DataFormat.DEFAULT.dateFormatter();
 
         public ExcelCellRenderer(JGrid grid) {
             this.delegate = grid.getDefaultRenderer(Object.class);

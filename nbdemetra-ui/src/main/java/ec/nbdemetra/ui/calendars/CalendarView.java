@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.ui.calendars;
 
-import com.google.common.collect.Lists;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.Ts;
@@ -22,8 +21,7 @@ import ec.ui.interfaces.ITsCollectionView;
 import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
 import ec.ui.view.PeriodogramView;
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
@@ -65,11 +63,8 @@ public class CalendarView extends JComponent {
 
         this.tsGrid = new JTsGrid();
         tsGrid.setTsUpdateMode(TsUpdateMode.None);
-        tsGrid.addPropertyChangeListener(ITsCollectionView.SELECTION_PROPERTY, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                onTsGridSelectionChange();
-            }
+        tsGrid.addPropertyChangeListener(ITsCollectionView.SELECTION_PROPERTY, evt -> {
+            onTsGridSelectionChange();
         });
 
         JSplitPane sp1 = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, propertySheet, pView);
@@ -99,7 +94,7 @@ public class CalendarView extends JComponent {
             return;
         }
 
-        List<DataBlock> buffer = Lists.newArrayListWithCapacity(nx);
+        List<DataBlock> buffer = new ArrayList(nx);
         for (int i = 0; i < nx; ++i) {
             buffer.add(new DataBlock(domain.getLength()));
         }
@@ -108,7 +103,7 @@ public class CalendarView extends JComponent {
             new LeapYearVariable(ltype).data(domain.getStart(), buffer.get(nx - 1));
         }
 
-        List<Ts> tss = Lists.newArrayListWithCapacity(nx);
+        List<Ts> tss = new ArrayList(nx);
         for (int i = 0; i < nx; ++i) {
             TsData data = new TsData(domain.getStart(), buffer.get(i).getData(), false);
             tss.add(TsFactory.instance.createTs(getCmpName(i), null, data));

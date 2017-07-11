@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.jdbc;
 
-import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
@@ -81,11 +80,6 @@ public final class DriverBasedConfig implements IConfig {
     }
 
     @Override
-    public String get(String key) {
-        return params.get(key);
-    }
-
-    @Override
     public SortedMap<String, String> getParams() {
         return params;
     }
@@ -110,11 +104,9 @@ public final class DriverBasedConfig implements IConfig {
 
     @Override
     public String toString() {
-        MoreObjects.ToStringHelper helper = MoreObjects.toStringHelper(displayName + "(" + driverClass + ") url=" + databaseUrl + " schema=" + schema);
-        for (Map.Entry<String, String> o : params.entrySet()) {
-            helper.add(o.getKey(), o.getValue());
-        }
-        return helper.toString();
+        MoreObjects.ToStringHelper result = MoreObjects.toStringHelper(displayName + "(" + driverClass + ") url=" + databaseUrl + " schema=" + schema);
+        forEach(result::add);
+        return result.toString();
     }
 
     @VisibleForTesting
@@ -203,12 +195,7 @@ public final class DriverBasedConfig implements IConfig {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    private static final ThreadLocal<Xml> XML = new ThreadLocal<Xml>() {
-        @Override
-        protected Xml initialValue() {
-            return new Xml();
-        }
-    };
+    private static final ThreadLocal<Xml> XML = ThreadLocal.withInitial(Xml::new);
 
     private static final class Xml {
 
@@ -221,22 +208,10 @@ public final class DriverBasedConfig implements IConfig {
                 throw Throwables.propagate(ex);
             }
         }
-        final static Function<ConnectionBean, DriverBasedConfig> FROM_BEAN = new Function<ConnectionBean, DriverBasedConfig>() {
-            @Override
-            public DriverBasedConfig apply(ConnectionBean input) {
-                return input.toId();
-            }
-        };
-        final static Function<DriverBasedConfig, ConnectionBean> TO_BEAN = new Function<DriverBasedConfig, ConnectionBean>() {
-            @Override
-            public ConnectionBean apply(DriverBasedConfig input) {
-                return input.toBean();
-            }
-        };
-        //
-        final Parsers.Parser<DriverBasedConfig> defaultParser = Parsers.<ConnectionBean>onJAXB(BEAN_CONTEXT).compose(FROM_BEAN);
-        final Formatters.Formatter<DriverBasedConfig> defaultFormatter = Formatters.<ConnectionBean>onJAXB(BEAN_CONTEXT, false).compose(TO_BEAN);
-        final Formatters.Formatter<DriverBasedConfig> formattedOutputFormatter = Formatters.<ConnectionBean>onJAXB(BEAN_CONTEXT, true).compose(TO_BEAN);
+
+        final Parsers.Parser<DriverBasedConfig> defaultParser = Parsers.wrap(Parsers.<ConnectionBean>onJAXB(BEAN_CONTEXT).andThen(ConnectionBean::toId));
+        final Formatters.Formatter<DriverBasedConfig> defaultFormatter = Formatters.<ConnectionBean>onJAXB(BEAN_CONTEXT, false).compose(DriverBasedConfig::toBean);
+        final Formatters.Formatter<DriverBasedConfig> formattedOutputFormatter = Formatters.<ConnectionBean>onJAXB(BEAN_CONTEXT, true).compose(DriverBasedConfig::toBean);
     }
     //</editor-fold>
 }

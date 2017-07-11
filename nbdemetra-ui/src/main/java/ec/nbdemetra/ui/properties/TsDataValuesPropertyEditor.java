@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ui.properties;
 
@@ -28,13 +40,13 @@ import org.openide.nodes.PropertyEditorRegistration;
 @PropertyEditorRegistration(targetType = TsData.class)
 public class TsDataValuesPropertyEditor extends PropertyEditorSupport {
 
-    static final RectangleInsets PADDING = new RectangleInsets(2, 2, 2, 2);
-    final JFreeChart sparkLinePainter;
-    final JLabel singleValuePainter;
+    private static final RectangleInsets PADDING = new RectangleInsets(2, 2, 2, 2);
+    private final JFreeChart sparkLinePainter;
+    private final JLabel singleValuePainter;
 
     public TsDataValuesPropertyEditor() {
         Color disabledTextColor = StandardSwingColor.TEXT_FIELD_INACTIVE_FOREGROUND.value();
-        sparkLinePainter = Charts.createSparkLineChart(null);
+        sparkLinePainter = Charts.createSparkLineChart(Charts.emptyXYDataset());
         sparkLinePainter.getXYPlot().getRenderer().setBasePaint(disabledTextColor);
         sparkLinePainter.setPadding(PADDING);
         singleValuePainter = new JLabel();
@@ -50,15 +62,23 @@ public class TsDataValuesPropertyEditor extends PropertyEditorSupport {
     @Override
     public void paintValue(Graphics gfx, Rectangle box) {
         TsData data = (TsData) getValue();
-        if (data.getObsCount() > 1) {
-            sparkLinePainter.getXYPlot().setDataset(TsCharts.newSparklineDataset(data));
-            sparkLinePainter.draw((Graphics2D) gfx, box);
-        } else {
-            DataFormat dataFormat = DemetraUI.getDefault().getDataFormat();
-            String str = "Single: " + dataFormat.numberFormatter().formatAsString(data.get(0));
-            singleValuePainter.setText(str);
-            singleValuePainter.setBounds(box);
-            singleValuePainter.paint(gfx);
+        switch (data.getObsCount()) {
+            case 0:
+                singleValuePainter.setText("No obs");
+                singleValuePainter.setBounds(box);
+                singleValuePainter.paint(gfx);
+                break;
+            case 1:
+                DataFormat dataFormat = DemetraUI.getDefault().getDataFormat();
+                String str = "Single: " + dataFormat.numberFormatter().formatAsString(data.get(0));
+                singleValuePainter.setText(str);
+                singleValuePainter.setBounds(box);
+                singleValuePainter.paint(gfx);
+                break;
+            default:
+                sparkLinePainter.getXYPlot().setDataset(TsCharts.newSparklineDataset(data));
+                sparkLinePainter.draw((Graphics2D) gfx, box);
+                break;
         }
     }
 }

@@ -16,11 +16,9 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Ordering;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.interchange.Importable;
@@ -31,6 +29,7 @@ import java.awt.Image;
 import java.awt.datatransfer.Transferable;
 import java.beans.IntrospectionException;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.swing.Action;
@@ -74,11 +73,13 @@ public final class ProviderNode extends AbstractNode {
                 new ProxyLookup(Lookups.singleton(provider), new AbstractLookup(abilities)));
         // 2. Abilities
         {
-            abilities.add(DataSourceProviderBuddySupport.getDefault().get(provider));
             if (provider instanceof IDataSourceLoader) {
                 abilities.add(new OpenableImpl());
                 abilities.add(new ImportableDataSource());
             }
+            DataSourceProviderBuddySupport.getDefault()
+                    .getConfigurable(provider.getSource())
+                    .ifPresent(abilities::add);
         }
         // 3. Name and display name
         setName(provider.getSource());
@@ -90,19 +91,25 @@ public final class ProviderNode extends AbstractNode {
         return Nodes.actionsForPath(ACTION_PATH);
     }
 
+    private java.util.Optional<Image> lookupIcon(int type, boolean opened) {
+        IDataSourceProvider o = getLookup().lookup(IDataSourceProvider.class);
+        return DataSourceProviderBuddySupport.getDefault().getIcon(o.getSource(), type, opened);
+    }
+
     @Override
     public Image getIcon(int type) {
-        return getLookup().lookup(IDataSourceProviderBuddy.class).getIcon(type, false);
+        return lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
     }
 
     @Override
     public Image getOpenedIcon(int type) {
-        return getLookup().lookup(IDataSourceProviderBuddy.class).getIcon(type, true);
+        return lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
     }
 
     @Override
     protected Sheet createSheet() {
-        return getLookup().lookup(IDataSourceProviderBuddy.class).createSheet();
+        IDataSourceProvider o = getLookup().lookup(IDataSourceProvider.class);
+        return DataSourceProviderBuddySupport.getDefault().get(o).createSheet();
     }
 
     @Override
@@ -146,7 +153,9 @@ public final class ProviderNode extends AbstractNode {
 
         @Override
         protected boolean createKeys(List<DataSource> list) {
-            list.addAll(ON_TO_STRING.sortedCopy(provider.getDataSources()));
+            provider.getDataSources().stream()
+                    .sorted(Comparator.comparing(Object::toString))
+                    .forEach(list::add);
             return true;
         }
 
@@ -183,7 +192,7 @@ public final class ProviderNode extends AbstractNode {
             IDataSourceLoader loader = getLookup().lookup(IDataSourceLoader.class);
             Object bean = loader.newBean();
             try {
-                if (getLookup().lookup(IDataSourceProviderBuddy.class).editBean("Open data source", bean)) {
+                if (DataSourceProviderBuddySupport.getDefault().get(loader).editBean("Open data source", bean)) {
                     loader.open(loader.encodeBean(bean));
                 }
             } catch (IntrospectionException ex) {
@@ -232,11 +241,4 @@ public final class ProviderNode extends AbstractNode {
             return null;
         }
     }
-
-    private static final Ordering<DataSource> ON_TO_STRING = Ordering.natural().onResultOf(new Function<DataSource, String>() {
-        @Override
-        public String apply(DataSource input) {
-            return input.toString();
-        }
-    });
 }

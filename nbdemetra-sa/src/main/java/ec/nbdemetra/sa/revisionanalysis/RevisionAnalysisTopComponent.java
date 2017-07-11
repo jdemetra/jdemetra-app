@@ -51,13 +51,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.PopupMenuEvent;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.DropDownButtonFactory;
 import org.openide.awt.StatusDisplayer;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
-import org.openide.util.Cancellable;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
@@ -129,12 +127,9 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
         runButton.setDisabledIcon(ImageUtilities.createDisabledIcon(runButton.getIcon()));
         runButton.setEnabled(false);
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals(STATE_PROPERTY)) {
-                    onStateChange();
-                }
+        addPropertyChangeListener(evt -> {
+            if (evt.getPropertyName().equals(STATE_PROPERTY)) {
+                onStateChange();
             }
         });
 
@@ -142,14 +137,11 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
         itemsLabel = (JLabel) toolBarRepresentation.add(new JLabel("No items"));
 
         inputList = new JTsList();
-        inputList.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case JTsList.TS_COLLECTION_PROPERTY:
-                        onCollectionChange();
-                        break;
-                }
+        inputList.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case JTsList.TS_COLLECTION_PROPERTY:
+                    onCollectionChange();
+                    break;
             }
         });
 
@@ -221,12 +213,9 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
     @Override
     public void componentOpened() {
         super.componentOpened();
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                visualRepresentation.setDividerLocation(.4);
-                visualRepresentation.setResizeWeight(.4);
-            }
+        SwingUtilities.invokeLater(() -> {
+            visualRepresentation.setDividerLocation(.4);
+            visualRepresentation.setResizeWeight(.4);
         });
     }
 
@@ -330,12 +319,9 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
             case STARTED:
                 runButton.setEnabled(false);
                 loadingPanel.setLoading(true);
-                progressHandle = ProgressHandleFactory.createHandle("Processing Time Series...", new Cancellable() {
-                    @Override
-                    public boolean cancel() {
-                        runButton.setEnabled(true);
-                        return worker.cancel(true);
-                    }
+                progressHandle = ProgressHandle.createHandle("Processing Time Series...", () -> {
+                    runButton.setEnabled(true);
+                    return worker.cancel(true);
                 });
                 progressHandle.start();
                 break;
@@ -346,12 +332,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
         makeBusy(true);
 
         worker = new SwingWorkerImpl();
-        worker.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                firePropertyChange(STATE_PROPERTY, null, worker.getState());
-            }
-        });
+        worker.addPropertyChangeListener(evt -> firePropertyChange(STATE_PROPERTY, null, worker.getState()));
         worker.execute();
         return true;
     }

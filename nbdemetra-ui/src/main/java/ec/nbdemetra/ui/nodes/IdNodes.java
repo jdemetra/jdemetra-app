@@ -73,27 +73,23 @@ public final class IdNodes {
             return 16;
         }
     }
-    final static INodeFactory<Id> FACTORY = new INodeFactory<Id>() {
-
-        @Override
-        public Node create(Children children, final Id id) {
-            AbstractNode result = new AbstractNode(children, Lookups.singleton(id)) {
-
-                final IdIcon icon = new IdIcon(id);
-
-                @Override
-                public Image getIcon(int type) {
-                    return ImageUtilities.icon2Image(icon);
-                }
-
-                @Override
-                public Image getOpenedIcon(int type) {
-                    return getIcon(type);
-                }
-            };
-            result.setName(id.tail());
-            return result;
-        }
+    final static INodeFactory<Id> FACTORY = (Children children, Id id) -> {
+        AbstractNode result = new AbstractNode(children, Lookups.singleton(id)) {
+            
+            final IdIcon icon = new IdIcon(id);
+            
+            @Override
+            public Image getIcon(int type) {
+                return ImageUtilities.icon2Image(icon);
+            }
+            
+            @Override
+            public Image getOpenedIcon(int type) {
+                return getIcon(type);
+            }
+        };
+        result.setName(id.tail());
+        return result;
     };
 
     public static Node getRootNode2(List<Id> list) {

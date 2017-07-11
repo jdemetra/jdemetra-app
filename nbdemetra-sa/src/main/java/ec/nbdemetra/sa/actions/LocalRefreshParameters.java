@@ -22,7 +22,7 @@ id = "ec.nbdemetra.sa.actions.LocalRefreshParameters")
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.LOCALPATH+LocalRefreshPartial.PATH, position = 1230)
 })
-@Messages("CTL_LocalRefreshParameters=Parameters")
+@Messages("CTL_LocalRefreshParameters=+ Arima parameters")
 public final class LocalRefreshParameters implements ActionListener {
 
     public LocalRefreshParameters() {

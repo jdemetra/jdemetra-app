@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.joinup.sat</groupId>
         <artifactId>nbdemetra-parent</artifactId>
-        <version>2.1.0</version>
+        <version>2.2.0</version>
     </parent>
 
     <artifactId>nbdemetra-ui</artifactId>
@@ -14,7 +14,7 @@
 
     <properties>
         <miglayout.version>3.7.4</miglayout.version>
-        <l2fprod.version>1.0.2</l2fprod.version>
+        <l2fprod.version>1.0.5</l2fprod.version>
         <jcalendar.version>1.4</jcalendar.version>
         <swinglayout.version>1.0.3</swinglayout.version>
     </properties>
@@ -52,6 +52,24 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- compile only -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- test only -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
         <!-- NetBeans -->
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -125,6 +143,18 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-swing-outline</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-filesystems-nb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-api-progress</artifactId>
+        </dependency>
 
         <!-- NbDemetra -->
         <dependency>
@@ -180,6 +210,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>ec.benchmarking.*</publicPackage>
+                        <publicPackage>ec.nbdemetra.sa.output</publicPackage>
                         <publicPackage>ec.nbdemetra.ui.*</publicPackage>
                         <publicPackage>ec.nbdemetra.ws.*</publicPackage>
                         <publicPackage>ec.tss.*</publicPackage>

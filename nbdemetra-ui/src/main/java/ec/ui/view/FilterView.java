@@ -98,6 +98,7 @@ public class FilterView extends AChartView {
         chartPanel.getChart().getLegend().setVisible(seriesCollection.getSeriesCount() > 1);
 
         configureAxis();
+        chartPanel.getChart().getXYPlot().getDomainAxis().setAutoTickUnitSelection(true);
         onColorSchemeChange();
         onFocusChange();
     }

@@ -4,8 +4,6 @@
  */
 package ec.nbdemetra.ui.tools;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import ec.nbdemetra.ui.Config;
@@ -16,7 +14,8 @@ import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.TsMoniker;
 import ec.tss.tsproviders.utils.Formatters;
-import ec.tss.tsproviders.utils.Formatters.Formatter;
+import ec.tss.tsproviders.utils.IFormatter;
+import ec.tss.tsproviders.utils.IParser;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.tstoolkit.utilities.URLEncoder2;
 import ec.ui.interfaces.ITsCollectionView;
@@ -25,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -40,21 +40,21 @@ public final class ToolsPersistence {
         // static class
     }
 
-    private static <T> Optional<T> tryGet(Properties p, String key, Parsers.Parser<T> parser, boolean escape) {
+    private static <T> Optional<T> tryGet(Properties p, String key, IParser<T> parser, boolean escape) {
         CharSequence stringValue = p.getProperty(key);
         if (stringValue == null) {
-            return Optional.<T>absent();
+            return Optional.empty();
         }
         if (escape) {
             stringValue = Decoder.INSTANCE.parse(stringValue);
             if (stringValue == null) {
-                return Optional.<T>absent();
+                return Optional.empty();
             }
         }
-        return parser.tryParse(stringValue);
+        return parser.parseValue(stringValue);
     }
 
-    private static <T> boolean tryPut(Properties p, String key, Formatter<T> formatter, boolean escape, T value) {
+    private static <T> boolean tryPut(Properties p, String key, IFormatter<T> formatter, boolean escape, T value) {
         String stringValue = formatter.formatAsString(value);
         if (stringValue == null) {
             return false;
@@ -82,33 +82,21 @@ public final class ToolsPersistence {
 
     public static void readTsCollection(ITsCollectionView view, Properties p) {
         if (DemetraUI.getDefault().isPersistToolsContent()) {
-            Optional<Content> content = tryGet(p, "content", CONTENT_PARSER, true);
-            if (content.isPresent()) {
-                view.getTsCollection().append(content.get().collection);
+            tryGet(p, "content", CONTENT_PARSER, true).ifPresent(o -> {
+                view.getTsCollection().append(o.collection);
                 view.getTsCollection().load(TsInformationType.Data);
-                view.setSelection(Iterables.toArray(content.get().selection, Ts.class));
-            }
+                view.setSelection(Iterables.toArray(o.selection, Ts.class));
+            });
         }
         if (view instanceof IConfigurable) {
-            Optional<Config> config = tryGet(p, "config", Config.xmlParser(), true);
-            if (config.isPresent()) {
-                ((IConfigurable) view).setConfig(config.get());
-            }
+            tryGet(p, "config", Config.xmlParser(), true).ifPresent(o -> {
+                ((IConfigurable) view).setConfig(o);
+            });
         }
     }
-    //
-    private static final Formatters.Formatter<Content> CONTENT_FORMATTER = Formatters.onJAXB(ContentBean.class, false).compose(new Function<Content, ContentBean>() {
-        @Override
-        public ContentBean apply(Content input) {
-            return input.toBean();
-        }
-    });
-    private static final Parsers.Parser<Content> CONTENT_PARSER = Parsers.onJAXB(ContentBean.class).compose(new Function<ContentBean, Content>() {
-        @Override
-        public Content apply(ContentBean input) {
-            return Content.fromBean(input);
-        }
-    });
+
+    private static final IFormatter<Content> CONTENT_FORMATTER = Formatters.onJAXB(ContentBean.class, false).compose(Content::toBean);
+    private static final IParser<Content> CONTENT_PARSER = Parsers.onJAXB(ContentBean.class).andThen(Content::fromBean);
 
     private static class Content {
 
@@ -139,7 +127,7 @@ public final class ToolsPersistence {
         }
 
         static Content fromBean(ContentBean input) {
-            Content result = new Content(new ArrayList<Ts>(), new ArrayList<Ts>());
+            Content result = new Content(new ArrayList<>(), new ArrayList<>());
             if (input.items != null) {
                 for (ContentItemBean o : input.items) {
                     TsMoniker moniker = new TsMoniker(o.source, o.id);

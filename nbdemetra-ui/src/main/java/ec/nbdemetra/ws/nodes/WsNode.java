@@ -22,40 +22,41 @@ import org.openide.util.ImageUtilities;
  * @author Jean Palate
  */
 public abstract class WsNode extends BasicNode<Id> {
-    
-     public static boolean isManager(Id id) {
+
+    public static boolean isManager(Id id) {
         return WorkspaceFactory.getInstance().getManager(id) != null;
     }
 
-     public static Children createChildren(Workspace ws, Id id){
-        if (id == null){
+    public static Children createChildren(Workspace ws, Id id) {
+        if (id == null) {
             return createItems(ws);
         }
-        if (isManager(id)){
+        if (isManager(id)) {
             return createFinalItems(ws, id);
-        }else
+        } else {
             return createItems(ws, id);
-    }
-    
-    static Children createFinalItems(Workspace ws, Id managerId){
-        List<WorkspaceItem<?>> items = ws.searchDocuments(managerId);
-        Node[] nodes=new Node[items.size()];
-        int n=0;
-        for (WorkspaceItem<?> doc : items){
-            nodes[n++]=new ItemWsNode(ws, doc.getId());
         }
-        Children.Array children=new Children.Array();
-        children.add(nodes);
-        return children;
-   }
+    }
 
-    static Children createItems(Workspace ws) {
-        Node[] nodes=roots(ws);
+    static Children createFinalItems(Workspace ws, Id managerId) {
+        List<WorkspaceItem<?>> items = ws.searchDocuments(managerId);
+        Node[] nodes = new Node[items.size()];
+        int n = 0;
+        for (WorkspaceItem<?> doc : items) {
+            nodes[n++] = new ItemWsNode(ws, doc.getId());
+        }
         Children.Array children = new Children.Array();
         children.add(nodes);
         return children;
     }
-    
+
+    static Children createItems(Workspace ws) {
+        Node[] nodes = roots(ws);
+        Children.Array children = new Children.Array();
+        children.add(nodes);
+        return children;
+    }
+
     static Node[] roots(Workspace ws) {
         Id[] nroots = WorkspaceFactory.getInstance().getTree().roots();
         Node[] nodes = new Node[nroots.length];
@@ -70,12 +71,12 @@ public abstract class WsNode extends BasicNode<Id> {
     }
 
     static Children createItems(Workspace ws, Id id) {
-        Node[] nodes=items(ws, id);
+        Node[] nodes = items(ws, id);
         Children.Array children = new Children.Array();
         children.add(nodes);
         return children;
     }
-    
+
     public static Node[] items(Workspace ws, Id id) {
         Id[] nroots = WorkspaceFactory.getInstance().getTree().children(id);
         Node[] nodes = new Node[nroots.length];
@@ -88,7 +89,7 @@ public abstract class WsNode extends BasicNode<Id> {
         }
         return nodes;
     }
-    
+
     protected final Workspace workspace_;
 
     public WsNode(Children children, Workspace ws, Id id) {
@@ -100,9 +101,13 @@ public abstract class WsNode extends BasicNode<Id> {
         super(factory, id, WorkspaceFactory.getInstance().getActionsPath(id));
         workspace_ = ws;
     }
-    
-    public void updateUI(){
+
+    public void updateUI() {
         this.fireDisplayNameChange(null, lookup().tail());
+    }
+
+    public void updatePropertySheet() {
+        setSheet(createSheet());
     }
 
     @Override

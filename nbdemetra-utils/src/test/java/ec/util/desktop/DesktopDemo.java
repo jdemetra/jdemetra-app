@@ -23,13 +23,13 @@ import ec.util.various.swing.StandardSwingColor;
 import ec.util.various.swing.TextPrompt;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
@@ -37,15 +37,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -66,12 +65,7 @@ public final class DesktopDemo extends javax.swing.JPanel {
                 .title("Desktop Demo")
                 .size(520, 400)
                 .resizable(false)
-                .icons(new Callable<List<Image>>() {
-                    @Override
-                    public List<Image> call() throws Exception {
-                        return FontAwesome.FA_DESKTOP.getImages(Color.BLACK, 16f, 32f, 64f);
-                    }
-                })
+                .icons(() -> FontAwesome.FA_DESKTOP.getImages(Color.BLACK, 16f, 32f, 64f))
                 .launch();
     }
 
@@ -431,23 +425,10 @@ public final class DesktopDemo extends javax.swing.JPanel {
         searchResult.setListData(new Object[0]);
         if (!searchField.getText().isEmpty()) {
             searchField.setEnabled(false);
-            final String query = searchField.getText();
-            new SwingWorker<File[], Void>() {
-                @Override
-                protected File[] doInBackground() throws Exception {
-                    return desktop.search(query);
-                }
-
-                @Override
-                protected void done() {
-                    try {
-                        searchResult.setListData(get());
-                    } catch (InterruptedException | ExecutionException ex) {
-                        reportException(ex);
-                    }
-                    searchField.setEnabled(true);
-                }
-            }.execute();
+            String query = searchField.getText();
+            CompletableFuture
+                    .supplyAsync(() -> search(desktop, query))
+                    .whenCompleteAsync(this::displaySearchResult, SwingUtilities::invokeLater);
         }
     }//GEN-LAST:event_searchFieldActionPerformed
 
@@ -617,7 +598,24 @@ public final class DesktopDemo extends javax.swing.JPanel {
         }
     }
 
-    private void reportException(Exception ex) {
+    private static File[] search(Desktop desktop, String query) {
+        try {
+            return desktop.search(query);
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
+    }
+
+    private void displaySearchResult(File[] values, Throwable ex) {
+        if (ex != null) {
+            reportException(ex);
+        } else {
+            searchResult.setListData(values);
+        }
+        searchField.setEnabled(true);
+    }
+
+    private void reportException(Throwable ex) {
         JOptionPane.showMessageDialog(this, ex.getMessage(), "Exception", JOptionPane.ERROR_MESSAGE);
     }
 }

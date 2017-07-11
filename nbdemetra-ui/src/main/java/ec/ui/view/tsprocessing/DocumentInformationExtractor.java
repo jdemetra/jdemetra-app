@@ -4,10 +4,10 @@
  */
 package ec.ui.view.tsprocessing;
 
-import com.google.common.base.Objects;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.InformationExtractor;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -90,7 +90,7 @@ public abstract class DocumentInformationExtractor<D extends IProcDocument<?,?, 
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(this.doc, this.id);
+            return Objects.hash(this.doc, this.id);
         }
     }
 }

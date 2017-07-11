@@ -16,18 +16,13 @@
  */
 package ec.nbdemetra.ui;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 import ec.nbdemetra.core.GlobalService;
-import static ec.nbdemetra.ui.Jdk6Functions.colorSchemeDisplayName;
-import static ec.nbdemetra.ui.Jdk6Functions.colorSchemeName;
-import static ec.nbdemetra.ui.Jdk6Functions.namedServiceDisplayName;
-import static ec.nbdemetra.ui.Jdk6Functions.namedServiceName;
 import ec.nbdemetra.ui.awt.ListenableBean;
+import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
 import ec.nbdemetra.ui.tsaction.ChartGridTsAction;
 import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.nbdemetra.ui.tssave.ITsSave;
@@ -35,9 +30,12 @@ import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;
 import ec.tss.sa.EstimationPolicyType;
+import ec.tss.sa.SaManager;
+import ec.tss.sa.output.BasicConfiguration;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IParam;
 import ec.tss.tsproviders.utils.Params;
+import ec.tstoolkit.utilities.Jdk6.Collections;
 import ec.tstoolkit.utilities.ThreadPoolSize;
 import ec.tstoolkit.utilities.ThreadPriority;
 import ec.ui.ATsGrowthChart;
@@ -46,8 +44,10 @@ import ec.util.chart.ColorScheme;
 import ec.util.chart.impl.SmartColorScheme;
 import ec.util.various.swing.FontAwesome;
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.swing.Icon;
 import org.netbeans.api.options.OptionsDisplayer;
@@ -90,6 +90,9 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public static final String ESTIMATION_POLICY_PROPERTY = "estimationPolicyType";
     public static final String DEFAULT_SA_SPEC_PROPERTY = "defaultSASpec";
     public static final String POPUP_MENU_ICONS_VISIBLE_PROPERTY = "menuIconsVisibility";
+    public static final String PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY = "prespecifiedOutliersEditor";
+    public static final String SELECTED_DIAG_FIELDS_PROPERTY = "selectedDiagnosticsFields";
+    public static final String SELECTED_SERIES_FIELDS_PROPERTY = "selectedSeriesFields";
 
     // DEFAULT PROPERTIES
     static final IParam<Config, String> COLOR_SCHEME_NAME = Params.onString(SmartColorScheme.NAME, COLOR_SCHEME_NAME_PROPERTY);
@@ -107,10 +110,16 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     static final IParam<Config, EstimationPolicyType> ESTIMATION_POLICY_TYPE = Params.onEnum(EstimationPolicyType.FreeParameters, ESTIMATION_POLICY_PROPERTY);
     static final IParam<Config, String> DEFAULT_SA_SPEC = Params.onString("tramoseats." + TramoSeatsSpecification.RSAfull.toString(), DEFAULT_SA_SPEC_PROPERTY);
     static final IParam<Config, Boolean> POPUP_MENU_ICONS_VISIBLE = Params.onBoolean(false, POPUP_MENU_ICONS_VISIBLE_PROPERTY);
+    static final IParam<Config, PrespecificiedOutliersEditor> PRESPECIFIED_OUTLIERS_EDITOR = Params.onEnum(PrespecificiedOutliersEditor.CALENDAR_GRID, PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY);
+    static final IParam<Config, String[]> SELECTED_DIAG_FIELDS = Params.onStringArray(SELECTED_DIAG_FIELDS_PROPERTY,
+            BasicConfiguration.allSingleSaDetails(false).stream().toArray(String[]::new));
+    static final IParam<Config, String[]> SELECTED_SERIES_FIELDS = Params.onStringArray(SELECTED_SERIES_FIELDS_PROPERTY,
+            BasicConfiguration.allSaSeries(false).stream().toArray(String[]::new));
+
     // INTERNAL STUFF
-    private static final Ordering<ColorScheme> COLOR_SCHEME_ORDERING = Ordering.natural().onResultOf(colorSchemeDisplayName());
-    private static final Ordering<? super ITsAction> TS_ACTION_ORDERING = Ordering.natural().onResultOf(namedServiceDisplayName());
-    private static final Ordering<? super ITsSave> TS_SAVE_ORDERING = Ordering.natural().onResultOf(namedServiceDisplayName());
+    private static final Ordering<ColorScheme> COLOR_SCHEME_ORDERING = Ordering.natural().onResultOf(o -> o.getDisplayName());
+    private static final Ordering<? super ITsAction> TS_ACTION_ORDERING = Ordering.natural().onResultOf(o -> o.getDisplayName());
+    private static final Ordering<? super ITsSave> TS_SAVE_ORDERING = Ordering.natural().onResultOf(o -> o.getDisplayName());
     // PROPERTIES
     private final ConfigBean properties;
 
@@ -298,11 +307,41 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
         this.properties.popupMenuIconsVisible = visible;
         firePropertyChange(POPUP_MENU_ICONS_VISIBLE_PROPERTY, old, this.properties.popupMenuIconsVisible);
     }
+
+    public PrespecificiedOutliersEditor getPrespecifiedOutliersEditor() {
+        return properties.prespecifiedOutliersEditor;
+    }
+
+    public void setPrespecifiedOutliersEditor(PrespecificiedOutliersEditor prespecifiedOutliersEditor) {
+        PrespecificiedOutliersEditor old = this.properties.prespecifiedOutliersEditor;
+        this.properties.prespecifiedOutliersEditor = prespecifiedOutliersEditor != null ? prespecifiedOutliersEditor : PRESPECIFIED_OUTLIERS_EDITOR.defaultValue();
+        firePropertyChange(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, old, this.properties.prespecifiedOutliersEditor);
+    }
+
+    public List<String> getSelectedDiagFields() {
+        return this.properties.selectedDiagFields;
+    }
+
+    public void setSelectedDiagFields(List<String> fields) {
+        List<String> old = this.properties.selectedDiagFields;
+        this.properties.selectedDiagFields = fields;
+        firePropertyChange(SELECTED_DIAG_FIELDS_PROPERTY, old, this.properties.selectedDiagFields);
+    }
+
+    public List<String> getSelectedSeriesFields() {
+        return this.properties.selectedSeriesFields;
+    }
+
+    public void setSelectedSeriesFields(List<String> fields) {
+        List<String> old = this.properties.selectedSeriesFields;
+        this.properties.selectedSeriesFields = fields;
+        firePropertyChange(SELECTED_SERIES_FIELDS_PROPERTY, old, this.properties.selectedSeriesFields);
+    }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Utils">
     public ITsAction getTsAction() {
-        return find(ITsAction.class, namedServiceName(), properties.tsActionName, TS_ACTION_NAME.defaultValue());
+        return find(ITsAction.class, o -> o.getName(), properties.tsActionName, TS_ACTION_NAME.defaultValue());
     }
 
     public List<? extends ITsAction> getTsActions() {
@@ -314,7 +353,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     }
 
     public ColorScheme getColorScheme() {
-        return find(ColorScheme.class, colorSchemeName(), properties.colorSchemeName, COLOR_SCHEME_NAME.defaultValue());
+        return find(ColorScheme.class, o -> o.getName(), properties.colorSchemeName, COLOR_SCHEME_NAME.defaultValue());
     }
 
     public List<? extends ColorScheme> getColorSchemes() {
@@ -332,7 +371,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     private static <X, Y> X find(Class<X> clazz, Function<? super X, Y> toName, Y... names) {
         Collection<? extends X> items = Lookup.getDefault().lookupAll(clazz);
         for (Y o : names) {
-            Optional<? extends X> result = Iterables.tryFind(items, Predicates.compose(Predicates.equalTo(o), toName));
+            Optional<? extends X> result = Iterables.tryFind(items, x -> o.equals(toName.apply(x)));
             if (result.isPresent()) {
                 return result.get();
             }
@@ -365,6 +404,9 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
         setStabilityLength(bean.stabilityLength);
         setDefaultSASpec(bean.defaultSASpec);
         setPopupMenuIconsVisible(bean.popupMenuIconsVisible);
+        setPrespecifiedOutliersEditor(bean.prespecifiedOutliersEditor);
+        setSelectedDiagFields(bean.selectedDiagFields);
+        setSelectedSeriesFields(bean.selectedSeriesFields);
     }
 
     @Override
@@ -391,6 +433,9 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
         Integer stabilityLength;
         String defaultSASpec;
         boolean popupMenuIconsVisible;
+        PrespecificiedOutliersEditor prespecifiedOutliersEditor;
+        List<String> selectedDiagFields;
+        List<String> selectedSeriesFields;
 
         ConfigBean() {
             colorSchemeName = COLOR_SCHEME_NAME.defaultValue();
@@ -408,6 +453,9 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
             stabilityLength = STABILITY_LENGTH.defaultValue();
             defaultSASpec = DEFAULT_SA_SPEC.defaultValue();
             popupMenuIconsVisible = POPUP_MENU_ICONS_VISIBLE.defaultValue();
+            prespecifiedOutliersEditor = PRESPECIFIED_OUTLIERS_EDITOR.defaultValue();
+            selectedDiagFields = Arrays.asList(SELECTED_DIAG_FIELDS.defaultValue());
+            selectedSeriesFields = Arrays.asList(SELECTED_SERIES_FIELDS.defaultValue());
         }
 
         ConfigBean(Config config) {
@@ -427,6 +475,9 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
             stabilityLength = STABILITY_LENGTH.get(config);
             defaultSASpec = DEFAULT_SA_SPEC.get(config);
             popupMenuIconsVisible = POPUP_MENU_ICONS_VISIBLE.get(config);
+            prespecifiedOutliersEditor = PRESPECIFIED_OUTLIERS_EDITOR.get(config);
+            selectedDiagFields = Arrays.asList(SELECTED_DIAG_FIELDS.get(config));
+            selectedSeriesFields = Arrays.asList(SELECTED_SERIES_FIELDS.get(config));
         }
 
         Config toConfig() {
@@ -446,6 +497,9 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
             STABILITY_LENGTH.set(b, stabilityLength);
             DEFAULT_SA_SPEC.set(b, defaultSASpec);
             POPUP_MENU_ICONS_VISIBLE.set(b, popupMenuIconsVisible);
+            PRESPECIFIED_OUTLIERS_EDITOR.set(b, prespecifiedOutliersEditor);
+            SELECTED_DIAG_FIELDS.set(b, Collections.toArray(selectedDiagFields, String.class));
+            SELECTED_SERIES_FIELDS.set(b, Collections.toArray(selectedSeriesFields, String.class));
             return b.build();
         }
     }

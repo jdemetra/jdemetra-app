@@ -16,15 +16,15 @@
  */
 package ec.nbdemetra.ui.awt;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Maps;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.AbstractSet;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -50,13 +50,11 @@ public final class ActionMaps {
 
     @Nonnull
     public static Map<Object, Action> asMap(@Nonnull ActionMap actionMap, boolean includeParentKeys) {
-        return Maps.asMap(asKeySet(actionMap, includeParentKeys), asKeyToValueFunction(actionMap));
+        return asKeySet(actionMap, includeParentKeys).stream().collect(Collectors.toMap(o -> o, o -> actionMap.get(o)));
     }
 
     public static void copyEntries(@Nonnull ActionMap source, boolean includeParentKeys, @Nonnull ActionMap destination) {
-        for (Map.Entry<Object, Action> o : asMap(source, includeParentKeys).entrySet()) {
-            destination.put(o.getKey(), o.getValue());
-        }
+        asMap(source, includeParentKeys).forEach((k, v) -> destination.put(k, v));
     }
 
     public static void performAction(@Nonnull ActionMap actionMap, @Nonnull String actionName, @Nonnull MouseEvent e) {
@@ -73,7 +71,7 @@ public final class ActionMaps {
             @Override
             public Iterator<Object> iterator() {
                 Object[] keys = includeParentKeys ? actionMap.allKeys() : actionMap.keys();
-                return keys != null ? Iterators.forArray(keys) : Iterators.<Object>emptyIterator();
+                return keys != null ? Arrays.asList(keys).iterator() : Collections.emptyIterator();
             }
 
             @Override
@@ -86,16 +84,6 @@ public final class ActionMaps {
                     }
                 }
                 return result;
-            }
-        };
-    }
-
-    @Nonnull
-    private static Function<Object, Action> asKeyToValueFunction(@Nonnull final ActionMap actionMap) {
-        return new Function<Object, Action>() {
-            @Override
-            public Action apply(Object input) {
-                return actionMap.get(input);
             }
         };
     }

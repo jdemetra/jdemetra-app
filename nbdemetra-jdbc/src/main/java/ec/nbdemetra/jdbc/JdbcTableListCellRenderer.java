@@ -14,11 +14,6 @@ import ec.util.jdbc.JdbcTable;
 public class JdbcTableListCellRenderer extends SimpleHtmlListCellRenderer<JdbcTable> {
 
     public JdbcTableListCellRenderer() {
-        super(new HtmlProvider<JdbcTable>() {
-            @Override
-            public String getHtmlDisplayName(JdbcTable value) {
-                return "<html><b>" + value.getName() + "</b> - <i>" + value.getType() + "</i>";
-            }
-        });
+        super(o -> "<html><b>" + o.getName() + "</b> - <i>" + o.getType() + "</i>");
     }
 }

@@ -35,10 +35,8 @@ import ec.tss.tsproviders.utils.Parsers;
 import static ec.util.chart.impl.TangoColorScheme.DARK_ORANGE;
 import static ec.util.chart.impl.TangoColorScheme.DARK_SCARLET_RED;
 import static ec.util.chart.swing.SwingColorSchemeSupport.rgbToColor;
-import ec.util.completion.AbstractAutoCompletionSource.TermMatcher;
 import ec.util.completion.AutoCompletionSource;
-import ec.util.completion.AutoCompletionSource.Behavior;
-import ec.util.completion.ext.QuickAutoCompletionSource;
+import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.jdbc.ForwardingConnection;
 import ec.util.various.swing.FontAwesome;
 import java.awt.EventQueue;
@@ -47,11 +45,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.swing.Action;
 import javax.swing.JCheckBox;
@@ -85,12 +86,19 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
 
     public JndiJdbcProviderBuddy() {
         super(new DbExplorerConnectionSupplier());
-        this.dbSource = new DbExplorerSource();
-        this.dbRenderer = new DbExplorerRenderer();
+        this.dbSource = dbExplorerSource();
+        this.dbRenderer = new SimpleHtmlListCellRenderer<>((DatabaseConnection o) -> "<html><b>" + o.getDisplayName() + "</b> - <i>" + o.getName() + "</i>");
         this.warningBadge = FontAwesome.FA_EXCLAMATION_TRIANGLE.getImage(rgbToColor(DARK_ORANGE), 8f);
         this.errorBadge = FontAwesome.FA_EXCLAMATION_CIRCLE.getImage(rgbToColor(DARK_SCARLET_RED), 8f);
-        // this overrides default connection supplier since we don't have JNDI in JavaSE
-        TsProviders.lookup(JndiJdbcProvider.class, JndiJdbcProvider.SOURCE).get().setConnectionSupplier(supplier);
+        overrideDefaultConnectionSupplier();
+    }
+
+    // this overrides default connection supplier since we don't have JNDI in JavaSE
+    private void overrideDefaultConnectionSupplier() {
+        Optional<JndiJdbcProvider> provider = TsProviders.lookup(JndiJdbcProvider.class, JndiJdbcProvider.SOURCE);
+        if (provider.isPresent()) {
+            provider.get().setConnectionSupplier(supplier);
+        }
     }
 
     @Override
@@ -155,12 +163,7 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
     public Config editConfig(Config config) throws IllegalArgumentException {
         final Action openServicesTab = FileUtil.getConfigObject("Actions/Window/org-netbeans-core-ide-ServicesTabAction.instance", Action.class);
         if (openServicesTab != null) {
-            EventQueue.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    openServicesTab.actionPerformed(null);
-                }
-            });
+            EventQueue.invokeLater(() -> openServicesTab.actionPerformed(null));
         }
         return EMPTY;
     }
@@ -181,39 +184,25 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
         }
     }
 
-    private static final class DbExplorerSource extends QuickAutoCompletionSource<DatabaseConnection> {
-
-        @Override
-        public Behavior getBehavior(String term) {
-            return Behavior.ASYNC;
-        }
-
-        @Override
-        protected String getValueAsString(DatabaseConnection value) {
-            return value.getDisplayName();
-        }
-
-        @Override
-        protected Iterable<DatabaseConnection> getAllValues() throws Exception {
-            return Arrays.asList(ConnectionManager.getDefault().getConnections());
-        }
-
-        @Override
-        protected boolean matches(TermMatcher termMatcher, DatabaseConnection input) {
-            return termMatcher.matches(input.getName()) || termMatcher.matches(input.getDisplayName());
-        }
+    private static AutoCompletionSource dbExplorerSource() {
+        return ExtAutoCompletionSource
+                .builder(JndiJdbcProviderBuddy::getDatabaseConnections)
+                .behavior(AutoCompletionSource.Behavior.ASYNC)
+                .postProcessor(JndiJdbcProviderBuddy::getDatabaseConnections)
+                .valueToString(DatabaseConnection::getDisplayName)
+                .build();
     }
 
-    private static final class DbExplorerRenderer extends SimpleHtmlListCellRenderer<DatabaseConnection> {
+    private static List<DatabaseConnection> getDatabaseConnections() {
+        return Arrays.asList(ConnectionManager.getDefault().getConnections());
+    }
 
-        public DbExplorerRenderer() {
-            super(new SimpleHtmlListCellRenderer.HtmlProvider<DatabaseConnection>() {
-                @Override
-                public String getHtmlDisplayName(DatabaseConnection value) {
-                    return "<html><b>" + value.getDisplayName() + "</b> - <i>" + value.getName() + "</i>";
-                }
-            });
-        }
+    private static List<DatabaseConnection> getDatabaseConnections(List<DatabaseConnection> values, String term) {
+        Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
+        return values.stream()
+                .filter(o -> filter.test(o.getName()) || filter.test(o.getDisplayName()))
+                .sorted(Comparator.comparing(DatabaseConnection::getDisplayName))
+                .collect(Collectors.toList());
     }
 
     @NbBundle.Messages({
@@ -272,22 +261,19 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
 
         private boolean connectWithDialog(final DatabaseConnection o) {
             try {
-                return execInEDT(new Callable<Boolean>() {
-                    @Override
-                    public Boolean call() throws Exception {
-                        String dbName = o.getDisplayName();
-                        if (!isSkip(dbName)) {
-                            JCheckBox checkBox = new JCheckBox(Bundle.dbexplorer_skip(), false);
-                            Object[] msg = {Bundle.dbexplorer_requestConnection(dbName), checkBox};
-                            Object option = DialogDisplayer.getDefault().notify(new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION));
-                            setSkip(dbName, checkBox.isSelected());
-                            if (option == NotifyDescriptor.YES_OPTION) {
-                                ConnectionManager.getDefault().showConnectionDialog(o);
-                                return o.getJDBCConnection() != null;
-                            }
+                return execInEDT(() -> {
+                    String dbName = o.getDisplayName();
+                    if (!isSkip(dbName)) {
+                        JCheckBox checkBox = new JCheckBox(Bundle.dbexplorer_skip(), false);
+                        Object[] msg = {Bundle.dbexplorer_requestConnection(dbName), checkBox};
+                        Object option = DialogDisplayer.getDefault().notify(new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION));
+                        setSkip(dbName, checkBox.isSelected());
+                        if (option == NotifyDescriptor.YES_OPTION) {
+                            ConnectionManager.getDefault().showConnectionDialog(o);
+                            return o.getJDBCConnection() != null;
                         }
-                        return false;
                     }
+                    return false;
                 });
             } catch (Exception ex) {
                 Exceptions.printStackTrace(ex);

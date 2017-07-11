@@ -23,6 +23,7 @@ import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.TsProviders;
+import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 import javax.annotation.Nonnull;
@@ -36,7 +37,6 @@ import org.openide.awt.ActionReferences;
  * @author Philippe Charles
  */
 @ActionReferences({
-    @ActionReference(path = ACTION_PATH, position = 1340, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ReloadAction")),
     @ActionReference(path = ACTION_PATH, position = 1420, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "org.openide.actions.CopyAction")),
     @ActionReference(path = ACTION_PATH, position = 1425, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction"))
 })
@@ -58,13 +58,11 @@ public final class CollectionNode extends DataSetNode {
 
     @Override
     public Transferable clipboardCopy() throws IOException {
-        // Transferable#getTransferData(DataFlavor) might be called by the system clipboard
-        // Therefore, we load the data directly in the following call
-        return getData(TsInformationType.All);
+        return getData(SHOULD_BE_NONE);
     }
 
     @Override
     public Transferable drag() throws IOException {
-        return getData(TsInformationType.Definition);
+        return getData(SHOULD_BE_NONE);
     }
 }

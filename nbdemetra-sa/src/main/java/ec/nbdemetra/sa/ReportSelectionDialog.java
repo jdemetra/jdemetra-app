@@ -4,21 +4,17 @@
  */
 package ec.nbdemetra.sa;
 
+import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JList;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import org.openide.windows.WindowManager;
 
 /**
@@ -28,15 +24,11 @@ import org.openide.windows.WindowManager;
 public class ReportSelectionDialog extends JDialog {
 
     private String report;
-    private JList list;
+    private JList<String> list;
 
     private void fillList() {
         List<ISaReportFactory> factories = SaReportManager.getInstance().getFactories();
-        DefaultListModel model = new DefaultListModel();
-        for (ISaReportFactory item : factories) {
-            model.addElement(item.getReportName());
-        }
-        list.setModel(model);
+        list.setModel(JLists.modelOf(factories.stream().map(ISaReportFactory::getReportName).toArray(String[]::new)));
     }
 
     public ReportSelectionDialog() {
@@ -44,26 +36,18 @@ public class ReportSelectionDialog extends JDialog {
         setTitle("Choose report");
 
         final JButton btnOK_ = new JButton("OK");
-        btnOK_.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        });
+        btnOK_.addActionListener(event -> setVisible(false));
         btnOK_.setEnabled(false);
 
-        list = new JList();
+        list = new JList<>();
         list.setPreferredSize(new Dimension(200, 200));
-        list.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (e.getLastIndex() < 0) {
-                    report = null;
-                    btnOK_.setEnabled(false);
-                } else {
-                    report = list.getModel().getElementAt(e.getLastIndex()).toString();
-                    btnOK_.setEnabled(true);
-                }
+        list.addListSelectionListener(event -> {
+            if (event.getLastIndex() < 0) {
+                report = null;
+                btnOK_.setEnabled(false);
+            } else {
+                report = list.getModel().getElementAt(event.getLastIndex()).toString();
+                btnOK_.setEnabled(true);
             }
         });
 
@@ -77,9 +61,9 @@ public class ReportSelectionDialog extends JDialog {
         add(bnbox, BorderLayout.SOUTH);
         this.setBounds(100, 100, 200, 300);
         fillList();
-        
+
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        
+
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -94,8 +78,9 @@ public class ReportSelectionDialog extends JDialog {
         }
         List<ISaReportFactory> factories = SaReportManager.getInstance().getFactories();
         for (ISaReportFactory item : factories) {
-            if (item.getReportName().equals(report))
+            if (item.getReportName().equals(report)) {
                 return item;
+            }
         }
         return null;
     }

@@ -24,7 +24,6 @@ import java.awt.Component;
 import java.io.File;
 import java.util.Locale;
 import java.util.Scanner;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -38,14 +37,11 @@ import javax.swing.JTextArea;
 public final class BasicFileViewerDemo {
 
     public static void main(String[] args) {
-        new BasicSwingLauncher().content(new Callable<Component>() {
-            @Override
-            public Component call() throws Exception {
-                BasicFileViewer result = new BasicFileViewer();
-                result.setFileHandler(new TxtFileHandler());
-                result.setFailureRenderer(CustomFailureRenderer.INSTANCE);
-                return result;
-            }
+        new BasicSwingLauncher().content(() -> {
+            BasicFileViewer result = new BasicFileViewer();
+            result.setFileHandler(new TxtFileHandler());
+            result.setFailureRenderer(CustomFailureRenderer.INSTANCE);
+            return result;
         }).launch();
     }
 

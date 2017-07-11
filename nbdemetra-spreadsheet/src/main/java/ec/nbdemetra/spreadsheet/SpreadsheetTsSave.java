@@ -16,39 +16,32 @@
  */
 package ec.nbdemetra.spreadsheet;
 
-import ec.nbdemetra.ui.notification.MessageType;
-import ec.nbdemetra.ui.notification.NotifyUtil;
-import ec.nbdemetra.ui.ns.AbstractNamedService;
-import ec.nbdemetra.ui.properties.IBeanEditor;
+import ec.nbdemetra.ui.DemetraUiIcon;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
+import ec.nbdemetra.ui.SingleFileExporter;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.nbdemetra.ui.tssave.ITsSave;
+import ec.nbdemetra.ui.tssave.TsSaveUtil;
 import ec.tss.Ts;
+import ec.tss.TsCollection;
 import ec.tss.TsCollectionInformation;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
 import ec.tss.tsproviders.spreadsheet.engine.TsExportOptions;
-import ec.util.desktop.Desktop;
-import ec.util.desktop.DesktopManager;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.helpers.ArraySheet;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import ec.util.various.swing.OnAnyThread;
+import ec.util.various.swing.OnEDT;
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.swing.SwingWorker;
+import java.util.Optional;
 import javax.swing.filechooser.FileFilter;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.nodes.Sheet;
-import org.openide.util.Exceptions;
+import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -57,32 +50,19 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = ITsSave.class)
-public final class SpreadsheetTsSave extends AbstractNamedService implements ITsSave {
+public final class SpreadsheetTsSave implements ITsSave {
 
-    private final FileChooserBuilder fileChooserBuilder;
-    private final OptionsEditor optionsEditor;
-    private final OptionsBean optionsBean;
+    private final FileChooserBuilder fileChooser;
+    private final OptionsBean options;
 
     public SpreadsheetTsSave() {
-        super(ITsSave.class, "SpreadsheetTsSave");
-        this.fileChooserBuilder = new FileChooserBuilder(SpreadsheetTsSave.class)
-                .setFileFilter(new SaveFileFilter())
-                .setSelectionApprover(new SaveSelectionApprover());
-        this.optionsEditor = new OptionsEditor();
-        this.optionsBean = new OptionsBean();
+        this.fileChooser = TsSaveUtil.fileChooser(SpreadsheetTsSave.class).setFileFilter(new SaveFileFilter());
+        this.options = new OptionsBean();
     }
 
     @Override
-    public void save(Ts[] ts) {
-        File file = fileChooserBuilder.showSaveDialog();
-        if (file != null) {
-            Book.Factory factory = getFactoryByFile(file);
-            if (factory != null) {
-                if (optionsEditor.editBean(optionsBean)) {
-                    save(ts, file, factory, optionsBean.getTsExportOptions());
-                }
-            }
-        }
+    public String getName() {
+        return "SpreadsheetTsSave";
     }
 
     @Override
@@ -90,95 +70,69 @@ public final class SpreadsheetTsSave extends AbstractNamedService implements ITs
         return "Spreadsheet file";
     }
 
+    @Override
+    public Image getIcon(int type, boolean opened) {
+        return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
+    }
+
+    @Override
+    public void save(Ts[] input) {
+        save(TsSaveUtil.toCollections(input));
+    }
+
+    @Override
+    public void save(TsCollection[] input) {
+        TsSaveUtil.saveToFile(fileChooser, o -> editBean(options), o -> store(input, o, options));
+    }
+
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    private void save(final Ts[] data, final File file, final Book.Factory bookFactory, final TsExportOptions options) {
-        new SwingWorker<Void, String>() {
-            final ProgressHandle progressHandle = ProgressHandleFactory.createHandle("Saving to spreadsheet");
-
-            @Override
-            protected Void doInBackground() throws Exception {
-                progressHandle.start();
-                progressHandle.progress("Initializing content");
-                TsCollectionInformation col = new TsCollectionInformation();
-                for (Ts o : data) {
-                    col.items.add(new TsInformation(o, TsInformationType.All));
-                }
-                progressHandle.progress("Creating content");
-                ArraySheet sheet = SpreadSheetFactory.getDefault().fromTsCollectionInfo(col, options);
-                progressHandle.progress("Writing content");
-                bookFactory.store(file, sheet.toBook());
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                progressHandle.finish();
-                try {
-                    get();
-                    NotifyUtil.show("Spreadsheet saved", "Show in folder", MessageType.SUCCESS, new ShowInFolderActionListener(file), null, null);
-                } catch (InterruptedException | ExecutionException ex) {
-                    NotifyUtil.error("Saving to spreadsheet failed", ex.getMessage(), ex);
-                }
-            }
-        }.execute();
+    @OnEDT
+    private static boolean editBean(OptionsBean bean) {
+        return new PropertySheetDialogBuilder().title("Options").editSheet(getSheet(bean));
     }
 
-    @Nullable
-    private static Book.Factory getFactoryByFile(@Nonnull File file) {
-        for (Book.Factory o : Lookup.getDefault().lookupAll(Book.Factory.class
-        )) {
-            if (o.canStore()
-                    && o.accept(file)) {
-                return o;
-            }
-        }
-        return null;
-
+    @OnEDT
+    private static void store(TsCollection[] data, File file, OptionsBean opts) {
+        new SingleFileExporter()
+                .file(file)
+                .progressLabel("Saving to spreadsheet")
+                .onErrorNotify("Saving to spreadsheet failed")
+                .onSussessNotify("Spreadsheet saved")
+                .execAsync((f, ph) -> store(data, f, opts.getTsExportOptions(), ph));
     }
 
-    private static final class ShowInFolderActionListener implements ActionListener {
-
-        private final File file;
-
-        public ShowInFolderActionListener(File file) {
-            this.file = file;
+    @OnAnyThread
+    private static void store(TsCollection[] data, File file, TsExportOptions options, ProgressHandle ph) throws IOException {
+        ph.progress("Loading time series");
+        TsCollectionInformation content = new TsCollectionInformation();
+        for (TsCollection col : data) {
+            col.load(TsInformationType.All);
+            col.stream().map(o -> new TsInformation(o, TsInformationType.All)).forEach(content.items::add);
         }
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Desktop desktop = DesktopManager.get();
-            if (desktop.isSupported(Desktop.Action.SHOW_IN_FOLDER)) {
-                try {
-                    desktop.showInFolder(file);
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
-        }
+        ph.progress("Creating content");
+        ArraySheet sheet = SpreadSheetFactory.getDefault().fromTsCollectionInfo(content, options);
+
+        ph.progress("Writing file");
+        getFactoryByFile(file)
+                .orElseThrow(() -> new IOException("Cannot find spreadsheet factory"))
+                .store(file, sheet.toBook());
+    }
+
+    private static Optional<? extends Book.Factory> getFactoryByFile(File file) {
+        return Lookup.getDefault().lookupAll(Book.Factory.class).stream().filter(o -> o.canStore() && o.accept(file)).findFirst();
     }
 
     private static final class SaveFileFilter extends FileFilter {
 
         @Override
         public boolean accept(File f) {
-            return getFactoryByFile(f) != null;
+            return f.isDirectory() || getFactoryByFile(f).isPresent();
         }
 
         @Override
         public String getDescription() {
             return "Spreadsheet file";
-        }
-    }
-
-    private static final class SaveSelectionApprover implements FileChooserBuilder.SelectionApprover {
-
-        @Override
-        public boolean approve(File[] selection) {
-            if (selection.length > 0 && selection[0].exists()) {
-                NotifyDescriptor d = new NotifyDescriptor.Confirmation("Overwrite file?", NotifyDescriptor.OK_CANCEL_OPTION);
-                return DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.OK_OPTION;
-            }
-            return selection.length != 0;
         }
     }
 
@@ -194,26 +148,17 @@ public final class SpreadsheetTsSave extends AbstractNamedService implements ITs
         }
     }
 
-    private static final class OptionsEditor implements IBeanEditor {
+    private static Sheet getSheet(OptionsBean bean) {
+        Sheet result = new Sheet();
+        NodePropertySetBuilder b = new NodePropertySetBuilder();
 
-        private Sheet getSheet(OptionsBean bean) {
-            Sheet result = new Sheet();
-            NodePropertySetBuilder b = new NodePropertySetBuilder();
+        b.withBoolean().selectField(bean, "vertical").display("Vertical alignment").add();
+        b.withBoolean().selectField(bean, "showDates").display("Include date headers").add();
+        b.withBoolean().selectField(bean, "showTitle").display("Include title headers").add();
+        b.withBoolean().selectField(bean, "beginPeriod").display("Begin period").add();
+        result.put(b.build());
 
-            b.withBoolean().selectField(bean, "vertical").display("Vertical alignment").add();
-            b.withBoolean().selectField(bean, "showDates").display("Include date headers").add();
-            b.withBoolean().selectField(bean, "showTitle").display("Include title headers").add();
-            b.withBoolean().selectField(bean, "beginPeriod").display("Begin period").add();
-            result.put(b.build());
-
-            return result;
-        }
-
-        @Override
-        final public boolean editBean(Object bean) {
-            OptionsBean config = (OptionsBean) bean;
-            return OpenIdePropertySheetBeanEditor.editSheet(getSheet(config), "Options", null);
-        }
+        return result;
     }
     //</editor-fold>
 }

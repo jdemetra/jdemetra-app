@@ -1,7 +1,7 @@
 /*
- * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * Copyright 2016 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
@@ -20,7 +20,6 @@ import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.IResetable;
-import static ec.nbdemetra.ui.Jdk6Functions.namedServiceToNode;
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -100,7 +99,7 @@ public class NamedServiceNode extends AbstractNode {
     }
 
     public static void loadAll(ExplorerManager em, Iterable<? extends INamedService> items) {
-        Iterable<NamedServiceNode> nodes = Iterables.transform(items, namedServiceToNode());
+        Iterable<NamedServiceNode> nodes = Iterables.transform(items, o -> new NamedServiceNode(o));
         em.setRootContext(new AbstractNodeBuilder().add(nodes).build());
     }
 
@@ -108,6 +107,11 @@ public class NamedServiceNode extends AbstractNode {
         for (Node o : em.getRootContext().getChildren().getNodes()) {
             if (o instanceof NamedServiceNode) {
                 ((NamedServiceNode) o).applyConfig();
+            }
+            for (Node c : o.getChildren().getNodes()) {
+                if (c instanceof NamedServiceNode) {
+                    ((NamedServiceNode) c).applyConfig();
+                }
             }
         }
     }

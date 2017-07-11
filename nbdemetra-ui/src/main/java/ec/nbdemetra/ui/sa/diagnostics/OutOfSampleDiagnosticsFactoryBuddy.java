@@ -23,9 +23,9 @@ import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.IResetable;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.properties.OpenIdePropertySheetBeanEditor;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.OutOfSampleDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.OutOfSampleDiagnosticsFactory;
@@ -177,8 +177,8 @@ public final class OutOfSampleDiagnosticsFactoryBuddy extends SaDiagnosticsFacto
         private final IParam<Config, Double> badParam = Params.onDouble(.01, "bad");
         private final IParam<Config, Double> uncertainParam = Params.onDouble(.1, "uncertain");
         private final IParam<Config, Double> lengthParam = Params.onDouble(.01, "length");
-        private final IParam<Config, Boolean> menabledParam = Params.onBoolean(true, "menabled");
-        private final IParam<Config, Boolean> venabledParam = Params.onBoolean(true, "venabled");
+        private final IParam<Config, Boolean> menabledParam = Params.onBoolean(false, "menabled");
+        private final IParam<Config, Boolean> venabledParam = Params.onBoolean(false, "venabled");
         
         @Override
         protected Config doForward(OutOfSampleDiagnosticsConfiguration a) {
@@ -214,7 +214,7 @@ public final class OutOfSampleDiagnosticsFactoryBuddy extends SaDiagnosticsFacto
             Sheet sheet = createSheet((OutOfSampleDiagnosticsConfiguration) bean);
             String title = Bundle.outOfSampleDiagnostics_edit_title();
             while (true) {
-                if (!OpenIdePropertySheetBeanEditor.editSheet(sheet, title, getIcon())) {
+                if (!new PropertySheetDialogBuilder().title(title).icon(getIcon()).editSheet(sheet)) {
                     return false;
                 }
                 try {

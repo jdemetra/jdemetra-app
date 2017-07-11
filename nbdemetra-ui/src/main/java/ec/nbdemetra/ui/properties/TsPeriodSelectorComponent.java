@@ -1,19 +1,28 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.ui.properties;
 
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.PeriodSelectorType;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  *
- * @author charphi
+ * @author Philippe Charles
  */
 public final class TsPeriodSelectorComponent extends javax.swing.JPanel {
 
@@ -23,12 +32,7 @@ public final class TsPeriodSelectorComponent extends javax.swing.JPanel {
     public TsPeriodSelectorComponent() {
         initComponents();
 
-        type.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                updateType((PeriodSelectorType) e.getItem());
-            }
-        });
+        type.addItemListener(event -> updateType((PeriodSelectorType) event.getItem()));
 
         type.setSelectedItem(PeriodSelectorType.All);
     }

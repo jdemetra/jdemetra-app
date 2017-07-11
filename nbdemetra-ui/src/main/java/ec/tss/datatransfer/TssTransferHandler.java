@@ -23,6 +23,8 @@ import ec.tss.TsCollection;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.design.ServiceDefinition;
 import ec.tstoolkit.maths.matrices.Matrix;
+import ec.util.various.swing.OnAnyThread;
+import ec.util.various.swing.OnEDT;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
@@ -35,6 +37,7 @@ import org.openide.util.ImageUtilities;
  * clipboard.
  *
  * @author Philippe Charles
+ * @since 1.3.0
  */
 @ServiceDefinition(hasPosition = true)
 public abstract class TssTransferHandler implements INamedService {
@@ -44,14 +47,6 @@ public abstract class TssTransferHandler implements INamedService {
 
     //<editor-fold defaultstate="collapsed" desc="INamedService impl">
     @Override
-    abstract public String getName();
-
-    @Override
-    public String getDisplayName() {
-        return getName();
-    }
-
-    @Override
     public Image getIcon(int type, boolean opened) {
         return ImageUtilities.icon2Image(DemetraUiIcon.CLIPBOARD_PASTE_DOCUMENT_TEXT_16);
     }
@@ -60,26 +55,30 @@ public abstract class TssTransferHandler implements INamedService {
     public Sheet createSheet() {
         Sheet result = new Sheet();
         NodePropertySetBuilder b = new NodePropertySetBuilder();
-        b.with(String.class).select("DataFlavor", getDataFlavor().getMimeType()).display("Data Flavor").add();
+        b.with(String.class).selectConst("DataFlavor", getDataFlavor().getMimeType()).display("Data Flavor").add();
         result.put(b.build());
         return result;
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="TimeSeries struct">
+    @OnEDT
     public boolean canExportTsCollection(@Nonnull TsCollection col) {
         return false;
     }
 
+    @OnAnyThread
     @Nonnull
     public Object exportTsCollection(@Nonnull TsCollection col) throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    @OnEDT
     public boolean canImportTsCollection(@Nonnull Object obj) {
         return false;
     }
 
+    @OnEDT
     @Nonnull
     public TsCollection importTsCollection(@Nonnull Object obj) throws IOException, ClassCastException {
         throw new UnsupportedOperationException();
@@ -87,19 +86,23 @@ public abstract class TssTransferHandler implements INamedService {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Matrix struct">
+    @OnEDT
     public boolean canExportMatrix(@Nonnull Matrix matrix) {
         return false;
     }
 
+    @OnAnyThread
     @Nonnull
     public Object exportMatrix(@Nonnull Matrix matrix) throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    @OnEDT
     public boolean canImportMatrix(@Nonnull Object obj) {
         return false;
     }
 
+    @OnEDT
     @Nonnull
     public Matrix importMatrix(@Nonnull Object obj) throws IOException, ClassCastException {
         throw new UnsupportedOperationException();
@@ -107,19 +110,23 @@ public abstract class TssTransferHandler implements INamedService {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Table struct">
+    @OnEDT
     public boolean canExportTable(@Nonnull Table<?> table) {
         return false;
     }
 
+    @OnAnyThread
     @Nonnull
     public Object exportTable(@Nonnull Table<?> table) throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    @OnEDT
     public boolean canImportTable(@Nonnull Object obj) {
         return false;
     }
 
+    @OnEDT
     @Nonnull
     public Table<?> importTable(@Nonnull Object obj) throws IOException, ClassCastException {
         throw new UnsupportedOperationException();

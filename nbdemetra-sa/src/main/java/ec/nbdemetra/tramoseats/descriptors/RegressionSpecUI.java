@@ -4,13 +4,16 @@
  */
 package ec.nbdemetra.tramoseats.descriptors;
 
+import ec.nbdemetra.ui.properties.l2fprod.Coefficients;
+import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
+import ec.tstoolkit.modelling.DefaultTransformationType;
+import ec.tstoolkit.modelling.TsVariableDescriptor;
 import ec.tstoolkit.modelling.arima.tramo.RegressionSpec;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
-import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
-import ec.tstoolkit.modelling.TsVariableDescriptor;
 import ec.tstoolkit.timeseries.regression.InterventionVariable;
 import ec.tstoolkit.timeseries.regression.OutlierDefinition;
 import ec.tstoolkit.timeseries.regression.Ramp;
+import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -55,6 +58,12 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
+        
+        desc = fixedCoefficientsDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        
         return descs;
     }
 
@@ -95,7 +104,18 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
     public void setUserDefinedVariables(TsVariableDescriptor[] value) {
         inner().setUserDefinedVariables(value);
     }
-    private static final int CALENDAR_ID = 1, PRESPEC_ID = 1, INTERV_ID = 2, RAMPS_ID = 3, USERDEF_ID = 4;
+    
+    public Coefficients getFixedCoefficients() {
+        Coefficients c = new Coefficients(inner().getAllFixedCoefficients());
+        c.setAllNames(inner().getRegressionVariableNames(TsFrequency.Undefined));
+        return c;
+    }
+
+    public void setFixedCoefficients(Coefficients coeffs) {
+        inner().setAllFixedCoefficients(coeffs.getFixedCoefficients());
+    }
+    
+    private static final int CALENDAR_ID = 1, PRESPEC_ID = 1, INTERV_ID = 2, RAMPS_ID = 3, USERDEF_ID = 4, FCOEFF_ID = 5;
 
     @Messages({
         "regressionSpecUI.prespecDesc.name=Pre-specified outliers",
@@ -163,6 +183,25 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
             desc.setDisplayName(Bundle.regressionSpecUI_userdefinedDesc_name());
             desc.setShortDescription(Bundle.regressionSpecUI_userdefinedDesc_desc());
             edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+    
+    @Messages({
+        "regressionSpecUI.fixedCoefficientsDesc.name=Fixed regression coefficients",
+        "regressionSpecUI.fixedCoefficientsDesc.desc="
+    })
+    private EnhancedPropertyDescriptor fixedCoefficientsDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("FixedCoefficients", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FCOEFF_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.regressionSpecUI_fixedCoefficientsDesc_name());
+            desc.setShortDescription(Bundle.regressionSpecUI_fixedCoefficientsDesc_desc());
+            // Disabled when the transformation is on "auto"
+            edesc.setReadOnly(ro_ || core.getTransform().getFunction() == DefaultTransformationType.Auto);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

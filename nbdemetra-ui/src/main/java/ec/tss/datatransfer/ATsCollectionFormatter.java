@@ -16,9 +16,7 @@
  */
 package ec.tss.datatransfer;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
@@ -54,7 +52,7 @@ public abstract class ATsCollectionFormatter extends AbstractNamedService implem
     public Sheet createSheet() {
         Sheet result = super.createSheet();
         NodePropertySetBuilder b = new NodePropertySetBuilder();
-        b.with(String.class).select("DataFlavor", getDataFlavor().getMimeType()).display("Data Flavor").add();
+        b.with(String.class).selectConst("DataFlavor", getDataFlavor().getMimeType()).display("Data Flavor").add();
         result.put(b.build());
         return result;
     }
@@ -139,12 +137,8 @@ public abstract class ATsCollectionFormatter extends AbstractNamedService implem
             return ((IConfigurable) formatter).editConfig(config);
         }
     }
-    //
-    private static final Function<ITsCollectionFormatter, TssTransferHandler> TO_HANDLER = new Function<ITsCollectionFormatter, TssTransferHandler>() {
-        @Override
-        public TssTransferHandler apply(ITsCollectionFormatter input) {
-            return input instanceof IConfigurable ? new TssTransferHandlerAdapter2(input) : new TssTransferHandlerAdapter(input);
-        }
-    };
-    private static final ImmutableList<TssTransferHandler> LEGACY_HANDLERS = FluentIterable.from(Lookup.getDefault().lookupAll(ITsCollectionFormatter.class)).transform(TO_HANDLER).toList();
+
+    private static final ImmutableList<TssTransferHandler> LEGACY_HANDLERS = Lookup.getDefault().lookupAll(ITsCollectionFormatter.class).stream()
+            .map(o -> (TssTransferHandler) (o instanceof IConfigurable ? new TssTransferHandlerAdapter2(o) : new TssTransferHandlerAdapter(o)))
+            .collect(ImmutableList.toImmutableList());
 }

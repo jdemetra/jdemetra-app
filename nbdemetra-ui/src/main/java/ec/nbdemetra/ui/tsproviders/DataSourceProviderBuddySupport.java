@@ -21,10 +21,15 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import ec.nbdemetra.core.GlobalService;
+import ec.nbdemetra.ui.IConfigurable;
 import ec.tss.TsMoniker;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceProvider;
+import internal.FrozenTsHelper;
+import java.awt.Image;
+import java.io.IOException;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.openide.util.Lookup;
@@ -48,7 +53,7 @@ public class DataSourceProviderBuddySupport {
     public static DataSourceProviderBuddySupport getInstance() {
         return getDefault();
     }
-    //
+
     private final LoadingCache<String, IDataSourceProviderBuddy> fallback;
 
     public DataSourceProviderBuddySupport() {
@@ -63,12 +68,11 @@ public class DataSourceProviderBuddySupport {
     @Nonnull
     public IDataSourceProviderBuddy get(@Nullable String providerName) {
         String tmp = Strings.nullToEmpty(providerName);
-        for (IDataSourceProviderBuddy o : Lookup.getDefault().lookupAll(IDataSourceProviderBuddy.class)) {
-            if (o.getProviderName().equals(tmp)) {
-                return o;
-            }
-        }
-        return getFallback(tmp);
+        return Lookup.getDefault().lookupAll(IDataSourceProviderBuddy.class).stream()
+                .filter(o -> o.getProviderName().equals(tmp))
+                .map(o -> (IDataSourceProviderBuddy) o)
+                .findFirst()
+                .orElseGet(() -> getFallback(tmp));
     }
 
     @Nonnull
@@ -91,25 +95,98 @@ public class DataSourceProviderBuddySupport {
         return get(moniker.getSource());
     }
 
+    /**
+     * Gets an icon for a provider.
+     *
+     * @param providerName
+     * @param type
+     * @param opened
+     * @return an optional icon
+     * @since 2.2.0
+     */
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull String providerName, int type, boolean opened) {
+        return Optional.ofNullable(get(providerName).getIcon(type, opened));
+    }
+
+    /**
+     * Gets an icon for a data source.
+     *
+     * @param dataSource
+     * @param type
+     * @param opened
+     * @return an optional icon
+     * @since 2.2.0
+     */
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull DataSource dataSource, int type, boolean opened) {
+        return Optional.ofNullable(get(dataSource).getIcon(dataSource, type, opened));
+    }
+
+    /**
+     * Gets an icon for a data set.
+     *
+     * @param dataSet
+     * @param type
+     * @param opened
+     * @return an optional icon
+     * @since 2.2.0
+     */
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull DataSet dataSet, int type, boolean opened) {
+        return Optional.ofNullable(get(dataSet).getIcon(dataSet, type, opened));
+    }
+
+    /**
+     * Gets an icon for an exception thrown by a provider.
+     *
+     * @param providerName
+     * @param ex
+     * @param type
+     * @param opened
+     * @return an optional icon
+     * @since 2.2.0
+     */
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull String providerName, @Nonnull IOException ex, int type, boolean opened) {
+        return Optional.ofNullable(get(providerName).getIcon(ex, type, opened));
+    }
+
+    /**
+     * Gets an icon for a moniker.
+     *
+     * @param moniker
+     * @param type
+     * @param opened
+     * @return an optional icon
+     * @since 2.2.0
+     */
+    @Nonnull
+    public Optional<Image> getIcon(@Nonnull TsMoniker moniker, int type, boolean opened) {
+        TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
+        return original != null ? Optional.ofNullable(get(original).getIcon(moniker, type, opened)) : Optional.empty();
+    }
+
+    /**
+     * Gets a configurable for a provider.
+     *
+     * @param providerName
+     * @return an optional configurable
+     * @since 2.2.0
+     */
+    @Nonnull
+    public Optional<IConfigurable> getConfigurable(@Nonnull String providerName) {
+        IDataSourceProviderBuddy buddy = get(providerName);
+        return buddy instanceof IConfigurable ? Optional.of((IConfigurable) buddy) : Optional.empty();
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Implementation details">
     private static final class CacheLoaderImpl extends CacheLoader<String, IDataSourceProviderBuddy> {
 
         @Override
         public IDataSourceProviderBuddy load(final String key) {
-            return new DataSourceProviderBuddyImpl(key);
-        }
-
-        private static final class DataSourceProviderBuddyImpl extends AbstractDataSourceProviderBuddy {
-
-            private final String providerName;
-
-            public DataSourceProviderBuddyImpl(String providerName) {
-                this.providerName = providerName;
-            }
-
-            @Override
-            public String getProviderName() {
-                return providerName;
-            }
+            return () -> key;
         }
     }
+    //</editor-fold>
 }

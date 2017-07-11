@@ -18,6 +18,7 @@ package ec.util.completion.swing;
 
 import ec.util.completion.AutoCompletionSources;
 import ec.util.various.swing.BasicSwingLauncher;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -33,18 +34,19 @@ import javax.swing.JTextField;
  *
  * @author Philippe Charles
  */
-public final class XPopupDemo extends JPanel {
+public final class XPopupDemo {
 
     public static void main(String[] args) {
         new BasicSwingLauncher()
-                .content(XPopupDemo.class)
+                .content(XPopupDemo::create)
                 .title("XPopup Demo")
                 .logLevel(Level.FINE)
                 .launch();
     }
 
-    public XPopupDemo() {
-        setLayout(new FlowLayout());
+    private static Component create() {
+        JPanel result = new JPanel();
+        result.setLayout(new FlowLayout());
         for (final XPopup.Anchor o : XPopup.Anchor.values()) {
             final JButton button = new JButton(o.name());
             button.addActionListener(new ActionListener() {
@@ -61,11 +63,12 @@ public final class XPopupDemo extends JPanel {
                     visible = !visible;
                 }
             });
-            add(button);
+            result.add(button);
         }
         JTextField textField = new JTextField(20);
         JAutoCompletion ac = new JAutoCompletion(textField);
         ac.setSource(AutoCompletionSources.of(false, Locale.getAvailableLocales()));
-        add(textField);
+        result.add(textField);
+        return result;
     }
 }

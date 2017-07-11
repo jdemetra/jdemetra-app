@@ -1,38 +1,42 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2016 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.sa.output;
 
-import ec.tss.sa.output.CsvOutputConfiguration;
-import ec.tss.sa.output.CsvOutputFactory;
-import org.openide.util.lookup.ServiceProvider;
-
 /**
- *
+ * @deprecated Use {@link ec.nbdemetra.sa.output.impl.CsvOutputBuddy} instead
  * @author Jean Palate
  */
-@ServiceProvider(service = INbOutputFactory.class,
-position = 1000)
-public class CsvFactory implements INbOutputFactory{
+@Deprecated
+public class CsvFactory implements INbOutputFactory {
     
-    private CsvOutputConfiguration config=new CsvOutputConfiguration();
+    private final INbOutputFactory delegate = new ec.nbdemetra.sa.output.impl.CsvOutputBuddy();
 
     @Override
     public AbstractOutputNode createNode() {
-        return new CsvNode(config);
+        return delegate.createNode();
     }
 
     @Override
     public String getName() {
-        return CsvOutputFactory.NAME;
+        return delegate.getName();
     }
 
     @Override
     public AbstractOutputNode createNodeFor(Object properties) {
-        if (properties instanceof CsvOutputConfiguration)
-            return new CsvNode((CsvOutputConfiguration) properties);
-        else
-            return null;
+        return delegate.createNodeFor(properties);
     }
 }

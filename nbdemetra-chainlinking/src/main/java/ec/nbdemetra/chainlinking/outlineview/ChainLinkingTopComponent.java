@@ -140,13 +140,10 @@ public class ChainLinkingTopComponent extends TopComponent implements ExplorerMa
         tabbedPane.add("Detailed", htmlDetailedView);
         tabbedPane.add("Chart", chart);
 
-        addPanel.addPropertyChangeListener(AddProductPanel.PROCESS_PRODUCTS, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                ao.setProducts((List<Product>) evt.getNewValue());
-                ao.process();
-                refreshModel();
-            }
+        addPanel.addPropertyChangeListener(AddProductPanel.PROCESS_PRODUCTS, evt -> {
+            ao.setProducts((List<Product>) evt.getNewValue());
+            ao.process();
+            refreshModel();
         });
 
         inputs = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, addPanel, p);
@@ -210,15 +207,12 @@ public class ChainLinkingTopComponent extends TopComponent implements ExplorerMa
     @Override
     public void componentOpened() {
         super.componentOpened();
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                visualRepresentation.setDividerLocation(.3);
-                visualRepresentation.setResizeWeight(.3);
-
-                inputs.setDividerLocation(.4);
-                inputs.setResizeWeight(.4);
-            }
+        SwingUtilities.invokeLater(() -> {
+            visualRepresentation.setDividerLocation(.3);
+            visualRepresentation.setResizeWeight(.3);
+            
+            inputs.setDividerLocation(.4);
+            inputs.setResizeWeight(.4);
         });
     }
 

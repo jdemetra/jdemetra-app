@@ -23,10 +23,9 @@ import ec.util.various.swing.BasicSwingLauncher;
  *
  * @author Mats Maggi
  */
-public class RevisionHistoryTest {
+public final class RevisionHistoryTest {
 
     public static void main(String[] args) {
-
         new BasicSwingLauncher()
                 .content(RevisionSaSeriesView.class)
                 .launch();

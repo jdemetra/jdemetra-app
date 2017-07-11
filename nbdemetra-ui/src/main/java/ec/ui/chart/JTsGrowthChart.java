@@ -33,13 +33,12 @@ import ec.util.chart.swing.JTimeSeriesChartCommand;
 import ec.util.chart.swing.SelectionMouseListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.beans.Beans;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -98,6 +97,7 @@ public class JTsGrowthChart extends ATsGrowthChart {
         chartPanel.setSeriesFormatter(new SeriesFunction<String>() {
             @Override
             public String apply(int series) {
+                TsCollection collection = getTsCollection();
                 return collection.getCount() > series ? collection.get(series).getName() : chartPanel.getDataset().getSeriesKey(series).toString();
             }
         });
@@ -115,7 +115,7 @@ public class JTsGrowthChart extends ATsGrowthChart {
         chartPanel.setLegendVisibilityPredicate(new SeriesPredicate() {
             @Override
             public boolean apply(int series) {
-                return series < collection.getCount();
+                return series < getTsCollection().getCount();
             }
         });
         chartPanel.setSeriesRenderer(SeriesFunction.always(TimeSeriesChart.RendererType.COLUMN));
@@ -139,9 +139,15 @@ public class JTsGrowthChart extends ATsGrowthChart {
             chartPanel.getDropTarget().addDropTargetListener(new DropTargetAdapter() {
                 @Override
                 public void dragEnter(DropTargetDragEvent dtde) {
-                    if (!getTsUpdateMode().isReadOnly() && TssTransferSupport.getDefault().canImport(dtde.getCurrentDataFlavors())) {
-                        TsCollection col = TssTransferSupport.getDefault().toTsCollection(dtde.getTransferable());
-                        setDropContent(col != null ? col.toArray() : null);
+                    if (!getTsUpdateMode().isReadOnly()) {
+                        Transferable t = dtde.getTransferable();
+                        if (TssTransferSupport.getDefault().canImport(t)) {
+                            Ts[] dropContent = TssTransferSupport.getDefault()
+                                    .toTsCollectionStream(t)
+                                    .flatMap(TsCollection::stream)
+                                    .toArray(Ts[]::new);
+                            setDropContent(dropContent != null ? dropContent : null);
+                        }
                     }
                 }
 
@@ -166,17 +172,14 @@ public class JTsGrowthChart extends ATsGrowthChart {
     }
 
     private void enableProperties() {
-        this.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case "transferHandler":
-                        onTransferHandlerChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        this.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case "transferHandler":
+                    onTransferHandlerChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }
@@ -200,6 +203,7 @@ public class JTsGrowthChart extends ATsGrowthChart {
 
     @Override
     protected void onCollectionChange() {
+        TsCollection collection = getTsCollection();
         TsPeriodSelector selector = computeSelector(collection, lastYears);
         growthCollection.replace(Arrays.asList(computeGrowthData(collection.toArray(), growthKind, selector)));
         chartPanel.setDataset(TsXYDatasets.from(growthCollection));
@@ -215,6 +219,7 @@ public class JTsGrowthChart extends ATsGrowthChart {
     protected void onSelectionChange() {
         selectionListener.setEnabled(false);
         selectionModel.clearSelection();
+        TsCollection collection = getTsCollection();
         for (Ts o : selection) {
             int index = collection.indexOf(o);
             selectionModel.addSelectionInterval(index, index);

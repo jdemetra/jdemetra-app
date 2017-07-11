@@ -1,13 +1,25 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2016 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package ec.nbdemetra.sa.actions;
 
 import ec.nbdemetra.sa.MultiProcessingManager;
 import ec.nbdemetra.sa.SaBatchUI;
-import ec.nbdemetra.sa.SpecSelectionComponent;
 import ec.nbdemetra.ws.actions.AbstractViewAction;
+import ec.nbdemetra.ws.ui.SpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.tss.sa.SaItem;
 import org.openide.DialogDescriptor;
@@ -20,13 +32,13 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "ec.nbdemetra.sa.actions.ChangeSpecification")
+        id = "ec.nbdemetra.sa.actions.ChangeSpecification")
 @ActionRegistration(displayName = "#CTL_ChangeSpecification", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH, position = 1400),
-    @ActionReference(path = MultiProcessingManager.LOCALPATH, position = 1400)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Specification.PATH, position = 1410),
+    @ActionReference(path = MultiProcessingManager.LOCALPATH + Specification.PATH, position = 1410)
 })
-@Messages("CTL_ChangeSpecification=Specification...")
+@Messages("CTL_ChangeSpecification=Select...")
 public final class ChangeSpecification extends AbstractViewAction<SaBatchUI> {
 
     public ChangeSpecification() {
@@ -62,6 +74,8 @@ public final class ChangeSpecification extends AbstractViewAction<SaBatchUI> {
             for (int i = 0; i < selection.length; ++i) {
                 SaItem o = selection[i];
                 SaItem n = new SaItem(c.getSpecification(), o.getTs());
+                n.setMetaData(o.getMetaData());
+                n.setName(o.getRawName());
                 cur.getCurrentProcessing().replace(o, n);
             }
             cur.redrawAll();

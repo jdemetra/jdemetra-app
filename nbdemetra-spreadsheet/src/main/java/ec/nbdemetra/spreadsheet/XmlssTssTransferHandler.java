@@ -16,11 +16,18 @@
  */
 package ec.nbdemetra.spreadsheet;
 
+import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractBean;
+import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractBeanEditor;
+import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractConverter;
+import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.Resource;
 import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.IConfigurable;
+import ec.tss.TsCollection;
 import ec.tss.datatransfer.TssTransferHandler;
+import ec.tstoolkit.data.Table;
+import ec.tstoolkit.maths.matrices.Matrix;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.xmlss.XmlssBookFactory;
 import java.awt.datatransfer.DataFlavor;
@@ -28,6 +35,7 @@ import java.awt.datatransfer.SystemFlavorMap;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.function.Supplier;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -37,16 +45,16 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Jean Palate
  */
 @ServiceProvider(service = TssTransferHandler.class, position = 1000, supersedes = {"ec.tss.datatransfer.impl.XmlssTssTransferHandler"})
-public final class XmlssTssTransferHandler extends SpreadSheetTssTransferHandler<byte[]> implements IConfigurable {
+public final class XmlssTssTransferHandler extends TssTransferHandler implements IConfigurable {
 
     private final DataFlavor dataFlavor;
-    private final XmlssBookFactory bookFactory;
+    private final SpreadSheetTssTransferSupport support;
     private final Configurator<XmlssTssTransferHandler> configurator;
     private XmlssBean config;
 
     public XmlssTssTransferHandler() {
         this.dataFlavor = createDataFlavor();
-        this.bookFactory = new XmlssBookFactory();
+        this.support = new SpreadSheetTssTransferSupport(new ResourceImpl(() -> config));
         this.configurator = new XmlssBeanHandler().toConfigurator(new XmlssConverter(), new XmlssBeanEditor());
         this.config = new XmlssBean();
     }
@@ -67,6 +75,56 @@ public final class XmlssTssTransferHandler extends SpreadSheetTssTransferHandler
     }
 
     @Override
+    public boolean canExportTsCollection(TsCollection col) {
+        return support.canExportTsCollection(col);
+    }
+
+    @Override
+    public Object exportTsCollection(TsCollection col) throws IOException {
+        return support.exportTsCollection(col);
+    }
+
+    @Override
+    public boolean canImportTsCollection(Object obj) {
+        return support.canImportTsCollection(obj);
+    }
+
+    @Override
+    public TsCollection importTsCollection(Object obj) throws IOException {
+        return support.importTsCollection(obj);
+    }
+
+    @Override
+    public boolean canExportMatrix(Matrix matrix) {
+        return support.canExportMatrix(matrix);
+    }
+
+    @Override
+    public Object exportMatrix(Matrix matrix) throws IOException {
+        return support.exportMatrix(matrix);
+    }
+
+    @Override
+    public boolean canImportTable(Object obj) {
+        return support.canImportTable(obj);
+    }
+
+    @Override
+    public Table<?> importTable(Object obj) throws IOException, ClassCastException {
+        return support.importTable(obj);
+    }
+
+    @Override
+    public boolean canExportTable(Table<?> table) {
+        return support.canExportTable(table);
+    }
+
+    @Override
+    public Object exportTable(Table<?> table) throws IOException {
+        return support.exportTable(table);
+    }
+
+    @Override
     public Config getConfig() {
         return configurator.getConfig(this);
     }
@@ -82,30 +140,41 @@ public final class XmlssTssTransferHandler extends SpreadSheetTssTransferHandler
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    @Override
-    protected AbstractBean getInternalConfig() {
-        return config;
-    }
+    private static final class ResourceImpl implements Resource {
 
-    @Override
-    protected Book toBook(byte[] input) throws IOException {
-        // FIXME: there is a bug here with some chars at the end of the stream
-        try (ByteArrayInputStream stream = new ByteArrayInputStream(input, 0, input.length - 2)) {
-            return bookFactory.load(stream);
+        private final XmlssBookFactory bookFactory;
+        private final Supplier<? extends AbstractBean> configSupplier;
+
+        public ResourceImpl(Supplier<? extends AbstractBean> configSupplier) {
+            this.bookFactory = new XmlssBookFactory();
+            this.configSupplier = configSupplier;
         }
-    }
 
-    @Override
-    protected byte[] fromBook(Book book) throws IOException {
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-            bookFactory.store(stream, book);
-            return stream.toByteArray();
+        @Override
+        public AbstractBean getInternalConfig() {
+            return configSupplier.get();
         }
-    }
 
-    @Override
-    protected boolean isInstance(Object obj) {
-        return obj instanceof byte[];
+        @Override
+        public Book toBook(Object input) throws IOException {
+            byte[] bytes = (byte[]) input;
+            try (ByteArrayInputStream stream = new ByteArrayInputStream(bytes)) {
+                return bookFactory.load(stream);
+            }
+        }
+
+        @Override
+        public Object fromBook(Book book) throws IOException {
+            try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+                bookFactory.store(stream, book);
+                return stream.toByteArray();
+            }
+        }
+
+        @Override
+        public boolean isInstance(Object obj) {
+            return obj instanceof byte[];
+        }
     }
 
     private static DataFlavor createDataFlavor() {

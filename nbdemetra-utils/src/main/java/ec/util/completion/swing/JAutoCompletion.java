@@ -29,8 +29,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
@@ -40,7 +40,9 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -81,13 +83,10 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
         });
         this.timer.setRepeats(false);
         this.latestId = 0;
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String p = evt.getPropertyName();
-                if (p.equals(DELAY_PROPERTY)) {
-                    timer.setDelay(delay);
-                }
+        addPropertyChangeListener(evt -> {
+            String p = evt.getPropertyName();
+            if (p.equals(DELAY_PROPERTY)) {
+                timer.setDelay(delay);
             }
         });
     }
@@ -278,14 +277,11 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
 
         void fireDocumentEvent(DocumentEvent e) {
             if (listening) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        String current = getTerm();
-                        if (!current.equals(previous)) {
-                            previous = current;
-                            timer.restart();
-                        }
+                SwingUtilities.invokeLater(() -> {
+                    String current = getTerm();
+                    if (!current.equals(previous)) {
+                        previous = current;
+                        timer.restart();
                     }
                 });
             }
@@ -335,6 +331,15 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
             this.popup = new XPopup();
 
             this.message.setOpaque(true);
+            this.message.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    Object ex = message.getClientProperty("Exception");
+                    if (ex instanceof Exception) {
+                        onExceptionDetails((Exception) ex);
+                    }
+                }
+            });
 
             this.list.setFocusable(false);
             this.list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -349,6 +354,14 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
                 }
             });
             fillMaps(this.list);
+        }
+
+        private void onExceptionDetails(Exception ex) {
+            StringWriter errors = new StringWriter();
+            ((Exception) ex).printStackTrace(new PrintWriter(errors));
+            JComponent component = new JScrollPane(new JTextArea(errors.toString()));
+            component.setPreferredSize(new Dimension(500, 300));
+            JOptionPane.showMessageDialog(message, component, "Exception details", JOptionPane.ERROR_MESSAGE);
         }
 
         @Override
@@ -366,14 +379,16 @@ public class JAutoCompletion extends AbstractAutoCompletion<JComponent> {
             hidePopup();
             message.setText("<html><i>Searching ...");
             message.setToolTipText("");
+            message.putClientProperty("Exception", null);
             showPopup(message);
         }
 
         @Override
         public void onSearchFailed(String term, Exception ex) {
             hidePopup();
-            message.setText("<html><i>Error ...");
+            message.setText("<html><i>Error (click for details)");
             message.setToolTipText(ex.getMessage());
+            message.putClientProperty("Exception", ex);
             showPopup(message);
         }
 

@@ -22,8 +22,6 @@ import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.TukeyHanningTaper;
 import ec.tstoolkit.data.Values;
 import ec.tstoolkit.data.WindowType;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.JPopupMenu;
 import org.jfree.data.xy.XYSeries;
 
@@ -67,41 +65,41 @@ public class TukeySpectrumView extends ARPView {
         this.lag = DEFAULT_DIFF_LAG;
         this.log = DEFAULT_LOG;
         this.lastYears = DemetraUI.getDefault().getSpectralLastYears();
+        initComponents();
+    }
 
+    private void initComponents() {
         onComponentPopupMenuChange();
         enableProperties();
     }
 
     private void enableProperties() {
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case WINDOW_LENGTH_PROPERTY:
-                        onWindowLengthChange();
-                        break;
-                    case WINDOW_TYPE_PROPERTY:
-                        onWindowTypeChange();
-                        break;
-                    case TAPER_PART_PROPERTY:
-                        onTaperChange();
-                        break;
-                    case LOG_PROPERTY:
-                        onLogChange();
-                        break;
-                    case DIFF_PROPERTY:
-                        onDiffChange();
-                        break;
-                    case DIFF_LAG_PROPERTY:
-                        onDiffChange();
-                        break;
-                    case LASTYEARS_PROPERTY:
-                        onLastYearsChange();
-                        break;
-                    case "componentPopupMenu":
-                        onComponentPopupMenuChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case WINDOW_LENGTH_PROPERTY:
+                    onWindowLengthChange();
+                    break;
+                case WINDOW_TYPE_PROPERTY:
+                    onWindowTypeChange();
+                    break;
+                case TAPER_PART_PROPERTY:
+                    onTaperChange();
+                    break;
+                case LOG_PROPERTY:
+                    onLogChange();
+                    break;
+                case DIFF_PROPERTY:
+                    onDiffChange();
+                    break;
+                case DIFF_LAG_PROPERTY:
+                    onDiffChange();
+                    break;
+                case LASTYEARS_PROPERTY:
+                    onLastYearsChange();
+                    break;
+                case "componentPopupMenu":
+                    onComponentPopupMenuChange();
+                    break;
             }
         });
     }

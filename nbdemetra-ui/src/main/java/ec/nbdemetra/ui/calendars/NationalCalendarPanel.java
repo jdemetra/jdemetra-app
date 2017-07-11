@@ -9,7 +9,6 @@ import com.google.common.collect.Sets;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
 import ec.nbdemetra.ui.awt.JPanel2;
-import ec.nbdemetra.ui.awt.JProperty;
 import ec.nbdemetra.ui.awt.ListenerState;
 import ec.tss.tsproviders.utils.IConstraint;
 import ec.tstoolkit.algorithm.ProcessingContext;
@@ -23,9 +22,6 @@ import ec.tstoolkit.timeseries.calendars.SpecialDayEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -59,10 +55,10 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
     public static final String SPECIAL_DAY_EVENTS_PROPERTY = "specialDayEvents";
     public static final String JULIAN_EASTER_PROPERTY = "julianEaster";
     // PROPERTIES
-    protected final JProperty<String> calendarName;
-    protected final JProperty<ImmutableList<SpecialDayEvent>> specialDayEvents;
-    protected final JProperty<Boolean> meanCorrection;
-    protected final JProperty<Boolean> julianEaster;
+    private String calendarName;
+    private ImmutableList<SpecialDayEvent> specialDayEvents;
+    private boolean meanCorrection;
+    private boolean julianEaster;
     // OTHER
     final ExplorerManager em;
     final ListOfSpecialDayEvent childFactory;
@@ -76,22 +72,19 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
      * Creates new form NationalCalendarPanel
      */
     public NationalCalendarPanel() {
-        this.calendarName = newProperty(CALENDAR_NAME_PROPERTY, JProperty.nullTo(""), null);
-        this.specialDayEvents = newProperty(SPECIAL_DAY_EVENTS_PROPERTY, JProperty.nullTo(ImmutableList.<SpecialDayEvent>of()), null);
-        this.meanCorrection = newProperty(MEAN_CORRECTION_PROPERTY, true);
-        this.julianEaster = newProperty(JULIAN_EASTER_PROPERTY, false);
+        this.calendarName = "";
+        this.specialDayEvents = ImmutableList.of();
+        this.meanCorrection = true;
+        this.julianEaster = false;
 
         this.em = new ExplorerManager();
         this.childFactory = new ListOfSpecialDayEvent();
 
         em.setRootContext(new AbstractNode(Children.create(childFactory, false)));
-        em.addVetoableChangeListener(new VetoableChangeListener() {
-            @Override
-            public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-                if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
-                    Node[] nodes = (Node[]) evt.getNewValue();
-                    removeButton.setEnabled(nodes.length > 0);
-                }
+        em.addVetoableChangeListener(evt -> {
+            if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
+                Node[] nodes = (Node[]) evt.getNewValue();
+                removeButton.setEnabled(nodes.length > 0);
             }
         });
 
@@ -131,12 +124,9 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
 
         initComponents();
 
-        jButton1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (lastUsedAction != null) {
-                    lastUsedAction.actionPerformed(e);
-                }
+        jButton1.addActionListener(event -> {
+            if (lastUsedAction != null) {
+                lastUsedAction.actionPerformed(event);
             }
         });
 
@@ -151,23 +141,20 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
         julianCB.addActionListener(julianListener);
         removeButton.setEnabled(false);
 
-        addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case NationalCalendarPanel.CALENDAR_NAME_PROPERTY:
-                        onCalendarNameChange();
-                        break;
-                    case NationalCalendarPanel.SPECIAL_DAY_EVENTS_PROPERTY:
-                        onSpecialDayEventsChange();
-                        break;
-                    case NationalCalendarPanel.MEAN_CORRECTION_PROPERTY:
-                        onMeanChange();
-                        break;
-                    case NationalCalendarPanel.JULIAN_EASTER_PROPERTY:
-                        onJulianChange();
-                        break;
-                }
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case NationalCalendarPanel.CALENDAR_NAME_PROPERTY:
+                    onCalendarNameChange();
+                    break;
+                case NationalCalendarPanel.SPECIAL_DAY_EVENTS_PROPERTY:
+                    onSpecialDayEventsChange();
+                    break;
+                case NationalCalendarPanel.MEAN_CORRECTION_PROPERTY:
+                    onMeanChange();
+                    break;
+                case NationalCalendarPanel.JULIAN_EASTER_PROPERTY:
+                    onJulianChange();
+                    break;
             }
         });
     }
@@ -301,7 +288,7 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
     protected void onCalendarNameChange() {
         if (nameTextFieldListener.state == ListenerState.READY) {
             nameTextFieldListener.state = ListenerState.SUSPENDED;
-            nameTextField.setText(calendarName.get());
+            nameTextField.setText(calendarName);
             nameTextFieldListener.state = ListenerState.READY;
         }
     }
@@ -309,7 +296,7 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
     protected void onMeanChange() {
         if (meanListener.state == ListenerState.READY) {
             meanListener.state = ListenerState.SUSPENDED;
-            meanCB.setSelected(meanCorrection.get());
+            meanCB.setSelected(meanCorrection);
             meanListener.state = ListenerState.READY;
         }
     }
@@ -317,7 +304,7 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
     protected void onJulianChange() {
         if (julianListener.state == ListenerState.READY) {
             julianListener.state = ListenerState.SUSPENDED;
-            julianCB.setSelected(julianEaster.get());
+            julianCB.setSelected(julianEaster);
             julianListener.state = ListenerState.READY;
         }
     }
@@ -326,7 +313,7 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
         if (childFactory.state == ListenerState.READY) {
             childFactory.state = ListenerState.SUSPENDED;
             childFactory.beans.clear();
-            for (SpecialDayEvent o : specialDayEvents.get()) {
+            for (SpecialDayEvent o : specialDayEvents) {
                 if (o.day instanceof FixedDay) {
                     childFactory.beans.add(new FixedEventBean((FixedDay) o.day, o.getValidityPeriod()));
                 } else if (o.day instanceof EasterRelatedDay) {
@@ -345,35 +332,43 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
     public String getCalendarName() {
-        return calendarName.get();
+        return calendarName;
     }
 
     public void setCalendarName(String calendarName) {
-        this.calendarName.set(calendarName);
+        String old = this.calendarName;
+        this.calendarName = calendarName != null ? calendarName : "";
+        firePropertyChange(CALENDAR_NAME_PROPERTY, old, this.calendarName);
     }
 
     public boolean isMeanCorrection() {
-        return meanCorrection.get();
+        return meanCorrection;
     }
 
     public void setMeanCorrection(boolean mean) {
-        this.meanCorrection.set(mean);
+        boolean old = this.meanCorrection;
+        this.meanCorrection = mean;
+        firePropertyChange(MEAN_CORRECTION_PROPERTY, old, this.meanCorrection);
     }
 
     public boolean isJulianCalendar() {
-        return julianEaster.get();
+        return julianEaster;
     }
 
     public void setJulianEaster(boolean julian) {
-        this.julianEaster.set(julian);
+        boolean old = this.julianEaster;
+        this.julianEaster = julian;
+        firePropertyChange(JULIAN_EASTER_PROPERTY, old, this.julianEaster);
     }
 
     public ImmutableList<SpecialDayEvent> getSpecialDayEvents() {
-        return specialDayEvents.get();
+        return specialDayEvents;
     }
 
     public void setSpecialDayEvents(ImmutableList<SpecialDayEvent> events) {
-        this.specialDayEvents.set(events);
+        ImmutableList<SpecialDayEvent> old = this.specialDayEvents;
+        this.specialDayEvents = events != null ? events : ImmutableList.of();
+        firePropertyChange(SPECIAL_DAY_EVENTS_PROPERTY, old, this.specialDayEvents);
     }
 
     @Override
@@ -554,27 +549,27 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
     private enum NationalConstraints implements IConstraint<NationalConstraintData> {
 
         CALENDAR_NAME {
-                    @Override
-                    public String check(NationalConstraintData t) {
-                        String name = t.panel.getCalendarName();
-                        if (name.isEmpty()) {
-                            return "The name of the calendar cannot be empty";
-                        }
-                        if (!t.originalName.equals(name) && t.manager.contains(name)) {
-                            return "The name of the calendar is already used";
-                        }
-                        return null;
-                    }
-                },
-        SPECIAL_DAY_EVENTS {
-                    @Override
-                    public String check(NationalConstraintData t) {
-                        ImmutableList<SpecialDayEvent> events = t.panel.getSpecialDayEvents();
-                        if (Sets.newHashSet(events).size() != events.size()) {
-                            return "There are duplicated events";
-                        }
-                        return null;
-                    }
+            @Override
+            public String check(NationalConstraintData t) {
+                String name = t.panel.getCalendarName();
+                if (name.isEmpty()) {
+                    return "The name of the calendar cannot be empty";
                 }
+                if (!t.originalName.equals(name) && t.manager.contains(name)) {
+                    return "The name of the calendar is already used";
+                }
+                return null;
+            }
+        },
+        SPECIAL_DAY_EVENTS {
+            @Override
+            public String check(NationalConstraintData t) {
+                ImmutableList<SpecialDayEvent> events = t.panel.getSpecialDayEvents();
+                if (Sets.newHashSet(events).size() != events.size()) {
+                    return "There are duplicated events";
+                }
+                return null;
+            }
+        }
     }
 }
