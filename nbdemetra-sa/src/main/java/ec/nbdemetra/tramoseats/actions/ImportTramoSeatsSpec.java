@@ -25,6 +25,7 @@ import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.tss.tsproviders.utils.Parsers;
+import ec.tss.xml.information.XmlInformationSet;
 import ec.tss.xml.tramoseats.XmlTramoSeatsSpecification;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import java.util.Collections;
@@ -103,8 +104,13 @@ public class ImportTramoSeatsSpec extends SingleNodeAction<Node> implements Pres
         }
 
         return config.getParam("specification")
-                .map(Parsers.onJAXB(XmlTramoSeatsSpecification.class)::parse)
-                .map(XmlTramoSeatsSpecification::create)
+                .map(Parsers.onJAXB(XmlInformationSet.class)::parse)
+                .map(XmlInformationSet::create)
+                .map(o -> {
+                    TramoSeatsSpecification spec = new TramoSeatsSpecification();
+                    spec.read(o);
+                    return spec;
+                })
                 .orElse(null);
     }
 }

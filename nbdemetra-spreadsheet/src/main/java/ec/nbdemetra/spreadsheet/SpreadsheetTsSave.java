@@ -19,13 +19,12 @@ package ec.nbdemetra.spreadsheet;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.SingleFileExporter;
-import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tssave.ITsSave;
+import ec.nbdemetra.ui.tssave.TsSaveUtil;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsCollectionInformation;
-import ec.tss.TsFactory;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
@@ -33,10 +32,10 @@ import ec.tss.tsproviders.spreadsheet.engine.TsExportOptions;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.helpers.ArraySheet;
 import ec.util.various.swing.OnAnyThread;
+import ec.util.various.swing.OnEDT;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Optional;
 import javax.swing.filechooser.FileFilter;
 import org.netbeans.api.progress.ProgressHandle;
@@ -53,16 +52,12 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ITsSave.class)
 public final class SpreadsheetTsSave implements ITsSave {
 
-    private final FileChooserBuilder fileChooserBuilder;
-    private final OptionsEditor optionsEditor;
-    private final OptionsBean optionsBean;
+    private final FileChooserBuilder fileChooser;
+    private final OptionsBean options;
 
     public SpreadsheetTsSave() {
-        this.fileChooserBuilder = new FileChooserBuilder(SpreadsheetTsSave.class)
-                .setFileFilter(new SaveFileFilter())
-                .setSelectionApprover(SingleFileExporter.overwriteApprover());
-        this.optionsEditor = new OptionsEditor();
-        this.optionsBean = new OptionsBean();
+        this.fileChooser = TsSaveUtil.fileChooser(SpreadsheetTsSave.class).setFileFilter(new SaveFileFilter());
+        this.options = new OptionsBean();
     }
 
     @Override
@@ -82,27 +77,32 @@ public final class SpreadsheetTsSave implements ITsSave {
 
     @Override
     public void save(Ts[] input) {
-        TsCollection col = TsFactory.instance.createTsCollection();
-        col.quietAppend(Arrays.asList(input));
-        save(new TsCollection[]{col});
+        save(TsSaveUtil.toCollections(input));
     }
 
     @Override
     public void save(TsCollection[] input) {
-        File target = fileChooserBuilder.showSaveDialog();
-        if (target != null && optionsEditor.editBean(optionsBean)) {
-            new SingleFileExporter()
-                    .file(target)
-                    .progressLabel("Saving to spreadsheet")
-                    .onErrorNotify("Saving to spreadsheet failed")
-                    .onSussessNotify("Spreadsheet saved")
-                    .execAsync((f, ph) -> store(input, f, optionsBean.getTsExportOptions(), ph));
-        }
+        TsSaveUtil.saveToFile(fileChooser, o -> editBean(options), o -> store(input, o, options));
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
+    @OnEDT
+    private static boolean editBean(OptionsBean bean) {
+        return new PropertySheetDialogBuilder().title("Options").editSheet(getSheet(bean));
+    }
+
+    @OnEDT
+    private static void store(TsCollection[] data, File file, OptionsBean opts) {
+        new SingleFileExporter()
+                .file(file)
+                .progressLabel("Saving to spreadsheet")
+                .onErrorNotify("Saving to spreadsheet failed")
+                .onSussessNotify("Spreadsheet saved")
+                .execAsync((f, ph) -> store(data, f, opts.getTsExportOptions(), ph));
+    }
+
     @OnAnyThread
-    private static File store(TsCollection[] data, File file, TsExportOptions options, ProgressHandle ph) throws IOException {
+    private static void store(TsCollection[] data, File file, TsExportOptions options, ProgressHandle ph) throws IOException {
         ph.progress("Loading time series");
         TsCollectionInformation content = new TsCollectionInformation();
         for (TsCollection col : data) {
@@ -117,8 +117,6 @@ public final class SpreadsheetTsSave implements ITsSave {
         getFactoryByFile(file)
                 .orElseThrow(() -> new IOException("Cannot find spreadsheet factory"))
                 .store(file, sheet.toBook());
-
-        return file;
     }
 
     private static Optional<? extends Book.Factory> getFactoryByFile(File file) {
@@ -150,26 +148,17 @@ public final class SpreadsheetTsSave implements ITsSave {
         }
     }
 
-    private static final class OptionsEditor implements IBeanEditor {
+    private static Sheet getSheet(OptionsBean bean) {
+        Sheet result = new Sheet();
+        NodePropertySetBuilder b = new NodePropertySetBuilder();
 
-        private Sheet getSheet(OptionsBean bean) {
-            Sheet result = new Sheet();
-            NodePropertySetBuilder b = new NodePropertySetBuilder();
+        b.withBoolean().selectField(bean, "vertical").display("Vertical alignment").add();
+        b.withBoolean().selectField(bean, "showDates").display("Include date headers").add();
+        b.withBoolean().selectField(bean, "showTitle").display("Include title headers").add();
+        b.withBoolean().selectField(bean, "beginPeriod").display("Begin period").add();
+        result.put(b.build());
 
-            b.withBoolean().selectField(bean, "vertical").display("Vertical alignment").add();
-            b.withBoolean().selectField(bean, "showDates").display("Include date headers").add();
-            b.withBoolean().selectField(bean, "showTitle").display("Include title headers").add();
-            b.withBoolean().selectField(bean, "beginPeriod").display("Begin period").add();
-            result.put(b.build());
-
-            return result;
-        }
-
-        @Override
-        final public boolean editBean(Object bean) {
-            OptionsBean config = (OptionsBean) bean;
-            return new PropertySheetDialogBuilder().title("Options").editSheet(getSheet(config));
-        }
+        return result;
     }
     //</editor-fold>
 }

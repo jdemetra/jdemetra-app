@@ -18,6 +18,7 @@ package ec.util.completion.swing;
 
 import ec.util.completion.AutoCompletionSources;
 import java.awt.Component;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.DefaultListCellRenderer;
@@ -29,8 +30,24 @@ import javax.swing.JList;
  * A specialized renderer used by JAutoCompletion that highlights terms.
  *
  * @author Philippe Charles
+ * @param <T>
  */
 public class CustomListCellRenderer<T> extends DefaultListCellRenderer {
+
+    @Nonnull
+    public static <T> DefaultListCellRenderer of(@Nonnull Function<T, String> toValueAsString, @Nonnull Function<T, String> toToolTipText) {
+        return new CustomListCellRenderer<T>() {
+            @Override
+            protected String getValueAsString(T value) {
+                return toValueAsString.apply(value);
+            }
+
+            @Override
+            protected String toToolTipText(String term, JList list, T value, int index, boolean isSelected, boolean cellHasFocus) {
+                return toToolTipText.apply(value);
+            }
+        };
+    }
 
     private final boolean highlightTerm;
 

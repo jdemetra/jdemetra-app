@@ -75,6 +75,7 @@ public final class ChangeSpecification extends AbstractViewAction<SaBatchUI> {
                 SaItem o = selection[i];
                 SaItem n = new SaItem(c.getSpecification(), o.getTs());
                 n.setMetaData(o.getMetaData());
+                n.setName(o.getRawName());
                 cur.getCurrentProcessing().replace(o, n);
             }
             cur.redrawAll();

@@ -17,7 +17,6 @@
 package ec.nbdemetra.ui.properties;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import ec.tstoolkit.design.IBuilder;
@@ -258,7 +257,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
             try {
                 return next.apply(new PropertySupport.Reflection<>(bean, valueType, property));
             } catch (NoSuchMethodException ex) {
-                throw Throwables.propagate(ex);
+                throw new RuntimeException(ex);
             }
         }
 
@@ -267,7 +266,16 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
             try {
                 return next.apply(new PropertySupport.Reflection<>(bean, valueType, getter, setter));
             } catch (NoSuchMethodException ex) {
-                throw Throwables.propagate(ex);
+                throw new RuntimeException(ex);
+            }
+        }
+
+        @Nonnull
+        public <X> NEXT_STEP select(@Nonnull Object bean, @Nonnull String property, @Nonnull Class<X> source, @Nonnull Function<X, T> forward, @Nonnull Function<T, X> backward) {
+            try {
+                return next.apply(new PropertyAdapter<>(new PropertySupport.Reflection<>(bean, source, property), valueType, forward, backward));
+            } catch (NoSuchMethodException ex) {
+                throw new RuntimeException(ex);
             }
         }
 
@@ -822,6 +830,18 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
         }
     }
 
+    @Nonnull
+    public static <X, Y> Node.Property<Y> adapt(
+            @Nonnull Object bean, @Nonnull String property,
+            @Nonnull Class<X> source, @Nonnull Class<Y> target,
+            @Nonnull Function<X, Y> forward, @Nonnull Function<Y, X> backward) {
+        try {
+            return new PropertyAdapter<>(new PropertySupport.Reflection<>(bean, source, property), target, forward, backward);
+        } catch (NoSuchMethodException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     //<editor-fold defaultstate="collapsed" desc="Custom node properties">
     private final static class InternalProperty<T> extends ForwardingNodeProperty<T> {
 
@@ -878,6 +898,40 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
         @Override
         public T getValue() throws IllegalAccessException, InvocationTargetException {
             return value;
+        }
+    }
+
+    private static final class PropertyAdapter<X, Y> extends Node.Property<Y> {
+
+        private final Node.Property<X> source;
+        private final Function<X, Y> forward;
+        private final Function<Y, X> backward;
+
+        private PropertyAdapter(Node.Property<X> source, Class<Y> target, Function<X, Y> forward, Function<Y, X> backward) {
+            super(target);
+            this.source = source;
+            this.forward = forward;
+            this.backward = backward;
+        }
+
+        @Override
+        public boolean canRead() {
+            return source.canRead();
+        }
+
+        @Override
+        public Y getValue() throws IllegalAccessException, InvocationTargetException {
+            return forward.apply(source.getValue());
+        }
+
+        @Override
+        public boolean canWrite() {
+            return source.canWrite();
+        }
+
+        @Override
+        public void setValue(Y t) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+            source.setValue(backward.apply(t));
         }
     }
     //</editor-fold>

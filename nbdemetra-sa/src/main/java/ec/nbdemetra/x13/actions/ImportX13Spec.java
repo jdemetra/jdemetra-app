@@ -25,6 +25,7 @@ import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.x13.X13SpecificationManager;
 import ec.satoolkit.x13.X13Specification;
 import ec.tss.tsproviders.utils.Parsers;
+import ec.tss.xml.information.XmlInformationSet;
 import ec.tss.xml.x13.XmlX13Specification;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import java.util.Collections;
@@ -103,8 +104,13 @@ public class ImportX13Spec extends SingleNodeAction<Node> implements Presenter.P
         }
 
         return config.getParam("specification")
-                .map(Parsers.onJAXB(XmlX13Specification.class)::parse)
-                .map(XmlX13Specification::create)
+                .map(Parsers.onJAXB(XmlInformationSet.class)::parse)
+                .map(XmlInformationSet::create)
+                .map(o -> {
+                    X13Specification spec = new X13Specification();
+                    spec.read(o);
+                    return spec;
+                })
                 .orElse(null);
     }
 }

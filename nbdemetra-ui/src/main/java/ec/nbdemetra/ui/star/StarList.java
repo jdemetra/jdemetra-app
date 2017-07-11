@@ -63,7 +63,7 @@ public final class StarList implements Iterable<DataSource> {
         return list.iterator();
     }
 
-    boolean isStarred(DataSource dataSource) {
+    public boolean isStarred(DataSource dataSource) {
         return list.contains(dataSource);
     }
 }
