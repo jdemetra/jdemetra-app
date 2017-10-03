@@ -5,6 +5,7 @@
 package ec.nbdemetra.sa;
 
 import ec.nbdemetra.ui.ActiveViewManager;
+import ec.nbdemetra.ui.ComponentFactory;
 import ec.nbdemetra.ui.IActiveView;
 import ec.nbdemetra.ui.tsaction.ITsView2;
 import ec.tss.Ts;
@@ -14,13 +15,13 @@ import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlSeasonalityDiagnostics;
 import ec.tstoolkit.modelling.arima.tramo.SeasonalityTests;
 import ec.tstoolkit.timeseries.simplets.TsData;
+import ec.ui.AHtmlView;
+import ec.ui.ATsChart;
 import ec.ui.chart.JTsChart;
-import ec.ui.html.JHtmlPane;
 import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.JMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.text.html.StyleSheet;
 import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -59,24 +60,25 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
     private int diffOrder = 1;
     private int lastYears = 0;
 
+    private final ATsChart jTsChart1;
+    private final AHtmlView jEditorPane1;
+    
     public SeasonalityTestTopComponent() {
         initComponents();
         setName(Bundle.CTL_SeasonalityTestTopComponent());
         setToolTipText(Bundle.HINT_SeasonalityTestTopComponent());
+        
+        jTsChart1 = ComponentFactory.getDefault().newTsChart();
         jTsChart1.setTsUpdateMode(TsUpdateMode.Single);
 
-        jEditorPane1 = new JHtmlPane();
-        jScrollPane1.setViewportView(jEditorPane1);
-        StyleSheet ss = new StyleSheet();
-        ss.addRule("body {font-family: arial, verdana;}");
-        ss.addRule("body {font-size: 11;}");
-        ss.addRule("h4 {color: blue;}");
-        ss.addRule("td, th{text-align: right; margin-left: 5px; margin-right: 5 px;}");
-        ss.addRule("table {border: solid;}");
-        ((JHtmlPane) jEditorPane1).setStyleSheet(ss);
+        jEditorPane1 = ComponentFactory.getDefault().newHtmlView();
 
         node = new InternalNode();
         jTsChart1.addPropertyChangeListener(JTsChart.TS_COLLECTION_PROPERTY, evt -> showTests());
+        
+        jSplitPane1.setTopComponent(jTsChart1);
+        jSplitPane1.setBottomComponent(jEditorPane1);
+        
         associateLookup(ExplorerUtils.createLookup(ActiveViewManager.getInstance().getExplorerManager(), getActionMap()));
     }
 
@@ -123,37 +125,22 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
     private void initComponents() {
 
         jSplitPane1 = new javax.swing.JSplitPane();
-        jTsChart1 = new ec.ui.chart.JTsChart();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jEditorPane1 = new javax.swing.JEditorPane();
 
         setLayout(new java.awt.BorderLayout());
 
         jSplitPane1.setDividerLocation(100);
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPane1.setResizeWeight(0.5);
-
-        jTsChart1.setTitleVisible(false);
-        jSplitPane1.setTopComponent(jTsChart1);
-
-        jScrollPane1.setEnabled(false);
-        jScrollPane1.setViewportView(jEditorPane1);
-
-        jSplitPane1.setRightComponent(jScrollPane1);
-
         add(jSplitPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JEditorPane jEditorPane1;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSplitPane jSplitPane1;
-    private ec.ui.chart.JTsChart jTsChart1;
     // End of variables declaration//GEN-END:variables
 
     private void showTests() {
         Ts cur = getTs();
         if (cur == null) {
-            jEditorPane1.setText("");
+            jEditorPane1.loadContent("");
         } else {
             test(cur);
         }
@@ -181,8 +168,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements I
         }
         SeasonalityTests tests = SeasonalityTests.seasonalityTest(s, diffOrder, diffOrder <= 1, true);
         HtmlSeasonalityDiagnostics html = new HtmlSeasonalityDiagnostics(tests);
-        jEditorPane1.setText(HtmlUtil.toString(html));
-        jEditorPane1.setCaretPosition(0);
+        jEditorPane1.loadContent(HtmlUtil.toString(html));
     }
 
     void writeProperties(java.util.Properties p) {

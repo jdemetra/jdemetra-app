@@ -41,14 +41,14 @@ public class DirectIndirectSummary extends AbstractHtmlElement {
         if (bsa.getCount() != n || sa.getCount() != n) {
             return;
         }
-        stream.write(HtmlTag.HEADER2, h2, "Relatives differences between benchmarked and original sa series");
-        stream.open(new HtmlTable(0, 600));
+        stream.write(HtmlTag.HEADER2, "Relatives differences between benchmarked and original sa series");
+        stream.open(new HtmlTable().withWidth(600));
         stream.open(HtmlTag.TABLEROW);
-        stream.write(new HtmlTableCell("Series", 200));
-        stream.write(new HtmlTableCell("Average", 100));
-        stream.write(new HtmlTableCell("Stdev", 100));
-        stream.write(new HtmlTableCell("Min", 100));
-        stream.write(new HtmlTableCell("Max", 100));
+        stream.write(new HtmlTableCell("Series").withWidth(200));
+        stream.write(new HtmlTableCell("Average").withWidth(100));
+        stream.write(new HtmlTableCell("Stdev").withWidth(100));
+        stream.write(new HtmlTableCell("Min").withWidth(100));
+        stream.write(new HtmlTableCell("Max").withWidth(100));
         stream.close(HtmlTag.TABLEROW);
         stream.open(HtmlTag.TABLEROW);
         for (int i = 0; i < n; ++i) {
@@ -57,11 +57,11 @@ public class DirectIndirectSummary extends AbstractHtmlElement {
             DescriptiveStatistics tmp=new DescriptiveStatistics(sa.get(i).getTsData());
             del.getValues().div(tmp.getRmse());
             DescriptiveStatistics stats=new DescriptiveStatistics(del);
-            stream.write(new HtmlTableCell(name, 200));
-            stream.write(new HtmlTableCell(df4.format(stats.getAverage()), 100));
-            stream.write(new HtmlTableCell(df4.format(stats.getStdev()), 100));
-            stream.write(new HtmlTableCell(df4.format(stats.getMin()), 100));
-            stream.write(new HtmlTableCell(df4.format(stats.getMax()), 100));
+            stream.write(new HtmlTableCell(name).withWidth(200));
+            stream.write(new HtmlTableCell(df4.format(stats.getAverage())).withWidth(100));
+            stream.write(new HtmlTableCell(df4.format(stats.getStdev())).withWidth(100));
+            stream.write(new HtmlTableCell(df4.format(stats.getMin())).withWidth(100));
+            stream.write(new HtmlTableCell(df4.format(stats.getMax())).withWidth(100));
             stream.close(HtmlTag.TABLEROW);
         }
         stream.close(HtmlTag.TABLE);

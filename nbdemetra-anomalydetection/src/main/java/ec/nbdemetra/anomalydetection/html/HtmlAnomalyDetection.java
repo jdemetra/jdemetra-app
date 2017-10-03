@@ -38,7 +38,7 @@ public class HtmlAnomalyDetection extends AbstractHtmlElement implements IHtmlEl
 
     @Override
     public void write(HtmlStream stream) throws IOException {
-        stream.write(HtmlTag.HEADER1, h1, "Anomaly Detection").newLine();
+        stream.write(HtmlTag.HEADER1, "Anomaly Detection").newLine();
 
         HtmlRegArima reg = new HtmlRegArima(model_, false);
         reg.writeDetails(stream, false);

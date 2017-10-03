@@ -16,9 +16,16 @@
  */
 package ec.ui.html;
 
+import ec.ui.commands.ComponentCommand;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
@@ -39,9 +46,18 @@ import javax.swing.text.html.StyleSheet;
  */
 public class JHtmlPane extends JEditorPane {
 
+    public static final String STYLE_SHEET_PROPERTY = "styleSheet";
+    public static final String ZOOM_RATIO_PROPERTY = "zoomRatio";
+
     private boolean lastPaintException = false;
 
+    private StyleSheet styleSheet;
+    private int zoomRatio;
+
     public JHtmlPane() {
+        this.styleSheet = new StyleSheet();
+        this.zoomRatio = 100;
+
         setEditable(false);
         //when up/down arrow keys are pressed, ensure the whole browser content 
         //scrolls up/down instead of moving the caret position only
@@ -65,7 +81,19 @@ public class JHtmlPane extends JEditorPane {
 //            }
         });
 
-        initStyleSheet();
+        addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
+                    case STYLE_SHEET_PROPERTY:
+                        onStyleSheetChange();
+                        break;
+                    case ZOOM_RATIO_PROPERTY:
+                        onZoomRatioChange();
+                        break;
+                }
+            }
+        });
     }
 
     @Override
@@ -138,6 +166,101 @@ public class JHtmlPane extends JEditorPane {
         }
     }
 
+    public StyleSheet getStyleSheet() {
+        return styleSheet;
+    }
+
+    public void setStyleSheet(StyleSheet styleSheet) {
+        StyleSheet old = this.styleSheet;
+        this.styleSheet = styleSheet != null ? styleSheet : new StyleSheet();
+        firePropertyChange(STYLE_SHEET_PROPERTY, old, this.styleSheet);
+    }
+
+    public int getZoomRatio() {
+        return zoomRatio;
+    }
+
+    public void setZoomRatio(int zoomRatio) {
+        int old = this.zoomRatio;
+        this.zoomRatio = zoomRatio >= 10 && zoomRatio <= 200 ? zoomRatio : 100;
+        firePropertyChange(ZOOM_RATIO_PROPERTY, old, this.zoomRatio);
+    }
+
+    private void onStyleSheetChange() {
+        updateInternalStyle();
+    }
+
+    private void onZoomRatioChange() {
+        updateInternalStyle();
+    }
+
+    private void updateInternalStyle() {
+        StyleSheet newStyle = new StyleSheet();
+        newStyle.addStyleSheet(styleSheet);
+        newStyle.addRule("html { font-size: " + (getFont().getSize() * zoomRatio / 100) + "; }");
+
+        ((HTMLEditorKit) getEditorKit()).setStyleSheet(newStyle);
+        // refresh stylesheet
+        String text = getText();
+        setDocument(getEditorKit().createDefaultDocument());
+        setText(text);
+    }
+
+    static void copyText(JHtmlPane c) {
+        if (c.getSelectedText() != null) {
+            c.copy();
+        } else {
+            c.selectAll();
+            c.copy();
+            c.select(0, 0);
+        }
+    }
+
+    static void copyHtml(JHtmlPane c) {
+        Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+        cb.setContents(new StringSelection(c.getText()), null);
+    }
+
+    static final class ApplyStyleSheetCommand extends ComponentCommand<JHtmlPane> {
+
+        private final StyleSheet styleSheet;
+
+        ApplyStyleSheetCommand(StyleSheet styleSheet) {
+            super(STYLE_SHEET_PROPERTY);
+            this.styleSheet = styleSheet;
+        }
+
+        @Override
+        public void execute(JHtmlPane component) throws Exception {
+            component.setStyleSheet(styleSheet);
+        }
+
+        @Override
+        public boolean isSelected(JHtmlPane component) {
+            return Objects.equals(component.getStyleSheet(), styleSheet);
+        }
+    }
+
+    static final class ApplyZoomRatioCommand extends ComponentCommand<JHtmlPane> {
+
+        private final int zoomRatio;
+
+        ApplyZoomRatioCommand(int zoomRatio) {
+            super(ZOOM_RATIO_PROPERTY);
+            this.zoomRatio = zoomRatio;
+        }
+
+        @Override
+        public void execute(JHtmlPane component) throws Exception {
+            component.setZoomRatio(zoomRatio);
+        }
+
+        @Override
+        public boolean isSelected(JHtmlPane component) {
+            return component.getZoomRatio() == zoomRatio;
+        }
+    }
+
     private static class FilteredStyleSheet extends StyleSheet {
 
         @Override
@@ -170,23 +293,5 @@ public class JHtmlPane extends JEditorPane {
             }
             return value;
         }
-    }
-
-    private void initStyleSheet() {
-        StyleSheet ss = new StyleSheet();
-        ss.addRule("body {font-family: arial, verdana;}");
-        ss.addRule("body {font-size: 11;}");
-        ss.addRule("h4 {color: blue;}");
-        ss.addRule("td, th{text-align: right; margin-left: 5px; margin-right: 5 px;}");
-        ss.addRule("table {border: solid;}");
-        setStyleSheet(ss);
-    }
-
-    public void setStyleSheet(StyleSheet s) {
-        ((HTMLEditorKit) getEditorKit()).setStyleSheet(s);
-        // refresh stylesheet
-        String text = getText();
-        setDocument(getEditorKit().createDefaultDocument());
-        setText(text);
     }
 }
