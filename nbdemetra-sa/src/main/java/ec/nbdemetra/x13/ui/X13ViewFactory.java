@@ -361,7 +361,7 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
                     return new AbstractHtmlElement() {
                         @Override
                         public void write(HtmlStream stream) throws IOException {
-                            stream.write(HtmlTag.HEADER1, h1, "Final filters").newLine();
+                            stream.write(HtmlTag.HEADER1, "Final filters").newLine();
                             //stream.open(HtmlTag.DIV, "title", "Final seasonal filter");
                             stream.write("Seasonal filter: " + information.getFinalSeasonalFilter()).newLine();
                             if ("Composite filter".equals(information.getFinalSeasonalFilter())) {

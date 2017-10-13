@@ -113,7 +113,7 @@ public final class ReflectComponent extends JComponent {
         @Override
         public void write(HtmlStream stream) throws IOException {
             if (clazz != null) {
-                stream.write(HtmlTag.HEADER1, h1, clazz.getName()).newLine();
+                stream.write(HtmlTag.HEADER1, clazz.getName()).newLine();
                 stream.write("<table style='border:none;'>");
                 for (Method o : extractor.apply(clazz)) {
                     stream.write("<tr>")

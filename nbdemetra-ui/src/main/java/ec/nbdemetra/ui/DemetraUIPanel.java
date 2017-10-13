@@ -54,6 +54,16 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         chartPreviewPanel.add(colorSchemePreviewer);
 
         outliersEditorCB.setModel(new DefaultComboBoxModel(OutlierDefinitionsEditor.PrespecificiedOutliersEditor.values()));
+        
+        jSlider1.setMinimum(10);
+        jSlider1.setMaximum(200);
+        jSlider1.setValue(100);
+        jSlider1.setMajorTickSpacing(100);
+        jSlider1.setMinorTickSpacing(5);
+        jSlider1.setPaintTicks(true);
+        jSlider1.setPaintLabels(true);
+        jSlider1.setSnapToTicks(true);
+        jSlider1.setLabelTable(jSlider1.createStandardLabels(100, 100));
     }
 
     /**
@@ -83,9 +93,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         lastYearsLabel1 = new javax.swing.JLabel();
         outliersEditorCB = new javax.swing.JComboBox<>();
         htmlFontPanel = new javax.swing.JPanel();
-        smallRadio = new javax.swing.JRadioButton();
-        normalRadio = new javax.swing.JRadioButton();
-        bigRadio = new javax.swing.JRadioButton();
+        jSlider1 = new javax.swing.JSlider();
         popupMenuPanel = new javax.swing.JPanel();
         iconsVisibleCB = new javax.swing.JCheckBox();
 
@@ -181,24 +189,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
 
         htmlFontPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.htmlFontPanel.border.title"))); // NOI18N
         htmlFontPanel.setLayout(new java.awt.GridLayout(1, 0));
-
-        buttonGroup1.add(smallRadio);
-        org.openide.awt.Mnemonics.setLocalizedText(smallRadio, org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.smallRadio.text")); // NOI18N
-        smallRadio.setEnabled(false);
-        smallRadio.setFocusPainted(false);
-        htmlFontPanel.add(smallRadio);
-
-        buttonGroup1.add(normalRadio);
-        normalRadio.setSelected(true);
-        org.openide.awt.Mnemonics.setLocalizedText(normalRadio, org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.normalRadio.text")); // NOI18N
-        normalRadio.setFocusPainted(false);
-        htmlFontPanel.add(normalRadio);
-
-        buttonGroup1.add(bigRadio);
-        org.openide.awt.Mnemonics.setLocalizedText(bigRadio, org.openide.util.NbBundle.getMessage(DemetraUIPanel.class, "DemetraUIPanel.bigRadio.text")); // NOI18N
-        bigRadio.setEnabled(false);
-        bigRadio.setFocusPainted(false);
-        htmlFontPanel.add(bigRadio);
+        htmlFontPanel.add(jSlider1);
 
         jPanel4.add(htmlFontPanel);
 
@@ -225,6 +216,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         growthLastYears.setValue(demetraUI.getGrowthLastYears());
         iconsVisibleCB.setSelected(demetraUI.getPopupMenuIconsVisible());
         outliersEditorCB.setSelectedItem(demetraUI.getPrespecifiedOutliersEditor());
+        jSlider1.setValue(demetraUI.getHtmlZoomRatio());
     }
 
     void store() {
@@ -234,6 +226,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         demetraUI.setGrowthLastYears((Integer) growthLastYears.getValue());
         demetraUI.setPopupMenuIconsVisible(iconsVisibleCB.isSelected());
         demetraUI.setPrespecifiedOutliersEditor((OutlierDefinitionsEditor.PrespecificiedOutliersEditor) outliersEditorCB.getSelectedItem());
+        demetraUI.setHtmlZoomRatio(jSlider1.getValue());
     }
 
     boolean valid() {
@@ -303,7 +296,6 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JRadioButton bigRadio;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JPanel chartPreviewPanel;
     private javax.swing.JPanel chartsPanel;
@@ -320,12 +312,11 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JSlider jSlider1;
     private javax.swing.JLabel lastYearsLabel;
     private javax.swing.JLabel lastYearsLabel1;
-    private javax.swing.JRadioButton normalRadio;
     private javax.swing.JComboBox<String> outliersEditorCB;
     private javax.swing.JPanel outliersEditorPanel;
     private javax.swing.JPanel popupMenuPanel;
-    private javax.swing.JRadioButton smallRadio;
     // End of variables declaration//GEN-END:variables
 }

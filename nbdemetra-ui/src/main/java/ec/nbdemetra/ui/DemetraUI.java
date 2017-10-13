@@ -30,7 +30,6 @@ import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;
 import ec.tss.sa.EstimationPolicyType;
-import ec.tss.sa.SaManager;
 import ec.tss.sa.output.BasicConfiguration;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IParam;
@@ -93,6 +92,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public static final String PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY = "prespecifiedOutliersEditor";
     public static final String SELECTED_DIAG_FIELDS_PROPERTY = "selectedDiagnosticsFields";
     public static final String SELECTED_SERIES_FIELDS_PROPERTY = "selectedSeriesFields";
+    public static final String HTML_ZOOM_RATIO_PROPERTY = "htmlZoomRatio";
 
     // DEFAULT PROPERTIES
     static final IParam<Config, String> COLOR_SCHEME_NAME = Params.onString(SmartColorScheme.NAME, COLOR_SCHEME_NAME_PROPERTY);
@@ -115,6 +115,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
             BasicConfiguration.allSingleSaDetails(false).stream().toArray(String[]::new));
     static final IParam<Config, String[]> SELECTED_SERIES_FIELDS = Params.onStringArray(SELECTED_SERIES_FIELDS_PROPERTY,
             BasicConfiguration.allSaSeries(false).stream().toArray(String[]::new));
+    static final IParam<Config, Integer> HTML_ZOOM_RATIO = Params.onInteger(100, HTML_ZOOM_RATIO_PROPERTY);
 
     // INTERNAL STUFF
     private static final Ordering<ColorScheme> COLOR_SCHEME_ORDERING = Ordering.natural().onResultOf(o -> o.getDisplayName());
@@ -337,6 +338,16 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
         this.properties.selectedSeriesFields = fields;
         firePropertyChange(SELECTED_SERIES_FIELDS_PROPERTY, old, this.properties.selectedSeriesFields);
     }
+    
+    public int getHtmlZoomRatio() {
+        return this.properties.htmlZoomRatio;
+    }
+    
+    public void setHtmlZoomRatio(int htmlZoomRatio) {
+        int old = this.properties.htmlZoomRatio;
+        this.properties.htmlZoomRatio = htmlZoomRatio >= 10 && htmlZoomRatio <= 200 ? htmlZoomRatio : 100;
+        firePropertyChange(HTML_ZOOM_RATIO_PROPERTY, old, this.properties.htmlZoomRatio);
+    }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Utils">
@@ -407,6 +418,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
         setPrespecifiedOutliersEditor(bean.prespecifiedOutliersEditor);
         setSelectedDiagFields(bean.selectedDiagFields);
         setSelectedSeriesFields(bean.selectedSeriesFields);
+        setHtmlZoomRatio(bean.htmlZoomRatio);
     }
 
     @Override
@@ -436,6 +448,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
         PrespecificiedOutliersEditor prespecifiedOutliersEditor;
         List<String> selectedDiagFields;
         List<String> selectedSeriesFields;
+        int htmlZoomRatio;
 
         ConfigBean() {
             colorSchemeName = COLOR_SCHEME_NAME.defaultValue();
@@ -456,6 +469,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
             prespecifiedOutliersEditor = PRESPECIFIED_OUTLIERS_EDITOR.defaultValue();
             selectedDiagFields = Arrays.asList(SELECTED_DIAG_FIELDS.defaultValue());
             selectedSeriesFields = Arrays.asList(SELECTED_SERIES_FIELDS.defaultValue());
+            htmlZoomRatio = HTML_ZOOM_RATIO.defaultValue();
         }
 
         ConfigBean(Config config) {
@@ -478,6 +492,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
             prespecifiedOutliersEditor = PRESPECIFIED_OUTLIERS_EDITOR.get(config);
             selectedDiagFields = Arrays.asList(SELECTED_DIAG_FIELDS.get(config));
             selectedSeriesFields = Arrays.asList(SELECTED_SERIES_FIELDS.get(config));
+            htmlZoomRatio = HTML_ZOOM_RATIO.get(config);
         }
 
         Config toConfig() {
@@ -500,6 +515,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
             PRESPECIFIED_OUTLIERS_EDITOR.set(b, prespecifiedOutliersEditor);
             SELECTED_DIAG_FIELDS.set(b, Collections.toArray(selectedDiagFields, String.class));
             SELECTED_SERIES_FIELDS.set(b, Collections.toArray(selectedSeriesFields, String.class));
+            HTML_ZOOM_RATIO.set(b, htmlZoomRatio);
             return b.build();
         }
     }
