@@ -4,7 +4,7 @@
 
     <groupId>eu.europa.ec.joinup.sat</groupId>
     <artifactId>nbdemetra-parent</artifactId>
-    <version>2.2.1-SNAPSHOT</version>
+    <version>2.2.1-RC1</version>
     <packaging>pom</packaging>
 
     <name>NbDemetra - Parent</name>
@@ -23,7 +23,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <brandingToken>nbdemetra</brandingToken>
         <netbeans.version>RELEASE82</netbeans.version>
-        <jdemetra.version>2.2.1-SNAPSHOT</jdemetra.version>
+        <jdemetra.version>2.2.1-RC1</jdemetra.version>
         <!-- plugins versions > -->
         <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
@@ -64,7 +64,7 @@
                 <scope>import</scope>
             </dependency>
             <!-- < import of jdemetra deps -->
-            
+
             <!-- NetBeans deps > -->
             <dependency>
                 <groupId>org.netbeans.api</groupId>
@@ -322,7 +322,7 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>            
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
@@ -441,7 +441,7 @@
     <distributionManagement>
         <repository>
             <id>joinup-releases</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>                    
+            <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
             <id>joinup-snapshots</id>

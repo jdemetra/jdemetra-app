@@ -5,6 +5,8 @@
 package ec.nbdemetra.x13.ui;
 
 import ec.nbdemetra.sa.DiagnosticsMatrixView;
+import ec.nbdemetra.ws.WorkspaceFactory;
+import ec.nbdemetra.ws.WorkspaceItem;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.GenericSaProcessingFactory;
 import ec.satoolkit.ISeriesDecomposition;
@@ -28,27 +30,17 @@ import ec.tstoolkit.utilities.DefaultInformationExtractor;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.InformationExtractor;
 import ec.tstoolkit.utilities.LinearId;
-import ec.ui.view.tsprocessing.ComposedProcDocumentItemFactory;
-import ec.ui.view.tsprocessing.DefaultItemUI;
-import ec.ui.view.tsprocessing.HtmlItemUI;
-import ec.ui.view.tsprocessing.IProcDocumentView;
-import ec.ui.view.tsprocessing.IProcDocumentViewFactory;
-import ec.ui.view.tsprocessing.ItemUI;
-import ec.ui.view.tsprocessing.PooledItemUI;
-import ec.ui.view.tsprocessing.ProcDocumentItemFactory;
-import ec.ui.view.tsprocessing.SlidingSpansDetailUI;
-import ec.ui.view.tsprocessing.SlidingSpansUI;
-import ec.ui.view.tsprocessing.TsDocumentInformationExtractor;
+import ec.ui.view.tsprocessing.*;
 import ec.ui.view.tsprocessing.sa.SaDocumentViewFactory;
-import static ec.ui.view.tsprocessing.sa.SaDocumentViewFactory.MAIN_SUMMARY;
-import static ec.ui.view.tsprocessing.sa.SaDocumentViewFactory.saExtractor;
-import static ec.ui.view.tsprocessing.sa.SaDocumentViewFactory.ssExtractor;
+import static ec.ui.view.tsprocessing.sa.SaDocumentViewFactory.*;
 import ec.ui.view.tsprocessing.sa.SaTableUI;
 import ec.ui.view.tsprocessing.sa.SeasonalityTestUI;
 import ec.ui.view.tsprocessing.sa.SiRatioUI;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.JComponent;
 import org.openide.util.lookup.ServiceProvider;
@@ -131,17 +123,17 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
 
         public MainSummaryFactory() {
             super(MAIN_SUMMARY, new DefaultInformationExtractor<X13Document, X13Document>() {
-                @Override
-                public X13Document retrieve(X13Document source) {
-                    return source;
-                }
-            }, new PooledItemUI<View, X13Document, X13Summary>(X13Summary.class) {
-                @Override
-                protected void init(X13Summary c, View host, X13Document information) {
-                    c.setTsToolkit(host.getToolkit());
-                    c.set(information);
-                }
-            });
+              @Override
+              public X13Document retrieve(X13Document source) {
+                  return source;
+              }
+          }, new PooledItemUI<View, X13Document, X13Summary>(X13Summary.class) {
+              @Override
+              protected void init(X13Summary c, View host, X13Document information) {
+                  c.setTsToolkit(host.getToolkit());
+                  c.set(information);
+              }
+          });
         }
     }
     //</editor-fold>
@@ -181,21 +173,21 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
 
         public MainSiFactory() {
             super(MAIN_SI, new DefaultInformationExtractor<X13Document, TsData[]>() {
-                @Override
-                public TsData[] retrieve(X13Document source) {
-                    X11Results rslt = source.getDecompositionPart();
-                    if (rslt == null) {
-                        return null;
-                    }
-                    TsData si = rslt.getData("d8", TsData.class);
-                    TsData seas = rslt.getData("d10", TsData.class);
+              @Override
+              public TsData[] retrieve(X13Document source) {
+                  X11Results rslt = source.getDecompositionPart();
+                  if (rslt == null) {
+                      return null;
+                  }
+                  TsData si = rslt.getData("d8", TsData.class);
+                  TsData seas = rslt.getData("d10", TsData.class);
 
-                    if (rslt.getSeriesDecomposition().getMode() == DecompositionMode.LogAdditive) {
-                        si = si.exp();
-                    }
-                    return new TsData[]{seas, si};
-                }
-            }, new SiRatioUI());
+                  if (rslt.getSeriesDecomposition().getMode() == DecompositionMode.LogAdditive) {
+                      si = si.exp();
+                  }
+                  return new TsData[]{seas, si};
+              }
+          }, new SiRatioUI());
         }
     }
 
@@ -351,34 +343,34 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
 
         public X11FiltersFactory() {
             super(X11_FILTERS, new TsDocumentInformationExtractor<X13Document, X11Results>() {
-                @Override
-                protected X11Results buildInfo(X13Document source) {
-                    return source.getDecompositionPart();
-                }
-            }, new HtmlItemUI<View, X11Results>() {
-                @Override
-                protected IHtmlElement getHtmlElement(View host, final X11Results information) {
-                    return new AbstractHtmlElement() {
-                        @Override
-                        public void write(HtmlStream stream) throws IOException {
-                            stream.write(HtmlTag.HEADER1, "Final filters").newLine();
-                            //stream.open(HtmlTag.DIV, "title", "Final seasonal filter");
-                            stream.write("Seasonal filter: " + information.getFinalSeasonalFilter()).newLine();
-                            if ("Composite filter".equals(information.getFinalSeasonalFilter())) {
-                                DefaultSeasonalFilteringStrategy[] strategies = information.getFinalSeasonalFilterComposit();
-                                for (int i = 0; i < strategies.length; i++) {
-                                    DefaultSeasonalFilteringStrategy strategy = strategies[i];
-                                    stream.write((i + 1) + "&#09;" + strategy.getDescription()).newLine();
+              @Override
+              protected X11Results buildInfo(X13Document source) {
+                  return source.getDecompositionPart();
+              }
+          }, new HtmlItemUI<View, X11Results>() {
+              @Override
+              protected IHtmlElement getHtmlElement(View host, final X11Results information) {
+                  return new AbstractHtmlElement() {
+                      @Override
+                      public void write(HtmlStream stream) throws IOException {
+                          stream.write(HtmlTag.HEADER1, "Final filters").newLine();
+                          //stream.open(HtmlTag.DIV, "title", "Final seasonal filter");
+                          stream.write("Seasonal filter: " + information.getFinalSeasonalFilter()).newLine();
+                          if ("Composite filter".equals(information.getFinalSeasonalFilter())) {
+                              DefaultSeasonalFilteringStrategy[] strategies = information.getFinalSeasonalFilterComposit();
+                              for (int i = 0; i < strategies.length; i++) {
+                                  DefaultSeasonalFilteringStrategy strategy = strategies[i];
+                                  stream.write((i + 1) + "&#09;" + strategy.getDescription()).newLine();
 
-                                }
-                            }
+                              }
+                          }
 
 //stream.close(HtmlTag.DIV).newLine();
-                            stream.write("Trend filter: " + information.getFinalTrendFilter()).newLine();
-                        }
-                    };
-                }
-            });
+                          stream.write("Trend filter: " + information.getFinalTrendFilter()).newLine();
+                      }
+                  };
+              }
+          });
         }
     }
 
@@ -387,16 +379,16 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
 
         public MStatisticsSummaryFactory() {
             super(M_STATISTICS_SUMMARY, new TsDocumentInformationExtractor<X13Document, Mstatistics>() {
-                @Override
-                protected Mstatistics buildInfo(X13Document source) {
-                    return source.getMStatistics();
-                }
-            }, new HtmlItemUI<View, Mstatistics>() {
-                @Override
-                protected IHtmlElement getHtmlElement(View host, Mstatistics information) {
-                    return new HtmlMstatistics(information);
-                }
-            });
+              @Override
+              protected Mstatistics buildInfo(X13Document source) {
+                  return source.getMStatistics();
+              }
+          }, new HtmlItemUI<View, Mstatistics>() {
+              @Override
+              protected IHtmlElement getHtmlElement(View host, Mstatistics information) {
+                  return new HtmlMstatistics(information);
+              }
+          });
         }
     }
 
@@ -405,16 +397,16 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
 
         public MStatisticsDetailsFactory() {
             super(M_STATISTICS_DETAILS, new TsDocumentInformationExtractor<X13Document, Mstatistics>() {
-                @Override
-                protected Mstatistics buildInfo(X13Document source) {
-                    return source.getMStatistics();
-                }
-            }, new HtmlItemUI<View, Mstatistics>() {
-                @Override
-                protected IHtmlElement getHtmlElement(View host, Mstatistics information) {
-                    return new HtmlX11Diagnostics(information);
-                }
-            });
+              @Override
+              protected Mstatistics buildInfo(X13Document source) {
+                  return source.getMStatistics();
+              }
+          }, new HtmlItemUI<View, Mstatistics>() {
+              @Override
+              protected IHtmlElement getHtmlElement(View host, Mstatistics information) {
+                  return new HtmlX11Diagnostics(information);
+              }
+          });
         }
     }
     //</editor-fold>
@@ -442,17 +434,21 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
 
             Map<String, CompositeResults> results = new LinkedHashMap<>();
             X13Specification currentSpec = source.getSpecification();
-            results.put("[C] " + currentSpec.toString(), source.getResults());
+            List<WorkspaceItem<X13Specification>> x = WorkspaceFactory.getInstance().getActiveWorkspace().searchDocuments(X13Specification.class);
+            Optional<WorkspaceItem<X13Specification>> y = x.stream().filter(item -> item.getElement().equals(currentSpec)).findFirst();
+            String currentSpecName = y.isPresent() ? y.get().getDisplayName() : currentSpec.toString();
+            results.put("[C] " + currentSpecName, source.getResults());
 
-            for (X13Specification spec : X13Specification.allSpecifications()) {
+            x.forEach((item) -> {
+                X13Specification spec = item.getElement();
                 if (!spec.equals(currentSpec)) {
                     IProcessing<TsData, CompositeResults> proc = source.getProcessor().generateProcessing(spec, source.getContext());
                     CompositeResults rslt = proc.process(source.getSeries());
                     if (rslt != null) {
-                        results.put(spec.toString(), rslt);
+                        results.put(item.getDisplayName(), rslt);
                     }
                 }
-            }
+            });
             return results;
         }
     };
@@ -462,12 +458,12 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
 
         public DiagnosticsMatrixFactory() {
             super(DIAGNOSTICS_MATRIX, DiagnosticsMatrixExtractor.INSTANCE, new DefaultItemUI<IProcDocumentView<X13Document>, Map<String, CompositeResults>>() {
-                @Override
-                public JComponent getView(IProcDocumentView<X13Document> host, Map<String, CompositeResults> information) {
-                    return new DiagnosticsMatrixView(information);
-                }
+              @Override
+              public JComponent getView(IProcDocumentView<X13Document> host, Map<String, CompositeResults> information) {
+                  return new DiagnosticsMatrixView(information);
+              }
 
-            });
+          });
         }
     }
 
@@ -534,28 +530,28 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
 
         public DiagnosticsSeasonalityFactory() {
             super(DIAGNOSTICS_SEASONALITY, new DefaultInformationExtractor<X13Document, SeasonalityTestUI.Information>() {
-                @Override
-                public SeasonalityTestUI.Information retrieve(X13Document source) {
-                    CompositeResults rslt = source.getResults();
-                    ISeriesDecomposition finals = source.getFinalDecomposition();
-                    if (finals == null) {
-                        return null;
-                    }
-                    TsData si = rslt.getData("d8", TsData.class);
-                    if (si == null) {
-                        return null;
-                    }
-                    DecompositionMode mode = finals.getMode();
-                    boolean mul = mode.isMultiplicative();
-                    if (mode == DecompositionMode.LogAdditive) {
-                        si = si.exp();
-                    }
-                    SeasonalityTestUI.Information info = new SeasonalityTestUI.Information();
-                    info.si = si;
-                    info.mul = mul;
-                    return info;
-                }
-            }, new SeasonalityTestUI());
+              @Override
+              public SeasonalityTestUI.Information retrieve(X13Document source) {
+                  CompositeResults rslt = source.getResults();
+                  ISeriesDecomposition finals = source.getFinalDecomposition();
+                  if (finals == null) {
+                      return null;
+                  }
+                  TsData si = rslt.getData("d8", TsData.class);
+                  if (si == null) {
+                      return null;
+                  }
+                  DecompositionMode mode = finals.getMode();
+                  boolean mul = mode.isMultiplicative();
+                  if (mode == DecompositionMode.LogAdditive) {
+                      si = si.exp();
+                  }
+                  SeasonalityTestUI.Information info = new SeasonalityTestUI.Information();
+                  info.si = si;
+                  info.mul = mul;
+                  return info;
+              }
+          }, new SeasonalityTestUI());
         }
 
         @ServiceProvider(service = ProcDocumentItemFactory.class, position = 600050)
@@ -683,7 +679,7 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
     }
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="REGISTER STABILITY VIEWS">    
+    //<editor-fold defaultstate="collapsed" desc="REGISTER STABILITY VIEWS">
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 604010)
     public static class StabilityTDFactory extends SaDocumentViewFactory.StabilityTDFactory<X13Document> {
 
