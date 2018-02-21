@@ -64,7 +64,7 @@
                 <scope>import</scope>
             </dependency>
             <!-- < import of jdemetra deps -->
-            
+
             <!-- NetBeans deps > -->
             <dependency>
                 <groupId>org.netbeans.api</groupId>
@@ -322,7 +322,7 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>            
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
@@ -441,7 +441,7 @@
     <distributionManagement>
         <repository>
             <id>joinup-releases</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>                    
+            <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
             <id>joinup-snapshots</id>
