@@ -100,7 +100,9 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
-                    <!--installersFilePrefix>helloworld</installersFilePrefix-->
+                    <finalName>jdemetra-${project.version}-bin</finalName>
+                    <installersFilePrefix>jdemetra-${project.version}-setup</installersFilePrefix>
+                    <!--<installerPack200Enable>false</installerPack200Enable>-->
                     <etcConfFile>src/main/resources/nbdemetra.conf</etcConfFile>
                 </configuration>
             </plugin>
