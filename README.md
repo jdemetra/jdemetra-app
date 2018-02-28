@@ -1,4 +1,4 @@
-#Econometric software for seasonal adjustment and other time series methods (JDemetra+)
+# Econometric software for seasonal adjustment and other time series methods (JDemetra+)
 
 [![Download](https://img.shields.io/github/release/jdemetra/jdemetra-app.svg)](https://github.com/jdemetra/jdemetra-app/releases/latest)
 
@@ -16,7 +16,7 @@ From a technical point of view, JDemetra+ is a collection of reusable and extens
 
 JDemetra+ has been [officially recommended](https://ec.europa.eu/eurostat/cros/system/files/Jdemetra_%20release.pdf), since 2 February 2015, to the members of the ESS and the European System of Central Banks as software for seasonal and calendar adjustment of official statistics.
 
-##Quickstart
+## Quickstart
 
 JDemetra+ runs on multiple platforms such as Windows, Mac OS X and Linux (Java SE 7 or later version  is required).
 
