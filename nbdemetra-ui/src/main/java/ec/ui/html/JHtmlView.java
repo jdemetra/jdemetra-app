@@ -76,7 +76,7 @@ public final class JHtmlView extends AHtmlView {
             browser.addPropertyChangeListener(JHtmlPane.ZOOM_RATIO_PROPERTY, evt -> slider.setValue(browser.getZoomRatio()));
         }
         result.add(slider);
-        for (int o : new int[]{200, 100, 75, 50, 25}) {
+        for (int o : new int[]{200, 175, 150, 125, 100, 75}) {
             result.add(new JCheckBoxMenuItem(new JHtmlPane.ApplyZoomRatioCommand(o).toAction(browser))).setText(o + "%");
         }
         return result;
