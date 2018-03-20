@@ -12,7 +12,7 @@
     <name>NbDemetra - Utilities</name>
 
     <properties>
-        <jna.version>4.2.1</jna.version>
+        <jna.version>4.5.1</jna.version>
         <jfreechart.version>1.0.19</jfreechart.version>
         <jfreesvg.version>3.2</jfreesvg.version>
     </properties>
