@@ -8,7 +8,6 @@ import ec.ui.interfaces.IDisposable;
 import ec.ui.interfaces.IColorSchemeAble;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.util.chart.ColorScheme;
-import ec.util.chart.swing.Charts;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -70,8 +69,6 @@ public abstract class AChartView extends JComponent implements IColorSchemeAble,
         };
         this.seriesCollection = new XYSeriesCollection();
         this.chartPanel = new JChartPanel(ChartFactory.createLineChart(null, null, null, null, orientation_, false, false, false)); //, getDefaultMinX(), getDefaultMaxX(), getDefaultMinY(), getDefaultMaxY());
-
-        Charts.avoidScaling(chartPanel);
 
         chartPanel.addChartMouseListener(new ChartMouseListener() {
 

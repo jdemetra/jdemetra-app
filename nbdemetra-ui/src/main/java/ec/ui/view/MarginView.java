@@ -104,12 +104,11 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
     private static XYItemEntity highlight;
 
     public MarginView() {
-        this.chartPanel = new ChartPanel(createMarginViewChart());
+        this.chartPanel = Charts.newChartPanel(createMarginViewChart());
         this.data = new MarginData(null, null, null, false, null);
         this.precisionMarkersVisible = false;
         this.revealObs = new RevealObs();
 
-        Charts.avoidScaling(chartPanel);
         Charts.enableFocusOnClick(chartPanel);
 
         chartPanel.addChartMouseListener(new HighlightChartMouseListener2());

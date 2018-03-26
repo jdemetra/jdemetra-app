@@ -92,9 +92,7 @@ public class SlidingSpanView extends JComponent implements IColorSchemeAble {
         };
 
         this.seriesPanel = new JChartPanel(createSeriesChart());
-        Charts.avoidScaling(seriesPanel);
         this.distributionPanel = new JChartPanel(createDistributionChart());
-        Charts.avoidScaling(distributionPanel);
         this.documentPanel = Box.createHorizontalBox();
 
         JSplitPane splitpane1 = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, distributionPanel, documentPanel);

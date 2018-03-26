@@ -36,6 +36,7 @@ import ec.tss.tsproviders.utils.Formatters;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.IParser;
 import ec.tss.tsproviders.utils.Parsers;
+import ec.util.chart.swing.Charts;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -95,6 +96,7 @@ public final class Installer extends ModuleInstall {
         public void restore() {
             ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
             BarRenderer.setDefaultBarPainter(new StandardBarPainter());
+            LOGGER.info("ChartPanel buffer " + (Charts.USE_CHART_PANEL_BUFFER ? "enabled" : "disabled"));
         }
     }
 
