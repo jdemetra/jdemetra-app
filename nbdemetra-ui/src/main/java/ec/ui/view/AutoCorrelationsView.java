@@ -93,8 +93,7 @@ public class AutoCorrelationsView extends ATsControl implements IReadDataBlockVi
         this.meanCorrection = DEFAULT_MEAN_CORRECTION;
         this.ac = DEFAULT_AUTO_CORRELATIONS;
 
-        this.chartPanel = new ChartPanel(createAutoCorrelationsViewChart());
-        Charts.avoidScaling(chartPanel);
+        this.chartPanel = Charts.newChartPanel(createAutoCorrelationsViewChart());
 
         onDataFormatChange();
         onColorSchemeChange();

@@ -18,6 +18,7 @@ package ec.util.chart.swing;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.Paint;
 import java.awt.Point;
@@ -32,6 +33,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -57,6 +59,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
+import static org.jfree.chart.ChartPanel.*;
 import org.jfree.chart.ChartTransferable;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
@@ -276,6 +279,37 @@ public final class Charts {
     public static int getSelectedSeries(@Nonnull Point pt, @Nonnull ChartPanel cp) {
         LegendItemEntity result = getSeriesForPoint(pt, cp);
         return result != null ? ((SeriesDataset) result.getDataset()).indexOf(result.getSeriesKey()) : NO_SERIES_FOUND_INDEX;
+    }
+
+    public static boolean USE_CHART_PANEL_BUFFER = isChartPanelBufferValid();
+
+    private static boolean isChartPanelBufferValid() {
+        AffineTransform o = GraphicsEnvironment
+                .getLocalGraphicsEnvironment()
+                .getDefaultScreenDevice()
+                .getDefaultConfiguration()
+                .getDefaultTransform();
+        return o.getScaleX() == 1.0 && o.getScaleY() == 1.0;
+    }
+
+    @Nonnull
+    public static ChartPanel newChartPanel(@Nullable JFreeChart chart) {
+        ChartPanel result = new ChartPanel(
+                chart,
+                DEFAULT_WIDTH,
+                DEFAULT_HEIGHT,
+                DEFAULT_MINIMUM_DRAW_WIDTH,
+                DEFAULT_MINIMUM_DRAW_HEIGHT,
+                DEFAULT_MAXIMUM_DRAW_WIDTH,
+                DEFAULT_MAXIMUM_DRAW_HEIGHT,
+                USE_CHART_PANEL_BUFFER, // useBuffer
+                true, // properties
+                true, // save
+                true, // print
+                true, // zoom
+                true // tooltips
+        );
+        return avoidScaling(result);
     }
 
     @Nonnull

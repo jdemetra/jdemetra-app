@@ -99,8 +99,7 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
         this.hCount = DEFAULT_H_COUNT;
         this.data = DEFAULT_DATA;
 
-        this.chartPanel = new ChartPanel(createDistributionViewChart());
-        Charts.avoidScaling(chartPanel);
+        this.chartPanel = Charts.newChartPanel(createDistributionViewChart());
 
         onDataFormatChange();
         onColorSchemeChange();

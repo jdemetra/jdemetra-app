@@ -19,7 +19,20 @@ public class JChartPanel extends ChartPanel {
     public static final String ZOOM_SELECTION_CHANGED = "Zoom Selection Changed";
 
     public JChartPanel(JFreeChart chart) {
-        super(chart);
+        super(chart,
+                DEFAULT_WIDTH,
+                DEFAULT_HEIGHT,
+                DEFAULT_MINIMUM_DRAW_WIDTH,
+                DEFAULT_MINIMUM_DRAW_HEIGHT,
+                DEFAULT_MAXIMUM_DRAW_WIDTH,
+                DEFAULT_MAXIMUM_DRAW_HEIGHT,
+                Charts.USE_CHART_PANEL_BUFFER, // useBuffer
+                true, // properties
+                true, // save
+                true, // print
+                true, // zoom
+                true // tooltips
+        );
         Charts.avoidScaling(this);
         this.setDomainZoomable(false);
         this.setRangeZoomable(false);
