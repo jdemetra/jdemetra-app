@@ -16,11 +16,7 @@
  */
 package ec.nbdemetra.ui.properties.l2fprod;
 
-import ec.tstoolkit.timeseries.regression.OutlierType;
-import static ec.tstoolkit.timeseries.regression.OutlierType.AO;
-import static ec.tstoolkit.timeseries.regression.OutlierType.LS;
-import static ec.tstoolkit.timeseries.regression.OutlierType.SO;
-import static ec.tstoolkit.timeseries.regression.OutlierType.TC;
+import ec.tss.html.HtmlClass;
 import static ec.util.chart.swing.SwingColorSchemeSupport.toHex;
 import java.awt.Color;
 
@@ -63,8 +59,12 @@ public class ColorChooser {
                 return Color.black;
         }
     }
-    
+
     public static String getBgHexColor(String type) {
         return toHex(getColor(type));
+    }
+
+    public static HtmlClass getCodeClass(String code) {
+        return HtmlClass.of("outlier-" + code.toLowerCase());
     }
 }

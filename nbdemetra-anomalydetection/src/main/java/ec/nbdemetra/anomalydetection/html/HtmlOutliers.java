@@ -21,26 +21,19 @@ import ec.nbdemetra.ui.properties.l2fprod.ColorChooser;
 import ec.tss.html.AbstractHtmlElement;
 import ec.tss.html.HtmlStream;
 import ec.tss.html.HtmlStyle;
-import static ec.tss.html.HtmlStyle.Black;
-import static ec.tss.html.HtmlStyle.CustomDark;
-import static ec.tss.html.HtmlStyle.CustomLight;
 import ec.tss.html.HtmlTable;
 import ec.tss.html.HtmlTableCell;
 import ec.tss.html.HtmlTableHeader;
 import ec.tss.html.HtmlTag;
 import ec.tss.html.IHtmlElement;
 import ec.tstoolkit.timeseries.regression.OutlierEstimation;
-import ec.tstoolkit.timeseries.regression.OutlierType;
-import static ec.tstoolkit.timeseries.regression.OutlierType.AO;
-import static ec.tstoolkit.timeseries.regression.OutlierType.LS;
-import static ec.tstoolkit.timeseries.regression.OutlierType.TC;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import static ec.tss.html.Bootstrap4.TEXT_CENTER;
 
 /**
  * Html content displaying a table with all outliers information
@@ -58,18 +51,18 @@ public class HtmlOutliers extends AbstractHtmlElement implements IHtmlElement {
 
     @Override
     public void write(HtmlStream stream) throws IOException {
-        stream.write(HtmlTag.HEADER3, h3, "Outliers").newLine();
+        stream.write(HtmlTag.HEADER3, "Outliers").newLine();
         stream.write("Number of outliers : " + outliers_.length).newLine().newLine();
 
-        stream.open(new HtmlTable(0, 350));
+        stream.open(new HtmlTable().withWidth(350));
 
         // Headers
         stream.open(HtmlTag.TABLEROW);
-        stream.write(new HtmlTableHeader("", 40));
-        stream.write(new HtmlTableHeader("Period", HtmlStyle.Bold));
-        stream.write(new HtmlTableHeader("Value", HtmlStyle.Bold));
-        stream.write(new HtmlTableHeader("StdErr", HtmlStyle.Bold));
-        stream.write(new HtmlTableHeader("TStat", HtmlStyle.Bold));
+        stream.write(new HtmlTableHeader("").withWidth(40));
+        stream.write(new HtmlTableHeader("Period"));
+        stream.write(new HtmlTableHeader("Value"));
+        stream.write(new HtmlTableHeader("StdErr"));
+        stream.write(new HtmlTableHeader("TStat"));
         stream.close(HtmlTag.TABLEROW);
 
         // Data
@@ -77,25 +70,25 @@ public class HtmlOutliers extends AbstractHtmlElement implements IHtmlElement {
 
         for (OutlierEstimation e : outliers_) {
             stream.open(HtmlTag.TABLEROW);
-            stream.write(new HtmlTableCell(e.getCode(), 40, HtmlStyle.Center, getForeground(e.getCode())), ColorChooser.getBgHexColor(e.getCode()));
-            stream.write(new HtmlTableCell(e.getPosition().toString(), 50));
-            stream.write(new HtmlTableCell(df4.format(e.getValue()), 80));
-            stream.write(new HtmlTableCell(df4.format(e.getStdev()), 80));
-            stream.write(new HtmlTableCell(df4.format(e.getTStat()), 80));
+            stream.write(new HtmlTableCell(e.getCode()).withWidth(40).withClass(ColorChooser.getCodeClass(e.getCode())));
+            stream.write(new HtmlTableCell(e.getPosition().toString()).withWidth(50));
+            stream.write(new HtmlTableCell(df4.format(e.getValue())).withWidth(80));
+            stream.write(new HtmlTableCell(df4.format(e.getStdev())).withWidth(80));
+            stream.write(new HtmlTableCell(df4.format(e.getTStat())).withWidth(80));
             stream.close(HtmlTag.TABLEROW);
         }
 
         stream.close(HtmlTag.TABLE);
 
         stream.newLine();
-        stream.write(HtmlTag.HEADER3, h3, "Summary").newLine();
-        stream.open(new HtmlTable(0, 200));
+        stream.write(HtmlTag.HEADER3, "Summary").newLine();
+        stream.open(new HtmlTable().withWidth(200));
 
         // Headers
         stream.open(HtmlTag.TABLEROW);
-        stream.write(new HtmlTableHeader("", 40));
-        stream.write(new HtmlTableHeader("Number", HtmlStyle.Bold, HtmlStyle.Center));
-        stream.write(new HtmlTableHeader("Avg Value", HtmlStyle.Bold));
+        stream.write(new HtmlTableHeader("").withWidth(40));
+        stream.write(new HtmlTableHeader("Number").withClass(TEXT_CENTER));
+        stream.write(new HtmlTableHeader("Avg Value"));
         stream.close(HtmlTag.TABLEROW);
 
         // Data
@@ -105,22 +98,23 @@ public class HtmlOutliers extends AbstractHtmlElement implements IHtmlElement {
             stream.open(HtmlTag.TABLEROW);
             OutlierPojo o = map.get(l.get(i));
 
-            stream.write(new HtmlTableCell(l.get(i).toString(), 40, HtmlStyle.Center, getForeground(l.get(i))), ColorChooser.getBgHexColor(l.get(i)));
-            stream.write(new HtmlTableCell(String.valueOf(o.getNumberOfValues()), 80, HtmlStyle.Center));
-            stream.write(new HtmlTableCell(df4.format(o.getAverageValue()), 80));
+            stream.write(new HtmlTableCell(l.get(i)).withWidth(40).withClass(ColorChooser.getCodeClass(l.get(i))));
+            stream.write(new HtmlTableCell(String.valueOf(o.getNumberOfValues())).withWidth(80).withClass(TEXT_CENTER));
+            stream.write(new HtmlTableCell(df4.format(o.getAverageValue())).withWidth(80));
             stream.close(HtmlTag.TABLEROW);
         }
     }
 
+    @Deprecated
     public static HtmlStyle getForeground(String t) {
         switch (t) {
             case "AO":
-                return CustomDark;
+                return HtmlStyle.CustomDark;
             case "LS":
             case "TC":
-                return CustomLight;
+                return HtmlStyle.CustomLight;
             default:
-                return Black;
+                return HtmlStyle.Black;
         }
     }
 

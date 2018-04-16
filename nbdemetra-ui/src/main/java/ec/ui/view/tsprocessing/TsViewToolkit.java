@@ -50,14 +50,12 @@ public final class TsViewToolkit implements ITsViewToolkit {
     private final IPool<ATsGrowthChart> growthchartPool;
     private final IPool<ATsGrid> gridPool;
     private final IPool<AHtmlView> htmlPool;
-    private StyleSheet styleSheet;
 
     private TsViewToolkit() {
         this.chartPool = Pools.on(new ChartFactory(), 10);
         this.growthchartPool = Pools.on(new GrowthChartFactory(), 10);
         this.gridPool = Pools.on(new GridFactory(), 10);
         this.htmlPool = Pools.on(new HtmlFactory(), 10);
-        this.styleSheet = createStyleSheet(13, 13, 12, 12, 11, true);
     }
 
     /**
@@ -156,10 +154,11 @@ public final class TsViewToolkit implements ITsViewToolkit {
         return result;
     }
 
+    @Deprecated
     public void setStyleSheet(StyleSheet styleSheet) {
-        this.styleSheet = styleSheet;
     }
 
+    @Deprecated
     public static StyleSheet createStyleSheet(int h1, int h2, int h3, int h4, int body, boolean tableBorder) {
         StyleSheet result = new StyleSheet();
         result.addRule("body {font-family: arial, verdana;}");

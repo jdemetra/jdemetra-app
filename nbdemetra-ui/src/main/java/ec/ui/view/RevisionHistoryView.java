@@ -4,9 +4,9 @@
  */
 package ec.ui.view;
 
+import ec.nbdemetra.ui.ComponentFactory;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.html.implementation.HtmlRevisionsDocument;
-import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
 import ec.tstoolkit.timeseries.analysis.DiagnosticInfo;
 import ec.tstoolkit.timeseries.analysis.DiagnosticTarget;
@@ -16,7 +16,7 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.interfaces.IColorSchemeAble;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.html.HtmlUtil;
-import ec.ui.html.JHtmlPane;
+import ec.ui.AHtmlView;
 import ec.util.chart.ColorScheme;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -26,7 +26,6 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
-import javax.swing.text.html.StyleSheet;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -39,8 +38,6 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -48,7 +45,6 @@ import org.slf4j.LoggerFactory;
  */
 public class RevisionHistoryView extends JComponent implements IColorSchemeAble {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RevisionHistoryView.class);
     private String info_ = "SA";
     private RevisionHistory history_;
     private DiagnosticTarget target_ = DiagnosticTarget.Final;
@@ -59,7 +55,7 @@ public class RevisionHistoryView extends JComponent implements IColorSchemeAble 
     private int minyears_ = 5;
     private int threshold_ = 2;
     private final JChartPanel chartpanel_;
-    private final JHtmlPane documentpanel_;
+    private final AHtmlView documentpanel_;
     protected final ThemeSupport themeSupport;
 
     public RevisionHistoryView() {
@@ -73,15 +69,7 @@ public class RevisionHistoryView extends JComponent implements IColorSchemeAble 
         };
 
         chartpanel_ = new JChartPanel(ChartFactory.createLineChart(null, null, null, null, PlotOrientation.VERTICAL, false, false, false));
-        documentpanel_ = new JHtmlPane();
-
-        StyleSheet ss = new StyleSheet();
-        ss.addRule("body {font-family: arial, verdana;}");
-        ss.addRule("body {font-size: 11;}");
-        ss.addRule("h4 {color: blue;}");
-        ss.addRule("td, th{text-align: right; margin-left: 5px; margin-right: 5 px;}");
-        ss.addRule("table {border: solid;}");
-        documentpanel_.setStyleSheet(ss);
+        documentpanel_ = ComponentFactory.getDefault().newHtmlView();
 
         JSplitPane splitpane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, chartpanel_, documentpanel_);
         splitpane.setDividerLocation(0.5);
@@ -228,7 +216,7 @@ public class RevisionHistoryView extends JComponent implements IColorSchemeAble 
     private void showRevisionsDocument(TsData s) {
         HtmlRevisionsDocument document = new HtmlRevisionsDocument(s, diag_);
         document.setThreshold(threshold_);
-        documentpanel_.setText(HtmlUtil.toString(document));
+        documentpanel_.loadContent(HtmlUtil.toString(document));
     }
 
     private TsData revisions() {

@@ -4,18 +4,26 @@
 
     <groupId>eu.europa.ec.joinup.sat</groupId>
     <artifactId>nbdemetra-parent</artifactId>
-    <version>2.2.0</version>
+    <version>2.2.1</version>
     <packaging>pom</packaging>
 
     <name>NbDemetra - Parent</name>
+
     <url>https://github.com/jdemetra/jdemetra-app</url>
+    <licenses>
+        <license>
+            <name>European Union Public Licence (EUPL)</name>
+            <url>https://joinup.ec.europa.eu/page/eupl-text-11-12</url>
+        </license>
+    </licenses>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jdk.version>1.8</jdk.version>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
         <brandingToken>nbdemetra</brandingToken>
         <netbeans.version>RELEASE82</netbeans.version>
-        <jdemetra.version>2.2.0</jdemetra.version>
+        <jdemetra.version>2.2.1</jdemetra.version>
         <!-- plugins versions > -->
         <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
@@ -56,7 +64,7 @@
                 <scope>import</scope>
             </dependency>
             <!-- < import of jdemetra deps -->
-            
+
             <!-- NetBeans deps > -->
             <dependency>
                 <groupId>org.netbeans.api</groupId>
@@ -301,11 +309,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
-                    <configuration>
-                        <!--<showDeprecation>true</showDeprecation>-->
-                        <source>${jdk.version}</source>
-                        <target>${jdk.version}</target>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -319,7 +322,7 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>            
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
@@ -420,15 +423,15 @@
             </snapshots>
         </repository>
         <repository>
-            <id>joinup-releases</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>                    
+            <id>oss-jfrog-artifactory-releases</id>
+            <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </repository>
         <repository>
-            <id>joinup-snapshots</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
+            <id>oss-jfrog-artifactory-snapshots</id>
+            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -438,7 +441,7 @@
     <distributionManagement>
         <repository>
             <id>joinup-releases</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>                    
+            <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
             <id>joinup-snapshots</id>
@@ -447,35 +450,40 @@
     </distributionManagement>
 
     <profiles>
+        <!-- Deploy SNAPSHOTS to jfrog with sources -->
         <profile>
-            <id>jdemetra-release</id>
+            <id>deploy-snapshots</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>oss-jfrog-artifactory</id>
+                    <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+                </snapshotRepository>
+            </distributionManagement>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                    </plugin>            
+                    </plugin>
                 </plugins>
             </build>
         </profile>
+
+        <!-- Deploy RELEASES to jfrog with sources -->
         <profile>
-            <id>travis</id>
-            <activation>
-                <property>
-                    <name>env.TRAVIS</name>
-                    <value>true</value>
-                </property>
-            </activation>
+            <id>deploy-releases</id>
+            <distributionManagement>
+                <repository>
+                    <id>oss-jfrog-artifactory</id>
+                    <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
+                </repository>
+            </distributionManagement>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                    </plugin>            
+                    </plugin>
                 </plugins>
             </build>
         </profile>

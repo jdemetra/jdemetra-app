@@ -6,6 +6,8 @@ package ec.nbdemetra.tramoseats.ui;
 
 import com.google.common.collect.Iterables;
 import ec.nbdemetra.sa.DiagnosticsMatrixView;
+import ec.nbdemetra.ws.WorkspaceFactory;
+import ec.nbdemetra.ws.WorkspaceItem;
 import ec.satoolkit.ComponentDescriptor;
 import ec.satoolkit.GenericSaProcessingFactory;
 import ec.satoolkit.diagnostics.SignificantSeasonalityTest;
@@ -32,30 +34,18 @@ import ec.tstoolkit.sarima.SarimaModel;
 import ec.tstoolkit.timeseries.analysis.SlidingSpans;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.ucarima.UcarimaModel;
-import ec.tstoolkit.utilities.*;
-import ec.ui.view.tsprocessing.ArimaUI;
-import ec.ui.view.tsprocessing.ComposedProcDocumentItemFactory;
-import ec.ui.view.tsprocessing.DefaultItemUI;
-import ec.ui.view.tsprocessing.EstimationUI;
-import ec.ui.view.tsprocessing.GenericTableUI;
-import ec.ui.view.tsprocessing.HtmlItemUI;
-import ec.ui.view.tsprocessing.IProcDocumentView;
-import ec.ui.view.tsprocessing.IProcDocumentViewFactory;
-import ec.ui.view.tsprocessing.ItemUI;
-import ec.ui.view.tsprocessing.PooledItemUI;
-import ec.ui.view.tsprocessing.ProcDocumentItemFactory;
-import ec.ui.view.tsprocessing.SlidingSpansDetailUI;
-import ec.ui.view.tsprocessing.SlidingSpansUI;
-import ec.ui.view.tsprocessing.UcarimaUI;
-import ec.ui.view.tsprocessing.WkComponentsUI;
-import ec.ui.view.tsprocessing.WkFinalEstimatorsUI;
-import ec.ui.view.tsprocessing.WkInformation;
+import ec.tstoolkit.utilities.DefaultInformationExtractor;
+import ec.tstoolkit.utilities.Id;
+import ec.tstoolkit.utilities.InformationExtractor;
+import ec.tstoolkit.utilities.LinearId;
+import ec.ui.view.tsprocessing.*;
 import ec.ui.view.tsprocessing.sa.ModelBasedUI;
 import ec.ui.view.tsprocessing.sa.SaDocumentViewFactory;
 import static ec.ui.view.tsprocessing.sa.SaDocumentViewFactory.saExtractor;
 import static ec.ui.view.tsprocessing.sa.SaDocumentViewFactory.ssExtractor;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.JComponent;
@@ -163,17 +153,17 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public MainSummaryFactory() {
             super(MAIN_SUMMARY, new DefaultInformationExtractor<TramoSeatsDocument, TramoSeatsDocument>() {
-                @Override
-                public TramoSeatsDocument retrieve(TramoSeatsDocument source) {
-                    return source;
-                }
-            }, new PooledItemUI<View, TramoSeatsDocument, TramoSeatsSummary>(TramoSeatsSummary.class) {
-                @Override
-                protected void init(TramoSeatsSummary c, View host, TramoSeatsDocument information) {
-                    c.setTsToolkit(host.getToolkit());
-                    c.set(information);
-                }
-            });
+              @Override
+              public TramoSeatsDocument retrieve(TramoSeatsDocument source) {
+                  return source;
+              }
+          }, new PooledItemUI<View, TramoSeatsDocument, TramoSeatsSummary>(TramoSeatsSummary.class) {
+              @Override
+              protected void init(TramoSeatsSummary c, View host, TramoSeatsDocument information) {
+                  c.setTsToolkit(host.getToolkit());
+                  c.set(information);
+              }
+          });
         }
     }
     //</editor-fold>
@@ -320,25 +310,25 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public PreprocessingArimaFactory() {
             super(PREPROCESSING_ARIMA, new DefaultInformationExtractor<TramoSeatsDocument, LinkedHashMap<String, IArimaModel>>() {
-                @Override
-                public LinkedHashMap<String, IArimaModel> retrieve(TramoSeatsDocument source) {
-                    LinkedHashMap<String, IArimaModel> models = new LinkedHashMap<>();
-                    PreprocessingModel pm = source.getPreprocessingPart();
-                    SarimaModel tmodel = null;
-                    if (pm != null) {
-                        tmodel = pm.estimation.getArima();
-                        models.put("Tramo model", tmodel);
-                    }
-                    SeatsResults seats = source.getDecompositionPart();
-                    if (seats != null) {
-                        IArimaModel smodel = seats.getModel().getArima();
-                        if (tmodel == null || !ArimaModel.same(tmodel, smodel, 1e-4)) {
-                            models.put("Seats model", smodel);
-                        }
-                    }
-                    return models;
-                }
-            }, new ArimaUI());
+              @Override
+              public LinkedHashMap<String, IArimaModel> retrieve(TramoSeatsDocument source) {
+                  LinkedHashMap<String, IArimaModel> models = new LinkedHashMap<>();
+                  PreprocessingModel pm = source.getPreprocessingPart();
+                  SarimaModel tmodel = null;
+                  if (pm != null) {
+                      tmodel = pm.estimation.getArima();
+                      models.put("Tramo model", tmodel);
+                  }
+                  SeatsResults seats = source.getDecompositionPart();
+                  if (seats != null) {
+                      IArimaModel smodel = seats.getModel().getArima();
+                      if (tmodel == null || !ArimaModel.same(tmodel, smodel, 1e-4)) {
+                          models.put("Seats model", smodel);
+                      }
+                  }
+                  return models;
+              }
+          }, new ArimaUI());
         }
     }
     //</editor-fold>
@@ -355,20 +345,20 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DecompositionSummaryFactory() {
             super(DECOMPOSITION_SUMMARY, new DefaultInformationExtractor<TramoSeatsDocument, UcarimaUI.Information>() {
-                @Override
-                public UcarimaUI.Information retrieve(TramoSeatsDocument source) {
-                    SeatsResults seats = source.getDecompositionPart();
-                    if (seats == null) {
-                        return null;
-                    }
-                    UcarimaModel ucm = seats.getUcarimaModel();
-                    UcarimaUI.Information info = new UcarimaUI.Information();
-                    info.model = ucm.getModel();
-                    info.names = SeatsResults.getComponentsName(ucm);
-                    info.cmps = SeatsResults.getComponents(ucm);
-                    return info;
-                }
-            }, new UcarimaUI());
+              @Override
+              public UcarimaUI.Information retrieve(TramoSeatsDocument source) {
+                  SeatsResults seats = source.getDecompositionPart();
+                  if (seats == null) {
+                      return null;
+                  }
+                  UcarimaModel ucm = seats.getUcarimaModel();
+                  UcarimaUI.Information info = new UcarimaUI.Information();
+                  info.model = ucm.getModel();
+                  info.names = SeatsResults.getComponentsName(ucm);
+                  info.cmps = SeatsResults.getComponents(ucm);
+                  return info;
+              }
+          }, new UcarimaUI());
         }
     }
 
@@ -499,16 +489,16 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DecompositionGrowthFactory() {
             super(DECOMPOSITION_RATES, new DefaultInformationExtractor<TramoSeatsDocument, CompositeResults>() {
-                @Override
-                public CompositeResults retrieve(TramoSeatsDocument source) {
-                    CompositeResults results = source.getResults();
-                    if (!results.isSuccessful()) {
-                        return null;
-                    } else {
-                        return results;
-                    }
-                }
-            }, new GrowthRatesUI());
+              @Override
+              public CompositeResults retrieve(TramoSeatsDocument source) {
+                  CompositeResults results = source.getResults();
+                  if (!results.isSuccessful()) {
+                      return null;
+                  } else {
+                      return results;
+                  }
+              }
+          }, new GrowthRatesUI());
         }
     }
 
@@ -517,19 +507,19 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DecompositionTestsFactory() {
             super(DECOMPOSITION_TESTS, new DefaultInformationExtractor<TramoSeatsDocument, ModelBasedUI.Information>() {
-                @Override
-                public ModelBasedUI.Information retrieve(TramoSeatsDocument source) {
-                    SeatsResults rslt = source.getDecompositionPart();
-                    if (rslt == null) {
-                        return null;
-                    }
-                    ModelBasedUI.Information info = new ModelBasedUI.Information();
-                    info.decomposition = rslt.getComponents();
-                    info.ucm = rslt.getUcarimaModel();
-                    info.err = rslt.getModel().getSer();
-                    return info;
-                }
-            }, new ModelBasedUI());
+              @Override
+              public ModelBasedUI.Information retrieve(TramoSeatsDocument source) {
+                  SeatsResults rslt = source.getDecompositionPart();
+                  if (rslt == null) {
+                      return null;
+                  }
+                  ModelBasedUI.Information info = new ModelBasedUI.Information();
+                  info.decomposition = rslt.getComponents();
+                  info.ucm = rslt.getUcarimaModel();
+                  info.err = rslt.getModel().getSer();
+                  return info;
+              }
+          }, new ModelBasedUI());
         }
     }
 
@@ -573,17 +563,24 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
             Map<String, CompositeResults> results = new LinkedHashMap<>();
             TramoSeatsSpecification currentSpec = source.getSpecification();
-            results.put("[C] " + currentSpec.toString(), source.getResults());
+            List<WorkspaceItem<TramoSeatsSpecification>> allTramoSpecs = WorkspaceFactory.getInstance().getActiveWorkspace().searchDocuments(TramoSeatsSpecification.class);
+            String currentSpecName = allTramoSpecs.stream()
+                    .filter(item -> item.getElement().equals(currentSpec))
+                    .map(item -> item.getDisplayName())
+                    .findFirst().orElse(currentSpec.toString());
+            results.put("[C] " + currentSpecName, source.getResults());
 
-            for (TramoSeatsSpecification spec : TramoSeatsSpecification.allSpecifications()) {
+            allTramoSpecs.forEach((item) -> {
+                TramoSeatsSpecification spec = item.getElement();
                 if (!spec.equals(currentSpec)) {
                     IProcessing<TsData, CompositeResults> proc = source.getProcessor().generateProcessing(spec, source.getContext());
                     CompositeResults rslt = proc.process(source.getSeries());
                     if (rslt != null) {
-                        results.put(spec.toString(), rslt);
+                        results.put(item.getDisplayName(), rslt);
                     }
                 }
-            }
+            });
+
             return results;
         }
     };
@@ -593,12 +590,12 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DiagnosticsMatrixFactory() {
             super(DIAGNOSTICS_MATRIX, DiagnosticsMatrixExtractor.INSTANCE, new DefaultItemUI<IProcDocumentView<TramoSeatsDocument>, Map<String, CompositeResults>>() {
-                @Override
-                public JComponent getView(IProcDocumentView<TramoSeatsDocument> host, Map<String, CompositeResults> information) {
-                    return new DiagnosticsMatrixView(information);
-                }
+              @Override
+              public JComponent getView(IProcDocumentView<TramoSeatsDocument> host, Map<String, CompositeResults> information) {
+                  return new DiagnosticsMatrixView(information);
+              }
 
-            });
+          });
         }
     }
 
@@ -673,7 +670,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
     }
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="REGISTER STABILITY VIEWS">    
+    //<editor-fold defaultstate="collapsed" desc="REGISTER STABILITY VIEWS">
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 604010)
     public static class StabilityTDFactory extends SaDocumentViewFactory.StabilityTDFactory<TramoSeatsDocument> {
 
@@ -891,7 +888,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         @Override
         protected IHtmlElement getHtmlElement(V host, WkInformation information) {
             return new HtmlModelBasedRevisionsAnalysis(information.frequency.intValue(), information.estimators,
-                    information.descriptors);
+                                                       information.descriptors);
         }
     }
 

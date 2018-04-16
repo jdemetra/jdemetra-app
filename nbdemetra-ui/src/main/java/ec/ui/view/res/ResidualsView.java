@@ -63,8 +63,7 @@ public class ResidualsView extends ATsDataView {
     protected final JTsGrid grid;
 
     public ResidualsView() {
-        this.chartPanel = new ChartPanel(buildResidualViewChart());
-        Charts.avoidScaling(chartPanel);
+        this.chartPanel = Charts.newChartPanel(buildResidualViewChart());
         this.grid = new JTsGrid();
         this.grid.setTsUpdateMode(TsUpdateMode.None);
         this.grid.setMode(Mode.SINGLETS);

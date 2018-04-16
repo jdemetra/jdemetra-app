@@ -26,7 +26,11 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
-        EnhancedPropertyDescriptor desc = noadmissDesc();
+        EnhancedPropertyDescriptor desc = npredDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = noadmissDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -63,6 +67,14 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
         return Bundle.seatsSpecUI_getDisplayName();
     }
 
+    public int getPredictionLength() {
+        return core.getPredictionLength();
+    }
+
+    public void setPredictionLength(int value) {
+        core.setPredictionLength(value);
+    }
+
     public double getRMod() {
         return core.getTrendBoundary();
     }
@@ -78,7 +90,7 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
     public void setSMod(double value) {
         core.setSeasBoundary(value);
     }
-    
+
     public double getSMod1() {
         return core.getSeasBoundary1();
     }
@@ -86,7 +98,7 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
     public void setSMod1(double value) {
         core.setSeasBoundary1(value);
     }
-    
+
     public double getEpsPhi() {
         return core.getSeasTolerance();
     }
@@ -118,7 +130,7 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
     public void setMethod(EstimationMethod value) {
         core.setMethod(value);
     }
-    private static final int RMOD_ID = 0, EPSPHI_ID = 1, SMOD_ID=2, SMOD1_ID=3, NOADMISS_ID = 4, XL_ID = 5, WK_ID = 6;
+    private static final int RMOD_ID = 0, EPSPHI_ID = 1, SMOD_ID = 2, SMOD1_ID = 3, NOADMISS_ID = 4, XL_ID = 5, WK_ID = 6, NPRED_ID = 10;
 
     @Messages({
         "seatsSpecUI.rmodDesc.name=Trend boundary",
@@ -137,7 +149,7 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
             return null;
         }
     }
-    
+
     @Messages({
         "seatsSpecUI.smodDesc.name=Seasonal boundary",
         "seatsSpecUI.smodDesc.desc=[smod] Boundary from which a negative AR root is integrated in the seasonal component."
@@ -149,6 +161,24 @@ public class SeatsSpecUI extends BaseSeatsSpecUI {
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(Bundle.seatsSpecUI_smodDesc_name());
             desc.setShortDescription(Bundle.seatsSpecUI_smodDesc_desc());
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "seatsSpecUI.npredDesc.name=Prediction length",
+        "seatsSpecUI.npredDesc.desc=[npred] Number of forecasts used in the decomposition. Negative values correspond to numbers of years"
+    })
+    private EnhancedPropertyDescriptor npredDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("PredictionLength", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, NPRED_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.seatsSpecUI_npredDesc_name());
+            desc.setShortDescription(Bundle.seatsSpecUI_npredDesc_desc());
             edesc.setReadOnly(ro_);
             return edesc;
         } catch (IntrospectionException ex) {

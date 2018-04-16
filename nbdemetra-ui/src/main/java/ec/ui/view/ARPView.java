@@ -64,13 +64,12 @@ public abstract class ARPView extends ATsView {
     protected ARPData data;
 
     protected ARPView() {
-        this.chartPanel = new ChartPanel(createARPChart());
+        this.chartPanel = Charts.newChartPanel(createARPChart());
         this.data = null;
         initComponents();
     }
 
     private void initComponents() {
-        Charts.avoidScaling(chartPanel);
         chartPanel.setDomainZoomable(false);
         chartPanel.setRangeZoomable(false);
 

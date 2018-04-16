@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.joinup.sat</groupId>
         <artifactId>nbdemetra-parent</artifactId>
-        <version>2.2.0</version>
+        <version>2.2.1</version>
     </parent>
 
     <artifactId>nbdemetra-ui</artifactId>

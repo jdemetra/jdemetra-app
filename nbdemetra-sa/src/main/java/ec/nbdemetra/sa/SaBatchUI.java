@@ -9,18 +9,13 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
-import ec.nbdemetra.ui.ActiveViewManager;
-import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.IActiveView;
-import ec.nbdemetra.ui.Menus;
 import ec.nbdemetra.ui.Menus.DynamicPopup;
-import ec.nbdemetra.ui.MonikerUI;
-import ec.nbdemetra.ui.NbComponents;
+import ec.nbdemetra.ui.*;
 import ec.nbdemetra.ui.awt.ListTableModel;
 import ec.nbdemetra.ui.awt.PopupMenuAdapter;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
+import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.ui.SpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
@@ -46,40 +41,20 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.view.tsprocessing.DefaultProcessingViewer;
 import ec.ui.view.tsprocessing.TsProcessingViewer;
 import ec.util.grid.swing.XTable;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.DropMode;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingWorker;
-import javax.swing.TransferHandler;
+import static java.util.stream.Collectors.toList;
+import javax.swing.*;
 import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -283,13 +258,13 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         detail = new TsProcessingViewer(TsProcessingViewer.Type.APPLY_RESTORE_SAVE);
         detail.setHeaderVisible(false);
         detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_SAVE, evt -> {
-            save((SaDocument) detail.getDocument());
-        });
+                                     save((SaDocument) detail.getDocument());
+                                 });
         detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_RESTORE, evt -> {
-            if (selection.length > 0) {
-                showDetails(selection[0]);
-            }
-        });
+                                     if (selection.length > 0) {
+                                         showDetails(selection[0]);
+                                     }
+                                 });
         visualRepresentation = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, NbComponents.newJScrollPane(master), detail);
         visualRepresentation.setResizeWeight(.60d);
         visualRepresentation.setOneTouchExpandable(true);
@@ -510,7 +485,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     private boolean pasteSaProcessing(Transferable dataobj) {
         SaProcessing processing = ec.tss.datatransfer.TransferableXml.read(dataobj, SaProcessing.class, XmlSaProcessing.class);
         if (processing != null) {
-            getCurrentProcessing().addAll(processing);
+            getCurrentProcessing().addAll(processing.stream().map(item -> item.makeCopy()).collect(toList()));
             controller.setState(SaProcessingState.READY);
             return true;
         } else {
@@ -526,11 +501,11 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         if (interactive) {
             deleteActionPanel.setItems(items);
             NotifyDescriptor nd = new NotifyDescriptor(deleteActionPanel,
-                    "Delete confirmation",
-                    NotifyDescriptor.YES_NO_OPTION,
-                    NotifyDescriptor.QUESTION_MESSAGE,
-                    null,
-                    NotifyDescriptor.YES_OPTION);
+                                                       "Delete confirmation",
+                                                       NotifyDescriptor.YES_NO_OPTION,
+                                                       NotifyDescriptor.QUESTION_MESSAGE,
+                                                       null,
+                                                       NotifyDescriptor.YES_OPTION);
 
             if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.YES_OPTION) {
                 return;
@@ -892,7 +867,10 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         protected String getText(SaItem item) {
-            return item.getDomainSpecification().toString();
+            ISaSpecification currentDomainSpec = item.getDomainSpecification();
+            List<WorkspaceItem<ISaSpecification>> x = WorkspaceFactory.getInstance().getActiveWorkspace().searchDocuments(ISaSpecification.class);
+            Optional<WorkspaceItem<ISaSpecification>> y = x.stream().filter(workspaceItem -> workspaceItem.getElement().equals(currentDomainSpec)).findFirst();
+            return y.isPresent() ? y.get().getDisplayName() : currentDomainSpec.toString();
         }
 
         @Override
@@ -911,7 +889,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         protected String getText(SaItem item) {
-            switch (item.getEstimationPolicy()){
+            switch (item.getEstimationPolicy()) {
                 case Fixed:
                     return "Fixed model";
                 case FixedParameters:
@@ -926,7 +904,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                     return "Arima model";
                 case Complete:
                     return "Concurrent";
-                default: return null;
+                default:
+                    return null;
             }
         }
     }

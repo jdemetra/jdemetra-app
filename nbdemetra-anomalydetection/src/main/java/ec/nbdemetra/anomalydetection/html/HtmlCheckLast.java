@@ -44,7 +44,7 @@ public class HtmlCheckLast extends AbstractHtmlElement implements IHtmlElement {
 
     @Override
     public void write(HtmlStream stream) throws IOException {
-        stream.write(HtmlTag.HEADER1, h1, anomalyItem.getTs().getName()).newLine();       
+        stream.write(HtmlTag.HEADER1, anomalyItem.getTs().getName()).newLine();       
 
         HtmlRegArima reg = new HtmlRegArima(model, false);
         reg.writeDetails(stream, false);

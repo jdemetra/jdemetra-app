@@ -112,7 +112,7 @@ abstract class WinSearch {
         }
     }
 
-    private static final class JnaSearch extends WinSearch {
+    public static final class JnaSearch extends WinSearch {
 
         private final Factory factory = new Factory();
 
@@ -150,7 +150,7 @@ abstract class WinSearch {
         }
 
         @ComObject(progId = "ADODB.Connection")
-        private interface Connection {
+        public interface Connection {
 
             @ComMethod
             void Open(String connectionString);
@@ -163,7 +163,7 @@ abstract class WinSearch {
         }
 
         @ComInterface
-        private interface Recordset {
+        public interface Recordset {
 
             @ComMethod
             void Close();
@@ -185,14 +185,14 @@ abstract class WinSearch {
         }
 
         @ComInterface
-        private interface Fields {
+        public interface Fields {
 
             @ComProperty
             Field getItem(int index);
         }
 
         @ComInterface
-        private interface Field {
+        public interface Field {
 
             @ComProperty
             Object getValue();

@@ -56,6 +56,7 @@ import javax.swing.TransferHandler;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
+import static org.jfree.chart.ChartPanel.*;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.Axis;
 import org.jfree.chart.axis.DateAxis;
@@ -98,7 +99,21 @@ public final class JTimeSeriesChart extends ATimeSeriesChart {
 
     public JTimeSeriesChart() {
         super(Arrays.asList(MARKER, LINE, SPLINE, COLUMN, STACKED_COLUMN, AREA, STACKED_AREA));
-        this.chartPanel = new ChartPanel(createTsChart(), false, false, false, false, false);
+        this.chartPanel = new ChartPanel(
+                createTsChart(),
+                DEFAULT_WIDTH,
+                DEFAULT_HEIGHT,
+                DEFAULT_MINIMUM_DRAW_WIDTH,
+                DEFAULT_MINIMUM_DRAW_HEIGHT,
+                DEFAULT_MAXIMUM_DRAW_WIDTH,
+                DEFAULT_MAXIMUM_DRAW_HEIGHT,
+                Charts.USE_CHART_PANEL_BUFFER, // useBuffer
+                false, // properties
+                false, // save
+                false, // print
+                false, // zoom
+                false // tooltips
+        );
         this.notification = new ChartNotification(chartPanel.getChart());
         this.seriesSelectionModel = new DefaultListSelectionModel();
         this.mainPlot = (CombinedDomainXYPlot) chartPanel.getChart().getXYPlot();
