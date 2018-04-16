@@ -32,8 +32,7 @@ public class SpectrumView extends JComponent {
     public SpectrumView() {
         setLayout(new BorderLayout());
 
-        panel_ = new ChartPanel(null);
-        Charts.avoidScaling(panel_);
+        panel_ = Charts.newChartPanel(null);
         add(panel_, BorderLayout.CENTER);
     }
 

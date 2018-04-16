@@ -143,7 +143,7 @@ public final class JTimeSeriesRendererSupportDemo extends JPanel {
     }
 
     private Component createChartPanel() {
-        final ChartPanel result = Charts.avoidScaling(new ChartPanel(chart));
+        final ChartPanel result = Charts.newChartPanel(chart);
         result.setMinimumSize(new Dimension(400, 300));
         return result;
     }
