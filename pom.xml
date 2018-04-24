@@ -48,7 +48,6 @@
         <module>nbdemetra-businesscycle</module>
         <module>nbdemetra-sa</module>
         <module>nbdemetra-sdmx</module>
-        <module>nbdemetra-utils</module>
         <module>nbdemetra-anomalydetection</module>
         <module>nbdemetra-chainlinking</module>
     </modules>
@@ -259,11 +258,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>nbdemetra-sdmx</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
