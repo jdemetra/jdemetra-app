@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.DefaultInformationExtractor;
 import ec.tstoolkit.utilities.Id;
-import ec.tstoolkit.utilities.InformationExtractor;
 import java.util.LinkedHashMap;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -35,23 +34,6 @@ public abstract class ProcDocumentViewFactory<D extends IProcDocument> implement
         @Override
         public ITsViewToolkit getToolkit() {
             return toolkit_;
-        }
-
-        @Deprecated
-        public ItemUI getUI(Id id) {
-            return ProcDocumentViewFactory.this.getUI(id);
-        }
-
-        @Deprecated
-        @Nullable
-        public InformationExtractor<? super D, ?> getExtractor(Id id) {
-            return ProcDocumentViewFactory.this.getExtractor(id);
-        }
-
-        @Deprecated
-        protected Object getInformation(Id id) {
-            InformationExtractor extractor = getExtractor(id);
-            return extractor != null ? extractor.retrieve(document_) : document_;
         }
 
         @Override
@@ -130,32 +112,6 @@ public abstract class ProcDocumentViewFactory<D extends IProcDocument> implement
         return o instanceof ComposedProcDocumentItemFactory ? ((ComposedProcDocumentItemFactory) o).getActions() : null;
     }
 
-    /**
-     * @deprecated use {@link ComposedProcDocumentItemFactory} instead
-     */
-    @Override
-    @Deprecated
-    public <I> void register(Id id, InformationExtractor<? super D, I> info, ItemUI<? extends IProcDocumentView<D>, I> ui) {
-        itemFactories.put(id, new ComposedProcDocumentItemFactory(IProcDocument.class, id, info != null ? info : new DoNothingExtractor(), ui));
-    }
-
-    /**
-     * @deprecated use {@link ComposedProcDocumentItemFactory} instead
-     */
-    @Override
-    @Deprecated
-    public void unregister(Id id) {
-        itemFactories.remove(id);
-    }
-
-    /**
-     * @deprecated use {@link ComposedProcDocumentItemFactory} instead
-     */
-    @Deprecated
-    public void unregisterAll() {
-        itemFactories.clear();
-    }
-
     public void registerToolkit(@Nullable ITsViewToolkit toolkit) {
         toolkit_ = toolkit != null ? toolkit : TsViewToolkit.getInstance();
     }
@@ -168,26 +124,6 @@ public abstract class ProcDocumentViewFactory<D extends IProcDocument> implement
     @Nonnull
     public List<Id> getItems() {
         return Lists.newArrayList(itemFactories.keySet());
-    }
-
-    /**
-     * @deprecated use {@link ComposedProcDocumentItemFactory} instead
-     */
-    @Deprecated
-    @Nullable
-    public ItemUI<? extends IProcDocumentView<D>, ?> getUI(Id id) {
-        ProcDocumentItemFactory o = itemFactories.get(id);
-        return o instanceof ComposedProcDocumentItemFactory ? ((ComposedProcDocumentItemFactory) o).getItemUI() : null;
-    }
-
-    /**
-     * @deprecated use {@link ComposedProcDocumentItemFactory} instead
-     */
-    @Deprecated
-    @Nullable
-    public InformationExtractor<? super D, ?> getExtractor(Id id) {
-        ProcDocumentItemFactory o = itemFactories.get(id);
-        return o instanceof ComposedProcDocumentItemFactory ? ((ComposedProcDocumentItemFactory) o).getInformationExtractor() : null;
     }
 
     @Override

@@ -6,7 +6,6 @@ package ec.nbdemetra.ui.calendars;
 
 import com.google.common.collect.Lists;
 import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
-import ec.nbdemetra.ui.awt.JPanel2;
 import ec.nbdemetra.ui.awt.ListenerState;
 import ec.nbdemetra.ui.properties.ComboBoxPropertyEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
@@ -14,9 +13,11 @@ import ec.tss.tsproviders.utils.IConstraint;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
+import ec.tstoolkit.utilities.Arrays2;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.util.List;
+import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.openide.DialogDescriptor;
@@ -32,7 +33,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author Philippe Charles
  */
-public class ChainedGregorianCalendarPanel extends JPanel2 implements ExplorerManager.Provider, IDialogDescriptorProvider {
+public class ChainedGregorianCalendarPanel extends JPanel implements ExplorerManager.Provider, IDialogDescriptorProvider {
 
     // PROPERTIES DEFINITION
     public static final String CALENDAR_NAME_PROPERTY = "calendarName";
@@ -360,6 +361,13 @@ public class ChainedGregorianCalendarPanel extends JPanel2 implements ExplorerMa
                 }
                 return null;
             }
+        }
+    }
+
+    @Override
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        if (!Arrays2.arrayEquals(oldValue, newValue)) {
+            super.firePropertyChange(propertyName, oldValue, newValue);
         }
     }
 }

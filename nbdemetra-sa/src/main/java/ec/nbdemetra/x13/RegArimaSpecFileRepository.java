@@ -17,9 +17,6 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = IWorkspaceItemRepository.class)
 public class RegArimaSpecFileRepository extends AbstractFileItemRepository<RegArimaSpecification> {
 
-    @Deprecated
-    public static final String REPOSITORY = "RegArimaSpec";
-
     @Override
     public boolean load(WorkspaceItem<RegArimaSpecification> item) {
         return loadFile(item, (RegArimaSpecification o) -> {

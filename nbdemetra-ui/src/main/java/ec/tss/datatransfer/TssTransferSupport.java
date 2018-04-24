@@ -17,8 +17,6 @@
 package ec.tss.datatransfer;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import ec.nbdemetra.core.GlobalService;
 import ec.nbdemetra.ui.awt.ListenableBean;
@@ -77,12 +75,6 @@ public class TssTransferSupport extends ListenableBean {
         return Lookup.getDefault().lookup(TssTransferSupport.class);
     }
 
-    @Deprecated
-    @Nonnull
-    public static TssTransferSupport getInstance() {
-        return getDefault();
-    }
-
     private final ClipboardValidator clipboardValidator;
     private final Lookup lookup;
     private final Logger logger;
@@ -120,36 +112,11 @@ public class TssTransferSupport extends ListenableBean {
     /**
      * Retrieves a list of all available TssTransferHandler.
      *
-     * @return a non-null list of TssTransferHandler
-     * @deprecated use {@link #streamAll()} instead
-     */
-    @Deprecated
-    @Nonnull
-    public FluentIterable<? extends TssTransferHandler> all() {
-        return FluentIterable.from(Iterables.concat(lookup.lookupAll(TssTransferHandler.class), ATsCollectionFormatter.getLegacyHandlers()));
-    }
-
-    /**
-     * Retrieves a list of all available TssTransferHandler.
-     *
      * @return a non-null stream of TssTransferHandler
      */
     @Nonnull
     public Stream<? extends TssTransferHandler> stream() {
-        return Stream.concat(lookup.lookupAll(TssTransferHandler.class).stream(), ATsCollectionFormatter.getLegacyHandlers().stream());
-    }
-
-    /**
-     * Gets a mutable thread-safe list of formatters.<p>
-     * Note that order matters.
-     *
-     * @return a non-null list of formatters
-     * @deprecated use {@link #all()} instead
-     */
-    @Deprecated
-    @Nonnull
-    public List<ITsCollectionFormatter> getFormatters() {
-        return new ArrayList<>();
+        return lookup.lookupAll(TssTransferHandler.class).stream();
     }
 
     @OnEDT
@@ -343,11 +310,6 @@ public class TssTransferSupport extends ListenableBean {
      */
     public boolean isTssTransferable(@Nonnull Transferable transferable) {
         return transferable.isDataFlavorSupported(LocalObjectTssTransferHandler.DATA_FLAVOR);
-    }
-
-    @Deprecated
-    public static boolean isMultiFlavor(@Nonnull DataFlavor[] dataFlavors) {
-        return DataTransfers.isMultiFlavor(dataFlavors);
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">

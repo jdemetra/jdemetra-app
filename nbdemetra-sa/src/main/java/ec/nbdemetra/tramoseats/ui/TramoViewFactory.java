@@ -29,7 +29,6 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
     }
 
     public TramoViewFactory() {
-        registerDefault();
         registerFromLookup(TramoDocument.class);
     }
 

@@ -29,9 +29,8 @@ public enum CustomPropertyEditorRegistry {
         m_registry.registerEditor(Enum.class, EnumPropertyEditor.class);
         m_registry.registerEditor(double.class, DoublePropertyEditor.class);
         m_registry.registerEditor(Double.class, DoublePropertyEditor.class);
-        
-        //registerCompositeEditor(SeasonalFilterOption[].class);
 
+        //registerCompositeEditor(SeasonalFilterOption[].class);
         register(Directory.class, new DirectoryEditor());
         register(Day.class, new JDayPropertyEditor());
         register(Parameter[].class, new ParametersPropertyEditor());
@@ -53,10 +52,6 @@ public enum CustomPropertyEditorRegistry {
 
     public PropertyEditorRegistry getRegistry() {
         return m_registry;
-    }
-
-    @Deprecated
-    public void registerEnumEditor(Class<? extends Enum<?>> type) {
     }
 
     /**

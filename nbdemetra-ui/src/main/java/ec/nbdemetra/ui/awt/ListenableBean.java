@@ -48,21 +48,6 @@ public abstract class ListenableBean implements IPropertyChangeSource {
         support.removePropertyChangeListener(propertyName, listener);
     }
 
-    @Deprecated
-    protected <T> JProperty<T> newProperty(String name, T initialValue) {
-        return newProperty(name, JProperty.<T>identity(), initialValue);
-    }
-
-    @Deprecated
-    protected <T> JProperty<T> newProperty(String name, JProperty.Setter<T> setter, T initialValue) {
-        return new JProperty<T>(name, setter, setter.apply(null, initialValue)) {
-            @Override
-            protected void firePropertyChange(T oldValue, T newValue) {
-                ListenableBean.this.firePropertyChange(getName(), oldValue, newValue);
-            }
-        };
-    }
-
     protected <T> void firePropertyChange(String propertyName, T oldValue, T newValue) {
         if (!Arrays2.arrayEquals(oldValue, newValue)) {
             support.firePropertyChange(propertyName, oldValue, newValue);

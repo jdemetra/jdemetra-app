@@ -19,9 +19,6 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = IWorkspaceItemRepository.class)
 public class X13DocFileRepository extends AbstractFileItemRepository<X13Document> {
 
-    @Deprecated
-    public static final String REPOSITORY = "X13Doc", REPOSITORY2 = "X12Doc";
-
     @Override
     public boolean load(WorkspaceItem<X13Document> item) {
         return loadFile(item, (X13Document o) -> {

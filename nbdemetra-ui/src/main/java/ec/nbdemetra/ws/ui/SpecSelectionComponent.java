@@ -18,7 +18,6 @@ package ec.nbdemetra.ws.ui;
 
 import com.google.common.base.Optional;
 import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
-import ec.nbdemetra.ui.awt.JComponent2;
 import ec.nbdemetra.ui.calendars.CustomDialogDescriptor;
 import ec.nbdemetra.ui.nodes.DecoratedNode;
 import ec.nbdemetra.ws.WorkspaceFactory;
@@ -28,6 +27,7 @@ import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.satoolkit.GenericSaProcessingFactory;
 import ec.satoolkit.ISaSpecification;
 import ec.tss.tsproviders.utils.IConstraint;
+import ec.tstoolkit.utilities.Arrays2;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
 import java.awt.BorderLayout;
@@ -38,6 +38,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.util.function.Predicate;
+import javax.swing.JComponent;
 import javax.swing.tree.TreeSelectionModel;
 import org.openide.DialogDescriptor;
 import org.openide.explorer.ExplorerManager;
@@ -48,7 +49,7 @@ import org.openide.nodes.Node;
  *
  * @author Philippe Charles
  */
-public class SpecSelectionComponent extends JComponent2 implements ExplorerManager.Provider, IDialogDescriptorProvider {
+public class SpecSelectionComponent extends JComponent implements ExplorerManager.Provider, IDialogDescriptorProvider {
 
     public static final Id SPECS_ID = new LinearId(GenericSaProcessingFactory.FAMILY, WorkspaceFactory.SPECIFICATIONS);
     public static final String SPECIFICATION_PROPERTY = "specification";
@@ -203,6 +204,13 @@ public class SpecSelectionComponent extends JComponent2 implements ExplorerManag
         public boolean test(Node input) {
             return !(input instanceof ItemWsNode)
                     || ((ItemWsNode) input).getItem().getStatus() == WorkspaceItem.Status.System;
+        }
+    }
+
+    @Override
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        if (!Arrays2.arrayEquals(oldValue, newValue)) {
+            super.firePropertyChange(propertyName, oldValue, newValue);
         }
     }
 }

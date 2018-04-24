@@ -7,13 +7,13 @@ package ec.nbdemetra.ui.calendars;
 import com.google.common.collect.ImmutableList;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
-import ec.nbdemetra.ui.awt.JPanel2;
 import ec.nbdemetra.ui.awt.ListenableBean;
 import ec.nbdemetra.ui.awt.ListenerState;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.utils.IConstraint;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
+import ec.tstoolkit.utilities.Arrays2;
 import ec.tstoolkit.utilities.WeightedItem;
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -43,7 +44,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author Philippe Charles
  */
-public class CompositeGregorianCalendarPanel extends JPanel2 implements ExplorerManager.Provider, IDialogDescriptorProvider {
+public class CompositeGregorianCalendarPanel extends JPanel implements ExplorerManager.Provider, IDialogDescriptorProvider {
 
     // PROPERTIES DEFINITION
     public static final String CALENDAR_NAME_PROPERTY = "calendarName";
@@ -446,6 +447,13 @@ public class CompositeGregorianCalendarPanel extends JPanel2 implements Explorer
                 }
                 return null;
             }
+        }
+    }
+
+    @Override
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        if (!Arrays2.arrayEquals(oldValue, newValue)) {
+            super.firePropertyChange(propertyName, oldValue, newValue);
         }
     }
 }

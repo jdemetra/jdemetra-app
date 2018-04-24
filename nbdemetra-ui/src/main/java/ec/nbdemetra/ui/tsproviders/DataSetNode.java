@@ -172,13 +172,6 @@ abstract public class DataSetNode extends AbstractNode {
     private final class TsSavableImpl implements ITsSavable {
 
         @Override
-        public Ts[] getAllTs() {
-            TsCollection result = getTsCollection();
-            result.load(TsInformationType.Definition);
-            return result.toArray();
-        }
-
-        @Override
         public TsCollection getTsCollection() {
             return TsProviders.getTsCollection(getLookup().lookup(DataSet.class), SHOULD_BE_NONE)
                     .or(TsFactory.instance::createTsCollection);

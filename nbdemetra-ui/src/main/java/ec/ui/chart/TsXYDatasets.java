@@ -72,17 +72,6 @@ public final class TsXYDatasets {
         return EDT_BUILDER.clear().add(tss).build();
     }
 
-    /**
-     *
-     * @return an empty dataset
-     * @deprecated use {@link Charts#emptyXYDataset()} instead
-     */
-    @Deprecated
-    @Nonnull
-    public static IntervalXYDataset empty() {
-        return Charts.emptyXYDataset();
-    }
-
     @Nonnull
     @NewObject
     public static Builder builder() {

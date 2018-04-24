@@ -36,7 +36,6 @@ import java.awt.Component;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-import javax.swing.text.html.StyleSheet;
 
 /**
  *
@@ -151,27 +150,6 @@ public final class TsViewToolkit implements ITsViewToolkit {
         result.setHorizontalAlignment(SwingConstants.CENTER);
         result.setFont(result.getFont().deriveFont(result.getFont().getSize2D()*3/2));
         result.setText("<html><center>" + msg);
-        return result;
-    }
-
-    @Deprecated
-    public void setStyleSheet(StyleSheet styleSheet) {
-    }
-
-    @Deprecated
-    public static StyleSheet createStyleSheet(int h1, int h2, int h3, int h4, int body, boolean tableBorder) {
-        StyleSheet result = new StyleSheet();
-        result.addRule("body {font-family: arial, verdana;}");
-        result.addRule("body {font-size: " + Integer.toString(body) + ";}");
-        result.addRule("h1 {font-size: " + Integer.toString(h1) + ";}");
-        result.addRule("h2 {font-size: " + Integer.toString(h2) + ";}");
-        result.addRule("h3 {font-size: " + Integer.toString(h3) + ";}");
-        result.addRule("h4 {font-size: " + Integer.toString(h4) + ";}");
-        //ss.addRule("h4 {color: blue;}");
-        result.addRule("td, th{text-align: right; margin-left: 5px; margin-right: 5 px");
-        if (tableBorder) {
-            result.addRule("table {border-style: outset;}");
-        }
         return result;
     }
 

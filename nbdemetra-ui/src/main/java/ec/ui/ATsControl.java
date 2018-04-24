@@ -18,25 +18,21 @@ package ec.ui;
 
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.ThemeSupport;
-import ec.nbdemetra.ui.awt.ActionMaps;
-import ec.nbdemetra.ui.awt.InputMaps;
-import ec.nbdemetra.ui.awt.JComponent2;
-import ec.tss.datatransfer.DataTransfers;
 import ec.tss.tsproviders.utils.DataFormat;
+import ec.tstoolkit.utilities.Arrays2;
 import ec.ui.commands.TsControlCommand;
 import ec.ui.interfaces.IColorSchemeAble;
 import ec.ui.interfaces.ITsControl;
 import ec.ui.interfaces.ITsHelper;
 import ec.ui.interfaces.ITsPrinter;
 import ec.util.various.swing.JCommand;
-import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 import javax.swing.ActionMap;
-import javax.swing.InputMap;
+import javax.swing.JComponent;
 
-public abstract class ATsControl extends JComponent2 implements ITsControl, ClipboardOwner {
+public abstract class ATsControl extends JComponent implements ITsControl, ClipboardOwner {
 
     private static final long serialVersionUID = 3804565526142589316L;
 
@@ -148,27 +144,6 @@ public abstract class ATsControl extends JComponent2 implements ITsControl, Clip
         // Do nothing
     }
 
-    @Deprecated
-    protected Transferable getClipboardContents() {
-        return DataTransfers.systemClipboardAsTransferable();
-    }
-
-    @Deprecated
-    protected void setClipboardContents(Transferable transferable) {
-        Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-        cb.setContents(transferable, this);
-    }
-
-    @Deprecated
-    protected void fillActionMap(ActionMap am) {
-        ActionMaps.copyEntries(getActionMap(), false, am);
-    }
-
-    @Deprecated
-    protected void fillInputMap(InputMap im) {
-        InputMaps.copyEntries(getInputMap(), false, im);
-    }
-
     //<editor-fold defaultstate="collapsed" desc="Commands">
     private static final class ConfigureCommand extends JCommand<ATsControl> {
 
@@ -183,4 +158,11 @@ public abstract class ATsControl extends JComponent2 implements ITsControl, Clip
         }
     }
     //</editor-fold>
+
+    @Override
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        if (!Arrays2.arrayEquals(oldValue, newValue)) {
+            super.firePropertyChange(propertyName, oldValue, newValue);
+        }
+    }
 }

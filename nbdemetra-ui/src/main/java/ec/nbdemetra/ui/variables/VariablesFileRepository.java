@@ -16,9 +16,6 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = IWorkspaceItemRepository.class)
 public class VariablesFileRepository extends AbstractFileItemRepository<TsVariables> {
 
-    @Deprecated
-    public static final String REPOSITORY = "Variables";
-
     @Override
     public boolean load(WorkspaceItem<TsVariables> item) {
         return loadFile(item, (TsVariables o) -> {

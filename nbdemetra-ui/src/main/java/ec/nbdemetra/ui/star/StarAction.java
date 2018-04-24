@@ -59,6 +59,5 @@ public final class StarAction extends SingleNodeAction<DataSourceNode> {
 
     private void updateDisplayName(DataSourceNode activatedNode) {
         putValue(NAME, StarList.getInstance().isStarred(activatedNode.getLookup().lookup(DataSource.class)) ? Bundle.starAction_remove() : Bundle.starAction_add());
-        activatedNode.refreshAnnotation();
     }
 }

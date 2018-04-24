@@ -4,21 +4,11 @@
  */
 package ec.nbdemetra.x13.ui;
 
-import ec.tss.html.IHtmlElement;
-import ec.tss.html.implementation.HtmlX13Preprocessing;
 import ec.tss.modelling.documents.RegArimaDocument;
-import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.tstoolkit.modelling.arima.x13.RegArimaSpecification;
-import ec.tstoolkit.utilities.Id;
-import ec.tstoolkit.utilities.InformationExtractor;
-import ec.ui.view.tsprocessing.ComposedProcDocumentItemFactory;
-import ec.ui.view.tsprocessing.HtmlItemUI;
-import ec.ui.view.tsprocessing.IProcDocumentView;
 import ec.ui.view.tsprocessing.IProcDocumentViewFactory;
-import ec.ui.view.tsprocessing.ItemUI;
 import ec.ui.view.tsprocessing.PreprocessingViewFactory;
 import ec.ui.view.tsprocessing.ProcDocumentItemFactory;
-import static ec.ui.view.tsprocessing.PreprocessingViewFactory.PROCESSING_DETAILS;
 import java.util.concurrent.atomic.AtomicReference;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -39,7 +29,6 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
     }
 
     public RegArimaViewFactory() {
-        registerDefault();
         registerFromLookup(RegArimaDocument.class);
     }
 
@@ -159,11 +148,6 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER DETAILS">
-    @Deprecated
-    @Override
-    public void registerDetails() {
-    }
-
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 500000)
     public static class LikelihoodFactory extends PreprocessingViewFactory.LikelihoodFactory<RegArimaDocument> {
 

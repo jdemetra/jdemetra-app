@@ -86,25 +86,12 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
             PREPROCESSING_RES_DIST = new LinearId(PREPROCESSING, RESIDUALS, DISTRIBUTION)
             ;
 
-    @Deprecated
-    public void registerDefault() {
-        registerSummary();
-        registerForecasts();
-        registerModel();
-        registerResiduals();
-        registerDetails();
-    }
-
     @Override
     public Id getPreferredView() {
         return MODEL_SUMMARY;
     }
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SUMMARY">
-    @Deprecated
-    public void registerSummary() {
-    }
-
     protected static class InputFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, D> {
 
@@ -153,10 +140,6 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
 
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="REGISTER FORECASTS">
-    @Deprecated
-    public void registerForecasts() {
-    }
-
     protected static class ModelFCastsFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, EstimationUI.Information> {
 
@@ -223,10 +206,6 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER MODEL">
-    @Deprecated
-    public void registerModel() {
-    }
-
     public static class ModelRegsFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, PreprocessingModel> {
 
@@ -257,10 +236,6 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER RESIDUALS">
-    @Deprecated
-    public void registerResiduals() {
-    }
-
     protected static class ModelResFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, TsData> {
 
@@ -303,9 +278,6 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER DETAILS">
-    @Deprecated
-    public void registerDetails() {
-    }
     //</editor-fold>
 
     private static class ItemFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>, I> extends ComposedProcDocumentItemFactory<D, I> {

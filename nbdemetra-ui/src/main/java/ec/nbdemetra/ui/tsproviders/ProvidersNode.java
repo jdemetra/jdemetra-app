@@ -96,14 +96,6 @@ public final class ProvidersNode extends AbstractNode {
         return null;
     }
 
-    @Deprecated
-    public void paste(DataSource dataSource) {
-        Optional<IDataSourceLoader> loader = TsProviders.lookup(IDataSourceLoader.class, dataSource);
-        if (loader.isPresent()) {
-            loader.get().open(dataSource);
-        }
-    }
-
     private static final class ProvidersChildFactory extends ChildFactory.Detachable<Object> implements LookupListener, PropertyChangeListener, IDataSourceListener {
 
         private final Lookup.Result<IDataSourceProvider> lookupResult;

@@ -338,11 +338,6 @@ public class JTsGrid extends ATsGrid {
         firePropertyChange(USE_COLOR_SCHEME_PROPERTY, old, this.useColorScheme);
     }
 
-    @Deprecated
-    public int[] getSelectedColumns() {
-        return grid.getSelectedColumns();
-    }
-
     public boolean isShowBars() {
         return showBars;
     }
@@ -448,22 +443,6 @@ public class JTsGrid extends ATsGrid {
 
     private void updateComboCellRenderer() {
         combo.setRenderer(new ComboCellRenderer(useColorScheme ? themeSupport : null));
-    }
-
-    @Deprecated
-    protected JGrid buildGrid() {
-        final JGrid result = new JGrid();
-
-        result.setDragEnabled(true);
-        result.setTransferHandler(new TsCollectionTransferHandler());
-        result.setRowRenderer(new CustomRowRenderer(result));
-        result.getRowSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        result.addMouseListener(new TsActionMouseAdapter());
-
-        ActionMaps.copyEntries(getActionMap(), false, result.getActionMap());
-        InputMaps.copyEntries(getInputMap(), false, result.getInputMap(WHEN_IN_FOCUSED_WINDOW));
-
-        return result;
     }
 
     @Override

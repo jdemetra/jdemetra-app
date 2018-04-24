@@ -137,18 +137,4 @@ public abstract class AbstractInplaceEditor implements InplaceEditor {
     public void removeActionListener(ActionListener actionListener) {
         listenerList.remove(ActionListener.class, actionListener);
     }
-
-    @Deprecated
-    protected static <T> T getAttribute(PropertyEnv env, String attrName, Class<T> attrType, T defaultValue) {
-        Object value = env.getFeatureDescriptor().getValue(attrName);
-        return attrType.isInstance(value) ? attrType.cast(value) : defaultValue;
-    }
-
-    @Deprecated
-    protected <T> com.google.common.base.Optional<T> getAttribute(PropertyEnv env, String attrName, Class<T> attrType) {
-        Object value = env.getFeatureDescriptor().getValue(attrName);
-        return attrType.isInstance(value)
-                ? com.google.common.base.Optional.of(attrType.cast(value))
-                : com.google.common.base.Optional.<T>absent();
-    }
 }

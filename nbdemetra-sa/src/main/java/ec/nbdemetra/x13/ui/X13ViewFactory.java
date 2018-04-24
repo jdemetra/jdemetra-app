@@ -75,24 +75,12 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
     }
 
     public X13ViewFactory() {
-        registerDefault();
         registerFromLookup(X13Document.class);
     }
 
     @Override
     public Id getPreferredView() {
         return MAIN_SUMMARY;
-    }
-
-    @Deprecated
-    public void registerDefault() {
-        registerSpec();
-        registerSummary();
-        registerMainViews();
-        registerPreprocessingViews();
-        registerX11Views();
-        registerBenchmarkingView();
-        registerDiagnosticsViews();
     }
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SPEC">
@@ -114,10 +102,6 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SUMMARY">
-    @Deprecated
-    public void registerSummary() {
-    }
-
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000)
     public static class MainSummaryFactory extends ItemFactory<X13Document> {
 
@@ -161,11 +145,6 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
         public MainTableFactory() {
             super(X13Document.class, GenericSaProcessingFactory.FINAL);
         }
-    }
-
-    @Deprecated
-    @Override
-    public void registerSiView() {
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 203000)
@@ -294,10 +273,6 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER X11">
-    @Deprecated
-    public void registerX11Views() {
-    }
-
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 401000)
     public static class ATablesFactory extends ItemFactory<CompositeResults> {
 
@@ -605,11 +580,6 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SLIDING SPANS">
-    @Override
-    public void registerSlidingSpansView() {
-        super.registerSlidingSpansView();
-    }
-
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 603000)
     public static class DiagnosticsSlidingSummaryFactory extends ItemFactory<SlidingSpans> {
 

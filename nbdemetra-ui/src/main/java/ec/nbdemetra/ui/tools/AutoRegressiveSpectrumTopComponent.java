@@ -6,8 +6,8 @@ package ec.nbdemetra.ui.tools;
 
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
-import ec.nbdemetra.ui.tsaction.ITsView2;
 import ec.tss.Ts;
+import ec.ui.interfaces.ITsAble;
 import ec.ui.view.AutoRegressiveSpectrumView;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.JMenu;
@@ -29,10 +29,10 @@ import org.openide.windows.WindowManager;
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//ec.nbdemetra.ui.tools//AutoRegressiveSpectrum//EN",
-autostore = false)
+        autostore = false)
 @TopComponent.Description(preferredID = "AutoRegressiveSpectrumTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_NEVER)
+        //iconBase="SET/PATH/TO/ICON/HERE", 
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "output", openAtStartup = false)
 @ActionID(category = "Window", id = "ec.nbdemetra.ui.tools.AutoRegressiveSpectrumTopComponent")
 @ActionReference(path = "Menu/Tools/Spectral analysis", position = 100)
@@ -42,7 +42,7 @@ persistenceType = TopComponent.PERSISTENCE_NEVER)
     "CTL_AutoRegressiveSpectrumTopComponent=Auto-regressive spectrum Window",
     "HINT_AutoRegressiveSpectrumTopComponent=This is a Auto-regressive spectrum window"
 })
-public final class AutoRegressiveSpectrumTopComponent extends TopComponent implements ITsView2, IActiveView, ExplorerManager.Provider {
+public final class AutoRegressiveSpectrumTopComponent extends TopComponent implements ITsAble, IActiveView, ExplorerManager.Provider {
 
     private AutoRegressiveSpectrumView view;
     private Node node;
@@ -142,6 +142,7 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
     }
 
     class InternalNode extends AbstractNode {
+
         @Messages({
             "autoregressiveSpectrumTopComponent.internalNode.displayName=Auto-regressive spectrum"
         })
@@ -253,7 +254,7 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
             diffLag.setShortDescription(Bundle.autoregressiveSpectrumTopComponent_differencingLag_desc());
             transform.put(diffLag);
 
-             Node.Property<Integer> length = new Node.Property(Integer.class) {
+            Node.Property<Integer> length = new Node.Property(Integer.class) {
 
                 @Override
                 public boolean canRead() {
@@ -282,7 +283,7 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
             Sheet.Set spectrum = Sheet.createPropertiesSet();
             spectrum.setName(Bundle.autoregressiveSpectrumTopComponent_autoRegressiveSpectrum_name());
             spectrum.setDisplayName(Bundle.autoregressiveSpectrumTopComponent_autoRegressiveSpectrum_displayName());
-            
+
             Property<Integer> arcount = new Property(Integer.class) {
 
                 @Override
@@ -308,7 +309,7 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
             arcount.setName(Bundle.autoregressiveSpectrumTopComponent_autoRegressivePolynomialOrder_name());
             arcount.setShortDescription(Bundle.autoregressiveSpectrumTopComponent_autoRegressivePolynomialOrder_desc());
             spectrum.put(arcount);
-            
+
             Property<Integer> resolution = new Property(Integer.class) {
 
                 @Override
@@ -334,7 +335,7 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
             resolution.setName(Bundle.autoregressiveSpectrumTopComponent_resolution_name());
             resolution.setShortDescription(Bundle.autoregressiveSpectrumTopComponent_resolution_desc());
             spectrum.put(resolution);
-            
+
             sheet.put(transform);
             sheet.put(spectrum);
             return sheet;

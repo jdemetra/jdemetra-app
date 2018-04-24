@@ -27,7 +27,6 @@ import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.star.StarList;
 import static ec.nbdemetra.ui.tsproviders.DataSourceNode.ACTION_PATH;
 import ec.nbdemetra.ui.tssave.ITsSavable;
-import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
@@ -119,12 +118,6 @@ public final class DataSourceNode extends AbstractNode {
     @Override
     public Action[] getActions(boolean context) {
         return Nodes.actionsForPath(ACTION_PATH);
-    }
-
-    @Deprecated
-    public void refreshAnnotation() {
-        fireIconChange();
-        fireOpenedIconChange();
     }
 
     private java.util.Optional<Image> lookupIcon(int type, boolean opened) {
@@ -289,13 +282,6 @@ public final class DataSourceNode extends AbstractNode {
     }
 
     private final class TsSavableImpl implements ITsSavable {
-
-        @Override
-        public Ts[] getAllTs() {
-            TsCollection result = getTsCollection();
-            result.load(TsInformationType.Definition);
-            return result.toArray();
-        }
 
         @Override
         public TsCollection getTsCollection() {

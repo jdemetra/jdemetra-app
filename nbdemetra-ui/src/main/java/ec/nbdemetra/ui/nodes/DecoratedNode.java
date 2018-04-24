@@ -19,7 +19,6 @@ package ec.nbdemetra.ui.nodes;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
-import ec.nbdemetra.ui.awt.JProperty;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +37,8 @@ public class DecoratedNode extends FilterNode {
 
     public static final String HTML_DECORATOR_PROPERTY = "htmlDecorator";
     public static final String PREFERRED_ACTION_DECORATOR_PROPERTY = "preferredActionDecorator";
-    protected final JProperty<Function<Node, String>> htmlDecorator;
-    protected final JProperty<Function<Node, Action>> preferredActionDecorator;
+    protected Function<Node, String> htmlDecorator;
+    protected Function<Node, Action> preferredActionDecorator;
 
     public DecoratedNode(Node original) {
         this(original, o -> true);
@@ -47,8 +46,8 @@ public class DecoratedNode extends FilterNode {
 
     public DecoratedNode(Node original, Predicate<Node> filter) {
         super(original, original.isLeaf() ? Children.LEAF : new DecoratedChildren(original, filter));
-        this.htmlDecorator = newProperty(HTML_DECORATOR_PROPERTY, (o, n) -> n != null ? n : Html.DEFAULT, null);
-        this.preferredActionDecorator = newProperty(PREFERRED_ACTION_DECORATOR_PROPERTY, (o, n) -> n != null ? n : PreferredAction.DEFAULT, null);
+        this.htmlDecorator = Html.DEFAULT;
+        this.preferredActionDecorator = PreferredAction.DEFAULT;
     }
 
     @Override
@@ -57,35 +56,30 @@ public class DecoratedNode extends FilterNode {
     }
 
     public void setHtmlDecorator(Function<Node, String> decorator) {
-        this.htmlDecorator.set(decorator);
+        Function<Node, String> old = this.htmlDecorator;
+        this.htmlDecorator = decorator != null ? decorator : Html.DEFAULT;
+        firePropertyChange(HTML_DECORATOR_PROPERTY, old, this.htmlDecorator);
         fireDisplayNameChange(null, getHtmlDisplayName());
     }
 
     public void setPreferredActionDecorator(Function<Node, Action> decorator) {
-        this.preferredActionDecorator.set(decorator);
+        Function<Node, Action> old = this.preferredActionDecorator;
+        this.preferredActionDecorator = decorator != null ? decorator : PreferredAction.DEFAULT;
+        firePropertyChange(PREFERRED_ACTION_DECORATOR_PROPERTY, old, this.preferredActionDecorator);
     }
 
     @Override
     public String getHtmlDisplayName() {
-        return htmlDecorator.get().apply(getOriginal());
+        return htmlDecorator.apply(getOriginal());
     }
 
     @Override
     public Action getPreferredAction() {
-        return preferredActionDecorator.get().apply(getOriginal());
+        return preferredActionDecorator.apply(getOriginal());
     }
 
     public FluentIterable<DecoratedNode> breadthFirstIterable() {
         return Nodes.breadthFirstIterable(this).filter(DecoratedNode.class);
-    }
-
-    protected final <T> JProperty<T> newProperty(String name, JProperty.Setter<T> setter, T initialValue) {
-        return new JProperty<T>(name, setter, setter.apply(null, initialValue)) {
-            @Override
-            protected void firePropertyChange(T oldValue, T newValue) {
-                DecoratedNode.this.firePropertyChange(getName(), oldValue, newValue);
-            }
-        };
     }
 
     private static class DecoratedChildren extends FilterNode.Children {

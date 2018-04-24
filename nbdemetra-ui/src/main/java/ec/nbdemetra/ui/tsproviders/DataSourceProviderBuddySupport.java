@@ -48,12 +48,6 @@ public class DataSourceProviderBuddySupport {
         return Lookup.getDefault().lookup(DataSourceProviderBuddySupport.class);
     }
 
-    @Deprecated
-    @Nonnull
-    public static DataSourceProviderBuddySupport getInstance() {
-        return getDefault();
-    }
-
     private final LoadingCache<String, IDataSourceProviderBuddy> fallback;
 
     public DataSourceProviderBuddySupport() {

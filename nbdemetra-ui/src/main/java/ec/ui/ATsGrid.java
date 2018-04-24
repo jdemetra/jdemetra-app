@@ -167,12 +167,6 @@ public abstract class ATsGrid extends ATsCollectionView implements ITsGrid {
         themeSupport.setLocalColorScheme(colorScheme);
     }
 
-    @Deprecated
-    @Override
-    public void zoom(int percentage) {
-        setZoomRatio(percentage);
-    }
-
     @Override
     public int getZoomRatio() {
         return zoomRatio;

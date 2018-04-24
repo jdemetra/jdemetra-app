@@ -105,24 +105,12 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
     }
 
     public TramoSeatsViewFactory() {
-        registerDefault();
         registerFromLookup(TramoSeatsDocument.class);
     }
 
     @Override
     public Id getPreferredView() {
         return MAIN_SUMMARY;
-    }
-
-    @Deprecated
-    public void registerDefault() {
-        registerSpec();
-        registerSummary();
-        registerMainViews();
-        registerPreprocessingViews();
-        registerSeatsViews();
-        registerBenchmarkingView();
-        registerDiagnosticsViews();
     }
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SPEC">
@@ -144,10 +132,6 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SUMMARY">
-    @Deprecated
-    public void registerSummary() {
-    }
-
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000)
     public static class MainSummaryFactory extends ItemFactory<TramoSeatsDocument> {
 
@@ -170,11 +154,6 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER MAIN VIEWS">
     // provide regitration of main components
-    @Deprecated
-    public void registerMainViews() {
-        registerSiView();
-    }
-
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 201010)
     public static class MainChartsLowFactory extends SaDocumentViewFactory.MainChartsLowFactory<TramoSeatsDocument> {
 
@@ -300,11 +279,6 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER ARIMA">
-    @Deprecated
-    @Override
-    public void registerArimaView() {
-    }
-
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 303000)
     public static class PreprocessingArimaFactory extends ItemFactory<LinkedHashMap<String, IArimaModel>> {
 
@@ -334,12 +308,6 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SEATS">
-    @Deprecated
-    public void registerSeatsViews() {
-        //register(DECOMPOSITION_STOCH_SA, new CmpExtractor(ComponentType.SeasonallyAdjusted), new EstimationUI());
-        //register(DECOMPOSITION_STOCH_IRR, new CmpExtractor(ComponentType.Irregular), new EstimationUI());
-    }
-
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 400000)
     public static class DecompositionSummaryFactory extends ItemFactory<UcarimaUI.Information> {
 
@@ -779,11 +747,6 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SLIDING SPANS">
-    @Override
-    public void registerSlidingSpansView() {
-        super.registerSlidingSpansView();
-    }
-
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 603000)
     public static class DiagnosticsSlidingSummaryFactory extends ItemFactory<SlidingSpans> {
 

@@ -18,13 +18,4 @@ public interface IProcDocumentViewFactory<D extends IProcDocument> {
 
     @Nonnull
     IProcDocumentView<D> create(@Nonnull D document);
-
-    @Deprecated
-    <I> void register(
-            @Nonnull Id id,
-            @Nullable InformationExtractor<? super D, I> info,
-            @Nonnull ItemUI<? extends IProcDocumentView<D>, I> ui);
-
-    @Deprecated
-    void unregister(@Nonnull Id id);
 }

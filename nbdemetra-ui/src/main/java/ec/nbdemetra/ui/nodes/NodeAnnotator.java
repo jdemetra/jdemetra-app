@@ -32,11 +32,6 @@ public interface NodeAnnotator {
             return Lookup.getDefault().lookup(Support.class);
         }
 
-        @Deprecated
-        public static Support getInstance() {
-            return getDefault();
-        }
-
         public Image annotateIcon(Node node, Image image) {
             Image result = image;
             for (NodeAnnotator o : Lookup.getDefault().lookupAll(NodeAnnotator.class)) {

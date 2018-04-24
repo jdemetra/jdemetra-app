@@ -28,9 +28,6 @@ public interface ITsGrid extends ITsCollectionView, IColorSchemeAble {
     void setSingleTsIndex(int singleTsIndex);
 
     int getSingleTsIndex();
-    
-    @Deprecated
-    void zoom(int percentage);
 
     int getZoomRatio();
 

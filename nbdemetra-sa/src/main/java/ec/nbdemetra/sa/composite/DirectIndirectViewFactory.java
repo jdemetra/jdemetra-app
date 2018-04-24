@@ -162,7 +162,6 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
     }
 
     public DirectIndirectViewFactory() {
-        registerDefault();
         registerFromLookup(MultiSaDocument.class);
     }
 
@@ -171,20 +170,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
         return MAIN_CHART;
     }
 
-    @Deprecated
-    public void registerDefault() {
-        //registerIBTest();
-        registerMain();
-        registerSeasonalityTests();
-        registerDifferences();
-        registerDetails();
-    }
-
     //<editor-fold defaultstate="collapsed" desc="REGISTER MAIN">
-    @Deprecated
-    private void registerMain() {
-    }
-
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000 + 1000)
     public static class MainChartFactory extends ItemFactory<IProcResults> {
 
@@ -195,9 +181,6 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER IB_TEST">
-    @Deprecated
-    public void registerIBTest() {
-    }
 
 //    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100000 + 1000)
     public static class IBTestFactory extends ItemFactory<IProcResults> {
@@ -219,10 +202,6 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER DIFFERENCES">
-    @Deprecated
-    public void registerDifferences() {
-    }
-
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 400000 + 1000)
     public static class DiffStatsFactory extends ItemFactory<TsData> {
 
@@ -267,9 +246,6 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SEASONALITY_TESTS">
-    @Deprecated
-    private void registerSeasonalityTests() {
-    }
     private static final String HEADER_SEAS_DIRECT = "Seasonality tests on the direct sa series";
     private static final String HEADER_SEAS_INDIRECT = "Seasonality tests on the indirect sa series";
 
@@ -291,10 +267,6 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER DETAILS">
-    @Deprecated
-    private void registerDetails() {
-    }
-
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 400000 + 1000)
     public static class MainDetailsFactory extends ItemFactory<IProcResults> {
 

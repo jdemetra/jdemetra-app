@@ -26,8 +26,6 @@ import java.awt.datatransfer.StringSelection;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.JEditorPane;
@@ -128,22 +126,6 @@ public class JHtmlPane extends JEditorPane {
             return;
         }
         super.scrollToReference(reference);
-    }
-
-    @Override
-    @Deprecated
-    public void layout() {
-        try {
-            super.layout();
-        } catch (ArrayIndexOutOfBoundsException aioobE) {
-            //HACK - workaround for issue #168988
-            StackTraceElement[] stack = aioobE.getStackTrace();
-            if (stack.length > 0 && stack[0].getClassName().endsWith("BoxView")) { //NOI18N
-                Logger.getLogger(JHtmlPane.class.getName()).log(Level.INFO, null, aioobE);
-            } else {
-                throw aioobE;
-            }
-        }
     }
 
     /**

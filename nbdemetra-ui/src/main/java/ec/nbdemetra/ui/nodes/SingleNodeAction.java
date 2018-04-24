@@ -64,11 +64,6 @@ public abstract class SingleNodeAction<T extends Node> extends NodeAction {
      */
     protected abstract boolean enable(@Nonnull T activatedNode);
 
-    @Deprecated
-    protected T getSingleNode(Node[] activatedNodes) {
-        return (T) activatedNodes[0];
-    }
-
     @Override
     protected boolean asynchronous() {
         return false;

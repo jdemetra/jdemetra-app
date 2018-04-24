@@ -5,7 +5,6 @@
 package ec.nbdemetra.ui;
 
 import ec.tss.tsproviders.utils.DataFormat;
-import ec.ui.interfaces.IDisposable;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.SwingColorSchemeSupport;
@@ -22,7 +21,7 @@ import org.openide.util.WeakListeners;
  *
  * @author Philippe Charles
  */
-public abstract class ThemeSupport extends SwingColorSchemeSupport implements IDisposable {
+public abstract class ThemeSupport extends SwingColorSchemeSupport {
 
     private final DemetraUI demetraUI;
     private final PropertyChangeListener listener;
@@ -78,16 +77,6 @@ public abstract class ThemeSupport extends SwingColorSchemeSupport implements ID
         return localDataFormat != null ? localDataFormat : demetraUI.getDataFormat();
     }
 
-    @Deprecated
-    public void clearLineColors() {
-        forcedLineColors.clear();
-    }
-
-    @Deprecated
-    public void setLineColor(int index, KnownColor color) {
-        forcedLineColors.put(index, color);
-    }
-
     @Override
     public Color getLineColor(int index) {
         KnownColor kc = forcedLineColors.get(index);
@@ -96,11 +85,6 @@ public abstract class ThemeSupport extends SwingColorSchemeSupport implements ID
 
     public void register() {
         demetraUI.addPropertyChangeListener(WeakListeners.propertyChange(listener, this));
-    }
-
-    @Deprecated
-    @Override
-    public void dispose() {
     }
 
     private final class DemetraUIListener implements PropertyChangeListener {

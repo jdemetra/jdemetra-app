@@ -6,10 +6,8 @@ package ec.nbdemetra.ui.awt;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import javax.swing.CellRendererPane;
-import javax.swing.TransferHandler;
 
 /**
  *
@@ -19,16 +17,6 @@ public final class TransferHandlers {
 
     private TransferHandlers() {
         // static class
-    }
-
-    @Deprecated
-    public static boolean isSetDragImageMethodSupported() {
-        return true;
-    }
-
-    @Deprecated
-    public static void setDragImage(TransferHandler handler, Image image) {
-        handler.setDragImage(image);
     }
 
     // http://stackoverflow.com/a/4154510

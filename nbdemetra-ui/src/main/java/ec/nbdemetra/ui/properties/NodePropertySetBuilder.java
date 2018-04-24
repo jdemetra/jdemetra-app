@@ -281,20 +281,6 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
 
         /**
          *
-         * @param name
-         * @param value
-         * @return
-         * @deprecated use
-         * {@link #selectConst(java.lang.String, java.lang.Object)} instead
-         */
-        @Deprecated
-        @Nonnull
-        public NEXT_STEP select(@Nonnull String name, @Nonnull T value) {
-            return selectConst(name, value);
-        }
-
-        /**
-         *
          * @param name a non-null name
          * @param value a nullable value
          * @return

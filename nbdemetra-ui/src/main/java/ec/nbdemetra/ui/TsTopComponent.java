@@ -4,10 +4,10 @@
  */
 package ec.nbdemetra.ui;
 
-import ec.nbdemetra.ui.tsaction.ITsView2;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.tss.Ts;
+import ec.ui.interfaces.ITsAble;
 import ec.ui.view.tsprocessing.TsProcessingViewer;
 import java.util.Collection;
 import java.util.Iterator;
@@ -23,7 +23,7 @@ import org.openide.windows.TopComponent;
  *
  * @author Jean Palate
  */
-public abstract class TsTopComponent extends TopComponent implements ExplorerManager.Provider, IActiveView, ITsView2, LookupListener {
+public abstract class TsTopComponent extends TopComponent implements ExplorerManager.Provider, IActiveView, ITsAble, LookupListener {
 
     @Override
     public ExplorerManager getExplorerManager() {

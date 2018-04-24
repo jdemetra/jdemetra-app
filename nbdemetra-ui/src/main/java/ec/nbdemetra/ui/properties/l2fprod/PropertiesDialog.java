@@ -1,7 +1,5 @@
 package ec.nbdemetra.ui.properties.l2fprod;
 
-import ec.ui.view.tsprocessing.ApplyAction;
-import ec.ui.view.tsprocessing.IApplyAction;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -24,11 +22,6 @@ public class PropertiesDialog extends JDialog {
     private JButton bCancel_;
     private Object clone_;
     private Action applyAction_;
-
-    @Deprecated
-    public PropertiesDialog(Frame owner, boolean modal, Object clone, IApplyAction change) {
-        this(owner, modal, clone, ApplyAction.toSwingAction(change));
-    }
 
     public PropertiesDialog(Frame owner, boolean modal, Object clone, Action applyAction) {
         super(owner, modal);

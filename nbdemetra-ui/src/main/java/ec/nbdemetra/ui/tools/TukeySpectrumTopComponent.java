@@ -6,9 +6,9 @@ package ec.nbdemetra.ui.tools;
 
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
-import ec.nbdemetra.ui.tsaction.ITsView2;
 import ec.tss.Ts;
 import ec.tstoolkit.data.WindowType;
+import ec.ui.interfaces.ITsAble;
 import ec.ui.view.TukeySpectrumView;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.JMenu;
@@ -44,7 +44,7 @@ persistenceType = TopComponent.PERSISTENCE_NEVER)
     "CTL_TukeySpectrumTopComponent=Tukey Spectrum Window",
     "HINT_TukeySpectrumTopComponent=This is a Tukey Spectrum window"
 })
-public final class TukeySpectrumTopComponent extends TopComponent implements ITsView2, IActiveView, ExplorerManager.Provider {
+public final class TukeySpectrumTopComponent extends TopComponent implements ITsAble, IActiveView, ExplorerManager.Provider {
 
     private TukeySpectrumView view;
     private Node node;

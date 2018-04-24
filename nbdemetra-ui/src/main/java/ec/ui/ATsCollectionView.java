@@ -289,20 +289,10 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         return TssTransferSupport.getDefault().fromTsCollection(col);
     }
 
-    @Deprecated
-    protected Ts[] retainTsCollection(Ts[] tss) {
-        return retainTsCollection(tss, collection);
-    }
-
     private static Ts[] retainTsCollection(Ts[] tss, TsCollection collection) {
         List<Ts> tmp = Lists.newArrayList(tss);
         tmp.retainAll(Arrays.asList(collection.toArray()));
         return Iterables.toArray(tmp, Ts.class);
-    }
-
-    @Deprecated
-    protected Ts[] removeTsCollection(Ts[] tss) {
-        return removeTsCollection(tss, collection);
     }
 
     private static Ts[] removeTsCollection(Ts[] tss, TsCollection collection) {

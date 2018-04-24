@@ -20,6 +20,8 @@ import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
+import ec.nbdemetra.ui.awt.ActionMaps;
+import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.awt.ListTableModel;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -344,8 +346,9 @@ public class JTsCheckLastList extends ATsList {
         model = new AnomalyModel();
         result.setModel(model);
 
-        fillActionMap(result.getActionMap());
-        fillInputMap(result.getInputMap());
+        ActionMaps.copyEntries(getActionMap(), false, result.getActionMap());
+        InputMaps.copyEntries(getInputMap(), false, result.getInputMap());
+
         result.addMouseListener(new TsActionMouseAdapter());
         result.setDragEnabled(true);
         result.setTransferHandler(new TsCollectionTransferHandler());

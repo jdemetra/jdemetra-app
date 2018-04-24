@@ -7,7 +7,6 @@ package ec.nbdemetra.sa;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.ComponentFactory;
 import ec.nbdemetra.ui.IActiveView;
-import ec.nbdemetra.ui.tsaction.ITsView2;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
@@ -18,6 +17,7 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.AHtmlView;
 import ec.ui.ATsChart;
 import ec.ui.chart.JTsChart;
+import ec.ui.interfaces.ITsAble;
 import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.JMenu;
@@ -53,7 +53,7 @@ import org.openide.util.NbBundle.Messages;
     "CTL_SeasonalityTestTopComponent=Seasonality Tests Window",
     "HINT_SeasonalityTestTopComponent=This is a Seasonality Tests window"
 })
-public final class SeasonalityTestTopComponent extends TopComponent implements ITsView2, IActiveView, ExplorerManager.Provider {
+public final class SeasonalityTestTopComponent extends TopComponent implements ITsAble, IActiveView, ExplorerManager.Provider {
 
     private Node node;
     private boolean isLog = false;

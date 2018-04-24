@@ -136,11 +136,6 @@ public final class Config implements IConfig, Serializable {
         return new Builder(domain, name, version);
     }
 
-    @Deprecated
-    public static Config.Builder builder(Config config) {
-        return config.toBuilder();
-    }
-
     /**
      * Returns a convenient NamedServiceConfig formatter that produces xml
      * output.<p>

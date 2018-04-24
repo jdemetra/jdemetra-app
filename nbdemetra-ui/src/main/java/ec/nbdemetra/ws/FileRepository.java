@@ -22,13 +22,9 @@ import ec.demetra.workspace.file.FileFormat;
 import ec.demetra.workspace.file.FileWorkspace;
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
 import ec.tss.tsproviders.DataSource;
-import ec.tss.xml.calendar.XmlCalendars;
-import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
 import ec.tstoolkit.timeseries.calendars.IGregorianCalendarProvider;
-import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.utilities.LinearId;
-import ec.tstoolkit.utilities.NameManager;
 import ec.tstoolkit.utilities.Paths;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.Desktop.KnownFolder;
@@ -60,14 +56,6 @@ import org.openide.util.lookup.ServiceProvider;
 public class FileRepository extends AbstractWorkspaceRepository implements LookupListener {
 
     public static final String NAME = "File", FILENAME = "fileName", VERSION = "20120925";
-
-    @Deprecated
-    private static final FileChooserBuilder CALENDAR_FILE_CHOOSER;
-
-    static {
-        CALENDAR_FILE_CHOOSER = new FileChooserBuilder(CalendarDocumentManager.class)
-                .setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Xml files", "xml"));
-    }
 
     private final Lookup.Result<IWorkspaceItemRepository> repositoryLookup;
     private final FileChooserBuilder wsFileChooser;
@@ -253,33 +241,6 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         return ws.searchDocument(LinearId.of(o.getFamily()), o.getId()) == null;
     }
 
-    @Deprecated
-    public static String getRepositoryRootFolder(Workspace ws) {
-        File id = decode(ws.getDataSource());
-        if (id == null) {
-            File defaultWsFolder = getDefaultWorkingDirectory(DesktopManager.get(), System::getProperty);
-            if (!defaultWsFolder.exists()) {
-                defaultWsFolder.mkdirs();
-            }
-            return Paths.concatenate(defaultWsFolder.getAbsolutePath(), ws.getName());
-        } else {
-            return Paths.changeExtension(id.getAbsolutePath(), null);
-        }
-    }
-
-    @Deprecated
-    public static String getRepositoryFolder(Workspace ws, String repository, boolean create) {
-        String root = getRepositoryRootFolder(ws);
-        File frepo = new File(root, repository);
-        if (frepo.exists() && !frepo.isDirectory()) {
-            return null;
-        }
-        if (!frepo.exists() && create) {
-            frepo.mkdirs();
-        }
-        return frepo.getAbsolutePath();
-    }
-
     @Override
     public Collection<Class> getSupportedTypes() {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -293,57 +254,6 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     @Override
     public void resultChanged(LookupEvent le) {
         initialize();
-    }
-
-    @Deprecated
-    public static void importCalendars(Workspace ws) {
-        java.io.File file = CALENDAR_FILE_CHOOSER.showOpenDialog();
-        if (file != null) {
-            loadCalendars(ws, file.getAbsolutePath());
-        }
-    }
-
-    @Deprecated
-    public static boolean loadCalendars(Workspace ws, String file) {
-        GregorianCalendarManager wsMgr = ws.getContext().getGregorianCalendars();
-        XmlCalendars xml = AbstractFileItemRepository.loadXmlLegacy(file, XmlCalendars.class);
-        if (xml != null) {
-            xml.copyTo(wsMgr);
-        } else // try Demetra+ format
-        {
-            ec.tss.xml.legacy.XmlCalendars oxml = AbstractFileItemRepository.loadXmlLegacy(file, ec.tss.xml.legacy.XmlCalendars.class);
-            if (oxml != null) {
-                oxml.copyTo(wsMgr);
-            } else {
-                return false;
-            }
-        }
-        for (String s : wsMgr.getNames()) {
-            IGregorianCalendarProvider cal = wsMgr.get(s);
-            if (ws.searchDocument(cal) == null) {
-                WorkspaceItem<IGregorianCalendarProvider> item = WorkspaceItem.system(CalendarDocumentManager.ID, s, cal);
-                ws.add(item);
-            }
-        }
-        return true;
-    }
-
-    @Deprecated
-    public static boolean loadVariables(Workspace ws, String file) {
-        NameManager<TsVariables> wsMgr = ws.getContext().getTsVariableManagers();
-        TsVariables mgr = AbstractFileItemRepository.loadLegacy(file, ec.tss.xml.legacy.XmlTsVariables.class);
-        if (mgr != null) {
-            wsMgr.set(ProcessingContext.LEGACY, mgr);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Deprecated
-    public static boolean saveCalendars(Workspace ws, String file) {
-        GregorianCalendarManager wsMgr = ws.getContext().getGregorianCalendars();
-        return AbstractFileItemRepository.saveLegacy(file, wsMgr, XmlCalendars.class);
     }
 
     private static File getDefaultWorkingDirectory(Desktop desktop, UnaryOperator<String> properties) {

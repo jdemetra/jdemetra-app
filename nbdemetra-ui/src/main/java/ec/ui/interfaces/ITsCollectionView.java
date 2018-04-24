@@ -25,8 +25,6 @@ import ec.tss.TsCollection;
  */
 public interface ITsCollectionView extends ITsControl, ITsCollectionAble, ITsActionAble {
 
-    @Deprecated
-    public static final String COLLECTION_PROPERTY = TS_COLLECTION_PROPERTY;
     public static final String SELECTION_PROPERTY = "selection";
     public static final String UDPATE_MODE_PROPERTY = "tsUpdateMode";
     public static final String FREEZE_ON_IMPORT_PROPERTY = "freezeOnImport";

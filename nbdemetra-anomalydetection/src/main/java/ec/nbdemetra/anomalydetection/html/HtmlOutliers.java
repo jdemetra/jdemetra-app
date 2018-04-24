@@ -20,7 +20,6 @@ import ec.nbdemetra.anomalydetection.comparer.OutlierEstimationComparator;
 import ec.nbdemetra.ui.properties.l2fprod.ColorChooser;
 import ec.tss.html.AbstractHtmlElement;
 import ec.tss.html.HtmlStream;
-import ec.tss.html.HtmlStyle;
 import ec.tss.html.HtmlTable;
 import ec.tss.html.HtmlTableCell;
 import ec.tss.html.HtmlTableHeader;
@@ -102,19 +101,6 @@ public class HtmlOutliers extends AbstractHtmlElement implements IHtmlElement {
             stream.write(new HtmlTableCell(String.valueOf(o.getNumberOfValues())).withWidth(80).withClass(TEXT_CENTER));
             stream.write(new HtmlTableCell(df4.format(o.getAverageValue())).withWidth(80));
             stream.close(HtmlTag.TABLEROW);
-        }
-    }
-
-    @Deprecated
-    public static HtmlStyle getForeground(String t) {
-        switch (t) {
-            case "AO":
-                return HtmlStyle.CustomDark;
-            case "LS":
-            case "TC":
-                return HtmlStyle.CustomLight;
-            default:
-                return HtmlStyle.Black;
         }
     }
 

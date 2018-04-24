@@ -19,9 +19,6 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = IWorkspaceItemRepository.class)
 public class MultiProcessingDocFileRepository extends AbstractFileItemRepository<MultiProcessingDocument> {
 
-    @Deprecated
-    public static final String REPOSITORY = "SAProcessing";
-
     @Override
     public boolean load(WorkspaceItem<MultiProcessingDocument> item) {
         return loadFile(item, (SaProcessing o) -> {

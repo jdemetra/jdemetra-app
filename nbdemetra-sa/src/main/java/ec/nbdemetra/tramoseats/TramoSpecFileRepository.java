@@ -17,9 +17,6 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = IWorkspaceItemRepository.class)
 public class TramoSpecFileRepository extends AbstractFileItemRepository<TramoSpecification> {
 
-    @Deprecated
-    public static final String REPOSITORY = "TramoSpec";
-
     @Override
     public boolean load(WorkspaceItem<TramoSpecification> item) {
         return loadFile(item, (TramoSpecification o) -> {

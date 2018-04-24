@@ -31,13 +31,6 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = IWorkspaceItemRepository.class)
 public final class RevisionAnalysisDocFileRepository extends DefaultFileItemRepository<RevisionAnalysisDocument> {
 
-    public static final String REPOSITORY = "RevisionAnalysisDoc";
-    
-    @Override
-    public String getRepository() {
-        return REPOSITORY;
-    }
-
     @Override
     public Class<RevisionAnalysisDocument> getSupportedType() {
         return RevisionAnalysisDocument.class;

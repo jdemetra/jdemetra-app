@@ -1,5 +1,4 @@
 Manifest-Version: 1.0
-OpenIDE-Module-Install: ec/nbdemetra/sa/Installer.class
 OpenIDE-Module-Localizing-Bundle: ec/nbdemetra/sa/Bundle.properties
 OpenIDE-Module-Requires: org.openide.windows.WindowManager
 OpenIDE-Module-Display-Category: Seasonal Adjustment

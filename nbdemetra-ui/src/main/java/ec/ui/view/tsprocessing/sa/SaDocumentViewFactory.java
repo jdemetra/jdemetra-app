@@ -275,10 +275,6 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     }
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SPEC">
-    @Deprecated
-    public void registerSpec() {
-    }
-
     protected static class SpecAllFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, ISaSpecification> {
 
@@ -295,10 +291,6 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER MAIN VIEWS">
     // provide regitration of main components
-    @Deprecated
-    public void registerMainViews() {
-        registerSiView();
-    }
 
 //    protected static class MainChartFactory<D extends SaDocument<? extends ISaSpecification>>
 //            extends ItemFactory<D, CompositeResults> {
@@ -439,10 +431,6 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SI VIEW">
-    @Deprecated
-    public void registerSiView() {
-    }
-
     protected static class MainSiFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, TsData[]> {
 
@@ -484,10 +472,6 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER ARIMA VIEW">
-    @Deprecated
-    public void registerArimaView() {
-    }
-
     protected static class PreprocessingArimaFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, LinkedHashMap<String, IArimaModel>> {
 
@@ -509,10 +493,6 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER LIGHT PREPROCESSING VIEWS">
-    @Deprecated
-    public void registerLightPreprocessingViews() {
-    }
-
     protected static class PreprocessingSummaryFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, PreprocessingModel> {
 
@@ -554,11 +534,6 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER PREPROCESSING VIEWS">
-    @Deprecated
-    public void registerPreprocessingViews() {
-        registerArimaView();
-    }
-
     protected static class PreprocessingFCastsFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, EstimationUI.Information> {
 
@@ -668,10 +643,6 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER BENCHMARKING VIEW">
-    @Deprecated
-    public void registerBenchmarkingView() {
-    }
-
     protected static class BenchmarkingFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, Boolean> {
 
@@ -690,12 +661,6 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER DIAGNOSTICS VIEWS">
-    @Deprecated
-    public void registerDiagnosticsViews() {
-        registerSeasonalityView();
-        registerSlidingSpansView();
-    }
-
     protected static class DiagnosticsSummaryFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
@@ -837,10 +802,6 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SEASONALITY VIEW">
-    @Deprecated
-    public void registerSeasonalityView() {
-    }
-
     protected static class ResidualSeasonalityFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, TsData> {
 
@@ -887,10 +848,6 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SLIDING SPANS VIEW">
-    @Deprecated
-    public void registerSlidingSpansView() {
-    }
-
     protected static class DiagnosticsSlidingTdFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, SlidingSpans> {
 

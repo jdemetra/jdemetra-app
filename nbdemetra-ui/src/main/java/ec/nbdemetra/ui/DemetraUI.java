@@ -67,12 +67,6 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
         return Lookup.getDefault().lookup(DemetraUI.class);
     }
 
-    @Deprecated
-    @Nonnull
-    public static DemetraUI getInstance() {
-        return getDefault();
-    }
-
     // PROPERTIES DEFINITION
     public static final String COLOR_SCHEME_NAME_PROPERTY = "colorSchemeName";
     public static final String DATA_FORMAT_PROPERTY = "dataFormat";

@@ -18,11 +18,7 @@ package ec.nbdemetra.ui;
 
 import ec.nbdemetra.core.GlobalService;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import ec.tss.Ts;
 import ec.tss.TsMoniker;
-import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.DataSource;
-import java.awt.Image;
 import java.beans.BeanInfo;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,34 +45,6 @@ public class MonikerUI {
     public Icon getIcon(@Nonnull TsMoniker moniker) {
         return DataSourceProviderBuddySupport.getDefault()
                 .getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false)
-                .map(ImageUtilities::image2Icon)
-                .orElse(null);
-    }
-
-    @Deprecated
-    public Icon getIcon(DataSet dataSet) {
-        return getIcon(dataSet.getDataSource());
-    }
-
-    @Deprecated
-    public Icon getIcon(DataSource dataSource) {
-        return DataSourceProviderBuddySupport.getDefault()
-                .getIcon(dataSource.getProviderName(), BeanInfo.ICON_COLOR_16x16, false)
-                .map(ImageUtilities::image2Icon)
-                .orElse(null);
-    }
-
-    @Deprecated
-    public Image getImage(Ts ts) {
-        return DataSourceProviderBuddySupport.getDefault()
-                .getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false)
-                .orElse(null);
-    }
-
-    @Deprecated
-    public Icon getIcon(Ts ts) {
-        return DataSourceProviderBuddySupport.getDefault()
-                .getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false)
                 .map(ImageUtilities::image2Icon)
                 .orElse(null);
     }

@@ -39,12 +39,6 @@ public class DataSourceTransferSupport {
         return Lookup.getDefault().lookup(DataSourceTransferSupport.class);
     }
 
-    @Deprecated
-    @Nonnull
-    public static DataSourceTransferSupport getInstance() {
-        return getDefault();
-    }
-
     @Nonnull
     public FluentIterable<? extends DataSourceTransferHandler> all() {
         return FluentIterable.from(Lookup.getDefault().lookupAll(DataSourceTransferHandler.class));

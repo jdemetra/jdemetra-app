@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
-import ec.nbdemetra.ui.awt.JPanel2;
 import ec.nbdemetra.ui.awt.ListenerState;
 import ec.tss.tsproviders.utils.IConstraint;
 import ec.tstoolkit.algorithm.ProcessingContext;
@@ -19,6 +18,7 @@ import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
 import ec.tstoolkit.timeseries.calendars.ISpecialDay;
 import ec.tstoolkit.timeseries.calendars.SpecialCalendarDay;
 import ec.tstoolkit.timeseries.calendars.SpecialDayEvent;
+import ec.tstoolkit.utilities.Arrays2;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
@@ -47,7 +48,7 @@ import org.openide.util.WeakListeners;
  *
  * @author Philippe Charles
  */
-public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Provider, IDialogDescriptorProvider {
+public class NationalCalendarPanel extends JPanel implements ExplorerManager.Provider, IDialogDescriptorProvider {
 
     // PROPERTIES DEFINITION
     public static final String CALENDAR_NAME_PROPERTY = "calendarName";
@@ -570,6 +571,13 @@ public class NationalCalendarPanel extends JPanel2 implements ExplorerManager.Pr
                 }
                 return null;
             }
+        }
+    }
+
+    @Override
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        if (!Arrays2.arrayEquals(oldValue, newValue)) {
+            super.firePropertyChange(propertyName, oldValue, newValue);
         }
     }
 }
