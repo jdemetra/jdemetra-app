@@ -16,11 +16,11 @@
  */
 package ec.ui;
 
+import demetra.ui.TsManager;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
-import ec.tss.TsMoniker;
 import ec.tss.TsStatus;
+import ec.tstoolkit.MetaData;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.Month;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
@@ -54,7 +54,7 @@ public abstract class ATsGrowthChart extends ATsChart implements ITsGrowthChart 
     protected boolean useToolLayout;
 
     // OTHER
-    protected final TsCollection growthCollection = TsFactory.instance.createTsCollection();
+    protected final TsCollection growthCollection = TsManager.getDefault().newTsCollection();
 
     public ATsGrowthChart() {
         this.growthKind = DEFAULT_GROWTH_KIND;
@@ -179,7 +179,7 @@ public abstract class ATsGrowthChart extends ATsChart implements ITsGrowthChart 
     protected static Ts[] computeGrowthData(Ts[] input, GrowthKind kind, TsPeriodSelector selector) {
         Ts[] result = new Ts[input.length];
         for (int i = 0; i < result.length; i++) {
-            result[i] = TsFactory.instance.createTs(input[i].getName(), new TsMoniker(), null, computeGrowthData(input[i].getTsData(), kind, selector));
+            result[i] = TsManager.getDefault().newTs(input[i].getName(), new MetaData(), computeGrowthData(input[i].getTsData(), kind, selector));
         }
         return result;
     }

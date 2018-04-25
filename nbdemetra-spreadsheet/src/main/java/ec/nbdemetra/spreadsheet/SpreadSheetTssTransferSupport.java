@@ -17,6 +17,7 @@
 package ec.nbdemetra.spreadsheet;
 
 import com.google.common.base.Converter;
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
@@ -24,7 +25,6 @@ import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.TsCollection;
 import ec.tss.TsCollectionInformation;
-import ec.tss.TsFactory;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
@@ -94,10 +94,10 @@ final class SpreadSheetTssTransferSupport {
                 TsCollectionInformation info = resource.getFactory().toTsCollectionInfo(book.getSheet(0), resource.getInternalConfig().getTsImportOptions());
                 return info.items.stream()
                         .filter(TsInformation::hasData)
-                        .map(o -> TsFactory.instance.createTs(o.name, null, o.data))
-                        .collect(TsFactory.toTsCollection());
+                        .map(o -> TsManager.getDefault().newTs(o.name, null, o.data))
+                        .collect(TsManager.getDefault().getTsCollector());
             }
-            return TsFactory.instance.createTsCollection();
+            return TsManager.getDefault().newTsCollection();
         }
     }
 

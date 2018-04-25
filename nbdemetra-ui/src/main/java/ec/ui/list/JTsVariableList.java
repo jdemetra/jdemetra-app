@@ -16,6 +16,7 @@
  */
 package ec.ui.list;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.awt.ActionMaps;
@@ -25,7 +26,6 @@ import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.tss.DynamicTsVariable;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
@@ -450,8 +450,8 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
             name = variable.getName();
         }
         return variable instanceof DynamicTsVariable
-                ? TsFactory.instance.createTs(name, ((DynamicTsVariable) variable).getMoniker(), TsInformationType.None)
-                : TsFactory.instance.createTs(name, null, variable.getTsData());
+                ? TsManager.getDefault().lookupTs(name, ((DynamicTsVariable) variable).getMoniker(), TsInformationType.None)
+                : TsManager.getDefault().newTs(name, null, variable.getTsData());
     }
 
     private static final class OpenCommand extends JCommand<JTsVariableList> {

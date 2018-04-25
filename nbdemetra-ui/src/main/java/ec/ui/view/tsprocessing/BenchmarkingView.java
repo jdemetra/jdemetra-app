@@ -4,9 +4,9 @@
  */
 package ec.ui.view.tsprocessing;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.Ts;
-import ec.tss.TsFactory;
 import ec.tss.html.implementation.HtmlTsDifferenceDocument;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.Disposables;
@@ -73,7 +73,7 @@ public class BenchmarkingView extends JComponent implements IDisposable {
         chart_.getTsCollection().replace(all);
         TsData sdiff = mul ? (TsData.divide(benchSa.getTsData(), sa.getTsData()).minus(1))
                 : TsData.subtract(benchSa.getTsData(), sa.getTsData());
-        Ts diff = TsFactory.instance.createTs("Differences");
+        Ts diff = TsManager.getDefault().newTsWithName("Differences");
         diff.set(sdiff);
         dchart_.getTsCollection().replace(diff);
         all.add(diff);

@@ -8,6 +8,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import demetra.ui.TsManager;
 import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
 import ec.nbdemetra.ui.Menus.DynamicPopup;
 import ec.nbdemetra.ui.*;
@@ -22,8 +23,6 @@ import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
-import static ec.tss.TsFactory.toTsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TransferableXml;
@@ -258,13 +257,13 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         detail = new TsProcessingViewer(TsProcessingViewer.Type.APPLY_RESTORE_SAVE);
         detail.setHeaderVisible(false);
         detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_SAVE, evt -> {
-                                     save((SaDocument) detail.getDocument());
-                                 });
+            save((SaDocument) detail.getDocument());
+        });
         detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_RESTORE, evt -> {
-                                     if (selection.length > 0) {
-                                         showDetails(selection[0]);
-                                     }
-                                 });
+            if (selection.length > 0) {
+                showDetails(selection[0]);
+            }
+        });
         visualRepresentation = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, NbComponents.newJScrollPane(master), detail);
         visualRepresentation.setResizeWeight(.60d);
         visualRepresentation.setOneTouchExpandable(true);
@@ -501,11 +500,11 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         if (interactive) {
             deleteActionPanel.setItems(items);
             NotifyDescriptor nd = new NotifyDescriptor(deleteActionPanel,
-                                                       "Delete confirmation",
-                                                       NotifyDescriptor.YES_NO_OPTION,
-                                                       NotifyDescriptor.QUESTION_MESSAGE,
-                                                       null,
-                                                       NotifyDescriptor.YES_OPTION);
+                    "Delete confirmation",
+                    NotifyDescriptor.YES_NO_OPTION,
+                    NotifyDescriptor.QUESTION_MESSAGE,
+                    null,
+                    NotifyDescriptor.YES_OPTION);
 
             if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.YES_OPTION) {
                 return;
@@ -551,18 +550,18 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     public void copySeries(Collection<SaItem> litems) {
         TsCollection tmp = litems.stream()
                 .map(SaItem::getTs)
-                .collect(toTsCollection());
+                .collect(TsManager.getDefault().getTsCollector());
         Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(tmp);
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
     }
 
     public void copyComponents(List<String> components) {
-        TsCollection tmp = TsFactory.instance.createTsCollection();
+        TsCollection tmp = TsManager.getDefault().newTsCollection();
         for (SaItem item : getSelection()) {
             components.stream().forEach((comp) -> {
                 TsData tsData = item.process().getData(comp, TsData.class);
                 if (tsData != null) {
-                    tmp.add(TsFactory.instance.createTs("[" + comp + "] " + item.getTs().getName(), null, tsData));
+                    tmp.add(TsManager.getDefault().newTs("[" + comp + "] " + item.getTs().getName(), null, tsData));
                 }
             });
         }

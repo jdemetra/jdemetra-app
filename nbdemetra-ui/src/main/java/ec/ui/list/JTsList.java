@@ -17,6 +17,7 @@
 package ec.ui.list;
 
 import com.google.common.base.Strings;
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.awt.ActionMaps;
@@ -258,7 +259,7 @@ public class JTsList extends ATsList {
             public void actionPerformed(ActionEvent arg0) {
                 TsCollection collection = getTsCollection();
                 if (collection.isLocked()) {
-                    TsCollection ncol = TsFactory.instance.createTsCollection();
+                    TsCollection ncol = TsManager.getDefault().newTsCollection();
                     ncol.quietAppend(collection);
                     setTsCollection(ncol);
                 }

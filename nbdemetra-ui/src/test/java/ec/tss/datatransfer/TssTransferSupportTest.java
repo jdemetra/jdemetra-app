@@ -16,8 +16,8 @@
  */
 package ec.tss.datatransfer;
 
+import demetra.ui.TsManager;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.datatransfer.impl.LocalObjectTssTransferHandler;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
@@ -65,14 +65,14 @@ public class TssTransferSupportTest {
 
         assertThat(empty.fromMatrix(new Matrix(1, 1)).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTable(new Table<>(1, 1)).getTransferDataFlavors()).isEmpty();
-        assertThat(empty.fromTs(TsFactory.instance.createTs()).getTransferDataFlavors()).isEmpty();
-        assertThat(empty.fromTsCollection(TsFactory.instance.createTsCollection()).getTransferDataFlavors()).isEmpty();
+        assertThat(empty.fromTs(TsManager.getDefault().newTsWithName("")).getTransferDataFlavors()).isEmpty();
+        assertThat(empty.fromTsCollection(TsManager.getDefault().newTsCollection()).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTsData(TsData.random(TsFrequency.Yearly)).getTransferDataFlavors()).isEmpty();
     }
 
     @Test
     public void testContent() {
-        LocalObjectTransferable<TsCollection> col = new LocalObjectTransferable<>(TsFactory.instance.createTsCollection());
+        LocalObjectTransferable<TsCollection> col = new LocalObjectTransferable<>(TsManager.getDefault().newTsCollection());
         Transferable multi = new ExTransferable.Multi(new Transferable[]{col});
 
         TssTransferSupport local = of(new LocalObjectTssTransferHandler());

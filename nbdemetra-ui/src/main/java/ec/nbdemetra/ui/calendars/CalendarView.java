@@ -4,10 +4,10 @@
  */
 package ec.nbdemetra.ui.calendars;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.Ts;
-import ec.tss.TsFactory;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.timeseries.calendars.IGregorianCalendarProvider;
 import ec.tstoolkit.timeseries.calendars.LengthOfPeriodType;
@@ -106,7 +106,7 @@ public class CalendarView extends JComponent {
         List<Ts> tss = new ArrayList(nx);
         for (int i = 0; i < nx; ++i) {
             TsData data = new TsData(domain.getStart(), buffer.get(i).getData(), false);
-            tss.add(TsFactory.instance.createTs(getCmpName(i), null, data));
+            tss.add(TsManager.getDefault().newTs(getCmpName(i), null, data));
         }
 
         tsGrid.getTsCollection().replace(tss);

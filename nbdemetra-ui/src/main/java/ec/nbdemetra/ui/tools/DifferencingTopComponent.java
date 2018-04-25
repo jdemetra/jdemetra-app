@@ -4,12 +4,12 @@
  */
 package ec.nbdemetra.ui.tools;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.Ts;
-import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.TsMoniker;
 import ec.tss.datatransfer.TssTransferSupport;
@@ -225,7 +225,7 @@ public final class DifferencingTopComponent extends TopComponent implements ITsA
         if (ifreq > 1 && seasonalDiffOrder > 0) {
             s = s.delta(ifreq, seasonalDiffOrder);
         }
-        Ts del = TsFactory.instance.createTs("Differenced series", null, s);
+        Ts del = TsManager.getDefault().newTs("Differenced series", null, s);
         grid.getTsCollection().replace(del);
         AutoCorrelations ac = new AutoCorrelations(s);
         acView.setLength(ifreq * 3);

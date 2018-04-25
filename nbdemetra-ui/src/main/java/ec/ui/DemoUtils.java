@@ -16,9 +16,9 @@
  */
 package ec.ui;
 
+import demetra.ui.TsManager;
 import internal.RandomTsBuilder;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tstoolkit.random.IRandomNumberGenerator;
 import ec.tstoolkit.random.XorshiftRNG;
 import java.util.stream.IntStream;
@@ -45,7 +45,7 @@ public final class DemoUtils {
         RandomTsBuilder builder = new RandomTsBuilder();
         return IntStream.range(0, nSeries)
                 .mapToObj(o -> builder.withObsCount(nObs).withRng(rng).withName("S" + o).build().toTs())
-                .collect(TsFactory.toTsCollection());
+                .collect(TsManager.getDefault().getTsCollector());
     }
 
     public enum TsNamingScheme {

@@ -16,11 +16,11 @@
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.ui.grid.JTsGrid;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
@@ -76,7 +76,7 @@ public class JTsComboGrid extends JComponent {
     }
 
     private void showAllTs() {
-        TsCollection coll = TsFactory.instance.createTsCollection();
+        TsCollection coll = TsManager.getDefault().newTsCollection();
         for (Map.Entry<Ts, TsCollection> entry : collections.entrySet()) {
             TsCollection c = entry.getValue();
             for (int i = 0; i < c.getCount(); i++) {

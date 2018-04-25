@@ -18,9 +18,9 @@ package ec.nbdemetra.core;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
+import demetra.ui.TsManager;
 import ec.tss.DynamicTsVariable;
 import ec.tss.ITsProvider;
-import ec.tss.TsFactory;
 import ec.tss.sa.ISaDiagnosticsFactory;
 import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.ISaProcessingFactory;
@@ -100,10 +100,10 @@ public final class Installer {
             super(ITsProvider.class);
         }
 
-        private void restore(Iterable<? extends ITsProvider> providers) {
+        private void register(Iterable<? extends ITsProvider> providers) {
             Preferences pathsNode = prefs.node("paths");
             for (ITsProvider o : providers) {
-                TsFactory.instance.add(o);
+                TsManager.getDefault().register(o);
                 if (o instanceof IFileLoader) {
                     tryGet(pathsNode, o.getSource(), pathsParser)
                             .ifPresent(bean -> ((IFileLoader) o).setPaths(bean));
@@ -111,15 +111,14 @@ public final class Installer {
             }
         }
 
-        private void close(Iterable<? extends ITsProvider> providers) {
+        private void unregister(Iterable<? extends ITsProvider> providers) {
             Preferences pathsNode = prefs.node("paths");
             for (ITsProvider o : providers) {
                 if (o instanceof IFileLoader) {
                     tryPut(pathsNode, o.getSource(), pathsFormatter, ((IFileLoader) o).getPaths());
                 }
-                TsFactory.instance.remove(o.getSource());
+                TsManager.getDefault().unregister(o);
             }
-            TsFactory.instance.dispose();
         }
 
         private static <X> List<X> except(List<X> l, List<X> r) {
@@ -139,24 +138,25 @@ public final class Installer {
             List<ITsProvider> old = Lists.newArrayList(TsProviders.all());
             List<ITsProvider> current = Lists.newArrayList(lookup.allInstances());
 
-            close(except(old, current));
-            restore(except(current, old));
+            unregister(except(old, current));
+            register(except(current, old));
         }
 
         @Override
         protected void onRestore(Lookup.Result<ITsProvider> lookup) {
-            restore(lookup.allInstances());
+            register(lookup.allInstances());
             LOGGER.debug("Loaded providers: [{}]", toString(TsProviders.all()));
         }
 
         @Override
         protected void onClose(Lookup.Result<ITsProvider> lookup) {
-            close(TsProviders.all());
+            unregister(TsProviders.all());
             try {
                 prefs.flush();
             } catch (BackingStoreException ex) {
                 LOGGER.warn("Can't flush storage", ex);
             }
+            TsManager.getDefault().close();
         }
 
         @XmlRootElement(name = "paths")

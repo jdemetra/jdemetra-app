@@ -4,8 +4,8 @@
  */
 package ec.ui.view.tsprocessing;
 
+import demetra.ui.TsManager;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.documents.DocumentManager;
 import ec.tss.documents.TsDocument;
 import ec.ui.chart.JTsDualChart;
@@ -24,7 +24,7 @@ public class DualChartUI<D extends TsDocument<?, ?>> extends PooledItemUI<IProcD
     @Override
     protected void init(JTsDualChart c, IProcDocumentView<D> host, String[][] information) {
         String[] hnames = information[0], lnames = information[1];
-        TsCollection items = TsFactory.instance.createTsCollection();
+        TsCollection items = TsManager.getDefault().newTsCollection();
         if (hnames != null) {
             for (int i = 0; i < hnames.length; ++i) {
                 items.quietAdd(DocumentManager.instance.getTs(host.getDocument(), hnames[i]));

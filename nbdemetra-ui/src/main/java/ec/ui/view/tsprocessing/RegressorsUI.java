@@ -4,8 +4,8 @@
  */
 package ec.ui.view.tsprocessing;
 
+import demetra.ui.TsManager;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.tstoolkit.timeseries.regression.ITsVariable;
@@ -29,7 +29,7 @@ public class RegressorsUI<V extends IProcDocumentView<?>> extends DefaultItemUI<
     }
 
     private TsCollection createRegressors(PreprocessingModel information) {
-        TsCollection collection = TsFactory.instance.createTsCollection();
+        TsCollection collection = TsManager.getDefault().newTsCollection();
         TsDomain edomain = information.description.getSeriesDomain();
         TsPeriod start = edomain.getStart();
         int n = edomain.getLength();
@@ -45,7 +45,7 @@ public class RegressorsUI<V extends IProcDocumentView<?>> extends DefaultItemUI<
                 }
                 cur.data(edomain, tmp);
                 for (int j = 0; j < dim; ++j) {
-                    collection.quietAdd(TsFactory.instance.createTs(cur.getItemDescription(j, information.getFrequency()), null, new TsData(start, tmp.get(j).getData(), false)));
+                    collection.quietAdd(TsManager.getDefault().newTs(cur.getItemDescription(j, information.getFrequency()), null, new TsData(start, tmp.get(j).getData(), false)));
                 }
             }
         }

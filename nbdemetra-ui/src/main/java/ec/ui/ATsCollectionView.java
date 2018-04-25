@@ -19,6 +19,7 @@ package ec.ui;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.awt.ActionMaps;
@@ -27,7 +28,6 @@ import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
 import ec.tss.datatransfer.DataTransfers;
@@ -114,7 +114,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     protected final DemetraUI demetraUI = DemetraUI.getDefault();
 
     public ATsCollectionView() {
-        this.collection = TsFactory.instance.createTsCollection();
+        this.collection = TsManager.getDefault().newTsCollection();
         this.updateMode = DEFAULT_UPDATEMODE;
         this.tsAction = null;
         this.selection = DEFAULT_SELECTION;
@@ -127,7 +127,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         enableProperties();
 
         tsFactoryObserver.helper.setObserved(this.collection);
-        TsFactory.instance.addObserver(tsFactoryObserver);
+        TsManager.getDefault().addObserver(tsFactoryObserver);
     }
 
     private void registerActions() {
@@ -207,7 +207,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     @Override
     public void setTsCollection(TsCollection collection) {
         TsCollection old = this.collection;
-        this.collection = collection != null ? collection : TsFactory.instance.createTsCollection();
+        this.collection = collection != null ? collection : TsManager.getDefault().newTsCollection();
         fireTsCollectionChange(old, this.collection);
         tsFactoryObserver.helper.setObserved(this.collection);
     }
@@ -275,16 +275,16 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
 
     @Override
     public void dispose() {
-        TsFactory.instance.deleteObserver(tsFactoryObserver);
+        TsManager.getDefault().removeObserver(tsFactoryObserver);
         super.dispose();
     }
 
     public void connect() {
-        TsFactory.instance.addObserver(tsFactoryObserver);
+        TsManager.getDefault().addObserver(tsFactoryObserver);
     }
 
     protected Transferable transferableOnSelection() {
-        TsCollection col = TsFactory.instance.createTsCollection();
+        TsCollection col = TsManager.getDefault().newTsCollection();
         col.quietAppend(Arrays.asList(selection));
         return TssTransferSupport.getDefault().fromTsCollection(col);
     }
@@ -625,7 +625,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     }
 
     private static TsCollection freezedCopyOf(TsCollection input) {
-        return input.stream().map(Ts::freeze).collect(TsFactory.toTsCollection());
+        return input.stream().map(Ts::freeze).collect(TsManager.getDefault().getTsCollector());
     }
 
     private enum TransferChange {

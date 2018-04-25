@@ -259,6 +259,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
+                        <publicPackage>demetra.ui</publicPackage>
+                        
+                        <!-- old core -->
                         <publicPackage>ec.benchmarking.*</publicPackage>
                         <publicPackage>ec.businesscycle.*</publicPackage>
                         <publicPackage>ec.satoolkit.*</publicPackage>
@@ -277,6 +280,7 @@
                         <publicPackage>ec.demetra.workspace.file.util</publicPackage>
                         <publicPackage>ioutil</publicPackage>
 
+                        <!-- old ui -->
                         <publicPackage>ec.benchmarking.*</publicPackage>
                         <publicPackage>ec.nbdemetra.sa.output</publicPackage>
                         <publicPackage>ec.nbdemetra.ui.*</publicPackage>

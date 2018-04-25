@@ -16,8 +16,8 @@
  */
 package ec.ui.view.res;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.NbComponents;
-import ec.tss.TsFactory;
 import ec.tstoolkit.MetaData;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.DescriptiveStatistics;
@@ -104,7 +104,7 @@ public class ResidualsView extends ATsDataView {
             Range rng = calcRange(tsData.internalStorage());
             ((NumberAxis) chartPanel.getChart().getXYPlot().getRangeAxis()).setTickUnit(new NumberTickUnit(calcTick(rng)), true, false);
 
-            grid.getTsCollection().replace(TsFactory.instance.createTs("Residuals", new MetaData(), tsData));
+            grid.getTsCollection().replace(TsManager.getDefault().newTs("Residuals", new MetaData(), tsData));
         } else {
             grid.getTsCollection().clear();
         }

@@ -5,6 +5,7 @@
 package ec.nbdemetra.sa;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import demetra.ui.TsManager;
 import ec.nbdemetra.sa.composite.DirectIndirectViewFactory;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.DemetraUiIcon;
@@ -15,7 +16,6 @@ import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.benchmarking.MultiSaBenchmarkingSpec;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.tss.Ts;
-import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
 import ec.tss.sa.composite.MultiSaDocument;
@@ -184,7 +184,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
                 }
                 sum = TsData.add(sum, s.getTsData());
             }
-            Ts t = TsFactory.instance.createTs("Total", null, sum);
+            Ts t = TsManager.getDefault().newTs("Total", null, sum);
             saChart.getTsCollection().replace(t);
             clear();
         });

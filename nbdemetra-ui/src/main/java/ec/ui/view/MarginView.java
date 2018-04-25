@@ -16,8 +16,8 @@
  */
 package ec.ui.view;
 
+import demetra.ui.TsManager;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -322,10 +322,10 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
         result.add(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TsCollection col = TsFactory.instance.createTsCollection();
-                col.quietAdd(TsFactory.instance.createTs("series", null, data.series));
-                col.quietAdd(TsFactory.instance.createTs("lower", null, data.lower));
-                col.quietAdd(TsFactory.instance.createTs("upper", null, data.upper));
+                TsCollection col = TsManager.getDefault().newTsCollection();
+                col.quietAdd(TsManager.getDefault().newTs("series", null, data.series));
+                col.quietAdd(TsManager.getDefault().newTs("lower", null, data.lower));
+                col.quietAdd(TsManager.getDefault().newTs("upper", null, data.upper));
                 Transferable t = TssTransferSupport.getDefault().fromTsCollection(col);
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
             }

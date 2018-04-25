@@ -16,12 +16,11 @@
  */
 package ec.ui.chart;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.awt.KeyStrokes;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.datatransfer.TssTransferSupport;
-import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import static ec.ui.ATsCollectionView.COPY_ACTION;
 import ec.ui.ATsControl;
@@ -212,12 +211,12 @@ public class RevisionChartPanel extends ATsControl implements ClipboardOwner {
     }
 
     protected Transferable transferableOnSelection() {
-        TsCollection col = TsFactory.instance.createTsCollection();
-        Ts ts = TsFactory.instance.createTs("Reference serie", null, reference);
+        TsCollection col = TsManager.getDefault().newTsCollection();
+        Ts ts = TsManager.getDefault().newTs("Reference serie", null, reference);
         col.add(ts);
         if (revs != null) {
             for (int i = 0; i < revs.size(); i++) {
-                ts = TsFactory.instance.createTs(
+                ts = TsManager.getDefault().newTs(
                         "Rev->" + ts.getTsData().getLastPeriod().toString(), 
                         null, 
                         revs.get(i));

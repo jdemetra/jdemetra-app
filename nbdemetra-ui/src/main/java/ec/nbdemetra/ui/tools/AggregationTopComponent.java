@@ -4,9 +4,9 @@
  */
 package ec.nbdemetra.ui.tools;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.Ts;
-import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -109,7 +109,7 @@ public final class AggregationTopComponent extends TopComponent {
                 }
                 sum = TsData.add(sum, s.getTsData());
             }
-            Ts t = TsFactory.instance.createTs("Total", null, sum);
+            Ts t = TsManager.getDefault().newTs("Total", null, sum);
             aggChart.getTsCollection().replace(t);
         });
     }

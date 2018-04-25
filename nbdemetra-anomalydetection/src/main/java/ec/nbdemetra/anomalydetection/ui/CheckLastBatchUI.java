@@ -18,6 +18,7 @@ package ec.nbdemetra.anomalydetection.ui;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import demetra.ui.TsManager;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.anomalydetection.ControlNode;
 import ec.nbdemetra.anomalydetection.report.CheckLastReportAction;
@@ -32,7 +33,6 @@ import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ui.tools.ToolsPersistence;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tstoolkit.modelling.arima.CheckLast;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import ec.ui.chart.JTsChart;
@@ -538,7 +538,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
                 summary.set(a, cl.getEstimatedModel());
             }
 
-            TsCollection col = TsFactory.instance.createTsCollection();
+            TsCollection col = TsManager.getDefault().newTsCollection();
             col.quietAdd(a.getTs());
             chart.setTsCollection(col);
         }

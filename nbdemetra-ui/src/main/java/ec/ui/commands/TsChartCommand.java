@@ -16,11 +16,11 @@
  */
 package ec.ui.commands;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.TsStatus;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.design.UtilityClass;
@@ -187,7 +187,7 @@ public final class TsChartCommand {
         }
 
         private TsCollection split(Ts ts) {
-            TsCollection result = TsFactory.instance.createTsCollection();
+            TsCollection result = TsManager.getDefault().newTsCollection();
             Calendar cal = Calendar.getInstance();
             YearIterator yearIterator = new YearIterator(ts.getTsData());
             for (TsDataBlock o : NbCollections.iterable(yearIterator)) {
@@ -199,7 +199,7 @@ public final class TsChartCommand {
                 }
                 String name = String.valueOf(o.start.getYear());
                 TsData tmp = dc.make(o.start.getFrequency(), TsAggregationType.None);
-                result.quietAdd(TsFactory.instance.createTs(name, null, tmp));
+                result.quietAdd(TsManager.getDefault().newTs(name, null, tmp));
             }
             return result;
         }

@@ -16,12 +16,12 @@
  */
 package ec.ui.commands;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
@@ -193,7 +193,7 @@ public final class TsCollectionViewCommand {
             }
         }
 
-        private final TsCollection fake = TsFactory.instance.createTsCollection();
+        private final TsCollection fake = TsManager.getDefault().newTsCollection();
 
         private void fireCollectionChange(ITsCollectionView component, Ts ts) {
             TsCollection real = component.getTsCollection();
@@ -263,7 +263,7 @@ public final class TsCollectionViewCommand {
 
         @Override
         public void execute(ITsCollectionView component) throws Exception {
-            TsCollection col = TsFactory.instance.createTsCollection();
+            TsCollection col = TsManager.getDefault().newTsCollection();
             col.quietAppend(Arrays.asList(component.getSelection()));
             Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(col);
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);

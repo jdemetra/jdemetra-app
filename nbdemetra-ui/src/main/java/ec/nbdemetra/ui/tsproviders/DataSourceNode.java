@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.interchange.Exportable;
 import ec.nbdemetra.ui.INameable;
@@ -27,7 +28,6 @@ import ec.nbdemetra.ui.star.StarList;
 import static ec.nbdemetra.ui.tsproviders.DataSourceNode.ACTION_PATH;
 import ec.nbdemetra.ui.tssave.ITsSavable;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TssTransferSupport;
@@ -284,7 +284,7 @@ public final class DataSourceNode extends AbstractNode {
         @Override
         public TsCollection getTsCollection() {
             return TsProviders.getTsCollection(getLookup().lookup(DataSource.class), SHOULD_BE_NONE)
-                    .or(TsFactory.instance::createTsCollection);
+                    .or(TsManager.getDefault()::newTsCollection);
         }
     }
 

@@ -16,8 +16,8 @@
  */
 package internal;
 
+import demetra.ui.TsManager;
 import ec.tss.Ts;
-import ec.tss.TsFactory;
 import ec.tss.TsMoniker;
 import ec.tstoolkit.MetaData;
 import java.time.LocalDateTime;
@@ -80,7 +80,7 @@ public final class FrozenTsHelper {
         if (!moniker.isAnonymous()) {
             return moniker;
         }
-        Ts ts = TsFactory.instance.getTs(moniker);
+        Ts ts = TsManager.getDefault().lookupTs(moniker);
         if (ts == null) {
             return null;
         }

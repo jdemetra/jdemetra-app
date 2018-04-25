@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.anomalydetection.ui;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.MonikerUI;
@@ -25,7 +26,6 @@ import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.awt.ListTableModel;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.data.Table;
@@ -258,7 +258,7 @@ public class JTsCheckLastList extends ATsList {
             public void actionPerformed(ActionEvent arg0) {
                 TsCollection collection = getTsCollection();
                 if (collection.isLocked()) {
-                    TsCollection ncol = TsFactory.instance.createTsCollection();
+                    TsCollection ncol = TsManager.getDefault().newTsCollection();
                     ncol.quietAppend(collection);
                     setTsCollection(ncol);
                 }

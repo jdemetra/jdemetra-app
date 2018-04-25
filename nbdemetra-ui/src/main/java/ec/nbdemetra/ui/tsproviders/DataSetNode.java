@@ -16,13 +16,13 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.tssave.ITsSavable;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
@@ -171,7 +171,7 @@ abstract public class DataSetNode extends AbstractNode {
         @Override
         public TsCollection getTsCollection() {
             return TsProviders.getTsCollection(getLookup().lookup(DataSet.class), SHOULD_BE_NONE)
-                    .or(TsFactory.instance::createTsCollection);
+                    .or(TsManager.getDefault()::newTsCollection);
         }
     }
 

@@ -6,11 +6,11 @@ package ec.nbdemetra.ui.tools;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.tss.Ts;
-import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.TsMoniker;
 import ec.tss.tsproviders.utils.Formatters;
@@ -131,7 +131,7 @@ public final class ToolsPersistence {
             if (input.items != null) {
                 for (ContentItemBean o : input.items) {
                     TsMoniker moniker = new TsMoniker(o.source, o.id);
-                    Ts ts = TsFactory.instance.createTs(o.name, moniker, TsInformationType.Definition);
+                    Ts ts = TsManager.getDefault().lookupTs(o.name, moniker, TsInformationType.Definition);
                     if (o.selected) {
                         result.selection.add(ts);
                     }

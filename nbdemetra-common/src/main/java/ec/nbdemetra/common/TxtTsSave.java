@@ -17,6 +17,7 @@
 package ec.nbdemetra.common;
 
 import com.google.common.io.Files;
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
@@ -26,7 +27,6 @@ import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.nbdemetra.ui.tssave.TsSaveUtil;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.impl.TxtTssTransferHandler;
 import ec.tss.tsproviders.common.txt.TxtFileFilter;
@@ -104,7 +104,7 @@ public final class TxtTsSave implements ITsSave {
     private static void store(TsCollection[] data, File file, OptionsBean options, ProgressHandle ph) throws IOException {
         ph.start();
         ph.progress("Loading time series");
-        TsCollection content = TsFactory.instance.createTsCollection();
+        TsCollection content = TsManager.getDefault().newTsCollection();
         for (TsCollection col : data) {
             col.load(TsInformationType.All);
             content.quietAppend(col);

@@ -20,11 +20,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import demetra.ui.TsManager;
 import ec.tss.ITsProvider;
 import ec.tss.TsAsyncMode;
 import ec.tss.TsCollection;
 import ec.tss.TsCollectionInformation;
-import ec.tss.TsFactory;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import ec.tss.TsMoniker;
@@ -100,7 +100,7 @@ public final class FakeTsProvider implements IDataSourceProvider {
         this.onTick = new ConcurrentLinkedDeque<>();
         this.updater = new AbstractExecutionThreadService() {
 
-            private final TsCollection hardRef = TsFactory.instance.createTsCollection("", updatingMoniker, TsInformationType.None);
+            private final TsCollection hardRef = TsManager.getDefault().lookupTsCollection("", updatingMoniker, TsInformationType.None);
 
             @Override
             protected Executor executor() {

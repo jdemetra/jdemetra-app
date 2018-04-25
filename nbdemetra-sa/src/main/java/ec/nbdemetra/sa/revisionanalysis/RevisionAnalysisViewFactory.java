@@ -16,9 +16,9 @@
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
+import demetra.ui.TsManager;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.sa.revisions.RevisionAnalysisDocument;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.CompositeResults.Node;
@@ -133,7 +133,7 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
                 }
                 Map<String, Class> dictionary = n.results.getDictionary();
                 Integer curIndex = 0;
-                TsCollection col = TsFactory.instance.createTsCollection(source.getInput().get(curIndex).getName());
+                TsCollection col = TsManager.getDefault().newTsCollectionWithName(source.getInput().get(curIndex).getName());
                 for (String s : dictionary.keySet()) {
                     String[] splitted = s.split("\\.");
                     if (s.endsWith(".sa")) {
@@ -143,9 +143,9 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
                         if (sIndex != curIndex) {
                             all.put(source.getInput().get(curIndex), col);
                             curIndex = sIndex;
-                            col = TsFactory.instance.createTsCollection(source.getInput().get(curIndex).getName());
+                            col = TsManager.getDefault().newTsCollectionWithName(source.getInput().get(curIndex).getName());
                         }
-                        col.quietAdd(TsFactory.instance.createTs(splitted[1], null, tsData));
+                        col.quietAdd(TsManager.getDefault().newTs(splitted[1], null, tsData));
                     }
                 }
                 all.put(source.getInput().get(curIndex), col);

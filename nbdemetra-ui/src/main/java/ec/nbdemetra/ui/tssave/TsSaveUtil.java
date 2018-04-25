@@ -16,11 +16,11 @@
  */
 package ec.nbdemetra.ui.tssave;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.SingleFileExporter;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsCollectionInformation;
-import ec.tss.TsFactory;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import java.io.File;
@@ -39,7 +39,7 @@ public class TsSaveUtil {
 
     @Nonnull
     public TsCollection[] toCollections(@Nonnull Ts[] input) {
-        TsCollection col = TsFactory.instance.createTsCollection();
+        TsCollection col = TsManager.getDefault().newTsCollection();
         col.quietAppend(Arrays.asList(input));
         return new TsCollection[]{col};
     }

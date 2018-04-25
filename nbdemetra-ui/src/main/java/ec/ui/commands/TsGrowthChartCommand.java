@@ -17,8 +17,8 @@
 package ec.ui.commands;
 
 import com.toedter.components.JSpinField;
+import demetra.ui.TsManager;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.design.UtilityClass;
 import static ec.ui.interfaces.ITsCollectionView.SELECTION_PROPERTY;
@@ -79,7 +79,7 @@ public final class TsGrowthChartCommand {
 
         @Override
         public void execute(ITsGrowthChart component) throws Exception {
-            TsCollection tmp = TsFactory.instance.createTsCollection();
+            TsCollection tmp = TsManager.getDefault().newTsCollection();
             tmp.quietAppend(Arrays.asList(component.getGrowthData()));
             Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(tmp);
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);

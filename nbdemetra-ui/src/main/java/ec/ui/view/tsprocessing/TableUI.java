@@ -4,8 +4,8 @@
  */
 package ec.ui.view.tsprocessing;
 
+import demetra.ui.TsManager;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.NamedObject;
 import java.util.List;
@@ -23,8 +23,8 @@ public class TableUI< V extends IProcDocumentView<?>> extends DefaultItemUI<V, L
     @Override
     public JComponent getView(V host, List<NamedObject<TsData>> document) {
         TsCollection items = document.stream()
-                .map(o -> TsFactory.instance.createTs(o.name, null, o.object))
-                .collect(TsFactory.toTsCollection());
+                .map(o -> TsManager.getDefault().newTs(o.name, null, o.object))
+                .collect(TsManager.getDefault().getTsCollector());
         return host.getToolkit().getGrid(items.clean(true));
     }
 }

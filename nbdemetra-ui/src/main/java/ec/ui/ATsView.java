@@ -16,8 +16,8 @@
  */
 package ec.ui;
 
+import demetra.ui.TsManager;
 import ec.tss.Ts;
-import ec.tss.TsFactory;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferSupport;
@@ -50,7 +50,7 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
         enableProperties();
 
         tsFactoryObserver.helper.setObserved(this.m_ts);
-        TsFactory.instance.addObserver(tsFactoryObserver);
+        TsManager.getDefault().addObserver(tsFactoryObserver);
     }
 
     private void enableProperties() {
@@ -94,7 +94,7 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
 
     @Override
     public void dispose() {
-        TsFactory.instance.deleteObserver(tsFactoryObserver);
+        TsManager.getDefault().removeObserver(tsFactoryObserver);
         super.dispose();
     }
 

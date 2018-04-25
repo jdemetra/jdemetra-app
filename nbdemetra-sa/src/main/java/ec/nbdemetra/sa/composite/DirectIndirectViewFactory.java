@@ -4,11 +4,11 @@
  */
 package ec.nbdemetra.sa.composite;
 
+import demetra.ui.TsManager;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.diagnostics.IBTest;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tss.html.IHtmlElement;
 import ec.tss.html.implementation.HtmlAnova;
 import ec.tss.html.implementation.HtmlDescriptiveStatistics;
@@ -67,7 +67,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
 
         @Override
         protected TsCollection buildInfo(MultiSaDocument source) {
-            TsCollection all = TsFactory.instance.createTsCollection();
+            TsCollection all = TsManager.getDefault().newTsCollection();
             IProcResults results = source.getResults();
             TsCollection input = source.getInput();
             int icmp = 0;
@@ -75,7 +75,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 String name = s.getName() + " (sa)";
                 String id = InformationSet.item(MultiSaSpecification.COMPONENT + (icmp++), ModellingDictionary.SA);
                 TsData sa = results.getData(id, TsData.class);
-                all.quietAdd(TsFactory.instance.createTs(name, null, sa));
+                all.quietAdd(TsManager.getDefault().newTs(name, null, sa));
             }
             return all;
         }
@@ -87,7 +87,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
 
         @Override
         protected TsCollection buildInfo(MultiSaDocument source) {
-            TsCollection all = TsFactory.instance.createTsCollection();
+            TsCollection all = TsManager.getDefault().newTsCollection();
             IProcResults results = source.getResults().get(MultiSaProcessingFactory.BENCHMARKING);
             TsCollection input = source.getInput();
             int icmp = 0;
@@ -95,7 +95,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 String name = s.getName() + " (benchmarked sa)";
                 String id = MultiSaSpecification.COMPONENT + (icmp++);
                 TsData sa = results.getData(id, TsData.class);
-                all.quietAdd(TsFactory.instance.createTs(name, null, sa));
+                all.quietAdd(TsManager.getDefault().newTs(name, null, sa));
             }
             return all;
         }

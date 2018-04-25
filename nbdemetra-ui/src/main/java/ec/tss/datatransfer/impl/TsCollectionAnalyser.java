@@ -4,9 +4,9 @@
  */
 package ec.tss.datatransfer.impl;
 
+import demetra.ui.TsManager;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.tss.TsFactory;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.timeseries.TsAggregationType;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -31,7 +31,7 @@ class TsCollectionAnalyser {
         if (titles == null || dates == null || data == null) {
             return null;
         }
-        TsCollection coll = TsFactory.instance.createTsCollection();
+        TsCollection coll = TsManager.getDefault().newTsCollection();
         for (int i = 1; i < titles.length; ++i) {
             TsDataCollector cur = new TsDataCollector();
             for (int j = 0; j < dates.length; ++j) {
@@ -41,7 +41,7 @@ class TsCollectionAnalyser {
                 }
             }
             TsData sdata = cur.make(TsFrequency.Undefined, TsAggregationType.None);
-            Ts s = TsFactory.instance.createTs(titles[i]);
+            Ts s = TsManager.getDefault().newTsWithName(titles[i]);
             s.set(sdata);
             coll.quietAdd(s);
         }
