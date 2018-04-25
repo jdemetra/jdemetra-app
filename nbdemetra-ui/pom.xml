@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.joinup.sat</groupId>
         <artifactId>nbdemetra-parent</artifactId>
-        <version>2.2.2-SNAPSHOT</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>nbdemetra-ui</artifactId>
@@ -17,7 +17,7 @@
         <l2fprod.version>1.0.5</l2fprod.version>
         <jcalendar.version>1.4</jcalendar.version>
         <swinglayout.version>1.0.3</swinglayout.version>
-        <java-desktop-util.version>${project.version}</java-desktop-util.version>
+        <java-desktop-util.version>${jd2.version}</java-desktop-util.version>
     </properties>
 
     <dependencyManagement>

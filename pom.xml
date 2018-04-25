@@ -4,7 +4,7 @@
 
     <groupId>eu.europa.ec.joinup.sat</groupId>
     <artifactId>nbdemetra-parent</artifactId>
-    <version>2.2.2-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>NbDemetra - Parent</name>
@@ -23,7 +23,11 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <brandingToken>nbdemetra</brandingToken>
         <netbeans.version>RELEASE82</netbeans.version>
-        <jdemetra.version>${project.version}</jdemetra.version>
+
+        <jd2.version>2.2.2-SNAPSHOT</jd2.version>
+        <jd3.version>3.0.0-SNAPSHOT</jd3.version>
+        <jd3-basic.version>1.0.0-SNAPSHOT</jd3-basic.version>
+        
         <!-- plugins versions > -->
         <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
@@ -56,7 +60,7 @@
             <dependency>
                 <groupId>eu.europa.ec.joinup.sat</groupId>
                 <artifactId>demetra-parent</artifactId>
-                <version>${jdemetra.version}</version>
+                <version>${jd2.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

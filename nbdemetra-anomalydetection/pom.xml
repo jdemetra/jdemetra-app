@@ -4,7 +4,7 @@
     <parent>
         <artifactId>nbdemetra-parent</artifactId>
         <groupId>eu.europa.ec.joinup.sat</groupId>
-        <version>2.2.2-SNAPSHOT</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>nbdemetra-anomalydetection</artifactId>
