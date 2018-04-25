@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import ec.nbdemetra.core.InstallerStep;
 import ec.nbdemetra.sa.output.INbOutputFactory;
@@ -41,6 +40,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Stream;

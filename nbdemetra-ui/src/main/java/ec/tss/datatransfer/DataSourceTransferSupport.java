@@ -16,11 +16,11 @@
  */
 package ec.tss.datatransfer;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
 import ec.nbdemetra.core.GlobalService;
 import ec.tss.tsproviders.DataSource;
 import java.awt.datatransfer.Transferable;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -60,7 +60,7 @@ public class DataSourceTransferSupport {
                 return dataSource;
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Nonnull
@@ -71,6 +71,6 @@ public class DataSourceTransferSupport {
                 return dataSource;
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

@@ -16,10 +16,10 @@
  */
 package ec.tss.datatransfer;
 
-import com.google.common.base.Optional;
 import ec.tss.tsproviders.DataSource;
 import ec.tstoolkit.design.ServiceDefinition;
 import java.awt.datatransfer.Transferable;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /**

@@ -16,13 +16,11 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.tssave.ITsSavable;
-import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
@@ -162,10 +160,9 @@ abstract public class DataSetNode extends AbstractNode {
 
         @Override
         public void open() {
-            Optional<Ts> data = TsProviders.getTs(getLookup().lookup(DataSet.class), TsInformationType.None);
-            if (data.isPresent()) {
-                DemetraUI.getDefault().getTsAction().open(data.get());
-            }
+            TsProviders.getTs(getLookup().lookup(DataSet.class), TsInformationType.None)
+                    .toJavaUtil()
+                    .ifPresent(o -> DemetraUI.getDefault().getTsAction().open(o));
         }
     }
 

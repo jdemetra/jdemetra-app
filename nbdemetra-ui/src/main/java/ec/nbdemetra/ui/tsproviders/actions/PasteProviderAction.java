@@ -4,13 +4,13 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.tsproviders.ProviderNode;
 import ec.tss.datatransfer.DataSourceTransferSupport;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
+import java.util.Optional;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;

@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
@@ -46,6 +45,7 @@ import java.awt.Color;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.swing.Icon;
@@ -376,7 +376,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     private static <X, Y> X find(Class<X> clazz, Function<? super X, Y> toName, Y... names) {
         Collection<? extends X> items = Lookup.getDefault().lookupAll(clazz);
         for (Y o : names) {
-            Optional<? extends X> result = Iterables.tryFind(items, x -> o.equals(toName.apply(x)));
+            Optional<? extends X> result = Iterables.tryFind(items, x -> o.equals(toName.apply(x))).toJavaUtil();
             if (result.isPresent()) {
                 return result.get();
             }

@@ -16,10 +16,8 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.tsaction.ITsAction;
-import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.TsProviders;
@@ -71,10 +69,9 @@ public final class OpenWithSetAction extends AbstractAction implements Presenter
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            Optional<Ts> data = TsProviders.getTs(dataSet, TsInformationType.None);
-            if (data.isPresent()) {
-                tsAction.open(data.get());
-            }
+            TsProviders.getTs(dataSet, TsInformationType.None)
+                    .toJavaUtil()
+                    .ifPresent(o -> tsAction.open(o));
         }
     }
 }

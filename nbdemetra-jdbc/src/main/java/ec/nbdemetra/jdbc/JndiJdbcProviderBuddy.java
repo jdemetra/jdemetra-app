@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.jdbc;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import ec.nbdemetra.db.DbIcon;
 import ec.nbdemetra.ui.Config;
@@ -95,10 +94,9 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
 
     // this overrides default connection supplier since we don't have JNDI in JavaSE
     private void overrideDefaultConnectionSupplier() {
-        Optional<JndiJdbcProvider> provider = TsProviders.lookup(JndiJdbcProvider.class, JndiJdbcProvider.SOURCE);
-        if (provider.isPresent()) {
-            provider.get().setConnectionSupplier(supplier);
-        }
+        TsProviders.lookup(JndiJdbcProvider.class, JndiJdbcProvider.SOURCE)
+                .toJavaUtil()
+                .ifPresent(o -> o.setConnectionSupplier(supplier));
     }
 
     @Override
@@ -176,11 +174,9 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
         MISSING;
 
         public static DbConnStatus lookupByDisplayName(String dbName) {
-            Optional<DatabaseConnection> conn = DbExplorerUtil.getConnectionByDisplayName(dbName);
-            if (conn.isPresent()) {
-                return DbExplorerUtil.isConnected(conn.get()) ? CONNECTED : DISCONNECTED;
-            }
-            return MISSING;
+            return DbExplorerUtil.getConnectionByDisplayName(dbName)
+                    .map(o -> DbExplorerUtil.isConnected(o) ? CONNECTED : DISCONNECTED)
+                    .orElse(MISSING);
         }
     }
 
@@ -226,11 +222,9 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
         }
 
         private Connection getConnectionByName(String dbName) throws SQLException {
-            Optional<DatabaseConnection> o = DbExplorerUtil.getConnectionByDisplayName(dbName);
-            if (o.isPresent()) {
-                return getJDBCConnection(o.get());
-            }
-            throw new SQLException(Bundle.dbexplorer_missingConnection(dbName));
+            DatabaseConnection o = DbExplorerUtil.getConnectionByDisplayName(dbName)
+                    .orElseThrow(() -> new SQLException(Bundle.dbexplorer_missingConnection(dbName)));
+            return getJDBCConnection(o);
         }
 
         private FailSafeConnection getJDBCConnection(DatabaseConnection o) throws SQLException {

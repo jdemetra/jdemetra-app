@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.core;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import ec.tss.DynamicTsVariable;
@@ -53,7 +52,7 @@ import org.slf4j.LoggerFactory;
 public final class Installer {
 
     final static Logger LOGGER = LoggerFactory.getLogger(Installer.class);
-    
+
     public static final InstallerStep STEP = InstallerStep.all(
             new AppVersionStep(),
             new ByteArrayConverterStep(),
@@ -106,10 +105,8 @@ public final class Installer {
             for (ITsProvider o : providers) {
                 TsFactory.instance.add(o);
                 if (o instanceof IFileLoader) {
-                    Optional<File[]> bean = tryGet(pathsNode, o.getSource(), pathsParser);
-                    if (bean.isPresent()) {
-                        ((IFileLoader) o).setPaths(bean.get());
-                    }
+                    tryGet(pathsNode, o.getSource(), pathsParser)
+                            .ifPresent(bean -> ((IFileLoader) o).setPaths(bean));
                 }
             }
         }

@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.odbc;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import ec.nbdemetra.jdbc.JdbcProviderBuddy;
 import ec.nbdemetra.ui.Config;
@@ -41,6 +40,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.swing.ListCellRenderer;
@@ -118,7 +118,7 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
     }
 
     private static ConnectionSupplier getOdbcConnectionSupplier() {
-        Optional<OdbcProvider> provider = TsProviders.lookup(OdbcProvider.class, OdbcProvider.SOURCE);
+        Optional<OdbcProvider> provider = TsProviders.lookup(OdbcProvider.class, OdbcProvider.SOURCE).toJavaUtil();
         return provider.isPresent()
                 ? provider.get().getConnectionSupplier()
                 : new FailingConnectionSupplier("Cannot load OdbcProvider");

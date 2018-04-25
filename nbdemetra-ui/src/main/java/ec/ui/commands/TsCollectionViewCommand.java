@@ -16,7 +16,6 @@
  */
 package ec.ui.commands;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.nbdemetra.ui.tssave.ITsSave;
@@ -44,6 +43,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -176,7 +176,7 @@ public final class TsCollectionViewCommand {
                 descriptor.setAdditionalOptions(new Object[]{new JButton(new AbstractAction("Restore") {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        Optional<IDataSourceProvider> provider = TsProviders.lookup(IDataSourceProvider.class, ts.getMoniker());
+                        Optional<IDataSourceProvider> provider = TsProviders.lookup(IDataSourceProvider.class, ts.getMoniker()).toJavaUtil();
                         if (provider.isPresent()) {
                             DataSet dataSet = provider.get().toDataSet(ts.getMoniker());
                             if (dataSet != null) {

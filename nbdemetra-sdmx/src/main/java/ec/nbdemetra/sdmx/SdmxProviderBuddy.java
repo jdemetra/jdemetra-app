@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.sdmx;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.IConfigurable;
@@ -68,10 +67,9 @@ public class SdmxProviderBuddy extends AbstractDataSourceProviderBuddy implement
 
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("Source");
 
-        Optional<IFileLoader> loader = TsProviders.lookup(IFileLoader.class, SdmxProvider.SOURCE);
-        if (loader.isPresent()) {
-            addFileProperty(b, bean, loader.get());
-        }
+        TsProviders.lookup(IFileLoader.class, SdmxProvider.SOURCE)
+                .toJavaUtil()
+                .ifPresent(o -> addFileProperty(b, bean, o));
         result.add(b.build());
 
         b.reset("Options");

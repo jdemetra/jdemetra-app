@@ -4,13 +4,13 @@
  */
 package ec.tss.datatransfer.impl;
 
-import com.google.common.base.Optional;
 import ec.tss.datatransfer.DataSourceTransferHandler;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.utils.Parsers;
 import java.awt.datatransfer.Transferable;
+import java.util.Optional;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -34,13 +34,13 @@ public abstract class ParserTransferHandler extends DataSourceTransferHandler {
 
     @Override
     public Optional<DataSource> getDataSource(Transferable t) {
-        return !TssTransferSupport.getDefault().isTssTransferable(t) ? DataTransfers.tryParse(t, getParser()) : Optional.absent();
+        return !TssTransferSupport.getDefault().isTssTransferable(t) ? DataTransfers.tryParse(t, getParser()) : Optional.empty();
     }
 
     @Override
     public Optional<DataSource> getDataSource(Transferable t, String providerName) {
         Optional<DataSource> result = getDataSource(t);
-        return result.isPresent() && result.get().getProviderName().equals(providerName) ? result : Optional.<DataSource>absent();
+        return result.isPresent() && result.get().getProviderName().equals(providerName) ? result : Optional.<DataSource>empty();
     }
 
     @ServiceProvider(service = DataSourceTransferHandler.class)

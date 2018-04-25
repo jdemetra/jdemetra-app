@@ -4,8 +4,6 @@
  */
 package ec.tss.datatransfer;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Throwables;
 import ec.tss.tsproviders.utils.FunctionWithIO;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.IParser;
@@ -23,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.IntStream;
@@ -45,7 +44,7 @@ public final class DataTransfers {
         try {
             return new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType + ";class=" + clazz.getName());
         } catch (ClassNotFoundException ex) {
-            throw Throwables.propagate(ex);
+            throw new RuntimeException(ex);
         }
     }
 
@@ -57,31 +56,31 @@ public final class DataTransfers {
                     return Optional.of(files.get(0));
                 }
             } catch (UnsupportedFlavorException | IOException ex) {
-                throw Throwables.propagate(ex);
+                throw new RuntimeException(ex);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     public static <T> Optional<T> tryParse(Transferable t, IParser<T> parser) {
         if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
             try {
                 String text = (String) t.getTransferData(DataFlavor.stringFlavor);
-                return text != null ? Optional.fromNullable(parser.parse(text)) : Optional.absent();
+                return text != null ? Optional.ofNullable(parser.parse(text)) : Optional.empty();
             } catch (UnsupportedFlavorException ex) {
-                throw Throwables.propagate(ex);
+                throw new RuntimeException(ex);
             } catch (IOException ex) {
-                return Optional.absent();
+                return Optional.empty();
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     public static <T> Optional<Transferable> tryFormat(T value, IFormatter<T> formatter) {
         String text = formatter.formatAsString(value);
         return text != null
                 ? Optional.<Transferable>of(new StringSelection(text))
-                : Optional.<Transferable>absent();
+                : Optional.<Transferable>empty();
     }
 
     public static boolean isMultiFlavor(@Nonnull DataFlavor[] dataFlavors) {
@@ -102,15 +101,15 @@ public final class DataTransfers {
     }
 
     @Nonnull
-    public static java.util.Optional<MultiTransferObject> getMultiTransferObject(@Nonnull Transferable t) {
+    public static Optional<MultiTransferObject> getMultiTransferObject(@Nonnull Transferable t) {
         if (isMultiFlavor(t.getTransferDataFlavors())) {
             try {
-                return java.util.Optional.of((MultiTransferObject) t.getTransferData(ExTransferable.multiFlavor));
+                return Optional.of((MultiTransferObject) t.getTransferData(ExTransferable.multiFlavor));
             } catch (UnsupportedFlavorException | IOException ex) {
-                throw Throwables.propagate(ex);
+                throw new RuntimeException(ex);
             }
         }
-        return java.util.Optional.empty();
+        return Optional.empty();
     }
 
     @Nonnull

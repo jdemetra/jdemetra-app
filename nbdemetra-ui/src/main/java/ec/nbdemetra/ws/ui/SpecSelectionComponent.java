@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ws.ui;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
 import ec.nbdemetra.ui.calendars.CustomDialogDescriptor;
 import ec.nbdemetra.ui.nodes.DecoratedNode;
@@ -37,6 +36,7 @@ import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.util.Optional;
 import java.util.function.Predicate;
 import javax.swing.JComponent;
 import javax.swing.tree.TreeSelectionModel;
@@ -126,7 +126,7 @@ public class SpecSelectionComponent extends JComponent implements ExplorerManage
 //            ((DecoratedNode) o).setHtmlDecorator(null);
 //        }
         DecoratedNode root = (DecoratedNode) em.getRootContext();
-        Optional<DecoratedNode> node = root.breadthFirstIterable().firstMatch(o -> isCurrentSpecificationNode(o.getOriginal()));
+        Optional<DecoratedNode> node = root.breadthFirstIterable().firstMatch(o -> isCurrentSpecificationNode(o.getOriginal())).toJavaUtil();
         if (node.isPresent()) {
 //            node.get().setHtmlDecorator(DecoratedNode.Html.BOLD);
             try {

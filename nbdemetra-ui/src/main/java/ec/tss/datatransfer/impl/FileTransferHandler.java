@@ -4,7 +4,6 @@
  */
 package ec.tss.datatransfer.impl;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.nbdemetra.ui.tsproviders.actions.OpenProvidersAction;
 import ec.tss.datatransfer.DataSourceTransferHandler;
@@ -17,6 +16,7 @@ import java.awt.datatransfer.Transferable;
 import java.beans.IntrospectionException;
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -36,7 +36,7 @@ public class FileTransferHandler extends DataSourceTransferHandler {
     public boolean canHandle(Transferable t, String providerName) {
         Optional<File> file = DataTransfers.getSingleFile(t);
         if (file.isPresent()) {
-            Optional<IFileLoader> loader = TsProviders.lookup(IFileLoader.class, providerName);
+            Optional<IFileLoader> loader = TsProviders.lookup(IFileLoader.class, providerName).toJavaUtil();
             return loader.isPresent() ? loader.get().accept(file.get()) : false;
         }
         return false;
@@ -58,7 +58,7 @@ public class FileTransferHandler extends DataSourceTransferHandler {
                 // TODO: throw exception?
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Override
@@ -74,6 +74,6 @@ public class FileTransferHandler extends DataSourceTransferHandler {
         } catch (IntrospectionException ex) {
             // TODO: throw exception?
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

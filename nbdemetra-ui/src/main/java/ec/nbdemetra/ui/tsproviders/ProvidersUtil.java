@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.properties.ForwardingNodeProperty;
@@ -33,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -78,7 +78,7 @@ final class ProvidersUtil {
         if (node instanceof ProviderNode) {
             return find(dataSource, (ProviderNode) node);
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     private static Optional<Node> find(DataSource dataSource, ProvidersNode node) {
@@ -87,7 +87,7 @@ final class ProvidersUtil {
                 return find(dataSource, (ProviderNode) o);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     private static Optional<Node> find(DataSource dataSource, ProviderNode node) {
@@ -96,7 +96,7 @@ final class ProvidersUtil {
                 return Optional.of(o);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Nonnull
@@ -108,7 +108,7 @@ final class ProvidersUtil {
 
     @Nonnull
     static List<Sheet.Set> sheetSetsOfProvider(@Nonnull String providerName) {
-        Optional<IDataSourceProvider> op = TsProviders.lookup(IDataSourceProvider.class, providerName);
+        Optional<IDataSourceProvider> op = TsProviders.lookup(IDataSourceProvider.class, providerName).toJavaUtil();
         if (op.isPresent()) {
             IDataSourceProvider provider = op.get();
             List<Sheet.Set> result = new ArrayList<>();
@@ -164,7 +164,7 @@ final class ProvidersUtil {
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("DataSource");
         b.with(String.class).select(dataSource, "getProviderName", null).display("Source").add();
         b.with(String.class).select(dataSource, "getVersion", null).display("Version").add();
-        Optional<IDataSourceLoader> loader = TsProviders.lookup(IDataSourceLoader.class, dataSource);
+        Optional<IDataSourceLoader> loader = TsProviders.lookup(IDataSourceLoader.class, dataSource).toJavaUtil();
         if (loader.isPresent()) {
             Object bean = loader.get().decodeBean(dataSource);
             beanFunc.apply(bean).stream()

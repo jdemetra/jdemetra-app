@@ -16,9 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import com.google.common.base.Optional;
 import static ec.nbdemetra.ui.tsproviders.SeriesNode.ACTION_PATH;
-import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
@@ -54,11 +52,10 @@ public final class SeriesNode extends DataSetNode {
     }
 
     private Transferable getData(TsInformationType type) throws IOException {
-        Optional<Ts> data = TsProviders.getTs(getLookup().lookup(DataSet.class), type);
-        if (data.isPresent()) {
-            return TssTransferSupport.getDefault().fromTs(data.get());
-        }
-        throw new IOException("Cannot create the TS '" + getDisplayName() + "'; check the logs for further details.");
+        return TsProviders.getTs(getLookup().lookup(DataSet.class), type)
+                .toJavaUtil()
+                .map(data -> TssTransferSupport.getDefault().fromTs(data))
+                .orElseThrow(() -> new IOException("Cannot create the TS '" + getDisplayName() + "'; check the logs for further details."));
     }
 
     @Override

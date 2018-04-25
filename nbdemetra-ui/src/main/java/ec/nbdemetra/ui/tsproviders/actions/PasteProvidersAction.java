@@ -16,12 +16,12 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
-import com.google.common.base.Optional;
 import ec.tss.datatransfer.DataSourceTransferSupport;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.TsProviders;
+import java.util.Optional;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
@@ -38,7 +38,7 @@ public final class PasteProvidersAction extends NodeAction {
     protected void performAction(Node[] activatedNodes) {
         Optional<DataSource> dataSource = DataSourceTransferSupport.getDefault().getDataSource(DataTransfers.systemClipboardAsTransferable());
         if (dataSource.isPresent()) {
-            Optional<IDataSourceLoader> loader = TsProviders.lookup(IDataSourceLoader.class, dataSource.get());
+            Optional<IDataSourceLoader> loader = TsProviders.lookup(IDataSourceLoader.class, dataSource.get()).toJavaUtil();
             if (loader.isPresent()) {
                 loader.get().open(dataSource.get());
             }

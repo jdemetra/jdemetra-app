@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.jdbc;
 
-import com.google.common.base.Optional;
 import static ec.nbdemetra.jdbc.DbExplorerUtil.findConnection;
 import static ec.nbdemetra.jdbc.DbExplorerUtil.isConnected;
 import static ec.nbdemetra.jdbc.DbExplorerUtil.isTableOrView;
@@ -24,7 +23,6 @@ import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.tss.tsproviders.jdbc.JdbcBean;
 import ec.tss.tsproviders.jdbc.jndi.JndiJdbcProvider;
 import java.beans.IntrospectionException;
-import org.netbeans.api.db.explorer.DatabaseConnection;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -68,8 +66,9 @@ public final class OpenJndiJdbcDataSource extends SingleNodeAction<Node> {
 
     @Override
     protected boolean enable(Node activatedNode) {
-        Optional<DatabaseConnection> dbConn = findConnection(activatedNode);
-        return dbConn.isPresent() && isConnected(dbConn.get());
+        return findConnection(activatedNode)
+                .filter(o -> isConnected(o))
+                .isPresent();
     }
 
     @Override
@@ -78,10 +77,8 @@ public final class OpenJndiJdbcDataSource extends SingleNodeAction<Node> {
     }
 
     static void preFillBean(JdbcBean bean, Node node) {
-        Optional<DatabaseConnection> dbConn = findConnection(node);
-        if (dbConn.isPresent()) {
-            bean.setDbName(dbConn.get().getDisplayName());
-        }
+        findConnection(node)
+                .ifPresent(o -> bean.setDbName(o.getDisplayName()));
         if (isTableOrView(node)) {
             bean.setTableName(node.getName());
         }

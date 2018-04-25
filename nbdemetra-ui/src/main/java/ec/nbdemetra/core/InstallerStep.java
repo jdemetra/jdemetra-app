@@ -4,10 +4,10 @@
  */
 package ec.nbdemetra.core;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.IParser;
+import java.util.Optional;
 import java.util.prefs.Preferences;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -100,9 +100,9 @@ public abstract class InstallerStep {
     public static <X> Optional<X> tryGet(Preferences prefs, String key, IParser<X> parser) {
         String stringValue = prefs.get(key, null);
         if (stringValue == null) {
-            return Optional.absent();
+            return Optional.empty();
         }
-        return Optional.fromNullable(parser.parse(stringValue));
+        return Optional.ofNullable(parser.parse(stringValue));
     }
 
     public static <X> boolean tryPut(Preferences prefs, String key, IFormatter<X> formatter, X value) {

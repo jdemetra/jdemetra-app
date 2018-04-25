@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.common;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
@@ -35,7 +34,6 @@ import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.openide.nodes.Sheet.Set;
 import org.openide.util.ImageUtilities;
@@ -71,10 +69,9 @@ public class TxtProviderBuddy extends AbstractDataSourceProviderBuddy {
         NodePropertySetBuilder b = new NodePropertySetBuilder();
 
         b.reset("Source");
-        Optional<IFileLoader> loader = TsProviders.lookup(IFileLoader.class, TxtProvider.SOURCE);
-        if (loader.isPresent()) {
-            addFileProperty(b, bean, loader.get());
-        }
+        TsProviders.lookup(IFileLoader.class, TxtProvider.SOURCE)
+                .toJavaUtil()
+                .ifPresent(o -> addFileProperty(b, bean, o));
         addReaderProperty(b, bean);
         addCsvDialectProperty(b, bean);
         result.add(b.build());

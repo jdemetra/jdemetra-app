@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.jdbc;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import java.util.Properties;
 import javax.annotation.Nonnull;
 import org.netbeans.api.db.explorer.ConnectionManager;
@@ -70,7 +70,7 @@ public final class DbExplorerUtil {
         while (current != null && (result = current.getLookup().lookup(DatabaseConnection.class)) == null) {
             current = current.getParentNode();
         }
-        return Optional.fromNullable(result);
+        return Optional.ofNullable(result);
     }
 
     @Nonnull
@@ -78,7 +78,7 @@ public final class DbExplorerUtil {
         for (JDBCDriver o : JDBCDriverManager.getDefault().getDrivers(driverClass)) {
             return Optional.of(o);
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Nonnull
@@ -88,7 +88,7 @@ public final class DbExplorerUtil {
                 return Optional.of(o);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     public static void importConnection(@Nonnull DriverBasedConfig config) {

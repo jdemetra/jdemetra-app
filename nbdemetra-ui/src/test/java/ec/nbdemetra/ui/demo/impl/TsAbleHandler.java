@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.FakeTsProvider;
 import static ec.nbdemetra.ui.demo.impl.TsCollectionHandler.getIcon;
@@ -35,6 +34,7 @@ import ec.util.various.swing.ext.FontAwesomeUtils;
 import java.awt.Color;
 import static java.beans.BeanInfo.ICON_COLOR_16x16;
 import java.io.IOException;
+import java.util.Optional;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JMenu;
@@ -96,7 +96,7 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<ITsAble
     }
 
     private static void enableTickFeedback(JButton button) {
-        Optional<FakeTsProvider> p = TsProviders.lookup(FakeTsProvider.class, "Fake");
+        Optional<FakeTsProvider> p = TsProviders.lookup(FakeTsProvider.class, "Fake").toJavaUtil();
         if (p.isPresent()) {
             Icon icon1 = getIcon(FontAwesome.FA_DATABASE);
             Icon icon2 = FontAwesome.FA_DATABASE.getIcon(Color.ORANGE.darker(), FontAwesomeUtils.toSize(ICON_COLOR_16x16));
@@ -143,11 +143,11 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<ITsAble
 
         @Override
         public void execute(ITsAble component) throws Exception {
-            Optional<Ts> ts = TsProviders.getTs(dataSet, TsInformationType.Definition);
+            Optional<Ts> ts = TsProviders.getTs(dataSet, TsInformationType.Definition).toJavaUtil();
             if (ts.isPresent()) {
                 ts.get().query(TsInformationType.All);
             }
-            component.setTs(ts.orNull());
+            component.setTs(ts.orElse(null));
         }
     }
 }

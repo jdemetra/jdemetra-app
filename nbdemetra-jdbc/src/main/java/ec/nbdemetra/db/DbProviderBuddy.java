@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.db;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.properties.DhmsPropertyEditor;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
@@ -112,18 +111,17 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
         "bean.file.description=The path to the database file."})
     @Nonnull
     protected NodePropertySetBuilder withFileName(@Nonnull NodePropertySetBuilder b, @Nonnull BEAN bean) {
-        Optional<IFileLoader> loader = TsProviders.lookup(IFileLoader.class, getProviderName());
-        if (loader.isPresent()) {
-            return b.withFile()
-                    .select(bean, "file")
-                    .filterForSwing(new FileLoaderFileFilter(loader.get()))
-                    .paths(loader.get().getPaths())
-                    .directories(false)
-                    .display(Bundle.bean_file_display())
-                    .description(Bundle.bean_file_description())
-                    .add();
-        }
-        return b;
+        return TsProviders.lookup(IFileLoader.class, getProviderName())
+                .toJavaUtil()
+                .map(o -> b.withFile()
+                        .select(bean, "file")
+                        .filterForSwing(new FileLoaderFileFilter(o))
+                        .paths(o.getPaths())
+                        .directories(false)
+                        .display(Bundle.bean_file_display())
+                        .description(Bundle.bean_file_description())
+                        .add())
+                .orElse(b);
     }
 
     @NbBundle.Messages({

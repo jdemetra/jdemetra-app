@@ -16,9 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import com.google.common.base.Optional;
 import static ec.nbdemetra.ui.tsproviders.CollectionNode.ACTION_PATH;
-import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
@@ -49,11 +47,10 @@ public final class CollectionNode extends DataSetNode {
     }
 
     private Transferable getData(TsInformationType type) throws IOException {
-        Optional<TsCollection> data = TsProviders.getTsCollection(getLookup().lookup(DataSet.class), type);
-        if (data.isPresent()) {
-            return TssTransferSupport.getDefault().fromTsCollection(data.get());
-        }
-        throw new IOException("Cannot create the TS collection '" + getDisplayName() + "'; check the logs for further details.");
+        return TsProviders.getTsCollection(getLookup().lookup(DataSet.class), type)
+                .toJavaUtil()
+                .map(data -> TssTransferSupport.getDefault().fromTsCollection(data))
+                .orElseThrow(() -> new IOException("Cannot create the TS collection '" + getDisplayName() + "'; check the logs for further details."));
     }
 
     @Override

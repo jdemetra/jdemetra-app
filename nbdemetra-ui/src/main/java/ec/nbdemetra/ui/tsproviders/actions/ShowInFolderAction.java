@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.tsproviders.DataSourceNode;
 import ec.tss.tsproviders.DataSource;
@@ -25,6 +24,7 @@ import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.Exceptions;
@@ -80,6 +80,6 @@ public final class ShowInFolderAction extends SingleNodeAction<DataSourceNode> {
     }
 
     private static Optional<File> getFile(DataSourceNode activatedNode) {
-        return TsProviders.tryGetFile(activatedNode.getLookup().lookup(DataSource.class));
+        return TsProviders.tryGetFile(activatedNode.getLookup().lookup(DataSource.class)).toJavaUtil();
     }
 }

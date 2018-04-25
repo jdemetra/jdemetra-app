@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.spreadsheet;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
@@ -125,10 +124,9 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
         NodePropertySetBuilder b = new NodePropertySetBuilder();
 
         b.reset("source").display(Bundle.bean_source_display());
-        Optional<IFileLoader> loader = TsProviders.lookup(IFileLoader.class, SpreadSheetProvider.SOURCE);
-        if (loader.isPresent()) {
-            addFileProperty(b, bean, loader.get());
-        }
+        TsProviders.lookup(IFileLoader.class, SpreadSheetProvider.SOURCE)
+                .toJavaUtil()
+                .ifPresent(o -> addFileProperty(b, bean, o));
         result.add(b.build());
 
         b.reset("options").display(Bundle.bean_options_display());
@@ -140,15 +138,16 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
     }
 
     private static SpreadSheetCollection.AlignType getAlignType(DataSet dataSet) {
-        Optional<SpreadSheetProvider> p = TsProviders.lookup(SpreadSheetProvider.class, SpreadSheetProvider.SOURCE);
-        if (p.isPresent()) {
-            try {
-                return p.get().getSeries(dataSet).alignType;
-            } catch (IOException ex) {
-                // TODO: log this?
-            }
-        }
-        return SpreadSheetCollection.AlignType.UNKNOWN;
+        return TsProviders.lookup(SpreadSheetProvider.class, SpreadSheetProvider.SOURCE)
+                .toJavaUtil()
+                .map(o -> {
+                    try {
+                        return o.getSeries(dataSet).alignType;
+                    } catch (IOException ex) {
+                        // TODO: log this?
+                        return SpreadSheetCollection.AlignType.UNKNOWN;
+                    }
+                }).orElse(SpreadSheetCollection.AlignType.UNKNOWN);
     }
 
     private static void addFileProperty(NodePropertySetBuilder b, SpreadSheetBean bean, IFileLoader loader) {

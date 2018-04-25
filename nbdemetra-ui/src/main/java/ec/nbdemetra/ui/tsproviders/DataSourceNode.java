@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.interchange.Exportable;
 import ec.nbdemetra.ui.INameable;
@@ -47,6 +46,7 @@ import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -149,11 +149,10 @@ public final class DataSourceNode extends AbstractNode {
     }
 
     private Transferable getData(TsInformationType type) throws IOException {
-        Optional<TsCollection> data = TsProviders.getTsCollection(getLookup().lookup(DataSource.class), type);
-        if (data.isPresent()) {
-            return TssTransferSupport.getDefault().fromTsCollection(data.get());
-        }
-        throw new IOException("Cannot create the TS collection '" + getDisplayName() + "'; check the logs for further details.");
+        return TsProviders.getTsCollection(getLookup().lookup(DataSource.class), type)
+                .toJavaUtil()
+                .map(o -> TssTransferSupport.getDefault().fromTsCollection(o))
+                .orElseThrow(() -> new IOException("Cannot create the TS collection '" + getDisplayName() + "'; check the logs for further details."));
     }
 
     @Override
@@ -166,10 +165,9 @@ public final class DataSourceNode extends AbstractNode {
         ExTransferable data = ExTransferable.create(getData(SHOULD_BE_NONE));
 
         DataSource dataSource = getLookup().lookup(DataSource.class);
-        Optional<File> file = TsProviders.tryGetFile(dataSource);
-        if (file.isPresent()) {
-            data.put(new LocalFileTransferable(file.get()));
-        }
+        TsProviders.tryGetFile(dataSource)
+                .toJavaUtil()
+                .ifPresent(o -> data.put(new LocalFileTransferable(o)));
         return data;
     }
 
@@ -210,7 +208,7 @@ public final class DataSourceNode extends AbstractNode {
         @Override
         public void reload() {
             DataSource dataSource = getLookup().lookup(DataSource.class);
-            Optional<IDataSourceProvider> provider = TsProviders.lookup(IDataSourceProvider.class, dataSource);
+            Optional<IDataSourceProvider> provider = TsProviders.lookup(IDataSourceProvider.class, dataSource).toJavaUtil();
             if (provider.isPresent()) {
                 provider.get().reload(dataSource);
                 setChildren(Children.create(new DataSourceChildFactory(dataSource), true));

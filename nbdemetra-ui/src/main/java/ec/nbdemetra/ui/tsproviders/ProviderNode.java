@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import ec.nbdemetra.ui.Config;
@@ -211,14 +210,13 @@ public final class ProviderNode extends AbstractNode {
         @Override
         public void importConfig(Config config) throws IllegalArgumentException {
             DataSource dataSource = ProvidersUtil.getDataSource(config);
-            Optional<IDataSourceLoader> loader = TsProviders.lookup(IDataSourceLoader.class, dataSource);
-            if (loader.isPresent()) {
-                loader.get().open(dataSource);
-                Optional<Node> node = ProvidersUtil.findNode(dataSource, ProviderNode.this);
-                if (node.isPresent()) {
-                    node.get().setDisplayName(config.getName());
-                }
-            }
+            TsProviders.lookup(IDataSourceLoader.class, dataSource)
+                    .toJavaUtil()
+                    .ifPresent(o -> {
+                        o.open(dataSource);
+                        ProvidersUtil.findNode(dataSource, ProviderNode.this)
+                                .ifPresent(node -> node.setDisplayName(config.getName()));
+                    });
         }
     }
 
@@ -234,10 +232,8 @@ public final class ProviderNode extends AbstractNode {
 
         @Override
         public Transferable paste() throws IOException {
-            Optional<DataSource> dataSource = DataSourceTransferSupport.getDefault().getDataSource(t, loader.getSource());
-            if (dataSource.isPresent()) {
-                loader.open(dataSource.get());
-            }
+            DataSourceTransferSupport.getDefault().getDataSource(t, loader.getSource())
+                    .ifPresent(o -> loader.open(o));
             return null;
         }
     }

@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
-import com.google.common.base.Optional;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.IDataSourceProvider;
@@ -29,6 +28,7 @@ import java.beans.IntrospectionException;
 import java.io.File;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComboBox;
@@ -82,7 +82,7 @@ public final class OpenProvidersAction extends AbstractAction implements Present
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
             return Optional.of((T) cb.getSelectedItem());
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     private static void renderLoader(JLabel label, Object value) {
