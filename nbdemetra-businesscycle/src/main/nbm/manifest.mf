@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module-Localizing-Bundle: ec/nbdemetra/businesscycle/Bundle.properties
-OpenIDE-Module-Layer: ec/nbdemetra/businesscycle/layer.xml
-OpenIDE-Module-Requires: org.openide.windows.WindowManager

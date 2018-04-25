@@ -45,11 +45,9 @@
         <module>nbdemetra-jdbc</module>
         <module>nbdemetra-common</module>
         <module>nbdemetra-spreadsheet</module>
-        <module>nbdemetra-businesscycle</module>
         <module>nbdemetra-sa</module>
         <module>nbdemetra-sdmx</module>
         <module>nbdemetra-anomalydetection</module>
-        <module>nbdemetra-chainlinking</module>
     </modules>
 
     <dependencyManagement>
@@ -237,21 +235,6 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-sa-advanced</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-businesscycle</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-benchmarking</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>nbdemetra-sa</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -263,11 +246,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>nbdemetra-anomalydetection</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-reporting</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- < nbdemetra modules -->
