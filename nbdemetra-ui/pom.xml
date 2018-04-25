@@ -24,11 +24,20 @@
         <dependencies>
             <dependency>
                 <groupId>eu.europa.ec.joinup.sat</groupId>
+                <artifactId>demetra-utils</artifactId>
+                <version>${jd2.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>eu.europa.ec.joinup.sat</groupId>
                 <artifactId>nbdemetra-utils</artifactId>
                 <version>${java-desktop-util.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            
             <dependency>
                 <groupId>com.miglayout</groupId>
                 <artifactId>miglayout</artifactId>
@@ -157,18 +166,57 @@
             <artifactId>org-netbeans-api-progress</artifactId>
         </dependency>
 
-        <!-- NbDemetra -->
+        <!-- JDemetra -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>nbdemetra-core</artifactId>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-tss</artifactId>
         </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-tstoolkit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-workspace</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <scope>compile</scope>
+        </dependency>        
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+
+        <!-- Other -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>nbdemetra-utils</artifactId>
             <version>${java-desktop-util.version}</version>
         </dependency>
-
-        <!-- Other -->
         <dependency>
             <groupId>com.miglayout</groupId>
             <artifactId>miglayout</artifactId>
@@ -211,6 +259,24 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
+                        <publicPackage>ec.benchmarking.*</publicPackage>
+                        <publicPackage>ec.businesscycle.*</publicPackage>
+                        <publicPackage>ec.satoolkit.*</publicPackage>
+                        <publicPackage>ec.tss.*</publicPackage>
+                        <publicPackage>ec.tstoolkit.*</publicPackage>
+                        <publicPackage>ec.nbdemetra.core</publicPackage>
+                        <publicPackage>ec.nbdemetra.ws</publicPackage>
+                        <publicPackage>ec.util.*</publicPackage>
+                        <publicPackage>org.slf4j.*</publicPackage>
+                        <publicPackage>com.google.common.*</publicPackage>
+                        <publicPackage>org.apache.commons.logging.*</publicPackage>
+                        <publicPackage>javax.annotation.*</publicPackage>
+                        <publicPackage>ec.demetra.workspace</publicPackage>
+                        <publicPackage>ec.demetra.workspace.file</publicPackage>
+                        <publicPackage>ec.demetra.workspace.file.spi</publicPackage>
+                        <publicPackage>ec.demetra.workspace.file.util</publicPackage>
+                        <publicPackage>ioutil</publicPackage>
+
                         <publicPackage>ec.benchmarking.*</publicPackage>
                         <publicPackage>ec.nbdemetra.sa.output</publicPackage>
                         <publicPackage>ec.nbdemetra.ui.*</publicPackage>

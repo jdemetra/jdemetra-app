@@ -74,6 +74,7 @@ public final class Installer extends ModuleInstall {
 
     @Override
     public void restored() {
+        ec.nbdemetra.core.Installer.STEP.restore();
         super.restored();
         step.restore();
     }
@@ -82,6 +83,7 @@ public final class Installer extends ModuleInstall {
     public void close() {
         step.close();
         super.close();
+        ec.nbdemetra.core.Installer.STEP.close();
     }
 
     @Override

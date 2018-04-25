@@ -46,35 +46,22 @@ import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import org.openide.modules.ModuleInstall;
 import org.openide.util.Lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class Installer extends ModuleInstall {
+public final class Installer {
 
     final static Logger LOGGER = LoggerFactory.getLogger(Installer.class);
-    final InstallerStep step = InstallerStep.all(
+    
+    public static final InstallerStep STEP = InstallerStep.all(
             new AppVersionStep(),
             new ByteArrayConverterStep(),
             new ProvidersStep(),
             new SaFactoriesStep(),
             new SaDiagnosticsStep(),
-            new SaOutputStep());
-
-    final TsVariableStep tsvars = new TsVariableStep();
-
-    @Override
-    public void restored() {
-        step.restore();
-        tsvars.restore();
-    }
-
-    @Override
-    public void close() {
-        step.close();
-        TsFactory.instance.dispose();
-    }
+            new SaOutputStep(),
+            new TsVariableStep());
 
     private static final class AppVersionStep extends InstallerStep {
 
@@ -82,7 +69,7 @@ public final class Installer extends ModuleInstall {
         public void restore() {
             Properties p = new Properties();
             try {
-                p.load(Installer.class.getResourceAsStream("/META-INF/maven/eu.europa.ec.joinup.sat/nbdemetra-core/pom.properties"));
+                p.load(Installer.class.getResourceAsStream("/META-INF/maven/eu.europa.ec.joinup.sat/nbdemetra-ui/pom.properties"));
                 System.setProperty("netbeans.buildnumber", p.getProperty("version"));
                 p.clear();
             } catch (IOException ex) {
@@ -135,6 +122,7 @@ public final class Installer extends ModuleInstall {
                 }
                 TsFactory.instance.remove(o.getSource());
             }
+            TsFactory.instance.dispose();
         }
 
         private static <X> List<X> except(List<X> l, List<X> r) {
@@ -270,9 +258,10 @@ public final class Installer extends ModuleInstall {
         }
     }
 
-    private static final class TsVariableStep {
+    private static final class TsVariableStep extends InstallerStep {
 
-        void restore() {
+        @Override
+        public void restore() {
             TsVariable.register();
             DynamicTsVariable.register();
         }

@@ -97,10 +97,6 @@
         <!-- NbDemetra -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nbdemetra-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>nbdemetra-ui</artifactId>
         </dependency>
         <dependency>
