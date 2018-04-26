@@ -17,8 +17,6 @@
 package ec.nbdemetra.ui;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Ordering;
 import ec.nbdemetra.core.GlobalService;
 import ec.nbdemetra.ui.awt.ListenableBean;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
@@ -44,9 +42,11 @@ import ec.util.various.swing.FontAwesome;
 import java.awt.Color;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.swing.Icon;
 import org.netbeans.api.options.OptionsDisplayer;
@@ -111,10 +111,6 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
             BasicConfiguration.allSaSeries(false).stream().toArray(String[]::new));
     static final IParam<Config, Integer> HTML_ZOOM_RATIO = Params.onInteger(100, HTML_ZOOM_RATIO_PROPERTY);
 
-    // INTERNAL STUFF
-    private static final Ordering<ColorScheme> COLOR_SCHEME_ORDERING = Ordering.natural().onResultOf(o -> o.getDisplayName());
-    private static final Ordering<? super ITsAction> TS_ACTION_ORDERING = Ordering.natural().onResultOf(o -> o.getDisplayName());
-    private static final Ordering<? super ITsSave> TS_SAVE_ORDERING = Ordering.natural().onResultOf(o -> o.getDisplayName());
     // PROPERTIES
     private final ConfigBean properties;
 
@@ -332,11 +328,11 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
         this.properties.selectedSeriesFields = fields;
         firePropertyChange(SELECTED_SERIES_FIELDS_PROPERTY, old, this.properties.selectedSeriesFields);
     }
-    
+
     public int getHtmlZoomRatio() {
         return this.properties.htmlZoomRatio;
     }
-    
+
     public void setHtmlZoomRatio(int htmlZoomRatio) {
         int old = this.properties.htmlZoomRatio;
         this.properties.htmlZoomRatio = htmlZoomRatio >= 10 && htmlZoomRatio <= 200 ? htmlZoomRatio : 100;
@@ -346,23 +342,32 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
 
     //<editor-fold defaultstate="collapsed" desc="Utils">
     public ITsAction getTsAction() {
-        return find(ITsAction.class, o -> o.getName(), properties.tsActionName, TS_ACTION_NAME.defaultValue());
+        return find(ITsAction.class, ITsAction::getName, properties.tsActionName, TS_ACTION_NAME.defaultValue());
     }
 
     public List<? extends ITsAction> getTsActions() {
-        return TS_ACTION_ORDERING.sortedCopy(Lookup.getDefault().lookupAll(ITsAction.class));
+        return Lookup.getDefault().lookupAll(ITsAction.class)
+                .stream()
+                .sorted(Comparator.comparing(ITsAction::getDisplayName))
+                .collect(Collectors.toList());
     }
 
     public List<? extends ITsSave> getTsSave() {
-        return TS_SAVE_ORDERING.sortedCopy(Lookup.getDefault().lookupAll(ITsSave.class));
+        return Lookup.getDefault().lookupAll(ITsSave.class)
+                .stream()
+                .sorted(Comparator.comparing(ITsSave::getDisplayName))
+                .collect(Collectors.toList());
     }
 
     public ColorScheme getColorScheme() {
-        return find(ColorScheme.class, o -> o.getName(), properties.colorSchemeName, COLOR_SCHEME_NAME.defaultValue());
+        return find(ColorScheme.class, ColorScheme::getName, properties.colorSchemeName, COLOR_SCHEME_NAME.defaultValue());
     }
 
     public List<? extends ColorScheme> getColorSchemes() {
-        return COLOR_SCHEME_ORDERING.sortedCopy(Lookup.getDefault().lookupAll(ColorScheme.class));
+        return Lookup.getDefault().lookupAll(ColorScheme.class)
+                .stream()
+                .sorted(Comparator.comparing(ColorScheme::getDisplayName))
+                .collect(Collectors.toList());
     }
 
     public Icon getPopupMenuIcon(Icon icon) {
@@ -375,13 +380,10 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
 
     private static <X, Y> X find(Class<X> clazz, Function<? super X, Y> toName, Y... names) {
         Collection<? extends X> items = Lookup.getDefault().lookupAll(clazz);
-        for (Y o : names) {
-            Optional<? extends X> result = Iterables.tryFind(items, x -> o.equals(toName.apply(x))).toJavaUtil();
-            if (result.isPresent()) {
-                return result.get();
-            }
-        }
-        return null;
+        return Stream.of(names)
+                .flatMap(o -> items.stream().filter(x -> o.equals(toName.apply(x))))
+                .findFirst()
+                .orElse(null);
     }
     //</editor-fold>
 

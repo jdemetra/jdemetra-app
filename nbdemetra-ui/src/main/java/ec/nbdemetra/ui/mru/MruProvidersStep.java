@@ -7,6 +7,7 @@ package ec.nbdemetra.ui.mru;
 import demetra.ui.TsManager;
 import ec.nbdemetra.core.InstallerStep;
 import ec.tss.tsproviders.DataSource;
+import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.utils.DataSourceAdapter;
 import java.util.prefs.Preferences;
@@ -30,24 +31,27 @@ public class MruProvidersStep extends InstallerStep.LookupStep<IDataSourceProvid
     @Override
     protected void onResultChanged(Lookup.Result<IDataSourceProvider> lookup) {
         // won't be added twice
-        for (IDataSourceProvider o : TsManager.getDefault().all().filter(IDataSourceProvider.class)) {
-            o.addDataSourceListener(listener);
-        }
+        TsManager.getDefault().all()
+                .filter(IDataSourceLoader.class::isInstance)
+                .map(IDataSourceLoader.class::cast)
+                .forEach(o -> o.addDataSourceListener(listener));
     }
 
     @Override
     protected void onRestore(Lookup.Result<IDataSourceProvider> lookup) {
         MruPreferences.INSTANCE.load(prefs, MruList.getProvidersInstance());
-        for (IDataSourceProvider o : TsManager.getDefault().all().filter(IDataSourceProvider.class)) {
-            o.addDataSourceListener(listener);
-        }
+        TsManager.getDefault().all()
+                .filter(IDataSourceLoader.class::isInstance)
+                .map(IDataSourceLoader.class::cast)
+                .forEach(o -> o.addDataSourceListener(listener));
     }
 
     @Override
     protected void onClose(Lookup.Result<IDataSourceProvider> lookup) {
-        for (IDataSourceProvider o : TsManager.getDefault().all().filter(IDataSourceProvider.class)) {
-            o.removeDataSourceListener(listener);
-        }
+        TsManager.getDefault().all()
+                .filter(IDataSourceLoader.class::isInstance)
+                .map(IDataSourceLoader.class::cast)
+                .forEach(o -> o.removeDataSourceListener(listener));
         MruPreferences.INSTANCE.store(prefs, MruList.getProvidersInstance());
     }
 

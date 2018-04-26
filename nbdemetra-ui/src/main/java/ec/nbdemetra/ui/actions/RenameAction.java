@@ -5,6 +5,7 @@
 package ec.nbdemetra.ui.actions;
 
 import ec.nbdemetra.ui.INameable;
+import java.util.stream.Stream;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
@@ -23,10 +24,8 @@ public final class RenameAction extends AbilityAction<INameable> {
     }
 
     @Override
-    protected void performAction(Iterable<INameable> items) {
-        for (INameable o : items) {
-            o.rename();
-        }
+    protected void performAction(Stream<INameable> items) {
+        items.forEach(INameable::rename);
     }
 
     @Override

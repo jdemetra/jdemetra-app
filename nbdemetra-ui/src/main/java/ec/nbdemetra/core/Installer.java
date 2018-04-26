@@ -17,7 +17,6 @@
 package ec.nbdemetra.core;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Streams;
 import demetra.ui.TsManager;
 import ec.tss.DynamicTsVariable;
 import ec.tss.ITsProvider;
@@ -41,6 +40,7 @@ import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -126,15 +126,15 @@ public final class Installer {
             return result;
         }
 
-        private static String toString(Iterable<? extends ITsProvider> providers) {
-            return Streams.stream(providers)
+        private static String toString(Stream<? extends ITsProvider> providers) {
+            return providers
                     .map(o -> o.getSource() + "(" + o.getClass().getName() + ")")
                     .collect(Collectors.joining(", "));
         }
 
         @Override
         protected void onResultChanged(Lookup.Result<ITsProvider> lookup) {
-            List<ITsProvider> old = Lists.newArrayList(TsManager.getDefault().all());
+            List<ITsProvider> old = TsManager.getDefault().all().collect(Collectors.toList());
             List<ITsProvider> current = Lists.newArrayList(lookup.allInstances());
 
             unregister(except(old, current));
@@ -149,7 +149,7 @@ public final class Installer {
 
         @Override
         protected void onClose(Lookup.Result<ITsProvider> lookup) {
-            unregister(TsManager.getDefault().all());
+            unregister(TsManager.getDefault().all().collect(Collectors.toList()));
             try {
                 prefs.flush();
             } catch (BackingStoreException ex) {

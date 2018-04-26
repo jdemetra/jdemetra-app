@@ -20,11 +20,12 @@ import com.google.common.base.Converter;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.interchange.ExportAction;
 import ec.nbdemetra.ui.interchange.Exportable;
-import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.variables.VariablesDocumentManager;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -63,10 +64,7 @@ public final class ExportVariablesAction extends NodeAction implements Presenter
 
     @Override
     protected boolean enable(Node[] activatedNodes) {
-        return !Nodes.asIterable(activatedNodes)
-                .filter(ItemWsNode.class)
-                .filter(ExportVariablesAction::isExportable)
-                .isEmpty();
+        return Stream.of(activatedNodes).anyMatch(ExportVariablesAction::isExportable);
     }
 
     @Override
@@ -79,16 +77,20 @@ public final class ExportVariablesAction extends NodeAction implements Presenter
         return null;
     }
 
+    private static boolean isExportable(Node o) {
+        return o instanceof ItemWsNode && isExportable((ItemWsNode) o);
+    }
+
     private static boolean isExportable(ItemWsNode o) {
         return o.getItem().getElement() instanceof TsVariables;
     }
 
     private static List<Exportable> getExportables(Node[] activatedNodes) {
-        return Nodes.asIterable(activatedNodes)
-                .filter(ItemWsNode.class)
+        return Stream.of(activatedNodes)
                 .filter(ExportVariablesAction::isExportable)
-                .transform(o -> (Exportable) new ExportableVariables(o))
-                .toList();
+                .map(ItemWsNode.class::cast)
+                .map(ExportableVariables::new)
+                .collect(Collectors.toList());
     }
 
     private static final class ExportableVariables implements Exportable {

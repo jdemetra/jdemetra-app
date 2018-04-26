@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ui.actions;
 
+import java.util.stream.Stream;
 import org.netbeans.api.actions.Closable;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
@@ -19,10 +20,8 @@ public final class CloseAction extends AbilityAction<Closable> {
     }
 
     @Override
-    protected void performAction(Iterable<Closable> items) {
-        for (Closable o : items) {
-            o.close();
-        }
+    protected void performAction(Stream<Closable> items) {
+        items.forEach(Closable::close);
     }
 
     @Override

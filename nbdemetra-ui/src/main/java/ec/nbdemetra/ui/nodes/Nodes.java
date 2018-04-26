@@ -16,12 +16,8 @@
  */
 package ec.nbdemetra.ui.nodes;
 
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Iterables;
-import ec.tstoolkit.design.UtilityClass;
 import ec.tstoolkit.utilities.Trees;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.swing.Action;
@@ -33,42 +29,28 @@ import org.openide.util.Utilities;
  *
  * @author Philippe Charles
  */
-@UtilityClass(Node.class)
-public final class Nodes {
+@lombok.experimental.UtilityClass
+public class Nodes {
 
-    private Nodes() {
-        // static class
+    @Nonnull
+    public Action[] actionsForPath(@Nonnull String path) {
+        return Utilities.actionsForPath(path).stream().toArray(Action[]::new);
     }
 
     @Nonnull
-    public static Action[] actionsForPath(@Nonnull String path) {
-        return Iterables.toArray(Utilities.actionsForPath(path), Action.class);
-    }
-
-    @Nonnull
-    public static Stream<Node> childrenStream(@Nonnull Node root) {
+    public Stream<Node> childrenStream(@Nonnull Node root) {
         return !root.isLeaf()
                 ? Arrays.stream(root.getChildren().getNodes())
                 : Stream.empty();
     }
 
     @Nonnull
-    public static FluentIterable<Node> childrenIterable(@Nonnull Node root) {
-        return FluentIterable.from(root.isLeaf() ? Collections.emptyList() : Arrays.asList(root.getChildren().getNodes()));
+    public Stream<Node> breadthFirstStream(@Nonnull Node root) {
+        return Trees.breadthFirstStream(root, Nodes::childrenStream);
     }
 
     @Nonnull
-    public static FluentIterable<Node> breadthFirstIterable(@Nonnull Node root) {
-        return FluentIterable.from(root.isLeaf() ? Collections.singleton(root) : Trees.breadthFirstIterable(root, Nodes::childrenStream));
-    }
-
-    @Nonnull
-    public static FluentIterable<Node> depthFirstIterable(@Nonnull Node root) {
-        return FluentIterable.from(root.isLeaf() ? Collections.singleton(root) : Trees.depthFirstIterable(root, Nodes::childrenStream));
-    }
-
-    @Nonnull
-    public static FluentIterable<Node> asIterable(@Nonnull Node[] nodes) {
-        return FluentIterable.from(Arrays.asList(nodes));
+    public Stream<Node> depthFirstStream(@Nonnull Node root) {
+        return Trees.depthFirstStream(root, Nodes::childrenStream);
     }
 }

@@ -146,14 +146,17 @@ public final class Installer extends ModuleInstall {
             if (DemetraUI.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
                 IParser<DataSourcesBean> parser = Parsers.onJAXB(DataSourcesBean.class);
-                for (IDataSourceLoader o : TsManager.getDefault().all().filter(IDataSourceLoader.class)) {
-                    Optional<DataSourcesBean> value = tryGet(prefs, o.getSource(), parser);
-                    if (value.isPresent()) {
-                        for (DataSource dataSource : value.get()) {
-                            o.open(dataSource);
-                        }
-                    }
-                }
+                TsManager.getDefault().all()
+                        .filter(IDataSourceLoader.class::isInstance)
+                        .map(IDataSourceLoader.class::cast)
+                        .forEach(o -> {
+                            Optional<DataSourcesBean> value = tryGet(prefs, o.getSource(), parser);
+                            if (value.isPresent()) {
+                                for (DataSource dataSource : value.get()) {
+                                    o.open(dataSource);
+                                }
+                            }
+                        });
             }
         }
 
@@ -162,11 +165,14 @@ public final class Installer extends ModuleInstall {
             if (DemetraUI.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
                 IFormatter<DataSourcesBean> formatter = Formatters.onJAXB(DataSourcesBean.class, false);
-                for (IDataSourceLoader o : TsManager.getDefault().all().filter(IDataSourceLoader.class)) {
-                    DataSourcesBean value = new DataSourcesBean();
-                    value.dataSources = o.getDataSources();
-                    tryPut(prefs, o.getSource(), formatter, value);
-                }
+                TsManager.getDefault().all()
+                        .filter(IDataSourceLoader.class::isInstance)
+                        .map(IDataSourceLoader.class::cast)
+                        .forEach(o -> {
+                            DataSourcesBean value = new DataSourcesBean();
+                            value.dataSources = o.getDataSources();
+                            tryPut(prefs, o.getSource(), formatter, value);
+                        });
                 try {
                     prefs.flush();
                 } catch (BackingStoreException ex) {

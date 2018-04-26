@@ -40,6 +40,7 @@ import java.awt.event.ActionEvent;
 import static java.beans.BeanInfo.ICON_MONO_16x16;
 import java.io.File;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -72,7 +73,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
     public Object asyncLoad(File file, BasicFileViewer.ProgressCallback progress) throws Exception {
         ArrayBook.Builder result = ArrayBook.builder();
         Stopwatch sw = Stopwatch.createStarted();
-        Book.Factory factory = factories.stream().filter(o -> o != null && o.accept(file)).findFirst().get();
+        Book.Factory factory = factories.stream().filter(Objects::nonNull).filter(o -> o.accept(file)).findFirst().get();
         try (Book book = factory.load(file)) {
             for (int s = 0; s < book.getSheetCount(); s++) {
                 result.sheet(book.getSheet(s));
@@ -100,7 +101,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
 
     @Override
     public boolean accept(File pathname) {
-        return factories.stream().anyMatch(o -> o != null && o.accept(pathname));
+        return factories.stream().filter(Objects::nonNull).anyMatch(o -> o.accept(pathname));
     }
     //</editor-fold>
 

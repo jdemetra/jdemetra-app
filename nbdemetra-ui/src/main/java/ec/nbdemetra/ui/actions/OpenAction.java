@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.actions;
 
+import java.util.stream.Stream;
 import org.netbeans.api.actions.Openable;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
@@ -35,10 +36,8 @@ public final class OpenAction extends AbilityAction<Openable> {
     }
 
     @Override
-    protected void performAction(Iterable<Openable> items) {
-        for (Openable o : items) {
-            o.open();
-        }
+    protected void performAction(Stream<Openable> items) {
+        items.forEach(Openable::open);
     }
 
     @Override

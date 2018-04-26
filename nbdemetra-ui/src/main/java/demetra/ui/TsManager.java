@@ -16,7 +16,6 @@
  */
 package demetra.ui;
 
-import com.google.common.collect.FluentIterable;
 import ec.nbdemetra.core.GlobalService;
 import ec.tss.ITsProvider;
 import ec.tss.Ts;
@@ -44,6 +43,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 import java.util.stream.Collector;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
@@ -192,8 +192,8 @@ public class TsManager implements AutoCloseable {
     }
 
     @Nonnull
-    public FluentIterable<ITsProvider> all() {
-        return FluentIterable.from(asList());
+    public Stream<ITsProvider> all() {
+        return asList().stream();
     }
 
     @Nonnull

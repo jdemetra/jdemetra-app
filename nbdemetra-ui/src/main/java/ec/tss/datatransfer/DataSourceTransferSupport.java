@@ -16,11 +16,12 @@
  */
 package ec.tss.datatransfer;
 
-import com.google.common.collect.FluentIterable;
 import ec.nbdemetra.core.GlobalService;
 import ec.tss.tsproviders.DataSource;
 import java.awt.datatransfer.Transferable;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -40,37 +41,35 @@ public class DataSourceTransferSupport {
     }
 
     @Nonnull
-    public FluentIterable<? extends DataSourceTransferHandler> all() {
-        return FluentIterable.from(Lookup.getDefault().lookupAll(DataSourceTransferHandler.class));
+    public Stream<? extends DataSourceTransferHandler> all() {
+        return Lookup.getDefault().lookupAll(DataSourceTransferHandler.class).stream().filter(Objects::nonNull);
     }
 
     public boolean canHandle(@Nonnull Transferable t) {
-        return all().anyMatch(o -> o != null ? o.canHandle(t) : false);
+        return all().anyMatch(o -> o.canHandle(t));
     }
 
     public boolean canHandle(@Nonnull Transferable t, @Nonnull String providerName) {
-        return all().anyMatch(o -> o != null ? o.canHandle(t, providerName) : false);
+        return all().anyMatch(o -> o.canHandle(t, providerName));
     }
 
     @Nonnull
     public Optional<DataSource> getDataSource(@Nonnull Transferable t) {
-        for (DataSourceTransferHandler o : all().filter(o -> o != null ? o.canHandle(t) : false)) {
-            Optional<DataSource> dataSource = o.getDataSource(t);
-            if (dataSource.isPresent()) {
-                return dataSource;
-            }
-        }
-        return Optional.empty();
+        return all()
+                .filter(o -> o.canHandle(t))
+                .map(o -> o.getDataSource(t))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
     }
 
     @Nonnull
     public Optional<DataSource> getDataSource(@Nonnull Transferable t, @Nonnull String providerName) {
-        for (DataSourceTransferHandler o : all().filter(o -> o != null ? o.canHandle(t, providerName) : false)) {
-            Optional<DataSource> dataSource = o.getDataSource(t, providerName);
-            if (dataSource.isPresent()) {
-                return dataSource;
-            }
-        }
-        return Optional.empty();
+        return all()
+                .filter(o -> o.canHandle(t, providerName))
+                .map(o -> o.getDataSource(t, providerName))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
     }
 }

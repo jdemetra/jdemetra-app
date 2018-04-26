@@ -17,10 +17,12 @@
 package ec.nbdemetra.ui.interchange;
 
 import ec.nbdemetra.ui.actions.AbilityAction;
-import ec.nbdemetra.ui.nodes.Nodes;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -52,7 +54,7 @@ public final class ExportAction extends AbilityAction<Exportable> implements Pre
     }
 
     @Override
-    protected void performAction(Iterable<Exportable> items) {
+    protected void performAction(Stream<Exportable> items) {
     }
 
     @Override
@@ -61,10 +63,10 @@ public final class ExportAction extends AbilityAction<Exportable> implements Pre
     }
 
     private static List<Exportable> getExportables(Node[] activatedNodes) {
-        return Nodes.asIterable(activatedNodes)
-                .transform(o -> o.getLookup().lookup(Exportable.class))
-                .filter(o -> o != null)
-                .toList();
+        return Stream.of(activatedNodes)
+                .map(o -> o.getLookup().lookup(Exportable.class))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     @Nonnull

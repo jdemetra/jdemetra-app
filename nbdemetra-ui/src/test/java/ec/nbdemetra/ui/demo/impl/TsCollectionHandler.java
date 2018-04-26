@@ -29,7 +29,7 @@ import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.IDataSourceProvider;
+import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.commands.TsCollectionViewCommand;
@@ -293,26 +293,29 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
 
     static JButton createFakeProviderButton(ITsCollectionView view) {
         JMenu menu = new JMenu();
-        for (IDataSourceProvider provider : TsManager.getDefault().all().filter(IDataSourceProvider.class)) {
-            for (DataSource dataSource : provider.getDataSources()) {
-                JMenu subMenu = new JMenu(provider.getDisplayName(dataSource));
-                subMenu.setIcon(getIcon(FontAwesome.FA_FOLDER));
-                JMenuItem all = subMenu.add(new AddDataSourceCommand(dataSource).toAction(view));
-                all.setText("All");
-                all.setIcon(getIcon(FontAwesome.FA_FOLDER));
-                subMenu.addSeparator();
-                try {
-                    for (DataSet dataSet : provider.children(dataSource)) {
-                        JMenuItem item = subMenu.add(new AddDataSetCommand(dataSet).toAction(view));
-                        item.setText(provider.getDisplayNodeName(dataSet));
-                        item.setIcon(getIcon(FontAwesome.FA_LINE_CHART));
+        TsManager.getDefault().all()
+                .filter(IDataSourceLoader.class::isInstance)
+                .map(IDataSourceLoader.class::cast)
+                .forEach(provider -> {
+                    for (DataSource dataSource : provider.getDataSources()) {
+                        JMenu subMenu = new JMenu(provider.getDisplayName(dataSource));
+                        subMenu.setIcon(getIcon(FontAwesome.FA_FOLDER));
+                        JMenuItem all = subMenu.add(new AddDataSourceCommand(dataSource).toAction(view));
+                        all.setText("All");
+                        all.setIcon(getIcon(FontAwesome.FA_FOLDER));
+                        subMenu.addSeparator();
+                        try {
+                            for (DataSet dataSet : provider.children(dataSource)) {
+                                JMenuItem item = subMenu.add(new AddDataSetCommand(dataSet).toAction(view));
+                                item.setText(provider.getDisplayNodeName(dataSet));
+                                item.setIcon(getIcon(FontAwesome.FA_LINE_CHART));
+                            }
+                        } catch (IOException ex) {
+                            subMenu.add(ex.getMessage()).setIcon(getIcon(FontAwesome.FA_EXCLAMATION_CIRCLE));
+                        }
+                        menu.add(subMenu);
                     }
-                } catch (IOException ex) {
-                    subMenu.add(ex.getMessage()).setIcon(getIcon(FontAwesome.FA_EXCLAMATION_CIRCLE));
-                }
-                menu.add(subMenu);
-            }
-        }
+                });
         menu.add(new AddDataSourceCommand(DataSource.of("Missing", "")).toAction(view)).setText("Missing provider");
         JButton result = DropDownButtonFactory.createDropDownButton(getIcon(FontAwesome.FA_DATABASE), menu.getPopupMenu());
         result.setToolTipText("Data sources");

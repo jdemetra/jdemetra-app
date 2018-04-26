@@ -20,7 +20,6 @@ import ec.nbdemetra.tramoseats.TramoSpecificationManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.interchange.ExportAction;
 import ec.nbdemetra.ui.interchange.Exportable;
-import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.tss.tsproviders.utils.Formatters;
@@ -29,6 +28,8 @@ import ec.tss.xml.information.XmlInformationSet;
 import ec.tstoolkit.information.InformationSet;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -71,7 +72,11 @@ public class ExportTramoSpec extends NodeAction implements Presenter.Popup {
 
     @Override
     protected boolean enable(Node[] nodes) {
-        return !Nodes.asIterable(nodes).filter(ItemWsNode.class).filter(ExportTramoSpec::isExportable).isEmpty();
+        return Stream.of(nodes).anyMatch(ExportTramoSpec::isExportable);
+    }
+
+    private static boolean isExportable(Node o) {
+        return o instanceof ItemWsNode && isExportable((ItemWsNode) o);
     }
 
     private static boolean isExportable(ItemWsNode o) {
@@ -90,11 +95,11 @@ public class ExportTramoSpec extends NodeAction implements Presenter.Popup {
     }
 
     private static List<Exportable> getExportables(Node[] activatedNodes) {
-        return Nodes.asIterable(activatedNodes)
-                .filter(ItemWsNode.class)
+        return Stream.of(activatedNodes)
                 .filter(ExportTramoSpec::isExportable)
-                .transform(o -> (Exportable) new ExportableTramoSpec(o))
-                .toList();
+                .map(ItemWsNode.class::cast)
+                .map(ExportableTramoSpec::new)
+                .collect(Collectors.toList());
     }
 
     private static final class ExportableTramoSpec implements Exportable {

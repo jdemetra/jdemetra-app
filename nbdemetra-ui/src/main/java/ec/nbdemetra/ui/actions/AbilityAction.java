@@ -16,9 +16,10 @@
  */
 package ec.nbdemetra.ui.actions;
 
-import ec.nbdemetra.ui.nodes.Nodes;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
@@ -38,16 +39,16 @@ public abstract class AbilityAction<T> extends NodeAction {
         this.function = o -> o.getLookup().lookup(ability);
     }
 
-    abstract protected void performAction(Iterable<T> items);
+    abstract protected void performAction(Stream<T> items);
 
     @Override
     protected void performAction(Node[] activatedNodes) {
-        performAction(Nodes.asIterable(activatedNodes).transform(function::apply).filter(o -> o != null));
+        performAction(Stream.of(activatedNodes).map(function::apply).filter(Objects::nonNull));
     }
 
     @Override
     protected boolean enable(Node[] activatedNodes) {
-        return Nodes.asIterable(activatedNodes).anyMatch(predicate::test);
+        return Stream.of(activatedNodes).anyMatch(predicate::test);
     }
 
     @Override

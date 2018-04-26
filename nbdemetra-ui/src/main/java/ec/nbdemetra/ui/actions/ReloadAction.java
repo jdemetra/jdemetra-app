@@ -5,6 +5,7 @@
 package ec.nbdemetra.ui.actions;
 
 import ec.nbdemetra.ui.IReloadable;
+import java.util.stream.Stream;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
@@ -23,10 +24,8 @@ public final class ReloadAction extends AbilityAction<IReloadable> {
     }
 
     @Override
-    protected void performAction(Iterable<IReloadable> items) {
-        for (IReloadable o : items) {
-            o.reload();
-        }
+    protected void performAction(Stream<IReloadable> items) {
+        items.forEach(IReloadable::reload);
     }
 
     @Override

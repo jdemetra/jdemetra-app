@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
@@ -256,7 +257,10 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
     }
 
     void load() {
-        List<IFileLoader> loaders = TsManager.getDefault().all().filter(IFileLoader.class).toList();
+        List<IFileLoader> loaders = TsManager.getDefault().all()
+                .filter(IFileLoader.class::isInstance)
+                .map(IFileLoader.class::cast)
+                .collect(Collectors.toList());
         Node[] fileLoaderNodes = new Node[loaders.size()];
         for (int i = 0; i < fileLoaderNodes.length; i++) {
             IFileLoader loader = loaders.get(i);

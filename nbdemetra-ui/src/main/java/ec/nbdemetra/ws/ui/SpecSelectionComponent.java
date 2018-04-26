@@ -77,9 +77,7 @@ public class SpecSelectionComponent extends JComponent implements ExplorerManage
         tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         DecoratedNode root = new DecoratedNode(new DummyWsNode(WorkspaceFactory.getInstance().getActiveWorkspace(), SPECS_ID), showSystemOnly ? ItemWsNodeFilter.SYSTEM_ONLY : (o -> true));
-        for (DecoratedNode o : root.breadthFirstIterable()) {
-            o.setPreferredActionDecorator(DecoratedNode.PreferredAction.DO_NOTHING);
-        }
+        root.breadthFirstStream().forEach(o -> o.setPreferredActionDecorator(DecoratedNode.PreferredAction.DO_NOTHING));
 
         em.setRootContext(root);
 
@@ -126,7 +124,7 @@ public class SpecSelectionComponent extends JComponent implements ExplorerManage
 //            ((DecoratedNode) o).setHtmlDecorator(null);
 //        }
         DecoratedNode root = (DecoratedNode) em.getRootContext();
-        Optional<DecoratedNode> node = root.breadthFirstIterable().firstMatch(o -> isCurrentSpecificationNode(o.getOriginal())).toJavaUtil();
+        Optional<DecoratedNode> node = root.breadthFirstStream().filter(o -> isCurrentSpecificationNode(o.getOriginal())).findFirst();
         if (node.isPresent()) {
 //            node.get().setHtmlDecorator(DecoratedNode.Html.BOLD);
             try {
