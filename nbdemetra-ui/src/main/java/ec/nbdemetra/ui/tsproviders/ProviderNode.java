@@ -18,6 +18,7 @@ package ec.nbdemetra.ui.tsproviders;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.interchange.Importable;
@@ -210,8 +211,8 @@ public final class ProviderNode extends AbstractNode {
         @Override
         public void importConfig(Config config) throws IllegalArgumentException {
             DataSource dataSource = ProvidersUtil.getDataSource(config);
-            TsProviders.lookup(IDataSourceLoader.class, dataSource)
-                    .toJavaUtil()
+            TsManager.getDefault()
+                    .lookup(IDataSourceLoader.class, dataSource)
                     .ifPresent(o -> {
                         o.open(dataSource);
                         ProvidersUtil.findNode(dataSource, ProviderNode.this)

@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ui.nodes;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.Ts;
@@ -11,7 +12,6 @@ import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
 import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.MetaData;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -302,7 +302,7 @@ public class ControlNode {
         if (original != null) {
             String providerName = original.getSource();
             if (providerName != null) {
-                IDataSourceProvider p = TsProviders.lookup(IDataSourceProvider.class, providerName).orNull();
+                IDataSourceProvider p = TsManager.getDefault().lookup(IDataSourceProvider.class, providerName).orElse(null);
                 b.with(String.class).selectConst("Provider", getProviderDisplayName(p, providerName)).add();
                 b.with(String.class).selectConst("Data source", getDataSourceDisplayName(p, original, "unavailable")).add();
             }

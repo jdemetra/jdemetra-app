@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.spreadsheet;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
@@ -23,7 +24,6 @@ import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.spreadsheet.SpreadSheetBean;
 import ec.tss.tsproviders.spreadsheet.SpreadSheetProvider;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetCollection;
@@ -124,8 +124,8 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
         NodePropertySetBuilder b = new NodePropertySetBuilder();
 
         b.reset("source").display(Bundle.bean_source_display());
-        TsProviders.lookup(IFileLoader.class, SpreadSheetProvider.SOURCE)
-                .toJavaUtil()
+        TsManager.getDefault()
+                .lookup(IFileLoader.class, SpreadSheetProvider.SOURCE)
                 .ifPresent(o -> addFileProperty(b, bean, o));
         result.add(b.build());
 
@@ -138,8 +138,8 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
     }
 
     private static SpreadSheetCollection.AlignType getAlignType(DataSet dataSet) {
-        return TsProviders.lookup(SpreadSheetProvider.class, SpreadSheetProvider.SOURCE)
-                .toJavaUtil()
+        return TsManager.getDefault()
+                .lookup(SpreadSheetProvider.class, SpreadSheetProvider.SOURCE)
                 .map(o -> {
                     try {
                         return o.getSeries(dataSet).alignType;

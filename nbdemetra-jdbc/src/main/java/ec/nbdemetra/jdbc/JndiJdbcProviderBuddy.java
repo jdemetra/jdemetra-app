@@ -17,6 +17,7 @@
 package ec.nbdemetra.jdbc;
 
 import com.google.common.base.Preconditions;
+import demetra.ui.TsManager;
 import ec.nbdemetra.db.DbIcon;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
@@ -24,7 +25,6 @@ import ec.nbdemetra.ui.awt.SimpleHtmlListCellRenderer;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.db.DbBean;
 import ec.tss.tsproviders.jdbc.ConnectionSupplier;
 import ec.tss.tsproviders.jdbc.JdbcBean;
@@ -94,8 +94,8 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
 
     // this overrides default connection supplier since we don't have JNDI in JavaSE
     private void overrideDefaultConnectionSupplier() {
-        TsProviders.lookup(JndiJdbcProvider.class, JndiJdbcProvider.SOURCE)
-                .toJavaUtil()
+        TsManager.getDefault()
+                .lookup(JndiJdbcProvider.class, JndiJdbcProvider.SOURCE)
                 .ifPresent(o -> o.setConnectionSupplier(supplier));
     }
 

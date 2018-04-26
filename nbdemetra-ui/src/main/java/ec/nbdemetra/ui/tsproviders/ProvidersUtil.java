@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.tsproviders;
 
 import com.google.common.collect.Lists;
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.properties.ForwardingNodeProperty;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
@@ -26,7 +27,6 @@ import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.TsProviders;
 import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -108,7 +108,7 @@ final class ProvidersUtil {
 
     @Nonnull
     static List<Sheet.Set> sheetSetsOfProvider(@Nonnull String providerName) {
-        Optional<IDataSourceProvider> op = TsProviders.lookup(IDataSourceProvider.class, providerName).toJavaUtil();
+        Optional<IDataSourceProvider> op = TsManager.getDefault().lookup(IDataSourceProvider.class, providerName);
         if (op.isPresent()) {
             IDataSourceProvider provider = op.get();
             List<Sheet.Set> result = new ArrayList<>();
@@ -164,7 +164,7 @@ final class ProvidersUtil {
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("DataSource");
         b.with(String.class).select(dataSource, "getProviderName", null).display("Source").add();
         b.with(String.class).select(dataSource, "getVersion", null).display("Version").add();
-        Optional<IDataSourceLoader> loader = TsProviders.lookup(IDataSourceLoader.class, dataSource).toJavaUtil();
+        Optional<IDataSourceLoader> loader = TsManager.getDefault().lookup(IDataSourceLoader.class, dataSource);
         if (loader.isPresent()) {
             Object bean = loader.get().decodeBean(dataSource);
             beanFunc.apply(bean).stream()

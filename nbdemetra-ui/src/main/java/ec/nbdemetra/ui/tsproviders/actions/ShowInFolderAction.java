@@ -16,10 +16,10 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.tsproviders.DataSourceNode;
 import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.TsProviders;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
 import java.io.File;
@@ -40,7 +40,6 @@ import org.openide.util.NbBundle.Messages;
  * </ul>
  *
  * @see Desktop#showInFolder(java.io.File)
- * @see TsProviders#tryGetFile(ec.tss.tsproviders.DataSource)
  * @author Philippe Charles
  */
 @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.ShowInFolderAction")
@@ -80,6 +79,6 @@ public final class ShowInFolderAction extends SingleNodeAction<DataSourceNode> {
     }
 
     private static Optional<File> getFile(DataSourceNode activatedNode) {
-        return TsProviders.tryGetFile(activatedNode.getLookup().lookup(DataSource.class)).toJavaUtil();
+        return TsManager.getDefault().tryGetFile(activatedNode.getLookup().lookup(DataSource.class));
     }
 }

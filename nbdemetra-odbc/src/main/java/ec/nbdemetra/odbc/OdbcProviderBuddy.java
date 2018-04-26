@@ -17,12 +17,12 @@
 package ec.nbdemetra.odbc;
 
 import com.google.common.base.Preconditions;
+import demetra.ui.TsManager;
 import ec.nbdemetra.jdbc.JdbcProviderBuddy;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.awt.SimpleHtmlListCellRenderer;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.jdbc.ConnectionSupplier;
 import ec.tss.tsproviders.jdbc.JdbcBean;
 import ec.tss.tsproviders.odbc.OdbcBean;
@@ -118,7 +118,7 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
     }
 
     private static ConnectionSupplier getOdbcConnectionSupplier() {
-        Optional<OdbcProvider> provider = TsProviders.lookup(OdbcProvider.class, OdbcProvider.SOURCE).toJavaUtil();
+        Optional<OdbcProvider> provider = TsManager.getDefault().lookup(OdbcProvider.class, OdbcProvider.SOURCE);
         return provider.isPresent()
                 ? provider.get().getConnectionSupplier()
                 : new FailingConnectionSupplier("Cannot load OdbcProvider");

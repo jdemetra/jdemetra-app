@@ -16,10 +16,10 @@
  */
 package ec.nbdemetra.ui.mru;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
-import ec.tss.tsproviders.TsProviders;
 import java.awt.event.ActionEvent;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
@@ -120,8 +120,8 @@ public final class ProviderMruAction extends AbstractAction implements Presenter
         }
 
         boolean isLoadable(DataSource dataSource) {
-            return TsProviders.lookup(IDataSourceLoader.class, dataSource)
-                    .toJavaUtil()
+            return TsManager.getDefault()
+                    .lookup(IDataSourceLoader.class, dataSource)
                     .filter(o -> !o.getDataSources().contains(dataSource))
                     .isPresent();
         }
@@ -137,8 +137,8 @@ public final class ProviderMruAction extends AbstractAction implements Presenter
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            TsProviders.lookup(IDataSourceLoader.class, dataSource)
-                    .toJavaUtil()
+            TsManager.getDefault()
+                    .lookup(IDataSourceLoader.class, dataSource)
                     .ifPresent(o -> o.open(dataSource));
         }
     }

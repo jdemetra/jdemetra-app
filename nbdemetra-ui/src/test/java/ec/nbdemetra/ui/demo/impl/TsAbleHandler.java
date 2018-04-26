@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.FakeTsProvider;
 import static ec.nbdemetra.ui.demo.impl.TsCollectionHandler.getIcon;
@@ -25,7 +26,6 @@ import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.TsProviders;
 import ec.ui.interfaces.ITsAble;
 import ec.util.various.swing.FontAwesome;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
@@ -85,10 +85,10 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<ITsAble
     }
 
     private static JButton createFakeProviderButton(ITsAble view) {
-        JMenu providerMenu = TsProviders
+        JMenu providerMenu = TsManager.getDefault()
                 .lookup(IDataSourceProvider.class, "Fake")
-                .transform(o -> createFakeProviderMenu(o, view))
-                .or(JMenu::new);
+                .map(o -> createFakeProviderMenu(o, view))
+                .orElseGet(JMenu::new);
         JButton result = DropDownButtonFactory.createDropDownButton(getIcon(FontAwesome.FA_DATABASE), providerMenu.getPopupMenu());
         result.setToolTipText("Data sources");
         enableTickFeedback(result);
@@ -96,7 +96,7 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<ITsAble
     }
 
     private static void enableTickFeedback(JButton button) {
-        Optional<FakeTsProvider> p = TsProviders.lookup(FakeTsProvider.class, "Fake").toJavaUtil();
+        Optional<FakeTsProvider> p = TsManager.getDefault().lookup(FakeTsProvider.class, "Fake");
         if (p.isPresent()) {
             Icon icon1 = getIcon(FontAwesome.FA_DATABASE);
             Icon icon2 = FontAwesome.FA_DATABASE.getIcon(Color.ORANGE.darker(), FontAwesomeUtils.toSize(ICON_COLOR_16x16));
@@ -143,7 +143,7 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<ITsAble
 
         @Override
         public void execute(ITsAble component) throws Exception {
-            Optional<Ts> ts = TsProviders.getTs(dataSet, TsInformationType.Definition).toJavaUtil();
+            Optional<Ts> ts = TsManager.getDefault().getTs(dataSet, TsInformationType.Definition);
             if (ts.isPresent()) {
                 ts.get().query(TsInformationType.All);
             }

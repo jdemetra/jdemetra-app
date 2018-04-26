@@ -35,7 +35,6 @@ import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.TsProviders;
 import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
@@ -104,14 +103,14 @@ public final class DataSourceNode extends AbstractNode {
             abilities.add(new NameableImpl());
             abilities.add(new TsSavableImpl());
             abilities.add(new ReloadableImpl());
-            if (TsProviders.lookup(IDataSourceLoader.class, dataSource).isPresent()) {
+            if (TsManager.getDefault().lookup(IDataSourceLoader.class, dataSource).isPresent()) {
                 abilities.add(new EditableImpl());
                 abilities.add(new ClosableImpl());
                 abilities.add(new ExportableAsXmlImpl());
             }
         }
         // 3. Name and display name
-        IDataSourceProvider provider = TsProviders.lookup(IDataSourceProvider.class, dataSource).get();
+        IDataSourceProvider provider = TsManager.getDefault().lookup(IDataSourceProvider.class, dataSource).get();
         setDisplayName(provider.getDisplayName(dataSource));
     }
 
@@ -149,8 +148,8 @@ public final class DataSourceNode extends AbstractNode {
     }
 
     private Transferable getData(TsInformationType type) throws IOException {
-        return TsProviders.getTsCollection(getLookup().lookup(DataSource.class), type)
-                .toJavaUtil()
+        return TsManager.getDefault()
+                .getTsCollection(getLookup().lookup(DataSource.class), type)
                 .map(o -> TssTransferSupport.getDefault().fromTsCollection(o))
                 .orElseThrow(() -> new IOException("Cannot create the TS collection '" + getDisplayName() + "'; check the logs for further details."));
     }
@@ -165,8 +164,8 @@ public final class DataSourceNode extends AbstractNode {
         ExTransferable data = ExTransferable.create(getData(SHOULD_BE_NONE));
 
         DataSource dataSource = getLookup().lookup(DataSource.class);
-        TsProviders.tryGetFile(dataSource)
-                .toJavaUtil()
+        TsManager.getDefault()
+                .tryGetFile(dataSource)
                 .ifPresent(o -> data.put(new LocalFileTransferable(o)));
         return data;
     }
@@ -185,7 +184,7 @@ public final class DataSourceNode extends AbstractNode {
 
         @Override
         protected boolean tryCreateKeys(List<Object> list) throws Exception {
-            list.addAll(TsProviders.lookup(IDataSourceProvider.class, dataSource).get().children(dataSource));
+            list.addAll(TsManager.getDefault().lookup(IDataSourceProvider.class, dataSource).get().children(dataSource));
             return true;
         }
 
@@ -208,7 +207,7 @@ public final class DataSourceNode extends AbstractNode {
         @Override
         public void reload() {
             DataSource dataSource = getLookup().lookup(DataSource.class);
-            Optional<IDataSourceProvider> provider = TsProviders.lookup(IDataSourceProvider.class, dataSource).toJavaUtil();
+            Optional<IDataSourceProvider> provider = TsManager.getDefault().lookup(IDataSourceProvider.class, dataSource);
             if (provider.isPresent()) {
                 provider.get().reload(dataSource);
                 setChildren(Children.create(new DataSourceChildFactory(dataSource), true));
@@ -228,7 +227,7 @@ public final class DataSourceNode extends AbstractNode {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     DataSource dataSource = getLookup().lookup(DataSource.class);
-                    setDisplayName(TsProviders.lookup(IDataSourceProvider.class, dataSource).get().getDisplayName(dataSource));
+                    setDisplayName(TsManager.getDefault().lookup(IDataSourceProvider.class, dataSource).get().getDisplayName(dataSource));
                 }
             })});
             if (DialogDisplayer.getDefault().notify(descriptor) == NotifyDescriptor.OK_OPTION) {
@@ -242,7 +241,7 @@ public final class DataSourceNode extends AbstractNode {
         @Override
         public boolean close() {
             DataSource dataSource = getLookup().lookup(DataSource.class);
-            return TsProviders.lookup(IDataSourceLoader.class, dataSource).get().close(dataSource);
+            return TsManager.getDefault().lookup(IDataSourceLoader.class, dataSource).get().close(dataSource);
         }
     }
 
@@ -251,7 +250,7 @@ public final class DataSourceNode extends AbstractNode {
         @Override
         public void edit() {
             DataSource dataSource = getLookup().lookup(DataSource.class);
-            IDataSourceLoader loader = TsProviders.lookup(IDataSourceLoader.class, dataSource).get();
+            IDataSourceLoader loader = TsManager.getDefault().lookup(IDataSourceLoader.class, dataSource).get();
             Object bean = loader.decodeBean(dataSource);
             try {
                 if (DataSourceProviderBuddySupport.getDefault().get(loader).editBean("Edit data source", bean)) {
@@ -283,8 +282,9 @@ public final class DataSourceNode extends AbstractNode {
 
         @Override
         public TsCollection getTsCollection() {
-            return TsProviders.getTsCollection(getLookup().lookup(DataSource.class), SHOULD_BE_NONE)
-                    .or(TsManager.getDefault()::newTsCollection);
+            return TsManager.getDefault()
+                    .getTsCollection(getLookup().lookup(DataSource.class), SHOULD_BE_NONE)
+                    .orElseGet(TsManager.getDefault()::newTsCollection);
         }
     }
 

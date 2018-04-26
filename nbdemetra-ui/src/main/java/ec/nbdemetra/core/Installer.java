@@ -26,7 +26,6 @@ import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.ISaProcessingFactory;
 import ec.tss.sa.SaManager;
 import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.utils.ByteArrayConverter;
 import ec.tss.tsproviders.utils.Formatters;
 import ec.tss.tsproviders.utils.IFormatter;
@@ -135,7 +134,7 @@ public final class Installer {
 
         @Override
         protected void onResultChanged(Lookup.Result<ITsProvider> lookup) {
-            List<ITsProvider> old = Lists.newArrayList(TsProviders.all());
+            List<ITsProvider> old = Lists.newArrayList(TsManager.getDefault().all());
             List<ITsProvider> current = Lists.newArrayList(lookup.allInstances());
 
             unregister(except(old, current));
@@ -145,12 +144,12 @@ public final class Installer {
         @Override
         protected void onRestore(Lookup.Result<ITsProvider> lookup) {
             register(lookup.allInstances());
-            LOGGER.debug("Loaded providers: [{}]", toString(TsProviders.all()));
+            LOGGER.debug("Loaded providers: [{}]", toString(TsManager.getDefault().all()));
         }
 
         @Override
         protected void onClose(Lookup.Result<ITsProvider> lookup) {
-            unregister(TsProviders.all());
+            unregister(TsManager.getDefault().all());
             try {
                 prefs.flush();
             } catch (BackingStoreException ex) {

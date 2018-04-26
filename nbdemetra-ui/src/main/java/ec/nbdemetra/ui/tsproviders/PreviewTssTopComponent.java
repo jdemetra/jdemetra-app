@@ -4,9 +4,9 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.ui.TsManager;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.TsProviders;
 import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
 import java.util.Optional;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -116,7 +116,7 @@ public final class PreviewTssTopComponent extends TopComponent implements Lookup
             jTsChart1.getTsCollection().clear();
             lookupResult.allInstances().stream()
                     .filter(o -> o instanceof SeriesNode)
-                    .map(o -> TsProviders.getTs(o.getLookup().lookup(DataSet.class), TsInformationType.None).toJavaUtil())
+                    .map(o -> TsManager.getDefault().getTs(o.getLookup().lookup(DataSet.class), TsInformationType.None))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .forEach(jTsChart1.getTsCollection()::quietAdd);

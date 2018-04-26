@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui;
 
 import com.google.common.collect.Iterables;
+import demetra.ui.TsManager;
 import ec.nbdemetra.core.InstallerStep;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.ui.interchange.InterchangeBroker;
@@ -30,7 +31,6 @@ import ec.tss.datatransfer.TssTransferHandler;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.utils.Formatters;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.IParser;
@@ -146,7 +146,7 @@ public final class Installer extends ModuleInstall {
             if (DemetraUI.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
                 IParser<DataSourcesBean> parser = Parsers.onJAXB(DataSourcesBean.class);
-                for (IDataSourceLoader o : TsProviders.all().filter(IDataSourceLoader.class)) {
+                for (IDataSourceLoader o : TsManager.getDefault().all().filter(IDataSourceLoader.class)) {
                     Optional<DataSourcesBean> value = tryGet(prefs, o.getSource(), parser);
                     if (value.isPresent()) {
                         for (DataSource dataSource : value.get()) {
@@ -162,7 +162,7 @@ public final class Installer extends ModuleInstall {
             if (DemetraUI.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
                 IFormatter<DataSourcesBean> formatter = Formatters.onJAXB(DataSourcesBean.class, false);
-                for (IDataSourceLoader o : TsProviders.all().filter(IDataSourceLoader.class)) {
+                for (IDataSourceLoader o : TsManager.getDefault().all().filter(IDataSourceLoader.class)) {
                     DataSourcesBean value = new DataSourcesBean();
                     value.dataSources = o.getDataSources();
                     tryPut(prefs, o.getSource(), formatter, value);

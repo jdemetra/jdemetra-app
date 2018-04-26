@@ -26,7 +26,6 @@ import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.TsProviders;
 import ec.tstoolkit.design.UtilityClass;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.utilities.Arrays2;
@@ -176,7 +175,7 @@ public final class TsCollectionViewCommand {
                 descriptor.setAdditionalOptions(new Object[]{new JButton(new AbstractAction("Restore") {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        Optional<IDataSourceProvider> provider = TsProviders.lookup(IDataSourceProvider.class, ts.getMoniker()).toJavaUtil();
+                        Optional<IDataSourceProvider> provider = TsManager.getDefault().lookup(IDataSourceProvider.class, ts.getMoniker());
                         if (provider.isPresent()) {
                             DataSet dataSet = provider.get().toDataSet(ts.getMoniker());
                             if (dataSet != null) {

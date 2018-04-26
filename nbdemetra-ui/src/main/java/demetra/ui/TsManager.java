@@ -16,6 +16,7 @@
  */
 package demetra.ui;
 
+import com.google.common.collect.FluentIterable;
 import ec.nbdemetra.core.GlobalService;
 import ec.tss.ITsProvider;
 import ec.tss.Ts;
@@ -24,14 +25,22 @@ import ec.tss.TsEvent;
 import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.TsMoniker;
+import ec.tss.tsproviders.DataSet;
+import ec.tss.tsproviders.DataSource;
+import ec.tss.tsproviders.IDataSourceProvider;
+import ec.tss.tsproviders.IFileLoader;
 import ec.tstoolkit.MetaData;
 import ec.tstoolkit.design.NewObject;
 import ec.tstoolkit.timeseries.simplets.TsData;
+import ec.tstoolkit.utilities.Files2;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
+import java.io.File;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 import java.util.stream.Collector;
@@ -158,5 +167,107 @@ public class TsManager implements AutoCloseable {
     @OnEDT
     public void removeUpdateListener(@Nonnull Consumer<? super TsMoniker> consumer) {
         updateListeners.remove(consumer);
+    }
+
+    @Nonnull
+    public <T extends ITsProvider> Optional<T> lookup(@Nonnull Class<T> clazz, @Nonnull String providerName) {
+        ITsProvider result = delegate.getProvider(providerName);
+        return clazz.isInstance(result) ? Optional.of(clazz.cast(result)) : Optional.empty();
+    }
+
+    @Nonnull
+    public <T extends ITsProvider> Optional<T> lookup(@Nonnull Class<T> clazz, @Nonnull DataSource dataSource) {
+        return lookup(clazz, dataSource.getProviderName());
+    }
+
+    @Nonnull
+    public <T extends ITsProvider> Optional<T> lookup(@Nonnull Class<T> clazz, @Nonnull DataSet dataSet) {
+        return lookup(clazz, dataSet.getDataSource());
+    }
+
+    @Nonnull
+    public <T extends ITsProvider> Optional<T> lookup(@Nonnull Class<T> clazz, @Nonnull TsMoniker moniker) {
+        String providerName = moniker.getSource();
+        return providerName != null ? lookup(clazz, providerName) : Optional.empty();
+    }
+
+    @Nonnull
+    public FluentIterable<ITsProvider> all() {
+        return FluentIterable.from(asList());
+    }
+
+    @Nonnull
+    private List<ITsProvider> asList() {
+        final String[] providers = delegate.getProviders();
+        return new AbstractList<ITsProvider>() {
+            @Override
+            public ITsProvider get(int index) {
+                return delegate.getProvider(providers[index]);
+            }
+
+            @Override
+            public int size() {
+                return providers.length;
+            }
+        };
+    }
+
+    @Nonnull
+    public Optional<File> tryGetFile(@Nonnull DataSource dataSource) {
+        Optional<IFileLoader> loader = lookup(IFileLoader.class, dataSource.getProviderName());
+        if (loader.isPresent()) {
+            File file = loader.get().decodeBean(dataSource).getFile();
+            File realFile = Files2.getAbsoluteFile(loader.get().getPaths(), file);
+            return Optional.ofNullable(realFile);
+        }
+        return Optional.empty();
+    }
+
+    @Nonnull
+    public Optional<TsCollection> getTsCollection(@Nonnull DataSource dataSource, @Nonnull TsInformationType type) {
+        IDataSourceProvider provider = lookup(IDataSourceProvider.class, dataSource).orElse(null);
+        if (provider == null) {
+            return Optional.empty();
+        }
+        String name = provider.getDisplayName(dataSource);
+        TsMoniker moniker = provider.toMoniker(dataSource);
+        return Optional.of(delegate.createTsCollection(name, moniker, type));
+    }
+
+    @Nonnull
+    public Optional<TsCollection> getTsCollection(@Nonnull DataSet dataSet, @Nonnull TsInformationType type) {
+        IDataSourceProvider provider = lookup(IDataSourceProvider.class, dataSet).orElse(null);
+        if (provider == null) {
+            return Optional.empty();
+        }
+        String name = provider.getDisplayName(dataSet);
+        TsMoniker moniker = provider.toMoniker(dataSet);
+        switch (dataSet.getKind()) {
+            case COLLECTION:
+                return Optional.of(delegate.createTsCollection(name, moniker, type));
+            case DUMMY:
+                return Optional.of(delegate.createTsCollection(name));
+            case SERIES:
+                TsCollection result = delegate.createTsCollection();
+                result.quietAdd(delegate.createTs(name, moniker, type));
+                return Optional.of(result);
+        }
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Nonnull
+    public Optional<Ts> getTs(@Nonnull DataSet dataSet, @Nonnull TsInformationType type) {
+        IDataSourceProvider provider = lookup(IDataSourceProvider.class, dataSet).orElse(null);
+        if (provider == null) {
+            return Optional.empty();
+        }
+        String name = provider.getDisplayName(dataSet);
+        TsMoniker moniker = provider.toMoniker(dataSet);
+        switch (dataSet.getKind()) {
+            case SERIES:
+                Ts ts = delegate.createTs(name, moniker, type);
+                return Optional.of(ts);
+        }
+        throw new RuntimeException("Not implemented");
     }
 }

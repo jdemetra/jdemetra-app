@@ -16,13 +16,13 @@
  */
 package ec.nbdemetra.common;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.IFileBean;
 import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.common.tsw.TswBean;
 import ec.tss.tsproviders.common.tsw.TswProvider;
 import java.awt.Image;
@@ -63,8 +63,8 @@ public class TswProviderBuddy extends AbstractDataSourceProviderBuddy {
         NodePropertySetBuilder b = new NodePropertySetBuilder();
 
         b.reset("Source");
-        TsProviders.lookup(IFileLoader.class, TswProvider.SOURCE)
-                .toJavaUtil()
+        TsManager.getDefault()
+                .lookup(IFileLoader.class, TswProvider.SOURCE)
                 .ifPresent(o -> addFileProperty(b, bean, o));
         result.add(b.build());
 

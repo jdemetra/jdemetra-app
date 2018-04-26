@@ -18,6 +18,7 @@ package ec.nbdemetra.ui.demo.impl;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.DemoTsActions;
@@ -29,7 +30,6 @@ import ec.tss.TsStatus;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.TsProviders;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.commands.TsCollectionViewCommand;
@@ -293,7 +293,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
 
     static JButton createFakeProviderButton(ITsCollectionView view) {
         JMenu menu = new JMenu();
-        for (IDataSourceProvider provider : TsProviders.all().filter(IDataSourceProvider.class)) {
+        for (IDataSourceProvider provider : TsManager.getDefault().all().filter(IDataSourceProvider.class)) {
             for (DataSource dataSource : provider.getDataSources()) {
                 JMenu subMenu = new JMenu(provider.getDisplayName(dataSource));
                 subMenu.setIcon(getIcon(FontAwesome.FA_FOLDER));
@@ -333,7 +333,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
 
         @Override
         public void execute(ITsCollectionView component) throws Exception {
-            TsCollection col = TsProviders.getTsCollection(dataSource, TsInformationType.Definition).get();
+            TsCollection col = TsManager.getDefault().getTsCollection(dataSource, TsInformationType.Definition).get();
             col.query(TsInformationType.All);
             component.getTsCollection().append(col);
         }
@@ -349,7 +349,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
 
         @Override
         public void execute(ITsCollectionView component) throws Exception {
-            TsCollection col = TsProviders.getTsCollection(dataSet, TsInformationType.Definition).get();
+            TsCollection col = TsManager.getDefault().getTsCollection(dataSet, TsInformationType.Definition).get();
             col.query(TsInformationType.All);
             component.getTsCollection().append(col);
         }

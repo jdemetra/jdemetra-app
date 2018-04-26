@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.sdmx;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.BeanHandler;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.sdmx.SdmxProvider;
 
 /**
@@ -29,8 +29,8 @@ final class SdmxBuddyConfigHandler extends BeanHandler<SdmxBuddyConfig, SdmxProv
     @Override
     public SdmxBuddyConfig loadBean(SdmxProviderBuddy resource) {
         SdmxBuddyConfig result = new SdmxBuddyConfig();
-        TsProviders.lookup(SdmxProvider.class, SdmxProvider.SOURCE)
-                .toJavaUtil()
+        TsManager.getDefault()
+                .lookup(SdmxProvider.class, SdmxProvider.SOURCE)
                 .ifPresent(o -> {
                     result.setCompactNaming(o.isCompactNaming());
                     result.setKeysInMetaData(o.isKeysInMetaData());
@@ -40,8 +40,8 @@ final class SdmxBuddyConfigHandler extends BeanHandler<SdmxBuddyConfig, SdmxProv
 
     @Override
     public void storeBean(SdmxProviderBuddy resource, SdmxBuddyConfig bean) {
-        TsProviders.lookup(SdmxProvider.class, SdmxProvider.SOURCE)
-                .toJavaUtil()
+        TsManager.getDefault()
+                .lookup(SdmxProvider.class, SdmxProvider.SOURCE)
                 .ifPresent(o -> {
                     o.setCompactNaming(bean.isCompactNaming());
                     o.setKeysInMetaData(bean.isKeysInMetaData());

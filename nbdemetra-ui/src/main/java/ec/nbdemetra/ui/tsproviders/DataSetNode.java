@@ -26,7 +26,6 @@ import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.Image;
@@ -92,7 +91,7 @@ abstract public class DataSetNode extends AbstractNode {
             abilities.add(new TsSavableImpl());
         }
         // 3. Name and display name
-        applyText(TsProviders.lookup(IDataSourceProvider.class, dataSet).get().getDisplayNodeName(dataSet));
+        applyText(TsManager.getDefault().lookup(IDataSourceProvider.class, dataSet).get().getDisplayNodeName(dataSet));
     }
 
     @Override
@@ -138,7 +137,7 @@ abstract public class DataSetNode extends AbstractNode {
 
         @Override
         protected boolean tryCreateKeys(List<Object> list) throws Exception {
-            list.addAll(TsProviders.lookup(IDataSourceProvider.class, dataSet).get().children(dataSet));
+            list.addAll(TsManager.getDefault().lookup(IDataSourceProvider.class, dataSet).get().children(dataSet));
             return true;
         }
 
@@ -160,8 +159,8 @@ abstract public class DataSetNode extends AbstractNode {
 
         @Override
         public void open() {
-            TsProviders.getTs(getLookup().lookup(DataSet.class), TsInformationType.None)
-                    .toJavaUtil()
+            TsManager.getDefault()
+                    .getTs(getLookup().lookup(DataSet.class), TsInformationType.None)
                     .ifPresent(o -> DemetraUI.getDefault().getTsAction().open(o));
         }
     }
@@ -170,8 +169,9 @@ abstract public class DataSetNode extends AbstractNode {
 
         @Override
         public TsCollection getTsCollection() {
-            return TsProviders.getTsCollection(getLookup().lookup(DataSet.class), SHOULD_BE_NONE)
-                    .or(TsManager.getDefault()::newTsCollection);
+            return TsManager.getDefault()
+                    .getTsCollection(getLookup().lookup(DataSet.class), SHOULD_BE_NONE)
+                    .orElseGet(TsManager.getDefault()::newTsCollection);
         }
     }
 

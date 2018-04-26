@@ -4,10 +4,10 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.TsProviders;
 import ec.util.desktop.DesktopManager;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -256,7 +256,7 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
     }
 
     void load() {
-        List<IFileLoader> loaders = TsProviders.all().filter(IFileLoader.class).toList();
+        List<IFileLoader> loaders = TsManager.getDefault().all().filter(IFileLoader.class).toList();
         Node[] fileLoaderNodes = new Node[loaders.size()];
         for (int i = 0; i < fileLoaderNodes.length; i++) {
             IFileLoader loader = loaders.get(i);

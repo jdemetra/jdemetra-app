@@ -16,12 +16,12 @@
  */
 package ec.nbdemetra.db;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.properties.DhmsPropertyEditor;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.db.DbBean;
 import ec.tss.tsproviders.db.DbBean.BulkBean;
 import ec.tss.tsproviders.utils.DataFormat;
@@ -111,8 +111,8 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
         "bean.file.description=The path to the database file."})
     @Nonnull
     protected NodePropertySetBuilder withFileName(@Nonnull NodePropertySetBuilder b, @Nonnull BEAN bean) {
-        return TsProviders.lookup(IFileLoader.class, getProviderName())
-                .toJavaUtil()
+        return TsManager.getDefault()
+                .lookup(IFileLoader.class, getProviderName())
                 .map(o -> b.withFile()
                         .select(bean, "file")
                         .filterForSwing(new FileLoaderFileFilter(o))
