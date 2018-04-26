@@ -29,6 +29,7 @@ import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
+import ec.tss.TsMoniker;
 import ec.tss.TsStatus;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TsDragRenderer;
@@ -46,7 +47,6 @@ import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.ColorSchemeIcon;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
-import internal.TsEventHelper;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.datatransfer.Transferable;
@@ -57,8 +57,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -109,8 +107,6 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
     private boolean freezeOnImport;
 
     // OTHER
-    protected final TsFactoryObserver tsFactoryObserver;
-
     protected final DemetraUI demetraUI = DemetraUI.getDefault();
 
     public ATsCollectionView() {
@@ -120,14 +116,19 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         this.selection = DEFAULT_SELECTION;
         this.dropContent = DEFAULT_DROP_CONTENT;
         this.freezeOnImport = DEFAULT_FREEZE_ON_IMPORT;
-        this.tsFactoryObserver = new TsFactoryObserver();
 
         registerActions();
         registerInputs();
         enableProperties();
 
-        tsFactoryObserver.helper.setObserved(this.collection);
-        TsManager.getDefault().addObserver(tsFactoryObserver);
+        TsManager.getDefault().addUpdateListener(this::checkTsUpdate);
+    }
+
+    private void checkTsUpdate(TsMoniker moniker) {
+        if (moniker.equals(collection.getMoniker())
+                || collection.search(moniker) != null) {
+            fireTsCollectionChange(null, collection);
+        }
     }
 
     private void registerActions() {
@@ -209,7 +210,6 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         TsCollection old = this.collection;
         this.collection = collection != null ? collection : TsManager.getDefault().newTsCollection();
         fireTsCollectionChange(old, this.collection);
-        tsFactoryObserver.helper.setObserved(this.collection);
     }
 
     @Override
@@ -275,12 +275,12 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
 
     @Override
     public void dispose() {
-        TsManager.getDefault().removeObserver(tsFactoryObserver);
+        TsManager.getDefault().removeUpdateListener(this::checkTsUpdate);
         super.dispose();
     }
 
     public void connect() {
-        TsManager.getDefault().addObserver(tsFactoryObserver);
+        TsManager.getDefault().addUpdateListener(this::checkTsUpdate);
     }
 
     protected Transferable transferableOnSelection() {
@@ -489,20 +489,6 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
             if (!Charts.isPopup(e) && Charts.isDoubleClick(e)) {
                 ActionMaps.performAction(getActionMap(), OPEN_ACTION, e);
             }
-        }
-    }
-
-    protected class TsFactoryObserver implements Observer {
-
-        private final TsEventHelper<TsCollection> helper = TsEventHelper.onTsCollection(this::fireTsCollectionContentChange);
-
-        @Override
-        public void update(Observable o, Object arg) {
-            helper.process(o, arg);
-        }
-
-        private void fireTsCollectionContentChange() {
-            fireTsCollectionChange(null, collection);
         }
     }
 

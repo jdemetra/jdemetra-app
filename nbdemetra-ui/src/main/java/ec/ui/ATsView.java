@@ -20,14 +20,12 @@ import demetra.ui.TsManager;
 import ec.tss.Ts;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
+import ec.tss.TsMoniker;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.ui.interfaces.IColorSchemeAble;
 import ec.ui.interfaces.ITsView;
 import static ec.ui.interfaces.ITsView.TS_PROPERTY;
 import ec.util.chart.ColorScheme;
-import internal.TsEventHelper;
-import java.util.Observable;
-import java.util.Observer;
 import javax.annotation.Nullable;
 import javax.swing.TransferHandler;
 
@@ -40,17 +38,18 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
     // PROPERTIES
     protected Ts m_ts;
 
-    // OTHER
-    protected final TsFactoryObserver tsFactoryObserver;
-
     public ATsView() {
         this.m_ts = null;
-        this.tsFactoryObserver = new TsFactoryObserver();
 
         enableProperties();
 
-        tsFactoryObserver.helper.setObserved(this.m_ts);
-        TsManager.getDefault().addObserver(tsFactoryObserver);
+        TsManager.getDefault().addUpdateListener(this::checkTsUpdate);
+    }
+
+    private void checkTsUpdate(TsMoniker moniker) {
+        if (moniker.equals(m_ts.getMoniker())) {
+            firePropertyChange(TS_PROPERTY, null, m_ts);
+        }
     }
 
     private void enableProperties() {
@@ -78,7 +77,6 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
         Ts old = this.m_ts;
         this.m_ts = ts;
         firePropertyChange(TS_PROPERTY, old, this.m_ts);
-        tsFactoryObserver.helper.setObserved(this.m_ts);
     }
 
     @Override
@@ -94,27 +92,13 @@ public abstract class ATsView extends ATsControl implements ITsView, IColorSchem
 
     @Override
     public void dispose() {
-        TsManager.getDefault().removeObserver(tsFactoryObserver);
+        TsManager.getDefault().removeUpdateListener(this::checkTsUpdate);
         super.dispose();
     }
 
     @Nullable
     protected TsInformation getTsInformation() {
         return m_ts != null ? m_ts.toInfo(TsInformationType.Data) : null;
-    }
-
-    protected class TsFactoryObserver implements Observer {
-
-        private final TsEventHelper<Ts> helper = TsEventHelper.onTs(this::fireTsContentChange);
-
-        @Override
-        public void update(Observable o, Object arg) {
-            helper.process(o, arg);
-        }
-
-        private void fireTsContentChange() {
-            firePropertyChange(TS_PROPERTY, null, m_ts);
-        }
     }
 
     public class TsTransferHandler extends TransferHandler {

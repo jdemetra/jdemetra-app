@@ -20,18 +20,24 @@ import ec.nbdemetra.core.GlobalService;
 import ec.tss.ITsProvider;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
+import ec.tss.TsEvent;
 import ec.tss.TsFactory;
 import ec.tss.TsInformationType;
 import ec.tss.TsMoniker;
 import ec.tstoolkit.MetaData;
 import ec.tstoolkit.design.NewObject;
 import ec.tstoolkit.timeseries.simplets.TsData;
+import ec.util.various.swing.OnAnyThread;
+import ec.util.various.swing.OnEDT;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observer;
+import java.util.Observable;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
 import java.util.stream.Collector;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.SwingUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -48,7 +54,41 @@ public class TsManager implements AutoCloseable {
         return Lookup.getDefault().lookup(TsManager.class);
     }
 
-    private final TsFactory delegate = TsFactory.instance;
+    private final TsFactory delegate;
+    private final ConcurrentLinkedQueue<TsEvent> events;
+    private final List<Consumer<? super TsMoniker>> updateListeners;
+
+    public TsManager() {
+        this.delegate = TsFactory.instance;
+        this.events = new ConcurrentLinkedQueue<>();
+        this.updateListeners = new ArrayList<>();
+        delegate.addObserver(this::onDelegateChange);
+    }
+
+    @OnAnyThread
+    private void onDelegateChange(Observable o, Object arg) {
+        if (arg instanceof TsEvent) {
+            events.add((TsEvent) arg);
+            SwingUtilities.invokeLater(this::notifyUpdateListeners);
+        }
+    }
+
+    @OnEDT
+    private void notifyUpdateListeners() {
+        TsEvent event;
+        while ((event = events.poll()) != null) {
+            if (event.isSeries()) {
+                TsMoniker tsMoniker = event.ts.getMoniker();
+                updateListeners.stream().forEach(o -> o.accept(tsMoniker));
+            } else {
+                TsCollection col = event.tscollection;
+                updateListeners.stream().forEach(o -> {
+                    o.accept(col.getMoniker());
+                    col.forEach(ts -> o.accept(ts.getMoniker()));
+                });
+            }
+        }
+    }
 
     @Nonnull
     @NewObject
@@ -110,11 +150,13 @@ public class TsManager implements AutoCloseable {
         delegate.dispose();
     }
 
-    public void addObserver(@Nonnull Observer obs) {
-        delegate.addObserver(obs);
+    @OnEDT
+    public void addUpdateListener(@Nonnull Consumer<? super TsMoniker> consumer) {
+        updateListeners.add(consumer);
     }
 
-    public void removeObserver(@Nonnull Observer obs) {
-        delegate.deleteObserver(obs);
+    @OnEDT
+    public void removeUpdateListener(@Nonnull Consumer<? super TsMoniker> consumer) {
+        updateListeners.remove(consumer);
     }
 }
