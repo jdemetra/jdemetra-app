@@ -16,8 +16,12 @@
  */
 package ec.ui.view;
 
+import demetra.ui.TsManager;
+import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.HasTs;
+import demetra.ui.components.TimeSeriesComponent;
+import ec.nbdemetra.ui.ThemeSupport;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
-import ec.ui.ATsView;
 import ec.ui.chart.BasicXYDataset;
 import ec.ui.chart.TsCharts;
 import ec.util.chart.ColorScheme.KnownColor;
@@ -37,6 +41,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -55,7 +60,7 @@ import org.jfree.data.xy.XYDataset;
  *
  * @author Mats Maggi
  */
-public class StabilityView extends ATsView {
+public final class StabilityView extends JComponent implements TimeSeriesComponent, HasTs, HasColorScheme {
 
     private static final int POINTS_INDEX = 0;
     private static final int MEAN_INDEX = 1;
@@ -63,6 +68,7 @@ public class StabilityView extends ATsView {
     private static final Stroke MARKER_STROKE = new BasicStroke(0.5f); //, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.0f, new float[]{6.0f, 6.0f}, 0.0f));
     private static final Paint MARKER_PAINT = Color.GRAY;
     private static final float MARKER_ALPHA = 1f;
+
     private final Map<Bornes, Graphs> graphs_;
     private JFreeChart mainChart;
     private JFreeChart detailChart;
@@ -78,8 +84,19 @@ public class StabilityView extends ATsView {
     private final String ERROR_PANEL = "errorPanel";
     private int indexSelected = -1;
 
+    @lombok.experimental.Delegate
+    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
+
+    @lombok.experimental.Delegate
+    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+
+    private final ThemeSupport themeSupport = ThemeSupport.registered();
+
     public StabilityView() {
         super();
+
+        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
+
         setLayout(new BorderLayout());
 
         this.graphs_ = new LinkedHashMap<>();
@@ -376,18 +393,7 @@ public class StabilityView extends ATsView {
         }
     }
 
-    @Override
-    protected void onTsChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onDataFormatChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onColorSchemeChange() {
+    private void onColorSchemeChange() {
         pointsRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.BLUE));
         meanRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.RED));
         smoothRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.GREEN));

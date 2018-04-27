@@ -10,8 +10,9 @@ import ec.nbdemetra.anomalydetection.ui.OutliersTopComponent;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
-import ec.ui.interfaces.ITsGrid;
+import demetra.ui.components.JTsGrid;
 import ec.util.various.swing.BasicSwingLauncher;
+import demetra.ui.components.TsSelectionBridge;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -52,7 +53,7 @@ public final class JTsAnomalyGridTest extends JPanel {
             menuItem.setState(i == 1);
             addPopup.add(menuItem);
         }
-        view.addPropertyChangeListener(ITsGrid.ZOOM_PROPERTY, evt -> {
+        view.addPropertyChangeListener(JTsGrid.ZOOM_PROPERTY, evt -> {
             for (Component o : addPopup.getComponents()) {
                 ((JCheckBoxMenuItem) o).setState(view.getZoomPercentage() == Integer.parseInt(o.getName()));
             }
@@ -86,7 +87,7 @@ public final class JTsAnomalyGridTest extends JPanel {
 
         summ = new AnomalyDetectionSummary();
         g.addPropertyChangeListener(evt -> {
-            if (evt.getPropertyName().equals(ITsGrid.SELECTION_PROPERTY)) {
+            if (evt.getPropertyName().equals(TsSelectionBridge.TS_SELECTION_PROPERTY)) {
                 set(g.getModelOfSelection());
             }
         });

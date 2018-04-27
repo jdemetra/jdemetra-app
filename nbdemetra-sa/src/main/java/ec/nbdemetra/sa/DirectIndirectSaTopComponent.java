@@ -6,6 +6,7 @@ package ec.nbdemetra.sa;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.ui.TsManager;
+import demetra.ui.components.HasTsCollection;
 import ec.nbdemetra.sa.composite.DirectIndirectViewFactory;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.DemetraUiIcon;
@@ -21,8 +22,8 @@ import ec.tss.TsStatus;
 import ec.tss.sa.composite.MultiSaDocument;
 import ec.tss.sa.composite.MultiSaSpecification;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.chart.JTsChart;
-import ec.ui.list.JTsList;
+import demetra.ui.components.JTsChart;
+import demetra.ui.components.JTsTable;
 import ec.ui.view.AbstractDocumentViewer;
 import ec.ui.view.tsprocessing.IProcDocumentView;
 import java.awt.BorderLayout;
@@ -90,7 +91,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     // main components
     private final JSplitPane visualRepresentation;
     private final JSplitPane mainPane;
-    private final JTsList inputList;
+    private final JTsTable inputList;
     private final JTsChart saChart;
     private final JToolBar toolBarRepresentation;
     // toolBar stuff
@@ -140,7 +141,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
         });
         toolBarRepresentation.add(Box.createHorizontalGlue());
         toolBarRepresentation.addSeparator();
-        inputList = new JTsList();
+        inputList = new JTsTable();
         inputList.setFreezeOnImport(true);
         initList();
         saChart = new JTsChart();
@@ -176,7 +177,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     }
 
     private void initList() {
-        inputList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, evt -> {
+        inputList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             TsData sum = null;
             for (Ts s : inputList.getTsCollection()) {
                 if (s.hasData() == TsStatus.Undefined) {

@@ -18,11 +18,11 @@ package ec.nbdemetra.ui.completion;
 
 import ec.nbdemetra.ui.DemetraUI;
 import ec.util.chart.ColorScheme;
-import ec.util.chart.swing.ColorSchemeIcon;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
+import internal.ui.components.HasColorSchemeCommands;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -79,7 +79,7 @@ public class ColorSchemeAutoCompletionService extends JAutoCompletionService {
 
         @Override
         protected Icon toIcon(String term, JList list, ColorScheme value, int index, boolean isSelected, boolean cellHasFocus) {
-            return new ColorSchemeIcon(value);
+            return HasColorSchemeCommands.iconOf(value);
         }
     }
 }

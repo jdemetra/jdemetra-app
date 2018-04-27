@@ -16,20 +16,17 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import demetra.ui.components.HasColorScheme;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.ui.commands.ColorSchemeCommand;
-import ec.ui.interfaces.IColorSchemeAble;
-import ec.util.chart.ColorScheme;
-import ec.util.chart.swing.ColorSchemeIcon;
+import internal.ui.components.HasColorSchemeCommands;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import org.openide.awt.DropDownButtonFactory;
@@ -40,35 +37,27 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = DemoComponentHandler.class, position = 200)
-public final class ColorSchemeAbleHandler extends DemoComponentHandler.InstanceOf<IColorSchemeAble> {
+public final class ColorSchemeAbleHandler extends DemoComponentHandler.InstanceOf<HasColorScheme> {
 
     public ColorSchemeAbleHandler() {
-        super(IColorSchemeAble.class);
+        super(HasColorScheme.class);
     }
 
     @Override
-    public void doConfigure(IColorSchemeAble c) {
+    public void doConfigure(HasColorScheme c) {
         c.setColorScheme(null);
     }
 
     @Override
-    public void doFillToolBar(JToolBar toolBar, IColorSchemeAble c) {
-        final List<JMenuItem> menuItems = new ArrayList<>();
+    public void doFillToolBar(JToolBar toolBar, HasColorScheme c) {
+        JPopupMenu menu = HasColorSchemeCommands.menuOf(c, DemetraUI.getDefault().getColorSchemes()).getPopupMenu();
 
-        JMenuItem item;
-
-        JPopupMenu menu = new JPopupMenu();
-
-        item = menu.add(new JCheckBoxMenuItem(ColorSchemeCommand.applyColorScheme(null).toAction(c)));
-        item.setText("Default");
-        menuItems.add(item);
-        menu.addSeparator();
-        for (ColorScheme o : DemetraUI.getDefault().getColorSchemes()) {
-            item = menu.add(new JCheckBoxMenuItem(ColorSchemeCommand.applyColorScheme(o).toAction(c)));
-            item.setText(o.getDisplayName());
-            item.setIcon(new ColorSchemeIcon(o));
-            menuItems.add(item);
-        }
+        List<Action> colorSchemes = DemetraUI.getDefault()
+                .getColorSchemes()
+                .stream()
+                .map(HasColorSchemeCommands::commandOf)
+                .map(o -> o.toAction(c))
+                .collect(Collectors.toList());
 
         JButton coloSchemeBtn = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.COLOR_SWATCH_16, menu);
         coloSchemeBtn.addActionListener(new AbstractAction() {
@@ -76,7 +65,7 @@ public final class ColorSchemeAbleHandler extends DemoComponentHandler.InstanceO
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                menuItems.get(i++ % menuItems.size()).doClick();
+                colorSchemes.get(i++ % colorSchemes.size()).actionPerformed(e);
             }
         });
         toolBar.add(coloSchemeBtn);

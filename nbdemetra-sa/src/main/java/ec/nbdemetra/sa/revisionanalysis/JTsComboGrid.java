@@ -21,7 +21,7 @@ import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.ui.grid.JTsGrid;
+import demetra.ui.components.JTsGrid;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.event.ItemEvent;

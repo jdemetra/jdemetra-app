@@ -4,10 +4,10 @@
  */
 package ec.nbdemetra.ui.tools;
 
+import demetra.ui.components.HasTs;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
 import ec.tss.Ts;
-import ec.ui.interfaces.ITsAble;
 import ec.ui.view.AutoRegressiveSpectrumView;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.JMenu;
@@ -42,7 +42,7 @@ import org.openide.windows.WindowManager;
     "CTL_AutoRegressiveSpectrumTopComponent=Auto-regressive spectrum Window",
     "HINT_AutoRegressiveSpectrumTopComponent=This is a Auto-regressive spectrum window"
 })
-public final class AutoRegressiveSpectrumTopComponent extends TopComponent implements ITsAble, IActiveView, ExplorerManager.Provider {
+public final class AutoRegressiveSpectrumTopComponent extends TopComponent implements HasTs, IActiveView, ExplorerManager.Provider {
 
     private AutoRegressiveSpectrumView view;
     private Node node;

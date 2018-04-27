@@ -38,7 +38,6 @@ import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.chart.TsSparklineCellRenderer;
-import ec.ui.interfaces.ITsActionAble;
 import ec.util.chart.swing.Charts;
 import ec.util.grid.swing.XTable;
 import ec.util.various.swing.JCommand;
@@ -70,12 +69,15 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import demetra.ui.components.HasTsAction;
+import ec.util.table.swing.JTables;
+import java.util.Optional;
 
 /**
  *
  * @author Jean Palate
  */
-public class JTsVariableList extends JComponent implements ITsActionAble {
+public class JTsVariableList extends JComponent implements HasTsAction {
 
     public static final String DELETE_ACTION = "delete";
     public static final String CLEAR_ACTION = "clear";
@@ -85,12 +87,14 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
 
     private final XTable table;
     private final TsVariables variables;
-    private ITsAction tsAction;
+
+    @lombok.experimental.Delegate
+    private final HasTsAction tsAction;
 
     public JTsVariableList(TsVariables vars) {
         this.variables = vars;
         this.table = buildTable();
-        this.tsAction = null;
+        this.tsAction = HasTsAction.of(this::firePropertyChange);
 
         registerActions();
         registerInputs();
@@ -100,20 +104,6 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
         setLayout(new BorderLayout());
         add(NbComponents.newJScrollPane(table), BorderLayout.CENTER);
     }
-
-    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
-    @Override
-    public ITsAction getTsAction() {
-        return tsAction;
-    }
-
-    @Override
-    public void setTsAction(ITsAction tsAction) {
-        ITsAction old = this.tsAction;
-        this.tsAction = tsAction;
-        firePropertyChange(TS_ACTION_PROPERTY, old, this.tsAction);
-    }
-    //</editor-fold>
 
     protected JPopupMenu buildPopupMenu() {
         ActionMap actionMap = getActionMap();
@@ -170,7 +160,7 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
         result.setDefaultRenderer(String.class, new MultiLineNameTableCellRenderer());
 
         result.setModel(new CustomTableModel());
-        XTable.setWidthAsPercentages(result, .1, .2, .1, .1, .1, .1, .3);
+        JTables.setWidthAsPercentages(result, .1, .2, .1, .1, .1, .1, .3);
 
         result.setAutoCreateRowSorter(true);
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(result.getModel());
@@ -460,9 +450,9 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
 
         @Override
         public void execute(JTsVariableList c) throws Exception {
-            TsVariable variable = getSelectedVariable(c);
-            ITsAction tsAction = c.tsAction != null ? c.tsAction : DemetraUI.getDefault().getTsAction();
-            tsAction.open(toTs(variable));
+            Optional.ofNullable(c.getTsAction())
+                    .orElseGet(() -> DemetraUI.getDefault().getTsAction())
+                    .open(toTs(getSelectedVariable(c)));
         }
 
         @Override

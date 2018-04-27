@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.mru;
 
-import ec.nbdemetra.ui.awt.ListenableBean;
+import demetra.ui.beans.ListenableBean;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

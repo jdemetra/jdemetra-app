@@ -1,7 +1,7 @@
 package ec.ui.chart;
 
 import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.interfaces.ITsChart.LinesThickness;
+import demetra.ui.components.HasChart.LinesThickness;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;

@@ -17,6 +17,7 @@
 package ec.nbdemetra.sa.revisionanalysis;
 
 import com.google.common.base.Stopwatch;
+import demetra.ui.components.JTsTable;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.NbComponents;
@@ -28,7 +29,6 @@ import ec.satoolkit.ISaSpecification;
 import ec.tss.Ts;
 import ec.tss.sa.revisions.RevisionAnalysisDocument;
 import ec.tss.sa.revisions.RevisionAnalysisSpec;
-import ec.ui.list.JTsList;
 import ec.ui.utils.LoadingPanel;
 import ec.ui.view.AbstractDocumentViewer;
 import ec.ui.view.tsprocessing.IProcDocumentView;
@@ -85,7 +85,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
 
     // Main components
     private final JSplitPane visualRepresentation;
-    private final JTsList inputList;
+    private final JTsTable inputList;
     private final RevisionAnalysisDocumentView raView;
     private final LoadingPanel loadingPanel;
     // Toolbar
@@ -136,10 +136,10 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
         toolBarRepresentation.addSeparator();
         itemsLabel = (JLabel) toolBarRepresentation.add(new JLabel("No items"));
 
-        inputList = new JTsList();
+        inputList = new JTsTable();
         inputList.addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
-                case JTsList.TS_COLLECTION_PROPERTY:
+                case JTsTable.TS_COLLECTION_PROPERTY:
                     onCollectionChange();
                     break;
             }

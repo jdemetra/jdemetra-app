@@ -17,8 +17,7 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.ui.commands.TsChartCommand;
-import ec.ui.interfaces.ITsChart;
+import internal.ui.components.HasChartCommands;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.ext.FontAwesomeUtils;
 import java.beans.BeanInfo;
@@ -27,30 +26,31 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import org.openide.awt.DropDownButtonFactory;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.components.HasChart;
 
 /**
  *
  * @author Philippe Charles
  */
 @ServiceProvider(service = DemoComponentHandler.class)
-public final class TsChartHandler extends DemoComponentHandler.InstanceOf<ITsChart> {
+public final class TsChartHandler extends DemoComponentHandler.InstanceOf<HasChart> {
 
     public TsChartHandler() {
-        super(ITsChart.class);
+        super(HasChart.class);
     }
 
     @Override
-    public void doConfigure(ITsChart c) {
+    public void doConfigure(HasChart c) {
         c.setTitle("This is a title");
     }
 
     @Override
-    public void doFillToolBar(JToolBar toolBar, ITsChart c) {
+    public void doFillToolBar(JToolBar toolBar, HasChart c) {
         JPopupMenu menu = new JPopupMenu();
 
-        menu.add(new JCheckBoxMenuItem(TsChartCommand.toggleTitleVisibility().toAction(c))).setText("Show title");
-        menu.add(new JCheckBoxMenuItem(TsChartCommand.toggleLegendVisibility().toAction(c))).setText("Show legend");
-        menu.add(new JCheckBoxMenuItem(TsChartCommand.showAll().toAction(c))).setText("Show all");
+        menu.add(new JCheckBoxMenuItem(HasChartCommands.toggleTitleVisibility().toAction(c))).setText("Show title");
+        menu.add(new JCheckBoxMenuItem(HasChartCommands.toggleLegendVisibility().toAction(c))).setText("Show legend");
+//        menu.add(new JCheckBoxMenuItem(TsChartCommand.showAll().toAction(c))).setText("Show all");
 
         toolBar.add(DropDownButtonFactory.createDropDownButton(FontAwesomeUtils.getIcon(FontAwesome.FA_BAR_CHART_O, BeanInfo.ICON_MONO_16x16), menu));
         toolBar.addSeparator();

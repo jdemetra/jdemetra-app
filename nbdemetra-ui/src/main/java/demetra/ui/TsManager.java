@@ -37,17 +37,18 @@ import ec.util.various.swing.OnEDT;
 import java.io.File;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 import java.util.Observable;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Consumer;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.SwingUtilities;
 import org.openide.util.Lookup;
+import org.openide.util.WeakListeners;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -58,6 +59,11 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = TsManager.class)
 public class TsManager implements AutoCloseable {
 
+    public interface UpdateListener extends EventListener {
+
+        void accept(@Nonnull TsMoniker moniker);
+    }
+
     @Nonnull
     public static TsManager getDefault() {
         return Lookup.getDefault().lookup(TsManager.class);
@@ -65,7 +71,7 @@ public class TsManager implements AutoCloseable {
 
     private final TsFactory delegate;
     private final ConcurrentLinkedQueue<TsEvent> events;
-    private final List<Consumer<? super TsMoniker>> updateListeners;
+    private final List<UpdateListener> updateListeners;
 
     public TsManager() {
         this.delegate = TsFactory.instance;
@@ -160,13 +166,18 @@ public class TsManager implements AutoCloseable {
     }
 
     @OnEDT
-    public void addUpdateListener(@Nonnull Consumer<? super TsMoniker> consumer) {
-        updateListeners.add(consumer);
+    public void addWeakUpdateListener(@Nonnull UpdateListener listener) {
+        addUpdateListener(WeakListeners.create(TsManager.UpdateListener.class, listener, this));
     }
 
     @OnEDT
-    public void removeUpdateListener(@Nonnull Consumer<? super TsMoniker> consumer) {
-        updateListeners.remove(consumer);
+    public void addUpdateListener(@Nonnull UpdateListener listener) {
+        updateListeners.add(listener);
+    }
+
+    @OnEDT
+    public void removeUpdateListener(@Nonnull UpdateListener listener) {
+        updateListeners.remove(listener);
     }
 
     @Nonnull

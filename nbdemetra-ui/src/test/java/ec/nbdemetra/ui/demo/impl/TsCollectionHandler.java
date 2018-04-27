@@ -16,40 +16,38 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import demetra.ui.TsManager;
+import demetra.ui.components.HasTsAction;
+import demetra.ui.components.HasTsCollection;
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.DemoTsActions;
-import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsCollectionInformation;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.IDataSourceLoader;
+import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import ec.ui.commands.TsCollectionViewCommand;
-import ec.ui.interfaces.ITsCollectionView;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
+import internal.ui.components.HasTsCollectionCommands;
+import ec.util.list.swing.JLists;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.ext.FontAwesomeUtils;
 import internal.RandomTsBuilder;
+import demetra.ui.components.TsSelectionBridge;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.BeanInfo;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.swing.*;
 import org.openide.awt.DropDownButtonFactory;
@@ -60,14 +58,14 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = DemoComponentHandler.class)
-public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<ITsCollectionView> {
+public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<HasTsCollection> {
 
     private static final RandomTsBuilder BUILDER = new RandomTsBuilder();
 
     private final TsCollectionInformation col;
 
     public TsCollectionHandler() {
-        super(ITsCollectionView.class);
+        super(HasTsCollection.class);
         col = new TsCollectionInformation();
 
         int nbrYears = 3;
@@ -78,6 +76,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         });
 
         BUILDER.withStart(new TsPeriod(TsFrequency.Monthly, 2010, 0));
+        col.items.add(BUILDER.withObsCount(1).withMissingCount(0).withName("Single").build());
         col.items.add(BUILDER.withObsCount(nbrYears * 12).withMissingCount(3).withName("Missing").build());
         col.items.add(BUILDER.withObsCount(0).withMissingCount(0).withName("Empty").build());
         col.items.add(BUILDER.withStatus(TsStatus.Invalid).withName("Invalid").build());
@@ -85,13 +84,15 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
     }
 
     @Override
-    public void doConfigure(ITsCollectionView c) {
+    public void doConfigure(HasTsCollection c) {
         col.items.forEach(o -> c.getTsCollection().add(o.toTs()));
-        c.setTsAction(DemoTsActions.SHOW_DIALOG);
+        if (c instanceof HasTsAction) {
+            ((HasTsAction) c).setTsAction(DemoTsActions.SHOW_DIALOG);
+        }
     }
 
     @Override
-    public void doFillToolBar(JToolBar toolBar, ITsCollectionView c) {
+    public void doFillToolBar(JToolBar toolBar, HasTsCollection c) {
         toolBar.add(createFakeProviderButton(c));
         toolBar.add(createAddButton(c));
         toolBar.add(createRemoveButton(c));
@@ -100,7 +101,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         toolBar.add(createSizeLabel(c));
     }
 
-    static JButton createAddButton(final ITsCollectionView view) {
+    static JButton createAddButton(final HasTsCollection view) {
         JMenu menu = new JMenu();
         for (int i = 10; i < 10000; i *= 10) {
             menu.add(new AddRandomCommand(i).toAction(view)).setText(Integer.toString(i));
@@ -111,7 +112,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         return result;
     }
 
-    static final class AddRandomCommand extends JCommand<ITsCollectionView> {
+    static final class AddRandomCommand extends JCommand<HasTsCollection> {
 
         private final int size;
         private final TsPeriod startPeriod;
@@ -122,20 +123,22 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         }
 
         @Override
-        public void execute(ITsCollectionView c) throws Exception {
+        public void execute(HasTsCollection c) throws Exception {
             BUILDER
                     .withObsCount(24)
                     .withStart(startPeriod)
                     .withStatus(TsStatus.Valid)
                     .withForecastCount(3)
                     .withMissingCount(0);
-            IntStream.range(0, size)
+            c.getTsCollection().append(
+                    IntStream.range(0, size)
                     .mapToObj(o -> BUILDER.withName("S" + o).build().toTs())
-                    .forEach(c.getTsCollection()::add);
+                    .collect(Collectors.toList())
+            );
         }
     }
 
-    static final class AddCustomCommand extends JCommand<ITsCollectionView> {
+    static final class AddCustomCommand extends JCommand<HasTsCollection> {
 
         private final AddTsCollectionPanel panel;
 
@@ -145,7 +148,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         }
 
         @Override
-        public void execute(ITsCollectionView c) throws Exception {
+        public void execute(HasTsCollection c) throws Exception {
             if (JOptionPane.showConfirmDialog((Component) c, panel, "Add time series", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
                 BUILDER
                         .withObsCount(panel.getObsCount())
@@ -161,35 +164,35 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         }
     }
 
-    static JButton createRemoveButton(ITsCollectionView view) {
+    static JButton createRemoveButton(HasTsCollection view) {
         JMenu menu = new JMenu();
-        menu.add(TsCollectionViewCommand.clear().toAction(view)).setText("Clear");
+        menu.add(HasTsCollectionCommands.clear().toAction(view)).setText("Clear");
         JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LIST_REMOVE_16, menu.getPopupMenu());
         result.addActionListener(RemoveLastCommand.INSTANCE.toAction(view));
         return result;
     }
 
-    static final class RemoveLastCommand extends JCommand<ITsCollectionView> {
+    static final class RemoveLastCommand extends JCommand<HasTsCollection> {
 
         public static final RemoveLastCommand INSTANCE = new RemoveLastCommand();
 
         @Override
-        public ActionAdapter toAction(ITsCollectionView component) {
-            return super.toAction(component).withWeakPropertyChangeListener((Component) component, ITsCollectionView.TS_COLLECTION_PROPERTY);
+        public ActionAdapter toAction(HasTsCollection component) {
+            return super.toAction(component).withWeakPropertyChangeListener((Component) component, HasTsCollection.TS_COLLECTION_PROPERTY);
         }
 
         @Override
-        public boolean isEnabled(ITsCollectionView component) {
+        public boolean isEnabled(HasTsCollection component) {
             return !component.getTsCollection().isEmpty();
         }
 
         @Override
-        public void execute(ITsCollectionView component) throws Exception {
+        public void execute(HasTsCollection component) throws Exception {
             component.getTsCollection().removeAt(component.getTsCollection().getCount() - 1);
         }
     }
 
-    static JButton createUpdateModeButton(final ITsCollectionView view) {
+    static JButton createUpdateModeButton(final HasTsCollection view) {
         final JMenu menu = new JMenu();
         for (TsUpdateMode o : TsUpdateMode.values()) {
             menu.add(new JCheckBoxMenuItem(ApplyTsUpdateModeCommand.VALUES.get(o).toAction(view))).setText(o.name());
@@ -197,7 +200,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         return DropDownButtonFactory.createDropDownButton(DemetraUiIcon.TABLE_RELATION_16, menu.getPopupMenu());
     }
 
-    static final class ApplyTsUpdateModeCommand extends JCommand<ITsCollectionView> {
+    static final class ApplyTsUpdateModeCommand extends JCommand<HasTsCollection> {
 
         public static final EnumMap<TsUpdateMode, ApplyTsUpdateModeCommand> VALUES;
 
@@ -215,51 +218,53 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         }
 
         @Override
-        public ActionAdapter toAction(ITsCollectionView component) {
-            return super.toAction(component).withWeakPropertyChangeListener((Component) component, ITsCollectionView.UDPATE_MODE_PROPERTY);
+        public ActionAdapter toAction(HasTsCollection component) {
+            return super.toAction(component).withWeakPropertyChangeListener((Component) component, HasTsCollection.UDPATE_MODE_PROPERTY);
         }
 
         @Override
-        public boolean isSelected(ITsCollectionView component) {
+        public boolean isSelected(HasTsCollection component) {
             return component.getTsUpdateMode() == value;
         }
 
         @Override
-        public void execute(ITsCollectionView component) throws Exception {
+        public void execute(HasTsCollection component) throws Exception {
             component.setTsUpdateMode(value);
         }
     }
 
-    static JButton createSelectionButton(final ITsCollectionView view) {
+    static JButton createSelectionButton(final HasTsCollection view) {
         final Action[] selectionActions = {
             new AbstractAction("All") {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    view.setSelection(view.getTsCollection().toArray());
+                    view.getTsSelectionModel().setSelectionInterval(0, view.getTsCollection().getCount());
                 }
             },
             new AbstractAction("None") {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    view.setSelection(null);
+                    view.getTsSelectionModel().clearSelection();
                 }
             },
             new AbstractAction("Alternate") {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    List<Ts> tmp = new ArrayList<>();
+                    view.getTsSelectionModel().clearSelection();
                     for (int i = 0; i < view.getTsCollection().getCount(); i += 2) {
-                        tmp.add(view.getTsCollection().get(i));
+                        view.getTsSelectionModel().addSelectionInterval(i, i);
                     }
-                    view.setSelection(Iterables.toArray(tmp, Ts.class));
                 }
             },
             new AbstractAction("Inverse") {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    List<Ts> tmp = Lists.newArrayList(view.getTsCollection());
-                    tmp.removeAll(Arrays.asList(view.getSelection()));
-                    view.setSelection(Iterables.toArray(tmp, Ts.class));
+                    int[] selection = IntStream
+                            .range(0, view.getTsCollection().getCount())
+                            .filter(i -> !view.getTsSelectionModel().isSelectedIndex(i))
+                            .toArray();
+                    view.getTsSelectionModel().clearSelection();
+                    IntStream.of(selection).forEach(i -> view.getTsSelectionModel().addSelectionInterval(i, i));
                 }
             }
         };
@@ -279,23 +284,25 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         return result;
     }
 
-    static JLabel createSizeLabel(final ITsCollectionView view) {
+    static JLabel createSizeLabel(final HasTsCollection view) {
         final JLabel result = new JLabel(" [0/0] ");
-        view.addPropertyChangeListener(evt -> {
-            switch (evt.getPropertyName()) {
-                case ITsCollectionView.SELECTION_PROPERTY:
-                    result.setText(" [" + view.getSelectionSize() + "/" + view.getTsCollection().getCount() + "] ");
-                    break;
-            }
-        });
+        if (view instanceof JComponent) {
+            ((JComponent) view).addPropertyChangeListener(evt -> {
+                switch (evt.getPropertyName()) {
+                    case TsSelectionBridge.TS_SELECTION_PROPERTY:
+                        result.setText(" [" + JLists.getSelectionIndexSize(view.getTsSelectionModel()) + "/" + view.getTsCollection().getCount() + "] ");
+                        break;
+                }
+            });
+        }
         return result;
     }
 
-    static JButton createFakeProviderButton(ITsCollectionView view) {
+    static JButton createFakeProviderButton(HasTsCollection view) {
         JMenu menu = new JMenu();
         TsManager.getDefault().all()
-                .filter(IDataSourceLoader.class::isInstance)
-                .map(IDataSourceLoader.class::cast)
+                .filter(IDataSourceProvider.class::isInstance)
+                .map(IDataSourceProvider.class::cast)
                 .forEach(provider -> {
                     for (DataSource dataSource : provider.getDataSources()) {
                         JMenu subMenu = new JMenu(provider.getDisplayName(dataSource));
@@ -326,7 +333,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         return FontAwesomeUtils.getIcon(fa, BeanInfo.ICON_COLOR_16x16);
     }
 
-    static final class AddDataSourceCommand extends JCommand<ITsCollectionView> {
+    static final class AddDataSourceCommand extends JCommand<HasTsCollection> {
 
         private final DataSource dataSource;
 
@@ -335,14 +342,14 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         }
 
         @Override
-        public void execute(ITsCollectionView component) throws Exception {
+        public void execute(HasTsCollection component) throws Exception {
             TsCollection col = TsManager.getDefault().getTsCollection(dataSource, TsInformationType.Definition).get();
             col.query(TsInformationType.All);
             component.getTsCollection().append(col);
         }
     }
 
-    static final class AddDataSetCommand extends JCommand<ITsCollectionView> {
+    static final class AddDataSetCommand extends JCommand<HasTsCollection> {
 
         private final DataSet dataSet;
 
@@ -351,7 +358,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<I
         }
 
         @Override
-        public void execute(ITsCollectionView component) throws Exception {
+        public void execute(HasTsCollection component) throws Exception {
             TsCollection col = TsManager.getDefault().getTsCollection(dataSet, TsInformationType.Definition).get();
             col.query(TsInformationType.All);
             component.getTsCollection().append(col);

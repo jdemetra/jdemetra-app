@@ -5,7 +5,6 @@
 package ec.nbdemetra.sa;
 
 import com.google.common.collect.Maps;
-import ec.nbdemetra.ui.ComponentFactory;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.tss.html.HtmlUtil;
@@ -13,6 +12,7 @@ import ec.tss.html.implementation.HtmlRegArimaReport;
 import ec.tss.sa.RegArimaReport;
 import ec.tstoolkit.algorithm.AlgorithmDescriptor;
 import ec.ui.AHtmlView;
+import ec.ui.html.JHtmlView;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.event.ItemEvent;
@@ -42,7 +42,7 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
     public SummaryView(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
         super(doc, controller);
         this.reports = new HashMap<>();
-        this.reportTB_ = ComponentFactory.getDefault().newHtmlView();
+        this.reportTB_ = new JHtmlView();
 
         this.comboBox = new JComboBox<>();
         comboBox.setRenderer(JLists.cellRendererOf((label, value) -> {

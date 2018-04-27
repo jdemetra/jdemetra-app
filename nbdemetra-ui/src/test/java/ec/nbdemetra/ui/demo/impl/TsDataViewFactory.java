@@ -19,12 +19,12 @@ package ec.nbdemetra.ui.demo.impl;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.nbdemetra.ui.demo.ReflectComponent;
 import ec.tstoolkit.utilities.Id;
-import ec.ui.interfaces.ITsDataView;
 import ec.ui.view.res.ResidualsView;
 import java.awt.Component;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.components.HasTsData;
 
 /**
  *
@@ -38,7 +38,7 @@ public final class TsDataViewFactory extends DemoComponentFactory {
     @Override
     public Map<Id, Callable<Component>> getComponents() {
         return builder()
-                .put(ID, () -> ReflectComponent.of(ITsDataView.class))
+                .put(ID, () -> ReflectComponent.of(HasTsData.class))
                 .put(ID.extend("ResidualsView"), ResidualsView::new)
                 .build();
     }

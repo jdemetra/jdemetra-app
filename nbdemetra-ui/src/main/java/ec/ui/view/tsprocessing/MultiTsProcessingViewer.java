@@ -4,9 +4,9 @@
  */
 package ec.ui.view.tsprocessing;
 
+import demetra.ui.components.JTsTable;
 import ec.tss.documents.MultiTsDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
-import ec.ui.list.JTsList;
 import java.awt.Font;
 import javax.swing.Box;
 import javax.swing.JLabel;
@@ -31,13 +31,13 @@ public class MultiTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocu
     // CONSTANTS
     private static final Font DROP_DATA_FONT = new JLabel().getFont().deriveFont(Font.ITALIC);
     // visual components
-    private final JTsList tsList;
+    private final JTsTable tsList;
     private final JLabel specLabel;
     private boolean quietRefresh;
     
     public MultiTsProcessingViewer(Type type) {
         super(type);
-        this.tsList = new JTsList();
+        this.tsList = new JTsTable();
         tsList.setVisible(true);
         this.specLabel = new JLabel("Spec: ");
         specLabel.setVisible(true);
@@ -47,7 +47,7 @@ public class MultiTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocu
         toolBar.add(new JToolBar.Separator(), 3);
         toolBar.add(specLabel, 4);
         
-        tsList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, evt -> {
+        tsList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             if (!quietRefresh) {
                 getDocument().setInput(tsList.getTsCollection().toArray());
             }

@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import demetra.ui.TsManager;
+import demetra.ui.components.HasTs;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.FakeTsProvider;
 import static ec.nbdemetra.ui.demo.impl.TsCollectionHandler.getIcon;
@@ -26,7 +27,6 @@ import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceProvider;
-import ec.ui.interfaces.ITsAble;
 import ec.util.various.swing.FontAwesome;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
 import ec.util.various.swing.JCommand;
@@ -49,24 +49,24 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = DemoComponentHandler.class)
-public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<ITsAble> {
+public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> {
 
-    private final RandomTsCommand<ITsAble> randomCommand;
-    private final JCommand<ITsAble> clearCommand;
+    private final RandomTsCommand<HasTs> randomCommand;
+    private final JCommand<HasTs> clearCommand;
 
     public TsAbleHandler() {
-        super(ITsAble.class);
+        super(HasTs.class);
         this.randomCommand = RandomTsCommand.of(TsAbleHandler::apply);
         this.clearCommand = JCommand.of(TsAbleHandler::clear);
     }
 
     @Override
-    public void doConfigure(ITsAble c) {
+    public void doConfigure(HasTs c) {
         randomCommand.executeSafely(c);
     }
 
     @Override
-    public void doFillToolBar(JToolBar toolBar, ITsAble c) {
+    public void doFillToolBar(JToolBar toolBar, HasTs c) {
         toolBar.add(randomCommand.toButton(c));
         toolBar.add(createFakeProviderButton(c));
 
@@ -76,15 +76,15 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<ITsAble
         toolBar.addSeparator();
     }
 
-    private static void apply(ITsAble o, TsInformation ts) {
+    private static void apply(HasTs o, TsInformation ts) {
         o.setTs(ts.toTs());
     }
 
-    private static void clear(ITsAble o) {
+    private static void clear(HasTs o) {
         o.setTs(null);
     }
 
-    private static JButton createFakeProviderButton(ITsAble view) {
+    private static JButton createFakeProviderButton(HasTs view) {
         JMenu providerMenu = TsManager.getDefault()
                 .lookup(IDataSourceProvider.class, "Fake")
                 .map(o -> createFakeProviderMenu(o, view))
@@ -114,7 +114,7 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<ITsAble
         }
     }
 
-    private static JMenu createFakeProviderMenu(IDataSourceProvider provider, ITsAble view) {
+    private static JMenu createFakeProviderMenu(IDataSourceProvider provider, HasTs view) {
         JMenu result = new JMenu();
         for (DataSource dataSource : provider.getDataSources()) {
             JMenu subMenu = new JMenu(provider.getDisplayName(dataSource));
@@ -133,7 +133,7 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<ITsAble
         return result;
     }
 
-    private static final class AddDataSetCommand extends JCommand<ITsAble> {
+    private static final class AddDataSetCommand extends JCommand<HasTs> {
 
         private final DataSet dataSet;
 
@@ -142,7 +142,7 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<ITsAble
         }
 
         @Override
-        public void execute(ITsAble component) throws Exception {
+        public void execute(HasTs component) throws Exception {
             Optional<Ts> ts = TsManager.getDefault().getTs(dataSet, TsInformationType.Definition);
             if (ts.isPresent()) {
                 ts.get().query(TsInformationType.All);

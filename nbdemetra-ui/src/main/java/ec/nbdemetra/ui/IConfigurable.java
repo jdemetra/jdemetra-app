@@ -16,7 +16,9 @@
  */
 package ec.nbdemetra.ui;
 
+import ec.util.various.swing.JCommand;
 import javax.annotation.Nonnull;
+import javax.swing.ActionMap;
 
 /**
  *
@@ -31,4 +33,20 @@ public interface IConfigurable {
 
     @Nonnull
     Config editConfig(@Nonnull Config config) throws IllegalArgumentException;
+
+    static final String CONFIGURE_ACTION = "configure";
+
+    static void registerActions(IConfigurable configurable, ActionMap am) {
+        am.put(CONFIGURE_ACTION, ConfigureCommand.INSTANCE.toAction(configurable));
+    }
+
+    static final class ConfigureCommand extends JCommand<IConfigurable> {
+
+        public static final ConfigureCommand INSTANCE = new ConfigureCommand();
+
+        @Override
+        public void execute(IConfigurable c) throws Exception {
+            c.setConfig(c.editConfig(c.getConfig()));
+        }
+    }
 }

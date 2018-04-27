@@ -4,9 +4,8 @@
  */
 package ec.nbdemetra.ui.tools;
 
-import ec.nbdemetra.ui.ComponentFactory;
 import ec.nbdemetra.ui.nodes.ControlNode;
-import ec.ui.ATsGrowthChart;
+import demetra.ui.components.JTsGrowthChart;
 import java.awt.BorderLayout;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -45,7 +44,7 @@ public final class GrowthChartTopComponent extends TopComponent implements Explo
         setName(Bundle.CTL_GrowthChartTopComponent());
         setToolTipText(Bundle.HINT_GrowthChartTopComponent());
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
-        add(ComponentFactory.getDefault().newTsGrowthChart(), BorderLayout.CENTER);
+        add(new JTsGrowthChart(), BorderLayout.CENTER);
     }
 
     @Override
@@ -73,13 +72,11 @@ public final class GrowthChartTopComponent extends TopComponent implements Explo
     @Override
     public void componentOpened() {
         ControlNode.onComponentOpened(mgr, getGrowthChart());
-        getGrowthChart().connect();
     }
 
     @Override
     public void componentClosed() {
         mgr.setRootContext(Node.EMPTY);
-        getGrowthChart().dispose();
     }
 
     void writeProperties(java.util.Properties p) {
@@ -99,7 +96,7 @@ public final class GrowthChartTopComponent extends TopComponent implements Explo
         return mgr;
     }
 
-    public ATsGrowthChart getGrowthChart() {
-        return (ATsGrowthChart) getComponent(0);
+    public JTsGrowthChart getGrowthChart() {
+        return (JTsGrowthChart) getComponent(0);
     }
 }

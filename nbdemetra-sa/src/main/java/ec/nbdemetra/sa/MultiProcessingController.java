@@ -16,9 +16,8 @@
  */
 package ec.nbdemetra.sa;
 
-import ec.nbdemetra.ui.awt.ListenableBean;
+import demetra.ui.beans.ListenableBean;
 import java.beans.PropertyChangeListener;
-import org.openide.windows.TopComponent;
 
 /**
  *

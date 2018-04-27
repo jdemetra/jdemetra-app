@@ -19,9 +19,6 @@ package ec.nbdemetra.spreadsheet;
 import com.google.common.base.Stopwatch;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.NbComponents;
-import ec.ui.commands.ColorSchemeCommand;
-import ec.util.chart.ColorScheme;
-import ec.util.chart.swing.ColorSchemeIcon;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
 import ec.util.grid.swing.ext.SpreadSheetView;
@@ -33,6 +30,7 @@ import static ec.util.various.swing.FontAwesome.FA_INFO;
 import static ec.util.various.swing.FontAwesome.FA_SEARCH;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.ext.FontAwesomeUtils;
+import internal.ui.components.HasColorSchemeCommands;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -164,17 +162,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
             item.setText("Edit format..");
             item.setEnabled(false);
 
-            JMenu colorSchemeMenu = new JMenu("Color scheme");
-            item = colorSchemeMenu.add(new JCheckBoxMenuItem(ColorSchemeCommand.applyColorScheme(null).toAction(view)));
-            item.setText("Default");
-            colorSchemeMenu.addSeparator();
-            for (ColorScheme o : DemetraUI.getDefault().getColorSchemes()) {
-                item = new JCheckBoxMenuItem(ColorSchemeCommand.applyColorScheme(o).toAction(view));
-                item.setText(o.getDisplayName());
-                item.setIcon(new ColorSchemeIcon(o));
-                colorSchemeMenu.add(item);
-            }
-            result.add(colorSchemeMenu);
+            result.add(HasColorSchemeCommands.menuOf(view, DemetraUI.getDefault().getColorSchemes()));
 
             item = result.add(new JCheckBoxMenuItem(SpreadSheetView.invertColors().toAction(view)));
             item.setText("Invert colors");

@@ -16,17 +16,24 @@
  */
 package ec.ui.view;
 
+import demetra.ui.TsManager;
+import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.HasTs;
+import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
+import ec.tss.Ts;
 import ec.tss.TsInformation;
+import ec.tss.TsInformationType;
+import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.data.Periodogram;
 import ec.tstoolkit.data.Values;
-import ec.ui.ATsView;
 import ec.ui.chart.TsCharts;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.ext.MatrixChartCommand;
+import internal.ui.components.HasTsTransferHandler;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Stroke;
@@ -35,6 +42,8 @@ import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -53,7 +62,7 @@ import org.jfree.ui.Layer;
  *
  * @author Jeremy Demortier
  */
-public abstract class ARPView extends ATsView {
+public abstract class ARPView extends JComponent implements TimeSeriesComponent, HasTs, HasColorScheme {
 
     // CONSTANTS
     protected static final double TWO_PI = 2 * Math.PI;
@@ -62,6 +71,14 @@ public abstract class ARPView extends ATsView {
     // OTHER
     protected final ChartPanel chartPanel;
     protected ARPData data;
+
+    @lombok.experimental.Delegate
+    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
+
+    @lombok.experimental.Delegate
+    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+
+    protected final ThemeSupport themeSupport = ThemeSupport.registered();
 
     protected ARPView() {
         this.chartPanel = Charts.newChartPanel(createARPChart());
@@ -73,7 +90,17 @@ public abstract class ARPView extends ATsView {
         chartPanel.setDomainZoomable(false);
         chartPanel.setRangeZoomable(false);
 
-        setTransferHandler(new TsTransferHandler());
+        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
+
+        setTransferHandler(new HasTsTransferHandler(this, TssTransferSupport.getDefault()));
+
+        addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case TS_PROPERTY:
+                    onTsChange();
+                    break;
+            }
+        });
 
         setLayout(new BorderLayout());
         add(chartPanel, BorderLayout.CENTER);
@@ -96,9 +123,14 @@ public abstract class ARPView extends ATsView {
         onColorSchemeChange();
     }
 
+    @Nullable
+    private TsInformation getTsInformation() {
+        Ts ts = getTs();
+        return ts != null ? ts.toInfo(TsInformationType.Data) : null;
+    }
+
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
-    @Override
-    protected void onTsChange() {
+    private void onTsChange() {
         TsInformation ts = getTsInformation();
         if (ts == null || ts.data == null) {
             data = null;
@@ -109,12 +141,6 @@ public abstract class ARPView extends ATsView {
         }
     }
 
-    @Override
-    protected void onDataFormatChange() {
-        // do nothing?
-    }
-
-    @Override
     protected void onColorSchemeChange() {
         XYPlot plot = getPlot();
         plot.setBackgroundPaint(themeSupport.getPlotColor());

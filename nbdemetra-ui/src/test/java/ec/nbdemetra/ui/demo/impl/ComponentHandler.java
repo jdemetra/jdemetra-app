@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.util.grid.swing.XTable;
+import ec.util.table.swing.JTables;
 import ec.util.various.swing.FontAwesome;
 import static ec.util.various.swing.FontAwesome.FA_HAND_O_UP;
 import ec.util.various.swing.JCommand;
@@ -82,7 +82,7 @@ public final class ComponentHandler extends DemoComponentHandler {
 
     private static void watch(Component c) {
         JTable table = new JTable(new PropertyChangeModel(c));
-        XTable.setWidthAsPercentages(table, .2, .4, .4);
+        JTables.setWidthAsPercentages(table, .2, .4, .4);
         table.setDefaultRenderer(Object.class, new DefaultTableCellRendererImpl());
         showInDialog("Watching " + c.getClass().getName(), table);
     }

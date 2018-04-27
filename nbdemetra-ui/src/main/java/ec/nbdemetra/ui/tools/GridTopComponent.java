@@ -4,12 +4,13 @@
  */
 package ec.nbdemetra.ui.tools;
 
-import ec.nbdemetra.ui.ComponentFactory;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.nodes.ControlNode;
-import ec.ui.ATsCollectionView;
-import ec.ui.ATsGrid;
+import demetra.ui.components.JTsGrid;
+import internal.ui.components.HasTsCollectionCommands;
+import static internal.ui.components.JTsGridCommands.REVERSE_ACTION;
+import static internal.ui.components.JTsGridCommands.TRANSPOSE_ACTION;
 import java.awt.BorderLayout;
 import javax.swing.*;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -52,7 +53,7 @@ public final class GridTopComponent extends TopComponent implements ExplorerMana
         setName(Bundle.CTL_GridTopComponent());
         setToolTipText(Bundle.HINT_GridTopComponent());
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
-        add(ComponentFactory.getDefault().newTsGrid(), BorderLayout.CENTER);
+        add(new JTsGrid(), BorderLayout.CENTER);
     }
 
     /**
@@ -81,13 +82,11 @@ public final class GridTopComponent extends TopComponent implements ExplorerMana
     @Override
     public void componentOpened() {
         ControlNode.onComponentOpened(mgr, getGrid());
-        getGrid().connect();
     }
 
     @Override
     public void componentClosed() {
         mgr.setRootContext(Node.EMPTY);
-        getGrid().dispose();
     }
 
     @Override
@@ -102,20 +101,20 @@ public final class GridTopComponent extends TopComponent implements ExplorerMana
 
         result.addSeparator();
 
-        JButton copy = new JButton(getGrid().getActionMap().get(ATsCollectionView.COPY_ALL_ACTION));
+        JButton copy = new JButton(getGrid().getActionMap().get(HasTsCollectionCommands.COPY_ALL_ACTION));
         copy.setText("");
         copy.setToolTipText("Copy");
         copy.setIcon(DemetraUiIcon.EDIT_COPY_16);
         result.add(copy);
 
-        JToggleButton transpose = new JToggleButton(getGrid().getActionMap().get(ATsGrid.TRANSPOSE_ACTION));
+        JToggleButton transpose = new JToggleButton(getGrid().getActionMap().get(TRANSPOSE_ACTION));
         transpose.setText("");
         transpose.setToolTipText("Transpose");
         transpose.setIcon(DemetraUiIcon.HORIZONTAL_16);
         transpose.setSelectedIcon(DemetraUiIcon.VERTICAL_16);
         result.add(transpose);
 
-        JToggleButton reverse = new JToggleButton(getGrid().getActionMap().get(ATsGrid.REVERSE_ACTION));
+        JToggleButton reverse = new JToggleButton(getGrid().getActionMap().get(REVERSE_ACTION));
         reverse.setText("");
         reverse.setToolTipText("Reverse chronology");
         reverse.setIcon(DemetraUiIcon.SORT_DATE_16);
@@ -171,7 +170,7 @@ public final class GridTopComponent extends TopComponent implements ExplorerMana
         return mgr;
     }
 
-    public ATsGrid getGrid() {
-        return (ATsGrid) getComponent(0);
+    public JTsGrid getGrid() {
+        return (JTsGrid) getComponent(0);
     }
 }

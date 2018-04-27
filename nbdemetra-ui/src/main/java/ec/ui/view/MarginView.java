@@ -17,6 +17,7 @@
 package ec.ui.view;
 
 import demetra.ui.TsManager;
+import demetra.ui.components.HasColorScheme;
 import ec.tss.TsCollection;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.data.DescriptiveStatistics;
@@ -24,16 +25,18 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.tstoolkit.utilities.Jdk6;
-import ec.ui.ATsControl;
 import ec.ui.chart.TsCharts;
 import ec.ui.chart.TsXYDatasets;
-import ec.ui.interfaces.IColorSchemeAble;
-import ec.ui.interfaces.ITsChart.LinesThickness;
-import ec.util.chart.ColorScheme;
+import demetra.ui.components.HasChart.LinesThickness;
+import demetra.ui.components.HasObsFormat;
+import demetra.ui.components.TimeSeriesComponent;
+import ec.nbdemetra.ui.ThemeSupport;
+import ec.tstoolkit.utilities.Arrays2;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.SwingColorSchemeSupport;
+import internal.ui.components.HasObsFormatCommands;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -52,6 +55,7 @@ import java.util.Collection;
 import java.util.Date;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import org.jfree.chart.ChartFactory;
@@ -80,7 +84,7 @@ import org.jfree.ui.Layer;
  *
  * @author Kristof Bayens
  */
-public final class MarginView extends ATsControl implements IColorSchemeAble {
+public final class MarginView extends JComponent implements TimeSeriesComponent, HasColorScheme, HasObsFormat {
 
     // PROPERTIES
     private static final String DATA_PROPERTY = "data";
@@ -103,12 +107,25 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
     private final RevealObs revealObs;
     private static XYItemEntity highlight;
 
+    @lombok.experimental.Delegate
+    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+
+    @lombok.experimental.Delegate
+    private final HasObsFormat obsFormat = HasObsFormat.of(this::firePropertyChange);
+
+    private final ThemeSupport themeSupport = ThemeSupport.registered();
+
     public MarginView() {
         this.chartPanel = Charts.newChartPanel(createMarginViewChart());
         this.data = new MarginData(null, null, null, false, null);
         this.precisionMarkersVisible = false;
         this.revealObs = new RevealObs();
 
+        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
+        themeSupport.setObsFormatListener(obsFormat, this::onDataFormatChange);
+
+        registerActions();
+        
         Charts.enableFocusOnClick(chartPanel);
 
         chartPanel.addChartMouseListener(new HighlightChartMouseListener2());
@@ -123,9 +140,19 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
         add(chartPanel, BorderLayout.CENTER);
     }
 
+    private void registerActions() {
+        getActionMap().put(HasObsFormatCommands.FORMAT_ACTION, HasObsFormatCommands.editDataFormat().toAction(this));
+    }
+    
     private void enableProperties() {
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
+                case COLOR_SCHEME_PROPERTY:
+                    onColorSchemeChange();
+                    break;
+                case DATA_FORMAT_PROPERTY:
+                    onDataFormatChange();
+                    break;
                 case DATA_PROPERTY:
                     onDataChange();
                     break;
@@ -140,8 +167,7 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
     }
 
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
-    @Override
-    protected void onDataFormatChange() {
+    private void onDataFormatChange() {
         DateAxis domainAxis = (DateAxis) chartPanel.getChart().getXYPlot().getDomainAxis();
         try {
             domainAxis.setDateFormatOverride(themeSupport.getDataFormat().newDateFormat());
@@ -150,8 +176,7 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
         }
     }
 
-    @Override
-    protected void onColorSchemeChange() {
+    private void onColorSchemeChange() {
         XYPlot plot = chartPanel.getChart().getXYPlot();
         plot.setBackgroundPaint(themeSupport.getPlotColor());
         plot.setDomainGridlinePaint(themeSupport.getGridColor());
@@ -215,16 +240,6 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
-    @Override
-    public ColorScheme getColorScheme() {
-        return themeSupport.getLocalColorScheme();
-    }
-
-    @Override
-    public void setColorScheme(ColorScheme colorScheme) {
-        themeSupport.setLocalColorScheme(colorScheme);
-    }
-
     public void setData(TsData series, TsData lower, TsData upper, Date... markers) {
         setData(series, lower, upper, false, markers);
     }
@@ -490,4 +505,11 @@ public final class MarginView extends ATsControl implements IColorSchemeAble {
             return label;
         }
     };
+
+    @Override
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        if (!Arrays2.arrayEquals(oldValue, newValue)) {
+            super.firePropertyChange(propertyName, oldValue, newValue);
+        }
+    }
 }

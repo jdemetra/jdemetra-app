@@ -18,7 +18,6 @@ package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.tss.TsInformation;
-import ec.ui.interfaces.ITsDataAble;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.ext.FontAwesomeUtils;
@@ -26,30 +25,31 @@ import static java.beans.BeanInfo.ICON_COLOR_16x16;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.components.HasTsData;
 
 /**
  *
  * @author Philippe Charles
  */
 @ServiceProvider(service = DemoComponentHandler.class)
-public final class TsDataAbleHandler extends DemoComponentHandler.InstanceOf<ITsDataAble> {
+public final class TsDataAbleHandler extends DemoComponentHandler.InstanceOf<HasTsData> {
 
-    private final RandomTsCommand<ITsDataAble> randomCommand;
-    private final JCommand<ITsDataAble> clearCommand;
+    private final RandomTsCommand<HasTsData> randomCommand;
+    private final JCommand<HasTsData> clearCommand;
 
     public TsDataAbleHandler() {
-        super(ITsDataAble.class);
+        super(HasTsData.class);
         this.randomCommand = RandomTsCommand.of(TsDataAbleHandler::apply);
         this.clearCommand = JCommand.of(TsDataAbleHandler::clear);
     }
 
     @Override
-    public void doConfigure(ITsDataAble c) {
+    public void doConfigure(HasTsData c) {
         randomCommand.executeSafely(c);
     }
 
     @Override
-    public void doFillToolBar(JToolBar toolBar, final ITsDataAble c) {
+    public void doFillToolBar(JToolBar toolBar, final HasTsData c) {
         JButton item;
 
         toolBar.add(randomCommand.toButton(c));
@@ -60,11 +60,11 @@ public final class TsDataAbleHandler extends DemoComponentHandler.InstanceOf<ITs
         toolBar.addSeparator();
     }
 
-    private static void apply(ITsDataAble o, TsInformation ts) {
+    private static void apply(HasTsData o, TsInformation ts) {
         o.setTsData(ts.data);
     }
 
-    private static void clear(ITsDataAble o) {
+    private static void clear(HasTsData o) {
         o.setTsData(null);
     }
 }

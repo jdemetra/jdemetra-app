@@ -6,11 +6,10 @@ package ec.tss.datatransfer;
 
 import com.google.common.base.Suppliers;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.ComponentFactory;
 import ec.nbdemetra.ui.awt.TransferHandlers;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
-import ec.ui.ATsChart;
+import demetra.ui.components.JTsChart;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -44,19 +43,19 @@ public abstract class TsDragRenderer {
 
     private static class ChartRenderer extends TsDragRenderer {
 
-        final Supplier<ATsChart> supplier = Suppliers.memoize(ChartRenderer::createChart);
+        final Supplier<JTsChart> supplier = Suppliers.memoize(ChartRenderer::createChart);
 
         @Override
         public Component getTsDragRendererComponent(List<? extends Ts> selection) {
             TsCollection col = TsManager.getDefault().newTsCollection();
             col.quietAppend(selection);
-            ATsChart result = supplier.get();
+            JTsChart result = supplier.get();
             result.setTsCollection(col);
             return result;
         }
 
-        private static ATsChart createChart() {
-            ATsChart c = ComponentFactory.getDefault().newTsChart();
+        private static JTsChart createChart() {
+            JTsChart c = new JTsChart();
             c.setPreferredSize(new Dimension(150, 90));
             c.setAxisVisible(false);
             c.setLegendVisible(false);

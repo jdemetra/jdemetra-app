@@ -65,6 +65,13 @@
             </dependency>
             <!-- < import of jdemetra deps -->
 
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <!-- updated to avoid compilation problems in netbeans 8.2 -->
+                <version>1.16.20</version>
+            </dependency>
+
             <!-- NetBeans deps > -->
             <dependency>
                 <groupId>org.netbeans.api</groupId>

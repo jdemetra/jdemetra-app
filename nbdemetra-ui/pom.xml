@@ -260,6 +260,8 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>demetra.ui</publicPackage>
+                        <publicPackage>demetra.ui.beans</publicPackage>
+                        <publicPackage>demetra.ui.components</publicPackage>
                         
                         <!-- old core -->
                         <publicPackage>ec.benchmarking.*</publicPackage>

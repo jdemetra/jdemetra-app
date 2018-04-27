@@ -16,7 +16,7 @@
  */
 package ec.ui.view.tsprocessing;
 
-import ec.nbdemetra.ui.ComponentFactory;
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.tss.Ts;
 import ec.tss.html.HtmlUtil;
 import ec.tss.html.IHtmlElement;
@@ -24,12 +24,12 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.IPool;
 import ec.tstoolkit.utilities.Pools;
 import ec.ui.AHtmlView;
-import ec.ui.ATsChart;
-import ec.ui.ATsGrid;
-import ec.ui.ATsGrowthChart;
+import demetra.ui.components.JTsChart;
+import demetra.ui.components.JTsGrid;
+import demetra.ui.components.JTsGrid.Mode;
+import demetra.ui.components.JTsGrowthChart;
 import ec.ui.interfaces.IDisposable;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
-import ec.ui.interfaces.ITsGrid.Mode;
+import ec.ui.html.JHtmlView;
 import ec.ui.view.SpectralView;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -45,9 +45,9 @@ public final class TsViewToolkit implements ITsViewToolkit {
 
     private static final TsViewToolkit INSTANCE = new TsViewToolkit();
     // 
-    private final IPool<ATsChart> chartPool;
-    private final IPool<ATsGrowthChart> growthchartPool;
-    private final IPool<ATsGrid> gridPool;
+    private final IPool<JTsChart> chartPool;
+    private final IPool<JTsGrowthChart> growthchartPool;
+    private final IPool<JTsGrid> gridPool;
     private final IPool<AHtmlView> htmlPool;
 
     private TsViewToolkit() {
@@ -66,7 +66,7 @@ public final class TsViewToolkit implements ITsViewToolkit {
 
     @Override
     public JComponent getGrid(Iterable<Ts> series) {
-        final ATsGrid result = gridPool.getOrCreate();
+        final JTsGrid result = gridPool.getOrCreate();
         result.setTsUpdateMode(TsUpdateMode.None);
         result.setMode(Mode.MULTIPLETS);
         result.getTsCollection().replace(series);
@@ -81,7 +81,7 @@ public final class TsViewToolkit implements ITsViewToolkit {
 
     @Override
     public JComponent getGrid(Ts series) {
-        final ATsGrid result = gridPool.getOrCreate();
+        final JTsGrid result = gridPool.getOrCreate();
         result.setTsUpdateMode(TsUpdateMode.None);
         result.setMode(Mode.SINGLETS);
         result.getTsCollection().replace(series);
@@ -96,7 +96,7 @@ public final class TsViewToolkit implements ITsViewToolkit {
 
     @Override
     public JComponent getChart(Iterable<Ts> series) {
-        final ATsChart result = chartPool.getOrCreate();
+        final JTsChart result = chartPool.getOrCreate();
         result.setTsUpdateMode(TsUpdateMode.None);
         result.getTsCollection().replace(series);
 
@@ -110,7 +110,7 @@ public final class TsViewToolkit implements ITsViewToolkit {
 
     @Override
     public JComponent getGrowthChart(Iterable<Ts> series) {
-        final ATsGrowthChart result = growthchartPool.getOrCreate();
+        final JTsGrowthChart result = growthchartPool.getOrCreate();
         result.setTsUpdateMode(TsUpdateMode.None);
         result.getTsCollection().replace(series);
 
@@ -173,35 +173,67 @@ public final class TsViewToolkit implements ITsViewToolkit {
         }
     }
 
-    private static class ChartFactory extends DisposableFactory<ATsChart> {
+    private static class ChartFactory implements IPool.Factory<JTsChart> {
 
         @Override
-        public ATsChart create() {
-            return ComponentFactory.getDefault().newTsChart();
+        public JTsChart create() {
+            return new JTsChart();
+        }
+
+        @Override
+        public void reset(JTsChart o) {
+        }
+
+        @Override
+        public void destroy(JTsChart o) {
         }
     }
 
-    private static class GrowthChartFactory extends DisposableFactory<ATsGrowthChart> {
+    private static class GrowthChartFactory implements IPool.Factory<JTsGrowthChart> {
 
         @Override
-        public ATsGrowthChart create() {
-            return ComponentFactory.getDefault().newTsGrowthChart();
+        public JTsGrowthChart create() {
+            return new JTsGrowthChart();
+        }
+
+        @Override
+        public void reset(JTsGrowthChart o) {
+        }
+
+        @Override
+        public void destroy(JTsGrowthChart o) {
         }
     }
 
-    private static class GridFactory extends DisposableFactory<ATsGrid> {
+    private static class GridFactory implements IPool.Factory<JTsGrid> {
 
         @Override
-        public ATsGrid create() {
-            return ComponentFactory.getDefault().newTsGrid();
+        public JTsGrid create() {
+            return new JTsGrid();
+        }
+
+        @Override
+        public void reset(JTsGrid o) {
+        }
+
+        @Override
+        public void destroy(JTsGrid o) {
         }
     }
 
-    private static class HtmlFactory extends DisposableFactory<AHtmlView> {
+    private static class HtmlFactory implements IPool.Factory<AHtmlView> {
 
         @Override
         public AHtmlView create() {
-            return ComponentFactory.getDefault().newHtmlView();
+            return new JHtmlView();
+        }
+
+        @Override
+        public void reset(AHtmlView o) {
+        }
+
+        @Override
+        public void destroy(AHtmlView o) {
         }
     }
 }

@@ -4,6 +4,7 @@
  */
 package ec.ui.view;
 
+import demetra.ui.components.HasColorScheme;
 import ec.nbdemetra.ui.NbComponents;
 import ec.satoolkit.DecompositionMode;
 import ec.tss.html.implementation.HtmlSlidingSpanDocument;
@@ -15,13 +16,11 @@ import ec.tstoolkit.timeseries.analysis.SlidingSpans;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.chart.TsXYDatasets;
 import ec.ui.chart.TsCharts;
-import ec.ui.interfaces.IColorSchemeAble;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.ui.Disposables;
 import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;
-import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
@@ -54,7 +53,7 @@ import org.jfree.data.xy.DefaultXYDataset;
  *
  * @author Kristof Bayens
  */
-public class SlidingSpanView extends JComponent implements IColorSchemeAble {
+public class SlidingSpanView extends JComponent implements HasColorScheme {
 
     // CONSTANTS
     protected static final int N = 18;
@@ -78,18 +77,16 @@ public class SlidingSpanView extends JComponent implements IColorSchemeAble {
     private final Box documentPanel;
     private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
 
+    @lombok.experimental.Delegate
+    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+
     public SlidingSpanView() {
 
         this.slidingSpans = null;
         this.infoName = null;
         this.threshold = DEFAULT_THRESHOLD;
         this.info = DEFAULT_INFO;
-        this.themeSupport = new ThemeSupport() {
-            @Override
-            protected void colorSchemeChanged() {
-                onColorSchemeChange();
-            }
-        };
+        this.themeSupport = new ThemeSupport();
 
         this.seriesPanel = new JChartPanel(createSeriesChart());
         this.distributionPanel = new JChartPanel(createDistributionChart());
@@ -107,6 +104,7 @@ public class SlidingSpanView extends JComponent implements IColorSchemeAble {
         add(splitpane2, BorderLayout.CENTER);
 
         themeSupport.register();
+        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
 
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
@@ -318,16 +316,6 @@ public class SlidingSpanView extends JComponent implements IColorSchemeAble {
         SlidingSpans<?> old = this.slidingSpans;
         this.slidingSpans = slidingspans;
         firePropertyChange(SLIDING_SPANS_PROPERTY, old, this.slidingSpans);
-    }
-
-    @Override
-    public ColorScheme getColorScheme() {
-        return themeSupport.getLocalColorScheme();
-    }
-
-    @Override
-    public void setColorScheme(ColorScheme theme) {
-        themeSupport.setLocalColorScheme(theme);
     }
     //</editor-fold>
 

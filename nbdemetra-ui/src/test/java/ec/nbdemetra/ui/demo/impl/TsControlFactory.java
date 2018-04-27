@@ -16,13 +16,13 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.nbdemetra.ui.demo.ReflectComponent;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.Id;
 import ec.ui.DemoUtils;
-import ec.ui.interfaces.ITsControl;
 import ec.ui.view.MarginView;
 import java.awt.Component;
 import java.util.Map;
@@ -41,7 +41,7 @@ public final class TsControlFactory extends DemoComponentFactory {
     @Override
     public Map<Id, Callable<Component>> getComponents() {
         return builder()
-                .put(ID, () -> ReflectComponent.of(ITsControl.class))
+                .put(ID, () -> ReflectComponent.of(TimeSeriesComponent.class))
                 .put(ID.extend("MarginView"), TsControlFactory::marginView)
                 .build();
     }

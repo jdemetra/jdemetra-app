@@ -26,7 +26,6 @@ import ec.tstoolkit.timeseries.regression.OutlierEstimation;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import static ec.ui.chart.JTimeSeriesChartUtil.newExportImageMenu;
-import static ec.ui.chart.JTimeSeriesChartUtil.newThemeSupport;
 import static ec.ui.chart.JTimeSeriesChartUtil.setSeriesColorist;
 import ec.ui.chart.TsXYDatasets;
 import ec.util.chart.ColorScheme;
@@ -69,7 +68,7 @@ final class AnomalyDetectionChart extends JComponent {
     public AnomalyDetectionChart() {
         this.chart = new JTimeSeriesChart();
         this.chartHandler = new ChartHandler();
-        this.themeSupport = newThemeSupport(chart);
+        this.themeSupport = new ThemeSupport();
         this.model = null;
         this.hoveredObs = -1;
 

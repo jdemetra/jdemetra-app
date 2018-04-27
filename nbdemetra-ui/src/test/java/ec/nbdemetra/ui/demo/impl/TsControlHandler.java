@@ -16,12 +16,12 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import demetra.ui.components.HasObsFormat;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.tss.tsproviders.utils.DataFormat;
-import ec.ui.commands.TsControlCommand;
-import ec.ui.interfaces.ITsControl;
 import ec.util.various.swing.JCommand;
+import internal.ui.components.HasObsFormatCommands;
 import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -35,12 +35,12 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = DemoComponentHandler.class, position = 100)
-public final class TsControlHandler extends DemoComponentHandler.InstanceOf<ITsControl> {
+public final class TsControlHandler extends DemoComponentHandler.InstanceOf<HasObsFormat> {
 
     private final DataFormatCommand dataFormatCommand;
 
     public TsControlHandler() {
-        super(ITsControl.class);
+        super(HasObsFormat.class);
         DataFormat[] dataFormats = {
             new DataFormat(Locale.FRENCH, "YYYY-MM", null),
             new DataFormat(Locale.US, "MM/YY", "0 $"),
@@ -49,12 +49,12 @@ public final class TsControlHandler extends DemoComponentHandler.InstanceOf<ITsC
     }
 
     @Override
-    public void doFillToolBar(JToolBar toolBar, final ITsControl c) {
+    public void doFillToolBar(JToolBar toolBar, final HasObsFormat c) {
         toolBar.add(dataFormatCommand.toButton(c));
         toolBar.addSeparator();
     }
 
-    private static final class DataFormatCommand extends JCommand<ITsControl> {
+    private static final class DataFormatCommand extends JCommand<HasObsFormat> {
 
         private final DataFormat[] dataFormats;
         private int position;
@@ -65,22 +65,22 @@ public final class TsControlHandler extends DemoComponentHandler.InstanceOf<ITsC
         }
 
         @Override
-        public void execute(ITsControl component) throws Exception {
+        public void execute(HasObsFormat component) throws Exception {
             component.setDataFormat(dataFormats[position]);
             position = (position + 1) % dataFormats.length;
         }
 
         @Override
-        public boolean isEnabled(ITsControl component) {
+        public boolean isEnabled(HasObsFormat component) {
             return dataFormats.length > 0;
         }
 
-        public JButton toButton(final ITsControl c) {
+        public JButton toButton(final HasObsFormat c) {
             JPopupMenu popup = new JPopupMenu();
-            popup.add(new JCheckBoxMenuItem(TsControlCommand.applyDataFormat(null).toAction(c))).setText("Default");
+            popup.add(new JCheckBoxMenuItem(HasObsFormatCommands.applyDataFormat(null).toAction(c))).setText("Default");
             popup.addSeparator();
             for (DataFormat o : dataFormats) {
-                popup.add(new JCheckBoxMenuItem(TsControlCommand.applyDataFormat(o).toAction(c))).setText(o.toString());
+                popup.add(new JCheckBoxMenuItem(HasObsFormatCommands.applyDataFormat(o).toAction(c))).setText(o.toString());
             }
             JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LOCALE_ALTERNATE_16, popup);
             result.addActionListener(toAction(c));

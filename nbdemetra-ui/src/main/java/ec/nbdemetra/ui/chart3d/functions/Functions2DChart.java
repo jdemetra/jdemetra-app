@@ -16,13 +16,16 @@
  */
 package ec.nbdemetra.ui.chart3d.functions;
 
+import demetra.ui.TsManager;
+import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.HasTs;
+import demetra.ui.components.TimeSeriesComponent;
+import ec.nbdemetra.ui.ThemeSupport;
 import ec.tstoolkit.data.DataBlock;
-import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.maths.realfunctions.IFunction;
 import ec.tstoolkit.maths.realfunctions.IFunctionInstance;
 import ec.tstoolkit.maths.realfunctions.IParametersDomain;
-import ec.ui.ATsView;
 import ec.ui.chart.BasicXYDataset;
 import ec.ui.chart.TsCharts;
 import ec.ui.view.JChartPanel;
@@ -32,6 +35,7 @@ import ec.util.chart.swing.Charts;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
+import javax.swing.JComponent;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.block.LineBorder;
@@ -47,7 +51,7 @@ import org.jfree.ui.RectangleInsets;
  *
  * @author Mats Maggi
  */
-public class Functions2DChart extends ATsView {
+public final class Functions2DChart extends JComponent implements TimeSeriesComponent, HasTs, HasColorScheme {
 
     private JChartPanel panel;
     private JFreeChart chart;
@@ -58,18 +62,29 @@ public class Functions2DChart extends ATsView {
     private final XYLineAndShapeRenderer functionRenderer;
     private final XYLineAndShapeRenderer optimumRenderer;
 
+    @lombok.experimental.Delegate
+    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
+    
+    @lombok.experimental.Delegate
+    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+
+    private final ThemeSupport themeSupport = ThemeSupport.registered();
+
     public Functions2DChart(IFunction f, IFunctionInstance maxF, int steps) {
         super();
+
+        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
+
         setLayout(new BorderLayout());
 
         function = f;
         maxFunction = maxF;
-        
+
         if (steps < ConfigurationToolBar.MIN_STEPS || steps > ConfigurationToolBar.MAX_STEPS) {
-            throw new IllegalArgumentException("Number of steps must be between " 
+            throw new IllegalArgumentException("Number of steps must be between "
                     + ConfigurationToolBar.MIN_STEPS + " and " + ConfigurationToolBar.MAX_STEPS + " !");
         }
-        
+
         this.steps = steps;
 
         functionRenderer = new XYLineAndShapeRenderer(true, false);
@@ -85,6 +100,18 @@ public class Functions2DChart extends ATsView {
 
         panel = new JChartPanel(null);
         chart = createChart();
+
+        enableProperties();
+    }
+
+    private void enableProperties() {
+        this.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case HasColorScheme.COLOR_SCHEME_PROPERTY:
+                    onColorSchemeChange();
+                    break;
+            }
+        });
     }
 
     /**
@@ -95,7 +122,7 @@ public class Functions2DChart extends ATsView {
         if (function == null || maxFunction == null) {
             throw new IllegalArgumentException("The given functions can't be null !");
         }
-        
+
         BasicXYDataset dataset = new BasicXYDataset();
         BasicXYDataset optimumDataset = new BasicXYDataset();
         double[] dataX = new double[steps];
@@ -106,14 +133,16 @@ public class Functions2DChart extends ATsView {
         final IParametersDomain d = function.getDomain();
 
         float xMin = ((float) p.get(0) - epsilon);
-        double dMin=d.lbound(0);
-        if (Double.isFinite(dMin) && xMin < dMin)
-            xMin=(float) dMin;
+        double dMin = d.lbound(0);
+        if (Double.isFinite(dMin) && xMin < dMin) {
+            xMin = (float) dMin;
+        }
         float xMax = ((float) p.get(0) + epsilon);
-        double dMax=d.ubound(0);
-        if (Double.isFinite(dMax) && xMax > dMax)
-            xMax=(float) dMax;
-        float stepX = (xMax - xMin) / (steps-1);    // Calculates the "distance" between each point
+        double dMax = d.ubound(0);
+        if (Double.isFinite(dMax) && xMax > dMax) {
+            xMax = (float) dMax;
+        }
+        float stepX = (xMax - xMin) / (steps - 1);    // Calculates the "distance" between each point
 
         // Optimum point of the max likelihood function
         double optiX = parameters.get(0);
@@ -207,7 +236,7 @@ public class Functions2DChart extends ATsView {
      */
     public void setEpsilon(float eps) {
         if (eps < ConfigurationToolBar.MIN_EPS) {
-            throw new IllegalArgumentException("Epsilon must be greater than" 
+            throw new IllegalArgumentException("Epsilon must be greater than"
                     + ConfigurationToolBar.MIN_EPS + " !");
         }
 //        if (eps < ConfigurationToolBar.MIN_EPS || eps > ConfigurationToolBar.MAX_EPS) {
@@ -225,25 +254,14 @@ public class Functions2DChart extends ATsView {
      */
     public void setSteps(int steps) {
         if (steps < ConfigurationToolBar.MIN_STEPS || steps > ConfigurationToolBar.MAX_STEPS) {
-            throw new IllegalArgumentException("Number of steps must be between " 
+            throw new IllegalArgumentException("Number of steps must be between "
                     + ConfigurationToolBar.MIN_STEPS + " and " + ConfigurationToolBar.MAX_STEPS + " !");
         }
         this.steps = steps;
         generateData();
     }
 
-    @Override
-    protected void onTsChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onDataFormatChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onColorSchemeChange() {
+    private void onColorSchemeChange() {
         functionRenderer.setBasePaint(themeSupport.getLineColor(ColorScheme.KnownColor.BLUE));
         optimumRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.RED));
 

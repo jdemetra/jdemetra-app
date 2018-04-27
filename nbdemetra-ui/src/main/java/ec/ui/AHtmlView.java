@@ -16,18 +16,13 @@
  */
 package ec.ui;
 
-import ec.ui.interfaces.IDisposable;
 import javax.swing.JComponent;
 
 /**
  *
  * @author Philippe Charles
  */
-public abstract class AHtmlView extends JComponent implements IDisposable {
+public abstract class AHtmlView extends JComponent {
 
     public abstract void loadContent(String content);
-
-    @Override
-    public void dispose() {
-    }
 }

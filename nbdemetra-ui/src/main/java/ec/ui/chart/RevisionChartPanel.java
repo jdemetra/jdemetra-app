@@ -17,22 +17,23 @@
 package ec.ui.chart;
 
 import demetra.ui.TsManager;
+import demetra.ui.components.TimeSeriesComponent;
+import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.awt.KeyStrokes;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import static ec.ui.ATsCollectionView.COPY_ACTION;
-import ec.ui.ATsControl;
+import ec.tstoolkit.utilities.Arrays2;
 import ec.ui.ExtAction;
 import ec.ui.view.JChartPanel;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.Charts;
+import internal.ui.components.HasTsCollectionCommands;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
@@ -40,6 +41,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import org.jfree.chart.JFreeChart;
@@ -55,9 +57,10 @@ import org.jfree.data.time.TimeSeriesCollection;
 
 /**
  * Chart Panel used in popups of Revision History View
+ *
  * @author Mats Maggi
  */
-public class RevisionChartPanel extends ATsControl implements ClipboardOwner {
+public final class RevisionChartPanel extends JComponent implements TimeSeriesComponent {
 
     private JChartPanel panel;
     private XYLineAndShapeRenderer refRenderer;
@@ -69,8 +72,11 @@ public class RevisionChartPanel extends ATsControl implements ClipboardOwner {
     private ActionMap am;
     private InputMap im;
 
+    private final ThemeSupport themeSupport = ThemeSupport.registered();
+
     /**
      * Constructs a new RevisionChartPanel from a given chart
+     *
      * @param chart Chart used to construct the chart panel
      */
     public RevisionChartPanel(JFreeChart chart) {
@@ -86,18 +92,18 @@ public class RevisionChartPanel extends ATsControl implements ClipboardOwner {
         seriesRenderer.setBaseShapesVisible(false);
         seriesRenderer.setBasePaint(themeSupport.getLineColor(ColorScheme.KnownColor.BLUE));
         seriesRenderer.setBaseStroke(new BasicStroke(0.75f));
-        
+
         panel.setPopupMenu(buildMenu().getPopupMenu());
-        
+
 //        fillActionMap(getActionMap());
 //        fillInputMap(getInputMap());
-        
         add(panel, BorderLayout.CENTER);
         onColorSchemeChange();
     }
-    
+
     /**
      * Sets the title of the graph
+     *
      * @param title Title of the graph
      */
     public void setChartTitle(String title) {
@@ -106,6 +112,7 @@ public class RevisionChartPanel extends ATsControl implements ClipboardOwner {
 
     /**
      * Sets the data of the graph
+     *
      * @param reference Reference serie used for the revisions
      * @param revisions Calculated list of revision's series
      */
@@ -144,24 +151,24 @@ public class RevisionChartPanel extends ATsControl implements ClipboardOwner {
 
         setRange(ref, revCol);
     }
-    
+
     private JMenu buildMenu() {
         am = new ActionMap();
-        am.put(COPY_ACTION, new CopyAction());
+        am.put(HasTsCollectionCommands.COPY_ACTION, new CopyAction());
 
         im = new InputMap();
-        KeyStrokes.putAll(im, KeyStrokes.COPY, COPY_ACTION);
-        
+        KeyStrokes.putAll(im, KeyStrokes.COPY, HasTsCollectionCommands.COPY_ACTION);
+
         JMenu result = new JMenu();
 
         JMenuItem item;
-        
-        item = new JMenuItem(am.get(COPY_ACTION));
+
+        item = new JMenuItem(am.get(HasTsCollectionCommands.COPY_ACTION));
         item.setText("Copy All");
         item.setAccelerator(KeyStrokes.COPY.get(0));
         ExtAction.hideWhenDisabled(item);
         result.add(item);
-        
+
         return result;
     }
 
@@ -217,8 +224,8 @@ public class RevisionChartPanel extends ATsControl implements ClipboardOwner {
         if (revs != null) {
             for (int i = 0; i < revs.size(); i++) {
                 ts = TsManager.getDefault().newTs(
-                        "Rev->" + ts.getTsData().getLastPeriod().toString(), 
-                        null, 
+                        "Rev->" + ts.getTsData().getLastPeriod().toString(),
+                        null,
                         revs.get(i));
                 col.add(ts);
             }
@@ -226,13 +233,7 @@ public class RevisionChartPanel extends ATsControl implements ClipboardOwner {
         return TssTransferSupport.getDefault().fromTsCollection(col);
     }
 
-    @Override
-    protected void onDataFormatChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onColorSchemeChange() {
+    private void onColorSchemeChange() {
         refRenderer.setBasePaint(themeSupport.getLineColor(ColorScheme.KnownColor.RED));
         seriesRenderer.setBasePaint(themeSupport.getLineColor(ColorScheme.KnownColor.BLUE));
 
@@ -250,13 +251,20 @@ public class RevisionChartPanel extends ATsControl implements ClipboardOwner {
     private class CopyAction extends AbstractAction {
 
         public CopyAction() {
-            super(COPY_ACTION);
+            super(HasTsCollectionCommands.COPY_ACTION);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-            cb.setContents(transferableOnSelection(), RevisionChartPanel.this);
+            cb.setContents(transferableOnSelection(), null);
+        }
+    }
+
+    @Override
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        if (!Arrays2.arrayEquals(oldValue, newValue)) {
+            super.firePropertyChange(propertyName, oldValue, newValue);
         }
     }
 }

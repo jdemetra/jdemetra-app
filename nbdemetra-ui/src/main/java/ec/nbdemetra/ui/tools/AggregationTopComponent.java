@@ -5,14 +5,14 @@
 package ec.nbdemetra.ui.tools;
 
 import demetra.ui.TsManager;
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.chart.JTsChart;
-import ec.ui.interfaces.ITsCollectionView;
-import ec.ui.list.JTsList;
+import demetra.ui.components.JTsChart;
+import demetra.ui.components.JTsTable;
 import java.awt.BorderLayout;
 import javax.swing.JSplitPane;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -44,17 +44,17 @@ import org.openide.util.NbBundle.Messages;
 public final class AggregationTopComponent extends TopComponent {
 
     private final JSplitPane mainPane;
-    private final JTsList inputList;
+    private final JTsTable inputList;
     private final JTsChart aggChart;
     
     public AggregationTopComponent() {
         initComponents();
         setName(Bundle.CTL_AggregationTopComponent());
         setToolTipText(Bundle.HINT_AggregationTopComponent());
-        inputList = new JTsList();
+        inputList = new JTsTable();
         initList();
         aggChart = new JTsChart();
-        aggChart.setTsUpdateMode(ITsCollectionView.TsUpdateMode.None);
+        aggChart.setTsUpdateMode(TsUpdateMode.None);
         mainPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, inputList, aggChart);
 
         setLayout(new BorderLayout());
@@ -77,15 +77,10 @@ public final class AggregationTopComponent extends TopComponent {
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
-        // TODO add custom code on component opening
-        aggChart.connect();
-        inputList.connect();
     }
 
     @Override
     public void componentClosed() {
-        aggChart.dispose();
-        inputList.dispose();
     }
 
     void writeProperties(java.util.Properties p) {
@@ -101,7 +96,7 @@ public final class AggregationTopComponent extends TopComponent {
     }
 
     private void initList() {
-        inputList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, evt -> {
+        inputList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             TsData sum = null;
             for (Ts s : inputList.getTsCollection()) {
                 if (s.hasData() == TsStatus.Undefined) {

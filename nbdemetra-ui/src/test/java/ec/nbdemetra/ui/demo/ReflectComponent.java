@@ -16,13 +16,13 @@
  */
 package ec.nbdemetra.ui.demo;
 
-import ec.nbdemetra.ui.ComponentFactory;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.html.AbstractHtmlElement;
 import ec.tss.html.HtmlStream;
 import ec.tss.html.HtmlTag;
 import ec.tss.html.HtmlUtil;
 import ec.ui.AHtmlView;
+import ec.ui.html.JHtmlView;
 import java.awt.BorderLayout;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -54,7 +54,7 @@ public final class ReflectComponent extends JComponent {
     private Function<Class<?>, List<Method>> extractor;
 
     public ReflectComponent() {
-        this.htmlView = ComponentFactory.getDefault().newHtmlView();
+        this.htmlView = new JHtmlView();
         this.clazz = null;
         this.extractor = o -> getPublicMethodsOf(o, true);
         initComponents();

@@ -16,23 +16,25 @@
  */
 package ec.ui.view;
 
+import demetra.ui.components.HasColorScheme;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.dstats.BoundaryType;
 import ec.tstoolkit.dstats.IContinuousDistribution;
-import ec.ui.ATsControl;
 import ec.ui.chart.TsCharts;
 import ec.ui.interfaces.IReadDataBlockView;
-import ec.ui.interfaces.IColorSchemeAble;
-import ec.ui.interfaces.ITsChart.LinesThickness;
-import ec.util.chart.ColorScheme;
+import demetra.ui.components.HasChart.LinesThickness;
+import demetra.ui.components.TimeSeriesComponent;
+import ec.nbdemetra.ui.ThemeSupport;
+import ec.tstoolkit.utilities.Arrays2;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.ext.MatrixChartCommand;
 import java.awt.BorderLayout;
 import java.text.DecimalFormat;
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import org.jfree.chart.ChartPanel;
@@ -56,13 +58,13 @@ import org.jfree.data.xy.XYSeriesCollection;
  *
  * @author Demortier & BAYENSK
  */
-public class DistributionView extends ATsControl implements IReadDataBlockView, IColorSchemeAble {
+public final class DistributionView extends JComponent implements TimeSeriesComponent, IReadDataBlockView, HasColorScheme {
 
     // CONSTANTS
-    protected static final int HISTOGRAM_INDEX = 1;
-    protected static final int DISTRIBUTION_INDEX = 0;
-    protected static final KnownColor HISTOGRAM_COLOR = KnownColor.BLUE;
-    protected static final KnownColor DISTRIBUTION_COLOR = KnownColor.RED;
+    private static final int HISTOGRAM_INDEX = 1;
+    private static final int DISTRIBUTION_INDEX = 0;
+    private static final KnownColor HISTOGRAM_COLOR = KnownColor.BLUE;
+    private static final KnownColor DISTRIBUTION_COLOR = KnownColor.RED;
 
     // PROPERTIES DEFINITION
     public static final String L_BOUND_PROPERTY = "lBound";
@@ -73,23 +75,28 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
     public static final String DATA_PROPERTY = "data";
 
     // DEFAULT PROPERTIES
-    protected static final double DEFAULT_L_BOUND = 0;
-    protected static final double DEFAULT_R_BOUND = 0;
-    protected static final IContinuousDistribution DEFAULT_DISTRIBUTION = null;
-    protected static final boolean DEFAULT_ADJUST_DISTRIBUTION = true;
-    protected static final int DEFAULT_H_COUNT = 0;
-    protected static final double[] DEFAULT_DATA = null;
+    private static final double DEFAULT_L_BOUND = 0;
+    private static final double DEFAULT_R_BOUND = 0;
+    private static final IContinuousDistribution DEFAULT_DISTRIBUTION = null;
+    private static final boolean DEFAULT_ADJUST_DISTRIBUTION = true;
+    private static final int DEFAULT_H_COUNT = 0;
+    private static final double[] DEFAULT_DATA = null;
 
     // PROPERTIES
-    protected double lBound;
-    protected double rBound;
-    protected IContinuousDistribution distribution;
-    protected boolean adjustDistribution;
-    protected int hCount;
-    protected double[] data;
+    private double lBound;
+    private double rBound;
+    private IContinuousDistribution distribution;
+    private boolean adjustDistribution;
+    private int hCount;
+    private double[] data;
 
     // OTHER
-    protected final ChartPanel chartPanel;
+    private final ChartPanel chartPanel;
+
+    @lombok.experimental.Delegate
+    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+
+    private final ThemeSupport themeSupport = ThemeSupport.registered();
 
     public DistributionView() {
         this.lBound = DEFAULT_L_BOUND;
@@ -101,11 +108,12 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
 
         this.chartPanel = Charts.newChartPanel(createDistributionViewChart());
 
-        onDataFormatChange();
+        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
+        
         onColorSchemeChange();
         onComponentPopupMenuChange();
         enableProperties();
-
+        
         setLayout(new BorderLayout());
         add(chartPanel, BorderLayout.CENTER);
     }
@@ -139,13 +147,7 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
     }
 
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
-    @Override
-    protected void onDataFormatChange() {
-        // do nothing
-    }
-
-    @Override
-    protected void onColorSchemeChange() {
+    private void onColorSchemeChange() {
         XYPlot plot = chartPanel.getChart().getXYPlot();
         plot.setBackgroundPaint(themeSupport.getPlotColor());
         plot.setDomainGridlinePaint(themeSupport.getGridColor());
@@ -280,16 +282,6 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
         this.hCount = hCount >= 0 ? hCount : DEFAULT_H_COUNT;
         firePropertyChange(H_COUNT_PROPERTY, old, this.hCount);
     }
-
-    @Override
-    public ColorScheme getColorScheme() {
-        return themeSupport.getLocalColorScheme();
-    }
-
-    @Override
-    public void setColorScheme(ColorScheme theme) {
-        themeSupport.setLocalColorScheme(theme);
-    }
     //</editor-fold>
 
     @Override
@@ -372,5 +364,12 @@ public class DistributionView extends ATsControl implements IReadDataBlockView, 
         result.add(export);
 
         return result;
+    }
+
+    @Override
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        if (!Arrays2.arrayEquals(oldValue, newValue)) {
+            super.firePropertyChange(propertyName, oldValue, newValue);
+        }
     }
 }

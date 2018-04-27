@@ -16,6 +16,8 @@
  */
 package ec.nbdemetra.anomalydetection.ui;
 
+import demetra.ui.components.HasHoveredObs;
+import demetra.ui.components.HasTsCollection;
 import ec.nbdemetra.ui.properties.l2fprod.ColorChooser;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -29,21 +31,24 @@ import ec.tstoolkit.timeseries.regression.OutlierType;
 import static ec.tstoolkit.timeseries.simplets.TsDataTableInfo.Empty;
 import static ec.tstoolkit.timeseries.simplets.TsDataTableInfo.Missing;
 import static ec.tstoolkit.timeseries.simplets.TsDataTableInfo.Valid;
-import ec.ui.grid.JTsGrid;
+import demetra.ui.components.JTsGrid;
 import ec.ui.grid.TsGridObs;
-import ec.ui.interfaces.ITsGrid;
 import ec.util.chart.ObsIndex;
+import ec.util.list.swing.JLists;
+import demetra.ui.components.TsSelectionBridge;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JToolTip;
+import javax.swing.ListSelectionModel;
 import static javax.swing.SwingConstants.TRAILING;
 import javax.swing.SwingWorker;
 import static javax.swing.SwingWorker.StateValue.DONE;
@@ -67,7 +72,7 @@ public class JTsAnomalyGrid extends JComponent {
     public static final String STATE_PROPERTY = "State Property";
     public static final String TYPES_PROPERTY = "Types Displayed";
     public static final String TRANSFORMATION_PROPERTY = "Transformation Change";
-    public static final String HOVERED_OBS_PROPERTY = JTsGrid.HOVERED_OBS_PROPERTY;
+    public static final String HOVERED_OBS_PROPERTY = HasHoveredObs.HOVERED_OBS_PROPERTY;
 
     private final JTsGrid grid;
     private List<OutlierEstimation[]> outliers;
@@ -101,16 +106,16 @@ public class JTsAnomalyGrid extends JComponent {
         // Listening to a data change to calculate the new outliers
         grid.addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
-                case JTsGrid.TS_COLLECTION_PROPERTY:
+                case HasTsCollection.TS_COLLECTION_PROPERTY:
                     onCollectionChange((TsCollection) evt.getNewValue());
                     break;
-                case ITsGrid.ZOOM_PROPERTY:
+                case JTsGrid.ZOOM_PROPERTY:
                     firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
                     break;
-                case ITsGrid.SELECTION_PROPERTY:
+                case TsSelectionBridge.TS_SELECTION_PROPERTY:
                     firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
                     break;
-                case JTsGrid.HOVERED_OBS_PROPERTY:
+                case HasHoveredObs.HOVERED_OBS_PROPERTY:
                     firePropertyChange(HOVERED_OBS_PROPERTY, evt.getOldValue(), evt.getNewValue());
                     break;
             }
@@ -159,15 +164,15 @@ public class JTsAnomalyGrid extends JComponent {
     }
 
     public PreprocessingModel getModelOfSelection() {
-        if (getSelection().length > 0) {
-            return preprocessor.process(getSelection()[0].getTsData(), null);
-        } else {
-            return null;
-        }
+        Ts selectedItem = getSelectedItem();
+        return selectedItem != null
+                ? preprocessor.process(selectedItem.getTsData(), null)
+                : null;
     }
-
-    public Ts[] getSelection() {
-        return grid.getSelection();
+    
+    public Ts getSelectedItem() {
+        OptionalInt singleSelection = JLists.getSelectionIndexStream(grid.getTsSelectionModel()).findFirst();
+        return singleSelection.isPresent() ? grid.getTsCollection().get(singleSelection.getAsInt()) : null;
     }
 
     public boolean isShowAO() {
@@ -237,12 +242,8 @@ public class JTsAnomalyGrid extends JComponent {
             return -1;
         }
 
-        Ts[] ts = grid.getSelection();
-        if (ts.length > 0) {
-            return tsCollection.indexOf(ts[0]);
-        }
-
-        return -1;
+        ListSelectionModel selection = grid.getTsSelectionModel();
+        return selection.isSelectionEmpty() ? -1 : selection.getMinSelectionIndex();
     }
 
     public SwingWorker.StateValue getState() {
@@ -266,7 +267,7 @@ public class JTsAnomalyGrid extends JComponent {
     // <editor-fold defaultstate="collapsed" desc="Event Handlers">
     private void refreshOutliersDisplayed() {
         outliers.clear();
-        grid.setSelection(null);
+        grid.getTsSelectionModel().clearSelection();
         OutlierType[] types = spec.getOutliers().getTypes();
         spec.getOutliers().clearTypes();
         if (showAO) {
@@ -371,7 +372,8 @@ public class JTsAnomalyGrid extends JComponent {
 
         @Override
         protected void process(List<Ts> chunks) {
-            grid.fireTableDataChanged();
+            // FIXME: find an alternative
+//            grid.fireTableDataChanged();
             progressCount += chunks.size();
             if (progressHandle != null && !chunks.isEmpty()) {
                 progressHandle.progress(100 * progressCount / tsCollection.getCount());

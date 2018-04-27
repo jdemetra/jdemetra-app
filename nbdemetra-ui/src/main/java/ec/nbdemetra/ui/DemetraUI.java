@@ -17,8 +17,8 @@
 package ec.nbdemetra.ui;
 
 import com.google.common.base.Preconditions;
+import demetra.ui.beans.ListenableBean;
 import ec.nbdemetra.core.GlobalService;
-import ec.nbdemetra.ui.awt.ListenableBean;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
 import ec.nbdemetra.ui.tsaction.ChartGridTsAction;
 import ec.nbdemetra.ui.tsaction.ITsAction;
@@ -34,7 +34,7 @@ import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.utilities.Jdk6.Collections;
 import ec.tstoolkit.utilities.ThreadPoolSize;
 import ec.tstoolkit.utilities.ThreadPriority;
-import ec.ui.ATsGrowthChart;
+import demetra.ui.components.JTsGrowthChart;
 import ec.ui.view.AutoRegressiveSpectrumView;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.impl.SmartColorScheme;
@@ -98,7 +98,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     static final IParam<Config, Boolean> PERSIST_OPENED_DATASOURCES = Params.onBoolean(false, PERSIST_OPENED_DATASOURCES_PROPERTY);
     static final IParam<Config, ThreadPoolSize> BATCH_POOL_SIZE = Params.onEnum(ThreadPoolSize.ALL_BUT_ONE, BATCH_POOL_SIZE_PROPERTY);
     static final IParam<Config, ThreadPriority> BATCH_PRIORITY = Params.onEnum(ThreadPriority.NORMAL, BATCH_PRIORITY_PROPERTY);
-    static final IParam<Config, Integer> GROWTH_LAST_YEARS = Params.onInteger(ATsGrowthChart.DEFAULT_LAST_YEARS, GROWTH_CHART_LENGTH_PROPERTY);
+    static final IParam<Config, Integer> GROWTH_LAST_YEARS = Params.onInteger(JTsGrowthChart.DEFAULT_LAST_YEARS, GROWTH_CHART_LENGTH_PROPERTY);
     static final IParam<Config, Integer> SPECTRAL_LAST_YEARS = Params.onInteger(AutoRegressiveSpectrumView.DEFAULT_LAST, SPECTRAL_YEARS_PROPERTY);
     static final IParam<Config, Integer> STABILITY_LENGTH = Params.onInteger(8, STABILITY_YEARS_PROPERTY);
     static final IParam<Config, EstimationPolicyType> ESTIMATION_POLICY_TYPE = Params.onEnum(EstimationPolicyType.FreeParameters, ESTIMATION_POLICY_PROPERTY);

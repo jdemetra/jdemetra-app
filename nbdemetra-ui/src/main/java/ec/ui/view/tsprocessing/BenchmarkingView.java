@@ -5,15 +5,14 @@
 package ec.ui.view.tsprocessing;
 
 import demetra.ui.TsManager;
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.Ts;
 import ec.tss.html.implementation.HtmlTsDifferenceDocument;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.Disposables;
-import ec.ui.chart.JTsChart;
-import ec.ui.grid.JTsGrid;
-import ec.ui.interfaces.IDisposable;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
+import demetra.ui.components.JTsChart;
+import demetra.ui.components.JTsGrid;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import javax.swing.Box;
@@ -24,7 +23,7 @@ import javax.swing.JSplitPane;
  *
  * @author Jean Palate
  */
-public class BenchmarkingView extends JComponent implements IDisposable {
+public final class BenchmarkingView extends JComponent {
 
     private final JTsGrid grid_;
     private final JTsChart chart_;
@@ -54,7 +53,6 @@ public class BenchmarkingView extends JComponent implements IDisposable {
         splitpane3.setDividerLocation(0.5);
         splitpane3.setResizeWeight(0.5);
 
-
         this.add(splitpane3, BorderLayout.CENTER);
     }
 
@@ -83,12 +81,5 @@ public class BenchmarkingView extends JComponent implements IDisposable {
         Disposables.disposeAndRemoveAll(documentPanel_).add(toolkit_.getHtmlViewer(document));
         chart_.updateUI();
         dchart_.updateUI();
-    }
-
-    @Override
-    public void dispose() {
-        grid_.dispose();
-        chart_.dispose();
-        dchart_.dispose();
     }
 }
