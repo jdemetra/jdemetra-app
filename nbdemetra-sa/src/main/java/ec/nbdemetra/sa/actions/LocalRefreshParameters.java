@@ -34,6 +34,6 @@ public final class LocalRefreshParameters implements ActionListener {
         if (ui == null) {
             return;
         }
-        ui.refreshSelection(EstimationPolicyType.FreeParameters, true, false);
+        ui.refreshSelection(EstimationPolicyType.FreeParameters, false, false);
     }
 }
