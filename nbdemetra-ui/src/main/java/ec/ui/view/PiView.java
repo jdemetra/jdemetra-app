@@ -8,7 +8,7 @@ import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.uihelper.ContinuousDisplayDomain;
 import ec.tstoolkit.uihelper.IContinuousInformationProvider;
 import ec.ui.chart.TsCharts;
-import ec.ui.interfaces.ITsChart.LinesThickness;
+import demetra.ui.components.HasChart.LinesThickness;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.ext.MatrixChartCommand;

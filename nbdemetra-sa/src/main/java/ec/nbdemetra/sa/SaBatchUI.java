@@ -40,6 +40,7 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.view.tsprocessing.DefaultProcessingViewer;
 import ec.ui.view.tsprocessing.TsProcessingViewer;
 import ec.util.grid.swing.XTable;
+import ec.util.table.swing.JTables;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
@@ -602,7 +603,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         lsmodel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         lsmodel.addListSelectionListener(listTableListener);
 
-        XTable.setWidthAsPercentages(result, .35, .1, .1, .1, .05, .07, .07, .06);
+        JTables.setWidthAsPercentages(result, .35, .1, .1, .1, .05, .07, .07, .06);
         result.setAutoCreateColumnsFromModel(false);
         result.getColumnModel().getColumn(SaProcessingModel.SERIES).setCellRenderer(new SeriesRenderer());
         result.getColumnModel().getColumn(SaProcessingModel.METHOD).setCellRenderer(new MethodRenderer());

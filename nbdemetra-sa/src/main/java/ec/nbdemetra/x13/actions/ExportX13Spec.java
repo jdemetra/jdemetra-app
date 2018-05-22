@@ -19,7 +19,6 @@ package ec.nbdemetra.x13.actions;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.interchange.ExportAction;
 import ec.nbdemetra.ui.interchange.Exportable;
-import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.nbdemetra.x13.X13SpecificationManager;
@@ -27,9 +26,10 @@ import ec.satoolkit.x13.X13Specification;
 import ec.tss.tsproviders.utils.Formatters;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.xml.information.XmlInformationSet;
-import ec.tss.xml.x13.XmlX13Specification;
 import ec.tstoolkit.information.InformationSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -72,7 +72,11 @@ public class ExportX13Spec extends NodeAction implements Presenter.Popup {
 
     @Override
     protected boolean enable(Node[] nodes) {
-        return !Nodes.asIterable(nodes).filter(ItemWsNode.class).filter(ExportX13Spec::isExportable).isEmpty();
+        return Stream.of(nodes).anyMatch(ExportX13Spec::isExportable);
+    }
+
+    private static boolean isExportable(Node o) {
+        return o instanceof ItemWsNode && isExportable((ItemWsNode) o);
     }
 
     private static boolean isExportable(ItemWsNode o) {
@@ -91,11 +95,11 @@ public class ExportX13Spec extends NodeAction implements Presenter.Popup {
     }
 
     private static List<Exportable> getExportables(Node[] activatedNodes) {
-        return Nodes.asIterable(activatedNodes)
-                .filter(ItemWsNode.class)
+        return Stream.of(activatedNodes)
                 .filter(ExportX13Spec::isExportable)
-                .transform(o -> (Exportable) new ExportableX13Spec(o))
-                .toList();
+                .map(ItemWsNode.class::cast)
+                .map(ExportableX13Spec::new)
+                .collect(Collectors.toList());
     }
 
     private static final class ExportableX13Spec implements Exportable {
@@ -109,7 +113,7 @@ public class ExportX13Spec extends NodeAction implements Presenter.Popup {
         @Override
         public Config exportConfig() {
             final WorkspaceItem<X13Specification> xdoc = input.getWorkspace().searchDocument(input.lookup(), X13Specification.class);
-           InformationSet set = xdoc.getElement().write(true);
+            InformationSet set = xdoc.getElement().write(true);
             XmlInformationSet xmlSet = new XmlInformationSet();
             xmlSet.copy(set);
 

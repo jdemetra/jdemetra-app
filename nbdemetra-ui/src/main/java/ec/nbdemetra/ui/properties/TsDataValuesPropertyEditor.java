@@ -22,7 +22,6 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.chart.TsCharts;
 import ec.util.chart.swing.Charts;
 import ec.util.various.swing.StandardSwingColor;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -45,13 +44,14 @@ public class TsDataValuesPropertyEditor extends PropertyEditorSupport {
     private final JLabel singleValuePainter;
 
     public TsDataValuesPropertyEditor() {
-        Color disabledTextColor = StandardSwingColor.TEXT_FIELD_INACTIVE_FOREGROUND.value();
         sparkLinePainter = Charts.createSparkLineChart(Charts.emptyXYDataset());
-        sparkLinePainter.getXYPlot().getRenderer().setBasePaint(disabledTextColor);
         sparkLinePainter.setPadding(PADDING);
         singleValuePainter = new JLabel();
         singleValuePainter.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        singleValuePainter.setForeground(disabledTextColor);
+        StandardSwingColor.TEXT_FIELD_INACTIVE_FOREGROUND.lookup().ifPresent(o -> {
+            sparkLinePainter.getXYPlot().getRenderer().setBasePaint(o);
+            singleValuePainter.setForeground(o);
+        });
     }
 
     @Override

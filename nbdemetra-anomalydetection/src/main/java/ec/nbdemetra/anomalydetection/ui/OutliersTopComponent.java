@@ -26,8 +26,9 @@ import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
-import ec.ui.interfaces.ITsGrid;
+import demetra.ui.components.JTsGrid;
 import ec.util.chart.ObsIndex;
+import demetra.ui.components.TsSelectionBridge;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -123,7 +124,7 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
                         break;
                     case JTsAnomalyGrid.SPEC_CHANGE_PROPERTY:
                     case JTsAnomalyGrid.CRITICAL_VALUE_PROPERTY:
-                    case ITsGrid.SELECTION_PROPERTY:
+                    case TsSelectionBridge.TS_SELECTION_PROPERTY:
                     case JTsAnomalyGrid.TRANSFORMATION_PROPERTY:
                         refreshSummary();
                         break;
@@ -186,7 +187,7 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
         PreprocessingModel ppm = grid.getModelOfSelection();
         if (ppm != null) {
             summary.set(ppm);
-            chart.setModel(new AnomalyDetectionChart.Model(grid.getSelection()[0], ppm));
+            chart.setModel(new AnomalyDetectionChart.Model(grid.getSelectedItem(), ppm));
         } else {
             summary.set(null);
             chart.setModel(null);
@@ -278,7 +279,7 @@ public class OutliersTopComponent extends TopComponent implements ExplorerManage
             menuItem.setEnabled(i != 1);
             addPopup.add(menuItem);
         }
-        grid.addPropertyChangeListener(ITsGrid.ZOOM_PROPERTY, evt -> {
+        grid.addPropertyChangeListener(JTsGrid.ZOOM_PROPERTY, evt -> {
             for (Component o : addPopup.getComponents()) {
                 JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
                 item.setState(grid.getZoomPercentage() == Integer.parseInt(o.getName()));

@@ -4,6 +4,9 @@
  */
 package ec.nbdemetra.ui.nodes;
 
+import demetra.ui.TsManager;
+import demetra.ui.components.HasTsCollection;
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.Ts;
@@ -11,17 +14,16 @@ import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
 import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.MetaData;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import ec.ui.interfaces.ITsCollectionView;
 import internal.FrozenTsHelper;
 import ec.nbdemetra.ui.properties.LocalDateTimePropertyEditor;
 import ec.tss.TsMoniker;
 import ec.tss.tsproviders.DataSet;
+import demetra.ui.components.TsSelectionBridge;
 import java.awt.Image;
 import java.beans.PropertyVetoException;
 import java.time.LocalDateTime;
@@ -32,6 +34,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.swing.JComponent;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
@@ -48,47 +51,49 @@ public class ControlNode {
 
     private static final Node VOID = new AbstractNodeBuilder().name("void").build();
 
-    public static Node onComponentOpened(final ExplorerManager mgr, final ITsCollectionView view) {
-        view.addPropertyChangeListener(evt -> {
-            switch (evt.getPropertyName()) {
-                case ITsCollectionView.SELECTION_PROPERTY:
-                    onSelectionChange(mgr, view);
-                    break;
-                case ITsCollectionView.TS_COLLECTION_PROPERTY:
-                    onCollectionChange(mgr, view);
-                    break;
-            }
-        });
+    public static Node onComponentOpened(final ExplorerManager mgr, final HasTsCollection view) {
+        if (view instanceof JComponent) {
+            ((JComponent) view).addPropertyChangeListener(evt -> {
+                switch (evt.getPropertyName()) {
+                    case TsSelectionBridge.TS_SELECTION_PROPERTY:
+                        onSelectionChange(mgr, view);
+                        break;
+                    case HasTsCollection.TS_COLLECTION_PROPERTY:
+                        onCollectionChange(mgr, view);
+                        break;
+                }
+            });
+        }
         onCollectionChange(mgr, view);
         onSelectionChange(mgr, view);
 
         return VOID;
     }
 
-    private static void onSelectionChange(ExplorerManager mgr, ITsCollectionView view) {
-        Ts[] selection = view.getSelection();
-        if (selection.length == 0) {
+    private static void onSelectionChange(ExplorerManager mgr, HasTsCollection view) {
+        if (view.getTsSelectionModel().isSelectionEmpty()) {
             selectSingleIfReadonly(mgr, view);
         } else {
-            selectNodes(mgr, selection);
+            Ts[] tss = view.getTsSelectionStream().toArray(Ts[]::new);
+            selectNodes(mgr, tss);
         }
     }
 
-    private static void onCollectionChange(ExplorerManager mgr, ITsCollectionView view) {
+    private static void onCollectionChange(ExplorerManager mgr, HasTsCollection view) {
         mgr.setRootContext(new TsCollectionNode(view.getTsCollection()));
         selectSingleIfReadonly(mgr, view);
     }
 
-    private static boolean isReadonly(ITsCollectionView view) {
-        return view.getTsUpdateMode() == ITsCollectionView.TsUpdateMode.None;
+    private static boolean isReadonly(HasTsCollection view) {
+        return view.getTsUpdateMode() == TsUpdateMode.None;
     }
 
-    private static Ts getSingleOrNull(ITsCollectionView view) {
+    private static Ts getSingleOrNull(HasTsCollection view) {
         Ts[] result = view.getTsCollection().toArray();
         return result.length == 1 ? result[0] : null;
     }
 
-    private static void selectSingleIfReadonly(ExplorerManager mgr, ITsCollectionView view) {
+    private static void selectSingleIfReadonly(ExplorerManager mgr, HasTsCollection view) {
         if (isReadonly(view)) {
             Ts single = getSingleOrNull(view);
             if (single != null) {
@@ -302,7 +307,7 @@ public class ControlNode {
         if (original != null) {
             String providerName = original.getSource();
             if (providerName != null) {
-                IDataSourceProvider p = TsProviders.lookup(IDataSourceProvider.class, providerName).orNull();
+                IDataSourceProvider p = TsManager.getDefault().lookup(IDataSourceProvider.class, providerName).orElse(null);
                 b.with(String.class).selectConst("Provider", getProviderDisplayName(p, providerName)).add();
                 b.with(String.class).selectConst("Data source", getDataSourceDisplayName(p, original, "unavailable")).add();
             }

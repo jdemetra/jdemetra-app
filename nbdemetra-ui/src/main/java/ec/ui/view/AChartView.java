@@ -4,10 +4,8 @@
  */
 package ec.ui.view;
 
-import ec.ui.interfaces.IDisposable;
-import ec.ui.interfaces.IColorSchemeAble;
+import demetra.ui.components.HasColorScheme;
 import ec.nbdemetra.ui.ThemeSupport;
-import ec.util.chart.ColorScheme;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -28,7 +26,7 @@ import org.jfree.data.xy.XYSeriesCollection;
  *
  * @author Kristof Bayens
  */
-public abstract class AChartView extends JComponent implements IColorSchemeAble, IDisposable {
+public abstract class AChartView extends JComponent implements HasColorScheme {
 
     // PROPERTIES
     protected PlotOrientation orientation_;
@@ -47,6 +45,9 @@ public abstract class AChartView extends JComponent implements IColorSchemeAble,
     protected final JChartPanel chartPanel;
     protected final XYSeriesCollection seriesCollection;
 
+    @lombok.experimental.Delegate
+    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+
     public AChartView(int points, PlotOrientation orientation, double baseminx, double basemaxx, double baseminy, double basemaxy, NumberTickUnit basetickunitx, NumberTickUnit basetickunity, DecimalFormat baseformat) {
         setLayout(new BorderLayout());
 
@@ -60,13 +61,8 @@ public abstract class AChartView extends JComponent implements IColorSchemeAble,
         this.basedecimalformat_ = baseformat;
         this.orientation_ = orientation;
 
-        this.themeSupport = new ThemeSupport() {
-
-            @Override
-            protected void colorSchemeChanged() {
-                onColorSchemeChange();
-            }
-        };
+        this.themeSupport = new ThemeSupport();
+        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
         this.seriesCollection = new XYSeriesCollection();
         this.chartPanel = new JChartPanel(ChartFactory.createLineChart(null, null, null, null, orientation_, false, false, false)); //, getDefaultMinX(), getDefaultMaxX(), getDefaultMinY(), getDefaultMaxY());
 
@@ -130,10 +126,6 @@ public abstract class AChartView extends JComponent implements IColorSchemeAble,
         restoreBaseValues();
         this.add(chartPanel, BorderLayout.CENTER);
         themeSupport.register();
-    }
-
-    @Override
-    public void dispose() {
     }
 
     // EVENT HANDLERS >
@@ -239,16 +231,6 @@ public abstract class AChartView extends JComponent implements IColorSchemeAble,
 
     public void setZoomable(boolean value) {
         zoomable_ = value;
-    }
-
-    @Override
-    public void setColorScheme(ColorScheme theme) {
-        themeSupport.setLocalColorScheme(theme);
-    }
-
-    @Override
-    public ColorScheme getColorScheme() {
-        return themeSupport.getLocalColorScheme();
     }
 
     public void setFocus(Comparable key) {

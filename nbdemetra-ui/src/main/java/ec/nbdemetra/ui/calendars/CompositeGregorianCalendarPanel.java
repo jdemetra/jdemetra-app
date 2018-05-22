@@ -5,9 +5,9 @@
 package ec.nbdemetra.ui.calendars;
 
 import com.google.common.collect.ImmutableList;
+import demetra.ui.beans.ListenableBean;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
-import ec.nbdemetra.ui.awt.ListenableBean;
 import ec.nbdemetra.ui.awt.ListenerState;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.utils.IConstraint;

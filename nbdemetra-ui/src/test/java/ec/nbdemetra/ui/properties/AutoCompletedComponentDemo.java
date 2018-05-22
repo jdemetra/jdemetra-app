@@ -71,7 +71,7 @@ final class AutoCompletedComponentDemo {
     private static List<StandardSystemProperty> load(String term) {
         Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
         return Stream.of(StandardSystemProperty.values())
-                .filter(o -> o != null && filter.test(o.name()))
+                .filter(o -> filter.test(o.name()))
                 .sorted(Comparator.comparing(StandardSystemProperty::name))
                 .collect(Collectors.toList());
     }

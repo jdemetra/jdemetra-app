@@ -6,7 +6,6 @@ package ec.ui.view;
 
 import ec.nbdemetra.ui.NbComponents;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.interfaces.IDisposable;
 import java.awt.BorderLayout;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
@@ -15,7 +14,7 @@ import javax.swing.JSplitPane;
  *
  * @author Jean Palate
  */
-public class SpectralView extends JComponent implements IDisposable {
+public final class SpectralView extends JComponent {
 
     private final JSplitPane m_splitter;
     AutoRegressiveSpectrumView m_arView;
@@ -34,21 +33,22 @@ public class SpectralView extends JComponent implements IDisposable {
         m_pView.setData("Periodogram", freq, series);
         m_arView.setData("Auto-regressive spectrum", freq, series);
     }
-    
-    public void setDifferencingOrder(int order){
+
+    public void setDifferencingOrder(int order) {
         m_pView.setDifferencingOrder(order);
         m_arView.setDifferencingOrder(order);
     }
 
-    public void setDifferencingLag(int lag){
+    public void setDifferencingLag(int lag) {
         m_pView.setDifferencingLag(lag);
         m_arView.setDifferencingLag(lag);
     }
 
-    public void setLogTransformation(boolean log){
+    public void setLogTransformation(boolean log) {
         m_pView.setLogTransformation(log);
         m_arView.setLogTransformation(log);
     }
+
     private void build() {
         setLayout(new BorderLayout());
         add(m_splitter, BorderLayout.CENTER);
@@ -57,14 +57,8 @@ public class SpectralView extends JComponent implements IDisposable {
         m_splitter.setBottomComponent(m_arView);
         m_splitter.setDividerLocation(.5);
         m_splitter.setResizeWeight(.5);
-        
+
         m_pView.setDifferencingOrder(0);
         m_arView.setDifferencingOrder(0);
-    }
-
-    @Override
-    public void dispose() {
-        m_pView.dispose();
-        m_arView.dispose();
     }
 }

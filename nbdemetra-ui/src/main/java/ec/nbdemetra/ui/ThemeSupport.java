@@ -4,6 +4,8 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.HasObsFormat;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorScheme.KnownColor;
@@ -13,68 +15,58 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import org.openide.util.WeakListeners;
 
 /**
  *
  * @author Philippe Charles
  */
-public abstract class ThemeSupport extends SwingColorSchemeSupport {
+public final class ThemeSupport extends SwingColorSchemeSupport {
+
+    @Deprecated
+    public static ThemeSupport registered() {
+        ThemeSupport result = new ThemeSupport();
+        result.register();
+        return result;
+    }
 
     private final DemetraUI demetraUI;
     private final PropertyChangeListener listener;
     private final Map<Integer, KnownColor> forcedLineColors;
-    private ColorScheme localColorScheme;
-    private DataFormat localDataFormat;
+
+    private HasObsFormat obsFormatProperty;
+    private Runnable onObsFormatChange;
+
+    private HasColorScheme colorSchemeProperty;
+    private Runnable onColorSchemeChange;
 
     public ThemeSupport() {
         this.demetraUI = DemetraUI.getDefault();
         this.listener = new DemetraUIListener();
         this.forcedLineColors = new HashMap<>();
-        this.localColorScheme = null;
     }
 
-    protected void colorSchemeChanged() {
-        // does nothing by default
+    public void setObsFormatListener(HasObsFormat property, Runnable listener) {
+        this.obsFormatProperty = property;
+        this.onObsFormatChange = listener;
     }
 
-    protected void dataFormatChanged() {
-        // does nothing by default
-    }
-
-    public void setLocalColorScheme(@Nullable ColorScheme localColorScheme) {
-        if (!Objects.equals(this.localColorScheme, localColorScheme)) {
-            this.localColorScheme = localColorScheme;
-            colorSchemeChanged();
-        }
-    }
-
-    @Nullable
-    public ColorScheme getLocalColorScheme() {
-        return localColorScheme;
+    public void setColorSchemeListener(HasColorScheme property, Runnable listener) {
+        this.colorSchemeProperty = property;
+        this.onColorSchemeChange = listener;
     }
 
     @Override
     public ColorScheme getColorScheme() {
-        return localColorScheme != null ? localColorScheme : demetraUI.getColorScheme();
+        ColorScheme result = colorSchemeProperty != null ? colorSchemeProperty.getColorScheme() : null;
+        return result != null ? result : demetraUI.getColorScheme();
     }
 
-    @Nullable
-    public DataFormat getLocalDataFormat() {
-        return localDataFormat;
-    }
-
-    public void setLocalDataFormat(@Nullable DataFormat localDataFormat) {
-        if (!Objects.equals(this.localDataFormat, localDataFormat)) {
-            this.localDataFormat = localDataFormat;
-            dataFormatChanged();
-        }
-    }
-
+    @Nonnull
     public DataFormat getDataFormat() {
-        return localDataFormat != null ? localDataFormat : demetraUI.getDataFormat();
+        DataFormat result = obsFormatProperty != null ? obsFormatProperty.getDataFormat() : null;
+        return result != null ? result : demetraUI.getDataFormat();
     }
 
     @Override
@@ -93,13 +85,13 @@ public abstract class ThemeSupport extends SwingColorSchemeSupport {
         public void propertyChange(PropertyChangeEvent evt) {
             switch (evt.getPropertyName()) {
                 case DemetraUI.COLOR_SCHEME_NAME_PROPERTY:
-                    if (localColorScheme == null) {
-                        ThemeSupport.this.colorSchemeChanged();
+                    if (colorSchemeProperty != null && colorSchemeProperty.getColorScheme() == null) {
+                        onColorSchemeChange.run();
                     }
                     break;
                 case DemetraUI.DATA_FORMAT_PROPERTY:
-                    if (localDataFormat == null) {
-                        ThemeSupport.this.dataFormatChanged();
+                    if (obsFormatProperty != null && obsFormatProperty.getDataFormat() == null) {
+                        onObsFormatChange.run();
                     }
                     break;
             }

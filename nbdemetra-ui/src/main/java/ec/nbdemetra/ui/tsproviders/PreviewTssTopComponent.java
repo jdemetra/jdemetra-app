@@ -4,10 +4,10 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.ui.TsManager;
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.TsProviders;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
 import java.util.Optional;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -58,7 +58,7 @@ public final class PreviewTssTopComponent extends TopComponent implements Lookup
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jTsChart1 = new ec.ui.chart.JTsChart();
+        jTsChart1 = new demetra.ui.components.JTsChart();
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -82,7 +82,7 @@ public final class PreviewTssTopComponent extends TopComponent implements Lookup
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private ec.ui.chart.JTsChart jTsChart1;
+    private demetra.ui.components.JTsChart jTsChart1;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -116,7 +116,7 @@ public final class PreviewTssTopComponent extends TopComponent implements Lookup
             jTsChart1.getTsCollection().clear();
             lookupResult.allInstances().stream()
                     .filter(o -> o instanceof SeriesNode)
-                    .map(o -> TsProviders.getTs(o.getLookup().lookup(DataSet.class), TsInformationType.None).toJavaUtil())
+                    .map(o -> TsManager.getDefault().getTs(o.getLookup().lookup(DataSet.class), TsInformationType.None))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .forEach(jTsChart1.getTsCollection()::quietAdd);

@@ -13,6 +13,13 @@
     <name>NbDemetra - Anomaly Detection</name>
 
     <dependencies>
+        <!-- compile only -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
         <!-- NetBeans -->
         <dependency>
             <groupId>org.netbeans.api</groupId>

@@ -26,7 +26,6 @@ import ec.tstoolkit.timeseries.regression.OutlierEstimation;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import static ec.ui.chart.JTimeSeriesChartUtil.newExportImageMenu;
-import static ec.ui.chart.JTimeSeriesChartUtil.newThemeSupport;
 import static ec.ui.chart.JTimeSeriesChartUtil.setSeriesColorist;
 import ec.ui.chart.TsXYDatasets;
 import ec.util.chart.ColorScheme;
@@ -45,6 +44,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.Arrays;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
@@ -68,7 +68,7 @@ final class AnomalyDetectionChart extends JComponent {
     public AnomalyDetectionChart() {
         this.chart = new JTimeSeriesChart();
         this.chartHandler = new ChartHandler();
-        this.themeSupport = newThemeSupport(chart);
+        this.themeSupport = new ThemeSupport();
         this.model = null;
         this.hoveredObs = -1;
 
@@ -261,7 +261,7 @@ final class AnomalyDetectionChart extends JComponent {
         }
 
         private Table<Object> toTable(OutlierEstimation[] input) {
-            OutlierEstimation[] tmp = Arrays.stream(input).filter(o -> o != null).toArray(OutlierEstimation[]::new);
+            OutlierEstimation[] tmp = Arrays.stream(input).filter(Objects::nonNull).toArray(OutlierEstimation[]::new);
             Table<Object> result = new Table<>(tmp.length + 1, 5);
             result.set(0, 0, "");
             result.set(0, 1, "Period");

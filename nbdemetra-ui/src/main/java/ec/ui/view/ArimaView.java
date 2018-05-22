@@ -4,7 +4,6 @@
  */
 package ec.ui.view;
 
-import ec.nbdemetra.ui.ComponentFactory;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.html.HtmlStream;
 import ec.tss.html.HtmlTag;
@@ -16,6 +15,7 @@ import ec.tstoolkit.sarima.SarimaModel;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.uihelper.ModelInformationProvider;
 import ec.ui.AHtmlView;
+import ec.ui.html.JHtmlView;
 import java.awt.BorderLayout;
 import java.io.IOException;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class ArimaView extends JComponent {
         ac.setFrequency(TsFrequency.Monthly);
         ac.setInformation(ModelInformationProvider.AUTOCORRELATIONS);
 
-        documentPanel_ = ComponentFactory.getDefault().newHtmlView();
+        documentPanel_ = new JHtmlView();
 
         JSplitPane split = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, spectrumPanel_, NbComponents.newJScrollPane(documentPanel_));
         split.setDividerLocation(0.5);

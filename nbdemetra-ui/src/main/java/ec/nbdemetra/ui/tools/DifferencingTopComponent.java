@@ -5,6 +5,8 @@
 package ec.nbdemetra.ui.tools;
 
 import demetra.ui.TsManager;
+import demetra.ui.components.HasTs;
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
 import ec.nbdemetra.ui.MonikerUI;
@@ -15,10 +17,8 @@ import ec.tss.TsMoniker;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.stats.AutoCorrelations;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.grid.JTsGrid;
-import ec.ui.interfaces.ITsAble;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
-import ec.ui.interfaces.ITsGrid.Mode;
+import demetra.ui.components.JTsGrid.Mode;
+import demetra.ui.components.JTsGrid;
 import ec.ui.view.AutoCorrelationsView;
 import ec.ui.view.PeriodogramView;
 import java.awt.BorderLayout;
@@ -61,7 +61,7 @@ preferredID = "DifferencingTopComponent")
     "CTL_DifferencingTopComponent=Differencing Window",
     "HINT_DifferencingTopComponent=This is a Differencing window"
 })
-public final class DifferencingTopComponent extends TopComponent implements ITsAble, IActiveView, ExplorerManager.Provider {
+public final class DifferencingTopComponent extends TopComponent implements HasTs, IActiveView, ExplorerManager.Provider {
 
     private final JToolBar toolBar;
     // CONSTANTS

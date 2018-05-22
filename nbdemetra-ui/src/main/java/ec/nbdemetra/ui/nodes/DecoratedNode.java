@@ -17,12 +17,12 @@
 package ec.nbdemetra.ui.nodes;
 
 import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.nodes.FilterNode;
@@ -78,8 +78,8 @@ public class DecoratedNode extends FilterNode {
         return preferredActionDecorator.apply(getOriginal());
     }
 
-    public FluentIterable<DecoratedNode> breadthFirstIterable() {
-        return Nodes.breadthFirstIterable(this).filter(DecoratedNode.class);
+    public Stream<DecoratedNode> breadthFirstStream() {
+        return Nodes.breadthFirstStream(this).filter(DecoratedNode.class::isInstance).map(DecoratedNode.class::cast);
     }
 
     private static class DecoratedChildren extends FilterNode.Children {

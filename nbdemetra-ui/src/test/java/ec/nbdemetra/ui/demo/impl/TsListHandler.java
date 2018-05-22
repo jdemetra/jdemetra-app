@@ -16,12 +16,19 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.ui.interfaces.ITsList;
+import demetra.ui.components.JTsTable;
+import static demetra.ui.components.JTsTable.Column.DATA;
+import static demetra.ui.components.JTsTable.Column.FREQ;
+import static demetra.ui.components.JTsTable.Column.LAST;
+import static demetra.ui.components.JTsTable.Column.LENGTH;
+import static demetra.ui.components.JTsTable.Column.NAME;
+import static demetra.ui.components.JTsTable.Column.START;
+import static demetra.ui.components.JTsTable.Column.TS_IDENTIFIER;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.*;
 import org.openide.awt.DropDownButtonFactory;
@@ -32,43 +39,43 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = DemoComponentHandler.class)
-public final class TsListHandler extends DemoComponentHandler.InstanceOf<ITsList> {
+public final class TsListHandler extends DemoComponentHandler.InstanceOf<JTsTable> {
 
     public TsListHandler() {
-        super(ITsList.class);
+        super(JTsTable.class);
     }
 
     @Override
-    public void doFillToolBar(JToolBar toolBar, ITsList c) {
+    public void doFillToolBar(JToolBar toolBar, JTsTable c) {
         toolBar.add(createInfoButton(c));
     }
 
-    static JButton createInfoButton(final ITsList view) {
+    static JButton createInfoButton(final JTsTable view) {
         JPopupMenu menu = new JPopupMenu();
-        List<ITsList.InfoType> currentInfo = Lists.newArrayList(view.getInformation());
-        for (final ITsList.InfoType o : ITsList.InfoType.values()) {
-            JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(o.name());
-            menuItem.setName(o.name());
-            menuItem.addActionListener(new AbstractAction() {
+        List<JTsTable.Column> currentInfo = view.getColumns();
+        for (JTsTable.Column o : Arrays.asList(NAME, FREQ, START, LAST, LENGTH, DATA, TS_IDENTIFIER)) {
+            JCheckBoxMenuItem item = new JCheckBoxMenuItem(o.getName());
+            item.setName(o.getName());
+            item.addActionListener(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    List<ITsList.InfoType> tmp = Lists.newArrayList(view.getInformation());
+                    List<JTsTable.Column> tmp = new ArrayList<>(view.getColumns());
                     if (tmp.contains(o)) {
                         tmp.remove(o);
                     } else {
                         tmp.add(o);
                     }
-                    view.setInformation(Iterables.toArray(tmp, ITsList.InfoType.class));
+                    view.setColumns(tmp);
                 }
             });
-            menuItem.setState(currentInfo.contains(o));
-            menu.add(menuItem);
+            item.setState(currentInfo.contains(o));
+            menu.add(item);
         }
         JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.COMPILE_16, menu);
         result.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                view.setInformation(null);
+                view.setColumns(null);
             }
         });
         return result;

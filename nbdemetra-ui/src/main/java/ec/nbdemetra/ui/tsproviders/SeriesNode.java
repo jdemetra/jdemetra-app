@@ -16,11 +16,11 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.ui.TsManager;
 import static ec.nbdemetra.ui.tsproviders.SeriesNode.ACTION_PATH;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.TsProviders;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -52,8 +52,8 @@ public final class SeriesNode extends DataSetNode {
     }
 
     private Transferable getData(TsInformationType type) throws IOException {
-        return TsProviders.getTs(getLookup().lookup(DataSet.class), type)
-                .toJavaUtil()
+        return TsManager.getDefault()
+                .getTs(getLookup().lookup(DataSet.class), type)
                 .map(data -> TssTransferSupport.getDefault().fromTs(data))
                 .orElseThrow(() -> new IOException("Cannot create the TS '" + getDisplayName() + "'; check the logs for further details."));
     }

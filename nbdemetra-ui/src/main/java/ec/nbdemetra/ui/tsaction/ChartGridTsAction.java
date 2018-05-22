@@ -16,6 +16,8 @@
  */
 package ec.nbdemetra.ui.tsaction;
 
+import demetra.ui.components.HasChart.LinesThickness;
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
@@ -25,9 +27,7 @@ import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
-import ec.ui.interfaces.ITsChart.LinesThickness;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
-import ec.ui.interfaces.ITsGrid;
+import demetra.ui.components.JTsGrid;
 import java.awt.Image;
 import java.beans.BeanInfo;
 import java.io.Serializable;
@@ -170,7 +170,7 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
             GridTopComponent result = new GridTopComponent();
             result.getGrid().getTsCollection().add(ts);
             result.getGrid().setTsUpdateMode(TsUpdateMode.None);
-            result.getGrid().setMode(ITsGrid.Mode.SINGLETS);
+            result.getGrid().setMode(JTsGrid.Mode.SINGLETS);
             return result;
         }
     }

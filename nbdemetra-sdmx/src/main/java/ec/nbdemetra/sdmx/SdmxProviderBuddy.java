@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.sdmx;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.IConfigurable;
@@ -24,7 +25,6 @@ import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.sdmx.SdmxBean;
 import ec.tss.tsproviders.sdmx.SdmxProvider;
 import ec.tss.tsproviders.sdmx.engine.CunningPlanFactory;
@@ -67,8 +67,8 @@ public class SdmxProviderBuddy extends AbstractDataSourceProviderBuddy implement
 
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("Source");
 
-        TsProviders.lookup(IFileLoader.class, SdmxProvider.SOURCE)
-                .toJavaUtil()
+        TsManager.getDefault()
+                .lookup(IFileLoader.class, SdmxProvider.SOURCE)
                 .ifPresent(o -> addFileProperty(b, bean, o));
         result.add(b.build());
 

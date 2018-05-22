@@ -4,12 +4,12 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.tsproviders.DataSourceNode;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
-import ec.tss.tsproviders.TsProviders;
 import java.beans.IntrospectionException;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
@@ -36,7 +36,7 @@ public final class CloneSourceAction extends SingleNodeAction<DataSourceNode> {
     }
 
     static DataSource clone(DataSource dataSource) throws IntrospectionException {
-        IDataSourceLoader loader = TsProviders.lookup(IDataSourceLoader.class, dataSource).get();
+        IDataSourceLoader loader = TsManager.getDefault().lookup(IDataSourceLoader.class, dataSource).get();
         final Object bean = loader.decodeBean(dataSource);
         if (DataSourceProviderBuddySupport.getDefault().get(loader).editBean("Clone data source", bean)) {
             DataSource newDataSource = loader.encodeBean(bean);
@@ -47,7 +47,7 @@ public final class CloneSourceAction extends SingleNodeAction<DataSourceNode> {
 
     @Override
     protected boolean enable(DataSourceNode activatedNode) {
-        return TsProviders.lookup(IDataSourceLoader.class, activatedNode.getLookup().lookup(DataSource.class)).isPresent();
+        return TsManager.getDefault().lookup(IDataSourceLoader.class, activatedNode.getLookup().lookup(DataSource.class)).isPresent();
     }
 
     @Override

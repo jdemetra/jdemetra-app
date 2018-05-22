@@ -17,10 +17,12 @@
 package ec.nbdemetra.ui.tssave;
 
 import ec.nbdemetra.ui.actions.AbilityAction;
-import ec.nbdemetra.ui.nodes.Nodes;
 import ec.tss.TsCollection;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -51,7 +53,7 @@ public final class TsSaveAction extends AbilityAction<ITsSavable> implements Pre
     }
 
     @Override
-    protected void performAction(Iterable<ITsSavable> items) {
+    protected void performAction(Stream<ITsSavable> items) {
     }
 
     @Override
@@ -60,10 +62,10 @@ public final class TsSaveAction extends AbilityAction<ITsSavable> implements Pre
     }
 
     private static List<ITsSavable> getAll(Node[] activatedNodes) {
-        return Nodes.asIterable(activatedNodes)
-                .transform(o -> o.getLookup().lookup(ITsSavable.class))
-                .filter(o -> o != null)
-                .toList();
+        return Stream.of(activatedNodes)
+                .map(o -> o.getLookup().lookup(ITsSavable.class))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     @Nonnull

@@ -16,14 +16,15 @@
  */
 package ec.ui.view;
 
+import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.TimeSeriesComponent;
+import ec.nbdemetra.ui.ThemeSupport;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.stats.AutoCorrelations;
+import ec.tstoolkit.utilities.Arrays2;
 import ec.tstoolkit.utilities.Jdk6;
-import ec.ui.ATsControl;
 import ec.ui.chart.TsCharts;
 import ec.ui.interfaces.IReadDataBlockView;
-import ec.ui.interfaces.IColorSchemeAble;
-import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
@@ -33,6 +34,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Stroke;
 import java.util.Collection;
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import org.jfree.chart.ChartFactory;
@@ -52,7 +54,7 @@ import org.jfree.ui.Layer;
  *
  * @author Demortier Jeremy
  */
-public class AutoCorrelationsView extends ATsControl implements IReadDataBlockView, IColorSchemeAble {
+public final class AutoCorrelationsView extends JComponent implements TimeSeriesComponent, IReadDataBlockView, HasColorScheme {
 
     public enum ACKind {
 
@@ -60,11 +62,11 @@ public class AutoCorrelationsView extends ATsControl implements IReadDataBlockVi
     };
 
     // CONSTANTS
-    protected static final Stroke MARKER_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.0f, new float[]{6.0f, 6.0f}, 0.0f);
-    protected static final float MARKER_ALPHA = 0.8f;
-    protected static final KnownColor NORMAL_COLOR = KnownColor.BLUE;
-    protected static final KnownColor PARTIAL_COLOR = KnownColor.BROWN;
-    protected static final KnownColor MARKER_COLOR = KnownColor.GREEN;
+    private static final Stroke MARKER_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.0f, new float[]{6.0f, 6.0f}, 0.0f);
+    private static final float MARKER_ALPHA = 0.8f;
+    private static final KnownColor NORMAL_COLOR = KnownColor.BLUE;
+    private static final KnownColor PARTIAL_COLOR = KnownColor.BROWN;
+    private static final KnownColor MARKER_COLOR = KnownColor.GREEN;
 
     // PROPERTIES DEFINITIONS
     public static final String LENGTH_PROPERTY = "length";
@@ -73,21 +75,28 @@ public class AutoCorrelationsView extends ATsControl implements IReadDataBlockVi
     public static final String AUTO_CORRELATIONS_PROPERTY = "autoCorrelations";
 
     // DEFAULT PROPERTIES
-    protected static final int DEFAULT_LENGTH = 36;
-    protected static final ACKind DEFAULT_KIND = ACKind.Normal;
-    protected static final boolean DEFAULT_MEAN_CORRECTION = false;
-    protected static final AutoCorrelations DEFAULT_AUTO_CORRELATIONS = null;
+    private static final int DEFAULT_LENGTH = 36;
+    private static final ACKind DEFAULT_KIND = ACKind.Normal;
+    private static final boolean DEFAULT_MEAN_CORRECTION = false;
+    private static final AutoCorrelations DEFAULT_AUTO_CORRELATIONS = null;
 
     // PROPERTIES
-    protected int length;
-    protected ACKind kind;
-    protected boolean meanCorrection;
-    protected AutoCorrelations ac;
+    private int length;
+    private ACKind kind;
+    private boolean meanCorrection;
+    private AutoCorrelations ac;
 
     // OTHER
-    protected final ChartPanel chartPanel;
+    private final ChartPanel chartPanel;
+
+    @lombok.experimental.Delegate
+    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+
+    private final ThemeSupport themeSupport = ThemeSupport.registered();
 
     public AutoCorrelationsView() {
+        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
+
         this.length = DEFAULT_LENGTH;
         this.kind = DEFAULT_KIND;
         this.meanCorrection = DEFAULT_MEAN_CORRECTION;
@@ -95,7 +104,6 @@ public class AutoCorrelationsView extends ATsControl implements IReadDataBlockVi
 
         this.chartPanel = Charts.newChartPanel(createAutoCorrelationsViewChart());
 
-        onDataFormatChange();
         onColorSchemeChange();
         onComponentPopupMenuChange();
         enableProperties();
@@ -127,13 +135,7 @@ public class AutoCorrelationsView extends ATsControl implements IReadDataBlockVi
     }
 
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
-    @Override
-    protected void onDataFormatChange() {
-        // do nothing
-    }
-
-    @Override
-    protected void onColorSchemeChange() {
+    private void onColorSchemeChange() {
         XYPlot plot = chartPanel.getChart().getXYPlot();
         plot.setBackgroundPaint(themeSupport.getPlotColor());
         plot.setDomainGridlinePaint(themeSupport.getGridColor());
@@ -154,7 +156,7 @@ public class AutoCorrelationsView extends ATsControl implements IReadDataBlockVi
         }
     }
 
-    protected void onDataChange() {
+    private void onDataChange() {
         chartPanel.getChart().setTitle(ACKind.Normal == kind ? "Autocorrelations" : "Partial autocorrelations");
         NumberAxis domainAxis = (NumberAxis) chartPanel.getChart().getXYPlot().getDomainAxis();
         domainAxis.setRange(0, length);
@@ -234,16 +236,6 @@ public class AutoCorrelationsView extends ATsControl implements IReadDataBlockVi
     public AutoCorrelations getAutoCorrelations() {
         return ac;
     }
-
-    @Override
-    public ColorScheme getColorScheme() {
-        return themeSupport.getLocalColorScheme();
-    }
-
-    @Override
-    public void setColorScheme(ColorScheme theme) {
-        themeSupport.setLocalColorScheme(theme);
-    }
     //</editor-fold>
 
     @Override
@@ -293,5 +285,12 @@ public class AutoCorrelationsView extends ATsControl implements IReadDataBlockVi
         result.add(export);
 
         return result;
+    }
+
+    @Override
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        if (!Arrays2.arrayEquals(oldValue, newValue)) {
+            super.firePropertyChange(propertyName, oldValue, newValue);
+        }
     }
 }

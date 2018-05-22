@@ -6,7 +6,6 @@ package ec.nbdemetra.anomalydetection.demo;
 
 import ec.nbdemetra.anomalydetection.ui.CheckLastBatchUI;
 import ec.util.various.swing.BasicSwingLauncher;
-import javax.swing.JPanel;
 
 /**
  *
@@ -16,7 +15,7 @@ public final class CheckLastTest {
 
     public static void main(String[] args) {
         new BasicSwingLauncher()
-                .content(JPanel::new)
+                .content(CheckLastBatchUI::new)
                 .launch();
     }
 }

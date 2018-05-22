@@ -16,12 +16,10 @@
  */
 package ec.nbdemetra.tramoseats.actions;
 
-import ec.demetra.xml.sa.tramoseats.XmlTramoSeatsSpecification;
 import ec.nbdemetra.tramoseats.TramoSeatsSpecificationManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.interchange.ExportAction;
 import ec.nbdemetra.ui.interchange.Exportable;
-import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
@@ -30,6 +28,8 @@ import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.xml.information.XmlInformationSet;
 import ec.tstoolkit.information.InformationSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -72,7 +72,11 @@ public class ExportTramoSeatsSpec extends NodeAction implements Presenter.Popup 
 
     @Override
     protected boolean enable(Node[] nodes) {
-        return !Nodes.asIterable(nodes).filter(ItemWsNode.class).filter(ExportTramoSeatsSpec::isExportable).isEmpty();
+        return Stream.of(nodes).anyMatch(ExportTramoSeatsSpec::isExportable);
+    }
+
+    private static boolean isExportable(Node o) {
+        return o instanceof ItemWsNode && isExportable((ItemWsNode) o);
     }
 
     private static boolean isExportable(ItemWsNode o) {
@@ -91,11 +95,11 @@ public class ExportTramoSeatsSpec extends NodeAction implements Presenter.Popup 
     }
 
     private static List<Exportable> getExportables(Node[] activatedNodes) {
-        return Nodes.asIterable(activatedNodes)
-                .filter(ItemWsNode.class)
+        return Stream.of(activatedNodes)
                 .filter(ExportTramoSeatsSpec::isExportable)
-                .transform(o -> (Exportable) new ExportableTramoSeatsSpec(o))
-                .toList();
+                .map(ItemWsNode.class::cast)
+                .map(ExportableTramoSeatsSpec::new)
+                .collect(Collectors.toList());
     }
 
     private static final class ExportableTramoSeatsSpec implements Exportable {

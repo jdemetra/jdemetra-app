@@ -21,11 +21,12 @@ import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
 import ec.nbdemetra.ui.interchange.ExportAction;
 import ec.nbdemetra.ui.interchange.Exportable;
-import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
 import ec.tstoolkit.timeseries.calendars.IGregorianCalendarProvider;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -64,7 +65,7 @@ public final class ExportCalendarAction extends NodeAction implements Presenter.
 
     @Override
     protected boolean enable(Node[] activatedNodes) {
-        return !Nodes.asIterable(activatedNodes).filter(ItemWsNode.class).filter(ExportCalendarAction::isExportable).isEmpty();
+        return Stream.of(activatedNodes).anyMatch(ExportCalendarAction::isExportable);
     }
 
     @Override
@@ -77,16 +78,20 @@ public final class ExportCalendarAction extends NodeAction implements Presenter.
         return null;
     }
 
+    private static boolean isExportable(Node o) {
+        return o instanceof ItemWsNode && isExportable((ItemWsNode) o);
+    }
+
     private static boolean isExportable(ItemWsNode o) {
         return !o.getDisplayName().equals(GregorianCalendarManager.DEF);
     }
 
     private static List<Exportable> getExportables(Node[] activatedNodes) {
-        return Nodes.asIterable(activatedNodes)
-                .filter(ItemWsNode.class)
+        return Stream.of(activatedNodes)
                 .filter(ExportCalendarAction::isExportable)
-                .transform(o -> (Exportable) new ExportableCalendar(o))
-                .toList();
+                .map(ItemWsNode.class::cast)
+                .map(ExportableCalendar::new)
+                .collect(Collectors.toList());
     }
 
     private static final class ExportableCalendar implements Exportable {

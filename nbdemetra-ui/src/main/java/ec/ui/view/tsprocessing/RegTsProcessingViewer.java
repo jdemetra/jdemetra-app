@@ -5,12 +5,12 @@
 package ec.ui.view.tsprocessing;
 
 import com.google.common.collect.ObjectArrays;
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
+import demetra.ui.components.JTsTable;
 import ec.tss.Ts;
 import ec.tss.documents.MultiTsDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
-import ec.ui.interfaces.ITsList.InfoType;
-import ec.ui.list.JTsList;
+import demetra.ui.components.JTsTable.Column;
 import java.awt.Dimension;
 import java.util.Arrays;
 import javax.swing.Box;
@@ -32,21 +32,21 @@ public class RegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocume
         return viewer;
     }
     // visual components
-    private final JTsList yList, xList;
+    private final JTsTable yList, xList;
     private final JLabel specLabel;
     private boolean quietRefresh;
 
     public RegTsProcessingViewer(Type type) {
         super(type);
-        yList = new JTsList();
+        yList = new JTsTable();
         yList.setVisible(true);
         yList.setShowHeader(false);
         yList.setTsUpdateMode(TsUpdateMode.Single);
-        yList.setInformation(new InfoType[]{InfoType.Name});
-        xList = new JTsList();
+        yList.setColumns(Arrays.asList(Column.NAME));
+        xList = new JTsTable();
         yList.setVisible(true);
         xList.setShowHeader(false);
-        xList.setInformation(new InfoType[]{InfoType.Name});
+        xList.setColumns(Arrays.asList(Column.NAME));
         this.specLabel = new JLabel("Spec: ");
         specLabel.setVisible(true);
         xList.setPreferredSize(new Dimension(50, 60));
@@ -67,12 +67,12 @@ public class RegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocume
 
         toolBar.setVisible(true);
 
-        xList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, evt -> {
+        xList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             if (!quietRefresh) {
                 updateDocument();
             }
         });
-        yList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, evt-> {
+        yList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt-> {
             if (!quietRefresh) {
                 updateDocument();
             }
@@ -138,7 +138,5 @@ public class RegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocume
     @Override
     public void dispose() {
         super.dispose();
-        yList.dispose();
-        xList.dispose();
     }
 }

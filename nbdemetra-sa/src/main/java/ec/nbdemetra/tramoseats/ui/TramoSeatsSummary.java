@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.tramoseats.ui;
 
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.NbComponents;
 import ec.satoolkit.ComponentDescriptor;
 import ec.satoolkit.seats.SeatsResults;
@@ -17,9 +18,8 @@ import ec.tstoolkit.modelling.ModellingDictionary;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.ucarima.UcarimaModel;
 import ec.ui.Disposables;
-import ec.ui.chart.JTsChart;
 import ec.ui.interfaces.IDisposable;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
+import demetra.ui.components.JTsChart;
 import ec.ui.view.SIView;
 import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;
@@ -139,8 +139,6 @@ public class TramoSeatsSummary extends JComponent implements IDisposable {
     @Override
     public void dispose() {
         doc_ = null;
-        siPanel_.dispose();
-        chart_.dispose();
         Disposables.disposeAndRemoveAll(document_);
     }
 }

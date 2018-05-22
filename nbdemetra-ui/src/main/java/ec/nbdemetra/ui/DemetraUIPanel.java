@@ -16,17 +16,17 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.ns.INamedService;
 import ec.nbdemetra.ui.properties.DataFormatComponent2;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor;
 import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.tss.Ts;
-import ec.ui.ATsChart;
+import demetra.ui.components.JTsChart;
 import ec.ui.DemoUtils;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
 import ec.util.chart.ColorScheme;
-import ec.util.chart.swing.ColorSchemeIcon;
+import internal.ui.components.HasColorSchemeCommands;
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -41,13 +41,13 @@ import org.openide.util.ImageUtilities;
 final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeListener, PropertyChangeListener {
 
     private final DemetraUIOptionsPanelController controller;
-    final ATsChart colorSchemePreviewer;
+    final JTsChart colorSchemePreviewer;
 
     DemetraUIPanel(DemetraUIOptionsPanelController controller) {
         this.controller = controller;
         initComponents();
 
-        colorSchemePreviewer = ComponentFactory.getDefault().newTsChart();
+        colorSchemePreviewer = new JTsChart();
         colorSchemePreviewer.setTsCollection(DemoUtils.randomTsCollection(3));
         colorSchemePreviewer.setTsAction(new PreviewTsAction());
         colorSchemePreviewer.setTsUpdateMode(TsUpdateMode.None);
@@ -288,7 +288,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
 
         @Override
         public Image getIcon(int type, boolean opened) {
-            return ImageUtilities.icon2Image(new ColorSchemeIcon(colorScheme));
+            return ImageUtilities.icon2Image(HasColorSchemeCommands.iconOf(colorScheme));
         }
 
         public ColorScheme getColorScheme() {

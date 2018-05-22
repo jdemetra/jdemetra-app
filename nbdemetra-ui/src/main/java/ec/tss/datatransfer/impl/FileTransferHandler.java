@@ -4,6 +4,7 @@
  */
 package ec.tss.datatransfer.impl;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.nbdemetra.ui.tsproviders.actions.OpenProvidersAction;
 import ec.tss.datatransfer.DataSourceTransferHandler;
@@ -11,7 +12,6 @@ import ec.tss.datatransfer.DataTransfers;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IFileBean;
 import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.TsProviders;
 import java.awt.datatransfer.Transferable;
 import java.beans.IntrospectionException;
 import java.io.File;
@@ -36,7 +36,7 @@ public class FileTransferHandler extends DataSourceTransferHandler {
     public boolean canHandle(Transferable t, String providerName) {
         Optional<File> file = DataTransfers.getSingleFile(t);
         if (file.isPresent()) {
-            Optional<IFileLoader> loader = TsProviders.lookup(IFileLoader.class, providerName).toJavaUtil();
+            Optional<IFileLoader> loader = TsManager.getDefault().lookup(IFileLoader.class, providerName);
             return loader.isPresent() ? loader.get().accept(file.get()) : false;
         }
         return false;
@@ -64,7 +64,7 @@ public class FileTransferHandler extends DataSourceTransferHandler {
     @Override
     public Optional<DataSource> getDataSource(Transferable t, String providerName) {
         File file = DataTransfers.getSingleFile(t).get();
-        IFileLoader loader = TsProviders.lookup(IFileLoader.class, providerName).get();
+        IFileLoader loader = TsManager.getDefault().lookup(IFileLoader.class, providerName).get();
         IFileBean bean = loader.newBean();
         bean.setFile(file);
         try {

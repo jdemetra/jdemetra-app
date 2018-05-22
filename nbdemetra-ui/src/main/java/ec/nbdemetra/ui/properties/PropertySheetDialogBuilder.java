@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.properties;
 
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import ec.tstoolkit.utilities.Trees;
-import ec.util.grid.swing.XTable;
+import ec.util.table.swing.JTables;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dialog;
@@ -77,7 +77,7 @@ public final class PropertySheetDialogBuilder {
         Trees.breadthFirstStream(v, PropertySheetDialogBuilder::childrenStream)
                 .filter(o -> o instanceof JTable)
                 .findFirst()
-                .ifPresent(o -> XTable.setWidthAsPercentages(((JTable) o), .3, .7));
+                .ifPresent(o -> JTables.setWidthAsPercentages(((JTable) o), .3, .7));
 
         DialogDescriptor d = new DialogDescriptor(v, title);
         Dialog dialog = DialogDisplayer.getDefault().createDialog(d);

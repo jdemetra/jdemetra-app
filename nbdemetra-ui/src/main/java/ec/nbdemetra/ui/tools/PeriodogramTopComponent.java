@@ -4,10 +4,10 @@
  */
 package ec.nbdemetra.ui.tools;
 
+import demetra.ui.components.HasTs;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
 import ec.tss.Ts;
-import ec.ui.interfaces.ITsAble;
 import ec.ui.view.PeriodogramView;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.JMenu;
@@ -40,7 +40,7 @@ import org.openide.windows.WindowManager;
     "CTL_PeriodogramTopComponent=Periodogram Window",
     "HINT_PeriodogramTopComponent=This is a Periodogram window"
 })
-public final class PeriodogramTopComponent extends TopComponent implements ITsAble, IActiveView, ExplorerManager.Provider {
+public final class PeriodogramTopComponent extends TopComponent implements HasTs, IActiveView, ExplorerManager.Provider {
 
     private PeriodogramView view;
     private Node node;

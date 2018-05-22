@@ -7,6 +7,7 @@ package ec.nbdemetra.ui.tools;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import demetra.ui.TsManager;
+import demetra.ui.components.HasTsCollection;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
@@ -18,14 +19,13 @@ import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.IParser;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.tstoolkit.utilities.URLEncoder2;
-import ec.ui.interfaces.ITsCollectionView;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -69,23 +69,28 @@ public final class ToolsPersistence {
         return true;
     }
 
-    public static void writeTsCollection(ITsCollectionView view, Properties p) {
+    public static void writeTsCollection(HasTsCollection view, Properties p) {
         if (view instanceof IConfigurable) {
             Config config = ((IConfigurable) view).getConfig();
             tryPut(p, "config", Config.xmlFormatter(false), true, config);
         }
         if (DemetraUI.getDefault().isPersistToolsContent()) {
-            Content content = new Content(Lists.newArrayList(view.getTsCollection()), Arrays.asList(view.getSelection()));
+            List<Ts> selection = view.getTsSelectionStream().collect(Collectors.toList());
+            Content content = new Content(Lists.newArrayList(view.getTsCollection()), selection);
             tryPut(p, "content", CONTENT_FORMATTER, true, content);
         }
     }
 
-    public static void readTsCollection(ITsCollectionView view, Properties p) {
+    public static void readTsCollection(HasTsCollection view, Properties p) {
         if (DemetraUI.getDefault().isPersistToolsContent()) {
             tryGet(p, "content", CONTENT_PARSER, true).ifPresent(o -> {
                 view.getTsCollection().append(o.collection);
                 view.getTsCollection().load(TsInformationType.Data);
-                view.setSelection(Iterables.toArray(o.selection, Ts.class));
+                view.getTsSelectionModel().clearSelection();
+                o.collection
+                        .stream()
+                        .mapToInt(view.getTsCollection()::indexOf)
+                        .forEach(i -> view.getTsSelectionModel().addSelectionInterval(i, i));
             });
         }
         if (view instanceof IConfigurable) {

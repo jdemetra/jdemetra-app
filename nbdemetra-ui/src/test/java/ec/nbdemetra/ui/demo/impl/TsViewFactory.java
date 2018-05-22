@@ -16,11 +16,11 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import demetra.ui.components.HasTs;
 import ec.nbdemetra.ui.chart3d.functions.Functions2DChart;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.nbdemetra.ui.demo.ReflectComponent;
 import ec.tstoolkit.utilities.Id;
-import ec.ui.interfaces.ITsView;
 import ec.ui.view.AutoRegressiveSpectrumView;
 import ec.ui.view.PeriodogramView;
 import ec.ui.view.RevisionSaSeriesView;
@@ -44,7 +44,7 @@ public final class TsViewFactory extends DemoComponentFactory {
     @Override
     public Map<Id, Callable<Component>> getComponents() {
         return builder()
-                .put(ID, () -> ReflectComponent.of(ITsView.class))
+                .put(ID, () -> ReflectComponent.of(HasTs.class))
                 .put(ID.extend("AutoRegressiveSpectrumView"), AutoRegressiveSpectrumView::new)
                 .put(ID.extend("PeriodogramView"), PeriodogramView::new)
                 .put(ID.extend("TukeySpectrumView"), TukeySpectrumView::new)

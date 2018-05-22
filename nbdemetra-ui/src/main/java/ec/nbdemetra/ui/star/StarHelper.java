@@ -4,11 +4,11 @@
  */
 package ec.nbdemetra.ui.star;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.core.InstallerStep;
 import static ec.nbdemetra.core.InstallerStep.tryGet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.IParser;
 import java.util.Optional;
@@ -46,8 +46,8 @@ public class StarHelper extends InstallerStep {
         }
 
         for (DataSource o : StarList.getInstance()) {
-            TsProviders.lookup(IDataSourceLoader.class, o)
-                    .toJavaUtil()
+            TsManager.getDefault()
+                    .lookup(IDataSourceLoader.class, o)
                     .ifPresent(x -> x.open(o));
         }
     }

@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.tsaction;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
@@ -24,12 +25,11 @@ import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.TsProviders;
-import ec.ui.interfaces.ITsChart;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
 import java.beans.BeanInfo;
 import java.util.Optional;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.components.HasChart;
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 
 /**
  *
@@ -58,7 +58,7 @@ public class SimpleChartTsAction extends AbstractNamedService implements ITsActi
             c = new ChartTopComponent();
             c.setName(name);
 
-            Optional<IDataSourceProvider> provider = TsProviders.lookup(IDataSourceProvider.class, ts.getMoniker()).toJavaUtil();
+            Optional<IDataSourceProvider> provider = TsManager.getDefault().lookup(IDataSourceProvider.class, ts.getMoniker());
             if (provider.isPresent()) {
                 DataSet dataSet = provider.get().toDataSet(ts.getMoniker());
                 if (dataSet != null) {
@@ -73,7 +73,7 @@ public class SimpleChartTsAction extends AbstractNamedService implements ITsActi
             c.getChart().setTsUpdateMode(TsUpdateMode.None);
             c.getChart().setLegendVisible(false);
             c.getChart().setTitle(ts.getName());
-            c.getChart().setLinesThickness(ITsChart.LinesThickness.Thick);
+            c.getChart().setLinesThickness(HasChart.LinesThickness.Thick);
             c.open();
         }
         c.requestActive();

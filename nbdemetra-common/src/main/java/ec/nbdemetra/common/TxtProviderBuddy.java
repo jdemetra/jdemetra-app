@@ -16,13 +16,13 @@
  */
 package ec.nbdemetra.common;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.IFileBean;
 import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.common.txt.TxtBean;
 import ec.tss.tsproviders.common.txt.TxtBean.Delimiter;
 import ec.tss.tsproviders.common.txt.TxtBean.TextQualifier;
@@ -69,8 +69,8 @@ public class TxtProviderBuddy extends AbstractDataSourceProviderBuddy {
         NodePropertySetBuilder b = new NodePropertySetBuilder();
 
         b.reset("Source");
-        TsProviders.lookup(IFileLoader.class, TxtProvider.SOURCE)
-                .toJavaUtil()
+        TsManager.getDefault()
+                .lookup(IFileLoader.class, TxtProvider.SOURCE)
                 .ifPresent(o -> addFileProperty(b, bean, o));
         addReaderProperty(b, bean);
         addCsvDialectProperty(b, bean);

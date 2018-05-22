@@ -4,12 +4,13 @@
  */
 package ec.nbdemetra.ui.tools;
 
-import ec.nbdemetra.ui.ComponentFactory;
+import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.nodes.ControlNode;
-import ec.ui.ATsChart;
-import ec.ui.ATsCollectionView;
+import demetra.ui.components.JTsChart;
+import internal.ui.components.HasColorSchemeCommands;
+import internal.ui.components.HasTsCollectionCommands;
 import java.awt.BorderLayout;
 import javax.swing.*;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -53,7 +54,7 @@ public final class ChartTopComponent extends TopComponent implements ExplorerMan
         setName(Bundle.CTL_ChartTopComponent());
         setToolTipText(Bundle.HINT_ChartTopComponent());
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
-        add(ComponentFactory.getDefault().newTsChart(), BorderLayout.CENTER);
+        add(new JTsChart(), BorderLayout.CENTER);
     }
 
     /**
@@ -82,7 +83,6 @@ public final class ChartTopComponent extends TopComponent implements ExplorerMan
     @Override
     public void componentOpened() {
         ControlNode.onComponentOpened(mgr, getChart());
-        getChart().connect();
 //        Sheet.Set properties = Sheet.createPropertiesSet();
 //        properties.put(new Truc());
 //        sheet.put(properties);
@@ -117,15 +117,15 @@ public final class ChartTopComponent extends TopComponent implements ExplorerMan
 
         result.addSeparator();
 
-        JButton copyBtn = new JButton(getChart().getActionMap().get(ATsCollectionView.COPY_ALL_ACTION));
+        JButton copyBtn = new JButton(getChart().getActionMap().get(HasTsCollectionCommands.COPY_ALL_ACTION));
         copyBtn.setText("");
         copyBtn.setToolTipText("Copy");
         copyBtn.setIcon(DemetraUiIcon.EDIT_COPY_16);
         result.add(copyBtn);
 
-        JPopupMenu menuColorScheme = getChart().buildColorSchemeMenu().getPopupMenu();
+        JPopupMenu menuColorScheme = HasColorSchemeCommands.menuOf(getChart(), DemetraUI.getDefault().getColorSchemes()).getPopupMenu();
         JButton coloSchemeBtn = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.COLOR_SWATCH_16, menuColorScheme);
-        coloSchemeBtn.addActionListener(getChart().getActionMap().get(ATsChart.DEFAULT_COLOR_SCHEME_ACTION));
+        coloSchemeBtn.addActionListener(getChart().getActionMap().get(HasColorSchemeCommands.DEFAULT_COLOR_SCHEME_ACTION));
         result.add(coloSchemeBtn);
 
         return result;
@@ -192,7 +192,6 @@ public final class ChartTopComponent extends TopComponent implements ExplorerMan
     @Override
     public void componentClosed() {
         mgr.setRootContext(Node.EMPTY);
-        getChart().dispose();
     }
 
     void writeProperties(java.util.Properties p) {
@@ -212,7 +211,7 @@ public final class ChartTopComponent extends TopComponent implements ExplorerMan
         return mgr;
     }
 
-    public ATsChart getChart() {
-        return (ATsChart) getComponent(0);
+    public JTsChart getChart() {
+        return (JTsChart) getComponent(0);
     }
 }

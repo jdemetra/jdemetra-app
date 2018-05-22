@@ -1,15 +1,15 @@
 package ec.ui.view;
 
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.data.DescriptiveStatistics;
-import ec.ui.chart.JTsChart;
-import ec.ui.grid.JTsGrid;
+import demetra.ui.components.JTsGrid.Mode;
 import ec.ui.interfaces.IDisposable;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
-import ec.ui.interfaces.ITsGrid.Mode;
+import demetra.ui.components.JTsChart;
+import demetra.ui.components.JTsGrid;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.*;
@@ -132,8 +132,6 @@ public class TsProperties extends JComponent implements IDisposable {
 
     @Override
     public void dispose() {
-        chart_.dispose();
-        grid_.dispose();
     }
 
     class TsHandler extends TransferHandler {

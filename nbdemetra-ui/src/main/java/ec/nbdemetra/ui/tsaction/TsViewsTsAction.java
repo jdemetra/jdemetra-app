@@ -16,9 +16,9 @@
  */
 package ec.nbdemetra.ui.tsaction;
 
+import demetra.ui.components.HasTs;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.tss.Ts;
-import ec.ui.interfaces.ITsAble;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
 
@@ -43,7 +43,7 @@ public class TsViewsTsAction extends AbstractNamedService implements ITsAction {
     @Override
     public void open(Ts ts) {
         TopComponent.getRegistry().getOpened().stream()
-                .filter(ITsAble.class::isInstance)
-                .forEach(o -> ((ITsAble) o).setTs(ts));
+                .filter(HasTs.class::isInstance)
+                .forEach(o -> ((HasTs) o).setTs(ts));
     }
 }

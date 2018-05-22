@@ -53,15 +53,15 @@ public abstract class TsGridObs {
     abstract public boolean hasFeature(@Nonnull Ts.DataFeature feature) throws IllegalStateException;
 
     //<editor-fold defaultstate="collapsed" desc="Internal implementation">
-    static final TsGridObs empty(int seriesIndex) {
+    public static final TsGridObs empty(int seriesIndex) {
         return Empty.INSTANCE.with(seriesIndex);
     }
 
-    static final TsGridObs missing(int seriesIndex, int obsIndex, TsPeriod period) {
+    public static final TsGridObs missing(int seriesIndex, int obsIndex, TsPeriod period) {
         return Missing.INSTANCE.with(seriesIndex, obsIndex, period);
     }
 
-    static final TsGridObs valid(int seriesIndex, int obsIndex, TsPeriod period, double value, Supplier<DescriptiveStatistics> stats, DataFeatureModel dataFeatureModel) {
+    public static final TsGridObs valid(int seriesIndex, int obsIndex, TsPeriod period, double value, Supplier<DescriptiveStatistics> stats, DataFeatureModel dataFeatureModel) {
         return Valid.INSTANCE.with(seriesIndex, obsIndex, period, value, stats, dataFeatureModel);
     }
 

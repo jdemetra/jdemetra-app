@@ -16,6 +16,7 @@
  */
 package ec.ui.view;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.satoolkit.DecompositionMode;
 import ec.tss.TsInformation;
@@ -25,10 +26,15 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDataBlock;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import ec.ui.ATsView;
 import ec.ui.chart.BasicXYDataset;
 import ec.ui.chart.TsCharts;
-import ec.ui.interfaces.ITsChart.LinesThickness;
+import demetra.ui.components.HasChart.LinesThickness;
+import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.HasTs;
+import demetra.ui.components.TimeSeriesComponent;
+import ec.nbdemetra.ui.ThemeSupport;
+import ec.tss.Ts;
+import ec.tss.TsInformationType;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
@@ -40,9 +46,6 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
@@ -50,7 +53,9 @@ import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -72,7 +77,7 @@ import org.jfree.data.xy.XYDataset;
  *
  * @author Kristof Bayens
  */
-public class SIView extends ATsView implements ClipboardOwner {
+public final class SIView extends JComponent implements TimeSeriesComponent, HasTs, HasColorScheme {
 
     // CONSTANTS
     private static final int S_INDEX = 0;
@@ -92,6 +97,14 @@ public class SIView extends ATsView implements ClipboardOwner {
     private final JFreeChart detailChart;
     private final DecimalFormat format = new DecimalFormat("0");
     private NumberFormat numberFormat;
+
+    @lombok.experimental.Delegate
+    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
+
+    @lombok.experimental.Delegate
+    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+
+    private final ThemeSupport themeSupport = ThemeSupport.registered();
 
     private final RevealObs revealObs;
 
@@ -161,6 +174,8 @@ public class SIView extends ATsView implements ClipboardOwner {
     }
 
     public SIView() {
+        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
+        
         this.graphs_ = new HashMap<>();
         highlight = null;
         this.revealObs = new RevealObs();
@@ -199,6 +214,8 @@ public class SIView extends ATsView implements ClipboardOwner {
     private void enableProperties() {
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
+                case TS_PROPERTY:
+                    onTsChange();
                 case "componentPopupMenu":
                     onComponentPopupMenuChange();
                     break;
@@ -251,25 +268,28 @@ public class SIView extends ATsView implements ClipboardOwner {
         });
     }
 
+    @Nullable
+    private TsInformation getTsInformation() {
+        Ts ts = getTs();
+        return ts != null ? ts.toInfo(TsInformationType.Data) : null;
+    }
+
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
     private void onComponentPopupMenuChange() {
         JPopupMenu popupMenu = getComponentPopupMenu();
         chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildMenu().getPopupMenu());
     }
 
-    @Override
-    protected void onDataFormatChange() {
+    private void onDataFormatChange() {
         numberFormat = DemetraUI.getDefault().getDataFormat().newNumberFormat();
     }
 
-    @Override
-    protected void onTsChange() {
+    private void onTsChange() {
         TsInformation ts = getTsInformation();
         setData(ts != null ? ts.data : null);
     }
 
-    @Override
-    protected void onColorSchemeChange() {
+    private void onColorSchemeChange() {
         sRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.BLUE));
         tRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.RED));
         siDetailRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.GRAY));
@@ -482,10 +502,6 @@ public class SIView extends ATsView implements ClipboardOwner {
 
     static void rescaleAxis(NumberAxis axis) {
         axis.setAutoRangeIncludesZero(false);
-    }
-
-    @Override
-    public void lostOwnership(Clipboard clipboard, Transferable contents) {
     }
 
     static JFreeChart createMasterChart(XYLineAndShapeRenderer sRenderer, XYLineAndShapeRenderer tRenderer, XYLineAndShapeRenderer siRenderer2) {

@@ -5,24 +5,24 @@
 package ec.ui.view.tsprocessing;
 
 import demetra.ui.TsManager;
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.tss.TsCollection;
 import ec.tss.documents.DocumentManager;
 import ec.tss.documents.TsDocument;
-import ec.ui.chart.JTsDualChart;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
+import demetra.ui.components.JTsChart;
 
 /**
  *
  * @author Jean Palate
  */
-public class DualChartUI<D extends TsDocument<?, ?>> extends PooledItemUI<IProcDocumentView<D>, String[][], JTsDualChart> {
+public class DualChartUI<D extends TsDocument<?, ?>> extends PooledItemUI<IProcDocumentView<D>, String[][], JTsChart> {
 
     public DualChartUI() {
-        super(JTsDualChart.class);
+        super(JTsChart.class);
     }
 
     @Override
-    protected void init(JTsDualChart c, IProcDocumentView<D> host, String[][] information) {
+    protected void init(JTsChart c, IProcDocumentView<D> host, String[][] information) {
         String[] hnames = information[0], lnames = information[1];
         TsCollection items = TsManager.getDefault().newTsCollection();
         if (hnames != null) {
@@ -35,17 +35,18 @@ public class DualChartUI<D extends TsDocument<?, ?>> extends PooledItemUI<IProcD
                 items.quietAdd(DocumentManager.instance.getTs(host.getDocument(), lnames[i]));
             }
         }
+        c.setDualChart(true);
         c.getTsCollection().quietAppend(items);
         c.setTsUpdateMode(TsUpdateMode.None);
         int i = 0;
+        c.getDualDispatcher().clearSelection();
         if (hnames != null) {
             for (; i < hnames.length; ++i) {
-                c.setTsLevel(i, false);
             }
         }
         if (lnames != null) {
             for (int j = 0; j < lnames.length; ++j, ++i) {
-                c.setTsLevel(i, true);
+                c.getDualDispatcher().setSelectionInterval(i, i);
             }
         }
     }

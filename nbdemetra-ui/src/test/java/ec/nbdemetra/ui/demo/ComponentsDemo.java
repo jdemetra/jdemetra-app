@@ -18,17 +18,18 @@ package ec.nbdemetra.ui.demo;
 
 import com.google.common.collect.Lists;
 import demetra.ui.TsManager;
+import demetra.ui.components.JTsTable;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.awt.ExceptionPanel;
 import ec.tstoolkit.utilities.Id;
-import ec.ui.interfaces.ITsList;
-import ec.ui.list.JTsList;
+import demetra.ui.components.JTsTable.Column;
 import ec.ui.view.tsprocessing.IdsTree;
 import ec.util.various.swing.BasicSwingLauncher;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -54,7 +55,7 @@ import org.openide.util.Lookup;
 /**
  *
  * @author Philippe Charles
- */
+ */     
 public final class ComponentsDemo {
 
     public static void main(String[] args) {
@@ -94,13 +95,13 @@ public final class ComponentsDemo {
             }
         });
 
-        JTsList dragDrop = new JTsList();
-        dragDrop.setShowHeader(false);
-        dragDrop.setInformation(new ITsList.InfoType[]{ITsList.InfoType.TsIdentifier, ITsList.InfoType.Data});
-        dragDrop.setPreferredSize(new Dimension(250, 200));
-        dragDrop.setTsAction(DemoTsActions.DO_NOTHING);
+        JTsTable dnd = new JTsTable();
+        dnd.setShowHeader(false);
+        dnd.setColumns(Arrays.asList(Column.TS_IDENTIFIER, Column.DATA));
+        dnd.setPreferredSize(new Dimension(250, 200));
+        dnd.setTsAction(DemoTsActions.DO_NOTHING);
 
-        JSplitPane left = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, NbComponents.newJScrollPane(tree), dragDrop);
+        JSplitPane left = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, NbComponents.newJScrollPane(tree), dnd);
         JSplitPane splitPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, main);
         splitPane.getLeftComponent().setPreferredSize(new Dimension(250, 400));
 

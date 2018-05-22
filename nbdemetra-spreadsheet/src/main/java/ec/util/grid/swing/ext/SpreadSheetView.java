@@ -16,13 +16,12 @@
  */
 package ec.util.grid.swing.ext;
 
+import demetra.ui.components.HasColorScheme;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.utilities.IPool;
 import ec.tstoolkit.utilities.Pools;
-import ec.ui.interfaces.IColorSchemeAble;
-import ec.util.chart.ColorScheme;
 import ec.util.grid.swing.JGrid;
 import ec.util.spreadsheet.Sheet;
 import ec.util.spreadsheet.helpers.ArrayBook;
@@ -40,11 +39,14 @@ import javax.swing.JTabbedPane;
  *
  * @author Philippe Charles
  */
-public final class SpreadSheetView extends javax.swing.JPanel implements IColorSchemeAble {
+public final class SpreadSheetView extends javax.swing.JPanel implements HasColorScheme {
 
     public static final String ZOOM_RATIO_PROPERTY = "zoomRatio";
     public static final String INVERT_COLORS_PROPERTY = "invertColors";
     public static final String MODEL_PROPERTY = "model";
+
+    @lombok.experimental.Delegate
+    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
 
     private final IPool<JGrid> gridPool;
     private final ThemeSupport themeSupport;
@@ -60,12 +62,8 @@ public final class SpreadSheetView extends javax.swing.JPanel implements IColorS
         initComponents();
 
         this.gridPool = Pools.on(new GridPoolFactory(), 100);
-        this.themeSupport = new ThemeSupport() {
-            @Override
-            protected void colorSchemeChanged() {
-                firePropertyChange(IColorSchemeAble.COLOR_SCHEME_PROPERTY, null, themeSupport.getColorScheme());
-            }
-        };
+        this.themeSupport = new ThemeSupport();
+        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
         this.dataFormat = new DataFormat(Locale.ROOT, "yyyy-MM-dd", null);
         this.zoomRatio = 100;
         this.invertColors = false;
@@ -147,16 +145,6 @@ public final class SpreadSheetView extends javax.swing.JPanel implements IColorS
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
-    @Override
-    public void setColorScheme(ColorScheme colorScheme) {
-        themeSupport.setLocalColorScheme(colorScheme);
-    }
-
-    @Override
-    public ColorScheme getColorScheme() {
-        return themeSupport.getLocalColorScheme();
-    }
-
     public int getZoomRatio() {
         return zoomRatio;
     }

@@ -16,11 +16,11 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.TsProviders;
 import ec.util.list.swing.JLists;
 import java.awt.event.ActionEvent;
 import java.beans.BeanInfo;
@@ -29,6 +29,7 @@ import java.io.File;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComboBox;
@@ -62,14 +63,20 @@ public final class OpenProvidersAction extends AbstractAction implements Present
     @Override
     public JMenuItem getPopupPresenter() {
         JMenu result = new JMenu(Bundle.CTL_OpenProvidersAction());
-        TsProviders.all().filter(IFileLoader.class).stream()
+        TsManager.getDefault().all()
+                .filter(IFileLoader.class::isInstance)
+                .map(IFileLoader.class::cast)
                 .sorted(ON_CLASS_SIMPLENAME)
                 .forEach(o -> result.add(new AbstractActionImpl(o)));
         return result;
     }
 
     public static List<IFileLoader> getLoaders(final File file) {
-        return TsProviders.all().filter(IFileLoader.class).filter(o -> o.accept(file)).toList();
+        return TsManager.getDefault().all()
+                .filter(IFileLoader.class::isInstance)
+                .map(IFileLoader.class::cast)
+                .filter(o -> o.accept(file))
+                .collect(Collectors.toList());
     }
 
     public static <T extends IDataSourceLoader> Optional<T> chooseLoader(List<T> loaders) {

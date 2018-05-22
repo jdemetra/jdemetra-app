@@ -4,9 +4,8 @@
  */
 package ec.nbdemetra.ui.tools;
 
-import ec.nbdemetra.ui.ComponentFactory;
 import ec.nbdemetra.ui.nodes.ControlNode;
-import ec.ui.ATsList;
+import demetra.ui.components.JTsTable;
 import java.awt.BorderLayout;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -23,10 +22,10 @@ import org.openide.windows.WindowManager;
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//ec.nbdemetra.ui.tools//List//EN",
-autostore = false)
+        autostore = false)
 @TopComponent.Description(preferredID = "ListTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_ALWAYS)
+        //iconBase="SET/PATH/TO/ICON/HERE", 
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 @TopComponent.Registration(mode = "tsnavigator", openAtStartup = false)
 @ActionID(category = "Window", id = "ec.nbdemetra.ui.tools.ListTopComponent")
 @ActionReference(path = "Menu/Tools/Container", position = 400)
@@ -45,7 +44,7 @@ public final class ListTopComponent extends TopComponent implements ExplorerMana
         setName(Bundle.CTL_ListTopComponent());
         setToolTipText(Bundle.HINT_ListTopComponent());
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
-        add(ComponentFactory.getDefault().newTsList(), BorderLayout.CENTER);
+        add(new JTsTable(), BorderLayout.CENTER);
     }
 
     /**
@@ -64,21 +63,20 @@ public final class ListTopComponent extends TopComponent implements ExplorerMana
         super.open();
         WindowManager.getDefault().getModes();
         Mode mode = WindowManager.getDefault().findMode("tsnavigator");
-        if (mode != null)
+        if (mode != null) {
             mode.dockInto(this);
+        }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
         ControlNode.onComponentOpened(mgr, getList());
-        getList().connect();
     }
 
     @Override
     public void componentClosed() {
         mgr.setRootContext(Node.EMPTY);
-        getList().dispose();
     }
 
     void writeProperties(java.util.Properties p) {
@@ -98,7 +96,7 @@ public final class ListTopComponent extends TopComponent implements ExplorerMana
         return mgr;
     }
 
-    public ATsList getList() {
-        return (ATsList) getComponent(0);
+    public JTsTable getList() {
+        return (JTsTable) getComponent(0);
     }
 }

@@ -17,13 +17,12 @@
 package ec.nbdemetra.anomalydetection.ui;
 
 import demetra.ui.TsManager;
+import demetra.ui.components.HasTsCollection;
+import static demetra.ui.components.HasTsCollection.TS_COLLECTION_PROPERTY;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.MonikerUI;
-import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
-import ec.nbdemetra.ui.awt.ListTableModel;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.datatransfer.TssTransferSupport;
@@ -32,15 +31,14 @@ import ec.tstoolkit.data.Table;
 import ec.tstoolkit.modelling.arima.CheckLast;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import ec.ui.ATsCollectionView.TsActionMouseAdapter;
-import ec.ui.ATsCollectionView.TsCollectionSelectionListener;
-import ec.ui.ATsCollectionView.TsCollectionTransferHandler;
-import ec.ui.ATsList;
 import ec.ui.DemoUtils;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
-import ec.ui.list.TsPeriodTableCellRenderer;
-import ec.util.grid.swing.XTable;
+import demetra.ui.components.JTsTable;
+import demetra.ui.components.TimeSeriesComponent;
+import ec.nbdemetra.ui.DemetraUI;
+import ec.tss.TsIdentifier;
+import ec.util.table.swing.JTables;
 import ec.util.various.swing.JCommand;
+import demetra.ui.components.TsSelectionBridge;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -50,13 +48,15 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.beans.Beans;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalInt;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -64,13 +64,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 
 /**
  * List component containing input and output results of a Check Last batch
@@ -78,36 +74,35 @@ import javax.swing.table.TableRowSorter;
  *
  * @author Mats Maggi
  */
-public class JTsCheckLastList extends ATsList {
+public final class JTsCheckLastList extends JComponent implements TimeSeriesComponent,
+        HasTsCollection {
 
-    private static final String UNPROCESSABLE_MSG = "Check Last can't be processed !";
-    private static final String NO_DATA_MSG = "Invalid or empty data !";
-    public static final String COLOR_VALUES = "colorValues";
-    public static final String NB_CHECK_LAST = "nbCheckLast";
-    public static final String SPEC_CHANGE = "specChange";
-    private boolean interactive_ = true;
-    private final XTable table;
-    private Map<String, AnomalyItem> map;
-    private List<AnomalyItem> items;
-    private ListTableSelectionListener selectionListener;
-    private AnomalyModel model;
+    public static final String COLOR_VALUES_PROPERTY = "colorValues";
+    public static final String LAST_CHECKS_PROPERTY = "lastChecks";
+    public static final String SPEC_PROPERTY = "spec";
+
+    @lombok.experimental.Delegate(types = HasTsCollection.class)
+    private final JTsTable table;
+
+    private double orangeCells;
+    private double redCells;
+    private int lastChecks;
     private TramoSpecification spec;
-    private int lastChecks = 1;
-    private double orangeCells = 4.0;
-    private double redCells = 5.0;
-    private Comparator<Double> compDouble;
-    private Comparator<Ts> compTs;
+
+    private Map<String, AnomalyItem> map;
+    private final List<AnomalyItem> items;
     private CheckLast checkLast;
 
     public JTsCheckLastList() {
+        this.table = new JTsTable();
+        this.orangeCells = 4.0;
+        this.redCells = 5.0;
+        this.lastChecks = 1;
+        this.spec = TramoSpecification.TRfull.clone();
+
         map = new HashMap<>();
         items = new ArrayList<>();
-        table = buildTable();
-        setColumnsWidths();
-
-        spec = TramoSpecification.TRfull.clone();
-        this.selectionListener = new ListTableSelectionListener();
-        table.getSelectionModel().addListSelectionListener(selectionListener);
+        initTable();
 
         checkLast = new CheckLast(spec.build());
 
@@ -115,7 +110,7 @@ public class JTsCheckLastList extends ATsList {
         enableProperties();
 
         setLayout(new BorderLayout());
-        add(NbComponents.newJScrollPane(table), BorderLayout.CENTER);
+        add(table, BorderLayout.CENTER);
 
         if (Beans.isDesignTime()) {
             setTsCollection(DemoUtils.randomTsCollection(3));
@@ -127,13 +122,29 @@ public class JTsCheckLastList extends ATsList {
     private void enableProperties() {
         this.addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
+                case TS_COLLECTION_PROPERTY:
+                    onCollectionChange();
+                    break;
+                case TsSelectionBridge.TS_SELECTION_PROPERTY:
+                    onSelectionChange();
+                    break;
                 case "componentPopupMenu":
                     onComponentPopupMenuChange();
+                    break;
+                case COLOR_VALUES_PROPERTY:
+                    onColorValuesChange();
+                    break;
+                case LAST_CHECKS_PROPERTY:
+                    onLastChecksChange();
+                    break;
+                case SPEC_PROPERTY:
+                    onSpecChange();
                     break;
             }
         });
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
     public double getOrangeCells() {
         return orangeCells;
     }
@@ -144,8 +155,7 @@ public class JTsCheckLastList extends ATsList {
         }
         double old = this.orangeCells;
         this.orangeCells = orangeCells;
-        fireTableDataChanged();
-        firePropertyChange(COLOR_VALUES, old, this.orangeCells);
+        firePropertyChange(COLOR_VALUES_PROPERTY, old, this.orangeCells);
     }
 
     public double getRedCells() {
@@ -158,8 +168,7 @@ public class JTsCheckLastList extends ATsList {
         }
         double old = this.redCells;
         this.redCells = redCells;
-        fireTableDataChanged();
-        firePropertyChange(COLOR_VALUES, old, this.redCells);
+        firePropertyChange(COLOR_VALUES_PROPERTY, old, this.redCells);
     }
 
     public int getLastChecks() {
@@ -170,29 +179,21 @@ public class JTsCheckLastList extends ATsList {
         if (lastChecks < 1 || lastChecks > 3) {
             throw new IllegalArgumentException("Number of last checked values can only be 1, 2 or 3 !");
         }
-        selectionListener.setEnabled(false);
         int old = this.lastChecks;
         this.lastChecks = lastChecks;
-        resetValues();
-        fireTableStructureChanged();
-        setColumnsWidths();
-        refreshSorter(table);
-        firePropertyChange(NB_CHECK_LAST, old, this.lastChecks);
-        selectionListener.setEnabled(true);
+        firePropertyChange(LAST_CHECKS_PROPERTY, old, this.lastChecks);
     }
 
-    private void setColumnsWidths() {
-        switch (lastChecks) {
-            case 1:
-                XTable.setWidthAsPercentages(table, .7, .1, .1, .1);
-                break;
-            case 2:
-                XTable.setWidthAsPercentages(table, .5, .1, .1, .1, .1, .1);
-                break;
-            case 3:
-                XTable.setWidthAsPercentages(table, .3, .1, .1, .1, .1, .1, .1, .1);
-        }
+    public TramoSpecification getSpec() {
+        return spec;
     }
+
+    public void setSpec(TramoSpecification spec) {
+        TramoSpecification old = this.spec;
+        this.spec = spec;
+        firePropertyChange(SPEC_PROPERTY, old, this.spec);
+    }
+    //</editor-fold>
 
     private void resetValues() {
         for (int i = 0; i < items.size(); i++) {
@@ -204,36 +205,53 @@ public class JTsCheckLastList extends ATsList {
         }
     }
 
-    public TramoSpecification getSpec() {
-        return spec;
-    }
-
     public CheckLast getCheckLast() {
         return checkLast;
     }
 
-    public void setSpec(TramoSpecification spec) {
-        selectionListener.setEnabled(false);
-        TramoSpecification old = this.spec;
-        this.spec = spec;
-        resetValues();
-        fireTableDataChanged();
-        firePropertyChange(SPEC_CHANGE, old, this.spec);
-        selectionListener.setEnabled(true);
+    public Map<String, AnomalyItem> getMap() {
+        return map;
+    }
+
+    public List<AnomalyItem> getItems() {
+        return items;
     }
 
     public void fireTableStructureChanged() {
-        model.fireTableStructureChanged();
-        setColumnsWidths();
+        List<JTsTable.Column> columns = new ArrayList<>();
+        columns.add(seriesColumn);
+        columns.add(lastPeriodColumn);
+        columns.add(abs1Column);
+        columns.add(rel1Column);
+        if (lastChecks > 1) {
+            columns.add(abs2Column);
+            columns.add(rel2Column);
+        }
+        if (lastChecks > 2) {
+            columns.add(abs3Column);
+            columns.add(rel3Column);
+        }
+        table.setColumns(columns);
+        switch (lastChecks) {
+            case 1:
+                table.setWidthAsPercentages(new double[]{.7, .1, .1, .1});
+                break;
+            case 2:
+                table.setWidthAsPercentages(new double[]{.5, .1, .1, .1, .1, .1});
+                break;
+            case 3:
+                table.setWidthAsPercentages(new double[]{.3, .1, .1, .1, .1, .1, .1, .1});
+                break;
+        }
     }
 
     public void fireTableDataChanged() {
-        model.fireTableDataChanged();
+        table.repaint();
     }
 
     private JPopupMenu buildPopupMenu() {
         ActionMap am = getActionMap();
-        JPopupMenu result = buildListMenu().getPopupMenu();
+        JPopupMenu result = HasTsCollection.newDefaultMenu(this, DemetraUI.getDefault()).getPopupMenu();
 
         int index = 11;
         JMenuItem item;
@@ -247,7 +265,7 @@ public class JTsCheckLastList extends ATsList {
         item = new JMenuItem(new AbstractAction("Original Order") {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                table.getRowSorter().setSortKeys(null);
+//                table.getRowSorter().setSortKeys(null);
             }
         });
         item.setEnabled(true);
@@ -269,7 +287,7 @@ public class JTsCheckLastList extends ATsList {
         result.addPopupMenuListener(new PopupMenuListener() {
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                boolean locked = getTsCollection().isLocked() || updateMode == TsUpdateMode.None || !interactive_;
+                boolean locked = getTsCollection().isLocked() || getTsUpdateMode().isReadOnly();
                 unlock.setEnabled(locked);
             }
 
@@ -285,113 +303,48 @@ public class JTsCheckLastList extends ATsList {
         return result;
     }
 
-    private XTable buildTable() {
-        final XTable result = new XTable() {
-            @Override
-            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-                int rowIndex = table.convertRowIndexToModel(row);
-                JLabel c = (JLabel) super.prepareRenderer(renderer, row, column);
-                if (getTsCollection().getCount() > row) {
-                    if (!isCellSelected(row, column)) {
-                        c.setBackground(Color.WHITE);
-                        c.setForeground(Color.BLACK);
-                        c.setToolTipText(null);
-                        c.setEnabled(true);
-                        if (items.get(rowIndex).isNotProcessable()) {
-                            if (column == 0) {
-                                c.setIcon(DemetraUiIcon.WARNING);
-                            }
-                            c.setBackground(new Color(255, 255, 204));
-                            c.setToolTipText(UNPROCESSABLE_MSG);
-                        } else if (items.get(rowIndex).isProcessed()) {
-                            if (column > 2 && column % 2 != 0) {
-                                int relIndex = (column / 2) - 1;
-                                Double relative_err = items.get(rowIndex).getRelativeError(relIndex);
-                                if (relative_err != null) {
-                                    relative_err = Math.abs(relative_err);
-                                    if (relative_err >= orangeCells && relative_err < redCells) {
-                                        c.setBackground(Color.ORANGE);
-                                    } else if (relative_err > redCells) {
-                                        c.setBackground(new Color(255, 102, 102));
-                                    }
-                                }
-                            }
-                        } else if (items.get(rowIndex).isInvalid()) {
-                            if (column == 0) {
-                                c.setIcon(DemetraUiIcon.EXCLAMATION_MARK_16);
-                            }
-                            c.setBackground(new Color(255, 204, 204));
-                            c.setToolTipText(NO_DATA_MSG);
-                        }
-                    } else if (items.get(rowIndex).isInvalid()) {
-                        if (column == 0) {
-                            c.setIcon(DemetraUiIcon.EXCLAMATION_MARK_16);
-                        }
-                        c.setToolTipText(NO_DATA_MSG);
-                    } else if (items.get(rowIndex).isNotProcessable()) {
-                        if (column == 0) {
-                            c.setIcon(DemetraUiIcon.WARNING);
-                        }
-                        c.setToolTipText(UNPROCESSABLE_MSG);
-                    }
-                }
-                return c;
+    private void initTable() {
+//        table.setMultiSelection(false);
+        table.getTsSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//        result.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+//        ((JLabel) result.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+
+        table.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case HasTsCollection.DROP_CONTENT_PROPERTY:
+                case HasTsCollection.FREEZE_ON_IMPORT_PROPERTY:
+                case HasTsCollection.TS_COLLECTION_PROPERTY:
+                case HasTsCollection.TS_SELECTION_MODEL_PROPERTY:
+                case HasTsCollection.UDPATE_MODE_PROPERTY:
+                case TsSelectionBridge.TS_SELECTION_PROPERTY:
+                    firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+                    break;
             }
-        };
+        });
 
-        result.setNoDataRenderer(new XTable.DefaultNoDataRenderer("Drop data here", "Drop data here"));
-        result.setDefaultRenderer(TsPeriod.class, new TsPeriodTableCellRenderer());
-        result.setDefaultRenderer(Ts.class, new TsIdentifierTableCellRenderer());
-        ((JLabel) result.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-        model = new AnomalyModel();
-        result.setModel(model);
+        ActionMaps.copyEntries(getActionMap(), false, table.getActionMap());
+        InputMaps.copyEntries(getInputMap(), false, table.getInputMap());
 
-        ActionMaps.copyEntries(getActionMap(), false, result.getActionMap());
-        InputMaps.copyEntries(getInputMap(), false, result.getInputMap());
-
-        result.addMouseListener(new TsActionMouseAdapter());
-        result.setDragEnabled(true);
-        result.setTransferHandler(new TsCollectionTransferHandler());
-        result.setFillsViewportHeight(true);
-
-        compDouble = (l, r) -> {
-            Double d1 = Math.abs(l);
-            Double d2 = Math.abs(r);
-            return d1.compareTo(d2);
-        };
-
-        compTs = (l, r) -> l.getName().compareTo(r.getName());
-
-        refreshSorter(result);
-
-        result.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-
-        return result;
+        fireTableStructureChanged();
     }
 
-    private void refreshSorter(XTable t) {
-        t.setAutoCreateRowSorter(true);
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
-        if (lastChecks >= 1) {
-            sorter.setComparator(AnomalyModel.SERIES, compTs);
-            sorter.setComparator(AnomalyModel.ABSOLUTE_ERROR1, compDouble);
-            sorter.setComparator(AnomalyModel.RELATIVE_ERROR1, compDouble);
-        }
-        if (lastChecks >= 2) {
-            sorter.setComparator(AnomalyModel.ABSOLUTE_ERROR2, compDouble);
-            sorter.setComparator(AnomalyModel.RELATIVE_ERROR2, compDouble);
-        }
-        if (lastChecks == 3) {
-            sorter.setComparator(AnomalyModel.ABSOLUTE_ERROR3, compDouble);
-            sorter.setComparator(AnomalyModel.RELATIVE_ERROR3, compDouble);
-        }
-
-        t.setRowSorter(sorter);
+    private void onColorValuesChange() {
+        fireTableDataChanged();
     }
 
-    @Override
-    protected void onCollectionChange() {
-        selectionListener.setEnabled(false);
+    private void onLastChecksChange() {
+        resetValues();
+        fireTableStructureChanged();
+    }
+
+    private void onSpecChange() {
+        resetValues();
+        fireTableDataChanged();
+    }
+
+    private void onCollectionChange() {
+//        table.setTsCollection(getTsCollection());
+
         Map<String, AnomalyItem> temp = new HashMap<>();
         items.clear();
         TsCollection collection = getTsCollection();
@@ -413,86 +366,33 @@ public class JTsCheckLastList extends ATsList {
 
         fireTableDataChanged();
 
-        selectionListener.setEnabled(true);
         firePropertyChange(CheckLastBatchUI.COLLECTION_CHANGE, null, collection);
         onSelectionChange();
     }
 
-    @Override
-    protected void onSelectionChange() {
-        selectionListener.setEnabled(false);
-        selectionListener.changeSelection(table.getSelectionModel());
-
-        int index = table.getSelectedRow();
+    private void onSelectionChange() {
+        OptionalInt index = table.getTsSelectionIndexStream().findFirst();
         AnomalyItem selected = null;
-        if (index >= 0) {
-            int modelIndex = table.convertRowIndexToModel(index);
-            selected = items.get(modelIndex);
+        if (index.isPresent()) {
+            selected = items.get(index.getAsInt());
             if (!selected.isProcessed() && selected.getTsData() != null) {
                 CheckLast cl = new CheckLast(spec.build());
                 cl.setBackCount(lastChecks);
                 selected.process(cl);
                 map.put(selected.getTs().getName(), selected);
-                model.fireTableRowsUpdated(index, index);
+                table.repaint();
             }
         }
         firePropertyChange(CheckLastBatchUI.SELECTION_PROPERTY, null, selected);
-        selectionListener.setEnabled(true);
     }
 
     public AnomalyItem put(String key, AnomalyItem value) {
         return map.put(key, value);
     }
 
-    @Override
-    protected void onUpdateModeChange() {
-        String message = getTsUpdateMode().isReadOnly() ? "No data" : "Drop data here";
-        table.setNoDataRenderer(new XTable.DefaultNoDataRenderer(message, message));
-    }
-
-    @Override
-    protected void onTsActionChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onDropContentChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onDataFormatChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onColorSchemeChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onMultiSelectionChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onShowHeaderChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onSortableChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onInformationChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onSortInfoChange() {
-        // Do nothing
+    private Optional<AnomalyItem> getAnomaly(Ts ts) {
+        int index = getTsCollection().indexOf(ts);
+        return index != -1 ? Optional.ofNullable(getItems().get(index)) : Optional.empty();
     }
 
     private void onComponentPopupMenuChange() {
@@ -500,126 +400,73 @@ public class JTsCheckLastList extends ATsList {
         table.setComponentPopupMenu(popupMenu != null ? popupMenu : buildPopupMenu());
     }
 
-    public Map<String, AnomalyItem> getMap() {
-        return map;
-    }
+    private final JTsTable.Column seriesColumn = JTsTable.Column.builder()
+            .name("<html><center>&nbsp;<br>Series Name<br>&nbsp;")
+            .type(Ts.class)
+            .mapper(ts -> getAnomaly(ts).map(AnomalyItem::getTs).map(TsIdentifier::new).orElse(null))
+            .comparator(TS_COMP)
+            .comparator(JTsTable.Column.TS_IDENTIFIER.getComparator())
+            .renderer(o -> new Decorator(JTsTable.Column.TS_IDENTIFIER.getRenderer().apply(o)))
+            .build();
 
-    public List<AnomalyItem> getItems() {
-        return items;
-    }
+    private final JTsTable.Column lastPeriodColumn = JTsTable.Column.builder()
+            .name("<html><center>&nbsp;Last<br>Period<br>&nbsp;")
+            .type(TsPeriod.class)
+            .mapper(ts -> getAnomaly(ts).filter(o -> o.getTsData() != null).map(o -> o.getTsData().getLastPeriod()).orElse(null))
+            .comparator(JTsTable.Column.LAST.getComparator())
+            .renderer(o -> new Decorator(JTsTable.Column.LAST.getRenderer().apply(o)))
+            .build();
 
-    class AnomalyModel extends ListTableModel<AnomalyItem> {
+    private final JTsTable.Column abs1Column = JTsTable.Column.builder()
+            .name("<html><center>Abs.<br>Error<br>N-1")
+            .type(Double.class)
+            .mapper(ts -> getAnomaly(ts).map(o -> o.getAbsoluteError(0)).orElse(null))
+            .comparator(DOUBLE_COMP)
+            .renderer(o -> new Decorator(JTables.cellRendererOf(JTsCheckLastList::apply)))
+            .build();
 
-        static final int SERIES = 0, LAST_PERIOD = 1,
-                ABSOLUTE_ERROR1 = 2, RELATIVE_ERROR1 = 3,
-                ABSOLUTE_ERROR2 = 4, RELATIVE_ERROR2 = 5,
-                ABSOLUTE_ERROR3 = 6, RELATIVE_ERROR3 = 7;
-        private final String COL1 = "<html><center>&nbsp;<br>Series Name<br>&nbsp;";
-        private final String COL2 = "<html><center>&nbsp;Last<br>Period<br>&nbsp;";
-        private final String COL3 = "<html><center>Abs.<br>Error<br>N-";
-        private final String COL4 = "<html><center>Rel.<br>Error<br>N-";
-        final List<String> columnNames1 = Arrays.asList(COL1, COL2, COL3 + 1, COL4 + 1);
-        final List<String> columnNames2 = Arrays.asList(COL1, COL2,
-                COL3 + 1, COL4 + 1,
-                COL3 + 2, COL4 + 2);
-        final List<String> columnNames3 = Arrays.asList(COL1, COL2,
-                COL3 + 1, COL4 + 1,
-                COL3 + 2, COL4 + 2,
-                COL3 + 3, COL4 + 3);
+    private final JTsTable.Column rel1Column = JTsTable.Column.builder()
+            .name("<html><center>Rel.<br>Error<br>N-1")
+            .type(Double.class)
+            .mapper(ts -> getAnomaly(ts).map(o -> o.getRelativeError(0)).orElse(null))
+            .comparator(DOUBLE_COMP)
+            .renderer(o -> new Decorator(JTables.cellRendererOf(JTsCheckLastList::apply)))
+            .build();
 
-        @Override
-        public Class<?> getColumnClass(int columnIndex) {
-            switch (columnIndex) {
-                case SERIES:
-                    return Ts.class;
-                case LAST_PERIOD:
-                    return TsPeriod.class;
-                case ABSOLUTE_ERROR1:
-                case RELATIVE_ERROR1:
-                case ABSOLUTE_ERROR2:
-                case RELATIVE_ERROR2:
-                case ABSOLUTE_ERROR3:
-                case RELATIVE_ERROR3:
-                    return Double.class;
-            }
-            return super.getColumnClass(columnIndex);
-        }
+    private final JTsTable.Column abs2Column = JTsTable.Column.builder()
+            .name("<html><center>Abs.<br>Error<br>N-2")
+            .type(Double.class)
+            .mapper(ts -> getAnomaly(ts).map(o -> o.getAbsoluteError(1)).orElse(null))
+            .comparator(DOUBLE_COMP)
+            .renderer(o -> new Decorator(JTables.cellRendererOf(JTsCheckLastList::apply)))
+            .build();
 
-        @Override
-        protected List<String> getColumnNames() {
-            switch (lastChecks) {
-                case 2:
-                    return columnNames2;
-                case 3:
-                    return columnNames3;
-                default:
-                    return columnNames1;
-            }
-        }
+    private final JTsTable.Column rel2Column = JTsTable.Column.builder()
+            .name("<html><center>Rel.<br>Error<br>N-2")
+            .type(Double.class)
+            .mapper(ts -> getAnomaly(ts).map(o -> o.getRelativeError(1)).orElse(null))
+            .comparator(DOUBLE_COMP)
+            .renderer(o -> new Decorator(JTables.cellRendererOf(JTsCheckLastList::apply)))
+            .build();
 
-        @Override
-        protected List<AnomalyItem> getValues() {
-            return items;
-        }
+    private final JTsTable.Column abs3Column = JTsTable.Column.builder()
+            .name("<html><center>Abs.<br>Error<br>N-3")
+            .type(Double.class)
+            .mapper(ts -> getAnomaly(ts).map(o -> o.getAbsoluteError(2)).orElse(null))
+            .comparator(DOUBLE_COMP)
+            .renderer(o -> new Decorator(JTables.cellRendererOf(JTsCheckLastList::apply)))
+            .build();
 
-        @Override
-        protected Object getValueAt(AnomalyItem row, int columnIndex) {
-            return getValueAt(items.indexOf(row), columnIndex);
-        }
+    private final JTsTable.Column rel3Column = JTsTable.Column.builder()
+            .name("<html><center>Rel.<br>Error<br>N-3")
+            .type(Double.class)
+            .mapper(ts -> getAnomaly(ts).map(o -> o.getRelativeError(2)).orElse(null))
+            .comparator(DOUBLE_COMP)
+            .renderer(o -> new Decorator(JTables.cellRendererOf(JTsCheckLastList::apply)))
+            .build();
 
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            switch (columnIndex) {
-                case SERIES:
-                    return items.get(rowIndex).getTs();
-                case LAST_PERIOD:
-                    if (items.get(rowIndex).getTsData() == null
-                            || items.get(rowIndex).getTsData().getLastPeriod() == null) {
-                        return null;
-                    }
-                    return items.get(rowIndex).getTsData().getLastPeriod();
-                case ABSOLUTE_ERROR1:
-                    return items.get(rowIndex).getAbsoluteError(0);
-                case RELATIVE_ERROR1:
-                    return items.get(rowIndex).getRelativeError(0);
-                case ABSOLUTE_ERROR2:
-                    return items.get(rowIndex).getAbsoluteError(1);
-                case RELATIVE_ERROR2:
-                    return items.get(rowIndex).getRelativeError(1);
-                case ABSOLUTE_ERROR3:
-                    return items.get(rowIndex).getAbsoluteError(2);
-                case RELATIVE_ERROR3:
-                    return items.get(rowIndex).getRelativeError(2);
-            }
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-    }
-
-    private class ListTableSelectionListener extends TsCollectionSelectionListener {
-
-        @Override
-        protected int indexToModel(int index) {
-            return table.convertRowIndexToModel(index);
-        }
-
-        @Override
-        protected int indexToView(int index) {
-            return table.convertRowIndexToView(index);
-        }
-    }
-
-    private static class TsIdentifierTableCellRenderer extends DefaultTableCellRenderer {
-
-        final MonikerUI monikerUI = MonikerUI.getDefault();
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            Ts ts = (Ts) value;
-            result.setText(MultiLineNameUtil.join(ts.getName()));
-            result.setIcon(monikerUI.getIcon(ts.getMoniker()));
-            return result;
-        }
+    private static void apply(JLabel l, Double value) {
+        l.setHorizontalAlignment(JLabel.TRAILING);
     }
 
     public Map getReportParameters() {
@@ -701,4 +548,72 @@ public class JTsCheckLastList extends ATsList {
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
     }
+
+    @lombok.AllArgsConstructor
+    private final class Decorator implements TableCellRenderer {
+
+        @lombok.NonNull
+        private final TableCellRenderer delegate;
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component result = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (result instanceof JLabel) {
+                JLabel c = (JLabel) result;
+                int rowIndex = table.convertRowIndexToModel(row);
+                if (getTsCollection().getCount() > row) {
+                    c.setOpaque(true);
+                    if (!isSelected) {
+                        c.setOpaque(true);
+                        c.setBackground(Color.WHITE);
+                        c.setForeground(Color.BLACK);
+                        c.setToolTipText(null);
+                        c.setEnabled(true);
+                        if (items.get(rowIndex).isNotProcessable()) {
+                            if (column == 0) {
+                                c.setIcon(DemetraUiIcon.WARNING);
+                            }
+                            c.setBackground(new Color(255, 255, 204));
+                            c.setToolTipText(UNPROCESSABLE_MSG);
+                        } else if (items.get(rowIndex).isProcessed()) {
+                            if (column > 2 && column % 2 != 0) {
+                                int relIndex = (column / 2) - 1;
+                                Double relative_err = items.get(rowIndex).getRelativeError(relIndex);
+                                if (relative_err != null) {
+                                    relative_err = Math.abs(relative_err);
+                                    if (relative_err >= orangeCells && relative_err < redCells) {
+                                        c.setBackground(Color.ORANGE);
+                                    } else if (relative_err > redCells) {
+                                        c.setBackground(new Color(255, 102, 102));
+                                    }
+                                }
+                            }
+                        } else if (items.get(rowIndex).isInvalid()) {
+                            if (column == 0) {
+                                c.setIcon(DemetraUiIcon.EXCLAMATION_MARK_16);
+                            }
+                            c.setBackground(new Color(255, 204, 204));
+                            c.setToolTipText(NO_DATA_MSG);
+                        }
+                    } else if (items.get(rowIndex).isInvalid()) {
+                        if (column == 0) {
+                            c.setIcon(DemetraUiIcon.EXCLAMATION_MARK_16);
+                        }
+                        c.setToolTipText(NO_DATA_MSG);
+                    } else if (items.get(rowIndex).isNotProcessable()) {
+                        if (column == 0) {
+                            c.setIcon(DemetraUiIcon.WARNING);
+                        }
+                        c.setToolTipText(UNPROCESSABLE_MSG);
+                    }
+                }
+            }
+            return result;
+        }
+    }
+
+    private static final String UNPROCESSABLE_MSG = "Check Last can't be processed !";
+    private static final String NO_DATA_MSG = "Invalid or empty data !";
+    private static final Comparator<Double> DOUBLE_COMP = Comparator.comparingDouble(Math::abs);
+    private static final Comparator<Ts> TS_COMP = Comparator.comparing(Ts::getName);
 }

@@ -18,7 +18,7 @@ package ec.nbdemetra.anomalydetection.ui;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import demetra.ui.TsManager;
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.anomalydetection.ControlNode;
 import ec.nbdemetra.anomalydetection.report.CheckLastReportAction;
@@ -32,11 +32,10 @@ import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ui.tools.ToolsPersistence;
 import ec.tss.Ts;
-import ec.tss.TsCollection;
 import ec.tstoolkit.modelling.arima.CheckLast;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
-import ec.ui.chart.JTsChart;
-import ec.ui.interfaces.ITsCollectionView;
+import demetra.ui.components.JTsChart;
+import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -44,6 +43,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -137,7 +137,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
 
         list.addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
-                case JTsCheckLastList.COLOR_VALUES:
+                case JTsCheckLastList.COLOR_VALUES_PROPERTY:
                     refreshNode();
                     break;
                 case COLLECTION_CHANGE:
@@ -146,7 +146,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
                 case SELECTION_PROPERTY:
                     onSelectionChange();
                     break;
-                case JTsCheckLastList.NB_CHECK_LAST:
+                case JTsCheckLastList.LAST_CHECKS_PROPERTY:
                     onNbCheckLastChange();
                     break;
             }
@@ -160,7 +160,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
         });
 
         chart = new JTsChart();
-        chart.setTsUpdateMode(ITsCollectionView.TsUpdateMode.None);
+        chart.setTsUpdateMode(TsUpdateMode.None);
         chart.setLegendVisible(false);
 
         tsInformation = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, summary, chart);
@@ -264,7 +264,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
             menuItem.setEnabled(i != specs.length - 1);
             addPopup.add(menuItem);
         }
-        view.addPropertyChangeListener(JTsCheckLastList.SPEC_CHANGE, evt -> {
+        view.addPropertyChangeListener(JTsCheckLastList.SPEC_PROPERTY, evt -> {
             refreshNode();
             for (Component o : addPopup.getComponents()) {
                 JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
@@ -297,7 +297,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
             menuItem.setEnabled(i != 1);
             addPopup.add(menuItem);
         }
-        view.addPropertyChangeListener(JTsCheckLastList.NB_CHECK_LAST, evt -> {
+        view.addPropertyChangeListener(JTsCheckLastList.LAST_CHECKS_PROPERTY, evt -> {
             refreshNode();
             for (Component o : addPopup.getComponents()) {
                 JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
@@ -322,7 +322,6 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
     public void componentClosed() {
         mgr.setRootContext(Node.EMPTY);
         stop();
-        list.dispose();
     }
 
     @Override
@@ -523,12 +522,13 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
 
     // <editor-fold defaultstate="collapsed" desc="Event Handlers">
     private void onSelectionChange() {
-        Ts[] ts = list.getSelection();
-        if (ts == null || ts.length != 1) {
+        OptionalInt singleSelection = JLists.getSelectionIndexStream(list.getTsSelectionModel()).findFirst();
+        if (!singleSelection.isPresent()) {
             summary.set(null, null);
-            chart.setTsCollection(null);
+            chart.getTsCollection().clear();
         } else {
-            AnomalyItem a = list.getMap().get(ts[0].getName());
+            Ts single = list.getTsCollection().get(singleSelection.getAsInt());
+            AnomalyItem a = list.getMap().get(single.getName());
             if (a.isInvalid() || a.isNotProcessable()) {
                 summary.set(null, null);
             } else if (a.getTsData() != null) {
@@ -538,9 +538,8 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
                 summary.set(a, cl.getEstimatedModel());
             }
 
-            TsCollection col = TsManager.getDefault().newTsCollection();
-            col.quietAdd(a.getTs());
-            chart.setTsCollection(col);
+            chart.getTsCollection().quietReplace(a.getTs());
+            chart.repaint();
         }
         summary.repaint();
     }

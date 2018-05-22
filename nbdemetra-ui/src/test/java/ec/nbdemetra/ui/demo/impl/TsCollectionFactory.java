@@ -16,16 +16,15 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import demetra.ui.components.HasTsCollection;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.nbdemetra.ui.demo.ReflectComponent;
 import ec.tstoolkit.utilities.Id;
-import ec.ui.chart.JTsChart;
-import ec.ui.chart.JTsDualChart;
-import ec.ui.chart.JTsGrowthChart;
-import ec.ui.grid.JTsGrid;
+import demetra.ui.components.JTsChart;
+import demetra.ui.components.JTsGrowthChart;
+import demetra.ui.components.JTsGrid;
+import demetra.ui.components.JTsTable;
 import ec.ui.grid.TsGridObs;
-import ec.ui.interfaces.ITsCollectionView;
-import ec.ui.list.JTsList;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Map;
@@ -48,12 +47,21 @@ public final class TsCollectionFactory extends DemoComponentFactory {
     @Override
     public Map<Id, Callable<Component>> getComponents() {
         return builder()
-                .put(ID, () -> ReflectComponent.of(ITsCollectionView.class))
+                .put(ID, () -> ReflectComponent.of(HasTsCollection.class))
                 .put(ID.extend("JTsGrid"), JTsGrid::new)
                 .put(ID.extend("JTsChart"), JTsChart::new)
                 .put(ID.extend("JTsGrowthChart"), JTsGrowthChart::new)
-                .put(ID.extend("JTsDualChart"), JTsDualChart::new)
-                .put(ID.extend("JTsList"), JTsList::new)
+                .put(ID.extend("JTsDualChart"), () -> {
+                    JTsChart result = new JTsChart();
+                    result.setDualChart(true);
+                    result.addPropertyChangeListener(HasTsCollection.TS_COLLECTION_PROPERTY, evt -> {
+                        if (!result.getTsCollection().isEmpty()) {
+                            result.getDualDispatcher().setSelectionInterval(0, 0);
+                        }
+                    });
+                    return result;
+                })
+                .put(ID.extend("JTsTable"), JTsTable::new)
                 .put(ID.extend("JTsGrid++"), TsCollectionFactory::gridWithCustomCellRenderer)
                 .build();
     }

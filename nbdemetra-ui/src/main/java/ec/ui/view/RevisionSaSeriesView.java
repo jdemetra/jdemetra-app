@@ -16,8 +16,12 @@
  */
 package ec.ui.view;
 
-import ec.nbdemetra.ui.ComponentFactory;
+import demetra.ui.TsManager;
+import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.HasTs;
+import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.NbComponents;
+import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlRevisionsDocument;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
@@ -28,19 +32,19 @@ import ec.tstoolkit.timeseries.simplets.TsDataFunction;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.AHtmlView;
-import ec.ui.ATsView;
 import ec.ui.chart.ChartPopup;
 import ec.ui.chart.TsCharts;
+import ec.ui.html.JHtmlView;
 import ec.util.chart.ColorScheme;
 import java.awt.BorderLayout;
 import java.awt.Point;
-import java.awt.datatransfer.ClipboardOwner;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.swing.JComponent;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import org.jfree.chart.ChartFactory;
@@ -64,7 +68,7 @@ import org.jfree.data.time.TimeSeriesCollection;
  *
  * @author Mats Maggi
  */
-public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
+public final class RevisionSaSeriesView extends JComponent implements TimeSeriesComponent, HasTs, HasColorScheme {
 
     private static final int S_INDEX = 1;
     private static final int REV_INDEX = 0;
@@ -85,10 +89,20 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
     private TsData sRef;
     private Range range;
 
+    @lombok.experimental.Delegate
+    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
+
+    @lombok.experimental.Delegate
+    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+
+    private final ThemeSupport themeSupport = ThemeSupport.registered();
+    
     /**
      * Constructs a new view
      */
     public RevisionSaSeriesView() {
+        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
+
         setLayout(new BorderLayout());
 
         sRenderer = new XYLineAndShapeRenderer();
@@ -102,7 +116,7 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
 
         chartpanel_ = new JChartPanel(ChartFactory.createLineChart(null, null, null, null, PlotOrientation.VERTICAL, false, false, false));
 
-        documentpanel_ = ComponentFactory.getDefault().newHtmlView();
+        documentpanel_ = new JHtmlView();
 
         JSplitPane splitpane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, chartpanel_, NbComponents.newJScrollPane(documentpanel_));
         splitpane.setDividerLocation(0.5);
@@ -405,18 +419,7 @@ public class RevisionSaSeriesView extends ATsView implements ClipboardOwner {
         }
     }
 
-    @Override
-    protected void onTsChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onDataFormatChange() {
-        // Do nothing
-    }
-
-    @Override
-    protected void onColorSchemeChange() {
+    private void onColorSchemeChange() {
         sRenderer.setBasePaint(themeSupport.getLineColor(ColorScheme.KnownColor.RED));
         revRenderer.setBasePaint(themeSupport.getLineColor(ColorScheme.KnownColor.BLUE));
 

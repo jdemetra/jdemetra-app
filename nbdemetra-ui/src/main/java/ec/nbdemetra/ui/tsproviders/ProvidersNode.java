@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.nodes.Nodes;
@@ -26,7 +27,6 @@ import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceListener;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.TsProviders;
 import java.awt.datatransfer.Transferable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -206,7 +206,7 @@ public final class ProvidersNode extends AbstractNode {
         @Override
         public void importConfig(Config config) throws IllegalArgumentException {
             DataSource dataSource = ProvidersUtil.getDataSource(config);
-            Optional<IDataSourceLoader> loader = TsProviders.lookup(IDataSourceLoader.class, dataSource).toJavaUtil();
+            Optional<IDataSourceLoader> loader = TsManager.getDefault().lookup(IDataSourceLoader.class, dataSource);
             if (loader.isPresent()) {
                 loader.get().open(dataSource);
                 Optional<Node> node = ProvidersUtil.findNode(dataSource, ProvidersNode.this);
@@ -229,7 +229,7 @@ public final class ProvidersNode extends AbstractNode {
         public Transferable paste() throws IOException {
             Optional<DataSource> dataSource = DataSourceTransferSupport.getDefault().getDataSource(t);
             if (dataSource.isPresent()) {
-                Optional<IDataSourceLoader> loader = TsProviders.lookup(IDataSourceLoader.class, dataSource.get()).toJavaUtil();
+                Optional<IDataSourceLoader> loader = TsManager.getDefault().lookup(IDataSourceLoader.class, dataSource.get());
                 if (loader.isPresent()) {
                     loader.get().open(dataSource.get());
                 }

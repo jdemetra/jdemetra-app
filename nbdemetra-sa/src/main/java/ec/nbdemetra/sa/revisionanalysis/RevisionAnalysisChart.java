@@ -19,10 +19,8 @@ package ec.nbdemetra.sa.revisionanalysis;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.IProcResults;
-import ec.ui.ATsControl;
 import ec.ui.chart.BasicXYDataset;
 import ec.ui.chart.TsCharts;
-import ec.ui.interfaces.ITsChart;
 import ec.ui.view.JChartPanel;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.various.swing.FontAwesome;
@@ -34,12 +32,19 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.ui.action.ActionMenuItem;
+import demetra.ui.components.HasChart;
+import demetra.ui.components.TimeSeriesComponent;
+import ec.nbdemetra.ui.ThemeSupport;
+import ec.tstoolkit.utilities.Arrays2;
+import javax.swing.JComponent;
 
 /**
  *
  * @author Mats Maggi
  */
-public class RevisionAnalysisChart extends ATsControl {
+public final class RevisionAnalysisChart extends JComponent implements TimeSeriesComponent {
+
+    private final ThemeSupport themeSupport = ThemeSupport.registered();
 
     private final CompositeResults results;
     private JChartPanel chartPanel;
@@ -63,7 +68,7 @@ public class RevisionAnalysisChart extends ATsControl {
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, false);
         renderer.setAutoPopulateSeriesPaint(false);
         renderer.setAutoPopulateSeriesStroke(false);
-        renderer.setBaseStroke(TsCharts.getStrongStroke(ITsChart.LinesThickness.Thin));
+        renderer.setBaseStroke(TsCharts.getStrongStroke(HasChart.LinesThickness.Thin));
         plot.setRenderer(renderer);
 
         JFreeChart result = new JFreeChart("", TsCharts.CHART_TITLE_FONT, plot, true);
@@ -136,13 +141,7 @@ public class RevisionAnalysisChart extends ATsControl {
         plot.setRangeAxis(yaxis);
     }
 
-    @Override
-    protected void onDataFormatChange() {
-
-    }
-
-    @Override
-    protected void onColorSchemeChange() {
+    private void onColorSchemeChange() {
         XYPlot plot = chartPanel.getChart().getXYPlot();
         for (int i = 0; i < plot.getDataset().getSeriesCount(); i++) {
             plot.getRenderer().setSeriesPaint(i, themeSupport.getLineColor(i));
@@ -153,4 +152,10 @@ public class RevisionAnalysisChart extends ATsControl {
         chartPanel.getChart().setBackgroundPaint(themeSupport.getBackColor());
     }
 
+    @Override
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        if (!Arrays2.arrayEquals(oldValue, newValue)) {
+            super.firePropertyChange(propertyName, oldValue, newValue);
+        }
+    }
 }

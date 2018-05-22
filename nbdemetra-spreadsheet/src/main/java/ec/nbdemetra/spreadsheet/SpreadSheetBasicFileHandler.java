@@ -19,9 +19,6 @@ package ec.nbdemetra.spreadsheet;
 import com.google.common.base.Stopwatch;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.NbComponents;
-import ec.ui.commands.ColorSchemeCommand;
-import ec.util.chart.ColorScheme;
-import ec.util.chart.swing.ColorSchemeIcon;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
 import ec.util.grid.swing.ext.SpreadSheetView;
@@ -33,6 +30,7 @@ import static ec.util.various.swing.FontAwesome.FA_INFO;
 import static ec.util.various.swing.FontAwesome.FA_SEARCH;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.ext.FontAwesomeUtils;
+import internal.ui.components.HasColorSchemeCommands;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -40,6 +38,7 @@ import java.awt.event.ActionEvent;
 import static java.beans.BeanInfo.ICON_MONO_16x16;
 import java.io.File;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -72,7 +71,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
     public Object asyncLoad(File file, BasicFileViewer.ProgressCallback progress) throws Exception {
         ArrayBook.Builder result = ArrayBook.builder();
         Stopwatch sw = Stopwatch.createStarted();
-        Book.Factory factory = factories.stream().filter(o -> o != null && o.accept(file)).findFirst().get();
+        Book.Factory factory = factories.stream().filter(Objects::nonNull).filter(o -> o.accept(file)).findFirst().get();
         try (Book book = factory.load(file)) {
             for (int s = 0; s < book.getSheetCount(); s++) {
                 result.sheet(book.getSheet(s));
@@ -100,7 +99,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
 
     @Override
     public boolean accept(File pathname) {
-        return factories.stream().anyMatch(o -> o != null && o.accept(pathname));
+        return factories.stream().filter(Objects::nonNull).anyMatch(o -> o.accept(pathname));
     }
     //</editor-fold>
 
@@ -163,17 +162,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
             item.setText("Edit format..");
             item.setEnabled(false);
 
-            JMenu colorSchemeMenu = new JMenu("Color scheme");
-            item = colorSchemeMenu.add(new JCheckBoxMenuItem(ColorSchemeCommand.applyColorScheme(null).toAction(view)));
-            item.setText("Default");
-            colorSchemeMenu.addSeparator();
-            for (ColorScheme o : DemetraUI.getDefault().getColorSchemes()) {
-                item = new JCheckBoxMenuItem(ColorSchemeCommand.applyColorScheme(o).toAction(view));
-                item.setText(o.getDisplayName());
-                item.setIcon(new ColorSchemeIcon(o));
-                colorSchemeMenu.add(item);
-            }
-            result.add(colorSchemeMenu);
+            result.add(HasColorSchemeCommands.menuOf(view, DemetraUI.getDefault().getColorSchemes()));
 
             item = result.add(new JCheckBoxMenuItem(SpreadSheetView.invertColors().toAction(view)));
             item.setText("Invert colors");

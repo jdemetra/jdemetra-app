@@ -16,12 +16,12 @@
  */
 package ec.nbdemetra.common;
 
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.TsProviders;
 import ec.tss.tsproviders.common.xml.XmlBean;
 import ec.tss.tsproviders.common.xml.XmlProvider;
 import java.awt.Image;
@@ -63,8 +63,8 @@ public class XmlProviderBuddy extends AbstractDataSourceProviderBuddy {
         NodePropertySetBuilder b = new NodePropertySetBuilder();
 
         b.reset("Source");
-        TsProviders.lookup(IFileLoader.class, XmlProvider.SOURCE)
-                .toJavaUtil()
+        TsManager.getDefault()
+                .lookup(IFileLoader.class, XmlProvider.SOURCE)
                 .ifPresent(o -> addFileProperty(b, bean, o));
         addReaderProperty(b, bean);
         result.add(b.build());

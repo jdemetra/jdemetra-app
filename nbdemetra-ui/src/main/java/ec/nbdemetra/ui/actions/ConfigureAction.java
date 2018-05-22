@@ -16,11 +16,12 @@
  */
 package ec.nbdemetra.ui.actions;
 
-import com.google.common.collect.Lists;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.tsproviders.ProvidersNode;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
@@ -45,8 +46,8 @@ public class ConfigureAction extends AbilityAction<IConfigurable> {
     }
 
     @Override
-    protected void performAction(Iterable<IConfigurable> items) {
-        configure(Lists.newArrayList(items));
+    protected void performAction(Stream<IConfigurable> items) {
+        configure(items.collect(Collectors.toList()));
     }
 
     @Override
@@ -58,9 +59,7 @@ public class ConfigureAction extends AbilityAction<IConfigurable> {
         if (list.isEmpty()) {
             configure(DemetraUI.getDefault());
         } else {
-            for (IConfigurable o : list) {
-                configure(o);
-            }
+            list.forEach(this::configure);
         }
     }
 

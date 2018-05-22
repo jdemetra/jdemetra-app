@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.x13.ui;
 
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.NbComponents;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.x11.X11Results;
@@ -16,9 +17,8 @@ import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.Disposables;
-import ec.ui.chart.JTsChart;
 import ec.ui.interfaces.IDisposable;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
+import demetra.ui.components.JTsChart;
 import ec.ui.view.SIView;
 import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;
@@ -107,8 +107,6 @@ public class X13Summary extends JComponent implements IDisposable {
     @Override
     public void dispose() {
         doc_ = null;
-        siPanel_.dispose();
-        chart_.dispose();
         Disposables.disposeAndRemoveAll(document_);
     }
 }

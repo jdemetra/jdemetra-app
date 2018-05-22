@@ -4,7 +4,7 @@
  */
 package ec.ui.view;
 
-import ec.nbdemetra.ui.ComponentFactory;
+import demetra.ui.components.HasColorScheme;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.html.implementation.HtmlRevisionsDocument;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
@@ -13,11 +13,10 @@ import ec.tstoolkit.timeseries.analysis.DiagnosticTarget;
 import ec.tstoolkit.timeseries.analysis.RevisionHistory;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import ec.ui.interfaces.IColorSchemeAble;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.html.HtmlUtil;
 import ec.ui.AHtmlView;
-import ec.util.chart.ColorScheme;
+import ec.ui.html.JHtmlView;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -43,7 +42,7 @@ import org.jfree.data.time.TimeSeriesCollection;
  *
  * @author Kristof Bayens
  */
-public class RevisionHistoryView extends JComponent implements IColorSchemeAble {
+public class RevisionHistoryView extends JComponent implements HasColorScheme {
 
     private String info_ = "SA";
     private RevisionHistory history_;
@@ -58,18 +57,17 @@ public class RevisionHistoryView extends JComponent implements IColorSchemeAble 
     private final AHtmlView documentpanel_;
     protected final ThemeSupport themeSupport;
 
+    @lombok.experimental.Delegate
+    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+    
     public RevisionHistoryView() {
         setLayout(new BorderLayout());
 
-        themeSupport = new ThemeSupport() {
-            @Override
-            protected void colorSchemeChanged() {
-                // TODO: add some code
-            }
-        };
+         // TODO: add some code on color scheme change
+        themeSupport = new ThemeSupport();
 
         chartpanel_ = new JChartPanel(ChartFactory.createLineChart(null, null, null, null, PlotOrientation.VERTICAL, false, false, false));
-        documentpanel_ = ComponentFactory.getDefault().newHtmlView();
+        documentpanel_ = new JHtmlView();
 
         JSplitPane splitpane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, chartpanel_, documentpanel_);
         splitpane.setDividerLocation(0.5);
@@ -303,15 +301,5 @@ public class RevisionHistoryView extends JComponent implements IColorSchemeAble 
 
     public void setPeriodLenth(int years) {
         years_ = years;
-    }
-
-    @Override
-    public ColorScheme getColorScheme() {
-        return themeSupport.getLocalColorScheme();
-    }
-
-    @Override
-    public void setColorScheme(ColorScheme theme) {
-        themeSupport.setLocalColorScheme(theme);
     }
 }

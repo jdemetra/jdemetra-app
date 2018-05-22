@@ -5,6 +5,7 @@
 package ec.nbdemetra.ui.calendars;
 
 import demetra.ui.TsManager;
+import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.Ts;
@@ -16,13 +17,14 @@ import ec.tstoolkit.timeseries.regression.LeapYearVariable;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
-import ec.ui.grid.JTsGrid;
-import ec.ui.interfaces.ITsCollectionView;
-import ec.ui.interfaces.ITsCollectionView.TsUpdateMode;
+import demetra.ui.components.JTsGrid;
 import ec.ui.view.PeriodogramView;
+import ec.util.list.swing.JLists;
+import demetra.ui.components.TsSelectionBridge;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
 import org.openide.explorer.propertysheet.PropertySheet;
@@ -63,7 +65,7 @@ public class CalendarView extends JComponent {
 
         this.tsGrid = new JTsGrid();
         tsGrid.setTsUpdateMode(TsUpdateMode.None);
-        tsGrid.addPropertyChangeListener(ITsCollectionView.SELECTION_PROPERTY, evt -> {
+        tsGrid.addPropertyChangeListener(TsSelectionBridge.TS_SELECTION_PROPERTY, evt -> {
             onTsGridSelectionChange();
         });
 
@@ -81,8 +83,8 @@ public class CalendarView extends JComponent {
     }
 
     protected void onTsGridSelectionChange() {
-        Ts[] selection = tsGrid.getSelection();
-        pView.setTs(selection.length == 1 ? selection[0] : null);
+        OptionalInt selection = JLists.getSelectionIndexStream(tsGrid.getTsSelectionModel()).findFirst();
+        pView.setTs(selection.isPresent() ? tsGrid.getTsCollection().get(selection.getAsInt()) : null);
     }
 
     protected void onCalendarProviderChange() {
@@ -110,7 +112,8 @@ public class CalendarView extends JComponent {
         }
 
         tsGrid.getTsCollection().replace(tss);
-        tsGrid.setSelection(new Ts[]{tss.get(0)});
+        tsGrid.getTsSelectionModel().clearSelection();
+        tsGrid.getTsSelectionModel().addSelectionInterval(0, 0);
     }
 
     protected void onConfigChange() {

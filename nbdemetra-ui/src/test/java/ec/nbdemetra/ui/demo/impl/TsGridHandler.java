@@ -18,11 +18,10 @@ package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.ui.commands.TsGridCommand;
-import ec.ui.interfaces.ITsGrid;
+import demetra.ui.components.JTsGrid;
+import ec.nbdemetra.ui.DemetraUI;
+import internal.ui.components.HasGridImpl;
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
 import javax.swing.JToolBar;
 import org.openide.awt.DropDownButtonFactory;
 import org.openide.util.lookup.ServiceProvider;
@@ -32,22 +31,18 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = DemoComponentHandler.class)
-public final class TsGridHandler extends DemoComponentHandler.InstanceOf<ITsGrid> {
+public final class TsGridHandler extends DemoComponentHandler.InstanceOf<JTsGrid> {
 
     public TsGridHandler() {
-        super(ITsGrid.class);
+        super(JTsGrid.class);
     }
 
     @Override
-    public void doFillToolBar(JToolBar toolBar, ITsGrid c) {
+    public void doFillToolBar(JToolBar toolBar, JTsGrid c) {
         toolBar.add(createZoomButton(c));
     }
 
-    static JButton createZoomButton(ITsGrid view) {
-        JMenu menu = new JMenu();
-        for (int o : new int[]{200, 100, 75, 50, 25}) {
-            menu.add(new JCheckBoxMenuItem(TsGridCommand.applyZoomRatio(o).toAction(view))).setText(o + "%");
-        }
-        return DropDownButtonFactory.createDropDownButton(DemetraUiIcon.MAGNIFYING_TOOL, menu.getPopupMenu());
+    static JButton createZoomButton(JTsGrid view) {
+        return DropDownButtonFactory.createDropDownButton(DemetraUiIcon.MAGNIFYING_TOOL, HasGridImpl.newZoomRationMenu(view, DemetraUI.getDefault()).getPopupMenu());
     }
 }

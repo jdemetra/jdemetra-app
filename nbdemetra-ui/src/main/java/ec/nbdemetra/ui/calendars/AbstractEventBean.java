@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui.calendars;
 
-import ec.nbdemetra.ui.awt.ListenableBean;
+import demetra.ui.beans.ListenableBean;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.ValidityPeriod;
 import ec.tstoolkit.timeseries.calendars.ISpecialDay;

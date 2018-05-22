@@ -24,6 +24,7 @@ import ec.util.list.swing.JLists;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.ext.FontAwesomeUtils;
+import internal.ui.components.ExtLayerUI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -32,10 +33,10 @@ import java.beans.BeanInfo;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.BorderFactory;
-import javax.swing.CellRendererPane;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -46,7 +47,6 @@ import javax.swing.JMenu;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SwingWorker;
-import javax.swing.plaf.LayerUI;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
@@ -101,7 +101,7 @@ final class AutoCompletedComponent extends JComponent {
 
         setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         setLayout(new BorderLayout());
-        add(new JLayer<>(list, new LoadingUI()));
+        add(new JLayer<>(list, new ExtLayerUI<>(new LoadingRenderer())));
         add(buildToolBar(), BorderLayout.EAST);
     }
 
@@ -343,50 +343,45 @@ final class AutoCompletedComponent extends JComponent {
         }
     }
 
-    private static final class LoadingUI extends LayerUI<JListOrdering> implements Icon {
+    private static final class LoadingRenderer implements Function<JListOrdering, Component>, Icon {
 
-        private final CellRendererPane cellRendererPane = new CellRendererPane();
-        private final JLabel renderer = new JLabel();
+        private final JLabel label;
         private Icon iconStrongRef;
 
-        public LoadingUI() {
-            renderer.setHorizontalAlignment(JLabel.CENTER);
-            renderer.setHorizontalTextPosition(JLabel.CENTER);
-            renderer.setVerticalTextPosition(JLabel.BOTTOM);
+        private LoadingRenderer() {
+            this.label = new JLabel();
+            label.setHorizontalAlignment(JLabel.CENTER);
+            label.setHorizontalTextPosition(JLabel.CENTER);
+            label.setVerticalTextPosition(JLabel.BOTTOM);
         }
 
         @Override
-        public void paint(Graphics g, JComponent c) {
-            super.paint(g, c);
-            JListOrdering view = ((JLayer<JListOrdering>) c).getView();
+        public Component apply(JListOrdering view) {
             if (!view.isEnabled()) {
                 if (iconStrongRef == null) {
                     iconStrongRef = FontAwesome.FA_SPINNER.getSpinningIcon(view, view.getForeground(), 24f);
                 }
-                renderer.setText("<html><center><b>Loading");
-                renderer.setIcon(this);
-                renderer.setBackground(SwingColorSchemeSupport.withAlpha(view.getBackground(), 200));
-                renderer.setOpaque(true);
-                renderer.paint(g);
+                label.setText("<html><center><b>Loading");
+                label.setIcon(this);
+                label.setBackground(SwingColorSchemeSupport.withAlpha(view.getBackground(), 200));
+                label.setOpaque(true);
             } else {
                 if (iconStrongRef != null) {
                     iconStrongRef = null;
                 }
                 if (view.getModel().getSize() == 0) {
-                    renderer.setText("<html><center><b>No value defined</b><br>Use the toolbar on the right to add new values");
-                    renderer.setIcon(null);
-                    renderer.setBackground(view.getBackground());
-                    renderer.setOpaque(true);
-                    renderer.paint(g);
+                    label.setText("<html><center><b>No value defined</b><br>Use the toolbar on the right to add new values");
+                    label.setIcon(null);
+                    label.setBackground(view.getBackground());
+                    label.setOpaque(true);
                 } else {
-                    renderer.setText(null);
-                    renderer.setIcon(FontAwesome.FA_ARROW_DOWN.getIcon(SwingColorSchemeSupport.withAlpha(Color.LIGHT_GRAY, 30), renderer.getFont().getSize2D() * 10));
-                    renderer.setBackground(view.getBackground());
-                    renderer.setOpaque(false);
-                    renderer.paint(g);
+                    label.setText(null);
+                    label.setIcon(FontAwesome.FA_ARROW_DOWN.getIcon(SwingColorSchemeSupport.withAlpha(Color.LIGHT_GRAY, 30), label.getFont().getSize2D() * 10));
+                    label.setBackground(view.getBackground());
+                    label.setOpaque(false);
                 }
             }
-            cellRendererPane.paintComponent(g, renderer, c, 0, 0, c.getWidth(), c.getHeight());
+            return label;
         }
 
         @Override

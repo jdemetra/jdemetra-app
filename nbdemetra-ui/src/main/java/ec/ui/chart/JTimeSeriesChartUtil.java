@@ -16,9 +16,7 @@
  */
 package ec.ui.chart;
 
-import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.tsproviders.utils.DataFormat;
-import ec.ui.interfaces.ITsPrinter;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.SeriesFunction;
 import ec.util.chart.swing.JTimeSeriesChart;
@@ -38,11 +36,6 @@ public final class JTimeSeriesChartUtil {
 
     private JTimeSeriesChartUtil() {
         // static class
-    }
-
-    @Nonnull
-    public static ThemeSupport newThemeSupport(@Nonnull JTimeSeriesChart chart) {
-        return new ThemeSupportImpl(chart);
     }
 
     public static void setColorScheme(@Nonnull JTimeSeriesChart chart, @Nonnull ColorScheme colorScheme) {
@@ -82,55 +75,7 @@ public final class JTimeSeriesChartUtil {
     }
 
     @Nonnull
-    public static ITsPrinter newTsPrinter(@Nonnull JTimeSeriesChart chart) {
-        return new TsPrinterImpl(chart);
+    public static void printWithPreview(@Nonnull JTimeSeriesChart chart) {
+        chart.printImage();
     }
-
-    //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    private static final class ThemeSupportImpl extends ThemeSupport {
-
-        private final JTimeSeriesChart chart;
-
-        public ThemeSupportImpl(JTimeSeriesChart chart) {
-            this.chart = chart;
-        }
-
-        @Override
-        protected void colorSchemeChanged() {
-            setColorScheme(chart, getColorScheme());
-        }
-
-        @Override
-        protected void dataFormatChanged() {
-            setDataFormat(chart, getDataFormat());
-        }
-
-        @Override
-        public void register() {
-            colorSchemeChanged();
-            dataFormatChanged();
-            super.register();
-        }
-    }
-
-    private static final class TsPrinterImpl implements ITsPrinter {
-
-        private final JTimeSeriesChart chart;
-
-        public TsPrinterImpl(JTimeSeriesChart chart) {
-            this.chart = chart;
-        }
-
-        @Override
-        public boolean printPreview() {
-            chart.printImage();
-            return true;
-        }
-
-        @Override
-        public boolean print() {
-            return printPreview();
-        }
-    }
-    //</editor-fold>
 }
