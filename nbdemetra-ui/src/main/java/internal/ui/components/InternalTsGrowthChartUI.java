@@ -28,7 +28,6 @@ import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
-import ec.tss.*;
 import ec.tss.datatransfer.TssTransferSupport;
 import demetra.ui.components.JTsGrowthChart;
 import ec.ui.ExtAction;
@@ -70,7 +69,7 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
     @Override
     public void install(JTsGrowthChart component) {
         this.target = component;
-        
+
         this.selectionListener = new InternalTsSelectionAdapter(target);
 
         themeSupport.setColorSchemeListener(target, this::onColorSchemeChange);
@@ -124,8 +123,9 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
         chartPanel.setSeriesFormatter(new SeriesFunction<String>() {
             @Override
             public String apply(int series) {
-                TsCollection collection = target.getTsCollection();
-                return collection.getCount() > series ? collection.get(series).getName() : chartPanel.getDataset().getSeriesKey(series).toString();
+                return target.getTsCollection().getData().size() > series
+                        ? target.getTsCollection().getData().get(series).getName()
+                        : chartPanel.getDataset().getSeriesKey(series).toString();
             }
         });
         chartPanel.setObsFormatter(new ObsFunction<String>() {
@@ -142,7 +142,7 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
         chartPanel.setLegendVisibilityPredicate(new SeriesPredicate() {
             @Override
             public boolean apply(int series) {
-                return series < target.getTsCollection().getCount();
+                return series < target.getTsCollection().getData().size();
             }
         });
         chartPanel.setSeriesRenderer(SeriesFunction.always(TimeSeriesChart.RendererType.COLUMN));

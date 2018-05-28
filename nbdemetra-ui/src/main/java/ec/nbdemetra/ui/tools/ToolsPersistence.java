@@ -5,7 +5,8 @@
 package ec.nbdemetra.ui.tools;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection;
 import ec.nbdemetra.ui.Config;
@@ -75,8 +76,9 @@ public final class ToolsPersistence {
             tryPut(p, "config", Config.xmlFormatter(false), true, config);
         }
         if (DemetraUI.getDefault().isPersistToolsContent()) {
-            List<Ts> selection = view.getTsSelectionStream().collect(Collectors.toList());
-            Content content = new Content(Lists.newArrayList(view.getTsCollection()), selection);
+            Content content = new Content(
+                    view.getTsCollection().getData().stream().map(TsConverter::fromTs).collect(Collectors.toList()),
+                    view.getTsSelectionStream().map(TsConverter::fromTs).collect(Collectors.toList()));
             tryPut(p, "content", CONTENT_FORMATTER, true, content);
         }
     }
@@ -84,12 +86,12 @@ public final class ToolsPersistence {
     public static void readTsCollection(HasTsCollection view, Properties p) {
         if (DemetraUI.getDefault().isPersistToolsContent()) {
             tryGet(p, "content", CONTENT_PARSER, true).ifPresent(o -> {
-                view.getTsCollection().append(o.collection);
-                view.getTsCollection().load(TsInformationType.Data);
+                List<demetra.tsprovider.Ts> tmp = o.collection.stream().map(TsConverter::toTs).collect(Collectors.toList());
+                view.setTsCollection(TsCollection.builder().data(tmp).build());
                 view.getTsSelectionModel().clearSelection();
-                o.collection
+                tmp
                         .stream()
-                        .mapToInt(view.getTsCollection()::indexOf)
+                        .mapToInt(view.getTsCollection().getData()::indexOf)
                         .forEach(i -> view.getTsSelectionModel().addSelectionInterval(i, i));
             });
         }

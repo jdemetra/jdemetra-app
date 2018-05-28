@@ -66,7 +66,7 @@ public class TssTransferSupportTest {
         assertThat(empty.fromMatrix(new Matrix(1, 1)).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTable(new Table<>(1, 1)).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTs(TsManager.getDefault().newTsWithName("")).getTransferDataFlavors()).isEmpty();
-        assertThat(empty.fromTsCollection(TsManager.getDefault().newTsCollection()).getTransferDataFlavors()).isEmpty();
+        assertThat(empty.fromTsCollection(demetra.tsprovider.TsCollection.EMPTY).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTsData(TsData.random(TsFrequency.Yearly)).getTransferDataFlavors()).isEmpty();
     }
 

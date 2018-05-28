@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsAction;
 import demetra.ui.components.HasTsCollection;
@@ -47,6 +48,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.swing.*;
@@ -85,7 +87,9 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
 
     @Override
     public void doConfigure(HasTsCollection c) {
-        col.items.forEach(o -> c.getTsCollection().add(o.toTs()));
+        demetra.tsprovider.TsCollection.Builder model = demetra.tsprovider.TsCollection.builder();
+        col.items.forEach(o -> model.data(TsConverter.toTs(o.toTs())));
+        c.setTsCollection(model.build());
         if (c instanceof HasTsAction) {
             ((HasTsAction) c).setTsAction(DemoTsActions.SHOW_DIALOG);
         }
@@ -130,11 +134,12 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
                     .withStatus(TsStatus.Valid)
                     .withForecastCount(3)
                     .withMissingCount(0);
-            c.getTsCollection().append(
-                    IntStream.range(0, size)
+            demetra.tsprovider.TsCollection.Builder result = demetra.tsprovider.TsCollection.builder();
+            IntStream.range(0, size)
                     .mapToObj(o -> BUILDER.withName("S" + o).build().toTs())
-                    .collect(Collectors.toList())
-            );
+                    .map(TsConverter::toTs)
+                    .forEach(result::data);
+            c.setTsCollection(result.build());
         }
     }
 
@@ -157,9 +162,12 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
                         .withForecastCount(panel.getForecastCount())
                         //                        .withNaming(panel.getNaming())
                         .withMissingCount(panel.getMissingValues());
+                demetra.tsprovider.TsCollection.Builder result = c.getTsCollection().toBuilder();
                 IntStream.range(0, panel.getSeriesCount())
                         .mapToObj(o -> BUILDER.withName("S" + o).build().toTs())
-                        .forEach(c.getTsCollection()::add);
+                        .map(TsConverter::toTs)
+                        .forEach(result::data);
+                c.setTsCollection(result.build());
             }
         }
     }
@@ -183,12 +191,14 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
 
         @Override
         public boolean isEnabled(HasTsCollection component) {
-            return !component.getTsCollection().isEmpty();
+            return component.getTsCollection().getData().size() > 0;
         }
 
         @Override
-        public void execute(HasTsCollection component) throws Exception {
-            component.getTsCollection().removeAt(component.getTsCollection().getCount() - 1);
+        public void execute(HasTsCollection c) throws Exception {
+            LinkedList<demetra.tsprovider.Ts> tmp = new LinkedList<>(c.getTsCollection().getData());
+            tmp.removeLast();
+            c.setTsCollection(demetra.tsprovider.TsCollection.builder().data(tmp).build());
         }
     }
 
@@ -238,7 +248,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
             new AbstractAction("All") {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    view.getTsSelectionModel().setSelectionInterval(0, view.getTsCollection().getCount());
+                    view.getTsSelectionModel().setSelectionInterval(0, view.getTsCollection().getData().size());
                 }
             },
             new AbstractAction("None") {
@@ -251,7 +261,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     view.getTsSelectionModel().clearSelection();
-                    for (int i = 0; i < view.getTsCollection().getCount(); i += 2) {
+                    for (int i = 0; i < view.getTsCollection().getData().size(); i += 2) {
                         view.getTsSelectionModel().addSelectionInterval(i, i);
                     }
                 }
@@ -260,7 +270,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     int[] selection = IntStream
-                            .range(0, view.getTsCollection().getCount())
+                            .range(0, view.getTsCollection().getData().size())
                             .filter(i -> !view.getTsSelectionModel().isSelectedIndex(i))
                             .toArray();
                     view.getTsSelectionModel().clearSelection();
@@ -290,7 +300,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
             ((JComponent) view).addPropertyChangeListener(evt -> {
                 switch (evt.getPropertyName()) {
                     case TsSelectionBridge.TS_SELECTION_PROPERTY:
-                        result.setText(" [" + JLists.getSelectionIndexSize(view.getTsSelectionModel()) + "/" + view.getTsCollection().getCount() + "] ");
+                        result.setText(" [" + JLists.getSelectionIndexSize(view.getTsSelectionModel()) + "/" + view.getTsCollection().getData().size() + "] ");
                         break;
                 }
             });
@@ -342,10 +352,10 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
         }
 
         @Override
-        public void execute(HasTsCollection component) throws Exception {
+        public void execute(HasTsCollection c) throws Exception {
             TsCollection col = TsManager.getDefault().getTsCollection(dataSource, TsInformationType.Definition).get();
             col.query(TsInformationType.All);
-            component.getTsCollection().append(col);
+            c.setTsCollection(c.getTsCollection().toBuilder().data(col.stream().map(TsConverter::toTs).collect(Collectors.toList())).build());
         }
     }
 
@@ -358,10 +368,10 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
         }
 
         @Override
-        public void execute(HasTsCollection component) throws Exception {
+        public void execute(HasTsCollection c) throws Exception {
             TsCollection col = TsManager.getDefault().getTsCollection(dataSet, TsInformationType.Definition).get();
             col.query(TsInformationType.All);
-            component.getTsCollection().append(col);
+            c.setTsCollection(c.getTsCollection().toBuilder().data(col.stream().map(TsConverter::toTs).collect(Collectors.toList())).build());
         }
     }
 }

@@ -24,7 +24,7 @@ import demetra.ui.components.JTsChart;
 import demetra.ui.components.JTsGrowthChart;
 import demetra.ui.components.JTsGrid;
 import demetra.ui.components.JTsTable;
-import ec.ui.grid.TsGridObs;
+import demetra.ui.components.TsGridObs;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Map;
@@ -55,7 +55,7 @@ public final class TsCollectionFactory extends DemoComponentFactory {
                     JTsChart result = new JTsChart();
                     result.setDualChart(true);
                     result.addPropertyChangeListener(HasTsCollection.TS_COLLECTION_PROPERTY, evt -> {
-                        if (!result.getTsCollection().isEmpty()) {
+                        if (result.getTsCollection().getData().size() > 0) {
                             result.getDualDispatcher().setSelectionInterval(0, 0);
                         }
                     });
@@ -88,18 +88,22 @@ public final class TsCollectionFactory extends DemoComponentFactory {
                 TsGridObs obs = (TsGridObs) value;
                 JLabel label = (JLabel) result;
                 label.setHorizontalAlignment(TRAILING);
-                switch (obs.getInfo()) {
-                    case Empty:
+                switch (obs.getStatus()) {
+                    case AFTER:
+                    case BEFORE:
+                    case EMPTY:
+                    case UNUSED:
                         label.setText("Empty");
                         break;
-                    case Missing:
-                        label.setText("Missing");
-                        break;
-                    case Valid:
-                        long longValue = (long) obs.getValue();
-                        label.setText(Long.toString(longValue));
-                        if (longValue % 2 != 0) {
-                            label.setForeground(Color.RED);
+                    case PRESENT:
+                        if (Double.isNaN(obs.getValue())) {
+                            label.setText("Missing");
+                        } else {
+                            long longValue = (long) obs.getValue();
+                            label.setText(Long.toString(longValue));
+                            if (longValue % 2 != 0) {
+                                label.setForeground(Color.RED);
+                            }
                         }
                         break;
                 }

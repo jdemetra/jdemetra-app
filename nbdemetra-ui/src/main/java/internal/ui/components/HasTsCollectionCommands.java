@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsAction;
@@ -27,12 +28,10 @@ import ec.nbdemetra.ui.awt.KeyStrokes;
 import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
-import ec.tss.TsCollection;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.ui.commands.ComponentCommand;
 import ec.ui.ExtAction;
 import ec.util.list.swing.JLists;
@@ -45,12 +44,10 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeListener;
-import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -72,8 +69,8 @@ import org.openide.util.WeakListeners;
 public class HasTsCollectionCommands {
 
     public static JMenu newDefaultMenu(HasTsCollection col, DemetraUI demetraUI) {
-        ActionMap am = ((JComponent)col).getActionMap();
-        
+        ActionMap am = ((JComponent) col).getActionMap();
+
         JMenu result = new JMenu();
 
         result.add(HasTsCollectionCommands.newOpenMenu(am, demetraUI));
@@ -92,10 +89,10 @@ public class HasTsCollectionCommands {
         result.addSeparator();
         result.add(HasTsCollectionCommands.newSelectAllMenu(am, demetraUI));
         result.add(HasTsCollectionCommands.newClearMenu(am, demetraUI));
-        
+
         return result;
     }
-    
+
     public static final String COPY_ALL_ACTION = "copyAll";
 
     @Nonnull
@@ -254,20 +251,6 @@ public class HasTsCollectionCommands {
         return result;
     }
 
-    @Nonnull
-    public static JCommand<HasTsCollection> selectByFreq(@Nonnull TsFrequency freq) {
-        return HasTsCollectionCommands.SelectByFreqCommand.VALUES.get(freq);
-    }
-
-    public static JMenu newSelectByFreqMenu(HasTsCollection c, DemetraUI demetraUI) {
-        JMenu result = new JMenu("Select by frequency");
-        result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_CALENDAR_O));
-        for (TsFrequency freq : EnumSet.of(TsFrequency.Monthly, TsFrequency.Quarterly, TsFrequency.HalfYearly, TsFrequency.Yearly)) {
-            result.add(new JMenuItem(HasTsCollectionCommands.selectByFreq(freq).toAction(c))).setText(freq.name());
-        }
-        return result;
-    }
-
     public static final String FREEZE_ACTION = "freeze";
 
     @Nonnull
@@ -329,12 +312,12 @@ public class HasTsCollectionCommands {
 
         @Override
         public boolean isEnabled(HasTsCollection component) {
-            return !component.getTsCollection().isEmpty();
+            return component.getTsCollection().getData().size() > 0;
         }
 
         @Override
-        public void execute(HasTsCollection component) throws Exception {
-            Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(component.getTsCollection());
+        public void execute(HasTsCollection c) throws Exception {
+            Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(c.getTsCollection());
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
         }
     }
@@ -351,7 +334,7 @@ public class HasTsCollectionCommands {
         }
 
         protected Ts getSingleTs(HasTsCollection c) {
-            return c.getTsCollection().get(c.getTsSelectionModel().getMinSelectionIndex());
+            return TsConverter.fromTs(c.getTsCollection().getData().get(c.getTsSelectionModel().getMinSelectionIndex()));
         }
     }
 
@@ -384,32 +367,23 @@ public class HasTsCollectionCommands {
                         if (provider.isPresent()) {
                             DataSet dataSet = provider.get().toDataSet(ts.getMoniker());
                             if (dataSet != null) {
-                                c.getTsCollection().rename(ts, provider.get().getDisplayName(dataSet));
-                                fireCollectionChange(c, ts);
+                                rename(c, ts, provider.get().getDisplayName(dataSet));
                             }
                         }
                     }
                 })});
             }
             if (DialogDisplayer.getDefault().notify(descriptor) == NotifyDescriptor.OK_OPTION) {
-                c.getTsCollection().rename(ts, descriptor.getInputText());
-                fireCollectionChange(c, ts);
+                rename(c, ts, descriptor.getInputText());
             }
         }
 
-        private final TsCollection fake = TsManager.getDefault().newTsCollection();
-
-        private void fireCollectionChange(HasTsCollection component, Ts ts) {
-            TsCollection real = component.getTsCollection();
-            component.setTsCollection(fake);
-            component.setTsCollection(real);
-
-            int index = real.indexOf(ts);
-            component.getTsSelectionModel().clearSelection();
-            component.getTsSelectionModel().setSelectionInterval(index, index);
-
-//            selection = retainTsCollection(selection);
-//            ATsCollectionView.this.firePropertyChange(COLLECTION_PROPERTY, null, collection);
+        private void rename(HasTsCollection c, Ts ts, String newName) {
+            List<Ts> tmp = c.getTsCollection().getData().stream().map(TsConverter::fromTs).collect(Collectors.toList());
+            tmp.set(tmp.indexOf(ts), ts.rename(newName));
+            demetra.tsprovider.TsCollection.Builder result = demetra.tsprovider.TsCollection.builder();
+            tmp.forEach(o -> result.data(TsConverter.toTs(o)));
+            c.setTsCollection(result.build());
         }
     }
 
@@ -468,7 +442,8 @@ public class HasTsCollectionCommands {
         @Override
         public void execute(HasTsCollection c) throws Exception {
             Ts[] selection = JLists.getSelectionIndexStream(c.getTsSelectionModel())
-                    .mapToObj(c.getTsCollection()::get)
+                    .mapToObj(c.getTsCollection().getData()::get)
+                    .map(TsConverter::fromTs)
                     .toArray(Ts[]::new);
             if (selection.length > 0) {
                 tsSave.save(selection);
@@ -482,8 +457,9 @@ public class HasTsCollectionCommands {
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            TsCollection col = c.getTsSelectionStream().collect(TsManager.getDefault().getTsCollector());
-            Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(col);
+            demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
+            c.getTsSelectionStream().forEach(col::data);
+            Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(col.build());
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
         }
     }
@@ -533,8 +509,10 @@ public class HasTsCollectionCommands {
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            List<Ts> selection = c.getTsSelectionStream().collect(Collectors.toList());
-            c.getTsCollection().remove(selection);
+            Set<demetra.tsprovider.Ts> selection = c.getTsSelectionStream().collect(Collectors.toSet());
+            demetra.tsprovider.TsCollection.Builder result = demetra.tsprovider.TsCollection.builder();
+            c.getTsCollection().getData().stream().filter(o -> !selection.contains(o)).forEach(result::data);
+            c.setTsCollection(result.build());
         }
     }
 
@@ -548,12 +526,12 @@ public class HasTsCollectionCommands {
 
         @Override
         public boolean isEnabled(HasTsCollection component) {
-            return !component.getTsUpdateMode().isReadOnly() && !component.getTsCollection().isEmpty();
+            return !component.getTsUpdateMode().isReadOnly() && component.getTsCollection().getData().size() > 0;
         }
 
         @Override
         public void execute(HasTsCollection component) throws Exception {
-            component.getTsCollection().clear();
+            component.setTsCollection(demetra.tsprovider.TsCollection.EMPTY);
         }
     }
 
@@ -567,39 +545,12 @@ public class HasTsCollectionCommands {
 
         @Override
         public boolean isEnabled(HasTsCollection c) {
-            return JLists.getSelectionIndexSize(c.getTsSelectionModel()) != c.getTsCollection().getCount();
+            return JLists.getSelectionIndexSize(c.getTsSelectionModel()) != c.getTsCollection().getData().size();
         }
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            c.getTsSelectionModel().setSelectionInterval(0, c.getTsCollection().getCount());
-        }
-    }
-
-    private static final class SelectByFreqCommand extends JCommand<HasTsCollection> {
-
-        public static final EnumMap<TsFrequency, SelectByFreqCommand> VALUES;
-
-        static {
-            VALUES = new EnumMap<>(TsFrequency.class);
-            for (TsFrequency o : TsFrequency.values()) {
-                VALUES.put(o, new SelectByFreqCommand(o));
-            }
-        }
-
-        private final TsFrequency freq;
-
-        private SelectByFreqCommand(TsFrequency freq) {
-            this.freq = freq;
-        }
-
-        @Override
-        public void execute(HasTsCollection c) throws Exception {
-            c.getTsSelectionModel().clearSelection();
-            Ts[] tss = c.getTsCollection().toArray();
-            IntStream.range(0, tss.length)
-                    .filter(o -> tss[o].getTsData() != null && tss[o].getTsData().getFrequency() == freq)
-                    .forEach(i -> c.getTsSelectionModel().addSelectionInterval(i, i));
+            c.getTsSelectionModel().setSelectionInterval(0, c.getTsCollection().getData().size());
         }
     }
 
@@ -621,7 +572,10 @@ public class HasTsCollectionCommands {
         public void execute(HasTsCollection c) throws Exception {
             JLists.getSelectionIndexStream(c.getTsSelectionModel())
                     .findFirst()
-                    .ifPresent(o -> c.getTsCollection().add(c.getTsCollection().get(o).freeze()));
+                    .ifPresent(o -> {
+                        demetra.tsprovider.TsCollection tmp = c.getTsCollection();
+                        c.setTsCollection(tmp.toBuilder().data(TsConverter.toTs(TsConverter.fromTs(tmp.getData().get(0)).freeze())).build());
+                    });
         }
     }
 

@@ -4,11 +4,12 @@
  */
 package ec.nbdemetra.tramoseats.ui;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.NbComponents;
 import ec.satoolkit.ComponentDescriptor;
 import ec.satoolkit.seats.SeatsResults;
-import ec.tss.Ts;
 import ec.tss.documents.DocumentManager;
 import ec.tss.html.implementation.HtmlTramoSeatsSummary;
 import ec.tss.sa.documents.TramoSeatsDocument;
@@ -24,8 +25,6 @@ import ec.ui.view.SIView;
 import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;
 import java.awt.BorderLayout;
-import java.util.Arrays;
-import java.util.List;
 import javax.swing.*;
 
 /**
@@ -104,7 +103,7 @@ public class TramoSeatsSummary extends JComponent implements IDisposable {
         doc_ = doc;
 
         if (doc_ == null || doc_.getResults() == null) {
-             return;
+            return;
         }
 
         SeatsResults seats = doc_.getDecompositionPart();
@@ -117,11 +116,14 @@ public class TramoSeatsSummary extends JComponent implements IDisposable {
         }
         Disposables.disposeAndRemoveAll(document_).add(toolkit_.getHtmlViewer(document));
 
-        List<Ts> list = Arrays.asList(
-                getMainSeries(ModellingDictionary.Y),
-                getMainSeries(ModellingDictionary.T),
-                getMainSeries(ModellingDictionary.SA));
-        chart_.getTsCollection().replace(list);
+        chart_.setTsCollection(
+                TsCollection
+                        .builder()
+                        .data(getMainSeries(ModellingDictionary.Y))
+                        .data(getMainSeries(ModellingDictionary.T))
+                        .data(getMainSeries(ModellingDictionary.SA))
+                        .build()
+        );
 
         if (seats != null) {
             TsData seas = doc_.getResults().getData(ModellingDictionary.S_CMP, TsData.class);
@@ -132,8 +134,8 @@ public class TramoSeatsSummary extends JComponent implements IDisposable {
         }
     }
 
-     private Ts getMainSeries(String str) {
-        return DocumentManager.instance.getTs(doc_, str);
+    private demetra.tsprovider.Ts getMainSeries(String str) {
+        return TsConverter.toTs(DocumentManager.instance.getTs(doc_, str));
     }
 
     @Override

@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.tsaction;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.components.HasTs;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.tss.Ts;
@@ -44,6 +45,6 @@ public class TsViewsTsAction extends AbstractNamedService implements ITsAction {
     public void open(Ts ts) {
         TopComponent.getRegistry().getOpened().stream()
                 .filter(HasTs.class::isInstance)
-                .forEach(o -> ((HasTs) o).setTs(ts));
+                .forEach(o -> ((HasTs) o).setTs(TsConverter.toTs(ts)));
     }
 }

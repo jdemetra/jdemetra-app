@@ -1,7 +1,9 @@
 package ec.ui.chart;
 
+import demetra.bridge.TsConverter;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import demetra.ui.components.HasChart.LinesThickness;
+import ec.tss.tsproviders.utils.OptionalTsData;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -44,16 +46,17 @@ public final class TsCharts {
     }
 
     public static XYDataset newSparklineDataset(TsData data) {
+        return new TsDataAsXYDataset(TsConverter.toTsData(OptionalTsData.present(data)));
+    }
+
+    public static XYDataset newSparklineDataset(demetra.timeseries.TsData data) {
         return new TsDataAsXYDataset(data);
     }
 
-    private static class TsDataAsXYDataset extends AbstractXYDataset {
+    @lombok.AllArgsConstructor
+    private static final class TsDataAsXYDataset extends AbstractXYDataset {
 
-        final TsData data;
-
-        public TsDataAsXYDataset(TsData data) {
-            this.data = data;
-        }
+        final demetra.timeseries.TsData data;
 
         @Override
         public int getSeriesCount() {
@@ -67,7 +70,7 @@ public final class TsCharts {
 
         @Override
         public int getItemCount(int i) {
-            return data.getLength();
+            return data.length();
         }
 
         @Override
@@ -77,7 +80,7 @@ public final class TsCharts {
 
         @Override
         public Number getY(int i, int i1) {
-            return data.get(i1);
+            return data.getValue(i1);
         }
     }
 }

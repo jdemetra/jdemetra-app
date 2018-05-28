@@ -8,6 +8,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
 import ec.nbdemetra.ui.Menus.DynamicPopup;
@@ -22,7 +23,6 @@ import ec.nbdemetra.ws.ui.SpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;
-import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TransferableXml;
@@ -549,25 +549,27 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     public void copySeries(Collection<SaItem> litems) {
-        TsCollection tmp = litems.stream()
+        demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
+        litems.stream()
                 .map(SaItem::getTs)
-                .collect(TsManager.getDefault().getTsCollector());
-        Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(tmp);
+                .map(TsConverter::toTs)
+                .forEach(col::data);
+        Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(col.build());
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
     }
 
     public void copyComponents(List<String> components) {
-        TsCollection tmp = TsManager.getDefault().newTsCollection();
+        demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
         for (SaItem item : getSelection()) {
             components.stream().forEach((comp) -> {
                 TsData tsData = item.process().getData(comp, TsData.class);
                 if (tsData != null) {
-                    tmp.add(TsManager.getDefault().newTs("[" + comp + "] " + item.getTs().getName(), null, tsData));
+                    col.data(TsConverter.toTs(TsManager.getDefault().newTs("[" + comp + "] " + item.getTs().getName(), null, tsData)));
                 }
             });
         }
 
-        Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(tmp);
+        Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(col.build());
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
     }
 

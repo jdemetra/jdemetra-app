@@ -16,6 +16,8 @@
  */
 package ec.nbdemetra.ui.tsaction;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
@@ -69,7 +71,7 @@ public class SimpleChartTsAction extends AbstractNamedService implements ITsActi
                 c.setDisplayName(ts.getName());
             }
 
-            c.getChart().getTsCollection().add(ts);
+            c.getChart().setTsCollection(TsCollection.builder().data(TsConverter.toTs(ts)).build());
             c.getChart().setTsUpdateMode(TsUpdateMode.None);
             c.getChart().setLegendVisible(false);
             c.getChart().setTitle(ts.getName());

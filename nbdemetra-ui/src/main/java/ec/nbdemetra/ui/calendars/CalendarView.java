@@ -4,11 +4,12 @@
  */
 package ec.nbdemetra.ui.calendars;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.tss.Ts;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.timeseries.calendars.IGregorianCalendarProvider;
 import ec.tstoolkit.timeseries.calendars.LengthOfPeriodType;
@@ -84,7 +85,7 @@ public class CalendarView extends JComponent {
 
     protected void onTsGridSelectionChange() {
         OptionalInt selection = JLists.getSelectionIndexStream(tsGrid.getTsSelectionModel()).findFirst();
-        pView.setTs(selection.isPresent() ? tsGrid.getTsCollection().get(selection.getAsInt()) : null);
+        pView.setTs(selection.isPresent() ? tsGrid.getTsCollection().getData().get(selection.getAsInt()) : null);
     }
 
     protected void onCalendarProviderChange() {
@@ -105,13 +106,13 @@ public class CalendarView extends JComponent {
             new LeapYearVariable(ltype).data(domain.getStart(), buffer.get(nx - 1));
         }
 
-        List<Ts> tss = new ArrayList(nx);
+        TsCollection.Builder tss = TsCollection.builder();
         for (int i = 0; i < nx; ++i) {
             TsData data = new TsData(domain.getStart(), buffer.get(i).getData(), false);
-            tss.add(TsManager.getDefault().newTs(getCmpName(i), null, data));
+            tss.data(TsConverter.toTs(TsManager.getDefault().newTs(getCmpName(i), null, data)));
         }
 
-        tsGrid.getTsCollection().replace(tss);
+        tsGrid.setTsCollection(tss.build());
         tsGrid.getTsSelectionModel().clearSelection();
         tsGrid.getTsSelectionModel().addSelectionInterval(0, 0);
     }

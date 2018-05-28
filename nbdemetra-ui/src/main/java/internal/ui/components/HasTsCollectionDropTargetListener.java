@@ -16,7 +16,7 @@
  */
 package internal.ui.components;
 
-import demetra.ui.TsManager;
+import demetra.bridge.TsConverter;
 import demetra.ui.components.HasTsCollection;
 import ec.tss.TsCollection;
 import ec.tss.datatransfer.TssTransferSupport;
@@ -47,11 +47,13 @@ public final class HasTsCollectionDropTargetListener implements DropTargetListen
         if (!target.getTsUpdateMode().isReadOnly()) {
             Transferable t = dtde.getTransferable();
             if (transferSupport.canImport(t)) {
-                TsCollection dropContent = transferSupport
+                demetra.tsprovider.TsCollection.Builder dropContent = demetra.tsprovider.TsCollection.builder();
+                transferSupport
                         .toTsCollectionStream(t)
                         .flatMap(TsCollection::stream)
-                        .collect(TsManager.getDefault().getTsCollector());
-                target.setDropContent(dropContent);
+                        .map(TsConverter::toTs)
+                        .forEach(dropContent::data);
+                target.setDropContent(dropContent.build());
             }
         }
     }
@@ -66,7 +68,7 @@ public final class HasTsCollectionDropTargetListener implements DropTargetListen
 
     @Override
     public void dragExit(DropTargetEvent dte) {
-        target.setDropContent(null);
+        target.setDropContent(demetra.tsprovider.TsCollection.EMPTY);
     }
 
     @Override

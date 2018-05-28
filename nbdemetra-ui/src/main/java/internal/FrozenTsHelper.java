@@ -16,6 +16,7 @@
  */
 package internal;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
@@ -36,6 +37,20 @@ public final class FrozenTsHelper {
         // static class
     }
 
+    public static boolean isFrozen(@Nonnull demetra.tsprovider.Ts ts) {
+        return TsConverter.fromTs(ts).isFrozen();
+    }
+    
+    @Nullable
+    public static LocalDateTime getTimestamp(@Nonnull demetra.tsprovider.Ts ts) {
+        return getTimestamp(TsConverter.fromTs(ts));
+    }
+    
+    @Nullable
+    public static TsMoniker getOriginalMoniker(@Nonnull demetra.tsprovider.TsMoniker moniker) {
+        return getOriginalMoniker(TsConverter.fromTsMoniker(moniker));
+    }
+    
     @Nullable
     public static String getSource(@Nonnull Ts ts) {
         String source = ts.getMoniker().getSource();

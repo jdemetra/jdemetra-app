@@ -4,6 +4,8 @@
  */
 package ec.nbdemetra.ui.tools;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTs;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
@@ -47,15 +49,15 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//ec.nbdemetra.ui.tools//Differencing//EN",
-autostore = false)
+        autostore = false)
 @TopComponent.Description(preferredID = "DifferencingTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_NEVER)
+        //iconBase="SET/PATH/TO/ICON/HERE", 
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "output", openAtStartup = false)
 @ActionID(category = "Window", id = "ec.nbdemetra.ui.tools.DifferencingTopComponent")
 @ActionReference(path = "Menu/Tools", position = 334)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_DifferencingAction",
-preferredID = "DifferencingTopComponent")
+        preferredID = "DifferencingTopComponent")
 @Messages({
     "CTL_DifferencingAction=Differencing",
     "CTL_DifferencingTopComponent=Differencing Window",
@@ -124,7 +126,6 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
 //            mode.dockInto(this);
 //        }
 //    }
-
     public void refreshHeader() {
         if (ts_ == null) {
             dropDataLabel.setVisible(true);
@@ -205,7 +206,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
         public boolean importData(TransferHandler.TransferSupport support) {
             Ts s = TssTransferSupport.getDefault().toTs(support.getTransferable());
             if (s != null) {
-                setTs(s);
+                setTs(TsConverter.toTs(s));
                 return true;
             }
             return false;
@@ -226,7 +227,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
             s = s.delta(ifreq, seasonalDiffOrder);
         }
         Ts del = TsManager.getDefault().newTs("Differenced series", null, s);
-        grid.getTsCollection().replace(del);
+        grid.setTsCollection(TsCollection.of(TsConverter.toTs(del)));
         AutoCorrelations ac = new AutoCorrelations(s);
         acView.setLength(ifreq * 3);
         acView.setAutoCorrelations(ac);
@@ -237,20 +238,20 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
     private void clear() {
         acView.reset();
         periodogramView.reset();
-        grid.getTsCollection().clear();
+        grid.setTsCollection(TsCollection.EMPTY);
     }
 
     @Override
-    public void setTs(Ts s) {
-        ts_ = s.freeze();
+    public void setTs(demetra.tsprovider.Ts s) {
+        ts_ = TsConverter.fromTs(s).freeze();
         ts_.load(TsInformationType.All);
         refreshHeader();
         showTests();
     }
 
     @Override
-    public Ts getTs() {
-        return ts_;
+    public demetra.tsprovider.Ts getTs() {
+        return TsConverter.toTs(ts_);
     }
 
     @Override

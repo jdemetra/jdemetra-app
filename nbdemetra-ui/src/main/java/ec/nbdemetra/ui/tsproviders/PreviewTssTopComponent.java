@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.tss.TsInformationType;
@@ -113,13 +114,18 @@ public final class PreviewTssTopComponent extends TopComponent implements Lookup
     @Override
     public void resultChanged(LookupEvent le) {
         if (le.getSource().equals(lookupResult)) {
-            jTsChart1.getTsCollection().clear();
-            lookupResult.allInstances().stream()
-                    .filter(o -> o instanceof SeriesNode)
-                    .map(o -> TsManager.getDefault().getTs(o.getLookup().lookup(DataSet.class), TsInformationType.None))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .forEach(jTsChart1.getTsCollection()::quietAdd);
+            jTsChart1.setTsCollection(
+                    TsConverter.toTsCollection(
+                            lookupResult
+                                    .allInstances()
+                                    .stream()
+                                    .filter(o -> o instanceof SeriesNode)
+                                    .map(o -> TsManager.getDefault().getTs(o.getLookup().lookup(DataSet.class), TsInformationType.None))
+                                    .filter(Optional::isPresent)
+                                    .map(Optional::get)
+                                    .collect(TsManager.getDefault().getTsCollector())
+                    )
+            );
         }
     }
 }

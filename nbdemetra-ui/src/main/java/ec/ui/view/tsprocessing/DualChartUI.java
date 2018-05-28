@@ -4,6 +4,7 @@
  */
 package ec.ui.view.tsprocessing;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.tss.TsCollection;
@@ -36,7 +37,7 @@ public class DualChartUI<D extends TsDocument<?, ?>> extends PooledItemUI<IProcD
             }
         }
         c.setDualChart(true);
-        c.getTsCollection().quietAppend(items);
+        c.setTsCollection(TsConverter.toTsCollection(items));
         c.setTsUpdateMode(TsUpdateMode.None);
         int i = 0;
         c.getDualDispatcher().clearSelection();

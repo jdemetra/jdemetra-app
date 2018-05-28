@@ -4,10 +4,11 @@
  */
 package ec.ui.view;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import ec.tss.Ts;
 import demetra.ui.components.JTsChart;
 import java.awt.BorderLayout;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
 
@@ -25,20 +26,21 @@ public class DecompositionView extends JComponent {
     }
 
     public void set(List<Ts> high, List<Ts> low) {
-        List<Ts> coll = new ArrayList<>();
-        coll.addAll(high);
-        coll.addAll(low);
+        TsCollection.Builder b = TsCollection                .builder();
+        high.forEach(o->b.data(TsConverter.toTs(o)));
+        low.forEach(o->b.data(TsConverter.toTs(o)));
+        TsCollection coll = b.build();
         dualchart_.getDualDispatcher().clearSelection();
-        for (int i = high.size(); i < coll.size(); ++i) {
+        for (int i = high.size(); i < coll.getData().size(); ++i) {
             dualchart_.getDualDispatcher().setSelectionInterval(i, i);
         }
-        dualchart_.getTsCollection().replace(coll);
+        dualchart_.setTsCollection(coll);
 
         setLayout(new BorderLayout());
         add(dualchart_, BorderLayout.CENTER);
     }
 
     public void clear() {
-        dualchart_.getTsCollection().clear();
+        dualchart_.setTsCollection(TsCollection.EMPTY);
     }
 }

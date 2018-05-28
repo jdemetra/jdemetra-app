@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import static ec.nbdemetra.ui.tsproviders.CollectionNode.ACTION_PATH;
 import ec.tss.TsInformationType;
@@ -49,7 +50,8 @@ public final class CollectionNode extends DataSetNode {
     private Transferable getData(TsInformationType type) throws IOException {
         return TsManager.getDefault()
                 .getTsCollection(getLookup().lookup(DataSet.class), type)
-                .map(data -> TssTransferSupport.getDefault().fromTsCollection(data))
+                .map(TsConverter::toTsCollection)
+                .map(TssTransferSupport.getDefault()::fromTsCollection)
                 .orElseThrow(() -> new IOException("Cannot create the TS collection '" + getDisplayName() + "'; check the logs for further details."));
     }
 

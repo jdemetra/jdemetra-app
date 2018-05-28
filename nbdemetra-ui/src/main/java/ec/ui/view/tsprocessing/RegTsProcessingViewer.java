@@ -4,7 +4,8 @@
  */
 package ec.ui.view.tsprocessing;
 
-import com.google.common.collect.ObjectArrays;
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import demetra.ui.components.JTsTable;
 import ec.tss.Ts;
@@ -13,6 +14,7 @@ import ec.tstoolkit.algorithm.IProcSpecification;
 import demetra.ui.components.JTsTable.Column;
 import java.awt.Dimension;
 import java.util.Arrays;
+import java.util.stream.Stream;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JToolBar;
@@ -72,7 +74,7 @@ public class RegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocume
                 updateDocument();
             }
         });
-        yList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt-> {
+        yList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             if (!quietRefresh) {
                 updateDocument();
             }
@@ -83,15 +85,15 @@ public class RegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocume
         try {
 
             quietRefresh = true;
-            Ts[] y = yList.getTsCollection().toArray();
-            if (y == null || y.length == 0) {
+            if (yList.getTsCollection().getData().isEmpty()) {
                 getDocument().setInput(null);
             }
-            Ts[] x = xList.getTsCollection().toArray();
-            if (x == null || x.length == 0) {
+            if (xList.getTsCollection().getData().isEmpty()) {
+                Ts[] y = yList.getTsCollection().getData().stream().map(TsConverter::fromTs).toArray(Ts[]::new);
                 getDocument().setInput(y);
             } else {
-                getDocument().setInput(ObjectArrays.concat(y[0], x));
+                Ts[] tmp = Stream.concat(yList.getTsCollection().getData().stream(), xList.getTsCollection().getData().stream()).map(TsConverter::fromTs).toArray(Ts[]::new);
+                getDocument().setInput(tmp);
             }
             refreshAll();
         } catch (Exception err) {
@@ -103,11 +105,13 @@ public class RegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocume
     private void updateList() {
         Ts[] s = getDocument().getTs();
         if (s == null || s.length == 0) {
-            yList.getTsCollection().clear();
-            xList.getTsCollection().clear();
+            yList.setTsCollection(TsCollection.EMPTY);
+            xList.setTsCollection(TsCollection.EMPTY);
         } else {
-            yList.getTsCollection().replace(s[0]);
-            xList.getTsCollection().replace(Arrays.copyOfRange(s, 1, s.length));
+            yList.setTsCollection(TsCollection.of(TsConverter.toTs(s[0])));
+            TsCollection.Builder col = TsCollection.builder();
+            Stream.of(s).skip(1).map(TsConverter::toTs).forEach(col::data);
+            xList.setTsCollection(col.build());
         }
     }
 

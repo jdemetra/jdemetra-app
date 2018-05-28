@@ -16,6 +16,7 @@
  */
 package ec.ui.view;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasColorScheme;
 import demetra.ui.components.HasTs;
@@ -125,8 +126,8 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
 
     @Nullable
     private TsInformation getTsInformation() {
-        Ts ts = getTs();
-        return ts != null ? ts.toInfo(TsInformationType.Data) : null;
+        demetra.tsprovider.Ts ts = getTs();
+        return ts != null ? TsConverter.fromTs(ts).toInfo(TsInformationType.Data) : null;
     }
 
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">

@@ -7,7 +7,6 @@ package ec.nbdemetra.ui.tools;
 import demetra.ui.components.HasTs;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
-import ec.tss.Ts;
 import ec.tstoolkit.data.WindowType;
 import ec.ui.view.TukeySpectrumView;
 import java.lang.reflect.InvocationTargetException;
@@ -135,12 +134,12 @@ public final class TukeySpectrumTopComponent extends TopComponent implements Has
     }
 
     @Override
-    public Ts getTs() {
+    public demetra.tsprovider.Ts getTs() {
         return null;
     }
 
     @Override
-    public void setTs(Ts ts) {
+    public void setTs(demetra.tsprovider.Ts ts) {
         view.setTs(ts);
     }
 

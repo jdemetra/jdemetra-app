@@ -16,6 +16,8 @@
  */
 package ec.ui.view.tsprocessing;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.tss.Ts;
 import ec.tss.html.HtmlUtil;
@@ -44,7 +46,7 @@ import javax.swing.SwingConstants;
 public final class TsViewToolkit implements ITsViewToolkit {
 
     private static final TsViewToolkit INSTANCE = new TsViewToolkit();
-    // 
+
     private final IPool<JTsChart> chartPool;
     private final IPool<JTsGrowthChart> growthchartPool;
     private final IPool<JTsGrid> gridPool;
@@ -66,10 +68,10 @@ public final class TsViewToolkit implements ITsViewToolkit {
 
     @Override
     public JComponent getGrid(Iterable<Ts> series) {
-        final JTsGrid result = gridPool.getOrCreate();
+        JTsGrid result = gridPool.getOrCreate();
         result.setTsUpdateMode(TsUpdateMode.None);
         result.setMode(Mode.MULTIPLETS);
-        result.getTsCollection().replace(series);
+        result.setTsCollection(toTsCollection(series));
 
         return new JDisposable(result) {
             @Override
@@ -81,10 +83,10 @@ public final class TsViewToolkit implements ITsViewToolkit {
 
     @Override
     public JComponent getGrid(Ts series) {
-        final JTsGrid result = gridPool.getOrCreate();
+        JTsGrid result = gridPool.getOrCreate();
         result.setTsUpdateMode(TsUpdateMode.None);
         result.setMode(Mode.SINGLETS);
-        result.getTsCollection().replace(series);
+        result.setTsCollection(TsCollection.builder().data(TsConverter.toTs(series)).build());
 
         return new JDisposable(result) {
             @Override
@@ -98,7 +100,7 @@ public final class TsViewToolkit implements ITsViewToolkit {
     public JComponent getChart(Iterable<Ts> series) {
         final JTsChart result = chartPool.getOrCreate();
         result.setTsUpdateMode(TsUpdateMode.None);
-        result.getTsCollection().replace(series);
+        result.setTsCollection(toTsCollection(series));
 
         return new JDisposable(result) {
             @Override
@@ -112,7 +114,7 @@ public final class TsViewToolkit implements ITsViewToolkit {
     public JComponent getGrowthChart(Iterable<Ts> series) {
         final JTsGrowthChart result = growthchartPool.getOrCreate();
         result.setTsUpdateMode(TsUpdateMode.None);
-        result.getTsCollection().replace(series);
+        result.setTsCollection(toTsCollection(series));
 
         return new JDisposable(result) {
             @Override
@@ -148,7 +150,7 @@ public final class TsViewToolkit implements ITsViewToolkit {
     public JComponent getMessageViewer(String msg) {
         JLabel result = new JLabel();
         result.setHorizontalAlignment(SwingConstants.CENTER);
-        result.setFont(result.getFont().deriveFont(result.getFont().getSize2D()*3/2));
+        result.setFont(result.getFont().deriveFont(result.getFont().getSize2D() * 3 / 2));
         result.setText("<html><center>" + msg);
         return result;
     }
@@ -158,18 +160,6 @@ public final class TsViewToolkit implements ITsViewToolkit {
         JDisposable(Component c) {
             setLayout(new BorderLayout());
             add(c, BorderLayout.CENTER);
-        }
-    }
-
-    private static abstract class DisposableFactory<T extends IDisposable> implements IPool.Factory<T> {
-
-        @Override
-        public void destroy(T o) {
-            o.dispose();
-        }
-
-        @Override
-        public void reset(T o) {
         }
     }
 
@@ -235,5 +225,13 @@ public final class TsViewToolkit implements ITsViewToolkit {
         @Override
         public void destroy(AHtmlView o) {
         }
+    }
+
+    private static TsCollection toTsCollection(Iterable<Ts> list) {
+        TsCollection.Builder col = TsCollection.builder();
+        for (Ts ts : list) {
+            col.data(TsConverter.toTs(ts));
+        }
+        return col.build();
     }
 }

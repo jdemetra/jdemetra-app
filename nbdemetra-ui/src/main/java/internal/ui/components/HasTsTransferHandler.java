@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.components.HasTs;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;
@@ -45,7 +46,7 @@ public final class HasTsTransferHandler extends TransferHandler {
         Ts ts = tssSupport.toTs(support.getTransferable());
         if (ts != null) {
             ts.query(TsInformationType.All);
-            delegate.setTs(ts);
+            delegate.setTs(TsConverter.toTs(ts));
             return true;
         }
         return false;

@@ -16,6 +16,8 @@
  */
 package ec.nbdemetra.ui.tsaction;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.components.HasChart.LinesThickness;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.MonikerUI;
@@ -122,7 +124,7 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
         @Override
         public MultiViewElement createElement() {
             ChartTopComponent result = new ChartTopComponent();
-            result.getChart().getTsCollection().add(ts);
+            result.getChart().setTsCollection(TsCollection.builder().data(TsConverter.toTs(ts)).build());
             result.getChart().setTsUpdateMode(TsUpdateMode.None);
             result.getChart().setLegendVisible(true);
             result.getChart().setTitleVisible(false);
@@ -168,7 +170,7 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
         @Override
         public MultiViewElement createElement() {
             GridTopComponent result = new GridTopComponent();
-            result.getGrid().getTsCollection().add(ts);
+            result.getGrid().setTsCollection(TsCollection.builder().data(TsConverter.toTs(ts)).build());
             result.getGrid().setTsUpdateMode(TsUpdateMode.None);
             result.getGrid().setMode(JTsGrid.Mode.SINGLETS);
             return result;

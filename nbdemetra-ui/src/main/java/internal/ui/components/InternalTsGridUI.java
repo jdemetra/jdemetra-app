@@ -16,6 +16,11 @@
  */
 package internal.ui.components;
 
+import com.google.common.base.Suppliers;
+import demetra.bridge.TsConverter;
+import demetra.timeseries.TsDataTable;
+import demetra.timeseries.TsPeriod;
+import demetra.tsprovider.Ts;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.HasColorScheme;
 import demetra.ui.components.HasObsFormat;
@@ -25,17 +30,14 @@ import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
-import ec.tss.Ts;
-import ec.tss.TsCollection;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.data.DescriptiveStatistics;
-import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import demetra.ui.components.JTsGrid;
-import ec.ui.chart.DataFeatureModel;
-import ec.ui.grid.TsGridObs;
+import demetra.ui.components.TsFeatureHelper;
+import demetra.ui.components.TsGridObs;
 import static internal.ui.components.JTsGridCommands.MULTI_TS_ACTION;
 import static internal.ui.components.JTsGridCommands.REVERSE_ACTION;
 import static internal.ui.components.JTsGridCommands.SINGLE_TS_ACTION;
@@ -43,6 +45,7 @@ import static internal.ui.components.JTsGridCommands.TOGGLE_MODE_ACTION;
 import static internal.ui.components.JTsGridCommands.TRANSPOSE_ACTION;
 import ec.util.chart.ObsIndex;
 import ec.util.chart.swing.SwingColorSchemeSupport;
+import ec.util.grid.CellIndex;
 import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
 import ec.util.grid.swing.XTable;
@@ -53,6 +56,9 @@ import java.awt.Component;
 import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.function.IntUnaryOperator;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.ActionMap;
@@ -80,7 +86,6 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     private final JComboBox combo = new JComboBox();
     private final GridHandler gridHandler = new GridHandler();
     private final CustomCellRenderer defaultCellRenderer = new CustomCellRenderer(grid.getDefaultRenderer(Object.class));
-    private final DataFeatureModel dataFeatureModel = new DataFeatureModel();
     private final ThemeSupport themeSupport = ThemeSupport.registered();
     private Font originalFont;
 
@@ -232,10 +237,10 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
     private void onCollectionChange() {
         selectionListener.setEnabled(false);
-        dataFeatureModel.setData(target.getTsCollection().toArray());
         updateGridModel();
         updateComboModel();
         updateNoDataMessage();
+        updateGridCellRenderer();
         selectionListener.setEnabled(true);
     }
 
@@ -334,9 +339,17 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     }
 
     private void updateGridModel() {
-        TsCollection collection = target.getTsCollection();
-        int index = target.getMode() == JTsGrid.Mode.SINGLETS ? Math.min(target.getSingleTsIndex(), collection.getCount() - 1) : -1;
-        grid.setModel(new GridModelAdapter(TsGridData.create(collection, index, target.getOrientation(), target.getChronology(), dataFeatureModel)));
+        int index = target.getMode() == JTsGrid.Mode.SINGLETS ? Math.min(target.getSingleTsIndex(), target.getTsCollection().getData().size() - 1) : -1;
+        TsGridData data = TsGridData.create(target.getTsCollection().getData(), index);
+        boolean transposed = target.getOrientation().equals(JTsGrid.Orientation.REVERSED);
+        boolean ascending = target.getChronology().equals(JTsGrid.Chronology.ASCENDING);
+        boolean single = index != -1;
+        grid.setModel(new GridModelAdapter(
+                data,
+                transposed,
+                ascending ? i -> i : i -> data.getRowCount() - i - 1,
+                ascending || !single ? j -> j : j -> data.getColumnCount() - j - 1
+        ));
     }
 
     private void updateSelectionBehavior() {
@@ -357,11 +370,10 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
     private void updateSelection() {
         if (selectionListener.isEnabled()) {
-            TsCollection collection = target.getTsCollection();
             if (target.getMode() == JTsGrid.Mode.MULTIPLETS) {
                 selectionListener.changeSelection(target.getOrientation() == JTsGrid.Orientation.NORMAL ? grid.getColumnSelectionModel() : grid.getRowSelectionModel());
-            } else if (!collection.isEmpty()) {
-                int index = Math.min(target.getSingleTsIndex(), collection.getCount() - 1);
+            } else if (target.getTsCollection().getData().size() > 0) {
+                int index = Math.min(target.getSingleTsIndex(), target.getTsCollection().getData().size() - 1);
                 if (combo.isVisible()) {
                     combo.setSelectedIndex(index);
                 }
@@ -372,9 +384,8 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     }
 
     private void updateComboModel() {
-        TsCollection collection = target.getTsCollection();
-        if (target.getMode() == JTsGrid.Mode.SINGLETS && collection.getCount() > 1) {
-            combo.setModel(new DefaultComboBoxModel(collection.toArray()));
+        if (target.getMode() == JTsGrid.Mode.SINGLETS && target.getTsCollection().getData().size() > 1) {
+            combo.setModel(new DefaultComboBoxModel(target.getTsCollection().getData().toArray()));
             combo.setVisible(true);
         } else {
             combo.setVisible(false);
@@ -382,7 +393,14 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     }
 
     private void updateGridCellRenderer() {
-        defaultCellRenderer.update(themeSupport.getDataFormat(), target.isUseColorScheme() ? themeSupport : null, target.isShowBars());
+        List<Ts> data = target.getTsCollection().getData();
+        Supplier<TsFeatureHelper> tsFeatures = Suppliers.memoize(() -> TsFeatureHelper.of(data));
+        Supplier<DescriptiveStatistics> stats = Suppliers.memoize(() -> {
+            return target.getSingleTsIndex() != -1
+                    ? new DescriptiveStatistics(data.stream().flatMapToDouble(o -> o.getData().getValues().stream()).toArray())
+                    : new DescriptiveStatistics(data.get(target.getSingleTsIndex()).getData().getValues().toArray());
+        });
+        defaultCellRenderer.update(themeSupport.getDataFormat(), target.isUseColorScheme() ? themeSupport : null, target.isShowBars(), tsFeatures, stats);
         grid.setDefaultRenderer(TsGridObs.class, target.getCellRenderer());
         grid.repaint();
     }
@@ -477,10 +495,9 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
         @Override
         protected void selectionChanged(ListSelectionModel model) {
-            TsCollection collection = target.getTsCollection();
             if (target.getMode() == JTsGrid.Mode.MULTIPLETS) {
                 super.selectionChanged(model);
-            } else if (collection.getCount() > target.getSingleTsIndex()) {
+            } else if (target.getTsCollection().getData().size() > target.getSingleTsIndex()) {
                 int index = target.getSingleTsIndex();
                 target.getTsSelectionModel().clearSelection();
                 target.getTsSelectionModel().setSelectionInterval(index, index);
@@ -500,7 +517,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
                 updating = true;
                 switch (evt.getPropertyName()) {
                     case JGrid.HOVERED_CELL_PROPERTY:
-                        target.setHoveredObs(((GridModelAdapter) grid.getModel()).data.toObsIndex(grid.getHoveredCell()));
+                        target.setHoveredObs(((GridModelAdapter) grid.getModel()).toObsIndex(grid.getHoveredCell()));
                         break;
                 }
                 updating = false;
@@ -509,7 +526,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
         private void applyHoveredCell(ObsIndex hoveredObs) {
             if (!updating) {
-                grid.setHoveredCell(((GridModelAdapter) grid.getModel()).data.toCellIndex(hoveredObs));
+                grid.setHoveredCell(((GridModelAdapter) grid.getModel()).toCellIndex(hoveredObs));
             }
         }
     }
@@ -566,23 +583,29 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         private IFormatter<? super Number> valueFormatter;
         private SwingColorSchemeSupport colorSchemeSupport;
         private boolean showBars;
+        private Supplier<TsFeatureHelper> tsFeatures;
+        private Supplier<DescriptiveStatistics> stats;
 
         public CustomCellRenderer(@Nonnull TableCellRenderer delegate) {
             super(false);
             setHorizontalAlignment(JLabel.TRAILING);
             setOpaque(true);
             this.delegate = delegate;
-            this.periodFormatter = TsPeriodFormatter.INSTANCE;
+            this.periodFormatter = TsPeriod::toString;
             this.toolTip = super.createToolTip();
             this.valueFormatter = DataFormat.DEFAULT.numberFormatter();
             this.colorSchemeSupport = null;
             this.showBars = false;
+            this.tsFeatures = () -> TsFeatureHelper.EMPTY;
+            this.stats = () -> new DescriptiveStatistics();
         }
 
-        void update(@Nonnull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars) {
+        void update(@Nonnull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars, Supplier<TsFeatureHelper> tsFeatures, Supplier<DescriptiveStatistics> stats) {
             this.valueFormatter = dataFormat.numberFormatter();
             this.colorSchemeSupport = colorSchemeSupport;
             this.showBars = showBars;
+            this.tsFeatures = tsFeatures;
+            this.stats = stats;
         }
 
         @Override
@@ -616,34 +639,38 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
                 setForeground(resource.getForeground());
             }
 
-            switch (obs.getInfo()) {
-                case Empty:
+            switch (obs.getStatus()) {
+                case AFTER:
+                case BEFORE:
+                case EMPTY:
+                case UNUSED:
                     setText(null);
                     setToolTipText(null);
                     setBarValues(0, 0, 0);
                     break;
-                case Missing:
-                    setText(".");
-                    setToolTipText(periodFormatter.formatAsString(obs.getPeriod()));
-                    setBarValues(0, 0, 0);
-                    break;
-                case Valid:
-                    String valueAsString = valueFormatter.formatAsString(obs.getValue());
-                    String periodAsString = periodFormatter.formatAsString(obs.getPeriod());
-                    if (obs.hasFeature(Ts.DataFeature.Forecasts)) {
-                        setText("<html><i>" + valueAsString);
-                        setToolTipText("<html>" + periodAsString + ": " + valueAsString + "<br>Forecast");
-                    } else {
-                        setText(valueAsString);
-                        setToolTipText(periodAsString + ": " + valueAsString);
-                    }
-                    if (showBars && !isSelected) {
-                        DescriptiveStatistics stats = obs.getStats();
-                        setBarValues(stats.getMin(), stats.getMax(), obs.getValue());
-                    } else {
+                case PRESENT:
+                    if (Double.isNaN(obs.getValue())) {
+                        setText(".");
+                        setToolTipText(periodFormatter.formatAsString(obs.getPeriod()));
                         setBarValues(0, 0, 0);
+                    } else {
+                        String valueAsString = valueFormatter.formatAsString(obs.getValue());
+                        String periodAsString = periodFormatter.formatAsString(obs.getPeriod());
+                        if (tsFeatures.get().hasFeature(TsFeatureHelper.Feature.Forecasts, obs.getSeriesIndex(), obs.getIndex())) {
+                            setText("<html><i>" + valueAsString);
+                            setToolTipText("<html>" + periodAsString + ": " + valueAsString + "<br>Forecast");
+                        } else {
+                            setText(valueAsString);
+                            setToolTipText(periodAsString + ": " + valueAsString);
+                        }
+                        if (showBars && !isSelected) {
+                            DescriptiveStatistics tmp = stats.get();
+                            setBarValues(tmp.getMin(), tmp.getMax(), obs.getValue());
+                        } else {
+                            setBarValues(0, 0, 0);
+                        }
+                        break;
                     }
-                    break;
             }
 
             return this;
@@ -663,9 +690,9 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            Ts ts = (Ts) value;
+            demetra.tsprovider.Ts ts = (demetra.tsprovider.Ts) value;
             setText(ts.getName());
-            setIcon(monikerUI.getIcon(ts.getMoniker()));
+            setIcon(monikerUI.getIcon(TsConverter.fromTsMoniker(ts.getMoniker())));
             if (colorSchemeSupport != null && index != -1) {
                 if (isSelected) {
                     setBackground(colorSchemeSupport.getPlotColor());
@@ -677,52 +704,73 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     }
     //</editor-fold>
 
+    @lombok.AllArgsConstructor
     private static final class GridModelAdapter extends AbstractTableModel implements GridModel {
 
         private final TsGridData data;
-
-        public GridModelAdapter(TsGridData data) {
-            this.data = data;
-        }
+        private final boolean transposed;
+        private final IntUnaryOperator rowIndexer;
+        private final IntUnaryOperator columnIndexer;
 
         @Override
         public int getRowCount() {
-            return data.getRowCount();
+            return transposed
+                    ? data.getColumnCount()
+                    : data.getRowCount();
         }
 
         @Override
         public int getColumnCount() {
-            return data.getColumnCount();
+            return transposed
+                    ? data.getRowCount()
+                    : data.getColumnCount();
         }
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            return data.getObs(rowIndex, columnIndex);
+            return transposed
+                    ? data.getObs(rowIndexer.applyAsInt(columnIndex), columnIndexer.applyAsInt(rowIndex))
+                    : data.getObs(rowIndexer.applyAsInt(rowIndex), columnIndexer.applyAsInt(columnIndex));
         }
 
         @Override
         public String getRowName(int rowIndex) {
-            return data.getRowName(rowIndex);
+            return transposed
+                    ? data.getColumnName(columnIndexer.applyAsInt(rowIndex))
+                    : data.getRowName(rowIndexer.applyAsInt(rowIndex));
         }
 
         @Override
-        public String getColumnName(int column) {
-            return data.getColumnName(column);
+        public String getColumnName(int columnIndex) {
+            return transposed
+                    ? data.getRowName(rowIndexer.applyAsInt(columnIndex))
+                    : data.getColumnName(columnIndexer.applyAsInt(columnIndex));
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
             return TsGridObs.class;
         }
-    }
 
-    private static final class TsPeriodFormatter implements IFormatter<TsPeriod> {
+        @Nonnull
+        public ObsIndex toObsIndex(@Nonnull CellIndex index) {
+            if (CellIndex.NULL.equals(index)) {
+                return ObsIndex.NULL;
+            }
+            TsGridObs obs = transposed
+                    ? data.getObs(rowIndexer.applyAsInt(index.getColumn()), columnIndexer.applyAsInt(index.getRow()))
+                    : data.getObs(rowIndexer.applyAsInt(index.getRow()), columnIndexer.applyAsInt(index.getColumn()));
+            if (TsDataTable.ValueStatus.PRESENT.equals(obs.getStatus())) {
+                return ObsIndex.valueOf(obs.getSeriesIndex(), obs.getIndex());
+            }
+            return ObsIndex.NULL;
+        }
 
-        private final static TsPeriodFormatter INSTANCE = new TsPeriodFormatter();
-
-        @Override
-        public CharSequence format(TsPeriod value) throws NullPointerException {
-            return value.toString();
+        @Nonnull
+        public CellIndex toCellIndex(@Nonnull ObsIndex index) {
+            return transposed
+                    ? CellIndex.valueOf(rowIndexer.applyAsInt(data.getColumnIndex(index)), columnIndexer.applyAsInt(data.getRowIndex(index)))
+                    : CellIndex.valueOf(rowIndexer.applyAsInt(data.getRowIndex(index)), columnIndexer.applyAsInt(data.getColumnIndex(index)));
         }
     }
 }

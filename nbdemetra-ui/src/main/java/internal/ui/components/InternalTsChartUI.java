@@ -17,7 +17,6 @@
 package internal.ui.components;
 
 import demetra.ui.components.TsSelectionBridge;
-import com.google.common.collect.Lists;
 import demetra.ui.components.HasChart;
 import demetra.ui.components.HasColorScheme;
 import demetra.ui.components.HasObsFormat;
@@ -29,14 +28,12 @@ import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
-import ec.tss.Ts;
-import ec.tss.TsCollection;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.utilities.IntList;
 import demetra.ui.components.JTsChart;
-import ec.ui.chart.DataFeatureModel;
+import demetra.ui.components.TsFeatureHelper;
+import demetra.ui.util.jfreechart.TsXYDataset;
 import ec.ui.chart.JTimeSeriesChartUtil;
-import ec.ui.chart.TsXYDatasets;
 import ec.util.chart.ObsFunction;
 import ec.util.chart.ObsIndex;
 import ec.util.chart.ObsPredicate;
@@ -49,9 +46,11 @@ import ec.util.various.swing.JCommand;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.ActionMap;
 import javax.swing.JMenu;
@@ -69,11 +68,11 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
 
     private final JTimeSeriesChart chartPanel = new JTimeSeriesChart();
     private final ChartHandler chartHandler = new ChartHandler();
-    private final DataFeatureModel dataFeatureModel = new DataFeatureModel();
     private final IntList savedSelection = new IntList();
     private final DualDispatcherListener dualDispatcherListener = new DualDispatcherListener();
     private final ThemeSupport themeSupport = ThemeSupport.registered();
 
+    private TsFeatureHelper tsFeatures = TsFeatureHelper.of(Collections.emptyList());
     private InternalTsSelectionAdapter selectionListener;
 
     @Override
@@ -126,8 +125,9 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
         chartPanel.setSeriesFormatter(new SeriesFunction<String>() {
             @Override
             public String apply(int series) {
-                TsCollection collection = target.getTsCollection();
-                return collection.getCount() > series ? collection.get(series).getName() : chartPanel.getDataset().getSeriesKey(series).toString();
+                return target.getTsCollection().getData().size() > series
+                        ? target.getTsCollection().getData().get(series).getName()
+                        : chartPanel.getDataset().getSeriesKey(series).toString();
             }
         });
         chartPanel.setObsFormatter(new ObsFunction<String>() {
@@ -138,7 +138,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
                 CharSequence value = chartPanel.getValueFormat().format(dataset.getY(series, obs));
                 StringBuilder result = new StringBuilder();
                 result.append(period).append(": ").append(value);
-                if (dataFeatureModel.hasFeature(Ts.DataFeature.Forecasts, series, obs)) {
+                if (series < target.getTsCollection().getData().size() && tsFeatures.hasFeature(TsFeatureHelper.Feature.Forecasts, series, obs)) {
                     result.append("\nForecast");
                 }
                 return result.toString();
@@ -147,13 +147,13 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
         chartPanel.setDashPredicate(new ObsPredicate() {
             @Override
             public boolean apply(int series, int obs) {
-                return dataFeatureModel.hasFeature(Ts.DataFeature.Forecasts, series, obs);
+                return series < target.getTsCollection().getData().size() && tsFeatures.hasFeature(TsFeatureHelper.Feature.Forecasts, series, obs);
             }
         });
         chartPanel.setLegendVisibilityPredicate(new SeriesPredicate() {
             @Override
             public boolean apply(int series) {
-                return series < target.getTsCollection().getCount();
+                return series < target.getTsCollection().getData().size();
             }
         });
     }
@@ -245,9 +245,9 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
 
     private void onCollectionChange() {
         selectionListener.setEnabled(false);
-        Ts[] tss = target.getTsCollection().toArray();
-        dataFeatureModel.setData(tss);
-        chartPanel.setDataset(TsXYDatasets.from(tss));
+        demetra.tsprovider.TsCollection tss = target.getTsCollection();
+        tsFeatures = TsFeatureHelper.of(tss.getData());
+        chartPanel.setDataset(TsXYDataset.of(tss.getData()));
         updateNoDataMessage();
         selectionListener.setEnabled(true);
     }
@@ -269,27 +269,29 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
     }
 
     private void onDropContentChange() {
-        Ts[] collection = target.getTsCollection().toArray();
-        Ts[] dropContent = target.getDropContent().toArray();
+        demetra.tsprovider.TsCollection collection = target.getTsCollection();
+        demetra.tsprovider.TsCollection dropContent = target.getDropContent();
 
-        List<Ts> tmp = Lists.newArrayList(dropContent);
-        tmp.removeAll(Arrays.asList(collection));
+        List<demetra.tsprovider.Ts> tmp = new ArrayList<>();
+        tmp.addAll(dropContent.getData());
+        tmp.removeAll(collection.getData());
 
-        Ts[] tss = Stream.concat(Stream.of(collection), tmp.stream()).toArray(Ts[]::new);
-        dataFeatureModel.setData(tss);
-        chartPanel.setDataset(TsXYDatasets.from(tss));
+        List<demetra.tsprovider.Ts> tss = Stream
+                .concat(collection.getData().stream(), tmp.stream())
+                .collect(Collectors.toList());
+        chartPanel.setDataset(TsXYDataset.of(tss));
 
         selectionListener.setEnabled(false);
         ListSelectionModel m = chartPanel.getSeriesSelectionModel();
-        if (dropContent.length > 0) {
+        if (dropContent.getData().size() > 0) {
             savedSelection.clear();
             for (int series = m.getMinSelectionIndex(); series <= m.getMaxSelectionIndex(); series++) {
                 if (m.isSelectedIndex(series)) {
                     savedSelection.add(series);
                 }
             }
-            int offset = collection.length;
-            m.setSelectionInterval(offset, offset + dropContent.length);
+            int offset = target.getTsCollection().getData().size();
+            m.setSelectionInterval(offset, offset + dropContent.getData().size());
         } else {
             m.clearSelection();
             for (int series : savedSelection.toArray()) {

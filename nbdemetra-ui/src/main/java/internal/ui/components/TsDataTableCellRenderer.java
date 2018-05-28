@@ -20,7 +20,6 @@ import demetra.ui.components.HasObsFormat;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.Formatters;
-import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.chart.TsSparklineCellRenderer;
 import ec.util.various.swing.StandardSwingColor;
 import java.awt.Component;
@@ -72,13 +71,14 @@ public final class TsDataTableCellRenderer implements TableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (value instanceof TsData) {
-            TsData data = (TsData) value;
-            switch (data.getObsCount()) {
+        if (value instanceof demetra.timeseries.TsData) {
+            demetra.timeseries.TsData data = (demetra.timeseries.TsData) value;
+            switch (data.length()) {
                 case 0:
-                    return renderUsingLabel(table, "No obs", isSelected, hasFocus, row, column);
+                    String cause = data.getCause();
+                    return renderUsingLabel(table, cause.isEmpty() ? "loading? invalid?" : cause, isSelected, hasFocus, row, column);
                 case 1:
-                    return renderUsingLabel(table, "Single: " + formatValue(data.get(0)), isSelected, hasFocus, row, column);
+                    return renderUsingLabel(table, "Single: " + formatValue(data.getValue(0)), isSelected, hasFocus, row, column);
                 default:
                     return renderUsingSparkline(table, value, isSelected, hasFocus, row, column);
             }

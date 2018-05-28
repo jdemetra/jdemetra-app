@@ -18,6 +18,7 @@ package ec.tss.datatransfer;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.beans.ListenableBean;
 import ec.nbdemetra.core.GlobalService;
@@ -155,9 +156,7 @@ public class TssTransferSupport extends ListenableBean {
     @Nonnull
     public Transferable fromTs(@Nonnull Ts ts) {
         Preconditions.checkNotNull(ts);
-        TsCollection col = TsManager.getDefault().newTsCollection();
-        col.quietAdd(ts);
-        return fromTsCollection(col);
+        return fromTsCollection(demetra.tsprovider.TsCollection.of(TsConverter.toTs(ts)));
     }
 
     /**
@@ -168,9 +167,9 @@ public class TssTransferSupport extends ListenableBean {
      */
     @OnEDT
     @Nonnull
-    public Transferable fromTsCollection(@Nonnull TsCollection col) {
+    public Transferable fromTsCollection(@Nonnull demetra.tsprovider.TsCollection col) {
         Preconditions.checkNotNull(col);
-        return asTransferable(col, stream(), TsCollectionHelper.INSTANCE);
+        return asTransferable(TsConverter.fromTsCollection(col), stream(), TsCollectionHelper.INSTANCE);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 National Bank of Belgium
+ * Copyright 2013 National Bank of Belgium
  * 
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,32 +14,25 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.ui.components;
 
-import demetra.timeseries.TsData;
-import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.components.HasTsData;
+import demetra.timeseries.TsDataTable;
+import demetra.timeseries.TsPeriod;
 
 /**
  *
  * @author Philippe Charles
  */
-@lombok.RequiredArgsConstructor
-public final class HasTsDataImpl implements HasTsData {
+@lombok.Data
+public final class TsGridObs {
 
-    @lombok.NonNull
-    private final PropertyChangeSource.Broadcaster broadcaster;
-    private TsData tsData = null;
+    private TsDataTable.ValueStatus status;
 
-    @Override
-    public TsData getTsData() {
-        return tsData;
-    }
+    private int seriesIndex;
 
-    @Override
-    public void setTsData(TsData tsData) {
-        TsData old = this.tsData;
-        this.tsData = tsData;
-        broadcaster.firePropertyChange(TS_DATA_PROPERTY, old, this.tsData);
-    }
+    private int index;
+
+    private TsPeriod period;
+
+    private double value;
 }

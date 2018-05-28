@@ -5,10 +5,9 @@
 package ec.tss.datatransfer;
 
 import com.google.common.base.Suppliers;
-import demetra.ui.TsManager;
+import demetra.bridge.TsConverter;
 import ec.nbdemetra.ui.awt.TransferHandlers;
 import ec.tss.Ts;
-import ec.tss.TsCollection;
 import demetra.ui.components.JTsChart;
 import java.awt.Color;
 import java.awt.Component;
@@ -47,10 +46,10 @@ public abstract class TsDragRenderer {
 
         @Override
         public Component getTsDragRendererComponent(List<? extends Ts> selection) {
-            TsCollection col = TsManager.getDefault().newTsCollection();
-            col.quietAppend(selection);
+            demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
+            selection.forEach(o -> col.data(TsConverter.toTs(o)));
             JTsChart result = supplier.get();
-            result.setTsCollection(col);
+            result.setTsCollection(col.build());
             return result;
         }
 

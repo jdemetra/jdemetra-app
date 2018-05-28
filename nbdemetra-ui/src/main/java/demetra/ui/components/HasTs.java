@@ -16,9 +16,9 @@
  */
 package demetra.ui.components;
 
+import demetra.tsprovider.Ts;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
-import ec.tss.Ts;
 import internal.ui.components.HasTsImpl;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

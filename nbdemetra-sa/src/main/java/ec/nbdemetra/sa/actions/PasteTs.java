@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.sa.actions;
 
+import demetra.bridge.TsConverter;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.actions.AbstractViewAction;
 import ec.nbdemetra.ws.ui.WorkspaceTsTopComponent;
@@ -47,7 +48,7 @@ public final class PasteTs extends AbstractViewAction<WorkspaceTsTopComponent> {
                 NotifyDescriptor nd = new NotifyDescriptor.Message("Unable to paste ts");
                 DialogDisplayer.getDefault().notify(nd);
             } else {
-                top.setTs(s);
+                top.setTs(TsConverter.toTs(s));
             }
         }
     }

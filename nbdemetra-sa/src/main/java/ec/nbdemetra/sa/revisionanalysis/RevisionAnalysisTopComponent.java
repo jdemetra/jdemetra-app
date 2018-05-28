@@ -17,6 +17,7 @@
 package ec.nbdemetra.sa.revisionanalysis;
 
 import com.google.common.base.Stopwatch;
+import demetra.bridge.TsConverter;
 import demetra.ui.components.JTsTable;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.DemetraUiIcon;
@@ -182,7 +183,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
         visualRepresentation = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, inputList, loadingPanel);
         visualRepresentation.setOneTouchExpandable(true);
 
-        inputList.setTsCollection(getDocument().getElement().getInput());
+        inputList.setTsCollection(TsConverter.toTsCollection(getDocument().getElement().getInput()));
 
         setLayout(new BorderLayout());
         add(toolBarRepresentation, BorderLayout.NORTH);
@@ -202,12 +203,12 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
     }
 
     private void onCollectionChange() {
-        int nbElements = inputList.getTsCollection() != null ? inputList.getTsCollection().getCount() : 0;
+        int nbElements = inputList.getTsCollection().getData().size();
         itemsLabel.setText(nbElements == 0 ? "No items" : nbElements + (nbElements < 2 ? " item" : " items"));
 
         runButton.setEnabled(nbElements != 0);
         clear();
-        getDocument().getElement().setTsCollection(inputList.getTsCollection().makeCopy());
+        getDocument().getElement().setTsCollection(TsConverter.fromTsCollection(inputList.getTsCollection()));
     }
 
     @Override
@@ -287,11 +288,11 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
         protected Void doInBackground() throws Exception {
             Stopwatch stopwatch = Stopwatch.createStarted();
             RevisionAnalysisDocument doc = getDocument().getElement();
-            doc.setTsCollection(inputList.getTsCollection().makeCopy());
+            doc.setTsCollection(TsConverter.fromTsCollection(inputList.getTsCollection()));
             doc.setSpecification(curSpec.clone());
             doc.getResults();
 
-            StatusDisplayer.getDefault().setStatusText("Processed " + inputList.getTsCollection().getCount() + " items in " + stopwatch.stop().toString());
+            StatusDisplayer.getDefault().setStatusText("Processed " + inputList.getTsCollection().getData().size() + " items in " + stopwatch.stop().toString());
             if (!active) {
                 requestAttention(false);
             }

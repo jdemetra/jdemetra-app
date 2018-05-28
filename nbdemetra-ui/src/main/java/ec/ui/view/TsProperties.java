@@ -1,5 +1,7 @@
 package ec.ui.view;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.Ts;
@@ -71,11 +73,11 @@ public class TsProperties extends JComponent implements IDisposable {
 
     public void setTs(Ts ts) {
         ts.load(TsInformationType.All);
-        chart_.getTsCollection().clear();
-        chart_.getTsCollection().add(ts);
-
-        grid_.getTsCollection().clear();
-        grid_.getTsCollection().add(ts);
+        
+        TsCollection col = TsCollection.builder().data(TsConverter.toTs(ts)).build();
+        
+        chart_.setTsCollection(col);
+        grid_.setTsCollection(col);
 
         labelSeries_.setText(ts.getName());
         labelSource_.setText(ts.getMoniker().getSource());

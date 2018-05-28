@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import demetra.bridge.TsConverter;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.tss.TsInformation;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
@@ -26,6 +27,7 @@ import javax.swing.JButton;
 import javax.swing.JToolBar;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.components.HasTsData;
+import ec.tss.tsproviders.utils.OptionalTsData;
 
 /**
  *
@@ -61,7 +63,7 @@ public final class TsDataAbleHandler extends DemoComponentHandler.InstanceOf<Has
     }
 
     private static void apply(HasTsData o, TsInformation ts) {
-        o.setTsData(ts.data);
+        o.setTsData(TsConverter.toTsData(OptionalTsData.present(ts.data)));
     }
 
     private static void clear(HasTsData o) {

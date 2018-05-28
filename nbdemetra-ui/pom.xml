@@ -210,6 +210,17 @@
             <artifactId>snappy-java</artifactId>
             <version>1.1.2</version>
         </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-bridge</artifactId>
+            <version>${jd3-basic.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>eu.europa.ec.joinup.sat</groupId>
+                    <artifactId>demetra-data-tests</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <!-- Other -->
         <dependency>
@@ -262,6 +273,10 @@
                         <publicPackage>demetra.ui</publicPackage>
                         <publicPackage>demetra.ui.beans</publicPackage>
                         <publicPackage>demetra.ui.components</publicPackage>
+                        
+                        <publicPackage>demetra.timeseries</publicPackage>
+                        <publicPackage>demetra.tsprovider</publicPackage>
+                        <publicPackage>demetra.bridge</publicPackage>
                         
                         <!-- old core -->
                         <publicPackage>ec.benchmarking.*</publicPackage>

@@ -4,6 +4,8 @@
  */
 package ec.ui.view.tsprocessing;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.NbComponents;
@@ -14,7 +16,6 @@ import ec.ui.Disposables;
 import demetra.ui.components.JTsChart;
 import demetra.ui.components.JTsGrid;
 import java.awt.BorderLayout;
-import java.util.ArrayList;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
@@ -65,17 +66,18 @@ public final class BenchmarkingView extends JComponent {
     }
 
     public void set(Ts benchSa, Ts sa, boolean mul) {
-        ArrayList<Ts> all = new ArrayList<>();
-        all.add(sa);
-        all.add(benchSa);
-        chart_.getTsCollection().replace(all);
+        TsCollection all = TsCollection
+                .builder()
+                .data(TsConverter.toTs(sa))
+                .data(TsConverter.toTs(benchSa))
+                .build();
+        chart_.setTsCollection(all);
         TsData sdiff = mul ? (TsData.divide(benchSa.getTsData(), sa.getTsData()).minus(1))
                 : TsData.subtract(benchSa.getTsData(), sa.getTsData());
         Ts diff = TsManager.getDefault().newTsWithName("Differences");
         diff.set(sdiff);
-        dchart_.getTsCollection().replace(diff);
-        all.add(diff);
-        grid_.getTsCollection().replace(all);
+        dchart_.setTsCollection(TsCollection.of(TsConverter.toTs(diff)));
+        grid_.setTsCollection(all.toBuilder().data(TsConverter.toTs(diff)).build());
 
         HtmlTsDifferenceDocument document = new HtmlTsDifferenceDocument(benchSa, sa, mul);
         Disposables.disposeAndRemoveAll(documentPanel_).add(toolkit_.getHtmlViewer(document));

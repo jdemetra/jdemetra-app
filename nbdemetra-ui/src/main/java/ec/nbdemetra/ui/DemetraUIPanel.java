@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.ns.INamedService;
@@ -48,13 +49,13 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         initComponents();
 
         colorSchemePreviewer = new JTsChart();
-        colorSchemePreviewer.setTsCollection(DemoUtils.randomTsCollection(3));
+        colorSchemePreviewer.setTsCollection(TsConverter.toTsCollection(DemoUtils.randomTsCollection(3)));
         colorSchemePreviewer.setTsAction(new PreviewTsAction());
         colorSchemePreviewer.setTsUpdateMode(TsUpdateMode.None);
         chartPreviewPanel.add(colorSchemePreviewer);
 
         outliersEditorCB.setModel(new DefaultComboBoxModel(OutlierDefinitionsEditor.PrespecificiedOutliersEditor.values()));
-        
+
         jSlider1.setMinimum(10);
         jSlider1.setMaximum(200);
         jSlider1.setValue(100);

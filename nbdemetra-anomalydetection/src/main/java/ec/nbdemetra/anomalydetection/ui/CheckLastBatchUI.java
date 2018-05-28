@@ -18,6 +18,8 @@ package ec.nbdemetra.anomalydetection.ui;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.anomalydetection.ControlNode;
@@ -31,7 +33,6 @@ import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ui.tools.ToolsPersistence;
-import ec.tss.Ts;
 import ec.tstoolkit.modelling.arima.CheckLast;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import demetra.ui.components.JTsChart;
@@ -525,9 +526,9 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
         OptionalInt singleSelection = JLists.getSelectionIndexStream(list.getTsSelectionModel()).findFirst();
         if (!singleSelection.isPresent()) {
             summary.set(null, null);
-            chart.getTsCollection().clear();
+            chart.setTsCollection(TsCollection.EMPTY);
         } else {
-            Ts single = list.getTsCollection().get(singleSelection.getAsInt());
+            demetra.tsprovider.Ts single = list.getTsCollection().getData().get(singleSelection.getAsInt());
             AnomalyItem a = list.getMap().get(single.getName());
             if (a.isInvalid() || a.isNotProcessable()) {
                 summary.set(null, null);
@@ -538,7 +539,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
                 summary.set(a, cl.getEstimatedModel());
             }
 
-            chart.getTsCollection().quietReplace(a.getTs());
+            chart.setTsCollection(TsCollection.of(TsConverter.toTs(a.getTs())));
             chart.repaint();
         }
         summary.repaint();

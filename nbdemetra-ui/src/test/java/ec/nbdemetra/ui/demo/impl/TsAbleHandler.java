@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTs;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
@@ -77,7 +78,7 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> 
     }
 
     private static void apply(HasTs o, TsInformation ts) {
-        o.setTs(ts.toTs());
+        o.setTs(TsConverter.toTs(ts.toTs()));
     }
 
     private static void clear(HasTs o) {
@@ -147,7 +148,7 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> 
             if (ts.isPresent()) {
                 ts.get().query(TsInformationType.All);
             }
-            component.setTs(ts.orElse(null));
+            component.setTs(ts.map(TsConverter::toTs).orElse(null));
         }
     }
 }

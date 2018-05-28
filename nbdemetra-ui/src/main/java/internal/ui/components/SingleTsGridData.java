@@ -16,51 +16,42 @@
  */
 package internal.ui.components;
 
-import com.google.common.base.Supplier;
-import ec.tss.TsCollection;
-import ec.tstoolkit.data.DescriptiveStatistics;
+import demetra.bridge.TsConverter;
+import demetra.timeseries.TsDataTable;
+import ec.tss.Ts;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import ec.ui.chart.DataFeatureModel;
-import ec.ui.grid.TsGridObs;
+import demetra.ui.components.TsGridObs;
 import ec.util.chart.ObsIndex;
-import ec.util.grid.CellIndex;
+import java.util.List;
 
 /**
  *
  * @author Philippe Charles
  */
-final class SingleTsGridData extends TsGridData implements Supplier<DescriptiveStatistics> {
+final class SingleTsGridData implements TsGridData {
 
     private final int seriesIndex;
     private final IReadDataBlock data;
     private final TsDomain domain;
     private final int startYear;
     private final int startPosition;
-    private final DataFeatureModel dataFeatureModel;
-    private DescriptiveStatistics stats;
+    private final TsGridObs obs;
 
-    public SingleTsGridData(TsCollection col, int seriesIndex, DataFeatureModel dataFeatureModel) {
+    public SingleTsGridData(List<demetra.tsprovider.Ts> col, int seriesIndex) {
         this.seriesIndex = seriesIndex;
-        this.data = col.get(seriesIndex).getTsData();
-        this.domain = col.get(seriesIndex).getTsData().getDomain();
+        Ts ts = TsConverter.fromTs(col.get(seriesIndex));
+        this.data = ts.getTsData();
+        this.domain = ts.getTsData().getDomain();
         this.startYear = domain.getStart().getYear();
         this.startPosition = domain.getStart().getPosition();
-        this.dataFeatureModel = dataFeatureModel;
+        this.obs = new TsGridObs();
     }
 
     private int getPeriodId(int i, int j) {
         int periodId = j + (getColumnCount() * i) - startPosition;
         return (periodId < 0 || periodId >= domain.getLength()) ? -1 : periodId;
-    }
-
-    @Override
-    public DescriptiveStatistics get() {
-        if (stats == null) {
-            stats = new DescriptiveStatistics(data);
-        }
-        return stats;
     }
 
     @Override
@@ -76,13 +67,12 @@ final class SingleTsGridData extends TsGridData implements Supplier<DescriptiveS
     @Override
     public TsGridObs getObs(int i, int j) {
         int obsIndex = getPeriodId(i, j);
-        if (obsIndex == -1) {
-            return TsGridObs.empty(seriesIndex);
-        }
-        if (data.isMissing(obsIndex)) {
-            return TsGridObs.missing(seriesIndex, obsIndex, domain.get(obsIndex));
-        }
-        return TsGridObs.valid(seriesIndex, obsIndex, domain.get(obsIndex), data.get(obsIndex), this, dataFeatureModel);
+        obs.setIndex(obsIndex);
+        obs.setPeriod(obsIndex != -1 ? TsConverter.toTsPeriod(domain.get(obsIndex)) : null);
+        obs.setSeriesIndex(seriesIndex);
+        obs.setStatus(obsIndex != -1 ? TsDataTable.ValueStatus.PRESENT : TsDataTable.ValueStatus.EMPTY);
+        obs.setValue(obsIndex != -1 ? data.get(obsIndex) : Double.NaN);
+        return obs;
     }
 
     @Override
@@ -96,11 +86,16 @@ final class SingleTsGridData extends TsGridData implements Supplier<DescriptiveS
     }
 
     @Override
-    public CellIndex toCellIndex(ObsIndex index) {
-        if (index.getSeries() != seriesIndex) {
-            return CellIndex.NULL;
-        }
-        int tmp = index.getObs() + startPosition;
-        return CellIndex.valueOf(tmp / getColumnCount(), tmp % getColumnCount());
+    public int getRowIndex(ObsIndex index) {
+        return index.getSeries() != seriesIndex
+                ? -1
+                : index.getObs() + startPosition / getColumnCount();
+    }
+
+    @Override
+    public int getColumnIndex(ObsIndex index) {
+        return index.getSeries() != seriesIndex
+                ? -1
+                : index.getObs() + startPosition % getColumnCount();
     }
 }
