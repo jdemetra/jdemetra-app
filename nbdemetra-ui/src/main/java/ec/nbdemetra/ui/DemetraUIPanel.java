@@ -17,13 +17,12 @@
 package ec.nbdemetra.ui;
 
 import demetra.bridge.TsConverter;
+import demetra.ui.TsAction;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.ns.INamedService;
 import ec.nbdemetra.ui.properties.DataFormatComponent2;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor;
-import ec.nbdemetra.ui.tsaction.ITsAction;
-import ec.tss.Ts;
 import demetra.ui.components.JTsChart;
 import ec.ui.DemoUtils;
 import ec.util.chart.ColorScheme;
@@ -50,7 +49,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
 
         colorSchemePreviewer = new JTsChart();
         colorSchemePreviewer.setTsCollection(TsConverter.toTsCollection(DemoUtils.randomTsCollection(3)));
-        colorSchemePreviewer.setTsAction(new PreviewTsAction());
+        colorSchemePreviewer.setTsAction(TsAction.NO_ACTION);
         colorSchemePreviewer.setTsUpdateMode(TsUpdateMode.None);
         chartPreviewPanel.add(colorSchemePreviewer);
 
@@ -256,21 +255,6 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
 
     DataFormatComponent2 getDataFormatComponent() {
         return dataFormatComponent;
-    }
-
-    private class PreviewTsAction extends AbstractNamedService implements ITsAction {
-
-        PreviewTsAction() {
-            super(ITsAction.class, "PreviewTsAction");
-        }
-
-        @Override
-        public void open(Ts ts) {
-            //String displayName = tsActionChoicePanel.getExplorerManager().getSelectedNodes()[0].getDisplayName();
-            //String msg = "This would have opened the selected time series\nby using '" + displayName + "' TsAction.";
-            //NotifyDescriptor d = new NotifyDescriptor.Message(msg, NotifyDescriptor.INFORMATION_MESSAGE);
-            //DialogDisplayer.getDefault().notify(d);
-        }
     }
 
     static class ColorSchemeNamedService extends AbstractNamedService {

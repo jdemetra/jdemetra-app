@@ -16,13 +16,13 @@
  */
 package ec.ui.list;
 
+import demetra.bridge.TsConverter;
+import demetra.ui.TsAction;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.awt.KeyStrokes;
-import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.tss.DynamicTsVariable;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -51,7 +51,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.InputVerifier;
@@ -70,8 +69,8 @@ import javax.swing.table.TableRowSorter;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import demetra.ui.components.HasTsAction;
+import ec.nbdemetra.ui.ns.INamedService;
 import ec.util.table.swing.JTables;
-import java.util.Optional;
 
 /**
  *
@@ -412,7 +411,7 @@ public class JTsVariableList extends JComponent implements HasTsAction {
     private JMenu buildOpenWithMenu() {
         JMenu result = new JMenu(OpenWithCommand.INSTANCE.toAction(this));
 
-        for (ITsAction o : DemetraUI.getDefault().getTsActions()) {
+        for (INamedService o : TsAction.getDefault().getTsActions()) {
             JMenuItem item = new JMenuItem(new OpenWithItemCommand(o).toAction(this));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
@@ -450,9 +449,8 @@ public class JTsVariableList extends JComponent implements HasTsAction {
 
         @Override
         public void execute(JTsVariableList c) throws Exception {
-            Optional.ofNullable(c.getTsAction())
-                    .orElseGet(() -> DemetraUI.getDefault().getTsAction())
-                    .open(toTs(getSelectedVariable(c)));
+            Ts ts = toTs(getSelectedVariable(c));
+            TsAction.getDefault().openWith(TsConverter.toTs(ts), c.getTsAction());
         }
 
         @Override
@@ -486,17 +484,14 @@ public class JTsVariableList extends JComponent implements HasTsAction {
         }
     }
 
+    @lombok.AllArgsConstructor
     private static final class OpenWithItemCommand extends JCommand<JTsVariableList> {
 
-        private final ITsAction tsAction;
-
-        public OpenWithItemCommand(@Nonnull ITsAction tsAction) {
-            this.tsAction = tsAction;
-        }
+        private final INamedService tsAction;
 
         @Override
         public void execute(JTsVariableList c) throws Exception {
-            tsAction.open(toTs(getSelectedVariable(c)));
+            TsAction.getDefault().openWith(TsConverter.toTs(toTs(getSelectedVariable(c))), tsAction.getName());
         }
     }
 

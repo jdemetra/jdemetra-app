@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.demo;
 
 import com.google.common.collect.Lists;
+import demetra.ui.TsAction;
 import demetra.ui.TsManager;
 import demetra.ui.components.JTsTable;
 import ec.nbdemetra.ui.NbComponents;
@@ -99,7 +100,7 @@ public final class ComponentsDemo {
         dnd.setShowHeader(false);
         dnd.setColumns(Arrays.asList(Column.TS_IDENTIFIER, Column.DATA));
         dnd.setPreferredSize(new Dimension(250, 200));
-        dnd.setTsAction(DemoTsActions.DO_NOTHING);
+        dnd.setTsAction(TsAction.NO_ACTION);
 
         JSplitPane left = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, NbComponents.newJScrollPane(tree), dnd);
         JSplitPane splitPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, main);

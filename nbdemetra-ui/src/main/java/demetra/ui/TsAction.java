@@ -14,31 +14,39 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.ui;
 
-import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.components.HasTsAction;
+import demetra.tsprovider.Ts;
+import ec.nbdemetra.core.GlobalService;
+import ec.nbdemetra.ui.ns.INamedService;
+import ec.util.various.swing.OnEDT;
+import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.openide.util.Lookup;
 
 /**
  *
  * @author Philippe Charles
  */
-@lombok.RequiredArgsConstructor
-public final class HasTsActionImpl implements HasTsAction {
+@GlobalService
+public interface TsAction {
 
-    @lombok.NonNull
-    private final PropertyChangeSource.Broadcaster broadcaster;
-    private String tsAction = null;
-
-    @Override
-    public void setTsAction(String tsAction) {
-        String old = this.tsAction;
-        this.tsAction = tsAction;
-        broadcaster.firePropertyChange(TS_ACTION_PROPERTY, old, this.tsAction);
+    @Nonnull
+    static TsAction getDefault() {
+        return Lookup.getDefault().lookup(TsAction.class);
     }
 
-    @Override
-    public String getTsAction() {
-        return tsAction;
+    static final String NO_ACTION = "";
+
+    @Nonnull
+    List<? extends INamedService> getTsActions();
+
+    @OnEDT
+    default void open(@Nonnull Ts ts) {
+        openWith(ts, null);
     }
+
+    @OnEDT
+    void openWith(@Nonnull Ts ts, @Nullable String actionName);
 }

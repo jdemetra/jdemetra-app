@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.tsaction;
+package internal.ui;
 
+import demetra.ui.TsAction;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.ns.NamedServiceChoicePanel;
 import java.awt.Component;
@@ -42,7 +43,7 @@ public final class ChooseTsActionAction extends AbstractAction implements Presen
     public ChooseTsActionAction() {
         this.choicePanel = new NamedServiceChoicePanel();
         DemetraUI demetraUI = DemetraUI.getDefault();
-        choicePanel.setContent(demetraUI.getTsActions());
+        choicePanel.setContent(TsAction.getDefault().getTsActions());
         choicePanel.setSelectedServiceName(demetraUI.getTsActionName());
         choicePanel.getExplorerManager().addVetoableChangeListener(this);
         demetraUI.addPropertyChangeListener(WeakListeners.propertyChange(this, demetraUI));

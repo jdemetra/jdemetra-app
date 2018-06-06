@@ -14,19 +14,18 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.tsaction;
+package internal.ui;
 
 import demetra.bridge.TsConverter;
+import demetra.tsprovider.Ts;
 import demetra.tsprovider.TsCollection;
 import demetra.ui.components.HasChart.LinesThickness;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tools.GridTopComponent;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import demetra.ui.components.JTsGrid;
@@ -39,18 +38,20 @@ import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
+import demetra.ui.TsActionSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = ITsAction.class)
-public class ChartGridTsAction extends AbstractNamedService implements ITsAction {
+@ServiceProvider(service = TsActionSpi.class)
+public final class ChartGridTsAction implements TsActionSpi {
 
     public static final String NAME = "ChartGridTsAction";
 
-    public ChartGridTsAction() {
-        super(ITsAction.class, NAME);
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     @Override
@@ -60,14 +61,14 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
 
     @Override
     public void open(Ts ts) {
-        ts.query(TsInformationType.All);
-        String name = NAME + ts.getMoniker().toString();
+        TsConverter.fromTs(ts).query(TsInformationType.All);
+        String name = getName() + ts.getMoniker().toString();
         TopComponent c = NbComponents.findTopComponentByName(name);
         if (c == null) {
             MultiViewDescription[] descriptions = {new ChartTab(ts), new GridTab(ts)};
             c = MultiViewFactory.createMultiView(descriptions, descriptions[0], null);
             c.setName(name);
-            c.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false).orElse(null));
+            c.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(TsConverter.fromTsMoniker(ts.getMoniker()), BeanInfo.ICON_COLOR_16x16, false).orElse(null));
             applyText(ts.getName(), c);
             c.open();
         }
@@ -87,13 +88,10 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
         }
     }
 
-    static class ChartTab implements MultiViewDescription, Serializable {
+    @lombok.AllArgsConstructor
+    private static final class ChartTab implements MultiViewDescription, Serializable {
 
-        final Ts ts;
-
-        public ChartTab(Ts ts) {
-            this.ts = ts;
-        }
+        private final Ts ts;
 
         @Override
         public int getPersistenceType() {
@@ -107,7 +105,7 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
 
         @Override
         public Image getIcon() {
-            Icon icon = MonikerUI.getDefault().getIcon(ts.getMoniker());
+            Icon icon = MonikerUI.getDefault().getIcon(TsConverter.fromTsMoniker(ts.getMoniker()));
             return icon != null ? ImageUtilities.icon2Image(icon) : null;
         }
 
@@ -124,7 +122,7 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
         @Override
         public MultiViewElement createElement() {
             ChartTopComponent result = new ChartTopComponent();
-            result.getChart().setTsCollection(TsCollection.builder().data(TsConverter.toTs(ts)).build());
+            result.getChart().setTsCollection(TsCollection.of(ts));
             result.getChart().setTsUpdateMode(TsUpdateMode.None);
             result.getChart().setLegendVisible(true);
             result.getChart().setTitleVisible(false);
@@ -133,13 +131,10 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
         }
     }
 
-    static class GridTab implements MultiViewDescription, Serializable {
+    @lombok.AllArgsConstructor
+    private static final class GridTab implements MultiViewDescription, Serializable {
 
-        final Ts ts;
-
-        public GridTab(Ts ts) {
-            this.ts = ts;
-        }
+        private final Ts ts;
 
         @Override
         public int getPersistenceType() {
@@ -153,7 +148,7 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
 
         @Override
         public Image getIcon() {
-            Icon icon = MonikerUI.getDefault().getIcon(ts.getMoniker());
+            Icon icon = MonikerUI.getDefault().getIcon(TsConverter.fromTsMoniker(ts.getMoniker()));
             return icon != null ? ImageUtilities.icon2Image(icon) : null;
         }
 
@@ -170,7 +165,7 @@ public class ChartGridTsAction extends AbstractNamedService implements ITsAction
         @Override
         public MultiViewElement createElement() {
             GridTopComponent result = new GridTopComponent();
-            result.getGrid().setTsCollection(TsCollection.builder().data(TsConverter.toTs(ts)).build());
+            result.getGrid().setTsCollection(TsCollection.of(ts));
             result.getGrid().setTsUpdateMode(TsUpdateMode.None);
             result.getGrid().setMode(JTsGrid.Mode.SINGLETS);
             return result;

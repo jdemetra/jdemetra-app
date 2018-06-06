@@ -16,8 +16,9 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.bridge.TsConverter;
+import demetra.ui.TsAction;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
@@ -161,7 +162,8 @@ abstract public class DataSetNode extends AbstractNode {
         public void open() {
             TsManager.getDefault()
                     .getTs(getLookup().lookup(DataSet.class), TsInformationType.None)
-                    .ifPresent(o -> DemetraUI.getDefault().getTsAction().open(o));
+                    .map(TsConverter::toTs)
+                    .ifPresent(TsAction.getDefault()::open);
         }
     }
 

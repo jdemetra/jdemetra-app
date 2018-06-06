@@ -17,6 +17,7 @@
 package internal.ui.components;
 
 import demetra.bridge.TsConverter;
+import demetra.ui.TsAction;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsAction;
@@ -25,7 +26,7 @@ import static demetra.ui.components.HasTsCollection.TS_COLLECTION_PROPERTY;
 import static demetra.ui.components.HasTsCollection.UDPATE_MODE_PROPERTY;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.awt.KeyStrokes;
-import ec.nbdemetra.ui.tsaction.ITsAction;
+import ec.nbdemetra.ui.ns.INamedService;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.datatransfer.DataTransfers;
@@ -133,7 +134,7 @@ public class HasTsCollectionCommands {
     }
 
     @Nonnull
-    public static JCommand<HasTsCollection> openWith(@Nonnull ITsAction tsAction) {
+    public static JCommand<HasTsCollection> openWith(@Nonnull String tsAction) {
         return new HasTsCollectionCommands.OpenWithCommand(tsAction);
     }
 
@@ -143,8 +144,8 @@ public class HasTsCollectionCommands {
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_BAR_CHART_O));
         ExtAction.hideWhenDisabled(result);
 
-        for (ITsAction o : demetraUI.getTsActions()) {
-            JMenuItem item = new JMenuItem(HasTsCollectionCommands.openWith(o).toAction(c));
+        for (INamedService o : TsAction.getDefault().getTsActions()) {
+            JMenuItem item = new JMenuItem(HasTsCollectionCommands.openWith(o.getName()).toAction(c));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
             item.setIcon(demetraUI.getPopupMenuIcon(ImageUtilities.image2Icon(o.getIcon(BeanInfo.ICON_COLOR_16x16, false))));
@@ -394,8 +395,7 @@ public class HasTsCollectionCommands {
         @Override
         public void execute(HasTsCollection c) throws Exception {
             if (c instanceof HasTsAction) {
-                ITsAction tsAction = ((HasTsAction) c).getTsAction();
-                (tsAction != null ? tsAction : DemetraUI.getDefault().getTsAction()).open(getSingleTs(c));
+                TsAction.getDefault().openWith(TsConverter.toTs(getSingleTs(c)), ((HasTsAction) c).getTsAction());
             }
         }
     }
@@ -417,17 +417,14 @@ public class HasTsCollectionCommands {
         }
     }
 
+    @lombok.AllArgsConstructor
     private static final class OpenWithCommand extends SingleSelectionCommand {
 
-        private final ITsAction tsAction;
-
-        public OpenWithCommand(@Nonnull ITsAction tsAction) {
-            this.tsAction = tsAction;
-        }
+        private final String tsAction;
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            tsAction.open(getSingleTs(c));
+            TsAction.getDefault().openWith(TsConverter.toTs(getSingleTs(c)), tsAction);
         }
     }
 

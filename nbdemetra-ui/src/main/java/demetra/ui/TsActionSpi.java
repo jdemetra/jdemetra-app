@@ -14,10 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.tsaction;
+package demetra.ui;
 
+import demetra.tsprovider.Ts;
 import ec.nbdemetra.ui.ns.INamedService;
-import ec.tss.Ts;
 import ec.tstoolkit.design.ServiceDefinition;
 import ec.util.various.swing.OnEDT;
 import javax.annotation.Nonnull;
@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
  * @since 1.0.0
  */
 @ServiceDefinition
-public interface ITsAction extends INamedService {
+public interface TsActionSpi extends INamedService {
 
     @OnEDT
     void open(@Nonnull Ts ts);

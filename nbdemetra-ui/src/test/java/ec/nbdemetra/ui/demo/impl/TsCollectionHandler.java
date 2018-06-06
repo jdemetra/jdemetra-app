@@ -91,7 +91,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
         col.items.forEach(o -> model.data(TsConverter.toTs(o.toTs())));
         c.setTsCollection(model.build());
         if (c instanceof HasTsAction) {
-            ((HasTsAction) c).setTsAction(DemoTsActions.SHOW_DIALOG);
+            ((HasTsAction) c).setTsAction(DemoTsActions.NAME);
         }
     }
 
