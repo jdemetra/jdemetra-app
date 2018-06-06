@@ -22,10 +22,8 @@ import demetra.ui.components.HasTsCollection;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
-import ec.tss.TsMoniker;
 import ec.tss.datatransfer.DataTransfers;
-import ec.tss.datatransfer.TssTransferSupport;
-import ec.tss.datatransfer.impl.LocalObjectTssTransferHandler;
+import ec.tss.datatransfer.impl.LocalObjectDataTransfer;
 import java.awt.datatransfer.Transferable;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -35,6 +33,7 @@ import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 import org.openide.util.Lookup;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -43,9 +42,9 @@ import org.openide.util.Lookup;
 public final class HasTsCollectionTransferHandler extends TransferHandler {
 
     private final HasTsCollection delegate;
-    private final TssTransferSupport tssSupport;
+    private final DataTransfer tssSupport;
 
-    public HasTsCollectionTransferHandler(HasTsCollection delegate, TssTransferSupport tssSupport) {
+    public HasTsCollectionTransferHandler(HasTsCollection delegate, DataTransfer tssSupport) {
         this.delegate = delegate;
         this.tssSupport = tssSupport;
     }
@@ -81,7 +80,7 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
         return importData(delegate, tssSupport, support::getTransferable);
     }
 
-    public static boolean canImport(@Nonnull HasTsCollection view, @Nonnull TssTransferSupport tssSupport, @Nonnull Supplier<Transferable> toData) {
+    public static boolean canImport(@Nonnull HasTsCollection view, @Nonnull DataTransfer tssSupport, @Nonnull Supplier<Transferable> toData) {
         if (!view.getTsUpdateMode().isReadOnly()) {
             Transferable t = toData.get();
             return tssSupport.canImport(t) && TransferChange.of(t, view.getTsCollection()).mayChangeContent();
@@ -89,9 +88,10 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
         return false;
     }
 
-    public static boolean importData(@Nonnull HasTsCollection view, @Nonnull TssTransferSupport tssSupport, @Nonnull Supplier<Transferable> toData) {
+    public static boolean importData(@Nonnull HasTsCollection view, @Nonnull DataTransfer tssSupport, @Nonnull Supplier<Transferable> toData) {
         if (!view.getTsUpdateMode().isReadOnly()) {
             return tssSupport.toTsCollectionStream(toData.get())
+                    .map(TsConverter::fromTsCollection)
                     .peek(o -> importData(view, o))
                     .count() > 0;
         }
@@ -148,14 +148,14 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
         }
 
         public static TransferChange of(Transferable source, demetra.tsprovider.TsCollection target) {
-            LocalObjectTssTransferHandler handler = Lookup.getDefault().lookup(LocalObjectTssTransferHandler.class);
+            LocalObjectDataTransfer handler = Lookup.getDefault().lookup(LocalObjectDataTransfer.class);
             return handler != null ? of(handler, source, target) : MAYBE;
         }
 
-        private static TransferChange of(LocalObjectTssTransferHandler handler, Transferable source, demetra.tsprovider.TsCollection target) {
+        private static TransferChange of(LocalObjectDataTransfer handler, Transferable source, demetra.tsprovider.TsCollection target) {
             return DataTransfers.getMultiTransferables(source)
                     .map(handler::peekTsCollection)
-                    .map(o -> of(o, TsConverter.fromTsCollection(target)))
+                    .map(o -> of(TsConverter.fromTsCollection(o), TsConverter.fromTsCollection(target)))
                     .filter(TransferChange::mayChangeContent)
                     .findFirst()
                     .orElse(NO);

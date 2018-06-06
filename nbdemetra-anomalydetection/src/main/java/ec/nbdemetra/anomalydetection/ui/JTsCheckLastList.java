@@ -24,7 +24,6 @@ import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
 import ec.tss.Ts;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.modelling.arima.CheckLast;
@@ -64,6 +63,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
+import demetra.ui.DataTransfer;
 
 /**
  * List component containing input and output results of a Check Last batch
@@ -512,7 +512,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         @Override
         public void execute(JTsCheckLastList component) throws Exception {
-            Transferable t = TssTransferSupport.getDefault().fromTable(toTable(component));
+            Transferable t = DataTransfer.getDefault().fromTable(toTable(component));
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
     }

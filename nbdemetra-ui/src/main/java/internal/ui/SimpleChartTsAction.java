@@ -23,7 +23,6 @@ import demetra.ui.TsManager;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
 import java.beans.BeanInfo;
@@ -53,7 +52,8 @@ public final class SimpleChartTsAction implements TsActionSpi {
 
     @Override
     public void open(Ts ts) {
-        TsConverter.fromTs(ts).query(TsInformationType.All);
+        TsManager.getDefault().loadAsync(ts, demetra.tsprovider.TsInformationType.All);
+
         String name = getName() + ts.getMoniker().toString();
         ChartTopComponent c = NbComponents.findTopComponentByNameAndClass(name, ChartTopComponent.class);
         if (c == null) {

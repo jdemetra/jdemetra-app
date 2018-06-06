@@ -28,7 +28,6 @@ import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.utilities.IntList;
 import demetra.ui.components.JTsChart;
 import demetra.ui.components.TsFeatureHelper;
@@ -61,6 +60,7 @@ import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.jfree.data.xy.IntervalXYDataset;
+import demetra.ui.DataTransfer;
 
 public final class InternalTsChartUI implements InternalUI<JTsChart> {
 
@@ -164,7 +164,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
     }
 
     private void enableDropPreview() {
-        new HasTsCollectionDropTargetListener(target, TssTransferSupport.getDefault())
+        new HasTsCollectionDropTargetListener(target, DataTransfer.getDefault())
                 .register(chartPanel.getDropTarget());
     }
 
@@ -323,7 +323,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
 
     private void onTransferHandlerChange() {
         TransferHandler th = target.getTransferHandler();
-        chartPanel.setTransferHandler(th != null ? th : new HasTsCollectionTransferHandler(target, TssTransferSupport.getDefault()));
+        chartPanel.setTransferHandler(th != null ? th : new HasTsCollectionTransferHandler(target, DataTransfer.getDefault()));
     }
 
     private void onComponentPopupMenuChange() {

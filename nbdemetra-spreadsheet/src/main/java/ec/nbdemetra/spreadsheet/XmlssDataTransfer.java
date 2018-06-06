@@ -24,10 +24,6 @@ import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.tss.TsCollection;
-import ec.tss.datatransfer.TssTransferHandler;
-import ec.tstoolkit.data.Table;
-import ec.tstoolkit.maths.matrices.Matrix;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.xmlss.XmlssBookFactory;
 import java.awt.datatransfer.DataFlavor;
@@ -37,6 +33,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.function.Supplier;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.DataTransferSpi;
 
 /**
  * XML Spreadsheet (XMLSS).
@@ -44,15 +41,16 @@ import org.openide.util.lookup.ServiceProvider;
  * @see http://msdn.microsoft.com/en-us/library/aa140066(v=office.10).aspx
  * @author Jean Palate
  */
-@ServiceProvider(service = TssTransferHandler.class, position = 1000, supersedes = {"ec.tss.datatransfer.impl.XmlssTssTransferHandler"})
-public final class XmlssTssTransferHandler extends TssTransferHandler implements IConfigurable {
+@ServiceProvider(service = DataTransferSpi.class, position = 1000, supersedes = {"ec.tss.datatransfer.impl.XmlssTssTransferHandler"})
+public final class XmlssDataTransfer implements DataTransferSpi, IConfigurable {
 
     private final DataFlavor dataFlavor;
+    @lombok.experimental.Delegate
     private final SpreadSheetTssTransferSupport support;
-    private final Configurator<XmlssTssTransferHandler> configurator;
+    private final Configurator<XmlssDataTransfer> configurator;
     private XmlssBean config;
 
-    public XmlssTssTransferHandler() {
+    public XmlssDataTransfer() {
         this.dataFlavor = createDataFlavor();
         this.support = new SpreadSheetTssTransferSupport(new ResourceImpl(() -> config));
         this.configurator = new XmlssBeanHandler().toConfigurator(new XmlssConverter(), new XmlssBeanEditor());
@@ -72,56 +70,6 @@ public final class XmlssTssTransferHandler extends TssTransferHandler implements
     @Override
     public DataFlavor getDataFlavor() {
         return dataFlavor;
-    }
-
-    @Override
-    public boolean canExportTsCollection(TsCollection col) {
-        return support.canExportTsCollection(col);
-    }
-
-    @Override
-    public Object exportTsCollection(TsCollection col) throws IOException {
-        return support.exportTsCollection(col);
-    }
-
-    @Override
-    public boolean canImportTsCollection(Object obj) {
-        return support.canImportTsCollection(obj);
-    }
-
-    @Override
-    public TsCollection importTsCollection(Object obj) throws IOException {
-        return support.importTsCollection(obj);
-    }
-
-    @Override
-    public boolean canExportMatrix(Matrix matrix) {
-        return support.canExportMatrix(matrix);
-    }
-
-    @Override
-    public Object exportMatrix(Matrix matrix) throws IOException {
-        return support.exportMatrix(matrix);
-    }
-
-    @Override
-    public boolean canImportTable(Object obj) {
-        return support.canImportTable(obj);
-    }
-
-    @Override
-    public Table<?> importTable(Object obj) throws IOException, ClassCastException {
-        return support.importTable(obj);
-    }
-
-    @Override
-    public boolean canExportTable(Table<?> table) {
-        return support.canExportTable(table);
-    }
-
-    @Override
-    public Object exportTable(Table<?> table) throws IOException {
-        return support.exportTable(table);
     }
 
     @Override
@@ -196,15 +144,15 @@ public final class XmlssTssTransferHandler extends TssTransferHandler implements
     public static final class XmlssBean extends AbstractBean {
     }
 
-    private static final class XmlssBeanHandler extends BeanHandler<XmlssBean, XmlssTssTransferHandler> {
+    private static final class XmlssBeanHandler extends BeanHandler<XmlssBean, XmlssDataTransfer> {
 
         @Override
-        public XmlssBean loadBean(XmlssTssTransferHandler resource) {
+        public XmlssBean loadBean(XmlssDataTransfer resource) {
             return resource.config;
         }
 
         @Override
-        public void storeBean(XmlssTssTransferHandler resource, XmlssBean bean) {
+        public void storeBean(XmlssDataTransfer resource, XmlssBean bean) {
             resource.config = bean;
         }
     }
@@ -221,7 +169,7 @@ public final class XmlssTssTransferHandler extends TssTransferHandler implements
 
         @Override
         protected Config.Builder newBuilder() {
-            return Config.builder(TssTransferHandler.class.getName(), "XMLSS", "");
+            return Config.builder("ec.tss.datatransfer.TssTransferHandler", "XMLSS", "");
         }
 
         @Override

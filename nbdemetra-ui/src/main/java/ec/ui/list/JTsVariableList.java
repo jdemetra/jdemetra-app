@@ -27,7 +27,6 @@ import ec.tss.DynamicTsVariable;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.timeseries.regression.ITsVariable;
@@ -71,6 +70,7 @@ import org.openide.NotifyDescriptor;
 import demetra.ui.components.HasTsAction;
 import ec.nbdemetra.ui.ns.INamedService;
 import ec.util.table.swing.JTables;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -185,7 +185,7 @@ public class JTsVariableList extends JComponent implements HasTsAction {
 
         @Override
         public boolean canImport(TransferHandler.TransferSupport support) {
-            boolean result = TssTransferSupport.getDefault().canImport(support.getTransferable());
+            boolean result = DataTransfer.getDefault().canImport(support.getTransferable());
             if (result && support.isDrop()) {
                 support.setDropAction(COPY);
             }
@@ -194,8 +194,9 @@ public class JTsVariableList extends JComponent implements HasTsAction {
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            return TssTransferSupport.getDefault()
+            return DataTransfer.getDefault()
                     .toTsCollectionStream(support.getTransferable())
+                    .map(TsConverter::fromTsCollection)
                     .peek(o -> o.load(TsInformationType.All))
                     .filter(o -> !o.isEmpty())
                     .peek(JTsVariableList.this::appendTsVariables)

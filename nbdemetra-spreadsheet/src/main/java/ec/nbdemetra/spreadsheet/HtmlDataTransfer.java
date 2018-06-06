@@ -24,10 +24,6 @@ import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.tss.TsCollection;
-import ec.tss.datatransfer.TssTransferHandler;
-import ec.tstoolkit.data.Table;
-import ec.tstoolkit.maths.matrices.Matrix;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.html.HtmlBookFactory;
 import java.awt.datatransfer.DataFlavor;
@@ -37,20 +33,22 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.DataTransferSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = TssTransferHandler.class, position = 1500)
-public final class HtmlTssTransferHandler extends TssTransferHandler implements IConfigurable {
+@ServiceProvider(service = DataTransferSpi.class, position = 1500)
+public final class HtmlDataTransfer implements DataTransferSpi, IConfigurable {
 
     private final DataFlavor dataFlavor;
+    @lombok.experimental.Delegate
     private final SpreadSheetTssTransferSupport support;
-    private final Configurator<HtmlTssTransferHandler> configurator;
+    private final Configurator<HtmlDataTransfer> configurator;
     private HtmlBean config;
 
-    public HtmlTssTransferHandler() {
+    public HtmlDataTransfer() {
         this.dataFlavor = createDataFlavor();
         this.support = new SpreadSheetTssTransferSupport(new ResourceImpl(() -> config));
         this.configurator = new HtmlBeanHandler().toConfigurator(new HtmlConverter(), new HtmlBeanEditor());
@@ -70,56 +68,6 @@ public final class HtmlTssTransferHandler extends TssTransferHandler implements 
     @Override
     public DataFlavor getDataFlavor() {
         return dataFlavor;
-    }
-
-    @Override
-    public boolean canExportTsCollection(TsCollection col) {
-        return support.canExportTsCollection(col);
-    }
-
-    @Override
-    public Object exportTsCollection(TsCollection col) throws IOException {
-        return support.exportTsCollection(col);
-    }
-
-    @Override
-    public boolean canImportTsCollection(Object obj) {
-        return support.canImportTsCollection(obj);
-    }
-
-    @Override
-    public TsCollection importTsCollection(Object obj) throws IOException {
-        return support.importTsCollection(obj);
-    }
-
-    @Override
-    public boolean canExportMatrix(Matrix matrix) {
-        return support.canExportMatrix(matrix);
-    }
-
-    @Override
-    public Object exportMatrix(Matrix matrix) throws IOException {
-        return support.exportMatrix(matrix);
-    }
-
-    @Override
-    public boolean canImportTable(Object obj) {
-        return support.canImportTable(obj);
-    }
-
-    @Override
-    public Table<?> importTable(Object obj) throws IOException, ClassCastException {
-        return support.importTable(obj);
-    }
-
-    @Override
-    public boolean canExportTable(Table<?> table) {
-        return support.canExportTable(table);
-    }
-
-    @Override
-    public Object exportTable(Table<?> table) throws IOException {
-        return support.exportTable(table);
     }
 
     @Override
@@ -185,15 +133,15 @@ public final class HtmlTssTransferHandler extends TssTransferHandler implements 
     public static final class HtmlBean extends AbstractBean {
     }
 
-    private static final class HtmlBeanHandler extends BeanHandler<HtmlBean, HtmlTssTransferHandler> {
+    private static final class HtmlBeanHandler extends BeanHandler<HtmlBean, HtmlDataTransfer> {
 
         @Override
-        public HtmlBean loadBean(HtmlTssTransferHandler resource) {
+        public HtmlBean loadBean(HtmlDataTransfer resource) {
             return resource.config;
         }
 
         @Override
-        public void storeBean(HtmlTssTransferHandler resource, HtmlBean bean) {
+        public void storeBean(HtmlDataTransfer resource, HtmlBean bean) {
             resource.config = bean;
         }
     }
@@ -210,7 +158,7 @@ public final class HtmlTssTransferHandler extends TssTransferHandler implements 
 
         @Override
         protected Config.Builder newBuilder() {
-            return Config.builder(TssTransferHandler.class.getName(), "HTML", "");
+            return Config.builder("ec.tss.datatransfer.TssTransferHandler", "HTML", "");
         }
 
         @Override

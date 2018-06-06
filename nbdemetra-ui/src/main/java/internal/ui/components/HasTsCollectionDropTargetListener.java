@@ -16,10 +16,7 @@
  */
 package internal.ui.components;
 
-import demetra.bridge.TsConverter;
 import demetra.ui.components.HasTsCollection;
-import ec.tss.TsCollection;
-import ec.tss.datatransfer.TssTransferSupport;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
@@ -28,6 +25,7 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.util.TooManyListenersException;
 import org.openide.util.Exceptions;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -40,7 +38,7 @@ public final class HasTsCollectionDropTargetListener implements DropTargetListen
     private final HasTsCollection target;
 
     @lombok.NonNull
-    private final TssTransferSupport transferSupport;
+    private final DataTransfer transferSupport;
 
     @Override
     public void dragEnter(DropTargetDragEvent dtde) {
@@ -50,8 +48,7 @@ public final class HasTsCollectionDropTargetListener implements DropTargetListen
                 demetra.tsprovider.TsCollection.Builder dropContent = demetra.tsprovider.TsCollection.builder();
                 transferSupport
                         .toTsCollectionStream(t)
-                        .flatMap(TsCollection::stream)
-                        .map(TsConverter::toTs)
+                        .flatMap(o -> o.getData().stream())
                         .forEach(dropContent::data);
                 target.setDropContent(dropContent.build());
             }

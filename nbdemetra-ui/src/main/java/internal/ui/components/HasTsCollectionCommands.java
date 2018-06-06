@@ -30,7 +30,6 @@ import ec.nbdemetra.ui.ns.INamedService;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.datatransfer.DataTransfers;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.ui.commands.ComponentCommand;
@@ -61,6 +60,8 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.ImageUtilities;
 import org.openide.util.WeakListeners;
+import demetra.ui.DataTransfer;
+import java.awt.Image;
 
 /**
  *
@@ -148,7 +149,10 @@ public class HasTsCollectionCommands {
             JMenuItem item = new JMenuItem(HasTsCollectionCommands.openWith(o.getName()).toAction(c));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
-            item.setIcon(demetraUI.getPopupMenuIcon(ImageUtilities.image2Icon(o.getIcon(BeanInfo.ICON_COLOR_16x16, false))));
+            Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
+            if (image != null) {
+                item.setIcon(demetraUI.getPopupMenuIcon(ImageUtilities.image2Icon(image)));
+            }
             result.add(item);
         }
 
@@ -168,7 +172,10 @@ public class HasTsCollectionCommands {
             JMenuItem item = new JMenuItem(HasTsCollectionCommands.save(o).toAction(c));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
-            item.setIcon(demetraUI.getPopupMenuIcon(ImageUtilities.image2Icon(o.getIcon(BeanInfo.ICON_COLOR_16x16, false))));
+            Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
+            if (image != null) {
+                item.setIcon(demetraUI.getPopupMenuIcon(ImageUtilities.image2Icon(image)));
+            }
             result.add(item);
         }
         return result;
@@ -318,7 +325,7 @@ public class HasTsCollectionCommands {
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(c.getTsCollection());
+            Transferable transferable = DataTransfer.getDefault().fromTsCollection(c.getTsCollection());
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
         }
     }
@@ -456,7 +463,7 @@ public class HasTsCollectionCommands {
         public void execute(HasTsCollection c) throws Exception {
             demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
             c.getTsSelectionStream().forEach(col::data);
-            Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(col.build());
+            Transferable transferable = DataTransfer.getDefault().fromTsCollection(col.build());
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
         }
     }
@@ -468,12 +475,12 @@ public class HasTsCollectionCommands {
         @Override
         public boolean isEnabled(HasTsCollection c) {
             return !c.getTsUpdateMode().isReadOnly()
-                    && TssTransferSupport.getDefault().isValidClipboard();
+                    && DataTransfer.getDefault().isValidClipboard();
         }
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            HasTsCollectionTransferHandler.importData(c, TssTransferSupport.getDefault(), DataTransfers::systemClipboardAsTransferable);
+            HasTsCollectionTransferHandler.importData(c, DataTransfer.getDefault(), DataTransfers::systemClipboardAsTransferable);
         }
 
         @Override
@@ -482,10 +489,10 @@ public class HasTsCollectionCommands {
             if (c instanceof Component) {
                 result.withWeakPropertyChangeListener((Component) c, UDPATE_MODE_PROPERTY);
             }
-            TssTransferSupport source = TssTransferSupport.getDefault();
+            DataTransfer source = DataTransfer.getDefault();
             PropertyChangeListener realListener = evt -> result.refreshActionState();
             result.putValue("TssTransferSupport", realListener);
-            source.addPropertyChangeListener(TssTransferSupport.VALID_CLIPBOARD_PROPERTY, WeakListeners.propertyChange(realListener, source));
+            source.addPropertyChangeListener(DataTransfer.VALID_CLIPBOARD_PROPERTY, WeakListeners.propertyChange(realListener, source));
             return result;
         }
     }

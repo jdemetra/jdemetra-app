@@ -6,6 +6,7 @@ package ec.nbdemetra.sa;
 
 import demetra.bridge.TsConverter;
 import demetra.tsprovider.TsCollection;
+import demetra.ui.TsManager;
 import demetra.ui.components.HasTs;
 import demetra.ui.components.HasTsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
@@ -148,7 +149,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
 
     private void test(Ts cur) {
         if (cur.hasData() == TsStatus.Undefined) {
-            cur.load(TsInformationType.Data);
+            TsManager.getDefault().load(cur, TsInformationType.Data);
         }
         TsData s = cur.getTsData();
         if (s == null) {

@@ -4,6 +4,7 @@
  */
 package ec.ui.view;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.components.HasColorScheme;
 import ec.nbdemetra.ui.NbComponents;
 import ec.satoolkit.DecompositionMode;
@@ -17,7 +18,7 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.chart.TsXYDatasets;
 import ec.ui.chart.TsCharts;
 import ec.nbdemetra.ui.ThemeSupport;
-import ec.tss.datatransfer.TssTransferSupport;
+import ec.tss.tsproviders.utils.OptionalTsData;
 import ec.ui.Disposables;
 import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;
@@ -48,6 +49,7 @@ import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultXYDataset;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -351,7 +353,7 @@ public class SlidingSpanView extends JComponent implements HasColorScheme {
             @Override
             public void execute(ChartPanel chartPanel) {
                 TsData data = (TsData) chartPanel.getClientProperty("TS_DATA");
-                Transferable t = TssTransferSupport.getDefault().fromTsData(data);
+                Transferable t = DataTransfer.getDefault().fromTsData(TsConverter.toTsData(OptionalTsData.present(data)));
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
             }
 

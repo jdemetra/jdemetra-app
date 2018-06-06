@@ -16,7 +16,6 @@ import ec.nbdemetra.ui.NbComponents;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.TsMoniker;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.stats.AutoCorrelations;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import demetra.ui.components.JTsGrid.Mode;
@@ -44,6 +43,7 @@ import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
+import demetra.ui.DataTransfer;
 
 /**
  * Top component which displays something.
@@ -199,14 +199,14 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
 
         @Override
         public boolean canImport(TransferHandler.TransferSupport support) {
-            return TssTransferSupport.getDefault().canImport(support.getDataFlavors());
+            return DataTransfer.getDefault().canImport(support.getDataFlavors());
         }
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            Ts s = TssTransferSupport.getDefault().toTs(support.getTransferable());
+            demetra.tsprovider.Ts s = DataTransfer.getDefault().toTs(support.getTransferable());
             if (s != null) {
-                setTs(TsConverter.toTs(s));
+                setTs(s);
                 return true;
             }
             return false;
@@ -244,7 +244,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
     @Override
     public void setTs(demetra.tsprovider.Ts s) {
         ts_ = TsConverter.fromTs(s).freeze();
-        ts_.load(TsInformationType.All);
+        TsManager.getDefault().load(ts_, TsInformationType.All);
         refreshHeader();
         showTests();
     }

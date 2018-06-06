@@ -19,7 +19,6 @@ package ec.ui.view;
 import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasColorScheme;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
@@ -79,6 +78,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.Day;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.Layer;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -341,7 +341,7 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
                 col.data(TsConverter.toTs(TsManager.getDefault().newTs("series", null, data.series)));
                 col.data(TsConverter.toTs(TsManager.getDefault().newTs("lower", null, data.lower)));
                 col.data(TsConverter.toTs(TsManager.getDefault().newTs("upper", null, data.upper)));
-                Transferable t = TssTransferSupport.getDefault().fromTsCollection(col.build());
+                Transferable t = DataTransfer.getDefault().fromTsCollection(col.build());
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
             }
         }).setText("Copy all series");

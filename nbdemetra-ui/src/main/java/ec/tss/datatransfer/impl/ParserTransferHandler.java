@@ -6,12 +6,12 @@ package ec.tss.datatransfer.impl;
 
 import ec.tss.datatransfer.DataSourceTransferHandler;
 import ec.tss.datatransfer.DataTransfers;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.utils.Parsers;
 import java.awt.datatransfer.Transferable;
 import java.util.Optional;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -34,7 +34,7 @@ public abstract class ParserTransferHandler extends DataSourceTransferHandler {
 
     @Override
     public Optional<DataSource> getDataSource(Transferable t) {
-        return !TssTransferSupport.getDefault().isTssTransferable(t) ? DataTransfers.tryParse(t, getParser()) : Optional.empty();
+        return !DataTransfer.getDefault().isTssTransferable(t) ? DataTransfers.tryParse(t, getParser()) : Optional.empty();
     }
 
     @Override

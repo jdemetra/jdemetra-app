@@ -22,7 +22,6 @@ import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.awt.KeyStrokes;
 import ec.tss.Ts;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.ui.ExtAction;
@@ -54,6 +53,7 @@ import org.jfree.data.Range;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import demetra.ui.DataTransfer;
 
 /**
  * Chart Panel used in popups of Revision History View
@@ -230,7 +230,7 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
                 col.data(TsConverter.toTs(ts));
             }
         }
-        return TssTransferSupport.getDefault().fromTsCollection(col.build());
+        return DataTransfer.getDefault().fromTsCollection(col.build());
     }
 
     private void onColorSchemeChange() {

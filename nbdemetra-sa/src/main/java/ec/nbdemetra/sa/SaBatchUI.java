@@ -27,7 +27,6 @@ import ec.satoolkit.x13.X13Specification;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TransferableXml;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.sa.EstimationPolicyType;
 import ec.tss.sa.SaItem;
 import ec.tss.sa.SaProcessing;
@@ -75,6 +74,7 @@ import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -471,8 +471,9 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     private boolean pasteTs(Transferable dataobj) {
-        long count = TssTransferSupport.getDefault()
+        long count = DataTransfer.getDefault()
                 .toTsCollectionStream(dataobj)
+                .map(TsConverter::fromTsCollection)
                 .peek(o -> getCurrentProcessing().addRange(defaultSpecification, o))
                 .count();
         if (count > 0) {
@@ -555,7 +556,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 .map(SaItem::getTs)
                 .map(TsConverter::toTs)
                 .forEach(col::data);
-        Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(col.build());
+        Transferable transferable = DataTransfer.getDefault().fromTsCollection(col.build());
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
     }
 
@@ -570,7 +571,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             });
         }
 
-        Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(col.build());
+        Transferable transferable = DataTransfer.getDefault().fromTsCollection(col.build());
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
     }
 
@@ -1142,7 +1143,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         public boolean canImport(TransferSupport support) {
-            boolean result = TssTransferSupport.getDefault().canImport(support.getTransferable());
+            boolean result = DataTransfer.getDefault().canImport(support.getTransferable());
             if (result && support.isDrop()) {
                 support.setDropAction(COPY);
             }
@@ -1153,8 +1154,9 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         public boolean importData(TransferSupport support) {
             // FIXME: use of TsCollection#query(...) brings bugs in SaItem#process()
             //col.query(TsInformationType.All);
-            long count = TssTransferSupport.getDefault()
+            long count = DataTransfer.getDefault()
                     .toTsCollectionStream(support.getTransferable())
+                    .map(TsConverter::fromTsCollection)
                     .peek(o -> o.load(TsInformationType.All))
                     .filter(o -> !o.isEmpty())
                     .peek(o -> getCurrentProcessing().addRange(defaultSpecification, o))

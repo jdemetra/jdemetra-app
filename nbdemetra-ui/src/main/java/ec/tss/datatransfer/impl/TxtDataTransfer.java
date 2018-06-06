@@ -20,6 +20,7 @@ import com.google.common.base.Converter;
 import com.google.common.base.Preconditions;
 import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.ImmutableList;
+import demetra.bridge.TsConverter;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.BeanHandler;
@@ -32,7 +33,6 @@ import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
-import ec.tss.datatransfer.TssTransferHandler;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IParam;
 import ec.tss.tsproviders.utils.IParser;
@@ -51,12 +51,13 @@ import java.util.Date;
 import java.util.Locale;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.DataTransferSpi;
 
 /**
  * @author Jean Palate
  */
-@ServiceProvider(service = TssTransferHandler.class, position = 2000)
-public class TxtTssTransferHandler extends TssTransferHandler implements IConfigurable {
+@ServiceProvider(service = DataTransferSpi.class, position = 2000)
+public final class TxtDataTransfer implements DataTransferSpi, IConfigurable {
 
     private static final char DELIMITOR = '\t';
     private static final String NEWLINE = StandardSystemProperty.LINE_SEPARATOR.value();
@@ -64,10 +65,10 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
     // PROPERTIES
     private final NumberFormat numberFormat;
     private final DateFormat dateFormat;
-    private final Configurator<TxtTssTransferHandler> configurator;
+    private final Configurator<TxtDataTransfer> configurator;
     private InternalConfig config;
 
-    public TxtTssTransferHandler() {
+    public TxtDataTransfer() {
         this.numberFormat = NumberFormat.getNumberInstance();
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         this.configurator = new InternalConfigHandler().toConfigurator(new InternalConfigConverter(), new InternalConfigEditor());
@@ -93,14 +94,15 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
     }
 
     @Override
-    public boolean canExportTsCollection(TsCollection col) {
-        return config.exportTimeSeries && !col.isEmpty();
+    public boolean canExportTsCollection(demetra.tsprovider.TsCollection col) {
+        return config.exportTimeSeries && !col.getData().isEmpty();
     }
 
     @Override
-    public Object exportTsCollection(TsCollection col) throws IOException {
-        col.load(TsInformationType.Data);
-        return tsCollectionToString(col);
+    public Object exportTsCollection(demetra.tsprovider.TsCollection col) throws IOException {
+        TsCollection tmp = TsConverter.fromTsCollection(col);
+        tmp.load(TsInformationType.Data);
+        return tsCollectionToString(tmp);
     }
 
     @Override
@@ -109,10 +111,10 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
     }
 
     @Override
-    public TsCollection importTsCollection(Object obj) throws IOException {
+    public demetra.tsprovider.TsCollection importTsCollection(Object obj) throws IOException {
         TsCollection result = tsCollectionFromString((String) obj);
         if (result != null) {
-            return result;
+            return TsConverter.toTsCollection(result);
         }
         throw new IOException("Cannot parse collection");
     }
@@ -420,15 +422,15 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
 
     }
 
-    private static final class InternalConfigHandler extends BeanHandler<InternalConfig, TxtTssTransferHandler> {
+    private static final class InternalConfigHandler extends BeanHandler<InternalConfig, TxtDataTransfer> {
 
         @Override
-        public InternalConfig loadBean(TxtTssTransferHandler resource) {
+        public InternalConfig loadBean(TxtDataTransfer resource) {
             return resource.config;
         }
 
         @Override
-        public void storeBean(TxtTssTransferHandler resource, InternalConfig bean) {
+        public void storeBean(TxtDataTransfer resource, InternalConfig bean) {
             resource.config = bean;
         }
     }
@@ -467,7 +469,7 @@ public class TxtTssTransferHandler extends TssTransferHandler implements IConfig
 
     private static final class InternalConfigConverter extends Converter<InternalConfig, Config> {
 
-        private static final String DOMAIN = TssTransferHandler.class.getName(), NAME = "TXT", VERSION = "";
+        private static final String DOMAIN = "ec.tss.datatransfer.TssTransferHandler", NAME = "TXT", VERSION = "";
         private static final IParam<Config, Boolean> VERTICAL = Params.onBoolean(true, "vertical");
         private static final IParam<Config, Boolean> SHOW_DATES = Params.onBoolean(true, "showDates");
         private static final IParam<Config, Boolean> SHOW_TITLE = Params.onBoolean(true, "showTitle");

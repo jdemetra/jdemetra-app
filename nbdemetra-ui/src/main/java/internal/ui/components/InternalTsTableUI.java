@@ -24,7 +24,6 @@ import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.awt.TableColumnModelAdapter;
-import ec.tss.datatransfer.TssTransferSupport;
 import demetra.ui.components.JTsTable;
 import ec.nbdemetra.ui.DemetraUI;
 import static ec.util.chart.swing.SwingColorSchemeSupport.withAlpha;
@@ -46,6 +45,7 @@ import javax.swing.table.*;
 import org.netbeans.swing.etable.ETable;
 import org.netbeans.swing.etable.ETableColumn;
 import org.netbeans.swing.etable.ETableColumnModel;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -60,7 +60,7 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
     private final JTableHeader tableHeader = table.getTableHeader();
     private final DropRenderer dropRenderer = new DropRenderer();
     private final ThemeSupport themeSupport = ThemeSupport.registered();
-    private final TssTransferSupport tssTransfer = TssTransferSupport.getDefault();
+    private final DataTransfer tssTransfer = DataTransfer.getDefault();
     private final DemetraUI demetraUI = DemetraUI.getDefault();
 
     private ListTableSelectionListener selectionListener;

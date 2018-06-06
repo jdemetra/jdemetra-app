@@ -26,7 +26,6 @@ import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tools.GridTopComponent;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import ec.tss.TsInformationType;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import demetra.ui.components.JTsGrid;
 import java.awt.Image;
@@ -39,6 +38,7 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
 import demetra.ui.TsActionSpi;
+import demetra.ui.TsManager;
 
 /**
  *
@@ -61,7 +61,8 @@ public final class ChartGridTsAction implements TsActionSpi {
 
     @Override
     public void open(Ts ts) {
-        TsConverter.fromTs(ts).query(TsInformationType.All);
+        TsManager.getDefault().loadAsync(ts, demetra.tsprovider.TsInformationType.All);
+
         String name = getName() + ts.getMoniker().toString();
         TopComponent c = NbComponents.findTopComponentByName(name);
         if (c == null) {

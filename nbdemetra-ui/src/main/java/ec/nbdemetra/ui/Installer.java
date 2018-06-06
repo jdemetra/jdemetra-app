@@ -27,8 +27,6 @@ import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.nbdemetra.ui.star.StarHelper;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.nbdemetra.ws.WorkspaceFactory;
-import ec.tss.datatransfer.TssTransferHandler;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.utils.Formatters;
@@ -54,6 +52,8 @@ import org.openide.modules.ModuleInstall;
 import org.openide.util.Lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import demetra.ui.DataTransfer;
+import demetra.ui.DataTransferSpi;
 
 public final class Installer extends ModuleInstall {
 
@@ -102,25 +102,25 @@ public final class Installer extends ModuleInstall {
         }
     }
 
-    private static final class FormattersStep extends InstallerStep.LookupStep<TssTransferHandler> {
+    private static final class FormattersStep extends InstallerStep.LookupStep<DataTransferSpi> {
 
         FormattersStep() {
-            super(TssTransferHandler.class);
+            super(DataTransferSpi.class);
         }
 
         @Override
-        protected void onResultChanged(Lookup.Result<TssTransferHandler> lookup) {
+        protected void onResultChanged(Lookup.Result<DataTransferSpi> lookup) {
             // TODO: loadConfig
         }
 
         @Override
-        protected void onRestore(Lookup.Result<TssTransferHandler> lookup) {
+        protected void onRestore(Lookup.Result<DataTransferSpi> lookup) {
             loadConfig(lookup.allInstances(), prefs());
         }
 
         @Override
-        protected void onClose(Lookup.Result<TssTransferHandler> lookup) {
-            storeConfig(TssTransferSupport.getDefault().stream(), prefs());
+        protected void onClose(Lookup.Result<DataTransferSpi> lookup) {
+            storeConfig(DataTransfer.getDefault().getProviders(), prefs());
         }
     }
 

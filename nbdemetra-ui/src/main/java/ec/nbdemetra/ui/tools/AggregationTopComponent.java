@@ -35,7 +35,7 @@ import org.openide.util.NbBundle.Messages;
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "ec.nbdemetra.ui.tools.AggregationTopComponent")
-@ActionReference(path = "Menu/Tools" , position = 332)
+@ActionReference(path = "Menu/Tools", position = 332)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_AggregationAction")
 @Messages({
@@ -48,7 +48,7 @@ public final class AggregationTopComponent extends TopComponent {
     private final JSplitPane mainPane;
     private final JTsTable inputList;
     private final JTsChart aggChart;
-    
+
     public AggregationTopComponent() {
         initComponents();
         setName(Bundle.CTL_AggregationTopComponent());
@@ -103,7 +103,7 @@ public final class AggregationTopComponent extends TopComponent {
             for (demetra.tsprovider.Ts o : inputList.getTsCollection().getData()) {
                 Ts s = TsConverter.fromTs(o);
                 if (s.hasData() == TsStatus.Undefined) {
-                    s.load(TsInformationType.Data);
+                    TsManager.getDefault().load(s, TsInformationType.Data);
                 }
                 sum = TsData.add(sum, s.getTsData());
             }
@@ -111,4 +111,4 @@ public final class AggregationTopComponent extends TopComponent {
             aggChart.setTsCollection(TsCollection.of(TsConverter.toTs(t)));
         });
     }
- }
+}

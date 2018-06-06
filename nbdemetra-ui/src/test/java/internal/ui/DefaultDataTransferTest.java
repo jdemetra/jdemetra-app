@@ -14,15 +14,13 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.tss.datatransfer;
+package internal.ui;
 
-import demetra.ui.TsManager;
-import ec.tss.TsCollection;
-import ec.tss.datatransfer.impl.LocalObjectTssTransferHandler;
+import demetra.timeseries.TsUnit;
+import demetra.tsprovider.Ts;
+import ec.tss.datatransfer.impl.LocalObjectDataTransfer;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
-import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -34,19 +32,20 @@ import org.junit.Test;
 import org.openide.util.datatransfer.ExTransferable;
 import org.openide.util.lookup.Lookups;
 import org.slf4j.helpers.NOPLogger;
+import demetra.ui.DataTransferSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-public class TssTransferSupportTest {
+public class DefaultDataTransferTest {
 
     @Test
     @SuppressWarnings("null")
     public void testEmpty() {
-        TssTransferSupport empty = of();
+        DefaultDataTransfer empty = of();
 
-        assertThat(empty.stream()).isEmpty();
+        assertThat(empty.getProviders()).isEmpty();
 
         assertThatThrownBy(() -> empty.fromMatrix(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.fromTable(null)).isInstanceOf(NullPointerException.class);
@@ -65,17 +64,17 @@ public class TssTransferSupportTest {
 
         assertThat(empty.fromMatrix(new Matrix(1, 1)).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTable(new Table<>(1, 1)).getTransferDataFlavors()).isEmpty();
-        assertThat(empty.fromTs(TsManager.getDefault().newTsWithName("")).getTransferDataFlavors()).isEmpty();
+        assertThat(empty.fromTs(Ts.builder().build()).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTsCollection(demetra.tsprovider.TsCollection.EMPTY).getTransferDataFlavors()).isEmpty();
-        assertThat(empty.fromTsData(TsData.random(TsFrequency.Yearly)).getTransferDataFlavors()).isEmpty();
+        assertThat(empty.fromTsData(demetra.timeseries.TsData.random(TsUnit.YEAR, 0)).getTransferDataFlavors()).isEmpty();
     }
 
     @Test
     public void testContent() {
-        LocalObjectTransferable<TsCollection> col = new LocalObjectTransferable<>(TsManager.getDefault().newTsCollection());
+        LocalObjectTransferable<demetra.tsprovider.TsCollection> col = new LocalObjectTransferable<>(demetra.tsprovider.TsCollection.EMPTY);
         Transferable multi = new ExTransferable.Multi(new Transferable[]{col});
 
-        TssTransferSupport local = of(new LocalObjectTssTransferHandler());
+        DefaultDataTransfer local = of(new LocalObjectDataTransfer());
         assertThat(local.canImport(col)).isTrue();
         assertThat(local.canImport(multi)).isTrue();
         assertThat(local.toTsCollection(col)).isEqualTo(col.getValue());
@@ -83,19 +82,19 @@ public class TssTransferSupportTest {
         assertThat(local.toTsCollectionStream(col)).containsExactly(col.getValue());
         assertThat(local.toTsCollectionStream(multi)).containsExactly(col.getValue());
 
-        TssTransferSupport empty = of();
+        DefaultDataTransfer empty = of();
         assertThat(empty.canImport(col)).isFalse();
         assertThat(empty.canImport(multi)).isFalse();
         assertThat(empty.toTsCollection(col)).isNull();
         assertThat(empty.toTsCollectionStream(col)).isEmpty();
 
-        TssTransferSupport valid = of(new CustomHandler(DataFlavor.stringFlavor));
+        DefaultDataTransfer valid = of(new CustomHandler(DataFlavor.stringFlavor));
         assertThat(valid.canImport(col)).isFalse();
         assertThat(valid.canImport(multi)).isFalse();
         assertThat(valid.toTsCollection(col)).isNull();
         assertThat(valid.toTsCollectionStream(col)).isEmpty();
 
-        TssTransferSupport invalid = of(new CustomHandler(LocalObjectTssTransferHandler.DATA_FLAVOR));
+        DefaultDataTransfer invalid = of(new CustomHandler(LocalObjectDataTransfer.DATA_FLAVOR));
         assertThat(invalid.canImport(col)).isTrue();
         assertThat(invalid.canImport(multi)).isTrue();
         assertThat(invalid.toTsCollection(col)).isNull();
@@ -133,11 +132,11 @@ public class TssTransferSupportTest {
         }).toMatrix(t)).isNull();
     }
 
-    private static TssTransferSupport of(TssTransferHandler... handlers) {
-        return new TssTransferSupport(Lookups.fixed((Object[]) handlers), NOPLogger.NOP_LOGGER, false);
+    private static DefaultDataTransfer of(DataTransferSpi... handlers) {
+        return new DefaultDataTransfer(Lookups.fixed((Object[]) handlers), NOPLogger.NOP_LOGGER, false);
     }
 
-    private static class CustomHandler extends TssTransferHandler {
+    private static class CustomHandler implements DataTransferSpi {
 
         private final DataFlavor df;
 
@@ -161,7 +160,7 @@ public class TssTransferSupportTest {
         private final T data;
 
         public LocalObjectTransferable(T data) {
-            super(LocalObjectTssTransferHandler.DATA_FLAVOR);
+            super(LocalObjectDataTransfer.DATA_FLAVOR);
             this.data = data;
         }
 

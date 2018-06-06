@@ -5,10 +5,10 @@
 package ec.ui.view.tsprocessing;
 
 import com.google.common.base.Strings;
+import demetra.bridge.TsConverter;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.documents.TsDocument;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.algorithm.IProcSpecification;
@@ -17,6 +17,7 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JToolBar;
 import javax.swing.TransferHandler;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -83,14 +84,14 @@ public class TsProcessingViewer extends DefaultProcessingViewer<TsDocument> {
 
         @Override
         public boolean canImport(TransferSupport support) {
-            return TssTransferSupport.getDefault().canImport(support.getDataFlavors());
+            return DataTransfer.getDefault().canImport(support.getDataFlavors());
         }
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            Ts ts = TssTransferSupport.getDefault().toTs(support.getTransferable());
+            demetra.tsprovider.Ts ts = DataTransfer.getDefault().toTs(support.getTransferable());
             if (ts != null) {
-                getDocument().setInput(ts);
+                getDocument().setInput(TsConverter.fromTs(ts));
                 refreshAll();
                 return true;
             }

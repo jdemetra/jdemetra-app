@@ -16,12 +16,10 @@
  */
 package internal.ui.components;
 
-import demetra.bridge.TsConverter;
+import demetra.ui.TsManager;
 import demetra.ui.components.HasTs;
-import ec.tss.Ts;
-import ec.tss.TsInformationType;
-import ec.tss.datatransfer.TssTransferSupport;
 import javax.swing.TransferHandler;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -34,7 +32,7 @@ public final class HasTsTransferHandler extends TransferHandler {
     private final HasTs delegate;
 
     @lombok.NonNull
-    private final TssTransferSupport tssSupport;
+    private final DataTransfer tssSupport;
 
     @Override
     public boolean canImport(TransferHandler.TransferSupport support) {
@@ -43,10 +41,10 @@ public final class HasTsTransferHandler extends TransferHandler {
 
     @Override
     public boolean importData(TransferHandler.TransferSupport support) {
-        Ts ts = tssSupport.toTs(support.getTransferable());
+        demetra.tsprovider.Ts ts = tssSupport.toTs(support.getTransferable());
         if (ts != null) {
-            ts.query(TsInformationType.All);
-            delegate.setTs(TsConverter.toTs(ts));
+            TsManager.getDefault().loadAsync(ts, demetra.tsprovider.TsInformationType.All);
+            delegate.setTs(ts);
             return true;
         }
         return false;

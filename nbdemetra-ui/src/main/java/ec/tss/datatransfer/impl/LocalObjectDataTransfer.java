@@ -4,9 +4,8 @@
  */
 package ec.tss.datatransfer.impl;
 
-import ec.tss.TsCollection;
+import demetra.tsprovider.TsCollection;
 import ec.tss.datatransfer.DataTransfers;
-import ec.tss.datatransfer.TssTransferHandler;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
 import java.awt.datatransfer.DataFlavor;
@@ -17,17 +16,18 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.DataTransferSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = TssTransferHandler.class, position = 0)
-public class LocalObjectTssTransferHandler extends TssTransferHandler {
+@ServiceProvider(service = DataTransferSpi.class, position = 0)
+public final class LocalObjectDataTransfer implements DataTransferSpi {
 
-    public static final DataFlavor DATA_FLAVOR = DataTransfers.newLocalObjectDataFlavor(LocalObjectTssTransferHandler.class);
+    public static final DataFlavor DATA_FLAVOR = DataTransfers.newLocalObjectDataFlavor(LocalObjectDataTransfer.class);
 
-    public LocalObjectTssTransferHandler() {
+    public LocalObjectDataTransfer() {
     }
 
     @Override

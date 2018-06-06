@@ -20,7 +20,6 @@ import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import static ec.nbdemetra.ui.tsproviders.CollectionNode.ACTION_PATH;
 import ec.tss.TsInformationType;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
 import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.datatransfer.Transferable;
@@ -29,6 +28,7 @@ import javax.annotation.Nonnull;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
+import demetra.ui.DataTransfer;
 
 /**
  * A node that represents a DataSet of type collection.
@@ -51,7 +51,7 @@ public final class CollectionNode extends DataSetNode {
         return TsManager.getDefault()
                 .getTsCollection(getLookup().lookup(DataSet.class), type)
                 .map(TsConverter::toTsCollection)
-                .map(TssTransferSupport.getDefault()::fromTsCollection)
+                .map(DataTransfer.getDefault()::fromTsCollection)
                 .orElseThrow(() -> new IOException("Cannot create the TS collection '" + getDisplayName() + "'; check the logs for further details."));
     }
 

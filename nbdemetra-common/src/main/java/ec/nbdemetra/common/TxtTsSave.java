@@ -28,7 +28,7 @@ import ec.nbdemetra.ui.tssave.TsSaveUtil;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
-import ec.tss.datatransfer.impl.TxtTssTransferHandler;
+import ec.tss.datatransfer.impl.TxtDataTransfer;
 import ec.tss.tsproviders.common.txt.TxtFileFilter;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
@@ -111,7 +111,7 @@ public final class TxtTsSave implements ITsSave {
         }
 
         ph.progress("Creating content");
-        TxtTssTransferHandler handler = new TxtTssTransferHandler();
+        TxtDataTransfer handler = new TxtDataTransfer();
         Config config = handler.getConfig().toBuilder()
                 .put("beginPeriod", options.beginPeriod)
                 .put("showDates", options.showDates)

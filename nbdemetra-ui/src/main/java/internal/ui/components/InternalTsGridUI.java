@@ -30,7 +30,6 @@ import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
@@ -77,6 +76,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
+import demetra.ui.DataTransfer;
 
 public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
@@ -324,7 +324,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
     private void onTransferHandlerChange() {
         TransferHandler th = target.getTransferHandler();
-        grid.setTransferHandler(th != null ? th : new HasTsCollectionTransferHandler(target, TssTransferSupport.getDefault()));
+        grid.setTransferHandler(th != null ? th : new HasTsCollectionTransferHandler(target, DataTransfer.getDefault()));
     }
 
     private void onComponentPopupMenuChange() {

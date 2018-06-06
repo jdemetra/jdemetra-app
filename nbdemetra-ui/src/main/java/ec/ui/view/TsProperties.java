@@ -2,11 +2,11 @@ package ec.ui.view;
 
 import demetra.bridge.TsConverter;
 import demetra.tsprovider.TsCollection;
+import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import demetra.ui.components.JTsGrid.Mode;
 import ec.ui.interfaces.IDisposable;
@@ -20,6 +20,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import org.openide.util.NbCollections;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -72,10 +73,10 @@ public class TsProperties extends JComponent implements IDisposable {
     }
 
     public void setTs(Ts ts) {
-        ts.load(TsInformationType.All);
-        
+        TsManager.getDefault().load(ts, TsInformationType.All);
+
         TsCollection col = TsCollection.builder().data(TsConverter.toTs(ts)).build();
-        
+
         chart_.setTsCollection(col);
         grid_.setTsCollection(col);
 
@@ -143,14 +144,14 @@ public class TsProperties extends JComponent implements IDisposable {
 
         @Override
         public boolean canImport(TransferSupport support) {
-            return TssTransferSupport.getDefault().canImport(support.getDataFlavors());
+            return DataTransfer.getDefault().canImport(support.getDataFlavors());
         }
 
         @Override
         public boolean importData(TransferSupport support) {
-            Ts s = TssTransferSupport.getDefault().toTs(support.getTransferable());
+            demetra.tsprovider.Ts s = DataTransfer.getDefault().toTs(support.getTransferable());
             if (s != null) {
-                setTs(s);
+                setTs(TsConverter.fromTs(s));
             }
             return super.importData(support);
         }
