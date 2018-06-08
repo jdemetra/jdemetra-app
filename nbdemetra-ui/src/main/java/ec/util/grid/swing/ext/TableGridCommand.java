@@ -18,7 +18,6 @@ package ec.util.grid.swing.ext;
 
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.data.Table;
 import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
@@ -27,6 +26,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import javax.annotation.Nonnull;
 import javax.swing.ListSelectionModel;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -37,7 +37,7 @@ public abstract class TableGridCommand extends JCommand<JGrid> {
     @Override
     public void execute(JGrid grid) {
         Table<?> table = toTable(grid);
-        Transferable t = TssTransferSupport.getDefault().fromTable(table);
+        Transferable t = DataTransfer.getDefault().fromTable(table);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
     }
 

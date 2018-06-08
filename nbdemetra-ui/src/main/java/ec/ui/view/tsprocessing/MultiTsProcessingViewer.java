@@ -4,10 +4,13 @@
  */
 package ec.ui.view.tsprocessing;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.components.JTsTable;
 import ec.tss.documents.MultiTsDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import java.awt.Font;
+import java.util.stream.Stream;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JToolBar;
@@ -49,7 +52,7 @@ public class MultiTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocu
         
         tsList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             if (!quietRefresh) {
-                getDocument().setInput(tsList.getTsCollection().toArray());
+                getDocument().setInput(tsList.getTsCollection().getData().stream().map(TsConverter::fromTs).toArray());
             }
         });
     }
@@ -61,7 +64,9 @@ public class MultiTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocu
             IProcSpecification spec = doc.getSpecification();
             specLabel.setText("Spec: " + (spec != null ? spec.toString() : ""));
             quietRefresh = true;
-            tsList.getTsCollection().replace(doc.getTs());
+            TsCollection.Builder col = TsCollection.builder();
+            Stream.of(doc.getTs()).map(TsConverter::toTs).forEach(col::data);
+            tsList.setTsCollection(col.build());
         } catch (Exception err) {
         } finally {
             quietRefresh = false;

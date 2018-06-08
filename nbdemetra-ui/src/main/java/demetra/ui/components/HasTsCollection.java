@@ -16,14 +16,15 @@
  */
 package demetra.ui.components;
 
+import demetra.tsprovider.Ts;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.tss.Ts;
-import ec.tss.TsCollection;
 import ec.util.list.swing.JLists;
 import internal.ui.components.HasTsCollectionCommands;
 import internal.ui.components.HasTsCollectionImpl;
+import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -42,7 +43,7 @@ public interface HasTsCollection {
     @Nonnull
     TsCollection getTsCollection();
 
-    void setTsCollection(@Nullable TsCollection tsCollection);
+    void setTsCollection(@Nonnull TsCollection tsCollection);
 
     static final String TS_SELECTION_MODEL_PROPERTY = "tsSelectionModel";
 
@@ -80,11 +81,11 @@ public interface HasTsCollection {
     @Nonnull
     TsCollection getDropContent();
 
-    void setDropContent(@Nullable TsCollection dropContent);
+    void setDropContent(@Nonnull TsCollection dropContent);
 
     @Nonnull
     default IntStream getTsSelectionIndexStream() {
-        int size = getTsCollection().getCount();
+        int size = getTsCollection().getData().size();
         return JLists
                 .getSelectionIndexStream(getTsSelectionModel())
                 .filter(o -> o < size);
@@ -92,11 +93,11 @@ public interface HasTsCollection {
 
     @Nonnull
     default Stream<Ts> getTsSelectionStream() {
-        Ts[] tss = getTsCollection().toArray();
+        List<Ts> tss = getTsCollection().getData();
         return JLists
                 .getSelectionIndexStream(getTsSelectionModel())
-                .filter(o -> o < tss.length)
-                .mapToObj(o -> tss[o]);
+                .filter(o -> o < tss.size())
+                .mapToObj(tss::get);
     }
 
     @Nonnull

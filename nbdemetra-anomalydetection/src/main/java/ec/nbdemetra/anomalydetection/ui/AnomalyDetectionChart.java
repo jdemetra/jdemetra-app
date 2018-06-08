@@ -16,10 +16,10 @@
  */
 package ec.nbdemetra.anomalydetection.ui;
 
+import demetra.bridge.TsConverter;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.properties.l2fprod.ColorChooser;
 import ec.tss.Ts;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.tstoolkit.timeseries.regression.OutlierEstimation;
@@ -49,6 +49,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -247,7 +248,7 @@ final class AnomalyDetectionChart extends JComponent {
 
         @Override
         public void execute(AnomalyDetectionChart c) throws Exception {
-            Transferable t = TssTransferSupport.getDefault().fromTs(c.model.getTs());
+            Transferable t = DataTransfer.getDefault().fromTs(TsConverter.toTs(c.model.getTs()));
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
     }
@@ -256,7 +257,7 @@ final class AnomalyDetectionChart extends JComponent {
 
         @Override
         public void execute(AnomalyDetectionChart c) throws Exception {
-            Transferable t = TssTransferSupport.getDefault().fromTable(toTable(c.model.getOutliers()));
+            Transferable t = DataTransfer.getDefault().fromTable(toTable(c.model.getOutliers()));
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
 

@@ -16,11 +16,11 @@
  */
 package demetra.ui.components;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.tss.Ts;
-import ec.tss.TsCollection;
 import ec.tss.TsStatus;
 import ec.tstoolkit.MetaData;
 import ec.tstoolkit.timeseries.Day;
@@ -131,8 +131,8 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
         return computeGrowthData(getTsCollection(), getGrowthKind(), getLastYears());
     }
 
-    public static Ts[] computeGrowthData(TsCollection input, GrowthKind kind, int lastyears) {
-        Ts[] tss = input.toArray();
+    private static Ts[] computeGrowthData(demetra.tsprovider.TsCollection input, GrowthKind kind, int lastyears) {
+        Ts[] tss = input.getData().stream().map(TsConverter::fromTs).toArray(Ts[]::new);
         return computeGrowthData(tss, kind, computeSelector(tss, lastyears));
     }
 
@@ -183,7 +183,7 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
 
     private void applyDesignTimeProperties() {
         if (Beans.isDesignTime()) {
-            setTsCollection(DemoUtils.randomTsCollection(3));
+            setTsCollection(TsConverter.toTsCollection(DemoUtils.randomTsCollection(3)));
             setTsUpdateMode(TsUpdateMode.None);
             setPreferredSize(new Dimension(200, 150));
             setTitle("Chart preview");

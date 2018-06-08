@@ -14,15 +14,15 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.tsaction;
+package internal.ui;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.Ts;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import ec.tss.Ts;
-import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
 import java.beans.BeanInfo;
@@ -30,18 +30,19 @@ import java.util.Optional;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.components.HasChart;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
+import demetra.ui.TsActionSpi;
+import ec.tss.TsMoniker;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = ITsAction.class)
-public class SimpleChartTsAction extends AbstractNamedService implements ITsAction {
+@ServiceProvider(service = TsActionSpi.class)
+public final class SimpleChartTsAction implements TsActionSpi {
 
-    public static final String NAME = "SimpleChartTsAction";
-
-    public SimpleChartTsAction() {
-        super(ITsAction.class, NAME);
+    @Override
+    public String getName() {
+        return "SimpleChartTsAction";
     }
 
     @Override
@@ -51,25 +52,27 @@ public class SimpleChartTsAction extends AbstractNamedService implements ITsActi
 
     @Override
     public void open(Ts ts) {
-        ts.query(TsInformationType.All);
-        String name = NAME + ts.getMoniker().toString();
+        TsManager.getDefault().loadAsync(ts, demetra.tsprovider.TsInformationType.All);
+
+        String name = getName() + ts.getMoniker().toString();
         ChartTopComponent c = NbComponents.findTopComponentByNameAndClass(name, ChartTopComponent.class);
         if (c == null) {
             c = new ChartTopComponent();
             c.setName(name);
 
-            Optional<IDataSourceProvider> provider = TsManager.getDefault().lookup(IDataSourceProvider.class, ts.getMoniker());
+            TsMoniker tmp = TsConverter.fromTsMoniker(ts.getMoniker());
+            Optional<IDataSourceProvider> provider = TsManager.getDefault().lookup(IDataSourceProvider.class, tmp);
             if (provider.isPresent()) {
-                DataSet dataSet = provider.get().toDataSet(ts.getMoniker());
+                DataSet dataSet = provider.get().toDataSet(tmp);
                 if (dataSet != null) {
-                    c.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false).orElse(null));
+                    c.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(tmp, BeanInfo.ICON_COLOR_16x16, false).orElse(null));
                     c.setDisplayName(provider.get().getDisplayNodeName(dataSet));
                 }
             } else {
                 c.setDisplayName(ts.getName());
             }
 
-            c.getChart().getTsCollection().add(ts);
+            c.getChart().setTsCollection(TsCollection.of(ts));
             c.getChart().setTsUpdateMode(TsUpdateMode.None);
             c.getChart().setLegendVisible(false);
             c.getChart().setTitle(ts.getName());

@@ -16,11 +16,16 @@
  */
 package internal.ui.components;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.Ts;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.components.HasTsCollection;
-import ec.tss.TsCollection;
 import ec.tss.TsMoniker;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.ListSelectionModel;
 
@@ -34,11 +39,11 @@ public final class HasTsCollectionImpl implements HasTsCollection, TsManager.Upd
     @lombok.NonNull
     private final PropertyChangeSource.Broadcaster broadcaster;
 
-    private TsCollection tsCollection = TsManager.getDefault().newTsCollection();
+    private TsCollection tsCollection = TsCollection.EMPTY;
     private ListSelectionModel selectionModel = new DefaultListSelectionModel();
     private TsUpdateMode updateMode = DEFAULT_UPDATEMODE;
     private boolean freezeOnImport = DEFAULT_FREEZE_ON_IMPORT;
-    private TsCollection dropContent = TsManager.getDefault().newTsCollection();
+    private TsCollection dropContent = TsCollection.EMPTY;
 
     public HasTsCollectionImpl register(TsManager manager) {
         manager.addWeakUpdateListener(this);
@@ -51,9 +56,10 @@ public final class HasTsCollectionImpl implements HasTsCollection, TsManager.Upd
     }
 
     @Override
-    public void setTsCollection(TsCollection collection) {
+    public void setTsCollection(TsCollection tsCollection) {
+        Objects.requireNonNull(tsCollection);
         TsCollection old = this.tsCollection;
-        this.tsCollection = tsCollection != null ? tsCollection : TsManager.getDefault().newTsCollection();
+        this.tsCollection = tsCollection;
         broadcaster.firePropertyChange(TS_COLLECTION_PROPERTY, old, this.tsCollection);
     }
 
@@ -100,16 +106,36 @@ public final class HasTsCollectionImpl implements HasTsCollection, TsManager.Upd
 
     @Override
     public void setDropContent(TsCollection dropContent) {
+        Objects.requireNonNull(dropContent);
         TsCollection old = this.dropContent;
-        this.dropContent = dropContent != null ? dropContent : TsManager.getDefault().newTsCollection();
+        this.dropContent = dropContent;
         broadcaster.firePropertyChange(DROP_CONTENT_PROPERTY, old, this.dropContent);
     }
 
     @Override
     public void accept(TsMoniker moniker) {
         TsCollection col = getTsCollection();
-        if (moniker.equals(col.getMoniker()) || col.search(moniker) != null) {
-            broadcaster.firePropertyChange(TS_COLLECTION_PROPERTY, null, col);
+        demetra.tsprovider.TsMoniker id = TsConverter.toTsMoniker(moniker);
+        if (id.equals(col.getMoniker())) {
+            ec.tss.TsCollection newData = TsManager.getDefault().lookupTsCollection(col.getName(), moniker, TsConverter.fromType(col.getType()));
+            setTsCollection(TsConverter.toTsCollection(newData));
+        } else {
+            int index = indexOf(col.getData(), id);
+            if (index != -1) {
+                ec.tss.Ts newData = TsManager.getDefault().lookupTs(moniker);
+                List<Ts> list = new ArrayList<>(col.getData());
+                list.set(index, TsConverter.toTs(newData));
+                setTsCollection(col.toBuilder().clearData().data(list).build());
+            }
         }
+    }
+
+    private static int indexOf(List<Ts> list, demetra.tsprovider.TsMoniker moniker) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getMoniker().equals(moniker)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

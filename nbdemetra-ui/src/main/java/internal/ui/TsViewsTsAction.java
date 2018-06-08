@@ -14,25 +14,23 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.tsaction;
+package internal.ui;
 
 import demetra.ui.components.HasTs;
-import ec.nbdemetra.ui.ns.AbstractNamedService;
-import ec.tss.Ts;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
+import demetra.ui.TsActionSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = ITsAction.class)
-public class TsViewsTsAction extends AbstractNamedService implements ITsAction {
+@ServiceProvider(service = TsActionSpi.class)
+public final class TsViewsTsAction implements TsActionSpi {
 
-    public static final String NAME = "TsViewsTs";
-
-    public TsViewsTsAction() {
-        super(ITsAction.class, NAME);
+    @Override
+    public String getName() {
+        return "TsViewsTs";
     }
 
     @Override
@@ -41,7 +39,7 @@ public class TsViewsTsAction extends AbstractNamedService implements ITsAction {
     }
 
     @Override
-    public void open(Ts ts) {
+    public void open(demetra.tsprovider.Ts ts) {
         TopComponent.getRegistry().getOpened().stream()
                 .filter(HasTs.class::isInstance)
                 .forEach(o -> ((HasTs) o).setTs(ts));

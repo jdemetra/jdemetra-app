@@ -18,7 +18,6 @@ package internal.ui.components;
 
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.components.HasTsAction;
-import ec.nbdemetra.ui.tsaction.ITsAction;
 
 /**
  *
@@ -29,17 +28,17 @@ public final class HasTsActionImpl implements HasTsAction {
 
     @lombok.NonNull
     private final PropertyChangeSource.Broadcaster broadcaster;
-    private ITsAction tsAction = null;
+    private String tsAction = null;
 
     @Override
-    public void setTsAction(ITsAction tsAction) {
-        ITsAction old = this.tsAction;
+    public void setTsAction(String tsAction) {
+        String old = this.tsAction;
         this.tsAction = tsAction;
         broadcaster.firePropertyChange(TS_ACTION_PROPERTY, old, this.tsAction);
     }
 
     @Override
-    public ITsAction getTsAction() {
+    public String getTsAction() {
         return tsAction;
     }
 }

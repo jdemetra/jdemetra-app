@@ -4,6 +4,9 @@
  */
 package ec.nbdemetra.sa;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
+import demetra.ui.TsManager;
 import demetra.ui.components.HasTs;
 import demetra.ui.components.HasTsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
@@ -136,17 +139,17 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
     // End of variables declaration//GEN-END:variables
 
     private void showTests() {
-        Ts cur = getTs();
+        demetra.tsprovider.Ts cur = getTs();
         if (cur == null) {
             jEditorPane1.loadContent("");
         } else {
-            test(cur);
+            test(TsConverter.fromTs(cur));
         }
     }
 
     private void test(Ts cur) {
         if (cur.hasData() == TsStatus.Undefined) {
-            cur.load(TsInformationType.Data);
+            TsManager.getDefault().load(cur, TsInformationType.Data);
         }
         TsData s = cur.getTsData();
         if (s == null) {
@@ -182,16 +185,13 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
     }
 
     @Override
-    public Ts getTs() {
-        if (jTsChart1.getTsCollection().isEmpty()) {
-            return null;
-        }
-        return jTsChart1.getTsCollection().get(0);
+    public demetra.tsprovider.Ts getTs() {
+        return jTsChart1.getTsCollection().getData().stream().findFirst().orElse(null);
     }
 
     @Override
-    public void setTs(Ts ts) {
-        jTsChart1.getTsCollection().replace(ts);
+    public void setTs(demetra.tsprovider.Ts ts) {
+        jTsChart1.setTsCollection(TsCollection.of(ts));
         //test(ts);
     }
 

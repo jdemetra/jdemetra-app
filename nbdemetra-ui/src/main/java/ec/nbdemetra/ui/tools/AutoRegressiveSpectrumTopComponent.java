@@ -7,7 +7,6 @@ package ec.nbdemetra.ui.tools;
 import demetra.ui.components.HasTs;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
-import ec.tss.Ts;
 import ec.ui.view.AutoRegressiveSpectrumView;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.JMenu;
@@ -112,12 +111,12 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
     }
 
     @Override
-    public Ts getTs() {
+    public demetra.tsprovider.Ts getTs() {
         return null;
     }
 
     @Override
-    public void setTs(Ts ts) {
+    public void setTs(demetra.tsprovider.Ts ts) {
         view.setTs(ts);
     }
 

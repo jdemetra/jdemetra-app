@@ -7,9 +7,7 @@ package ec.nbdemetra.sa.actions;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.actions.AbstractViewAction;
 import ec.nbdemetra.ws.ui.WorkspaceTsTopComponent;
-import ec.tss.Ts;
 import ec.tss.datatransfer.DataTransfers;
-import ec.tss.datatransfer.TssTransferSupport;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
@@ -17,6 +15,7 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
+import demetra.ui.DataTransfer;
 
 @ActionID(category = "SaProcessing",
         id = "ec.nbdemetra.sa.actions.PasteTs")
@@ -42,7 +41,7 @@ public final class PasteTs extends AbstractViewAction<WorkspaceTsTopComponent> {
     protected void process(WorkspaceTsTopComponent cur) {
         WorkspaceTsTopComponent top = context();
         if (top != null) {
-            Ts s = TssTransferSupport.getDefault().toTs(DataTransfers.systemClipboardAsTransferable());
+            demetra.tsprovider.Ts s = DataTransfer.getDefault().toTs(DataTransfers.systemClipboardAsTransferable());
             if (s == null) {
                 NotifyDescriptor nd = new NotifyDescriptor.Message("Unable to paste ts");
                 DialogDisplayer.getDefault().notify(nd);

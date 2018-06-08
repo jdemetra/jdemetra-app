@@ -16,6 +16,7 @@
  */
 package demetra.ui;
 
+import demetra.bridge.TsConverter;
 import ec.nbdemetra.core.GlobalService;
 import ec.tss.ITsProvider;
 import ec.tss.Ts;
@@ -280,5 +281,20 @@ public class TsManager implements AutoCloseable {
                 return Optional.of(ts);
         }
         throw new RuntimeException("Not implemented");
+    }
+
+    public void loadAsync(@Nonnull demetra.tsprovider.Ts ts, @Nonnull demetra.tsprovider.TsInformationType type) {
+        TsConverter.fromTs(ts).query(TsConverter.fromType(type));
+    }
+
+    @Nonnull
+    public demetra.tsprovider.Ts load(@Nonnull demetra.tsprovider.Ts ts, @Nonnull demetra.tsprovider.TsInformationType type) {
+        Ts tmp = TsConverter.fromTs(ts);
+        tmp.load(TsConverter.fromType(type));
+        return TsConverter.toTs(tmp);
+    }
+
+    public void load(@Nonnull Ts ts, @Nonnull TsInformationType type) {
+        ts.load(type);
     }
 }

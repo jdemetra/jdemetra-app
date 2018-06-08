@@ -5,8 +5,9 @@
 package ec.nbdemetra.sa;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.TsManager;
-import demetra.ui.components.HasTsCollection;
 import ec.nbdemetra.sa.composite.DirectIndirectViewFactory;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.DemetraUiIcon;
@@ -65,15 +66,15 @@ import org.slf4j.LoggerFactory;
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//ec.nbdemetra.sa//DirectIndirectSa//EN",
-autostore = false)
+        autostore = false)
 @TopComponent.Description(preferredID = "DirectIndirectSaTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_NEVER)
+        //iconBase="SET/PATH/TO/ICON/HERE", 
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "ec.nbdemetra.sa.DirectIndirectSaTopComponent")
 @ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Tools", position = 350)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_DirectIndirectSaAction",
-preferredID = "DirectIndirectSaTopComponent")
+        preferredID = "DirectIndirectSaTopComponent")
 @Messages({
     "CTL_DirectIndirectSaAction=Direct-Indirect Seasonal Adjustment"
 })
@@ -101,6 +102,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     private MultiSaDocumentView diView;
     private MultiSaSpecification curSpec;
     private SwingWorker worker;
+
     @Messages({
         "directIndirectSaTopComponent.setName=Direct-Indirect Seasonal Adjustment Window",
         "directIndirectSaTopComponent.setToolTipText=This is a Direct-Indirect Seasonal Adjustment window"
@@ -171,7 +173,6 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
 //                }
         });
 
-
         node = new InternalNode();
         associateLookup(ExplorerUtils.createLookup(ActiveViewManager.getInstance().getExplorerManager(), getActionMap()));
     }
@@ -179,14 +180,15 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     private void initList() {
         inputList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             TsData sum = null;
-            for (Ts s : inputList.getTsCollection()) {
+            for (demetra.tsprovider.Ts o : inputList.getTsCollection().getData()) {
+                Ts s = TsConverter.fromTs(o);
                 if (s.hasData() == TsStatus.Undefined) {
-                    s.load(TsInformationType.Data);
+                    TsManager.getDefault().load(s, TsInformationType.Data);
                 }
                 sum = TsData.add(sum, s.getTsData());
             }
             Ts t = TsManager.getDefault().newTs("Total", null, sum);
-            saChart.getTsCollection().replace(t);
+            saChart.setTsCollection(TsCollection.of(TsConverter.toTs(t)));
             clear();
         });
     }
@@ -275,7 +277,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
         this.makeBusy(true);
         MultiSaDocument doc = diView.getDocument();
         doc.setSpecification(curSpec.clone());
-        doc.setTsCollection(inputList.getTsCollection());
+        doc.setTsCollection(TsConverter.fromTsCollection(inputList.getTsCollection()));
         worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -320,6 +322,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     }
 
     class InternalNode extends AbstractNode {
+
         @Messages({
             "directIndirectSaTopComponent.internalNode.setDisplayName=Direct-Indirect SA"
         })

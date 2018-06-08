@@ -18,9 +18,7 @@ package internal.ui.components;
 
 import demetra.ui.components.TsSelectionBridge;
 import com.toedter.components.JSpinField;
-import demetra.ui.TsManager;
-import ec.tss.TsCollection;
-import ec.tss.datatransfer.TssTransferSupport;
+import demetra.bridge.TsConverter;
 import demetra.ui.components.JTsGrowthChart;
 import static demetra.ui.components.JTsGrowthChart.GROWTH_KIND_PROPERTY;
 import ec.ui.commands.ComponentCommand;
@@ -36,6 +34,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -78,10 +77,9 @@ public class JTsGrowthChartCommands {
 
         @Override
         public void execute(JTsGrowthChart c) throws Exception {
-            TsCollection data = Stream
-                    .of(c.computeGrowthData())
-                    .collect(TsManager.getDefault().getTsCollector());
-            Transferable transferable = TssTransferSupport.getDefault().fromTsCollection(data);
+            demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
+            Stream.of(c.computeGrowthData()).map(TsConverter::toTs).forEach(col::data);
+            Transferable transferable = DataTransfer.getDefault().fromTsCollection(col.build());
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
         }
     }

@@ -17,20 +17,19 @@
 package internal.ui.components;
 
 import com.google.common.base.Strings;
+import demetra.bridge.TsConverter;
 import demetra.ui.components.HasTsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import demetra.ui.components.PrintableWithPreview;
 import static demetra.ui.components.ResetableZoom.RESET_ZOOM_ACTION;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.tss.Ts;
-import ec.tss.TsCollection;
 import ec.tss.TsStatus;
 import ec.util.chart.swing.JTimeSeriesChart;
 import ec.util.chart.swing.JTimeSeriesChartCommand;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import java.util.Arrays;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.swing.ActionMap;
 import javax.swing.JMenuItem;
@@ -90,13 +89,12 @@ public class InternalComponents {
         return getNoDataMessage(o.getTsCollection(), o.getTsUpdateMode());
     }
 
-    private static String getNoDataMessage(TsCollection input, TsUpdateMode updateMode) {
-        Ts[] col = input.toArray();
-        switch (col.length) {
+    private static String getNoDataMessage(demetra.tsprovider.TsCollection input, TsUpdateMode updateMode) {
+        switch (input.getData().size()) {
             case 0:
                 return updateMode.isReadOnly() ? "No data" : "Drop data here";
             case 1:
-                Ts single = col[0];
+                Ts single = TsConverter.fromTs(input.getData().get(0));
                 switch (single.hasData()) {
                     case Invalid:
                         String cause = single.getInvalidDataCause();
@@ -109,8 +107,8 @@ public class InternalComponents {
             default:
                 int[] counter = new int[TsStatus.values().length];
                 Arrays.fill(counter, 0);
-                Stream.of(col).forEach(o -> counter[o.hasData().ordinal()]++);
-                if (counter[TsStatus.Invalid.ordinal()] == col.length) {
+                input.getData().stream().map(TsConverter::fromTs).forEach(o -> counter[o.hasData().ordinal()]++);
+                if (counter[TsStatus.Invalid.ordinal()] == input.getData().size()) {
                     return "Invalid data";
                 }
                 if (counter[TsStatus.Undefined.ordinal()] > 1) {

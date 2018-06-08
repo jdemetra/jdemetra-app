@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
-import demetra.ui.TsManager;
+import demetra.bridge.TsConverter;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.tss.Ts;
@@ -60,7 +60,7 @@ public class JTsComboGrid extends JComponent {
                     Object item = event.getItem();
                     if (item != null) {
                         if (item instanceof Ts) {
-                            grid.setTsCollection(collections.get((Ts) item));
+                            grid.setTsCollection(TsConverter.toTsCollection(collections.get((Ts) item)));
                         } else {
                             showAllTs();
                         }
@@ -76,14 +76,14 @@ public class JTsComboGrid extends JComponent {
     }
 
     private void showAllTs() {
-        TsCollection coll = TsManager.getDefault().newTsCollection();
+        demetra.tsprovider.TsCollection.Builder coll = demetra.tsprovider.TsCollection.builder();
         for (Map.Entry<Ts, TsCollection> entry : collections.entrySet()) {
             TsCollection c = entry.getValue();
             for (int i = 0; i < c.getCount(); i++) {
-                coll.quietAdd(c.get(i).rename(entry.getKey().getName() + " (" + c.get(i).getName() + ")"));
+                coll.data(TsConverter.toTs(c.get(i).rename(entry.getKey().getName() + " (" + c.get(i).getName() + ")")));
             }
         }
-        grid.setTsCollection(coll);
+        grid.setTsCollection(coll.build());
     }
 
     /**

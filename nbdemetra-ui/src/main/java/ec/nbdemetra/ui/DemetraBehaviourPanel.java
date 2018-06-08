@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.ui.TsAction;
 import ec.tstoolkit.utilities.ThreadPoolSize;
 import ec.tstoolkit.utilities.ThreadPriority;
 import java.awt.event.ItemEvent;
@@ -51,7 +52,7 @@ final class DemetraBehaviourPanel extends javax.swing.JPanel implements ItemList
         persistToolsContent.setSelected(demetraUI.isPersistToolsContent());
         persistOpenDataSources.setSelected(demetraUI.isPersistOpenedDataSources());
 
-        tsActionChoicePanel.setContent(demetraUI.getTsActions());
+        tsActionChoicePanel.setContent(TsAction.getDefault().getTsActions());
         tsActionChoicePanel.setSelectedServiceName(demetraUI.getTsActionName());
 
         batchPoolSizeCombo.setModel(new DefaultComboBoxModel(ThreadPoolSize.values()));

@@ -16,6 +16,7 @@
  */
 package ec.ui.view;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.satoolkit.DecompositionMode;
@@ -33,7 +34,6 @@ import demetra.ui.components.HasColorScheme;
 import demetra.ui.components.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
-import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
@@ -270,8 +270,8 @@ public final class SIView extends JComponent implements TimeSeriesComponent, Has
 
     @Nullable
     private TsInformation getTsInformation() {
-        Ts ts = getTs();
-        return ts != null ? ts.toInfo(TsInformationType.Data) : null;
+        demetra.tsprovider.Ts ts = getTs();
+        return ts != null ? TsConverter.fromTs(ts).toInfo(TsInformationType.Data) : null;
     }
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">

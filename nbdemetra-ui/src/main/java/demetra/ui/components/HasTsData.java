@@ -16,8 +16,8 @@
  */
 package demetra.ui.components;
 
+import demetra.timeseries.TsData;
 import demetra.ui.beans.PropertyChangeSource;
-import ec.tstoolkit.timeseries.simplets.TsData;
 import internal.ui.components.HasTsDataImpl;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,7 +30,7 @@ public interface HasTsData {
 
     static final String TS_DATA_PROPERTY = "tsData";
 
-    @Nonnull
+    @Nullable
     TsData getTsData();
 
     void setTsData(@Nullable TsData tsData);

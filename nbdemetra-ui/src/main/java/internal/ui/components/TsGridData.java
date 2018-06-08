@@ -16,15 +16,9 @@
  */
 package internal.ui.components;
 
-import ec.tss.TsCollection;
-import ec.tss.TsStatus;
-import ec.tstoolkit.timeseries.simplets.TsDataTableInfo;
-import demetra.ui.components.JTsGrid.Chronology;
-import demetra.ui.components.JTsGrid.Orientation;
-import ec.ui.chart.DataFeatureModel;
-import ec.ui.grid.TsGridObs;
+import demetra.ui.components.TsGridObs;
 import ec.util.chart.ObsIndex;
-import ec.util.grid.CellIndex;
+import java.util.List;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
@@ -32,73 +26,38 @@ import javax.annotation.Nonnull;
  *
  * @author Philippe Charles
  */
-abstract class TsGridData {
+interface TsGridData {
 
     @Nonnegative
-    abstract public int getColumnCount();
+    int getColumnCount();
 
     @Nonnull
-    abstract public String getColumnName(int j);
+    String getColumnName(int j);
 
     @Nonnegative
-    abstract public int getRowCount();
+    int getRowCount();
 
     @Nonnull
-    abstract public String getRowName(int i);
+    String getRowName(int i);
 
     @Nonnull
-    abstract public TsGridObs getObs(int i, int j);
+    TsGridObs getObs(int i, int j);
+
+    int getRowIndex(@Nonnull ObsIndex index);
+
+    int getColumnIndex(@Nonnull ObsIndex index);
 
     @Nonnull
-    public TsGridData transpose() {
-        return new Transposed(this);
-    }
-
-    @Nonnull
-    public TsGridData flipHorizontaly() {
-        return new FlippedHorizontaly(this);
-    }
-
-    @Nonnull
-    public TsGridData flipVerticaly() {
-        return new FlippedVerticaly(this);
-    }
-
-    @Nonnull
-    public ObsIndex toObsIndex(@Nonnull CellIndex index) {
-        if (CellIndex.NULL.equals(index)) {
-            return ObsIndex.NULL;
+    static TsGridData create(List<demetra.tsprovider.Ts> col, int singleSeriesIndex) {
+        if (col.isEmpty() || (singleSeriesIndex != -1 && col.get(singleSeriesIndex).getData().isEmpty())) {
+            return Empty.INSTANCE;
         }
-        TsGridObs obs = getObs(index.getRow(), index.getColumn());
-        if (TsDataTableInfo.Empty.equals(obs.getInfo())) {
-            return ObsIndex.NULL;
-        }
-        return ObsIndex.valueOf(obs.getSeriesIndex(), obs.getIndex());
+        return singleSeriesIndex == -1 ? new MultiTsGridData(col) : new SingleTsGridData(col, singleSeriesIndex);
     }
 
-    @Nonnull
-    abstract public CellIndex toCellIndex(@Nonnull ObsIndex index);
+    enum Empty implements TsGridData {
 
-    @Nonnull
-    public static TsGridData empty() {
-        return Empty.INSTANCE;
-    }
-
-    @Nonnull
-    public static TsGridData create(TsCollection col, int singleSeriesIndex, Orientation orientation, Chronology chronology, DataFeatureModel dataFeatureModel) {
-        if (col.isEmpty() || (singleSeriesIndex != -1 && col.get(singleSeriesIndex).hasData() != TsStatus.Valid)) {
-            return empty();
-        }
-        TsGridData result = singleSeriesIndex == -1 ? new MultiTsGridData(col, dataFeatureModel) : new SingleTsGridData(col, singleSeriesIndex, dataFeatureModel);
-        result = chronology == Chronology.ASCENDING ? result : result.flipVerticaly();
-        result = orientation == Orientation.NORMAL ? result : result.transpose();
-        return result;
-    }
-
-    //<editor-fold defaultstate="collapsed" desc="Internal implementation">
-    private static final class Empty extends TsGridData {
-
-        static final Empty INSTANCE = new Empty();
+        INSTANCE;
 
         @Override
         public int getColumnCount() {
@@ -126,167 +85,13 @@ abstract class TsGridData {
         }
 
         @Override
-        public TsGridData transpose() {
-            return this;
+        public int getRowIndex(ObsIndex index) {
+            return -1;
         }
 
         @Override
-        public TsGridData flipHorizontaly() {
-            return this;
-        }
-
-        @Override
-        public TsGridData flipVerticaly() {
-            return this;
-        }
-
-        @Override
-        public CellIndex toCellIndex(ObsIndex index) {
-            return CellIndex.NULL;
+        public int getColumnIndex(ObsIndex index) {
+            return -1;
         }
     }
-
-    private static final class Transposed extends TsGridData {
-
-        private final TsGridData data;
-
-        public Transposed(TsGridData data) {
-            this.data = data;
-        }
-
-        @Override
-        public int getColumnCount() {
-            return data.getRowCount();
-        }
-
-        @Override
-        public String getColumnName(int j) {
-            return data.getRowName(j);
-        }
-
-        @Override
-        public int getRowCount() {
-            return data.getColumnCount();
-        }
-
-        @Override
-        public String getRowName(int i) {
-            return data.getColumnName(i);
-        }
-
-        @Override
-        public TsGridObs getObs(int i, int j) {
-            return data.getObs(j, i);
-        }
-
-        @Override
-        public TsGridData transpose() {
-            return data;
-        }
-
-        @Override
-        public CellIndex toCellIndex(ObsIndex index) {
-            CellIndex tmp = data.toCellIndex(index);
-            return CellIndex.valueOf(tmp.getColumn(), tmp.getRow());
-        }
-    }
-
-    private static final class FlippedHorizontaly extends TsGridData {
-
-        private final TsGridData data;
-
-        public FlippedHorizontaly(TsGridData data) {
-            this.data = data;
-        }
-
-        private int flipColumn(int j) {
-            return data.getColumnCount() - j - 1;
-        }
-
-        @Override
-        public int getColumnCount() {
-            return data.getColumnCount();
-        }
-
-        @Override
-        public String getColumnName(int j) {
-            return data.getColumnName(flipColumn(j));
-        }
-
-        @Override
-        public int getRowCount() {
-            return data.getRowCount();
-        }
-
-        @Override
-        public String getRowName(int i) {
-            return data.getRowName(i);
-        }
-
-        @Override
-        public TsGridObs getObs(int i, int j) {
-            return data.getObs(i, flipColumn(j));
-        }
-
-        @Override
-        public TsGridData flipHorizontaly() {
-            return data;
-        }
-
-        @Override
-        public CellIndex toCellIndex(ObsIndex index) {
-            CellIndex tmp = data.toCellIndex(index);
-            return CellIndex.valueOf(tmp.getRow(), flipColumn(tmp.getColumn()));
-        }
-    }
-
-    private static final class FlippedVerticaly extends TsGridData {
-
-        private final TsGridData data;
-
-        public FlippedVerticaly(TsGridData data) {
-            this.data = data;
-        }
-
-        private int flipRow(int i) {
-            return data.getRowCount() - i - 1;
-        }
-
-        @Override
-        public int getColumnCount() {
-            return data.getColumnCount();
-        }
-
-        @Override
-        public String getColumnName(int j) {
-            return data.getColumnName(j);
-        }
-
-        @Override
-        public int getRowCount() {
-            return data.getRowCount();
-        }
-
-        @Override
-        public String getRowName(int i) {
-            return data.getRowName(flipRow(i));
-        }
-
-        @Override
-        public TsGridObs getObs(int i, int j) {
-            return data.getObs(flipRow(i), j);
-        }
-
-        @Override
-        public TsGridData flipVerticaly() {
-            return data;
-        }
-
-        @Override
-        public CellIndex toCellIndex(ObsIndex index) {
-            CellIndex tmp = data.toCellIndex(index);
-            return CellIndex.valueOf(flipRow(tmp.getRow()), tmp.getColumn());
-        }
-    }
-    //</editor-fold>
 }

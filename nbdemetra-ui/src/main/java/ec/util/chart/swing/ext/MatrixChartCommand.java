@@ -5,7 +5,6 @@
 package ec.util.chart.swing.ext;
 
 import com.google.common.base.Preconditions;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.util.chart.swing.ChartCommand;
 import java.awt.Toolkit;
@@ -14,6 +13,7 @@ import javax.annotation.Nonnull;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
+import demetra.ui.DataTransfer;
 
 /**
  * A command that extract a matrix from a chart and put it into the system
@@ -26,7 +26,7 @@ public abstract class MatrixChartCommand extends ChartCommand {
     @Override
     public void execute(ChartPanel chartPanel) {
         Matrix matrix = toMatrix(chartPanel);
-        Transferable t = TssTransferSupport.getDefault().fromMatrix(matrix);
+        Transferable t = DataTransfer.getDefault().fromMatrix(matrix);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
     }
 

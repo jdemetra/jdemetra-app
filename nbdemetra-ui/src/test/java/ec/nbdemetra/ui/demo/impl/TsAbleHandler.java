@@ -16,12 +16,12 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTs;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.FakeTsProvider;
 import static ec.nbdemetra.ui.demo.impl.TsCollectionHandler.getIcon;
-import ec.tss.Ts;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
@@ -77,7 +77,7 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> 
     }
 
     private static void apply(HasTs o, TsInformation ts) {
-        o.setTs(ts.toTs());
+        o.setTs(TsConverter.toTs(ts.toTs()));
     }
 
     private static void clear(HasTs o) {
@@ -143,9 +143,11 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> 
 
         @Override
         public void execute(HasTs component) throws Exception {
-            Optional<Ts> ts = TsManager.getDefault().getTs(dataSet, TsInformationType.Definition);
+            Optional<demetra.tsprovider.Ts> ts = TsManager.getDefault()
+                    .getTs(dataSet, TsInformationType.Definition)
+                    .map(TsConverter::toTs);
             if (ts.isPresent()) {
-                ts.get().query(TsInformationType.All);
+                TsManager.getDefault().loadAsync(ts.get(), demetra.tsprovider.TsInformationType.All);
             }
             component.setTs(ts.orElse(null));
         }

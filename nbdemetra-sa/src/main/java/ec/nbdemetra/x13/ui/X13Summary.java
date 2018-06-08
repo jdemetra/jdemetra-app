@@ -4,12 +4,13 @@
  */
 package ec.nbdemetra.x13.ui;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.NbComponents;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.x11.X11Results;
 import ec.tstoolkit.modelling.ModellingDictionary;
-import ec.tss.Ts;
 import ec.tss.documents.DocumentManager;
 import ec.tss.html.implementation.HtmlX13Summary;
 import ec.tss.sa.documents.X13Document;
@@ -23,8 +24,6 @@ import ec.ui.view.SIView;
 import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;
 import java.awt.BorderLayout;
-import java.util.Arrays;
-import java.util.List;
 import javax.swing.*;
 
 /**
@@ -80,11 +79,14 @@ public class X13Summary extends JComponent implements IDisposable {
         HtmlX13Summary summary = new HtmlX13Summary(MultiLineNameUtil.join(doc.getInput().getName()), results, null);
         Disposables.disposeAndRemoveAll(document_).add(toolkit_.getHtmlViewer(summary));
 
-        List<Ts> list = Arrays.asList(
-                getMainSeries(ModellingDictionary.Y),
-                getMainSeries(ModellingDictionary.T),
-                getMainSeries(ModellingDictionary.SA));
-        chart_.getTsCollection().replace(list);
+        chart_.setTsCollection(
+                TsCollection
+                        .builder()
+                        .data(getMainSeries(ModellingDictionary.Y))
+                        .data(getMainSeries(ModellingDictionary.T))
+                        .data(getMainSeries(ModellingDictionary.SA))
+                        .build()
+        );
 
         X11Results x11 = doc.getDecompositionPart();
         if (x11 != null) {
@@ -100,8 +102,8 @@ public class X13Summary extends JComponent implements IDisposable {
             siPanel_.reset();
     }
 
-    private Ts getMainSeries(String str) {
-        return DocumentManager.instance.getTs(doc_, str);
+    private demetra.tsprovider.Ts getMainSeries(String str) {
+        return TsConverter.toTs(DocumentManager.instance.getTs(doc_, str));
     }
 
     @Override

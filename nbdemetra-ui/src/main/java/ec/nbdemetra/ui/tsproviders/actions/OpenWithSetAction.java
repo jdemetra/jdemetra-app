@@ -16,9 +16,10 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
+import demetra.bridge.TsConverter;
+import demetra.ui.TsAction;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.tsaction.ITsAction;
+import ec.nbdemetra.ui.ns.INamedService;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import java.awt.event.ActionEvent;
@@ -51,27 +52,24 @@ public final class OpenWithSetAction extends AbstractAction implements Presenter
         Node selectedNode = Utilities.actionsGlobalContext().lookup(Node.class);
         DataSet dataSet = selectedNode.getLookup().lookup(DataSet.class);
         JMenu result = new JMenu(Bundle.CTL_OpenWithSetAction());
-        for (ITsAction o : DemetraUI.getDefault().getTsActions()) {
+        for (INamedService o : TsAction.getDefault().getTsActions()) {
             result.add(new OpenTsAction(o, dataSet)).setText(o.getDisplayName());
         }
         return result;
     }
 
+    @lombok.AllArgsConstructor
     private static final class OpenTsAction extends AbstractAction {
 
-        private final ITsAction tsAction;
+        private final INamedService tsAction;
         private final DataSet dataSet;
-
-        public OpenTsAction(ITsAction tsAction, DataSet dataSet) {
-            this.tsAction = tsAction;
-            this.dataSet = dataSet;
-        }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             TsManager.getDefault()
                     .getTs(dataSet, TsInformationType.None)
-                    .ifPresent(o -> tsAction.open(o));
+                    .map(TsConverter::toTs)
+                    .ifPresent(o -> TsAction.getDefault().openWith(o, tsAction.getName()));
         }
     }
 }

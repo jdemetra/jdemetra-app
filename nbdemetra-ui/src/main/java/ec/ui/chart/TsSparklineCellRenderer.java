@@ -31,6 +31,9 @@ public class TsSparklineCellRenderer extends SparklineCellRenderer {
             Ts ts = (Ts) value;
             return ts.hasData().equals(TsStatus.Valid) ? TsCharts.newSparklineDataset(ts.getTsData()) : null;
         }
+        if (value instanceof demetra.timeseries.TsData) {
+            return TsCharts.newSparklineDataset((demetra.timeseries.TsData) value);
+        }
         return super.getDataset(value);
     }
 }

@@ -16,13 +16,12 @@
  */
 package internal.ui.components;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.tss.Ts;
-import ec.tss.TsCollection;
-import ec.tss.TsStatus;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.timeseries.TsAggregationType;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -46,6 +45,7 @@ import ec.nbdemetra.ui.DemetraUI;
 import ec.ui.commands.ComponentCommand;
 import ec.util.list.swing.JLists;
 import ec.util.various.swing.FontAwesome;
+import java.time.Duration;
 import java.util.OptionalInt;
 import javax.swing.ActionMap;
 import javax.swing.JCheckBoxMenuItem;
@@ -187,16 +187,15 @@ public class HasChartCommands {
         public boolean isEnabled(HasTsCollection c) {
             OptionalInt selection = JLists.getSelectionIndexStream(c.getTsSelectionModel()).findFirst();
             if (selection.isPresent()) {
-                Ts ts = c.getTsCollection().get(selection.getAsInt());
-                return ts.hasData() == TsStatus.Valid
-                        && ts.getTsData().getDomain().getYearsCount() > 1;
+                demetra.timeseries.TsData data = c.getTsCollection().getData().get(selection.getAsInt()).getData();
+                return !data.isEmpty() && Duration.between(data.getDomain().start(), data.getDomain().end()).toDays() > 365;
             }
             return false;
         }
 
         @Override
         public void execute(HasTsCollection component) throws Exception {
-            Ts ts = component.getTsCollection().get(component.getTsSelectionModel().getMinSelectionIndex());
+            Ts ts = TsConverter.fromTs(component.getTsCollection().getData().get(component.getTsSelectionModel().getMinSelectionIndex()));
             ChartTopComponent c = new ChartTopComponent();
             c.getChart().setTitle(ts.getName());
             c.getChart().setDataFormat(new DataFormat(null, "MMM", null));
@@ -208,8 +207,8 @@ public class HasChartCommands {
             c.requestActive();
         }
 
-        private TsCollection split(Ts ts) {
-            TsCollection result = TsManager.getDefault().newTsCollection();
+        private demetra.tsprovider.TsCollection split(Ts ts) {
+            demetra.tsprovider.TsCollection.Builder result = demetra.tsprovider.TsCollection.builder();
             Calendar cal = Calendar.getInstance();
             YearIterator yearIterator = new YearIterator(ts.getTsData());
             for (TsDataBlock o : NbCollections.iterable(yearIterator)) {
@@ -221,9 +220,9 @@ public class HasChartCommands {
                 }
                 String name = String.valueOf(o.start.getYear());
                 TsData tmp = dc.make(o.start.getFrequency(), TsAggregationType.None);
-                result.quietAdd(TsManager.getDefault().newTs(name, null, tmp));
+                result.data(TsConverter.toTs(TsManager.getDefault().newTs(name, null, tmp)));
             }
-            return result;
+            return result.build();
         }
     }
     //</editor-fold>

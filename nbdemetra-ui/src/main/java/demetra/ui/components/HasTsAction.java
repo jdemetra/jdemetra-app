@@ -17,7 +17,6 @@
 package demetra.ui.components;
 
 import demetra.ui.beans.PropertyChangeSource;
-import ec.nbdemetra.ui.tsaction.ITsAction;
 import internal.ui.components.HasTsActionImpl;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,10 +29,10 @@ public interface HasTsAction {
 
     static final String TS_ACTION_PROPERTY = "tsAction";
 
-    void setTsAction(@Nullable ITsAction tsAction);
+    void setTsAction(@Nullable String tsAction);
 
     @Nullable
-    ITsAction getTsAction();
+    String getTsAction();
 
     @Nonnull
     static HasTsAction of(@Nonnull PropertyChangeSource.Broadcaster broadcaster) {

@@ -16,13 +16,12 @@
  */
 package ec.ui.chart;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.awt.KeyStrokes;
 import ec.tss.Ts;
-import ec.tss.TsCollection;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.ui.ExtAction;
@@ -54,6 +53,7 @@ import org.jfree.data.Range;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import demetra.ui.DataTransfer;
 
 /**
  * Chart Panel used in popups of Revision History View
@@ -218,19 +218,19 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
     }
 
     protected Transferable transferableOnSelection() {
-        TsCollection col = TsManager.getDefault().newTsCollection();
+        demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
         Ts ts = TsManager.getDefault().newTs("Reference serie", null, reference);
-        col.add(ts);
+        col.data(TsConverter.toTs(ts));
         if (revs != null) {
             for (int i = 0; i < revs.size(); i++) {
                 ts = TsManager.getDefault().newTs(
                         "Rev->" + ts.getTsData().getLastPeriod().toString(),
                         null,
                         revs.get(i));
-                col.add(ts);
+                col.data(TsConverter.toTs(ts));
             }
         }
-        return TssTransferSupport.getDefault().fromTsCollection(col);
+        return DataTransfer.getDefault().fromTsCollection(col.build());
     }
 
     private void onColorSchemeChange() {

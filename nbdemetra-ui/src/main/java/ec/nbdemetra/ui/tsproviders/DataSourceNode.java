@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.interchange.Exportable;
@@ -30,7 +31,6 @@ import ec.nbdemetra.ui.tssave.ITsSavable;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.datatransfer.DataTransfers;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
@@ -67,6 +67,7 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
+import demetra.ui.DataTransfer;
 
 /**
  * A node that represents a DataSource.
@@ -150,7 +151,8 @@ public final class DataSourceNode extends AbstractNode {
     private Transferable getData(TsInformationType type) throws IOException {
         return TsManager.getDefault()
                 .getTsCollection(getLookup().lookup(DataSource.class), type)
-                .map(o -> TssTransferSupport.getDefault().fromTsCollection(o))
+                .map(TsConverter::toTsCollection)
+                .map(DataTransfer.getDefault()::fromTsCollection)
                 .orElseThrow(() -> new IOException("Cannot create the TS collection '" + getDisplayName() + "'; check the logs for further details."));
     }
 

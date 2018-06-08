@@ -16,10 +16,9 @@
  */
 package internal.ui.components;
 
+import demetra.timeseries.TsData;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.components.HasTsData;
-import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.tstoolkit.timeseries.simplets.TsFrequency;
 
 /**
  *
@@ -30,7 +29,7 @@ public final class HasTsDataImpl implements HasTsData {
 
     @lombok.NonNull
     private final PropertyChangeSource.Broadcaster broadcaster;
-    private TsData tsData = getDefaultValue();
+    private TsData tsData = null;
 
     @Override
     public TsData getTsData() {
@@ -40,11 +39,7 @@ public final class HasTsDataImpl implements HasTsData {
     @Override
     public void setTsData(TsData tsData) {
         TsData old = this.tsData;
-        this.tsData = tsData != null ? tsData : getDefaultValue();
+        this.tsData = tsData;
         broadcaster.firePropertyChange(TS_DATA_PROPERTY, old, this.tsData);
-    }
-
-    private static TsData getDefaultValue() {
-        return new TsData(TsFrequency.Monthly, 2000, 0, 0);
     }
 }

@@ -4,6 +4,8 @@
  */
 package ec.nbdemetra.ui.tools;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.NbComponents;
@@ -33,7 +35,7 @@ import org.openide.util.NbBundle.Messages;
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "ec.nbdemetra.ui.tools.AggregationTopComponent")
-@ActionReference(path = "Menu/Tools" , position = 332)
+@ActionReference(path = "Menu/Tools", position = 332)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_AggregationAction")
 @Messages({
@@ -46,7 +48,7 @@ public final class AggregationTopComponent extends TopComponent {
     private final JSplitPane mainPane;
     private final JTsTable inputList;
     private final JTsChart aggChart;
-    
+
     public AggregationTopComponent() {
         initComponents();
         setName(Bundle.CTL_AggregationTopComponent());
@@ -98,14 +100,15 @@ public final class AggregationTopComponent extends TopComponent {
     private void initList() {
         inputList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             TsData sum = null;
-            for (Ts s : inputList.getTsCollection()) {
+            for (demetra.tsprovider.Ts o : inputList.getTsCollection().getData()) {
+                Ts s = TsConverter.fromTs(o);
                 if (s.hasData() == TsStatus.Undefined) {
-                    s.load(TsInformationType.Data);
+                    TsManager.getDefault().load(s, TsInformationType.Data);
                 }
                 sum = TsData.add(sum, s.getTsData());
             }
             Ts t = TsManager.getDefault().newTs("Total", null, sum);
-            aggChart.getTsCollection().replace(t);
+            aggChart.setTsCollection(TsCollection.of(TsConverter.toTs(t)));
         });
     }
- }
+}

@@ -5,6 +5,7 @@
  */
 package ec.nbdemetra.sa;
 
+import demetra.bridge.TsConverter;
 import ec.nbdemetra.ui.NbUtilities;
 import ec.nbdemetra.ui.nodes.ControlNode;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
@@ -63,6 +64,6 @@ public class SaItemNode extends AbstractNode {
     }
 
     private static Sheet.Set getDefinitionSheetSet(SaItem item, NodePropertySetBuilder b) {
-        return ControlNode.getDefinitionSheetSet(item.getTs(), b);
+        return ControlNode.getDefinitionSheetSet(TsConverter.toTs(item.getTs()), b);
     }
 }

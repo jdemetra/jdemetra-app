@@ -5,37 +5,34 @@
 package ec.nbdemetra.ui.demo;
 
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.tsaction.ITsAction;
 import ec.tss.Ts;
 import java.awt.Image;
 import javax.swing.JOptionPane;
 import org.openide.util.ImageUtilities;
+import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.TsActionSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-public enum DemoTsActions implements ITsAction {
+@ServiceProvider(service = TsActionSpi.class)
+public final class DemoTsActions implements TsActionSpi {
 
-    SHOW_DIALOG {
-        @Override
-        public void open(Ts ts) {
-            JOptionPane.showMessageDialog(null, "This would have opened the selected time series");
-        }
-    },
-    DO_NOTHING {
-        @Override
-        public void open(Ts ts) {
-        }
-    };
-
+    public static final String NAME = "Demo";
+    
     @Override
     public String getName() {
-        return name();
+        return NAME;
     }
 
     @Override
     public Image getIcon(int type, boolean opened) {
         return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
+    }
+
+    @Override
+    public void open(demetra.tsprovider.Ts ts) {
+        JOptionPane.showMessageDialog(null, "This would have opened the selected time series");
     }
 }

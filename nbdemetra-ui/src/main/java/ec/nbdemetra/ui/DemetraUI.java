@@ -20,8 +20,7 @@ import com.google.common.base.Preconditions;
 import demetra.ui.beans.ListenableBean;
 import ec.nbdemetra.core.GlobalService;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
-import ec.nbdemetra.ui.tsaction.ChartGridTsAction;
-import ec.nbdemetra.ui.tsaction.ITsAction;
+import internal.ui.ChartGridTsAction;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
@@ -341,17 +340,6 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Utils">
-    public ITsAction getTsAction() {
-        return find(ITsAction.class, ITsAction::getName, properties.tsActionName, TS_ACTION_NAME.defaultValue());
-    }
-
-    public List<? extends ITsAction> getTsActions() {
-        return Lookup.getDefault().lookupAll(ITsAction.class)
-                .stream()
-                .sorted(Comparator.comparing(ITsAction::getDisplayName))
-                .collect(Collectors.toList());
-    }
-
     public List<? extends ITsSave> getTsSave() {
         return Lookup.getDefault().lookupAll(ITsSave.class)
                 .stream()

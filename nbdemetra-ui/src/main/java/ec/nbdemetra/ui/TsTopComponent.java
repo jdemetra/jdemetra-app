@@ -4,10 +4,10 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.components.HasTs;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
-import ec.tss.Ts;
 import ec.ui.view.tsprocessing.TsProcessingViewer;
 import java.util.Collection;
 import java.util.Iterator;
@@ -60,13 +60,13 @@ public abstract class TsTopComponent extends TopComponent implements ExplorerMan
     }
 
     @Override
-    public Ts getTs() {
-        return panel.getDocument().getTs();
+    public demetra.tsprovider.Ts getTs() {
+        return TsConverter.toTs(panel.getDocument().getTs());
     }
 
     @Override
-    public void setTs(Ts ts) {
-        panel.getDocument().setTs(ts);
+    public void setTs(demetra.tsprovider.Ts ts) {
+        panel.getDocument().setTs(TsConverter.fromTs(ts));
         panel.refreshAll();
     }
 

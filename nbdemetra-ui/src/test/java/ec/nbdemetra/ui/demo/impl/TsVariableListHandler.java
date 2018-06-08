@@ -34,6 +34,6 @@ public final class TsVariableListHandler extends DemoComponentHandler.InstanceOf
 
     @Override
     public void doConfigure(JTsVariableList c) {
-        c.setTsAction(DemoTsActions.SHOW_DIALOG);
+        c.setTsAction(DemoTsActions.NAME);
     }
 }

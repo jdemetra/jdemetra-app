@@ -16,24 +16,17 @@
  */
 package demetra.ui.components;
 
-import com.google.common.base.Strings;
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.tss.Ts;
 import ec.tss.TsIdentifier;
-import ec.tss.TsStatus;
-import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.tstoolkit.timeseries.simplets.TsFrequency;
-import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.ui.DemoUtils;
-import ec.ui.list.TsFrequencyTableCellRenderer;
-import ec.ui.list.TsPeriodTableCellRenderer;
+import ec.util.table.swing.JTables;
 import internal.ui.components.InternalTsTableUI;
 import internal.ui.components.TsIdentifierTableCellRenderer;
 import internal.ui.components.InternalUI;
-import internal.ui.components.NumberTableCellRenderer;
 import internal.ui.components.TsDataTableCellRenderer;
 import java.awt.Dimension;
 import java.beans.Beans;
@@ -42,6 +35,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
@@ -60,56 +54,44 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
         public static final Column NAME = builder()
                 .name("Name")
                 .type(String.class)
-                .mapper(Ts::getName)
+                .mapper(demetra.tsprovider.Ts::getName)
                 .build();
 
         public static final Column FREQ = builder()
-                .name("Frequency")
-                .type(TsFrequency.class)
-                .mapper(ts -> ts.hasData().equals(TsStatus.Valid) ? ts.getTsData().getFrequency() : null)
-                .comparator(Comparator.comparingInt(TsFrequency::getAsInt))
-                .renderer(o -> new TsFrequencyTableCellRenderer())
+                .name("TsUnit")
+                .type(demetra.timeseries.TsUnit.class)
+                .mapper(ts -> ts.getData().getTsUnit())
+                .comparator(Comparator.comparing(demetra.timeseries.TsUnit::toString))
+                .renderer(o -> JTables.cellRendererOf(JTsTable::renderTsUnit))
                 .build();
 
         public static final Column START = builder()
                 .name("Start")
-                .type(TsPeriod.class)
-                .mapper(ts -> ts.hasData().equals(TsStatus.Valid) ? ts.getTsData().getDomain().getStart() : null)
-                .comparator(Comparator.comparing(TsPeriod::firstday))
-                .renderer(o -> new TsPeriodTableCellRenderer())
+                .type(demetra.timeseries.TsPeriod.class)
+                .mapper(ts -> ts.getData().isEmpty() ? null : ts.getData().getDomain().getStartPeriod())
+                .comparator(Comparator.comparing(demetra.timeseries.TsPeriod::start))
+                .renderer(o -> JTables.cellRendererOf(JTsTable::renderTsPeriod))
                 .build();
 
         public static final Column LAST = builder()
                 .name("End")
-                .type(TsPeriod.class)
-                .mapper(ts -> ts.hasData().equals(TsStatus.Valid) ? ts.getTsData().getDomain().getLast() : null)
-                .comparator(Comparator.comparing(TsPeriod::lastday))
-                .renderer(o -> new TsPeriodTableCellRenderer())
+                .type(demetra.timeseries.TsPeriod.class)
+                .mapper(ts -> ts.getData().isEmpty() ? null : ts.getData().getDomain().getLastPeriod())
+                .comparator(Comparator.comparing(demetra.timeseries.TsPeriod::end))
+                .renderer(o -> JTables.cellRendererOf(JTsTable::renderTsPeriod))
                 .build();
 
         public static final Column LENGTH = builder()
                 .name("Length")
                 .type(Integer.class)
-                .mapper(ts -> ts.hasData().equals(TsStatus.Valid) ? ts.getTsData().getLength() : null)
-                .renderer(o -> new NumberTableCellRenderer())
+                .mapper(ts -> ts.getData().length())
+                .renderer(o -> JTables.cellRendererOf(JTsTable::renderTsLength))
                 .build();
 
         public static final Column DATA = builder()
                 .name("Data")
-                .type(TsData.class)
-                .mapper(ts -> {
-                    switch (ts.hasData()) {
-                        case Valid:
-                            return ts.getTsData();
-                        case Invalid:
-                            String cause = ts.getInvalidDataCause();
-                            return !Strings.isNullOrEmpty(cause) ? cause : "Invalid";
-                        case Undefined:
-                            return "loading";
-                        default:
-                            return "Unknown error";
-                    }
-                })
+                .type(demetra.timeseries.TsData.class)
+                .mapper(demetra.tsprovider.Ts::getData)
                 .comparator((l, r) -> -1)
                 .renderer(o -> new TsDataTableCellRenderer(o, DemetraUI.getDefault()))
                 .build();
@@ -117,7 +99,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
         public static final Column TS_IDENTIFIER = builder()
                 .name("TsIdentifier")
                 .type(TsIdentifier.class)
-                .mapper(TsIdentifier::new)
+                .mapper(ts -> new TsIdentifier(ts.getName(), TsConverter.fromTsMoniker(ts.getMoniker())))
                 .comparator(Comparator.comparing(TsIdentifier::getName))
                 .renderer(o -> new TsIdentifierTableCellRenderer())
                 .build();
@@ -131,7 +113,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
 
         @lombok.NonNull
         @lombok.Builder.Default
-        private Function<Ts, ?> mapper = Function.identity();
+        private Function<demetra.tsprovider.Ts, ?> mapper = Function.identity();
 
         @lombok.NonNull
         @lombok.Builder.Default
@@ -217,9 +199,24 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
 
     private void applyDesignTimeProperties() {
         if (Beans.isDesignTime()) {
-            setTsCollection(DemoUtils.randomTsCollection(3));
+            setTsCollection(TsConverter.toTsCollection(DemoUtils.randomTsCollection(3)));
             setTsUpdateMode(TsUpdateMode.None);
             setPreferredSize(new Dimension(200, 150));
         }
+    }
+
+    private static void renderTsUnit(JLabel label, demetra.timeseries.TsUnit value) {
+        label.setHorizontalAlignment(JLabel.LEADING);
+        label.setText(value != null ? value.toString() : null);
+    }
+
+    private static void renderTsPeriod(JLabel label, demetra.timeseries.TsPeriod value) {
+        label.setHorizontalAlignment(JLabel.TRAILING);
+        label.setText(value != null ? value.display() : null);
+    }
+
+    private static void renderTsLength(JLabel label, Integer value) {
+        label.setHorizontalAlignment(JLabel.TRAILING);
+        label.setText(value != null ? value.toString() : null);
     }
 }

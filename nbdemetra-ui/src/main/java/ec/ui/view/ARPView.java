@@ -16,15 +16,14 @@
  */
 package ec.ui.view;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasColorScheme;
 import demetra.ui.components.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
-import ec.tss.Ts;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.data.Periodogram;
 import ec.tstoolkit.data.Values;
@@ -57,6 +56,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.Layer;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -92,7 +92,7 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
 
         themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
 
-        setTransferHandler(new HasTsTransferHandler(this, TssTransferSupport.getDefault()));
+        setTransferHandler(new HasTsTransferHandler(this, DataTransfer.getDefault()));
 
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
@@ -125,8 +125,8 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
 
     @Nullable
     private TsInformation getTsInformation() {
-        Ts ts = getTs();
-        return ts != null ? ts.toInfo(TsInformationType.Data) : null;
+        demetra.tsprovider.Ts ts = getTs();
+        return ts != null ? TsConverter.fromTs(ts).toInfo(TsInformationType.Data) : null;
     }
 
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">

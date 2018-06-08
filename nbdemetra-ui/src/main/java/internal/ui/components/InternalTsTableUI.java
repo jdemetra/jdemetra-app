@@ -24,8 +24,6 @@ import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.awt.TableColumnModelAdapter;
-import ec.tss.*;
-import ec.tss.datatransfer.TssTransferSupport;
 import demetra.ui.components.JTsTable;
 import ec.nbdemetra.ui.DemetraUI;
 import static ec.util.chart.swing.SwingColorSchemeSupport.withAlpha;
@@ -34,6 +32,7 @@ import static ec.util.various.swing.ModernUI.createDropBorder;
 import ec.util.various.swing.StandardSwingColor;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +45,7 @@ import javax.swing.table.*;
 import org.netbeans.swing.etable.ETable;
 import org.netbeans.swing.etable.ETableColumn;
 import org.netbeans.swing.etable.ETableColumnModel;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -60,7 +60,7 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
     private final JTableHeader tableHeader = table.getTableHeader();
     private final DropRenderer dropRenderer = new DropRenderer();
     private final ThemeSupport themeSupport = ThemeSupport.registered();
-    private final TssTransferSupport tssTransfer = TssTransferSupport.getDefault();
+    private final DataTransfer tssTransfer = DataTransfer.getDefault();
     private final DemetraUI demetraUI = DemetraUI.getDefault();
 
     private ListTableSelectionListener selectionListener;
@@ -181,7 +181,7 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
 
     private void onCollectionChange() {
         selectionListener.setEnabled(false);
-        ((TsTableModel) table.getModel()).setData(target.getTsCollection().toArray());
+        ((TsTableModel) table.getModel()).setData(target.getTsCollection());
         selectionListener.setEnabled(true);
         onSelectionChange();
     }
@@ -240,20 +240,28 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
         result.addSeparator();
         result.add(HasTsCollectionCommands.newSelectAllMenu(am, demetraUI));
         result.add(HasTsCollectionCommands.newClearMenu(am, demetraUI));
+
+        result.add(new AbstractAction("DEBUG") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(target.getTsCollection());
+            }
+        });
+
         return result.getPopupMenu();
     }
 
     private static final class TsTableModel extends AbstractTableModel {
 
-        private Ts[] data;
+        private demetra.tsprovider.TsCollection data;
         private List<JTsTable.Column> columns;
 
         public TsTableModel() {
-            this.data = new Ts[0];
+            this.data = demetra.tsprovider.TsCollection.EMPTY;
             this.columns = Collections.emptyList();
         }
 
-        public void setData(Ts[] data) {
+        public void setData(demetra.tsprovider.TsCollection data) {
             this.data = data;
             fireTableDataChanged();
         }
@@ -265,7 +273,7 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
 
         @Override
         public int getRowCount() {
-            return data.length;
+            return data.getData().size();
         }
 
         @Override
@@ -278,7 +286,7 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
             if (rowIndex == -1) {
                 return null;
             }
-            Ts ts = data[rowIndex];
+            demetra.tsprovider.Ts ts = data.getData().get(rowIndex);
             return columns.get(columnIndex).getMapper().apply(ts);
         }
 

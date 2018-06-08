@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.anomalydetection.ui;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.components.HasHoveredObs;
 import demetra.ui.components.HasTsCollection;
 import ec.nbdemetra.ui.properties.l2fprod.ColorChooser;
@@ -28,11 +29,8 @@ import ec.tstoolkit.modelling.arima.tramo.TramoException;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import ec.tstoolkit.timeseries.regression.OutlierEstimation;
 import ec.tstoolkit.timeseries.regression.OutlierType;
-import static ec.tstoolkit.timeseries.simplets.TsDataTableInfo.Empty;
-import static ec.tstoolkit.timeseries.simplets.TsDataTableInfo.Missing;
-import static ec.tstoolkit.timeseries.simplets.TsDataTableInfo.Valid;
 import demetra.ui.components.JTsGrid;
-import ec.ui.grid.TsGridObs;
+import demetra.ui.components.TsGridObs;
 import ec.util.chart.ObsIndex;
 import ec.util.list.swing.JLists;
 import demetra.ui.components.TsSelectionBridge;
@@ -169,10 +167,10 @@ public class JTsAnomalyGrid extends JComponent {
                 ? preprocessor.process(selectedItem.getTsData(), null)
                 : null;
     }
-    
+
     public Ts getSelectedItem() {
         OptionalInt singleSelection = JLists.getSelectionIndexStream(grid.getTsSelectionModel()).findFirst();
-        return singleSelection.isPresent() ? grid.getTsCollection().get(singleSelection.getAsInt()) : null;
+        return singleSelection.isPresent() ? TsConverter.fromTs(grid.getTsCollection().getData().get(singleSelection.getAsInt())) : null;
     }
 
     public boolean isShowAO() {
@@ -251,7 +249,7 @@ public class JTsAnomalyGrid extends JComponent {
     }
 
     public TsCollection getTsCollection() {
-        return grid.getTsCollection();
+        return TsConverter.fromTsCollection(grid.getTsCollection());
     }
 
     @Nonnull
@@ -439,47 +437,51 @@ public class JTsAnomalyGrid extends JComponent {
             if (value instanceof TsGridObs) {
                 TsGridObs obs = (TsGridObs) value;
                 currentOutlier = null;
-                switch (obs.getInfo()) {
-                    case Empty:
-                        setText("");
+                switch (obs.getStatus()) {
+                    case AFTER:
+                    case BEFORE:
+                    case EMPTY:
+                    case UNUSED:
                         break;
-                    case Missing:
-                        setText(".");
-                        break;
-                    case Valid:
-                        /*
+                    case PRESENT:
+                        if (Double.isNaN(obs.getValue())) {
+                            setText(".");
+                        } else {
+                            /*
                          * Try to find a match between the outlier and the current cell
                          * using the TsPeriods
-                         */
-                        setText(String.valueOf(obs.getValue()));
-                        if (outliers.size() <= obs.getSeriesIndex() || outliers.get(obs.getSeriesIndex()) == null) {
-                            setToolTipText("<html>Period : " + obs.getPeriod().toString() + "<br>"
-                                    + "Value : " + df.format(obs.getValue()));
-                        } else {
-                            OutlierEstimation[] est = outliers.get(obs.getSeriesIndex());
-                            int i = 0;
-                            while (currentOutlier == null && i < est.length) {
-                                if (est[i].getPosition().equals(obs.getPeriod())) {
-                                    currentOutlier = est[i];
-                                }
-                                i++;
-                            }
-
+                             */
                             setText(String.valueOf(obs.getValue()));
-                            if (currentOutlier != null) {
-                                setToolTipText("<html>Period : " + obs.getPeriod().toString() + "<br>"
-                                        + "Value : " + df.format(obs.getValue()) + "<br>"
-                                        + "Outlier Value : " + df.format(currentOutlier.getValue()) + "<br>"
-                                        + "Std Err : " + df.format(currentOutlier.getStdev()) + "<br>"
-                                        + "TStat : " + df.format(currentOutlier.getTStat()) + "<br>"
-                                        + "Outlier type : " + currentOutlier.getCode().toString());
-                                setBackground(ColorChooser.getColor(currentOutlier.getCode()));
-                                setForeground(ColorChooser.getForeColor(currentOutlier.getCode()));
-                            } else {
+                            if (outliers.size() <= obs.getSeriesIndex() || outliers.get(obs.getSeriesIndex()) == null) {
                                 setToolTipText("<html>Period : " + obs.getPeriod().toString() + "<br>"
                                         + "Value : " + df.format(obs.getValue()));
+                            } else {
+                                OutlierEstimation[] est = outliers.get(obs.getSeriesIndex());
+                                int i = 0;
+                                while (currentOutlier == null && i < est.length) {
+                                    if (est[i].getPosition().equals(TsConverter.fromTsPeriod(obs.getPeriod()))) {
+                                        currentOutlier = est[i];
+                                    }
+                                    i++;
+                                }
+
+                                setText(String.valueOf(obs.getValue()));
+                                if (currentOutlier != null) {
+                                    setToolTipText("<html>Period : " + obs.getPeriod().toString() + "<br>"
+                                            + "Value : " + df.format(obs.getValue()) + "<br>"
+                                            + "Outlier Value : " + df.format(currentOutlier.getValue()) + "<br>"
+                                            + "Std Err : " + df.format(currentOutlier.getStdev()) + "<br>"
+                                            + "TStat : " + df.format(currentOutlier.getTStat()) + "<br>"
+                                            + "Outlier type : " + currentOutlier.getCode());
+                                    setBackground(ColorChooser.getColor(currentOutlier.getCode()));
+                                    setForeground(ColorChooser.getForeColor(currentOutlier.getCode()));
+                                } else {
+                                    setToolTipText("<html>Period : " + obs.getPeriod().toString() + "<br>"
+                                            + "Value : " + df.format(obs.getValue()));
+                                }
                             }
                         }
+                        break;
                 }
             }
 

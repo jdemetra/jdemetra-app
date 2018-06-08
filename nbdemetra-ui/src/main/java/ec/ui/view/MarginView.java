@@ -16,10 +16,9 @@
  */
 package ec.ui.view;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasColorScheme;
-import ec.tss.TsCollection;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
@@ -79,6 +78,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.Day;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.Layer;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -125,7 +125,7 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
         themeSupport.setObsFormatListener(obsFormat, this::onDataFormatChange);
 
         registerActions();
-        
+
         Charts.enableFocusOnClick(chartPanel);
 
         chartPanel.addChartMouseListener(new HighlightChartMouseListener2());
@@ -143,7 +143,7 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
     private void registerActions() {
         getActionMap().put(HasObsFormatCommands.FORMAT_ACTION, HasObsFormatCommands.editDataFormat().toAction(this));
     }
-    
+
     private void enableProperties() {
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
@@ -337,11 +337,11 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
         result.add(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TsCollection col = TsManager.getDefault().newTsCollection();
-                col.quietAdd(TsManager.getDefault().newTs("series", null, data.series));
-                col.quietAdd(TsManager.getDefault().newTs("lower", null, data.lower));
-                col.quietAdd(TsManager.getDefault().newTs("upper", null, data.upper));
-                Transferable t = TssTransferSupport.getDefault().fromTsCollection(col);
+                demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
+                col.data(TsConverter.toTs(TsManager.getDefault().newTs("series", null, data.series)));
+                col.data(TsConverter.toTs(TsManager.getDefault().newTs("lower", null, data.lower)));
+                col.data(TsConverter.toTs(TsManager.getDefault().newTs("upper", null, data.upper)));
+                Transferable t = DataTransfer.getDefault().fromTsCollection(col.build());
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
             }
         }).setText("Copy all series");

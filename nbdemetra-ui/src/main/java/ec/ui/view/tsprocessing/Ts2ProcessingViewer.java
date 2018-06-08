@@ -4,10 +4,10 @@
  */
 package ec.ui.view.tsprocessing;
 
+import demetra.bridge.TsConverter;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
-import ec.tss.datatransfer.TssTransferSupport;
 import ec.tss.documents.MultiTsDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import java.awt.Font;
@@ -15,6 +15,7 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JToolBar;
 import javax.swing.TransferHandler;
+import demetra.ui.DataTransfer;
 
 /**
  *
@@ -116,19 +117,19 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
 
         @Override
         public boolean canImport(TransferSupport support) {
-            return TssTransferSupport.getDefault().canImport(support.getDataFlavors());
+            return DataTransfer.getDefault().canImport(support.getDataFlavors());
         }
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            Ts ts = TssTransferSupport.getDefault().toTs(support.getTransferable());
+            demetra.tsprovider.Ts ts = DataTransfer.getDefault().toTs(support.getTransferable());
             if (ts != null) {
                 Ts[] input = (Ts[]) getDocument().getInput();
                 if (input == null) {
                     input = new Ts[2];
                 }else
                     input=input.clone();
-                input[pos] = ts;
+                input[pos] = TsConverter.fromTs(ts);
                 getDocument().setInput(input);
                 refreshAll();
                 return true;

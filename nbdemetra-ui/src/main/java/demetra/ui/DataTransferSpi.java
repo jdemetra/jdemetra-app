@@ -14,12 +14,12 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.tss.datatransfer;
+package demetra.ui;
 
+import demetra.tsprovider.TsCollection;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.ns.INamedService;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
-import ec.tss.TsCollection;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.design.ServiceDefinition;
 import ec.tstoolkit.maths.matrices.Matrix;
@@ -40,19 +40,19 @@ import org.openide.util.ImageUtilities;
  * @since 1.3.0
  */
 @ServiceDefinition(hasPosition = true)
-public abstract class TssTransferHandler implements INamedService {
+public interface DataTransferSpi extends INamedService {
 
     @Nonnull
-    abstract public DataFlavor getDataFlavor();
+    DataFlavor getDataFlavor();
 
     //<editor-fold defaultstate="collapsed" desc="INamedService impl">
     @Override
-    public Image getIcon(int type, boolean opened) {
+    default Image getIcon(int type, boolean opened) {
         return ImageUtilities.icon2Image(DemetraUiIcon.CLIPBOARD_PASTE_DOCUMENT_TEXT_16);
     }
 
     @Override
-    public Sheet createSheet() {
+    default Sheet createSheet() {
         Sheet result = new Sheet();
         NodePropertySetBuilder b = new NodePropertySetBuilder();
         b.with(String.class).selectConst("DataFlavor", getDataFlavor().getMimeType()).display("Data Flavor").add();
@@ -63,72 +63,72 @@ public abstract class TssTransferHandler implements INamedService {
 
     //<editor-fold defaultstate="collapsed" desc="TimeSeries struct">
     @OnEDT
-    public boolean canExportTsCollection(@Nonnull TsCollection col) {
+    default boolean canExportTsCollection(@Nonnull TsCollection col) {
         return false;
     }
 
     @OnAnyThread
     @Nonnull
-    public Object exportTsCollection(@Nonnull TsCollection col) throws IOException {
+    default Object exportTsCollection(@Nonnull TsCollection col) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @OnEDT
-    public boolean canImportTsCollection(@Nonnull Object obj) {
+    default boolean canImportTsCollection(@Nonnull Object obj) {
         return false;
     }
 
     @OnEDT
     @Nonnull
-    public TsCollection importTsCollection(@Nonnull Object obj) throws IOException, ClassCastException {
+    default TsCollection importTsCollection(@Nonnull Object obj) throws IOException, ClassCastException {
         throw new UnsupportedOperationException();
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Matrix struct">
     @OnEDT
-    public boolean canExportMatrix(@Nonnull Matrix matrix) {
+    default boolean canExportMatrix(@Nonnull Matrix matrix) {
         return false;
     }
 
     @OnAnyThread
     @Nonnull
-    public Object exportMatrix(@Nonnull Matrix matrix) throws IOException {
+    default Object exportMatrix(@Nonnull Matrix matrix) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @OnEDT
-    public boolean canImportMatrix(@Nonnull Object obj) {
+    default boolean canImportMatrix(@Nonnull Object obj) {
         return false;
     }
 
     @OnEDT
     @Nonnull
-    public Matrix importMatrix(@Nonnull Object obj) throws IOException, ClassCastException {
+    default Matrix importMatrix(@Nonnull Object obj) throws IOException, ClassCastException {
         throw new UnsupportedOperationException();
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Table struct">
     @OnEDT
-    public boolean canExportTable(@Nonnull Table<?> table) {
+    default boolean canExportTable(@Nonnull Table<?> table) {
         return false;
     }
 
     @OnAnyThread
     @Nonnull
-    public Object exportTable(@Nonnull Table<?> table) throws IOException {
+    default Object exportTable(@Nonnull Table<?> table) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @OnEDT
-    public boolean canImportTable(@Nonnull Object obj) {
+    default boolean canImportTable(@Nonnull Object obj) {
         return false;
     }
 
     @OnEDT
     @Nonnull
-    public Table<?> importTable(@Nonnull Object obj) throws IOException, ClassCastException {
+    default Table<?> importTable(@Nonnull Object obj) throws IOException, ClassCastException {
         throw new UnsupportedOperationException();
     }
     //</editor-fold>

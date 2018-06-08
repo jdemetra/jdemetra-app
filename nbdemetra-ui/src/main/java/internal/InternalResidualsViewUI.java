@@ -16,20 +16,18 @@
  */
 package internal;
 
+import demetra.tsprovider.TsCollection;
 import internal.ui.components.InternalUI;
-import demetra.ui.TsManager;
 import static demetra.ui.components.HasObsFormat.DATA_FORMAT_PROPERTY;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import static demetra.ui.components.HasTsData.TS_DATA_PROPERTY;
 import ec.nbdemetra.ui.NbComponents;
 import ec.nbdemetra.ui.ThemeSupport;
-import ec.tstoolkit.MetaData;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.DescriptiveStatistics;
-import ec.tstoolkit.timeseries.simplets.TsData;
 import demetra.ui.components.JTsGrid;
+import demetra.ui.util.jfreechart.TsXYDataset;
 import ec.ui.chart.TsCharts;
-import ec.ui.chart.TsXYDatasets;
 import ec.ui.view.res.ResidualsView;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.ChartCommand;
@@ -38,6 +36,7 @@ import internal.ui.components.HasObsFormatCommands;
 import internal.ui.components.HasTsCollectionCommands;
 import java.awt.BorderLayout;
 import java.text.DateFormat;
+import java.util.Arrays;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
@@ -113,15 +112,16 @@ public final class InternalResidualsViewUI implements InternalUI<ResidualsView> 
     }
 
     private void onTsDataChange(ResidualsView view) {
-        TsData data = view.getTsData();
-        chartPanel.getChart().getXYPlot().setDataset(TsXYDatasets.from("", data));
+        demetra.timeseries.TsData data = view.getTsData();
+        demetra.tsprovider.Ts ts = demetra.tsprovider.Ts.builder().name("Residuals").data(data).build();
+        chartPanel.getChart().getXYPlot().setDataset(TsXYDataset.of(Arrays.asList(ts)));
         if (!data.isEmpty()) {
-            Range rng = calcRange(data.internalStorage());
+            Range rng = calcRange(data.getValues().toArray());
             ((NumberAxis) chartPanel.getChart().getXYPlot().getRangeAxis()).setTickUnit(new NumberTickUnit(calcTick(rng)), true, false);
 
-            grid.getTsCollection().replace(TsManager.getDefault().newTs("Residuals", new MetaData(), data));
+            grid.setTsCollection(TsCollection.of(ts));
         } else {
-            grid.getTsCollection().clear();
+            grid.setTsCollection(TsCollection.EMPTY);
         }
         onColorSchemeChange();
     }
