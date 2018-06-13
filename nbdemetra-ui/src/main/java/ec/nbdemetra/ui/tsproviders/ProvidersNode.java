@@ -57,11 +57,16 @@ import org.openide.util.lookup.InstanceContent;
  * @author Philippe Charles
  */
 @ActionReferences({
-    @ActionReference(path = ACTION_PATH, position = 1310, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tsproviders.actions.OpenProvidersAction")),
-    @ActionReference(path = ACTION_PATH, position = 1320, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.mru.ProviderMruAction")),
-    @ActionReference(path = ACTION_PATH, position = 1410, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.PasteProvidersAction")),
-    @ActionReference(path = ACTION_PATH, position = 1430, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ImportAction")),
-    @ActionReference(path = ACTION_PATH, position = 1460, separatorBefore = 1450, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.ShowProvidersAction")),
+    @ActionReference(path = ACTION_PATH, position = 1310, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tsproviders.actions.OpenProvidersAction"))
+    ,
+    @ActionReference(path = ACTION_PATH, position = 1320, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.mru.ProviderMruAction"))
+    ,
+    @ActionReference(path = ACTION_PATH, position = 1410, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.PasteProvidersAction"))
+    ,
+    @ActionReference(path = ACTION_PATH, position = 1430, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ImportAction"))
+    ,
+    @ActionReference(path = ACTION_PATH, position = 1460, separatorBefore = 1450, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.ShowProvidersAction"))
+    ,
     @ActionReference(path = ACTION_PATH, position = 1520, separatorBefore = 1500, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ConfigureAction"))
 })
 public final class ProvidersNode extends AbstractNode {
@@ -98,6 +103,7 @@ public final class ProvidersNode extends AbstractNode {
 
     private static final class ProvidersChildFactory extends ChildFactory.Detachable<Object> implements LookupListener, PropertyChangeListener, IDataSourceListener {
 
+        // FIXME: use TsManager instead of lookup
         private final Lookup.Result<IDataSourceProvider> lookupResult;
         private final DemetraUI demetraUI;
 
@@ -140,7 +146,9 @@ public final class ProvidersNode extends AbstractNode {
         }
 
         private Stream<? extends IDataSourceProvider> providerStream() {
-            return lookupResult.allInstances().stream()
+            return TsManager.getDefault().all()
+                    .filter(IDataSourceProvider.class::isInstance)
+                    .map(IDataSourceProvider.class::cast)
                     .filter(demetraUI.isShowUnavailableTsProviders() ? (o -> true) : o -> o.isAvailable());
         }
 

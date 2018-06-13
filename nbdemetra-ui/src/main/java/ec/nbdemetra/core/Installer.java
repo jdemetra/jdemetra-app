@@ -17,6 +17,8 @@
 package ec.nbdemetra.core;
 
 import com.google.common.collect.Lists;
+import demetra.bridge.FromDataSourceProvider;
+import demetra.demo.PocProvider;
 import demetra.ui.TsManager;
 import ec.tss.DynamicTsVariable;
 import ec.tss.ITsProvider;
@@ -108,6 +110,7 @@ public final class Installer {
                             .ifPresent(bean -> ((IFileLoader) o).setPaths(bean));
                 }
             }
+            TsManager.getDefault().register(new FromDataSourceProvider(new PocProvider()));
         }
 
         private void unregister(Iterable<? extends ITsProvider> providers) {

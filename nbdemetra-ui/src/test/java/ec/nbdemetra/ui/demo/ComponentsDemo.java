@@ -17,6 +17,8 @@
 package ec.nbdemetra.ui.demo;
 
 import com.google.common.collect.Lists;
+import demetra.bridge.FromDataSourceProvider;
+import demetra.demo.PocProvider;
 import demetra.ui.TsAction;
 import demetra.ui.TsManager;
 import demetra.ui.components.JTsTable;
@@ -115,7 +117,7 @@ public final class ComponentsDemo {
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarRenderer.setDefaultBarPainter(new StandardBarPainter());
         UIManager.put("Nb.Editor.Toolbar.border", BorderFactory.createLineBorder(Color.WHITE));
-        TsManager.getDefault().register(new FakeTsProvider());
+        TsManager.getDefault().register(new FromDataSourceProvider(new PocProvider()));
     }
 
     private static void expandAll(JTree tree) {
