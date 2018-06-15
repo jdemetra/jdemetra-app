@@ -5,23 +5,22 @@
 package ec.nbdemetra.ui.nodes;
 
 import demetra.bridge.TsConverter;
+import demetra.timeseries.TsPeriod;
+import demetra.timeseries.TsUnit;
+import demetra.tsprovider.Ts;
+import demetra.tsprovider.TsInformationType;
+import demetra.tsprovider.util.MultiLineNameUtil;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import ec.tss.Ts;
-import ec.tss.TsInformationType;
-import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.MetaData;
-import ec.tstoolkit.timeseries.simplets.TsFrequency;
-import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import internal.FrozenTsHelper;
 import ec.nbdemetra.ui.properties.LocalDateTimePropertyEditor;
-import ec.tss.TsMoniker;
-import ec.tss.tsproviders.DataSet;
 import demetra.ui.components.TsSelectionBridge;
+import ec.tss.tsproviders.DataSet;
+import ec.tss.tsproviders.IDataSourceProvider;
 import java.awt.Image;
 import java.beans.PropertyVetoException;
 import java.time.LocalDateTime;
@@ -87,7 +86,7 @@ public class ControlNode {
     }
 
     private static Ts getSingleOrNull(HasTsCollection view) {
-        return view.getTsCollection().getData().size() == 1 ? TsConverter.fromTs(view.getTsCollection().getData().get(0)) : null;
+        return view.getTsCollection().getData().stream().findFirst().orElse(null);
     }
 
     private static void selectSingleIfReadonly(ExplorerManager mgr, HasTsCollection view) {
@@ -205,9 +204,8 @@ public class ControlNode {
             addDataSourceProperties(col.getMoniker(), b);
         }
 
-        b.withEnum(TsInformationType.class).select(col, "getInformationType", null).display("Information type").add();
-        b.withBoolean().select(col, "isLocked", null).display("Locked").add();
-        b.withInt().select(col, "getCount", null).display("Series count").add();
+        b.withEnum(TsInformationType.class).select(col, "getType", null).display("Information type").add();
+        b.withInt().select(col.getData(), "getSize", null).display("Series count").add();
 
         return b.build();
     }
@@ -234,7 +232,7 @@ public class ControlNode {
             addDataSourceProperties(ts.getMoniker(), b);
         }
 
-        b.withEnum(TsInformationType.class).select(ts, "getInformationType", null).display("Information type").add();
+        b.withEnum(TsInformationType.class).select(ts, "getType", null).display("Information type").add();
         b.with(LocalDateTime.class)
                 .selectConst("snapshot", FrozenTsHelper.getTimestamp(ts))
                 .attribute(LocalDateTimePropertyEditor.NULL_STRING, "Latest")
@@ -248,10 +246,10 @@ public class ControlNode {
         b.reset("Data");
         demetra.timeseries.TsData data = ts.getData();
         if (!data.isEmpty()) {
-            b.withEnum(TsFrequency.class).select(data, "getFrequency", null).display("Frequency").add();
+            b.with(TsUnit.class).select(data, "getTsUnit", null).display("TsUnit").add();
             b.with(TsPeriod.class).select(data, "getStart", null).display("First period").add();
-            b.with(TsPeriod.class).select(data, "getLastPeriod", null).display("Last period").add();
-            b.withInt().select(data, "getObsCount", null).display("Obs count").add();
+            b.with(TsPeriod.class).select(data.getDomain(), "getLastPeriod", null).display("Last period").add();
+            b.withInt().select(data, "length", null).display("Obs count").add();
             b.with(demetra.timeseries.TsData.class).selectConst("values", data).display("Values").add();
         } else {
             b.with(String.class).selectConst("InvalidDataCause", data.getCause()).display("Invalid data cause").add();
@@ -270,8 +268,8 @@ public class ControlNode {
 
     private static boolean isFreezeKey(String key) {
         switch (key) {
-            case Ts.SOURCE_OLD:
-            case Ts.ID_OLD:
+            case ec.tss.Ts.SOURCE_OLD:
+            case ec.tss.Ts.ID_OLD:
             case MetaData.SOURCE:
             case MetaData.ID:
             case MetaData.DATE:
@@ -282,7 +280,7 @@ public class ControlNode {
     }
 
     private static void addDataSourceProperties(demetra.tsprovider.TsMoniker moniker, NodePropertySetBuilder b) {
-        TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
+        ec.tss.TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
         if (original != null) {
             String providerName = original.getSource();
             if (providerName != null) {
@@ -297,7 +295,7 @@ public class ControlNode {
         return provider != null ? provider.getDisplayName() : fallback;
     }
 
-    private static String getDataSourceDisplayName(IDataSourceProvider provider, TsMoniker moniker, String fallback) {
+    private static String getDataSourceDisplayName(IDataSourceProvider provider, ec.tss.TsMoniker moniker, String fallback) {
         if (provider != null) {
             DataSet dataSet = provider.toDataSet(moniker);
             if (dataSet != null) {
