@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.tsprovider.TsMeta;
 import ec.nbdemetra.ui.nodes.StringProperty;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.DataSource;
@@ -58,7 +59,7 @@ public class NbUtilities {
         JScrollPane scroll = NbComponents.newJScrollPane(editor);
         scroll.setPreferredSize(new Dimension(300, 100));
         MetaData md = doc.getMetaData();
-        String oldNote = md.get(MetaData.NOTE);
+        String oldNote = TsMeta.NOTE.load(md);
         editor.setText(oldNote);
         DialogDescriptor desc = new DialogDescriptor(scroll, "Note");
         if (DialogDisplayer.getDefault().notify(desc) != NotifyDescriptor.OK_OPTION) {
@@ -68,7 +69,7 @@ public class NbUtilities {
         if (Objects.equals(oldNote, newNote)) {
             return false;
         }
-        md.put(MetaData.NOTE, newNote);
+        TsMeta.NOTE.store(md, newNote);
         return true;
     }
 }

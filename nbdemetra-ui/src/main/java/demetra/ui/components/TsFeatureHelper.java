@@ -18,13 +18,10 @@ package demetra.ui.components;
 
 import demetra.timeseries.TsData;
 import demetra.tsprovider.Ts;
-import demetra.tsprovider.util.ObsFormat;
-import demetra.util.Parser;
+import demetra.tsprovider.TsMeta;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import lombok.AccessLevel;
@@ -52,8 +49,8 @@ public final class TsFeatureHelper {
         int[] endIndexes = new int[list.size()];
         for (int i = 0; i < list.size(); i++) {
             Ts ts = list.get(i);
-            begIndexes[i] = getBegIndex(ts.getData(), dayOf(ts.getMeta(), "@beg"));
-            endIndexes[i] = getEndIndex(ts.getData(), dayOf(ts.getMeta(), "@end"));
+            begIndexes[i] = getBegIndex(ts.getData(), TsMeta.BEG.load(ts.getMeta()));
+            endIndexes[i] = getEndIndex(ts.getData(), TsMeta.END.load(ts.getMeta()));
         }
         return new TsFeatureHelper(begIndexes, endIndexes);
     }
@@ -78,18 +75,11 @@ public final class TsFeatureHelper {
         }
     }
 
-    private static final Parser<LocalDateTime> PARSER = ObsFormat.of(Locale.ROOT, "yyyy-MM-dd", null).dateTimeParser();
-
     private static int getBegIndex(TsData data, LocalDateTime beg) {
         return beg == null ? Integer.MIN_VALUE : data.getStart().until(data.getStart().withDate(beg));
     }
 
     private static int getEndIndex(TsData data, LocalDateTime end) {
         return end == null ? Integer.MAX_VALUE : data.getStart().until(data.getStart().withDate(end));
-    }
-
-    private static LocalDateTime dayOf(Map<String, String> meta, String key) {
-        String value = meta.get(key);
-        return value != null ? PARSER.parse(value) : null;
     }
 }

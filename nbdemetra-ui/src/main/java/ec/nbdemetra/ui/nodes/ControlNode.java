@@ -15,7 +15,6 @@ import demetra.ui.components.HasTsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import ec.tstoolkit.MetaData;
 import internal.FrozenTsHelper;
 import ec.nbdemetra.ui.properties.LocalDateTimePropertyEditor;
 import demetra.ui.components.TsSelectionBridge;
@@ -260,23 +259,10 @@ public class ControlNode {
     private static Sheet.Set getMetaSheetSet(demetra.tsprovider.Ts ts, NodePropertySetBuilder b) {
         b.reset("Meta data");
         ts.getMeta().entrySet().stream()
-                .filter(o -> !isFreezeKey(o.getKey()))
+                .filter(o -> !FrozenTsHelper.isFreezeKey(o.getKey()))
                 .sorted(Comparator.comparing(Map.Entry::getKey))
                 .forEach(o -> b.with(String.class).selectConst(o.getKey(), o.getValue()).add());
         return b.build();
-    }
-
-    private static boolean isFreezeKey(String key) {
-        switch (key) {
-            case ec.tss.Ts.SOURCE_OLD:
-            case ec.tss.Ts.ID_OLD:
-            case MetaData.SOURCE:
-            case MetaData.ID:
-            case MetaData.DATE:
-                return true;
-            default:
-                return false;
-        }
     }
 
     private static void addDataSourceProperties(demetra.tsprovider.TsMoniker moniker, NodePropertySetBuilder b) {

@@ -4,12 +4,12 @@
  */
 package ec.nbdemetra.x13;
 
+import demetra.tsprovider.TsMeta;
 import ec.nbdemetra.ws.DefaultFileItemRepository;
 import ec.nbdemetra.ws.IWorkspaceItemRepository;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.tss.modelling.documents.RegArimaDocument;
-import ec.tstoolkit.MetaData;
-import java.util.Date;
+import java.time.LocalDateTime;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -30,7 +30,7 @@ public class RegArimaDocFileRepository extends DefaultFileItemRepository<RegArim
     @Override
     public boolean save(WorkspaceItem<RegArimaDocument> doc) {
         RegArimaDocument element = doc.getElement();
-        element.getMetaData().put(MetaData.DATE, new Date().toString());
+        TsMeta.TIMESTAMP.store(element.getMetaData(), LocalDateTime.now());
         return storeFile(doc, element, () -> {
             doc.resetDirty();
             doc.getElement().resetDirty();

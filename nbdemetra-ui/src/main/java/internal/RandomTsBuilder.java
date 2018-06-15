@@ -16,7 +16,8 @@
  */
 package internal;
 
-import ec.tss.Ts;
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsMeta;
 import ec.tss.TsInformation;
 import ec.tss.TsStatus;
 import ec.tstoolkit.MetaData;
@@ -161,7 +162,7 @@ public final class RandomTsBuilder implements IBuilder<TsInformation> {
         double[] values = generator.apply(obsCount, rng);
         TsData data = new TsData(start, values, false);
         if (forecastCount > 0) {
-            result.metaData.put(Ts.END, data.getDomain().get(data.getLength() - forecastCount - 1).lastday().toString());
+            TsMeta.END.store(result.metaData, TsConverter.toDateTime(data.getDomain().get(data.getLength() - forecastCount - 1).lastday()));
         }
         if (missingCount > 0 && !data.isEmpty()) {
             for (int x = 0; x < missingCount; x++) {

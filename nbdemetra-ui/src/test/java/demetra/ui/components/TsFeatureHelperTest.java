@@ -19,6 +19,7 @@ package demetra.ui.components;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsPeriod;
 import demetra.tsprovider.Ts;
+import demetra.tsprovider.TsMeta;
 import static demetra.ui.components.TsFeatureHelper.Feature.*;
 import java.util.Arrays;
 import static org.assertj.core.api.Assertions.*;
@@ -47,7 +48,7 @@ public class TsFeatureHelperTest {
             assertThat(o.hasFeature(Forecasts, 0, 2)).isFalse();
         });
 
-        assertThat(TsFeatureHelper.of(Arrays.asList(ts.meta("@beg", "2010-02-01").build()))).satisfies(o -> {
+        assertThat(TsFeatureHelper.of(Arrays.asList(ts.meta(TsMeta.BEG.getKey(), "2010-02-01").build()))).satisfies(o -> {
             assertThat(o.hasFeature(Backcasts, 0, 0)).isTrue();
             assertThat(o.hasFeature(Actual, 0, 0)).isFalse();
             assertThat(o.hasFeature(Forecasts, 0, 0)).isFalse();
@@ -59,7 +60,7 @@ public class TsFeatureHelperTest {
             assertThat(o.hasFeature(Forecasts, 0, 2)).isFalse();
         });
 
-        assertThat(TsFeatureHelper.of(Arrays.asList(ts.meta("@end", "2010-02-31").build()))).satisfies(o -> {
+        assertThat(TsFeatureHelper.of(Arrays.asList(ts.meta(TsMeta.END.getKey(), "2010-02-31").build()))).satisfies(o -> {
             assertThat(o.hasFeature(Backcasts, 0, 0)).isTrue();
             assertThat(o.hasFeature(Actual, 0, 0)).isFalse();
             assertThat(o.hasFeature(Forecasts, 0, 0)).isFalse();

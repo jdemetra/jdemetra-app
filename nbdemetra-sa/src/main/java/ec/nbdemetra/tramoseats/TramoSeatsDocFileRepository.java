@@ -4,12 +4,12 @@
  */
 package ec.nbdemetra.tramoseats;
 
+import demetra.tsprovider.TsMeta;
 import ec.nbdemetra.ws.AbstractFileItemRepository;
 import ec.nbdemetra.ws.IWorkspaceItemRepository;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.tss.sa.documents.TramoSeatsDocument;
-import ec.tstoolkit.MetaData;
-import java.util.Date;
+import java.time.LocalDateTime;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -30,7 +30,7 @@ public class TramoSeatsDocFileRepository extends AbstractFileItemRepository<Tram
     @Override
     public boolean save(WorkspaceItem<TramoSeatsDocument> item) {
         TramoSeatsDocument o = item.getElement();
-        o.getMetaData().put(MetaData.DATE, new Date().toString());
+        TsMeta.TIMESTAMP.store(o.getMetaData(), LocalDateTime.now());
         return storeFile(item, o, item::resetDirty);
     }
 

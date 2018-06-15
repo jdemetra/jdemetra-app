@@ -17,13 +17,15 @@
 package internal;
 
 import demetra.bridge.TsConverter;
+import demetra.tsprovider.TsMeta;
 import demetra.ui.TsManager;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
 import ec.tstoolkit.MetaData;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -40,17 +42,17 @@ public final class FrozenTsHelper {
     public static boolean isFrozen(@Nonnull demetra.tsprovider.Ts ts) {
         return TsConverter.fromTs(ts).isFrozen();
     }
-    
+
     @Nullable
     public static LocalDateTime getTimestamp(@Nonnull demetra.tsprovider.Ts ts) {
         return getTimestamp(TsConverter.fromTs(ts));
     }
-    
+
     @Nullable
     public static TsMoniker getOriginalMoniker(@Nonnull demetra.tsprovider.TsMoniker moniker) {
         return getOriginalMoniker(TsConverter.fromTsMoniker(moniker));
     }
-    
+
     @Nullable
     public static String getSource(@Nonnull Ts ts) {
         String source = ts.getMoniker().getSource();
@@ -66,28 +68,20 @@ public final class FrozenTsHelper {
 
     @Nullable
     private static String getSource(@Nonnull MetaData md) {
-        String result = md.get(MetaData.SOURCE);
-        return result != null ? result : md.get(Ts.SOURCE_OLD);
+        String result = TsMeta.SOURCE.load(md);
+        return result != null ? result : TsMeta.SOURCE_OLD.load(md);
     }
 
     @Nullable
     private static String getId(@Nonnull MetaData md) {
-        String result = md.get(MetaData.ID);
-        return result != null ? result : md.get(Ts.ID_OLD);
+        String result = TsMeta.ID.load(md);
+        return result != null ? result : TsMeta.ID_OLD.load(md);
     }
-
-    private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ROOT);
 
     @Nullable
     public static LocalDateTime getTimestamp(@Nonnull Ts ts) {
         MetaData md = ts.getMetaData();
-        return md != null ? getTimestamp(md) : null;
-    }
-
-    @Nullable
-    private static LocalDateTime getTimestamp(@Nonnull MetaData md) {
-        String dateAsString = md.get(MetaData.DATE);
-        return dateAsString != null ? LocalDateTime.parse(dateAsString, TIMESTAMP_FORMATTER) : null;
+        return md != null ? TsMeta.TIMESTAMP.load(md) : null;
     }
 
     @Nullable
@@ -112,5 +106,18 @@ public final class FrozenTsHelper {
             return null;
         }
         return new TsMoniker(source, id);
+    }
+
+    private static final Set<String> FREEZE_KEYS
+            = Stream.of(
+                    TsMeta.SOURCE_OLD,
+                    TsMeta.ID_OLD,
+                    TsMeta.SOURCE,
+                    TsMeta.ID,
+                    TsMeta.TIMESTAMP
+            ).map(TsMeta::getKey).collect(Collectors.toSet());
+
+    public static boolean isFreezeKey(String key) {
+        return FREEZE_KEYS.contains(key);
     }
 }
