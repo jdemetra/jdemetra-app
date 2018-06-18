@@ -17,12 +17,12 @@
 package demetra.ui.components;
 
 import demetra.bridge.TsConverter;
+import demetra.demo.DemoTsBuilder;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.tss.TsIdentifier;
 import ec.tstoolkit.utilities.Arrays2;
-import ec.ui.DemoUtils;
 import ec.util.table.swing.JTables;
 import internal.ui.components.InternalTsTableUI;
 import internal.ui.components.TsIdentifierTableCellRenderer;
@@ -199,7 +199,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
 
     private void applyDesignTimeProperties() {
         if (Beans.isDesignTime()) {
-            setTsCollection(TsConverter.toTsCollection(DemoUtils.randomTsCollection(3)));
+            setTsCollection(DemoTsBuilder.randomTsCollection(3));
             setTsUpdateMode(TsUpdateMode.None);
             setPreferredSize(new Dimension(200, 150));
         }

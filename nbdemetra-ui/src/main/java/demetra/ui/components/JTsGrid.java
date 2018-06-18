@@ -16,10 +16,9 @@
  */
 package demetra.ui.components;
 
-import demetra.bridge.TsConverter;
+import demetra.demo.DemoTsBuilder;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
-import ec.ui.DemoUtils;
 import internal.ui.components.InternalTsGridUI;
 import internal.ui.components.InternalUI;
 import java.awt.Dimension;
@@ -228,7 +227,7 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
 
     private void applyDesignTimeProperties() {
         if (Beans.isDesignTime()) {
-            setTsCollection(TsConverter.toTsCollection(DemoUtils.randomTsCollection(3)));
+            setTsCollection(DemoTsBuilder.randomTsCollection(3));
             setTsUpdateMode(TsUpdateMode.None);
             setPreferredSize(new Dimension(200, 150));
         }

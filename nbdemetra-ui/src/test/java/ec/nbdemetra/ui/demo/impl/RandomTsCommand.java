@@ -16,11 +16,12 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import demetra.bridge.TsConverter;
 import ec.tss.TsInformation;
 import static ec.util.various.swing.FontAwesome.FA_RANDOM;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.ext.FontAwesomeUtils;
-import internal.RandomTsBuilder;
+import demetra.demo.DemoTsBuilder;
 import java.awt.event.ActionEvent;
 import static java.beans.BeanInfo.ICON_COLOR_16x16;
 import java.util.function.BiConsumer;
@@ -46,17 +47,17 @@ final class RandomTsCommand<C> extends JCommand<C> {
 
     private final BiConsumer<C, TsInformation> consumer;
     private final BoundedRangeModel obsCountModel;
-    private final RandomTsBuilder builder;
+    private final DemoTsBuilder builder;
 
     private RandomTsCommand(BiConsumer<C, TsInformation> consumer) {
         this.consumer = consumer;
         this.obsCountModel = new DefaultBoundedRangeModel(12 * 10, 12, 0, 12 * 100);
-        this.builder = new RandomTsBuilder();
+        this.builder = new DemoTsBuilder();
     }
 
     @Override
     final public void execute(C c) throws Exception {
-        consumer.accept(c, builder.withObsCount(obsCountModel.getValue()).build());
+        consumer.accept(c, TsConverter.fromTsBuilder(builder.obsCount(obsCountModel.getValue()).build()));
     }
 
     @Override

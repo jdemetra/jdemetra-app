@@ -17,6 +17,7 @@
 package demetra.ui.components;
 
 import demetra.bridge.TsConverter;
+import demetra.demo.DemoTsBuilder;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.DemetraUI;
@@ -28,7 +29,6 @@ import ec.tstoolkit.timeseries.Month;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDataTable;
-import ec.ui.DemoUtils;
 import internal.ui.components.InternalTsGrowthChartUI;
 import internal.ui.components.InternalUI;
 import java.awt.Dimension;
@@ -183,7 +183,7 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
 
     private void applyDesignTimeProperties() {
         if (Beans.isDesignTime()) {
-            setTsCollection(TsConverter.toTsCollection(DemoUtils.randomTsCollection(3)));
+            setTsCollection(DemoTsBuilder.randomTsCollection(3));
             setTsUpdateMode(TsUpdateMode.None);
             setPreferredSize(new Dimension(200, 150));
             setTitle("Chart preview");

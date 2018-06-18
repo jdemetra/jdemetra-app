@@ -84,8 +84,12 @@ public class TsManager implements AutoCloseable {
     @OnAnyThread
     private void onDelegateChange(Observable o, Object arg) {
         if (arg instanceof TsEvent) {
-            events.add((TsEvent) arg);
-            SwingUtilities.invokeLater(this::notifyUpdateListeners);
+            TsEvent evt = (TsEvent) arg;
+            if (!(evt.isSeries() && evt.ts.getMoniker().isAnonymous())
+                    && !(evt.isCollection() && evt.tscollection.getMoniker().isAnonymous())) {
+                events.add(evt);
+                SwingUtilities.invokeLater(this::notifyUpdateListeners);
+            }
         }
     }
 

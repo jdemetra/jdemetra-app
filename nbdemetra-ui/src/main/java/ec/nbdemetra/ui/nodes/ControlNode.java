@@ -199,7 +199,7 @@ public class ControlNode {
                 .display("Name")
                 .add();
 
-        if (!col.getMoniker().isAnonymous()) {
+        if (col.getMoniker().isProvided()) {
             addDataSourceProperties(col.getMoniker(), b);
         }
 
@@ -227,7 +227,7 @@ public class ControlNode {
                 .description(MultiLineNameUtil.toHtml(ts.getName()))
                 .add();
 
-        if (FrozenTsHelper.isFrozen(ts) || !ts.getMoniker().isAnonymous()) {
+        if (FrozenTsHelper.isFrozen(ts) || ts.getMoniker().isProvided()) {
             addDataSourceProperties(ts.getMoniker(), b);
         }
 

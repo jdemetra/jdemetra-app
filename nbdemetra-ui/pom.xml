@@ -68,6 +68,13 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-design</artifactId>
+            <version>${jd3-basic.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- test only -->
         <dependency>
             <groupId>junit</groupId>
@@ -277,6 +284,7 @@
                         <publicPackage>demetra.timeseries</publicPackage>
                         <publicPackage>demetra.tsprovider</publicPackage>
                         <publicPackage>demetra.bridge</publicPackage>
+                        <publicPackage>demetra.demo</publicPackage>
                         
                         <!-- old core -->
                         <publicPackage>ec.benchmarking.*</publicPackage>

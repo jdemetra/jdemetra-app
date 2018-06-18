@@ -19,7 +19,6 @@ package ec.nbdemetra.ui.demo.impl;
 import ec.tss.TsStatus;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import ec.ui.DemoUtils.TsNamingScheme;
 import java.util.Date;
 
 /**
@@ -27,6 +26,11 @@ import java.util.Date;
  * @author Philippe Charles
  */
 final class AddTsCollectionPanel extends javax.swing.JPanel {
+
+    public enum TsNamingScheme {
+
+        DEFAULT, UNIQUE, DESCRIPTIVE;
+    }
 
     /**
      * Creates new form AddTsCollectionPanel
