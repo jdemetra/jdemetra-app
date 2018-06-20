@@ -4,12 +4,12 @@
  */
 package ec.nbdemetra.x13;
 
+import demetra.tsprovider.TsMeta;
 import ec.nbdemetra.ws.AbstractFileItemRepository;
 import ec.nbdemetra.ws.IWorkspaceItemRepository;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.tss.sa.documents.X13Document;
-import ec.tstoolkit.MetaData;
-import java.util.Date;
+import java.time.LocalDateTime;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -30,7 +30,7 @@ public class X13DocFileRepository extends AbstractFileItemRepository<X13Document
     @Override
     public boolean save(WorkspaceItem<X13Document> item) {
         X13Document o = item.getElement();
-        o.getMetaData().put(MetaData.DATE, new Date().toString());
+        TsMeta.TIMESTAMP.store(o.getMetaData(), LocalDateTime.now());
         return storeFile(item, o, () -> {
             item.resetDirty();
             item.getElement().resetDirty();

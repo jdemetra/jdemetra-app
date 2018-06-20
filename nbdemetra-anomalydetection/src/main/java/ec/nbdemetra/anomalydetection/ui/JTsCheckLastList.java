@@ -17,6 +17,7 @@
 package ec.nbdemetra.anomalydetection.ui;
 
 import demetra.bridge.TsConverter;
+import demetra.demo.DemoTsBuilder;
 import demetra.ui.components.HasTsCollection;
 import static demetra.ui.components.HasTsCollection.TS_COLLECTION_PROPERTY;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
@@ -29,7 +30,6 @@ import ec.tstoolkit.data.Table;
 import ec.tstoolkit.modelling.arima.CheckLast;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import ec.ui.DemoUtils;
 import demetra.ui.components.JTsTable;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.DemetraUI;
@@ -110,7 +110,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
         add(table, BorderLayout.CENTER);
 
         if (Beans.isDesignTime()) {
-            setTsCollection(TsConverter.toTsCollection(DemoUtils.randomTsCollection(3)));
+            setTsCollection(DemoTsBuilder.randomTsCollection(3));
             setTsUpdateMode(TsUpdateMode.None);
             setPreferredSize(new Dimension(200, 150));
         }

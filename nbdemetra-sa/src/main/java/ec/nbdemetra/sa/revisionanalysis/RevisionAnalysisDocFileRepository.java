@@ -16,12 +16,12 @@
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
+import demetra.tsprovider.TsMeta;
 import ec.nbdemetra.ws.DefaultFileItemRepository;
 import ec.nbdemetra.ws.IWorkspaceItemRepository;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.tss.sa.revisions.RevisionAnalysisDocument;
-import ec.tstoolkit.MetaData;
-import java.util.Date;
+import java.time.LocalDateTime;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -39,7 +39,7 @@ public final class RevisionAnalysisDocFileRepository extends DefaultFileItemRepo
     @Override
     public boolean save(WorkspaceItem<RevisionAnalysisDocument> doc) {
         RevisionAnalysisDocument element = doc.getElement();
-        element.getMetaData().put(MetaData.DATE, new Date().toString());
+        TsMeta.TIMESTAMP.store(element.getMetaData(), LocalDateTime.now());
         return super.save(doc);
     }
 

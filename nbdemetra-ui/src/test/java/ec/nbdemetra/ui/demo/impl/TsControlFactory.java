@@ -16,13 +16,14 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import demetra.bridge.TsConverter;
+import demetra.demo.DemoTsBuilder;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.nbdemetra.ui.demo.ReflectComponent;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.Id;
-import ec.ui.DemoUtils;
 import ec.ui.view.MarginView;
 import java.awt.Component;
 import java.util.Map;
@@ -48,7 +49,7 @@ public final class TsControlFactory extends DemoComponentFactory {
 
     private static Component marginView() {
         MarginView result = new MarginView();
-        TsData series = DemoUtils.randomTsCollection(1).get(0).getTsData();
+        TsData series = TsConverter.fromTsData(DemoTsBuilder.randomTsCollection(1).getData().get(0).getData()).get();
         DescriptiveStatistics stats = new DescriptiveStatistics(series);
         double val = (stats.getMax() - stats.getMin()) / 2;
         TsData lower = series.drop(14, 0).minus(val);

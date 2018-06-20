@@ -127,7 +127,7 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
                 demetra.tsprovider.TsCollection.Builder result = main.toBuilder();
                 for (Ts o : col) {
                     demetra.tsprovider.TsMoniker id = TsConverter.toTsMoniker(o.getMoniker());
-                    if (id.isAnonymous() || !monikers.contains(id)) {
+                    if (!id.isProvided()|| !monikers.contains(id)) {
                         result.data(TsConverter.toTs(o));
                     }
                 }

@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui;
 
-import demetra.bridge.TsConverter;
+import demetra.demo.DemoTsBuilder;
 import demetra.ui.TsAction;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
@@ -24,7 +24,6 @@ import ec.nbdemetra.ui.ns.INamedService;
 import ec.nbdemetra.ui.properties.DataFormatComponent2;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor;
 import demetra.ui.components.JTsChart;
-import ec.ui.DemoUtils;
 import ec.util.chart.ColorScheme;
 import internal.ui.components.HasColorSchemeCommands;
 import java.awt.Image;
@@ -48,7 +47,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         initComponents();
 
         colorSchemePreviewer = new JTsChart();
-        colorSchemePreviewer.setTsCollection(TsConverter.toTsCollection(DemoUtils.randomTsCollection(3)));
+        colorSchemePreviewer.setTsCollection(DemoTsBuilder.randomTsCollection(3));
         colorSchemePreviewer.setTsAction(TsAction.NO_ACTION);
         colorSchemePreviewer.setTsUpdateMode(TsUpdateMode.None);
         chartPreviewPanel.add(colorSchemePreviewer);

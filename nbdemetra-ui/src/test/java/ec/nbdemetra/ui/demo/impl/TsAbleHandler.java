@@ -17,15 +17,16 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import demetra.bridge.TsConverter;
+import demetra.demo.PocProvider;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTs;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.nbdemetra.ui.demo.FakeTsProvider;
 import static ec.nbdemetra.ui.demo.impl.TsCollectionHandler.getIcon;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
+import ec.tss.tsproviders.IDataSourceListener;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.util.various.swing.FontAwesome;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
@@ -86,7 +87,7 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> 
 
     private static JButton createFakeProviderButton(HasTs view) {
         JMenu providerMenu = TsManager.getDefault()
-                .lookup(IDataSourceProvider.class, "Fake")
+                .lookup(IDataSourceProvider.class, PocProvider.NAME)
                 .map(o -> createFakeProviderMenu(o, view))
                 .orElseGet(JMenu::new);
         JButton result = DropDownButtonFactory.createDropDownButton(getIcon(FontAwesome.FA_DATABASE), providerMenu.getPopupMenu());
@@ -96,21 +97,27 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> 
     }
 
     private static void enableTickFeedback(JButton button) {
-        Optional<FakeTsProvider> p = TsManager.getDefault().lookup(FakeTsProvider.class, "Fake");
+        Optional<IDataSourceProvider> p = TsManager.getDefault().lookup(IDataSourceProvider.class, PocProvider.NAME);
         if (p.isPresent()) {
-            Icon icon1 = getIcon(FontAwesome.FA_DATABASE);
-            Icon icon2 = FontAwesome.FA_DATABASE.getIcon(Color.ORANGE.darker(), FontAwesomeUtils.toSize(ICON_COLOR_16x16));
-            p.get().addTickListener(() -> {
-                SwingUtilities.invokeLater(() -> {
-                    if (icon1.equals(button.getClientProperty("stuff"))) {
-                        button.putClientProperty("stuff", icon2);
-                        button.setIcon(icon2);
-                    } else {
-                        button.putClientProperty("stuff", icon1);
-                        button.setIcon(icon1);
-                    }
-                });
-            });
+            IDataSourceListener changeListener = new IDataSourceListener() {
+                Icon icon1 = getIcon(FontAwesome.FA_DATABASE);
+                Icon icon2 = FontAwesome.FA_DATABASE.getIcon(Color.ORANGE.darker(), FontAwesomeUtils.toSize(ICON_COLOR_16x16));
+
+                @Override
+                public void changed(DataSource dataSource) {
+                    SwingUtilities.invokeLater(() -> {
+                        if (icon1.equals(button.getClientProperty("stuff"))) {
+                            button.putClientProperty("stuff", icon2);
+                            button.setIcon(icon2);
+                        } else {
+                            button.putClientProperty("stuff", icon1);
+                            button.setIcon(icon1);
+                        }
+                    });
+                }
+            };
+            button.putClientProperty("pocListener", changeListener);
+            p.get().addDataSourceListener(changeListener);
         }
     }
 

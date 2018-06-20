@@ -24,28 +24,27 @@ import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.DemoTsActions;
-import ec.tss.TsCollection;
-import ec.tss.TsCollectionInformation;
 import ec.tss.TsInformationType;
-import ec.tss.TsStatus;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
-import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import internal.ui.components.HasTsCollectionCommands;
 import ec.util.list.swing.JLists;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import ec.util.various.swing.ext.FontAwesomeUtils;
-import internal.RandomTsBuilder;
+import demetra.demo.DemoTsBuilder;
+import demetra.timeseries.TsPeriod;
+import demetra.timeseries.TsUnit;
+import demetra.tsprovider.TsCollection;
 import demetra.ui.components.TsSelectionBridge;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.BeanInfo;
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -62,34 +61,33 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemoComponentHandler.class)
 public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<HasTsCollection> {
 
-    private static final RandomTsBuilder BUILDER = new RandomTsBuilder();
+    private static final DemoTsBuilder BUILDER = new DemoTsBuilder();
 
-    private final TsCollectionInformation col;
+    private final TsCollection col;
 
     public TsCollectionHandler() {
         super(HasTsCollection.class);
-        col = new TsCollectionInformation();
+        TsCollection.Builder tmp = TsCollection.builder();
 
         int nbrYears = 3;
 
-        BUILDER.withForecastCount(2);
+        BUILDER.forecastCount(2);
         EnumSet.complementOf(EnumSet.of(TsFrequency.Undefined)).forEach((o) -> {
-            col.items.add(BUILDER.withStart(new TsPeriod(o, 2010, 0)).withObsCount(nbrYears * o.intValue()).withName(o.name()).build());
+            tmp.data(BUILDER.start(TsPeriod.of(TsConverter.toTsUnit(o), 0)).obsCount(nbrYears * o.intValue()).name(o.name()).build());
         });
 
-        BUILDER.withStart(new TsPeriod(TsFrequency.Monthly, 2010, 0));
-        col.items.add(BUILDER.withObsCount(1).withMissingCount(0).withName("Single").build());
-        col.items.add(BUILDER.withObsCount(nbrYears * 12).withMissingCount(3).withName("Missing").build());
-        col.items.add(BUILDER.withObsCount(0).withMissingCount(0).withName("Empty").build());
-        col.items.add(BUILDER.withStatus(TsStatus.Invalid).withName("Invalid").build());
-        col.items.add(BUILDER.withStatus(TsStatus.Undefined).withName("Undefined").build());
+        BUILDER.start(TsPeriod.of(TsUnit.MONTH, 0));
+        tmp.data(BUILDER.obsCount(1).missingCount(0).name("Single").build());
+        tmp.data(BUILDER.obsCount(nbrYears * 12).missingCount(3).name("Missing").build());
+        tmp.data(BUILDER.obsCount(0).missingCount(0).name("Empty").build());
+//        col.items.add(BUILDER.withType(TsStatus.Invalid).withName("Invalid").build());
+//        col.items.add(BUILDER.withType(TsStatus.Undefined).withName("Undefined").build());
+        this.col = tmp.build();
     }
 
     @Override
     public void doConfigure(HasTsCollection c) {
-        demetra.tsprovider.TsCollection.Builder model = demetra.tsprovider.TsCollection.builder();
-        col.items.forEach(o -> model.data(TsConverter.toTs(o.toTs())));
-        c.setTsCollection(model.build());
+        c.setTsCollection(col);
         if (c instanceof HasTsAction) {
             ((HasTsAction) c).setTsAction(DemoTsActions.NAME);
         }
@@ -123,21 +121,19 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
 
         public AddRandomCommand(int size) {
             this.size = size;
-            this.startPeriod = new TsPeriod(TsFrequency.Monthly, new Date());
+            this.startPeriod = TsPeriod.of(TsUnit.MONTH, LocalDateTime.now());
         }
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
             BUILDER
-                    .withObsCount(24)
-                    .withStart(startPeriod)
-                    .withStatus(TsStatus.Valid)
-                    .withForecastCount(3)
-                    .withMissingCount(0);
-            demetra.tsprovider.TsCollection.Builder result = demetra.tsprovider.TsCollection.builder();
+                    .obsCount(24)
+                    .start(startPeriod)
+                    .forecastCount(3)
+                    .missingCount(0);
+            TsCollection.Builder result = TsCollection.builder();
             IntStream.range(0, size)
-                    .mapToObj(o -> BUILDER.withName("S" + o).build().toTs())
-                    .map(TsConverter::toTs)
+                    .mapToObj(o -> BUILDER.name("S" + o).build())
                     .forEach(result::data);
             c.setTsCollection(result.build());
         }
@@ -156,16 +152,14 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
         public void execute(HasTsCollection c) throws Exception {
             if (JOptionPane.showConfirmDialog((Component) c, panel, "Add time series", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
                 BUILDER
-                        .withObsCount(panel.getObsCount())
-                        .withStart(panel.getStartPeriod())
-                        .withStatus(panel.getTsStatus())
-                        .withForecastCount(panel.getForecastCount())
+                        .obsCount(panel.getObsCount())
+                        .start(TsConverter.toTsPeriod(panel.getStartPeriod()))
+                        .forecastCount(panel.getForecastCount())
                         //                        .withNaming(panel.getNaming())
-                        .withMissingCount(panel.getMissingValues());
-                demetra.tsprovider.TsCollection.Builder result = c.getTsCollection().toBuilder();
+                        .missingCount(panel.getMissingValues());
+                TsCollection.Builder result = c.getTsCollection().toBuilder();
                 IntStream.range(0, panel.getSeriesCount())
-                        .mapToObj(o -> BUILDER.withName("S" + o).build().toTs())
-                        .map(TsConverter::toTs)
+                        .mapToObj(o -> BUILDER.name("S" + o).build())
                         .forEach(result::data);
                 c.setTsCollection(result.build());
             }
@@ -343,33 +337,27 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
         return FontAwesomeUtils.getIcon(fa, BeanInfo.ICON_COLOR_16x16);
     }
 
+    @lombok.AllArgsConstructor
     static final class AddDataSourceCommand extends JCommand<HasTsCollection> {
 
         private final DataSource dataSource;
 
-        public AddDataSourceCommand(DataSource dataSource) {
-            this.dataSource = dataSource;
-        }
-
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            TsCollection col = TsManager.getDefault().getTsCollection(dataSource, TsInformationType.Definition).get();
+            ec.tss.TsCollection col = TsManager.getDefault().getTsCollection(dataSource, TsInformationType.Definition).get();
             col.query(TsInformationType.All);
             c.setTsCollection(c.getTsCollection().toBuilder().data(col.stream().map(TsConverter::toTs).collect(Collectors.toList())).build());
         }
     }
 
+    @lombok.AllArgsConstructor
     static final class AddDataSetCommand extends JCommand<HasTsCollection> {
 
         private final DataSet dataSet;
 
-        public AddDataSetCommand(DataSet dataSet) {
-            this.dataSet = dataSet;
-        }
-
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            TsCollection col = TsManager.getDefault().getTsCollection(dataSet, TsInformationType.Definition).get();
+            ec.tss.TsCollection col = TsManager.getDefault().getTsCollection(dataSet, TsInformationType.Definition).get();
             col.query(TsInformationType.All);
             c.setTsCollection(c.getTsCollection().toBuilder().data(col.stream().map(TsConverter::toTs).collect(Collectors.toList())).build());
         }

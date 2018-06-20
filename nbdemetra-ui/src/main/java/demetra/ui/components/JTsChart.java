@@ -16,12 +16,11 @@
  */
 package demetra.ui.components;
 
-import demetra.bridge.TsConverter;
+import demetra.demo.DemoTsBuilder;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.ui.DemoUtils;
 import internal.ui.components.InternalTsChartUI;
 import internal.ui.components.InternalTsChartConfig;
 import internal.ui.components.InternalUI;
@@ -138,7 +137,7 @@ public final class JTsChart extends JComponent implements TimeSeriesComponent, P
 
     private void applyDesignTimeProperties() {
         if (Beans.isDesignTime()) {
-            setTsCollection(TsConverter.toTsCollection(DemoUtils.randomTsCollection(3)));
+            setTsCollection(DemoTsBuilder.randomTsCollection(3));
             setTsUpdateMode(TsUpdateMode.None);
             setPreferredSize(new Dimension(200, 150));
             setTitle("Chart preview");
