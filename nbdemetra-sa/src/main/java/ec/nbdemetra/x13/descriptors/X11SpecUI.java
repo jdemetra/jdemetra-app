@@ -25,10 +25,11 @@ import org.openide.util.NbBundle.Messages;
 public class X11SpecUI extends BaseX11SpecUI {
 
     private final TsFrequency freq_;
-    private final boolean x13_;
+    private final boolean x13_;  
+    
 
-    public X11SpecUI(X11Specification spec, TsFrequency freq, boolean x13, boolean ro) {
-        super(spec, ro);
+    public X11SpecUI(X11Specification spec, TsFrequency freq, boolean x13, boolean ro, Validator validator) {
+        super(spec, ro, validator);
         freq_ = freq;
         x13_ = x13;
     }
@@ -105,6 +106,8 @@ public class X11SpecUI extends BaseX11SpecUI {
 
     public void setMode(DecompositionMode value) {
         core.setMode(value);
+        if (validator != null)
+            validator.validate();
     }
 
 //    public boolean isUseForecast() {

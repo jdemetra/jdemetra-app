@@ -16,6 +16,7 @@ public abstract class BaseX11SpecUI implements IPropertyDescriptors {
 
     final X11Specification core;
     final boolean ro_;
+    final Validator validator;
 
     public BaseX11SpecUI(X11Specification spec, boolean ro) {
         if (spec == null) {
@@ -23,6 +24,16 @@ public abstract class BaseX11SpecUI implements IPropertyDescriptors {
         }
         core = spec;
         ro_ = ro;
+        validator=null;
+    }
+
+    public BaseX11SpecUI(X11Specification spec, boolean ro, Validator validator) {
+        if (spec == null) {
+            throw new AssertionError(IObjectDescriptor.EMPTY);
+        }
+        core = spec;
+        ro_ = ro;
+        this.validator=validator;
     }
 
     public X11Specification getCore() {
