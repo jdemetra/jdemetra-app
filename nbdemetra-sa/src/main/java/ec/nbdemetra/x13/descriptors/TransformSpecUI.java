@@ -30,8 +30,8 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
         return core.getTransform();
     }
 
-    TransformSpecUI(RegArimaSpecification spec, boolean ro) {
-        super(spec, ro);
+    TransformSpecUI(RegArimaSpecification spec, boolean ro, Validator validator) {
+        super(spec, ro, validator);
     }
 
     @Override
@@ -69,6 +69,8 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
             inner().setAdjust(LengthOfPeriodType.None);
             core.getRegression().getTradingDays().setLengthOfPeriod(LengthOfPeriodType.LeapYear);
         }
+        if (validator != null)
+            validator.validate();
     }
 
     public double getAic() {
