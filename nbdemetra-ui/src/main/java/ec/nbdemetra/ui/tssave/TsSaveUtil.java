@@ -21,7 +21,6 @@ import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsCollectionInformation;
 import ec.tss.TsFactory;
-import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import java.io.File;
 import java.util.Arrays;
@@ -49,7 +48,7 @@ public class TsSaveUtil {
         TsCollectionInformation result = new TsCollectionInformation();
         for (TsCollection col : data) {
             col.load(TsInformationType.All);
-            col.stream().map(o -> new TsInformation(o, TsInformationType.All)).forEach(result.items::add);
+            col.stream().map(o -> o.toInfo(TsInformationType.All)).forEach(result.items::add);
         }
         return result;
     }
