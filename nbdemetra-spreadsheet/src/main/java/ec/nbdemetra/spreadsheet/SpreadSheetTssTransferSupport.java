@@ -79,7 +79,7 @@ final class SpreadSheetTssTransferSupport {
     }
 
     public Object exportTsCollection(TsCollection col) throws IOException {
-        TsCollectionInformation info = new TsCollectionInformation(col, TsInformationType.Data);
+        TsCollectionInformation info = col.toInfo(TsInformationType.Data);
         ArraySheet sheet = resource.getFactory().fromTsCollectionInfo(info, resource.getInternalConfig().getTsExportOptions());
         return resource.fromBook(sheet.toBook());
     }
