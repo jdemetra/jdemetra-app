@@ -138,7 +138,13 @@ public final class SingleFileExporter {
     }
 
     private static void notifyError(File file, Throwable t, String message) {
-        NotifyUtil.error(message, t.getMessage(), t);
+        NotifyUtil.error(message, getMessageOrElseType(t), t);
+    }
+
+    @Nonnull
+    private static String getMessageOrElseType(@Nonnull Throwable t) {
+        String msg = t.getMessage();
+        return msg != null ? t.getMessage() : t.getClass().getSimpleName();
     }
 
     private static void notifySuccess(File file, String message) {
