@@ -5,11 +5,7 @@
 package ec.nbdemetra.x13.descriptors;
 
 import ec.satoolkit.DecompositionMode;
-import ec.satoolkit.x11.CalendarSigma;
-import ec.satoolkit.x11.SeasonalFilterOption;
-import ec.satoolkit.x11.SigmavecOption;
-import ec.satoolkit.x11.X11Exception;
-import ec.satoolkit.x11.X11Specification;
+import ec.satoolkit.x11.*;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import java.beans.IntrospectionException;
@@ -143,6 +139,7 @@ public class X11SpecUI extends BaseX11SpecUI {
 //            core.setForecastHorizon(0);
 //        }
 //    }
+
     public double getLSigma() {
         return core.getLowerSigma();
     }
@@ -201,13 +198,21 @@ public class X11SpecUI extends BaseX11SpecUI {
     public void setAutoTrendMA(boolean value) {
         if (value) {
             core.setHendersonFilterLength(0);
+        } else if (freq_.intValue() == 2) {
+
+            core.setHendersonFilterLength(5);
         } else {
             core.setHendersonFilterLength(13);
         }
     }
 
     public int getTrendMA() {
-        return core.getHendersonFilterLength() == 0 ? 13 : core.getHendersonFilterLength();
+
+        if (freq_.intValue() == 2) {
+            return core.getHendersonFilterLength() == 0 ? 5 : core.getHendersonFilterLength();
+        } else {
+            return core.getHendersonFilterLength() == 0 ? 13 : core.getHendersonFilterLength();
+        }
     }
 
     public void setTrendMA(int value) {
@@ -248,7 +253,6 @@ public class X11SpecUI extends BaseX11SpecUI {
     public void setSigmavec(SigmavecOption[] sigmavec) {
         core.setSigmavec(sigmavec);
     }
-
 
     public void setExcludefcst(boolean value) {
         core.setExcludefcst(value);
