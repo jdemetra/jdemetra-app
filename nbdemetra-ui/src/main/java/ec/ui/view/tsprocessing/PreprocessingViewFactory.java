@@ -72,7 +72,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
             MODEL_RES_DIST = new LinearId(MODEL, RESIDUALS, DISTRIBUTION),
             MODEL_RES_SPECTRUM = new LinearId(MODEL, RESIDUALS, SPECTRAL),
             MODEL_LIKELIHOOD = new LinearId(MODEL, LIKELIHOOD),
-           PROCESSING_DETAILS = new LinearId(PROCESSING, DETAILS),
+            PROCESSING_DETAILS = new LinearId(PROCESSING, DETAILS),
             PROCESSING_STEPS = new LinearId(PROCESSING, STEPS),
             PREPROCESSING_SUMMARY = new LinearId(PREPROCESSING),
             PREPROCESSING_FCASTS = new LinearId(PREPROCESSING, FCASTS),
@@ -83,8 +83,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
             PREPROCESSING_DET = new LinearId(PREPROCESSING, PREADJUSTMENT),
             PREPROCESSING_RES = new LinearId(PREPROCESSING, RESIDUALS),
             PREPROCESSING_RES_STATS = new LinearId(PREPROCESSING, RESIDUALS, STATS),
-            PREPROCESSING_RES_DIST = new LinearId(PREPROCESSING, RESIDUALS, DISTRIBUTION)
-            ;
+            PREPROCESSING_RES_DIST = new LinearId(PREPROCESSING, RESIDUALS, DISTRIBUTION);
 
     @Deprecated
     public void registerDefault() {
@@ -214,8 +213,11 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
                             break;
                     }
                     OneStepAheadForecastingTest test = new OneStepAheadForecastingTest(lback);
-                    test.test(model.estimation.getRegArima());
-                    return test;
+                    if (test.test(model.estimation.getRegArima())) {
+                        return test;
+                    } else {
+                        return null;
+                    }
                 }
             }, new OutOfSampleTestUI());
         }
@@ -367,7 +369,6 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
             }
         }
     };
-
 
     public static InformationExtractor<TsDocument<? extends IProcSpecification, PreprocessingModel>, PreprocessingModel> pmExtractor() {
         return PmExtractor.INSTANCE;
