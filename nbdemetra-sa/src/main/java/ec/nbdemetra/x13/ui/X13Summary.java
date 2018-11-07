@@ -91,9 +91,9 @@ public class X13Summary extends JComponent implements IDisposable {
             TsData si = results.getData("d8", TsData.class);
             TsData seas = results.getData("d10", TsData.class);
 
-            if (x11.getSeriesDecomposition().getMode() == DecompositionMode.LogAdditive) {
-                si = si.exp();
-            }
+//            if (x11.getSeriesDecomposition().getMode() == DecompositionMode.LogAdditive) {
+//                si = si.exp();
+//            }
 
             siPanel_.setSiData(seas, si);
         }else
