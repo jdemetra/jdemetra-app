@@ -182,9 +182,9 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
                   TsData si = rslt.getData("d8", TsData.class);
                   TsData seas = rslt.getData("d10", TsData.class);
 
-                  if (rslt.getSeriesDecomposition().getMode() == DecompositionMode.LogAdditive) {
-                      si = si.exp();
-                  }
+//                  if (rslt.getSeriesDecomposition().getMode() == DecompositionMode.LogAdditive) {
+//                      si = si.exp();
+//                  }
                   return new TsData[]{seas, si};
               }
           }, new SiRatioUI());
@@ -543,9 +543,9 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
                   }
                   DecompositionMode mode = finals.getMode();
                   boolean mul = mode.isMultiplicative();
-                  if (mode == DecompositionMode.LogAdditive) {
-                      si = si.exp();
-                  }
+//                  if (mode == DecompositionMode.LogAdditive) {
+//                      si = si.exp();
+//                  }
                   SeasonalityTestUI.Information info = new SeasonalityTestUI.Information();
                   info.si = si;
                   info.mul = mul;
