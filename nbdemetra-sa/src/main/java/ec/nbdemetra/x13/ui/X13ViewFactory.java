@@ -182,9 +182,6 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
                   TsData si = rslt.getData("d8", TsData.class);
                   TsData seas = rslt.getData("d10", TsData.class);
 
-//                  if (rslt.getSeriesDecomposition().getMode() == DecompositionMode.LogAdditive) {
-//                      si = si.exp();
-//                  }
                   return new TsData[]{seas, si};
               }
           }, new SiRatioUI());
