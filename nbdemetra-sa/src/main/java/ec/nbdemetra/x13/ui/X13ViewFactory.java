@@ -361,8 +361,6 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
 
                               }
                           }
-
-//stream.close(HtmlTag.DIV).newLine();
                           stream.write("Trend filter: " + information.getFinalTrendFilter()).newLine();
                       }
                   };
