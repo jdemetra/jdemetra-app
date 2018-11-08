@@ -82,8 +82,11 @@ public class X11SpecUI extends BaseX11SpecUI {
         if (desc != null) {
             descs.add(desc);
         }
-
         desc = excludefcstDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = biasDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -262,8 +265,16 @@ public class X11SpecUI extends BaseX11SpecUI {
         return core.isExcludefcst();
     }
 
+    public BiasCorrection getBiasCorrection() {
+        return core.getBiasCorrection();
+    }
+
+    public void setBiasCorrection(BiasCorrection bias) {
+        core.setBiasCorrection(bias);
+    }
+
     private static final int MODE_ID = 0, SEAS_ID = 1, FORECAST_ID = 2, BACKCAST_ID = 12, LSIGMA_ID = 3, USIGMA_ID = 4, AUTOTREND_ID = 5,
-            TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8, CALENDARSIGMA_ID = 9, SIGMAVEC_ID = 10, EXCLUDEFCST_ID = 11;
+            TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8, CALENDARSIGMA_ID = 9, SIGMAVEC_ID = 10, EXCLUDEFCST_ID = 11, BIAS_ID=12;
 
     @Messages({
         "x11SpecUI.calendarsigmaDesc.name=Calendarsigma",
@@ -528,4 +539,25 @@ public class X11SpecUI extends BaseX11SpecUI {
             return null;
         }
     }
+    
+    @Messages({
+        "x11SpecUI.biasDesc.name=Bias correction",
+        "x11SpecUI.biasDesc.desc=Bias correction for log-additive decomposition"
+    })
+    private EnhancedPropertyDescriptor biasDesc() {
+        if (core.getMode() != DecompositionMode.LogAdditive)
+            return null;
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("biasCorrection", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BIAS_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.x11SpecUI_biasDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_biasDesc_desc());
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+    
 }
