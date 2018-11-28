@@ -17,7 +17,7 @@
         <l2fprod.version>1.0.5</l2fprod.version>
         <jcalendar.version>1.4</jcalendar.version>
         <swinglayout.version>1.0.3</swinglayout.version>
-        <java-desktop-util.version>${project.version}</java-desktop-util.version>
+        <java-desktop-util.version>2.2.2</java-desktop-util.version>
     </properties>
 
     <dependencyManagement>
