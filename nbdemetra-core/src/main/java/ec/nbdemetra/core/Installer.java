@@ -55,6 +55,7 @@ public final class Installer extends ModuleInstall {
 
     final static Logger LOGGER = LoggerFactory.getLogger(Installer.class);
     final InstallerStep step = InstallerStep.all(
+            new PackageInfoFixStep(),
             new AppVersionStep(),
             new ByteArrayConverterStep(),
             new ProvidersStep(),
@@ -74,6 +75,14 @@ public final class Installer extends ModuleInstall {
     public void close() {
         step.close();
         TsFactory.instance.dispose();
+    }
+
+    private static final class PackageInfoFixStep extends InstallerStep {
+
+        @Override
+        public void restore() {
+            PackageInfoFix.doLoadPackageInfos(PackageInfoFixStep.class.getClassLoader());
+        }
     }
 
     private static final class AppVersionStep extends InstallerStep {
