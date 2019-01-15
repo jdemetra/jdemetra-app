@@ -247,7 +247,7 @@ public class WorkspaceFactory implements LookupListener {
             Object notify = DialogDisplayer.getDefault().notify(nd);
             if (notify == NotifyDescriptor.YES_OPTION) {
                 ws_.save();
-            } else if (notify == NotifyDescriptor.CANCEL_OPTION) {
+            } else if (notify == NotifyDescriptor.CANCEL_OPTION || notify == NotifyDescriptor.CLOSED_OPTION) {
                 return false;
             }
         }

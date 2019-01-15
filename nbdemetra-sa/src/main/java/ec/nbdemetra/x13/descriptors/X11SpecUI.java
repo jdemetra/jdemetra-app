@@ -5,11 +5,7 @@
 package ec.nbdemetra.x13.descriptors;
 
 import ec.satoolkit.DecompositionMode;
-import ec.satoolkit.x11.CalendarSigma;
-import ec.satoolkit.x11.SeasonalFilterOption;
-import ec.satoolkit.x11.SigmavecOption;
-import ec.satoolkit.x11.X11Exception;
-import ec.satoolkit.x11.X11Specification;
+import ec.satoolkit.x11.*;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import java.beans.IntrospectionException;
@@ -25,10 +21,11 @@ import org.openide.util.NbBundle.Messages;
 public class X11SpecUI extends BaseX11SpecUI {
 
     private final TsFrequency freq_;
-    private final boolean x13_;
+    private final boolean x13_;  
+    
 
-    public X11SpecUI(X11Specification spec, TsFrequency freq, boolean x13, boolean ro) {
-        super(spec, ro);
+    public X11SpecUI(X11Specification spec, TsFrequency freq, boolean x13, boolean ro, Validator validator) {
+        super(spec, ro, validator);
         freq_ = freq;
         x13_ = x13;
     }
@@ -85,8 +82,11 @@ public class X11SpecUI extends BaseX11SpecUI {
         if (desc != null) {
             descs.add(desc);
         }
-
         desc = excludefcstDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = biasDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -105,6 +105,8 @@ public class X11SpecUI extends BaseX11SpecUI {
 
     public void setMode(DecompositionMode value) {
         core.setMode(value);
+        if (validator != null)
+            validator.validate();
     }
 
 //    public boolean isUseForecast() {
@@ -140,6 +142,7 @@ public class X11SpecUI extends BaseX11SpecUI {
 //            core.setForecastHorizon(0);
 //        }
 //    }
+
     public double getLSigma() {
         return core.getLowerSigma();
     }
@@ -198,13 +201,21 @@ public class X11SpecUI extends BaseX11SpecUI {
     public void setAutoTrendMA(boolean value) {
         if (value) {
             core.setHendersonFilterLength(0);
+        } else if (freq_.intValue() == 2) {
+
+            core.setHendersonFilterLength(5);
         } else {
             core.setHendersonFilterLength(13);
         }
     }
 
     public int getTrendMA() {
-        return core.getHendersonFilterLength() == 0 ? 13 : core.getHendersonFilterLength();
+
+        if (freq_.intValue() == 2) {
+            return core.getHendersonFilterLength() == 0 ? 5 : core.getHendersonFilterLength();
+        } else {
+            return core.getHendersonFilterLength() == 0 ? 13 : core.getHendersonFilterLength();
+        }
     }
 
     public void setTrendMA(int value) {
@@ -246,7 +257,6 @@ public class X11SpecUI extends BaseX11SpecUI {
         core.setSigmavec(sigmavec);
     }
 
-
     public void setExcludefcst(boolean value) {
         core.setExcludefcst(value);
     }
@@ -255,8 +265,16 @@ public class X11SpecUI extends BaseX11SpecUI {
         return core.isExcludefcst();
     }
 
+    public BiasCorrection getBiasCorrection() {
+        return core.getBiasCorrection();
+    }
+
+    public void setBiasCorrection(BiasCorrection bias) {
+        core.setBiasCorrection(bias);
+    }
+
     private static final int MODE_ID = 0, SEAS_ID = 1, FORECAST_ID = 2, BACKCAST_ID = 12, LSIGMA_ID = 3, USIGMA_ID = 4, AUTOTREND_ID = 5,
-            TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8, CALENDARSIGMA_ID = 9, SIGMAVEC_ID = 10, EXCLUDEFCST_ID = 11;
+            TREND_ID = 6, SEASONMA_ID = 7, FULLSEASONMA_ID = 8, CALENDARSIGMA_ID = 9, SIGMAVEC_ID = 10, EXCLUDEFCST_ID = 11, BIAS_ID=12;
 
     @Messages({
         "x11SpecUI.calendarsigmaDesc.name=Calendarsigma",
@@ -521,4 +539,25 @@ public class X11SpecUI extends BaseX11SpecUI {
             return null;
         }
     }
+    
+    @Messages({
+        "x11SpecUI.biasDesc.name=Bias correction",
+        "x11SpecUI.biasDesc.desc=Bias correction for log-additive decomposition"
+    })
+    private EnhancedPropertyDescriptor biasDesc() {
+        if (core.getMode() != DecompositionMode.LogAdditive)
+            return null;
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("biasCorrection", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BIAS_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.x11SpecUI_biasDesc_name());
+            desc.setShortDescription(Bundle.x11SpecUI_biasDesc_desc());
+            edesc.setReadOnly(ro_);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+    
 }

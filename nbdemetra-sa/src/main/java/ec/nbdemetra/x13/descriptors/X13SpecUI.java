@@ -46,7 +46,7 @@ public class X13SpecUI implements IObjectDescriptor<X13Specification> {
     }
 
     public TransformSpecUI getTransform() {
-        return new TransformSpecUI(core.getRegArimaSpecification(), ro_ || core.getRegArimaSpecification().getRegression().hasFixedCoefficients());
+        return new TransformSpecUI(core.getRegArimaSpecification(), ro_ || core.getRegArimaSpecification().getRegression().hasFixedCoefficients(), ()->core.checkMode());
     }
 
     public ArimaSpecUI getArima() {
@@ -63,7 +63,7 @@ public class X13SpecUI implements IObjectDescriptor<X13Specification> {
 
     public X11SpecUI getX11() {
         return new X11SpecUI(core.getX11Specification(), (domain_ != null ? domain_.getFrequency() : TsFrequency.Undefined),
-                core.getRegArimaSpecification().getBasic().isPreprocessing(), ro_);
+                core.getRegArimaSpecification().getBasic().isPreprocessing(), ro_, ()->core.checkMode());
     }
 
     public SaBenchmarkingSpecUI getBenchmarking() {

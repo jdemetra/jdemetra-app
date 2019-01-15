@@ -622,10 +622,10 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
                             break;
                     }
                     OneStepAheadForecastingTest test = new OneStepAheadForecastingTest(lback);
-                    test.test(model.estimation.getRegArima());
-                    //                test.getProcessor().setPrecision(source.getSpecification().getRegArimaSpecification()
-                    //                        .getEstimate().getTol());
-                    return test;
+                    if (test.test(model.estimation.getRegArima()))
+                        return test;
+                    else
+                        return null;
                 }
             }, new OutOfSampleTestUI());
         }

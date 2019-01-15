@@ -27,6 +27,7 @@ import ec.util.desktop.DesktopManager;
 import ec.util.grid.swing.ext.SpreadSheetView;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.helpers.ArrayBook;
+import ec.util.spreadsheet.helpers.ArraySheet;
 import ec.util.various.swing.BasicFileViewer;
 import static ec.util.various.swing.FontAwesome.FA_EXTERNAL_LINK;
 import static ec.util.various.swing.FontAwesome.FA_INFO;
@@ -41,6 +42,7 @@ import static java.beans.BeanInfo.ICON_MONO_16x16;
 import java.io.File;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -74,9 +76,14 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
         Stopwatch sw = Stopwatch.createStarted();
         Book.Factory factory = factories.stream().filter(o -> o != null && o.accept(file)).findFirst().get();
         try (Book book = factory.load(file)) {
-            for (int s = 0; s < book.getSheetCount(); s++) {
-                result.sheet(book.getSheet(s));
-                progress.setProgress(0, book.getSheetCount(), s);
+            ArraySheet[] sheets = new ArraySheet[book.getSheetCount()];
+            AtomicInteger count = new AtomicInteger(0);
+            book.parallelForEach((sheet, i) -> {
+                sheets[i] = ArraySheet.copyOf(sheet);
+                progress.setProgress(0, book.getSheetCount(), count.incrementAndGet());
+            });
+            for (int i = 0; i < sheets.length; i++) {
+                result.sheet(sheets[i]);
             }
         }
         return new Model(factory.getName(), file, result.build(), sw.stop().elapsed(TimeUnit.MILLISECONDS));

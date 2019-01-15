@@ -4,7 +4,7 @@
 
     <groupId>eu.europa.ec.joinup.sat</groupId>
     <artifactId>nbdemetra-parent</artifactId>
-    <version>2.2.1</version>
+    <version>2.2.2</version>
     <packaging>pom</packaging>
 
     <name>NbDemetra - Parent</name>
@@ -18,22 +18,23 @@
     </licenses>
 
     <properties>
+        <!-- build -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
-        <brandingToken>nbdemetra</brandingToken>
-        <netbeans.version>RELEASE82</netbeans.version>
-        <jdemetra.version>2.2.1</jdemetra.version>
-        <!-- plugins versions > -->
-        <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
-        <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
-        <maven-source-plugin.version>2.4</maven-source-plugin.version>
-        <maven-enforcer-plugin.version>1.4</maven-enforcer-plugin.version>
-        <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
+        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
+        <maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
+        <animal-sniffer-maven-plugin.version>1.16</animal-sniffer-maven-plugin.version>
         <findbugs-maven-plugin.version>3.0.0</findbugs-maven-plugin.version>
-        <animal-sniffer-maven-plugin.version>1.14</animal-sniffer-maven-plugin.version>
         <nbm-maven-plugin.version>3.14</nbm-maven-plugin.version>
-        <!-- < plugins versions -->
+        <brandingToken>nbdemetra</brandingToken>
+
+        <!-- dev support -->
+        <netbeans.version>RELEASE82</netbeans.version>
+        <jdemetra.version>${project.version}</jdemetra.version>
     </properties>
 
     <modules>
@@ -45,12 +46,9 @@
         <module>nbdemetra-jdbc</module>
         <module>nbdemetra-common</module>
         <module>nbdemetra-spreadsheet</module>
-        <module>nbdemetra-businesscycle</module>
         <module>nbdemetra-sa</module>
         <module>nbdemetra-sdmx</module>
-        <module>nbdemetra-utils</module>
         <module>nbdemetra-anomalydetection</module>
-        <module>nbdemetra-chainlinking</module>
     </modules>
 
     <dependencyManagement>
@@ -238,21 +236,6 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-sa-advanced</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-businesscycle</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-benchmarking</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>nbdemetra-sa</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -263,17 +246,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-utils</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>nbdemetra-anomalydetection</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-reporting</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- < nbdemetra modules -->
@@ -297,7 +270,9 @@
                     <version>${maven-jar-plugin.version}</version>
                     <configuration>
                         <!-- to have the jar plugin pickup the nbm generated manifest -->
-                        <useDefaultManifestFile>true</useDefaultManifestFile>
+                        <archive>
+                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                        </archive>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -414,42 +389,40 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>netbeans-releases</id>
-            <url>http://bits.netbeans.org/nexus/content/groups/netbeans/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>oss-jfrog-artifactory-releases</id>
-            <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>oss-jfrog-artifactory-snapshots</id>
-            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>joinup-releases</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>joinup-snapshots</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <profiles>
+        <!-- Add missing Java EE Modules on JDK11 -->
+        <profile>
+            <activation>
+                <jdk>11</jdk>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>javax.activation-api</artifactId>
+                    <version>1.2.0</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                    <version>2.4.0-b180830.0359</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.jaxb</groupId>
+                    <artifactId>jaxb-runtime</artifactId>
+                    <version>2.4.0-b180830.0438</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>javax.annotation</groupId>
+                    <artifactId>javax.annotation-api</artifactId>
+                    <version>1.3.2</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        
         <!-- Deploy SNAPSHOTS to jfrog with sources -->
         <profile>
             <id>deploy-snapshots</id>
@@ -488,4 +461,35 @@
             </build>
         </profile>
     </profiles>
+
+    <repositories>
+        <repository>
+            <id>netbeans-releases</id>
+            <url>http://bits.netbeans.org/nexus/content/groups/netbeans/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>oss-jfrog-artifactory-releases</id>
+            <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>oss-jfrog-artifactory-snapshots</id>
+            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>projectlombok.org</id>
+            <url>https://projectlombok.org/edge-releases</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

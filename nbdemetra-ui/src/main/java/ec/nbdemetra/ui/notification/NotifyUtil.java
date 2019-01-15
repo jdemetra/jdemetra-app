@@ -31,6 +31,9 @@ public class NotifyUtil {
 
     private NotifyUtil() {
     }
+    
+    // NotificationDisplayer doesn't appear if message is null
+    private static final String NO_MESSAGE = "";
 
     /**
      * Show message with the specified type and action listener
@@ -45,7 +48,7 @@ public class NotifyUtil {
     public static void show(String title, String message, MessageType type,
             ActionListener actionListener, @Nullable JComponent balloon, @Nullable JComponent popup) {
         if (balloon == null && popup == null) {
-            NotificationDisplayer.getDefault().notify(title, type.getIcon(), message, actionListener);
+            NotificationDisplayer.getDefault().notify(title, type.getIcon(), message != null ? message : NO_MESSAGE, actionListener);
         } else {
             NotificationDisplayer.getDefault().notify(title,
                     type.getIcon(),

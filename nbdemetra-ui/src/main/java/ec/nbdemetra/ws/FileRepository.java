@@ -228,7 +228,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         GregorianCalendarManager source = (GregorianCalendarManager) storage.load(CAL_ID);
         GregorianCalendarManager target = ws.getContext().getGregorianCalendars();
         for (String name : source.getNames()) {
-            IGregorianCalendarProvider cal = source.get(name);
+            IGregorianCalendarProvider cal = source.get(name).withCalendarManager(target);
             target.set(name, cal);
             if (ws.searchDocument(cal) == null) {
                 WorkspaceItem<IGregorianCalendarProvider> item = WorkspaceItem.system(CalendarDocumentManager.ID, name, cal);

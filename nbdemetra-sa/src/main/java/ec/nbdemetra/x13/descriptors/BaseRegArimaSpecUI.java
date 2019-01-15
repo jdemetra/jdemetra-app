@@ -15,10 +15,18 @@ public abstract class BaseRegArimaSpecUI implements IPropertyDescriptors {
 
     final RegArimaSpecification core;
     final boolean ro_;
+    final Validator validator;
 
     public BaseRegArimaSpecUI(RegArimaSpecification spec, boolean ro) {
         core = spec;
         ro_ = ro;
+        validator=null;
+    }
+
+    public BaseRegArimaSpecUI(RegArimaSpecification spec, boolean ro, Validator validator) {
+        core = spec;
+        ro_ = ro;
+        this.validator=validator;
     }
 
     public RegArimaSpecification getCore() {

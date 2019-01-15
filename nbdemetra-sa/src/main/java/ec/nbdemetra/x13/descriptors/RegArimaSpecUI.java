@@ -22,14 +22,20 @@ public class RegArimaSpecUI implements IObjectDescriptor<RegArimaSpecification> 
 
     final RegArimaSpecification core;
     final boolean ro_;
+    final Validator validator;
     private TsDomain domain_;
 
-    public RegArimaSpecUI(RegArimaSpecification spec, TsDomain domain, boolean ro) {
+    public RegArimaSpecUI(RegArimaSpecification spec, TsDomain domain, boolean ro, Validator validator) {
         if (spec == null)
             throw new AssertionError(EMPTY);
         core = spec;
         domain_ = domain;
         ro_ = ro;
+        this.validator=validator;
+    }
+
+    public RegArimaSpecUI(RegArimaSpecification spec, TsDomain domain, boolean ro) {
+        this(spec, domain, ro, null);
     }
 
     @Override
@@ -46,7 +52,7 @@ public class RegArimaSpecUI implements IObjectDescriptor<RegArimaSpecification> 
     }
 
     public TransformSpecUI getTransform() {
-        return new TransformSpecUI(core, ro_ || core.getRegression().hasFixedCoefficients());
+        return new TransformSpecUI(core, ro_ || core.getRegression().hasFixedCoefficients(), validator);
     }
 
     public ArimaSpecUI getArima() {

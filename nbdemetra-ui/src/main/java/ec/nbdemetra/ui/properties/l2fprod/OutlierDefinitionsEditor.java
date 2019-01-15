@@ -14,40 +14,14 @@ import ec.tstoolkit.timeseries.regression.OutlierDefinition;
 import ec.tstoolkit.timeseries.regression.OutlierType;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.GridLayout;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.text.DateFormatSymbols;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
-import javax.swing.AbstractAction;
-import javax.swing.AbstractCellEditor;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -86,7 +60,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                         pane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
                         OutliersModel model = new OutliersModel(first, last, frequency,
-                                definitions_ != null ? new HashMap<>(definitions_) : new HashMap<>());
+                                                                definitions_ != null ? new HashMap<>(definitions_) : new HashMap<>());
                         final JTable table = new JTable(model);
                         table.getTableHeader().setReorderingAllowed(false);
                         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -106,7 +80,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                         clearButton.addActionListener(event -> {
                             OutliersModel mdl = (OutliersModel) table.getModel();
                             table.setModel(new OutliersModel(mdl.getFirstYear(), mdl.getLastYear(), mdl.getFreq(),
-                                    new HashMap<>()));
+                                                             new HashMap<>()));
                         });
                         clearButton.setFocusPainted(false);
                         subPane.add(clearButton);
@@ -132,7 +106,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                             topPane.add(Box.createHorizontalStrut(20));
                             topPane.add(new JLabel("Frequency:"));
                             topPane.add(Box.createHorizontalStrut(10));
-                            final JComboBox comboFreq = new JComboBox(new Integer[]{1, 4, 12});
+                            final JComboBox comboFreq = new JComboBox(new Integer[]{1, 2, 4, 12});
                             comboFreq.setSelectedItem(frequency);
                             topPane.add(comboFreq);
 
@@ -141,9 +115,9 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                                     spinnerLast.setValue(spinnerFirst.getValue());
                                 } else {
                                     table.setModel(new OutliersModel((Integer) spinnerFirst.getValue(),
-                                            (Integer) spinnerLast.getValue(),
-                                            (Integer) comboFreq.getSelectedItem(),
-                                            definitions_ != null ? definitions_ : new HashMap<>()));
+                                                                     (Integer) spinnerLast.getValue(),
+                                                                     (Integer) comboFreq.getSelectedItem(),
+                                                                     definitions_ != null ? definitions_ : new HashMap<>()));
                                 }
                             });
 
@@ -152,18 +126,18 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                                     spinnerFirst.setValue(spinnerLast.getValue());
                                 } else {
                                     table.setModel(new OutliersModel((Integer) spinnerFirst.getValue(),
-                                            (Integer) spinnerLast.getValue(),
-                                            (Integer) comboFreq.getSelectedItem(),
-                                            definitions_ != null ? definitions_ : new HashMap<>()));
+                                                                     (Integer) spinnerLast.getValue(),
+                                                                     (Integer) comboFreq.getSelectedItem(),
+                                                                     definitions_ != null ? definitions_ : new HashMap<>()));
                                 }
                             });
 
                             comboFreq.addItemListener((ItemEvent e1) -> {
                                 if (e1.getStateChange() == ItemEvent.SELECTED) {
                                     table.setModel(new OutliersModel((Integer) spinnerFirst.getValue(),
-                                            (Integer) spinnerLast.getValue(),
-                                            (Integer) comboFreq.getSelectedItem(),
-                                            definitions_ != null ? definitions_ : new HashMap<>()));
+                                                                     (Integer) spinnerLast.getValue(),
+                                                                     (Integer) comboFreq.getSelectedItem(),
+                                                                     definitions_ != null ? definitions_ : new HashMap<>()));
                                 }
                             });
 
@@ -191,7 +165,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
 
                     case LIST:
                         final ArrayEditorDialog<OutlierDescriptor> arrayEditorDialog = new ArrayEditorDialog<>(ancestor,
-                                null != definitions_ ? getDescriptors() : new OutlierDescriptor[]{}, OutlierDescriptor.class);
+                                                                                                               null != definitions_ ? getDescriptors() : new OutlierDescriptor[]{}, OutlierDescriptor.class);
                         arrayEditorDialog.setTitle("Pre-specified outliers");
                         arrayEditorDialog.setLocationRelativeTo(ancestor);
                         arrayEditorDialog.setVisible(true);
@@ -452,7 +426,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
 
         @Override
         public Component getListCellRendererComponent(JList list, Object value,
-                int index, boolean isSelected, boolean hasFocus) {
+                                                      int index, boolean isSelected, boolean hasFocus) {
             CheckListItem item = (CheckListItem) value;
             setEnabled(list.isEnabled());
             setSelected(item.isSelected());
