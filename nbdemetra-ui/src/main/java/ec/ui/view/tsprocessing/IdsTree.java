@@ -81,9 +81,10 @@ public class IdsTree {
         int pos = 0;
         while (pos < pview.getCount()) {
             boolean ok = false;
-            for (DefaultMutableTreeNode node : (Iterable<DefaultMutableTreeNode>)NbCollections.iterable(cur.children())) {
-                if (pview.get(pos).equals(node.getUserObject())) {
-                    cur = node;
+            for (Object node : NbCollections.iterable(cur.children())) {
+                if (node instanceof DefaultMutableTreeNode
+                        && pview.get(pos).equals(((DefaultMutableTreeNode) node).getUserObject())) {
+                    cur = (DefaultMutableTreeNode) node;
                     ++pos;
                     ok = true;
                     break;
