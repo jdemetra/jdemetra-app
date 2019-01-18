@@ -25,7 +25,7 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.util.TooManyListenersException;
 import org.openide.util.Exceptions;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  *

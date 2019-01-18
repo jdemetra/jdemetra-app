@@ -28,7 +28,7 @@ public class TransferableXml<T, X extends IXmlConverter<T>> implements Transfera
 
     public static <T, X extends IXmlConverter<T>> T read(Transferable dataobj, Class<T> tclass, Class<X> xclass) {
         try {
-            DataFlavor local = DataTransfers.newLocalObjectDataFlavor(tclass);
+            DataFlavor local = demetra.ui.datatransfer.DataTransfers.newLocalObjectDataFlavor(tclass);
             if (dataobj.isDataFlavorSupported(local)) {
                 return (T) dataobj.getTransferData(local);
             } else {
@@ -65,7 +65,7 @@ public class TransferableXml<T, X extends IXmlConverter<T>> implements Transfera
     public TransferableXml(T obj, Class<X> xclass) {
         xclass_ = xclass;
         obj_ = obj;
-        local_ = DataTransfers.newLocalObjectDataFlavor(obj.getClass());
+        local_ = demetra.ui.datatransfer.DataTransfers.newLocalObjectDataFlavor(obj.getClass());
     }
 
     @Override

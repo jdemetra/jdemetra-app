@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.ns;
 
 import com.google.common.collect.Iterables;
+import demetra.ui.NamedService;
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Dimension;
 import java.beans.PropertyVetoException;
@@ -44,7 +45,7 @@ public class NamedServiceChoicePanel extends javax.swing.JPanel implements Explo
         jComboBox1.setPreferredSize(new Dimension(200, 24));
     }
 
-    public void setContent(Iterable<? extends INamedService> namedServices) {
+    public void setContent(Iterable<? extends NamedService> namedServices) {
         Iterable<NamedServiceNode> nodes = Iterables.transform(namedServices, o -> new NamedServiceNode(o));
         em.setRootContext(new AbstractNodeBuilder().add(nodes).orderable(false).build());
     }

@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.ns;
 
 import com.google.common.base.Preconditions;
+import demetra.ui.NamedService;
 import ec.nbdemetra.ui.Config;
 
 /**
@@ -25,15 +26,15 @@ import ec.nbdemetra.ui.Config;
  */
 public class NamedServiceSupport {
 
-    protected final Class<? extends INamedService> service;
+    protected final Class<? extends NamedService> service;
     protected final String name;
 
-    public NamedServiceSupport(Class<? extends INamedService> service, String name) {
+    public NamedServiceSupport(Class<? extends NamedService> service, String name) {
         this.service = service;
         this.name = name;
     }
 
-    public Class<? extends INamedService> getService() {
+    public Class<? extends NamedService> getService() {
         return service;
     }
 

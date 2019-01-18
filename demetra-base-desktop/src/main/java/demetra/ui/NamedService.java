@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.ns;
+package demetra.ui;
 
 import ec.util.various.swing.OnEDT;
 import java.awt.Image;
@@ -27,7 +27,7 @@ import org.openide.nodes.Sheet;
  *
  * @author Philippe Charles
  */
-public interface INamedService {
+public interface NamedService {
 
     @OnEDT
     @Nonnull

@@ -49,7 +49,7 @@ import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultXYDataset;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  *

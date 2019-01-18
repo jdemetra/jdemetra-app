@@ -4,26 +4,20 @@
  */
 package ec.tss.datatransfer.impl;
 
-import demetra.tsprovider.TsCollection;
-import ec.tss.datatransfer.DataTransfers;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.DataTransferSpi;
+import demetra.ui.datatransfer.DataTransfers;
+import demetra.ui.OldDataTransferSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DataTransferSpi.class, position = 0)
-public final class LocalObjectDataTransfer implements DataTransferSpi {
+@ServiceProvider(service = OldDataTransferSpi.class, position = 0)
+public final class LocalObjectDataTransfer implements OldDataTransferSpi {
 
     public static final DataFlavor DATA_FLAVOR = DataTransfers.newLocalObjectDataFlavor(LocalObjectDataTransfer.class);
 
@@ -43,26 +37,6 @@ public final class LocalObjectDataTransfer implements DataTransferSpi {
     @Override
     public DataFlavor getDataFlavor() {
         return DATA_FLAVOR;
-    }
-
-    @Override
-    public boolean canExportTsCollection(TsCollection col) {
-        return true;
-    }
-
-    @Override
-    public Object exportTsCollection(TsCollection col) {
-        return col;
-    }
-
-    @Override
-    public boolean canImportTsCollection(Object obj) {
-        return obj instanceof TsCollection;
-    }
-
-    @Override
-    public TsCollection importTsCollection(Object obj) throws IOException {
-        return (TsCollection) obj;
     }
 
     @Override
@@ -103,20 +77,5 @@ public final class LocalObjectDataTransfer implements DataTransferSpi {
     @Override
     public Table<?> importTable(Object obj) throws IOException, ClassCastException {
         return (Table<?>) obj;
-    }
-
-    @Nullable
-    public TsCollection peekTsCollection(@Nonnull Transferable t) {
-        if (t.isDataFlavorSupported(DATA_FLAVOR)) {
-            try {
-                Object data = t.getTransferData(DATA_FLAVOR);
-                if (canImportTsCollection(data)) {
-                    return importTsCollection(data);
-                }
-            } catch (UnsupportedFlavorException | IOException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-        }
-        return null;
     }
 }

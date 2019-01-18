@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.ns;
 
+import demetra.ui.NamedService;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import java.awt.Image;
 import org.openide.util.ImageUtilities;
@@ -24,11 +25,11 @@ import org.openide.util.ImageUtilities;
  *
  * @author Philippe Charles
  */
-public abstract class AbstractNamedService implements INamedService {
+public abstract class AbstractNamedService implements NamedService {
 
     protected final NamedServiceSupport support;
 
-    protected AbstractNamedService(Class<? extends INamedService> service, String name) {
+    protected AbstractNamedService(Class<? extends NamedService> service, String name) {
         this.support = new NamedServiceSupport(service, name);
     }
 

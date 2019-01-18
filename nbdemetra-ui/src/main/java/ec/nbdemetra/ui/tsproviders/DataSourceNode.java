@@ -18,6 +18,8 @@ package ec.nbdemetra.ui.tsproviders;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
+import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.datatransfer.DataTransfers;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.interchange.Exportable;
 import ec.nbdemetra.ui.INameable;
@@ -30,7 +32,6 @@ import static ec.nbdemetra.ui.tsproviders.DataSourceNode.ACTION_PATH;
 import ec.nbdemetra.ui.tssave.ITsSavable;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
-import ec.tss.datatransfer.DataTransfers;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
@@ -67,7 +68,6 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import demetra.ui.DataTransfer;
 
 /**
  * A node that represents a DataSource.

@@ -29,6 +29,7 @@ import ec.ui.chart.TsXYDatasets;
 import demetra.ui.components.HasChart.LinesThickness;
 import demetra.ui.components.HasObsFormat;
 import demetra.ui.components.TimeSeriesComponent;
+import demetra.ui.datatransfer.DataTransfer;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.util.chart.ColorScheme.KnownColor;
@@ -78,7 +79,6 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.Day;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.Layer;
-import demetra.ui.DataTransfer;
 
 /**
  *

@@ -25,7 +25,6 @@ import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;
 import ec.tss.TsInformationType;
-import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TransferableXml;
 import ec.tss.sa.EstimationPolicyType;
 import ec.tss.sa.SaItem;
@@ -74,7 +73,8 @@ import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.datatransfer.DataTransfers;
 
 /**
  *

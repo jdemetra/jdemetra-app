@@ -15,7 +15,8 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JToolBar;
 import javax.swing.TransferHandler;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
+import java.util.Optional;
 
 /**
  *
@@ -122,14 +123,14 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            demetra.tsprovider.Ts ts = DataTransfer.getDefault().toTs(support.getTransferable());
-            if (ts != null) {
+            Optional<demetra.tsprovider.Ts> ts = DataTransfer.getDefault().toTs(support.getTransferable());
+            if (ts.isPresent()) {
                 Ts[] input = (Ts[]) getDocument().getInput();
                 if (input == null) {
                     input = new Ts[2];
                 }else
                     input=input.clone();
-                input[pos] = TsConverter.fromTs(ts);
+                input[pos] = TsConverter.fromTs(ts.get());
                 getDocument().setInput(input);
                 refreshAll();
                 return true;

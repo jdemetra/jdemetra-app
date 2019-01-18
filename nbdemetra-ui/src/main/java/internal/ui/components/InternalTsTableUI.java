@@ -45,7 +45,7 @@ import javax.swing.table.*;
 import org.netbeans.swing.etable.ETable;
 import org.netbeans.swing.etable.ETableColumn;
 import org.netbeans.swing.etable.ETableColumnModel;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  *

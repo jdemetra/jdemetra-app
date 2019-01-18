@@ -26,7 +26,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import javax.annotation.Nonnull;
 import javax.swing.ListSelectionModel;
-import demetra.ui.DataTransfer;
+import demetra.ui.OldDataTransfer;
 
 /**
  *
@@ -37,7 +37,7 @@ public abstract class TableGridCommand extends JCommand<JGrid> {
     @Override
     public void execute(JGrid grid) {
         Table<?> table = toTable(grid);
-        Transferable t = DataTransfer.getDefault().fromTable(table);
+        Transferable t = OldDataTransfer.getDefault().fromTable(table);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
     }
 

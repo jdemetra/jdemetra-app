@@ -49,7 +49,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
-import demetra.ui.DataTransfer;
+import demetra.ui.OldDataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  *
@@ -257,7 +258,7 @@ final class AnomalyDetectionChart extends JComponent {
 
         @Override
         public void execute(AnomalyDetectionChart c) throws Exception {
-            Transferable t = DataTransfer.getDefault().fromTable(toTable(c.model.getOutliers()));
+            Transferable t = OldDataTransfer.getDefault().fromTable(toTable(c.model.getOutliers()));
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
 

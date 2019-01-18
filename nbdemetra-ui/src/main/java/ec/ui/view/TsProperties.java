@@ -20,7 +20,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import org.openide.util.NbCollections;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
+import java.util.Optional;
 
 /**
  *
@@ -149,9 +150,9 @@ public class TsProperties extends JComponent implements IDisposable {
 
         @Override
         public boolean importData(TransferSupport support) {
-            demetra.tsprovider.Ts s = DataTransfer.getDefault().toTs(support.getTransferable());
-            if (s != null) {
-                setTs(TsConverter.fromTs(s));
+            Optional<demetra.tsprovider.Ts> s = DataTransfer.getDefault().toTs(support.getTransferable());
+            if (s.isPresent()) {
+                setTs(TsConverter.fromTs(s.get()));
             }
             return super.importData(support);
         }

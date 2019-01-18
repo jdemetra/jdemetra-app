@@ -51,13 +51,18 @@ import java.util.Date;
 import java.util.Locale;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.DataTransferSpi;
+import demetra.ui.OldDataTransferSpi;
+import demetra.ui.datatransfer.DataTransferSpi;
+import org.openide.util.lookup.ServiceProviders;
 
 /**
  * @author Jean Palate
  */
-@ServiceProvider(service = DataTransferSpi.class, position = 2000)
-public final class TxtDataTransfer implements DataTransferSpi, IConfigurable {
+@ServiceProviders({
+    @ServiceProvider(service = DataTransferSpi.class, position = 1000)
+    ,@ServiceProvider(service = OldDataTransferSpi.class, position = 2000)
+})
+public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSpi, IConfigurable {
 
     private static final char DELIMITOR = '\t';
     private static final String NEWLINE = StandardSystemProperty.LINE_SEPARATOR.value();

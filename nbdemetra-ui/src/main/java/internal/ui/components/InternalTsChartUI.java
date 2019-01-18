@@ -60,7 +60,7 @@ import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.jfree.data.xy.IntervalXYDataset;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 public final class InternalTsChartUI implements InternalUI<JTsChart> {
 

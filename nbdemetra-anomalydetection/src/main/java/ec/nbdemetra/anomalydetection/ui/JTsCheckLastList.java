@@ -63,7 +63,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
-import demetra.ui.DataTransfer;
+import demetra.ui.OldDataTransfer;
 
 /**
  * List component containing input and output results of a Check Last batch
@@ -512,7 +512,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         @Override
         public void execute(JTsCheckLastList component) throws Exception {
-            Transferable t = DataTransfer.getDefault().fromTable(toTable(component));
+            Transferable t = OldDataTransfer.getDefault().fromTable(toTable(component));
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
     }

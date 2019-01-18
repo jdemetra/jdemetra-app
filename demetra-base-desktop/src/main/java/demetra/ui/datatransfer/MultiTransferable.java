@@ -14,10 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui;
+package demetra.ui.datatransfer;
 
-import ec.tss.tsproviders.utils.FunctionWithIO;
 import ec.util.various.swing.OnAnyThread;
+import ioutil.IO;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -34,13 +34,13 @@ import java.util.concurrent.ConcurrentMap;
  * @author Philippe Charles
  */
 @lombok.RequiredArgsConstructor
-final class MultiTransferable<HANDLER> implements Transferable {
+public final class MultiTransferable<HANDLER> implements Transferable {
 
     @lombok.NonNull
     private final Map<DataFlavor, List<HANDLER>> roHandlersByFlavor;
 
     @lombok.NonNull
-    private final FunctionWithIO<HANDLER, Object> transferDataLoader;
+    private final IO.Function<HANDLER, Object> transferDataLoader;
 
     private final ConcurrentMap<DataFlavor, Object> cache = new ConcurrentHashMap<>();
 
@@ -86,7 +86,7 @@ final class MultiTransferable<HANDLER> implements Transferable {
         }
         Iterator<HANDLER> handlers = list.iterator();
         try {
-            return transferDataLoader.apply(handlers.next());
+            return transferDataLoader.applyWithIO(handlers.next());
         } catch (IOException ex) {
             return loadNext(handlers, ex);
         }
@@ -98,7 +98,7 @@ final class MultiTransferable<HANDLER> implements Transferable {
             throw root;
         }
         try {
-            return transferDataLoader.apply(handlers.next());
+            return transferDataLoader.applyWithIO(handlers.next());
         } catch (IOException ex) {
             root.addSuppressed(ex);
             return loadNext(handlers, root);

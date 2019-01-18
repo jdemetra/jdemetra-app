@@ -17,10 +17,10 @@
 package internal.ui;
 
 import demetra.tsprovider.Ts;
+import demetra.ui.NamedService;
 import demetra.ui.TsAction;
 import demetra.ui.TsActionSpi;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.ns.INamedService;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,7 +38,7 @@ import org.openide.util.lookup.ServiceProvider;
 public final class DefaultTsAction implements TsAction {
 
     @Override
-    public List<? extends INamedService> getTsActions() {
+    public List<? extends NamedService> getTsActions() {
         return lookupAll().collect(Collectors.toList());
     }
 

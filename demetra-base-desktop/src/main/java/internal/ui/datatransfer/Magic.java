@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 National Bank of Belgium
+ * Copyright 2019 National Bank of Belgium
  * 
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,24 +14,19 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.sa;
+package internal.ui.datatransfer;
 
-import demetra.ui.NamedService;
-import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.tstoolkit.design.ServiceDefinition;
-import java.awt.Image;
-import org.openide.util.ImageUtilities;
+import demetra.tsprovider.Ts;
+import demetra.tsprovider.TsInformationType;
 
 /**
  *
  * @author Philippe Charles
- * @since 2.1.0
  */
-@ServiceDefinition(hasPosition = true)
-public abstract class SaDiagnosticsFactoryBuddy implements NamedService {
+@lombok.experimental.UtilityClass
+public class Magic {
 
-    @Override
-    public Image getIcon(int type, boolean opened) {
-        return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
+    public static Ts load(Ts ts, TsInformationType tsInformationType) {
+        return ts;
     }
 }

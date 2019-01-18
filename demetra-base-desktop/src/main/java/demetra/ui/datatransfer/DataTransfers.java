@@ -1,11 +1,23 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2018 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
-package ec.tss.datatransfer;
+package demetra.ui.datatransfer;
 
-import ec.tss.tsproviders.utils.IFormatter;
-import ec.tss.tsproviders.utils.IParser;
+import demetra.util.Formatter;
+import demetra.util.Parser;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -16,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -54,7 +67,7 @@ public final class DataTransfers {
         return Optional.empty();
     }
 
-    public static <T> Optional<T> tryParse(Transferable t, IParser<T> parser) {
+    public static <T> Optional<T> tryParse(Transferable t, Parser<T> parser) {
         if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
             try {
                 String text = (String) t.getTransferData(DataFlavor.stringFlavor);
@@ -68,7 +81,7 @@ public final class DataTransfers {
         return Optional.empty();
     }
 
-    public static <T> Optional<Transferable> tryFormat(T value, IFormatter<T> formatter) {
+    public static <T> Optional<Transferable> tryFormat(T value, Formatter<T> formatter) {
         String text = formatter.formatAsString(value);
         return text != null
                 ? Optional.<Transferable>of(new StringSelection(text))
@@ -119,7 +132,7 @@ public final class DataTransfers {
      * {@link Clipboard#getContents(java.lang.Object)} that might throw
      * OutOfMemoryError.
      */
-    @lombok.extern.slf4j.Slf4j
+    @lombok.extern.java.Log
     private static final class ClipboardAsTransferable implements Transferable {
 
         private final Clipboard clipboard;
@@ -133,7 +146,7 @@ public final class DataTransfers {
             try {
                 return clipboard.getAvailableDataFlavors();
             } catch (IllegalStateException ex) {
-                log.warn("While getting data flavors from clipboard", ex);
+                log.log(Level.WARNING, "While getting data flavors from clipboard", ex);
                 return new DataFlavor[0];
             }
         }
@@ -143,7 +156,7 @@ public final class DataTransfers {
             try {
                 return clipboard.isDataFlavorAvailable(flavor);
             } catch (IllegalStateException ex) {
-                log.warn("While checking data flavor from clipboard", ex);
+                log.log(Level.WARNING, "While checking data flavor from clipboard", ex);
                 return false;
             }
         }
@@ -153,7 +166,7 @@ public final class DataTransfers {
             try {
                 return clipboard.getData(flavor);
             } catch (IllegalStateException | OutOfMemoryError ex) {
-                log.warn("While getting data from clipboard", ex);
+                log.log(Level.WARNING, "While getting data from clipboard", ex);
                 return new IOException(ex);
             }
         }

@@ -53,7 +53,7 @@ import org.jfree.data.Range;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  * Chart Panel used in popups of Revision History View

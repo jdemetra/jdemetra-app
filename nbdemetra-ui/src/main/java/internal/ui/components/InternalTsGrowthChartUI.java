@@ -50,7 +50,7 @@ import java.text.NumberFormat;
 import java.util.Date;
 import javax.swing.*;
 import org.jfree.data.xy.IntervalXYDataset;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  *

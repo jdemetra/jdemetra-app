@@ -43,7 +43,8 @@ import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
+import java.util.Optional;
 
 /**
  * Top component which displays something.
@@ -204,9 +205,9 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            demetra.tsprovider.Ts s = DataTransfer.getDefault().toTs(support.getTransferable());
-            if (s != null) {
-                setTs(s);
+            Optional<demetra.tsprovider.Ts> s = DataTransfer.getDefault().toTs(support.getTransferable());
+            if (s.isPresent()) {
+                setTs(s.get());
                 return true;
             }
             return false;

@@ -17,6 +17,7 @@
 package ec.nbdemetra.ui.ns;
 
 import com.google.common.collect.Iterables;
+import demetra.ui.NamedService;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.IResetable;
@@ -40,11 +41,11 @@ import org.openide.util.lookup.InstanceContent;
  */
 public class NamedServiceNode extends AbstractNode {
 
-    public NamedServiceNode(@Nonnull INamedService namedService) {
+    public NamedServiceNode(@Nonnull NamedService namedService) {
         this(namedService, new InstanceContent());
     }
 
-    private NamedServiceNode(INamedService namedService, InstanceContent abilities) {
+    private NamedServiceNode(NamedService namedService, InstanceContent abilities) {
         super(Children.LEAF, new AbstractLookup(abilities));
         // order matters !
         if (namedService instanceof IConfigurable) {
@@ -59,8 +60,8 @@ public class NamedServiceNode extends AbstractNode {
         setDisplayName(namedService.getDisplayName());
     }
 
-    protected INamedService getNamedService() {
-        return getLookup().lookup(INamedService.class);
+    protected NamedService getNamedService() {
+        return getLookup().lookup(NamedService.class);
     }
 
     @Override
@@ -98,7 +99,7 @@ public class NamedServiceNode extends AbstractNode {
         } : super.getPreferredAction();
     }
 
-    public static void loadAll(ExplorerManager em, Iterable<? extends INamedService> items) {
+    public static void loadAll(ExplorerManager em, Iterable<? extends NamedService> items) {
         Iterable<NamedServiceNode> nodes = Iterables.transform(items, o -> new NamedServiceNode(o));
         em.setRootContext(new AbstractNodeBuilder().add(nodes).build());
     }

@@ -16,9 +16,7 @@
  */
 package demetra.ui;
 
-import demetra.tsprovider.TsCollection;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.ns.INamedService;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.design.ServiceDefinition;
@@ -40,7 +38,7 @@ import org.openide.util.ImageUtilities;
  * @since 1.3.0
  */
 @ServiceDefinition(hasPosition = true)
-public interface DataTransferSpi extends INamedService {
+public interface OldDataTransferSpi extends NamedService {
 
     @Nonnull
     DataFlavor getDataFlavor();
@@ -58,30 +56,6 @@ public interface DataTransferSpi extends INamedService {
         b.with(String.class).selectConst("DataFlavor", getDataFlavor().getMimeType()).display("Data Flavor").add();
         result.put(b.build());
         return result;
-    }
-    //</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="TimeSeries struct">
-    @OnEDT
-    default boolean canExportTsCollection(@Nonnull TsCollection col) {
-        return false;
-    }
-
-    @OnAnyThread
-    @Nonnull
-    default Object exportTsCollection(@Nonnull TsCollection col) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    @OnEDT
-    default boolean canImportTsCollection(@Nonnull Object obj) {
-        return false;
-    }
-
-    @OnEDT
-    @Nonnull
-    default TsCollection importTsCollection(@Nonnull Object obj) throws IOException, ClassCastException {
-        throw new UnsupportedOperationException();
     }
     //</editor-fold>
 

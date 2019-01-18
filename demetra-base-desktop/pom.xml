@@ -61,7 +61,7 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>        
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
@@ -130,6 +130,27 @@
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna-platform</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-api-annotations-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-lookup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-nodes</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -140,13 +161,16 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
+                        <publicPackage>demetra.ui</publicPackage>
                         <publicPackage>demetra.ui.beans</publicPackage>
+                        <publicPackage>demetra.ui.datatransfer</publicPackage>
                         <publicPackage>demetra.ui.jfreechart</publicPackage>
                         <!-- core libs -->
                         <publicPackage>demetra.tsprovider</publicPackage>
                         <publicPackage>demetra.tsprovider.util</publicPackage>
                         <publicPackage>demetra.timeseries</publicPackage>
                         <publicPackage>ioutil</publicPackage>
+                        <publicPackage>javax.annotation.*</publicPackage>
                         <!-- desktop libs -->
                         <publicPackage>ec.util.chart.*</publicPackage>
                         <publicPackage>ec.util.completion.*</publicPackage>

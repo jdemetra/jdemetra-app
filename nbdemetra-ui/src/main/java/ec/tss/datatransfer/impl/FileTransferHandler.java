@@ -5,10 +5,10 @@
 package ec.tss.datatransfer.impl;
 
 import demetra.ui.TsManager;
+import demetra.ui.datatransfer.DataTransfers;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.nbdemetra.ui.tsproviders.actions.OpenProvidersAction;
 import ec.tss.datatransfer.DataSourceTransferHandler;
-import ec.tss.datatransfer.DataTransfers;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IFileBean;
 import ec.tss.tsproviders.IFileLoader;

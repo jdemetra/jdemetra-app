@@ -76,7 +76,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 

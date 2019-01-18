@@ -17,6 +17,7 @@
 package internal.ui.components;
 
 import demetra.bridge.TsConverter;
+import demetra.ui.NamedService;
 import demetra.ui.TsAction;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.TsManager;
@@ -26,10 +27,8 @@ import static demetra.ui.components.HasTsCollection.TS_COLLECTION_PROPERTY;
 import static demetra.ui.components.HasTsCollection.UDPATE_MODE_PROPERTY;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.awt.KeyStrokes;
-import ec.nbdemetra.ui.ns.INamedService;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
-import ec.tss.datatransfer.DataTransfers;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.ui.commands.ComponentCommand;
@@ -60,8 +59,10 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.ImageUtilities;
 import org.openide.util.WeakListeners;
-import demetra.ui.DataTransfer;
 import java.awt.Image;
+import demetra.ui.OldDataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.datatransfer.DataTransfers;
 
 /**
  *
@@ -145,7 +146,7 @@ public class HasTsCollectionCommands {
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_BAR_CHART_O));
         ExtAction.hideWhenDisabled(result);
 
-        for (INamedService o : TsAction.getDefault().getTsActions()) {
+        for (NamedService o : TsAction.getDefault().getTsActions()) {
             JMenuItem item = new JMenuItem(HasTsCollectionCommands.openWith(o.getName()).toAction(c));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
@@ -475,7 +476,7 @@ public class HasTsCollectionCommands {
         @Override
         public boolean isEnabled(HasTsCollection c) {
             return !c.getTsUpdateMode().isReadOnly()
-                    && DataTransfer.getDefault().isValidClipboard();
+                    && OldDataTransfer.getDefault().isValidClipboard();
         }
 
         @Override
@@ -489,10 +490,10 @@ public class HasTsCollectionCommands {
             if (c instanceof Component) {
                 result.withWeakPropertyChangeListener((Component) c, UDPATE_MODE_PROPERTY);
             }
-            DataTransfer source = DataTransfer.getDefault();
+            OldDataTransfer source = OldDataTransfer.getDefault();
             PropertyChangeListener realListener = evt -> result.refreshActionState();
             result.putValue("TssTransferSupport", realListener);
-            source.addPropertyChangeListener(DataTransfer.VALID_CLIPBOARD_PROPERTY, WeakListeners.propertyChange(realListener, source));
+            source.addPropertyChangeListener(OldDataTransfer.VALID_CLIPBOARD_PROPERTY, WeakListeners.propertyChange(realListener, source));
             return result;
         }
     }
