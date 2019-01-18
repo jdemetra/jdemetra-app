@@ -80,10 +80,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nbdemetra-sdmx</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>nbdemetra-anomalydetection</artifactId>
         </dependency>
     </dependencies>
