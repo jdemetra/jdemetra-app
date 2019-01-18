@@ -43,7 +43,6 @@
         <module>nbdemetra-branding</module>
         <module>nbdemetra-app</module>
         <module>nbdemetra-ui</module>
-        <module>nbdemetra-odbc</module>
         <module>nbdemetra-jdbc</module>
         <module>nbdemetra-common</module>
         <module>nbdemetra-spreadsheet</module>
@@ -207,11 +206,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>nbdemetra-ui</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-odbc</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -60,10 +60,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nbdemetra-odbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>nbdemetra-jdbc</artifactId>
         </dependency>
         <dependency>
