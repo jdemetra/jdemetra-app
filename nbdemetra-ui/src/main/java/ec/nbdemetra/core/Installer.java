@@ -27,7 +27,6 @@ import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.ISaProcessingFactory;
 import ec.tss.sa.SaManager;
 import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.utils.ByteArrayConverter;
 import ec.tss.tsproviders.utils.Formatters;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.IParser;
@@ -56,7 +55,6 @@ public final class Installer {
 
     public static final InstallerStep STEP = InstallerStep.all(
             new AppVersionStep(),
-            new ByteArrayConverterStep(),
             new ProvidersStep(),
             new SaFactoriesStep(),
             new SaDiagnosticsStep(),
@@ -74,19 +72,6 @@ public final class Installer {
                 p.clear();
             } catch (IOException ex) {
                 LOGGER.warn("While loading version", ex);
-            }
-        }
-    }
-
-    private static final class ByteArrayConverterStep extends InstallerStep {
-
-        @Override
-        public void restore() {
-            try {
-                ByteArrayConverter.setInstance(new SnappyConverter());
-                LOGGER.info("Using Snappy byte array converter");
-            } catch (Exception ex) {
-                LOGGER.warn("While loading Snappy byte array converter", ex);
             }
         }
     }

@@ -17,7 +17,7 @@
         <l2fprod.version>1.0.5</l2fprod.version>
         <jcalendar.version>1.4</jcalendar.version>
         <swinglayout.version>1.0.3</swinglayout.version>
-        <java-desktop-util.version>${jd2.version}</java-desktop-util.version>
+        <java-desktop-util.version>2.2.2</java-desktop-util.version>
     </properties>
 
     <dependencyManagement>
@@ -211,11 +211,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.xerial.snappy</groupId>
-            <artifactId>snappy-java</artifactId>
-            <version>1.1.2</version>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
