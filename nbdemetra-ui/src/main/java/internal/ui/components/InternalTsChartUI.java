@@ -31,7 +31,7 @@ import ec.nbdemetra.ui.awt.InputMaps;
 import ec.tstoolkit.utilities.IntList;
 import demetra.ui.components.JTsChart;
 import demetra.ui.components.TsFeatureHelper;
-import demetra.ui.util.jfreechart.TsXYDataset;
+import demetra.ui.jfreechart.TsXYDataset;
 import ec.ui.chart.JTimeSeriesChartUtil;
 import ec.util.chart.ObsFunction;
 import ec.util.chart.ObsIndex;

@@ -26,7 +26,7 @@ import ec.nbdemetra.ui.ThemeSupport;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import demetra.ui.components.JTsGrid;
-import demetra.ui.util.jfreechart.TsXYDataset;
+import demetra.ui.jfreechart.TsXYDataset;
 import ec.ui.chart.TsCharts;
 import ec.ui.view.res.ResidualsView;
 import ec.util.chart.ColorScheme;

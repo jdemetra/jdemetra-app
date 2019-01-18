@@ -16,7 +16,7 @@
  */
 package demetra.ui.beans;
 
-import ec.tstoolkit.utilities.Arrays2;
+import demetra.util.Arrays2;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 

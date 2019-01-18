@@ -12,14 +12,6 @@
 
     <name>NbDemetra - UI</name>
 
-    <properties>
-        <miglayout.version>3.7.4</miglayout.version>
-        <l2fprod.version>1.0.5</l2fprod.version>
-        <jcalendar.version>1.4</jcalendar.version>
-        <swinglayout.version>1.0.3</swinglayout.version>
-        <java-desktop-util.version>2.2.2</java-desktop-util.version>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -28,35 +20,6 @@
                 <version>${jd2.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>eu.europa.ec.joinup.sat</groupId>
-                <artifactId>nbdemetra-utils</artifactId>
-                <version>${java-desktop-util.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>com.miglayout</groupId>
-                <artifactId>miglayout</artifactId>
-                <version>${miglayout.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.tros</groupId>
-                <artifactId>l2fprod-properties-editor</artifactId>
-                <version>${l2fprod.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.toedter</groupId>
-                <artifactId>jcalendar</artifactId>
-                <version>${jcalendar.version}</version> 
-            </dependency>
-            <dependency>
-                <groupId>org.swinglabs</groupId>
-                <artifactId>swing-layout</artifactId>
-                <version>${swinglayout.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -221,46 +184,21 @@
                     <groupId>eu.europa.ec.joinup.sat</groupId>
                     <artifactId>demetra-data-tests</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>eu.europa.ec.joinup.sat</groupId>
+                    <artifactId>demetra-datatypes</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>eu.europa.ec.joinup.sat</groupId>
+                    <artifactId>demetra-io-core</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
-
-        <!-- Other -->
+        
+        <!-- nbdemetra -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nbdemetra-utils</artifactId>
-            <version>${java-desktop-util.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.miglayout</groupId>
-            <artifactId>miglayout</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.tros</groupId>
-            <artifactId>l2fprod-properties-editor</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.toedter</groupId>
-            <artifactId>jcalendar</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreechart</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreesvg</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.swinglabs</groupId>
-            <artifactId>swing-layout</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna-platform</artifactId>
+            <artifactId>demetra-base-desktop</artifactId>
         </dependency>
     </dependencies>
 
@@ -309,11 +247,6 @@
                         <publicPackage>ec.tstoolkit.*</publicPackage>
                         <publicPackage>ec.ui.*</publicPackage>
                         <publicPackage>ec.util.*</publicPackage>
-                        <publicPackage>net.miginfocom.*</publicPackage>
-                        <publicPackage>org.jfree.*</publicPackage>
-                        <publicPackage>com.sun.jna.*</publicPackage>
-                        <publicPackage>com.l2fprod.common.*</publicPackage>
-                        <publicPackage>com.toedter.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

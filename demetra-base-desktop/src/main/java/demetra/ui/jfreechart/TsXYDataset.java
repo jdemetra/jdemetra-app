@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.ui.util.jfreechart;
+package demetra.ui.jfreechart;
 
 import demetra.tsprovider.Ts;
 import java.time.ZoneOffset;

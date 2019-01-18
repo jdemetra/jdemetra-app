@@ -48,6 +48,7 @@
         <module>nbdemetra-spreadsheet</module>
         <module>nbdemetra-sa</module>
         <module>nbdemetra-anomalydetection</module>
+        <module>demetra-base-desktop</module>
     </modules>
 
     <dependencyManagement>
@@ -231,6 +232,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>nbdemetra-anomalydetection</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-base-desktop</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- < nbdemetra modules -->
