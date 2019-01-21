@@ -6,7 +6,7 @@ package ec.tss.datatransfer;
 
 import com.google.common.base.Suppliers;
 import demetra.bridge.TsConverter;
-import ec.nbdemetra.ui.awt.TransferHandlers;
+import demetra.ui.util.TransferHandlers;
 import ec.tss.Ts;
 import demetra.ui.components.JTsChart;
 import java.awt.Color;

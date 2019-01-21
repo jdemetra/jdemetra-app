@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.util.table.swing.JTables;
 import ec.util.various.swing.FontAwesome;

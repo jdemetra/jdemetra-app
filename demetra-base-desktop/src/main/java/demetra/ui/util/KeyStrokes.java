@@ -14,18 +14,18 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.awt;
+package demetra.ui.util;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.Maps;
+import demetra.util.List2;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Supplier;
 import javax.swing.InputMap;
 import javax.swing.JList;
@@ -43,12 +43,12 @@ public final class KeyStrokes {
         // static class
     }
 
-    public static final ImmutableList<KeyStroke> COPY;
-    public static final ImmutableList<KeyStroke> PASTE;
-    public static final ImmutableList<KeyStroke> SELECT_ALL;
-    public static final ImmutableList<KeyStroke> DELETE;
-    public static final ImmutableList<KeyStroke> OPEN;
-    public static final ImmutableList<KeyStroke> CLEAR;
+    public static final List<KeyStroke> COPY;
+    public static final List<KeyStroke> PASTE;
+    public static final List<KeyStroke> SELECT_ALL;
+    public static final List<KeyStroke> DELETE;
+    public static final List<KeyStroke> OPEN;
+    public static final List<KeyStroke> CLEAR;
 
     public static void putAll(InputMap im, Collection<? extends KeyStroke> keyStrokes, Object actionMapKey) {
         keyStrokes.stream().forEach(o -> im.put(o, actionMapKey));
@@ -61,7 +61,7 @@ public final class KeyStrokes {
     }
 
     static {
-        ImmutableListMultimap<ActionType, KeyStroke> keyStrokes = new TextFieldKeyStrokeSupplier().get();
+        Map<ActionType, List<KeyStroke>> keyStrokes = new TextFieldKeyStrokeSupplier().get();
         COPY = keyStrokes.get(ActionType.COPY);
         PASTE = keyStrokes.get(ActionType.PASTE);
         SELECT_ALL = keyStrokes.get(ActionType.SELECT_ALL);
@@ -70,7 +70,7 @@ public final class KeyStrokes {
         CLEAR = keyStrokes.get(ActionType.CLEAR);
     }
 
-    private static abstract class AbstractSupplier implements Supplier<ImmutableListMultimap<ActionType, KeyStroke>> {
+    private static abstract class AbstractSupplier implements Supplier<Map<ActionType, List<KeyStroke>>> {
 
         abstract protected InputMap getInputMap();
 
@@ -96,19 +96,22 @@ public final class KeyStrokes {
         }
 
         @Override
-        public ImmutableListMultimap<ActionType, KeyStroke> get() {
+        public Map<ActionType, List<KeyStroke>> get() {
             Map<KeyStroke, Object> keyStrokes = InputMaps.asMap(getInputMap(), true);
-            ImmutableListMultimap.Builder<ActionType, KeyStroke> result = ImmutableListMultimap.builder();
+            Map<ActionType, List<KeyStroke>> result = new HashMap<>();
             for (ActionType o : ActionType.values()) {
                 Object actionMapKey = getActionMapKey(o);
-                Set<KeyStroke> tmp = Maps.filterValues(keyStrokes, x -> Objects.equals(x, actionMapKey)).keySet();
-                if (!tmp.isEmpty()) {
-                    result.putAll(o, tmp);
-                } else {
-                    result.put(o, getFallback(o));
-                }
+                List<KeyStroke> tmp = keyStrokes
+                        .entrySet()
+                        .stream()
+                        .filter(x -> Objects.equals(x.getValue(), actionMapKey))
+                        .map(x -> x.getKey())
+                        .distinct()
+                        .sorted(orderingUsingKeyTextLength())
+                        .collect(List2.toUnmodifiableList());
+                result.put(o, !tmp.isEmpty() ? tmp : Collections.singletonList(getFallback(o)));
             }
-            return result.orderValuesBy(orderingUsingKeyTextLength()).build();
+            return result;
         }
     }
 

@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.ui;
+package demetra.ui.actions;
 
 import java.beans.PropertyChangeListener;
 import javax.annotation.Nonnull;
@@ -25,7 +25,8 @@ import javax.swing.JComponent;
  *
  * @author Philippe Charles
  */
-public final class ExtAction {
+@lombok.experimental.UtilityClass
+public final class Actions {
 
     @Nonnull
     public static <C extends AbstractButton> C hideWhenDisabled(@Nonnull C c) {

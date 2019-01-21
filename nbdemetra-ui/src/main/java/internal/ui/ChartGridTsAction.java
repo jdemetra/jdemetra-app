@@ -22,7 +22,7 @@ import demetra.tsprovider.TsCollection;
 import demetra.ui.components.HasChart.LinesThickness;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.MonikerUI;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tools.GridTopComponent;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;

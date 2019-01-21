@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.ui.nodes;
 
-import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.awt.ExceptionPanel;
+import demetra.ui.util.NbComponents;
+import demetra.ui.components.ExceptionPanel;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Image;

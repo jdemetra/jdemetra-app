@@ -18,7 +18,7 @@ package ec.nbdemetra.spreadsheet;
 
 import com.google.common.base.Stopwatch;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
 import ec.util.grid.swing.ext.SpreadSheetView;

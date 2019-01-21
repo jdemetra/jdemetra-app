@@ -26,10 +26,10 @@ import static demetra.ui.components.PrintableWithPreview.PRINT_ACTION;
 import static demetra.ui.components.ResetableZoom.RESET_ZOOM_ACTION;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.ThemeSupport;
-import ec.nbdemetra.ui.awt.ActionMaps;
-import ec.nbdemetra.ui.awt.InputMaps;
+import demetra.ui.util.ActionMaps;
+import demetra.ui.util.InputMaps;
 import demetra.ui.components.JTsGrowthChart;
-import ec.ui.ExtAction;
+import demetra.ui.actions.Actions;
 import ec.ui.chart.JTimeSeriesChartUtil;
 import ec.ui.chart.TsXYDatasets;
 import ec.util.chart.ObsFunction;
@@ -357,7 +357,7 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
         // NEXT
         item = new JMenuItem(copyGrowthData().toAction(target));
         item.setText("Copy growth data");
-        ExtAction.hideWhenDisabled(item);
+        Actions.hideWhenDisabled(item);
         result.add(item);
 
         result.add(buildKindMenu());

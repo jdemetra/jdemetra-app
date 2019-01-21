@@ -151,6 +151,22 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-nodes</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-windows</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-loaders</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-awt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-dialogs</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -164,8 +180,10 @@
                         <publicPackage>demetra.ui</publicPackage>
                         <publicPackage>demetra.ui.actions</publicPackage>
                         <publicPackage>demetra.ui.beans</publicPackage>
+                        <publicPackage>demetra.ui.components</publicPackage>
                         <publicPackage>demetra.ui.datatransfer</publicPackage>
                         <publicPackage>demetra.ui.jfreechart</publicPackage>
+                        <publicPackage>demetra.ui.util</publicPackage>
                         <!-- core libs -->
                         <publicPackage>demetra.tsprovider</publicPackage>
                         <publicPackage>demetra.tsprovider.util</publicPackage>

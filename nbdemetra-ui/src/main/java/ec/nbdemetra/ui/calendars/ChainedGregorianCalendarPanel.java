@@ -5,8 +5,8 @@
 package ec.nbdemetra.ui.calendars;
 
 import com.google.common.collect.Lists;
-import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
-import ec.nbdemetra.ui.awt.ListenerState;
+import demetra.ui.util.IDialogDescriptorProvider;
+import demetra.ui.util.ListenerState;
 import ec.nbdemetra.ui.properties.ComboBoxPropertyEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.utils.IConstraint;

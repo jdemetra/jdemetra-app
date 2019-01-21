@@ -14,10 +14,8 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.awt;
+package demetra.ui.util;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
 import java.util.AbstractSet;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,22 +24,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.swing.Action;
-import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.KeyStroke;
 
 /**
  *
  * @author Philippe Charles
  */
-public final class ActionMaps {
+public final class InputMaps {
 
-    private ActionMaps() {
+    private InputMaps() {
         // static class
     }
 
     @Nonnull
-    public static ActionMap getRoot(@Nonnull ActionMap actionMap) {
-        ActionMap result = actionMap;
+    public static InputMap getRoot(@Nonnull InputMap inputMap) {
+        InputMap result = inputMap;
         while (result.getParent() != null) {
             result = result.getParent();
         }
@@ -49,36 +47,29 @@ public final class ActionMaps {
     }
 
     @Nonnull
-    public static Map<Object, Action> asMap(@Nonnull ActionMap actionMap, boolean includeParentKeys) {
-        return asKeySet(actionMap, includeParentKeys).stream().collect(Collectors.toMap(o -> o, o -> actionMap.get(o)));
+    public static Map<KeyStroke, Object> asMap(@Nonnull InputMap inputMap, boolean includeParentKeys) {
+        return asKeySet(inputMap, includeParentKeys).stream().collect(Collectors.toMap(o -> o, o -> inputMap.get(o)));
     }
 
-    public static void copyEntries(@Nonnull ActionMap source, boolean includeParentKeys, @Nonnull ActionMap destination) {
+    public static void copyEntries(@Nonnull InputMap source, boolean includeParentKeys, @Nonnull InputMap destination) {
         asMap(source, includeParentKeys).forEach((k, v) -> destination.put(k, v));
-    }
-
-    public static void performAction(@Nonnull ActionMap actionMap, @Nonnull String actionName, @Nonnull MouseEvent e) {
-        Action action = actionMap.get(actionName);
-        if (action != null && action.isEnabled()) {
-            action.actionPerformed(new ActionEvent(e.getSource(), ActionEvent.ACTION_PERFORMED, actionName));
-        }
     }
 
     //<editor-fold defaultstate="collapsed" desc="Internal implementation">
     @Nonnull
-    private static Set<Object> asKeySet(final @Nonnull ActionMap actionMap, final boolean includeParentKeys) {
-        return new AbstractSet<Object>() {
+    private static Set<KeyStroke> asKeySet(final @Nonnull InputMap inputMap, final boolean includeParentKeys) {
+        return new AbstractSet<KeyStroke>() {
             @Override
-            public Iterator<Object> iterator() {
-                Object[] keys = includeParentKeys ? actionMap.allKeys() : actionMap.keys();
+            public Iterator<KeyStroke> iterator() {
+                KeyStroke[] keys = includeParentKeys ? inputMap.allKeys() : inputMap.keys();
                 return keys != null ? Arrays.asList(keys).iterator() : Collections.emptyIterator();
             }
 
             @Override
             public int size() {
-                int result = actionMap.size();
+                int result = inputMap.size();
                 if (includeParentKeys) {
-                    ActionMap cursor = actionMap;
+                    InputMap cursor = inputMap;
                     while ((cursor = cursor.getParent()) != null) {
                         result += cursor.size();
                     }

@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui;
+package demetra.ui.util;
 
 import ec.util.various.swing.ModernUI;
 import java.awt.Component;

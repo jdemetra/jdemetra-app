@@ -5,7 +5,7 @@
 package ec.nbdemetra.ui.tools;
 
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.nodes.ControlNode;
 import demetra.ui.components.JTsGrid;
 import internal.ui.components.HasTsCollectionCommands;

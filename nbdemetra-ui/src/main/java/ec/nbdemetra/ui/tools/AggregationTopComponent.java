@@ -8,7 +8,7 @@ import demetra.bridge.TsConverter;
 import demetra.tsprovider.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;

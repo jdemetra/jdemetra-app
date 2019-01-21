@@ -12,7 +12,7 @@ import ec.nbdemetra.sa.composite.DirectIndirectViewFactory;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IActiveView;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ws.ui.SpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.benchmarking.MultiSaBenchmarkingSpec;

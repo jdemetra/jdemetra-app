@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.ui.util.NbComponents;
 import demetra.tsprovider.TsMeta;
 import ec.nbdemetra.ui.nodes.StringProperty;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;

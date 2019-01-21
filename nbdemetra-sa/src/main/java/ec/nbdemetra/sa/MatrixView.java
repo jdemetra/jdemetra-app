@@ -6,7 +6,7 @@ package ec.nbdemetra.sa;
 
 import com.google.common.collect.Maps;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.satoolkit.algorithm.implementation.X13ProcessingFactory;
 import ec.satoolkit.x11.Mstatistics;

@@ -14,15 +14,16 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.awt;
+package demetra.ui.components;
 
-import ec.nbdemetra.ui.NbComponents;
-import ec.tstoolkit.utilities.StackTracePrinter;
+import demetra.ui.util.IDialogDescriptorProvider;
+import demetra.ui.util.NbComponents;
 import static ec.util.chart.ColorSchemeSupport.toHex;
 import ec.util.chart.impl.TangoColorScheme;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
 import ec.util.various.swing.JCommand;
+import internal.ui.components.StackTracePrinter;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +45,7 @@ import org.openide.util.Utilities;
  *
  * @author Philippe Charles
  */
-public class ExceptionPanel extends JComponent implements IDialogDescriptorProvider {
+public final class ExceptionPanel extends JComponent implements IDialogDescriptorProvider {
 
     // METHOD FACTORIES
     public static ExceptionPanel create(Exception ex) {

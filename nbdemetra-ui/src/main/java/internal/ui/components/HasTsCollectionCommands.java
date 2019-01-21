@@ -26,13 +26,13 @@ import demetra.ui.components.HasTsCollection;
 import static demetra.ui.components.HasTsCollection.TS_COLLECTION_PROPERTY;
 import static demetra.ui.components.HasTsCollection.UDPATE_MODE_PROPERTY;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.awt.KeyStrokes;
+import demetra.ui.util.KeyStrokes;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.ui.commands.ComponentCommand;
-import ec.ui.ExtAction;
+import demetra.ui.actions.Actions;
 import ec.util.list.swing.JLists;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
@@ -114,7 +114,7 @@ public class HasTsCollectionCommands {
         JMenuItem result = new JMenuItem(am.get(HasTsCollectionCommands.RENAME_ACTION));
         result.setText("Rename");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_PENCIL_SQUARE_O));
-        ExtAction.hideWhenDisabled(result);
+        Actions.hideWhenDisabled(result);
         return result;
     }
 
@@ -129,7 +129,7 @@ public class HasTsCollectionCommands {
         JMenuItem result = new JMenuItem(am.get(HasTsCollectionCommands.OPEN_ACTION));
         result.setText("Open");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_FOLDER_OPEN_O));
-        ExtAction.hideWhenDisabled(result);
+        Actions.hideWhenDisabled(result);
         result.setAccelerator(KeyStrokes.OPEN.get(0));
         result.setFont(result.getFont().deriveFont(Font.BOLD));
         return result;
@@ -144,7 +144,7 @@ public class HasTsCollectionCommands {
         JMenu result = new JMenu(new MainOpenWithCommand().toAction(c));
         result.setText("Open with");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_BAR_CHART_O));
-        ExtAction.hideWhenDisabled(result);
+        Actions.hideWhenDisabled(result);
 
         for (NamedService o : TsAction.getDefault().getTsActions()) {
             JMenuItem item = new JMenuItem(HasTsCollectionCommands.openWith(o.getName()).toAction(c));
@@ -168,7 +168,7 @@ public class HasTsCollectionCommands {
     public static JMenu newSaveMenu(HasTsCollection c, DemetraUI demetraUI) {
         JMenu result = new JMenu(new MainSaveCommand().toAction(c));
         result.setText("Save");
-        ExtAction.hideWhenDisabled(result);
+        Actions.hideWhenDisabled(result);
         for (ITsSave o : demetraUI.getTsSave()) {
             JMenuItem item = new JMenuItem(HasTsCollectionCommands.save(o).toAction(c));
             item.setName(o.getName());
@@ -194,7 +194,7 @@ public class HasTsCollectionCommands {
         result.setText("Copy");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_FILES_O));
         result.setAccelerator(KeyStrokes.COPY.get(0));
-        ExtAction.hideWhenDisabled(result);
+        Actions.hideWhenDisabled(result);
         return result;
     }
 
@@ -226,7 +226,7 @@ public class HasTsCollectionCommands {
         result.setText("Remove");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_TRASH_O));
         result.setAccelerator(KeyStrokes.DELETE.get(0));
-        ExtAction.hideWhenDisabled(result);
+        Actions.hideWhenDisabled(result);
         return result;
     }
 
@@ -271,7 +271,7 @@ public class HasTsCollectionCommands {
         JMenuItem result = new JMenuItem(am.get(HasTsCollectionCommands.FREEZE_ACTION));
         result.setText("Freeze");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_LOCK));
-        ExtAction.hideWhenDisabled(result);
+        Actions.hideWhenDisabled(result);
         return result;
     }
 
@@ -281,7 +281,7 @@ public class HasTsCollectionCommands {
         JMenuItem item = new JMenuItem(am.get(SPLIT_ACTION));
         item.setText("Split into yearly components");
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_CHAIN_BROKEN));
-        ExtAction.hideWhenDisabled(item);
+        Actions.hideWhenDisabled(item);
         return item;
     }
 

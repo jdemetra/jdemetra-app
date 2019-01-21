@@ -8,7 +8,7 @@ import demetra.bridge.TsConverter;
 import demetra.tsprovider.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.timeseries.calendars.IGregorianCalendarProvider;

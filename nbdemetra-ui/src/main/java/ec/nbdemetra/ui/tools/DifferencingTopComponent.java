@@ -12,7 +12,7 @@ import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
 import ec.nbdemetra.ui.MonikerUI;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.TsMoniker;

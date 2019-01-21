@@ -16,7 +16,7 @@
  */
 package internal.ui.components;
 
-import ec.nbdemetra.ui.awt.ActionMaps;
+import demetra.ui.util.ActionMaps;
 import ec.util.chart.swing.Charts;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

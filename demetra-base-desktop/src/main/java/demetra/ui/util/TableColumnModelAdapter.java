@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.awt;
+package demetra.ui.util;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;

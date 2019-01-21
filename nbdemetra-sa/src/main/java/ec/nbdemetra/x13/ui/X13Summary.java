@@ -7,7 +7,7 @@ package ec.nbdemetra.x13.ui;
 import demetra.bridge.TsConverter;
 import demetra.tsprovider.TsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.x11.X11Results;
 import ec.tstoolkit.modelling.ModellingDictionary;

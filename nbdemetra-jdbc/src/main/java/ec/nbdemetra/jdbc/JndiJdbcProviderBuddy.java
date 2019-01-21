@@ -21,7 +21,7 @@ import demetra.ui.TsManager;
 import ec.nbdemetra.db.DbIcon;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.awt.SimpleHtmlListCellRenderer;
+import demetra.ui.util.SimpleHtmlListCellRenderer;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.DataSource;
