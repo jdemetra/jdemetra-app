@@ -2,13 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.actions;
+package internal.ui.actions;
 
-import ec.nbdemetra.ui.INameable;
+import demetra.ui.actions.AbilityAction;
 import java.util.stream.Stream;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
+import demetra.ui.actions.Renameable;
 
 /**
  *
@@ -17,15 +18,15 @@ import org.openide.util.NbBundle;
 @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.RenameAction")
 @ActionRegistration(displayName = "#RenameAction", lazy = false)
 @NbBundle.Messages({"RenameAction=Rename..."})
-public final class RenameAction extends AbilityAction<INameable> {
+public final class RenameAction extends AbilityAction<Renameable> {
 
     public RenameAction() {
-        super(INameable.class);
+        super(Renameable.class);
     }
 
     @Override
-    protected void performAction(Stream<INameable> items) {
-        items.forEach(INameable::rename);
+    protected void performAction(Stream<Renameable> items) {
+        items.forEach(Renameable::rename);
     }
 
     @Override

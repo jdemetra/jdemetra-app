@@ -22,8 +22,6 @@ import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.interchange.Exportable;
-import ec.nbdemetra.ui.INameable;
-import ec.nbdemetra.ui.IReloadable;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
@@ -68,6 +66,8 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
+import demetra.ui.actions.Reloadable;
+import demetra.ui.actions.Renameable;
 
 /**
  * A node that represents a DataSource.
@@ -204,7 +204,7 @@ public final class DataSourceNode extends AbstractNode {
         }
     }
 
-    private final class ReloadableImpl implements IReloadable {
+    private final class ReloadableImpl implements Reloadable {
 
         @Override
         public void reload() {
@@ -219,7 +219,7 @@ public final class DataSourceNode extends AbstractNode {
         }
     }
 
-    private final class NameableImpl implements INameable {
+    private final class NameableImpl implements Renameable {
 
         @Override
         public void rename() {

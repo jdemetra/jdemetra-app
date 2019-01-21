@@ -44,6 +44,7 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
+import demetra.ui.actions.Resetable;
 
 /**
  *
@@ -92,7 +93,7 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
             if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
                 Node[] nodes = (Node[]) evt.getNewValue();
                 editDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IConfigurable.class) != null);
-                resetDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IResetable.class) != null);
+                resetDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(Resetable.class) != null);
             }
         });
         
@@ -380,7 +381,7 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
             NotifyDescriptor d = new NotifyDescriptor.Confirmation("Would you like to reset to default values ?", "Reset", NotifyDescriptor.YES_NO_OPTION);
             if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.YES_OPTION) {
                 Node node = getDiagnosticsExplorerManager().getSelectedNodes()[0];
-                IResetable r = node.getLookup().lookup(IResetable.class);
+                Resetable r = node.getLookup().lookup(Resetable.class);
                 r.reset();
             }
         }

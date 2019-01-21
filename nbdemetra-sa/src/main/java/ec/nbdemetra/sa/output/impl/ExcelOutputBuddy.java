@@ -25,7 +25,6 @@ import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.IResetable;
 import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
@@ -44,13 +43,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.actions.Resetable;
 
 /**
  *
  * @author Mats Maggi
  */
 @ServiceProvider(service = INbOutputFactory.class, position = 1200)
-public class ExcelOutputBuddy implements INbOutputFactory, IConfigurable, IResetable {
+public class ExcelOutputBuddy implements INbOutputFactory, IConfigurable, Resetable {
 
     private final Configurator<ExcelOutputBuddy> configurator = createConfigurator();
     private SpreadsheetOutputConfiguration config = new SpreadsheetOutputConfiguration();

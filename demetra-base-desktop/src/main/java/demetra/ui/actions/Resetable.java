@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui;
+package demetra.ui.actions;
 
 /**
  * Reset a component to its default options/config. To be used with
@@ -22,7 +22,7 @@ package ec.nbdemetra.ui;
  *
  * @author Philippe Charles
  */
-public interface IResetable {
+public interface Resetable {
 
     void reset();
 }

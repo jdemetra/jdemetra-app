@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.actions;
+package internal.ui.actions;
 
+import demetra.ui.actions.AbilityAction;
 import java.util.stream.Stream;
 import org.netbeans.api.actions.Closable;
 import org.openide.awt.ActionID;

@@ -14,11 +14,9 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.actions;
+package demetra.ui.actions;
 
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
@@ -31,24 +29,30 @@ import org.openide.util.actions.NodeAction;
  */
 public abstract class AbilityAction<T> extends NodeAction {
 
-    private final Predicate<Node> predicate;
-    private final Function<Node, T> function;
+    private final Class<T> ability;
 
     protected AbilityAction(Class<T> ability) {
-        this.predicate = o -> o.getLookup().lookup(ability) != null;
-        this.function = o -> o.getLookup().lookup(ability);
+        this.ability = ability;
+    }
+
+    private boolean hasAbility(Node node) {
+        return node.getLookup().lookup(ability) != null;
+    }
+
+    private T getAbility(Node node) {
+        return node.getLookup().lookup(ability);
     }
 
     abstract protected void performAction(Stream<T> items);
 
     @Override
     protected void performAction(Node[] activatedNodes) {
-        performAction(Stream.of(activatedNodes).map(function::apply).filter(Objects::nonNull));
+        performAction(Stream.of(activatedNodes).map(this::getAbility).filter(Objects::nonNull));
     }
 
     @Override
     protected boolean enable(Node[] activatedNodes) {
-        return Stream.of(activatedNodes).anyMatch(predicate::test);
+        return Stream.of(activatedNodes).anyMatch(this::hasAbility);
     }
 
     @Override

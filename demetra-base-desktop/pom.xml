@@ -162,6 +162,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>demetra.ui</publicPackage>
+                        <publicPackage>demetra.ui.actions</publicPackage>
                         <publicPackage>demetra.ui.beans</publicPackage>
                         <publicPackage>demetra.ui.datatransfer</publicPackage>
                         <publicPackage>demetra.ui.jfreechart</publicPackage>

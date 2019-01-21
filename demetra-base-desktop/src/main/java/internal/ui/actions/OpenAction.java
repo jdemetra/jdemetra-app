@@ -14,8 +14,9 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.actions;
+package internal.ui.actions;
 
+import demetra.ui.actions.AbilityAction;
 import java.util.stream.Stream;
 import org.netbeans.api.actions.Openable;
 import org.openide.awt.ActionID;

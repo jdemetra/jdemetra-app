@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.tssave;
 
-import ec.nbdemetra.ui.actions.AbilityAction;
+import demetra.ui.actions.AbilityAction;
 import ec.tss.TsCollection;
 import java.awt.event.ActionEvent;
 import java.util.List;

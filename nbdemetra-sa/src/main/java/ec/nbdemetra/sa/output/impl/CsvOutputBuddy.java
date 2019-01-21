@@ -25,7 +25,6 @@ import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.IResetable;
 import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
@@ -41,13 +40,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.actions.Resetable;
 
 /**
  *
  * @author Philippe Charles
  */
 @ServiceProvider(service = INbOutputFactory.class, position = 1000)
-public final class CsvOutputBuddy implements INbOutputFactory, IConfigurable, IResetable {
+public final class CsvOutputBuddy implements INbOutputFactory, IConfigurable, Resetable {
 
     private final Configurator<CsvOutputBuddy> configurator = createConfigurator();
     private CsvOutputConfiguration config = new CsvOutputConfiguration();

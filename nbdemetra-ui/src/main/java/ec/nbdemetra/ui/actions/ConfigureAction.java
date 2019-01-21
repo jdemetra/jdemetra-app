@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.actions;
 
+import demetra.ui.actions.AbilityAction;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.tsproviders.ProvidersNode;
