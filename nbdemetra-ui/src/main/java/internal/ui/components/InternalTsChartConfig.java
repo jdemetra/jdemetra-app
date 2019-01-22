@@ -23,7 +23,7 @@ import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.completion.JAutoCompletionService;
+import demetra.ui.completion.JAutoCompletionService;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;

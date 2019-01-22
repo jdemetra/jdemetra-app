@@ -14,9 +14,9 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.completion;
+package demetra.ui.completion;
 
-import ec.tstoolkit.design.ServiceDefinition;
+import demetra.design.ServiceDefinition;
 import ec.util.completion.swing.JAutoCompletion;
 import javax.annotation.Nonnull;
 import javax.swing.text.JTextComponent;
@@ -28,18 +28,18 @@ import org.openide.util.lookup.Lookups;
  * @since 1.3.2
  */
 @ServiceDefinition
-public abstract class JAutoCompletionService {
+public interface JAutoCompletionService {
 
     @Nonnull
-    abstract public JAutoCompletion bind(@Nonnull JTextComponent textComponent);
-    //
+    JAutoCompletion bind(@Nonnull JTextComponent textComponent);
+
     public static final String LOCALE_PATH = "JAutoCompletionService/Locale";
     public static final String DATE_PATTERN_PATH = "JAutoCompletionService/DatePattern";
     public static final String COLOR_SCHEME_PATH = "JAutoCompletionService/ColorScheme";
     public static final String CHARSET_PATH = "JAutoCompletionService/Charset";
 
     @Nonnull
-    public static JAutoCompletion forPathBind(@Nonnull String path, @Nonnull JTextComponent textComponent) {
+    static JAutoCompletion forPathBind(@Nonnull String path, @Nonnull JTextComponent textComponent) {
         JAutoCompletionService o = Lookups.forPath(path).lookup(JAutoCompletionService.class);
         return o != null ? o.bind(textComponent) : new JAutoCompletion(textComponent);
     }

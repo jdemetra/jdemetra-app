@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.properties;
 
-import ec.nbdemetra.ui.completion.JAutoCompletionService;
+import demetra.ui.completion.JAutoCompletionService;
 import static ec.nbdemetra.ui.properties.Util.attr;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.swing.JAutoCompletion;

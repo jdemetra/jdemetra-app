@@ -14,17 +14,16 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.completion;
+package internal.ui.completion;
 
-import com.google.common.base.Suppliers;
+import demetra.ui.completion.JAutoCompletionService;
+import demetra.util.List2;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.nio.charset.Charset;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.swing.ListCellRenderer;
@@ -36,11 +35,11 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  * @since 1.3.2
  */
-@ServiceProvider(service = JAutoCompletionService.class, path = JAutoCompletionService.LOCALE_PATH)
-public class LocaleAutoCompletionService extends JAutoCompletionService {
+@ServiceProvider(service = JAutoCompletionService.class, path = JAutoCompletionService.CHARSET_PATH)
+public final class CharsetAutoCompletionService implements JAutoCompletionService {
 
-    private final AutoCompletionSource source = localeSource();
-    private final ListCellRenderer renderer = new LocaleRenderer();
+    private final AutoCompletionSource source = charsetSource();
+    private final ListCellRenderer renderer = new CharsetRenderer();
 
     @Override
     public JAutoCompletion bind(JTextComponent textComponent) {
@@ -51,31 +50,31 @@ public class LocaleAutoCompletionService extends JAutoCompletionService {
         return result;
     }
 
-    private static AutoCompletionSource localeSource() {
+    private static AutoCompletionSource charsetSource() {
         return ExtAutoCompletionSource
-                .builder(Suppliers.memoize(LocaleAutoCompletionService::getLocales)::get)
+                .builder(CharsetAutoCompletionService::getCharsets)
                 .behavior(AutoCompletionSource.Behavior.SYNC)
-                .postProcessor(LocaleAutoCompletionService::getLocales)
+                .postProcessor(CharsetAutoCompletionService::getCharsets)
                 .build();
     }
 
-    private static List<Locale> getLocales() {
-        return Arrays.asList(Locale.getAvailableLocales());
+    private static List<Charset> getCharsets() {
+        return List2.copyOf(Charset.availableCharsets().values());
     }
 
-    private static List<Locale> getLocales(List<Locale> allValues, String term) {
+    private static List<Charset> getCharsets(List<Charset> allValues, String term) {
         Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
         return allValues.stream()
-                .filter(o -> filter.test(o.toString()) || filter.test(o.getDisplayName()))
-                .sorted(Comparator.comparing(Locale::toString))
+                .filter(o -> filter.test(o.name()))
+                .sorted()
                 .collect(Collectors.toList());
     }
 
-    private static class LocaleRenderer extends CustomListCellRenderer<Locale> {
+    private static final class CharsetRenderer extends CustomListCellRenderer<Charset> {
 
         @Override
-        protected String getValueAsString(Locale value) {
-            return "(" + value.toString() + ") " + value.getDisplayName();
+        protected String getValueAsString(Charset value) {
+            return value.name();
         }
     }
 }

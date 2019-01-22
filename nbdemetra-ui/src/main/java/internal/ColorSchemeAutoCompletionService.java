@@ -14,8 +14,9 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.completion;
+package internal;
 
+import demetra.ui.completion.JAutoCompletionService;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.util.chart.ColorScheme;
 import ec.util.completion.AutoCompletionSource;
@@ -39,7 +40,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @since 1.3.2
  */
 @ServiceProvider(service = JAutoCompletionService.class, path = JAutoCompletionService.COLOR_SCHEME_PATH)
-public class ColorSchemeAutoCompletionService extends JAutoCompletionService {
+public final class ColorSchemeAutoCompletionService implements JAutoCompletionService {
 
     private final AutoCompletionSource source = colorSchemeSource();
     private final ListCellRenderer renderer = new ColorSchemeRenderer();

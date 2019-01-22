@@ -14,9 +14,9 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.completion;
+package internal.ui.completion;
 
-import com.google.common.base.Suppliers;
+import demetra.ui.completion.JAutoCompletionService;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
@@ -36,7 +36,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @since 1.3.2
  */
 @ServiceProvider(service = JAutoCompletionService.class, path = JAutoCompletionService.DATE_PATTERN_PATH)
-public class DatePatternAutoCompletionService extends JAutoCompletionService {
+public final class DatePatternAutoCompletionService implements JAutoCompletionService {
 
     private final AutoCompletionSource source = datePatternLetterSource();
     private final ListCellRenderer renderer = new DatePatternLetterRenderer();
@@ -104,7 +104,7 @@ public class DatePatternAutoCompletionService extends JAutoCompletionService {
 
     private static AutoCompletionSource datePatternLetterSource() {
         return ExtAutoCompletionSource
-                .builder(Suppliers.memoize(DatePatternAutoCompletionService::getDatePatternLetters)::get)
+                .builder(DatePatternAutoCompletionService::getDatePatternLetters)
                 .behavior(AutoCompletionSource.Behavior.SYNC)
                 .postProcessor(DatePatternAutoCompletionService::getDatePatternLetter)
                 .build();

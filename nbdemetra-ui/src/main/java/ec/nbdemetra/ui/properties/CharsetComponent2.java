@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.properties;
 
-import ec.nbdemetra.ui.completion.JAutoCompletionService;
+import demetra.ui.completion.JAutoCompletionService;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.util.various.swing.TextPrompt;
 import java.awt.BorderLayout;
