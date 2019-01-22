@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.PropertySheetDialogBuilder;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.*;
 import java.awt.Image;
 import java.beans.BeanInfo;

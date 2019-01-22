@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui;
 
-import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
+import demetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.ns.NamedServiceNode;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;

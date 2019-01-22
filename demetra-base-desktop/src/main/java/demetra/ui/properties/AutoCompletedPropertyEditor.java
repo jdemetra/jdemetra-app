@@ -14,10 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.ui.properties;
 
+import internal.ui.properties.AutoCompletedComponent;
 import demetra.ui.completion.JAutoCompletionService;
-import static ec.nbdemetra.ui.properties.Util.attr;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.swing.JAutoCompletion;
 import ec.util.various.swing.TextPrompt;
@@ -36,7 +36,7 @@ import org.openide.explorer.propertysheet.PropertyEnv;
  *
  * @author Philippe Charles
  */
-public class AutoCompletedPropertyEditor3 extends AbstractExPropertyEditor {
+public final class AutoCompletedPropertyEditor extends AbstractExPropertyEditor {
 
     public static final String SERVICE_PATH_ATTRIBUTE = "servicePath";
     public static final String AUTO_FOCUS_ATTRIBUTE = "autoFocus";
@@ -51,7 +51,7 @@ public class AutoCompletedPropertyEditor3 extends AbstractExPropertyEditor {
     private final AutoCompletedComponent customEditor;
     private PropertyEnv currentEnv;
 
-    public AutoCompletedPropertyEditor3() {
+    public AutoCompletedPropertyEditor() {
         this.customEditor = new AutoCompletedComponent();
         this.currentEnv = null;
 

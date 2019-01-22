@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.ns;
 
 import com.google.common.collect.Iterables;
 import demetra.ui.NamedService;
-import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
+import demetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Dimension;
 import java.beans.PropertyVetoException;
 import javax.swing.JComboBox;

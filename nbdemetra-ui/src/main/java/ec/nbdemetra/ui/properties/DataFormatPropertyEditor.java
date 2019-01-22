@@ -16,6 +16,8 @@
  */
 package ec.nbdemetra.ui.properties;
 
+import demetra.ui.properties.AbstractInplaceEditor;
+import demetra.ui.properties.AbstractExPropertyEditor;
 import ec.tss.tsproviders.utils.DataFormat;
 import javax.swing.JComponent;
 import org.openide.explorer.propertysheet.InplaceEditor;

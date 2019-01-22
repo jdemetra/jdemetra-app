@@ -33,7 +33,7 @@ import internal.ui.components.HasTsCollectionCommands;
 import ec.util.list.swing.JLists;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
-import ec.util.various.swing.ext.FontAwesomeUtils;
+import demetra.ui.util.FontAwesomeUtils;
 import demetra.demo.DemoTsBuilder;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;

@@ -22,7 +22,7 @@ import ec.nbdemetra.db.DbIcon;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.util.SimpleHtmlListCellRenderer;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.db.DbBean;

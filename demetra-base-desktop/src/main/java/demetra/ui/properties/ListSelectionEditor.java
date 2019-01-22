@@ -14,8 +14,9 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.ui.properties;
 
+import demetra.ui.properties.AbstractInplaceEditor;
 import ec.util.list.swing.JListSelection;
 import ec.util.list.swing.JLists;
 import java.awt.Component;

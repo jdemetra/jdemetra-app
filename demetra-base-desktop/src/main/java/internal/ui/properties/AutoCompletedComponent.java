@@ -14,17 +14,16 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package internal.ui.properties;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
+import demetra.ui.util.ExtLayerUI;
+import demetra.ui.util.FontAwesomeUtils;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.list.swing.JListOrdering;
 import ec.util.list.swing.JLists;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
-import ec.util.various.swing.ext.FontAwesomeUtils;
-import internal.ui.components.ExtLayerUI;
+import internal.util.Strings;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -56,7 +55,7 @@ import org.openide.util.Exceptions;
  * @author Philippe Charles
  * @since 2.2.0
  */
-final class AutoCompletedComponent extends JComponent {
+public final class AutoCompletedComponent extends JComponent {
 
     public static final String VALUE_PROPERTY = "value";
     public static final String AUTO_COMPLETION_PROPERTY = "autoCompletion";
@@ -95,7 +94,7 @@ final class AutoCompletedComponent extends JComponent {
 
         model.addListDataListener(JLists.dataListenerOf(evt -> {
             if (!updating) {
-                setValue(Joiner.on(separator).join(JLists.asList(model)));
+                setValue(String.join(separator, JLists.asList(model)));
             }
         }));
 
@@ -125,10 +124,9 @@ final class AutoCompletedComponent extends JComponent {
     private void onValueChange() {
         updating = true;
         model.clear();
-        Splitter.on(separator)
-                .trimResults()
-                .omitEmptyStrings()
-                .splitToList(value)
+        Strings.splitToStream(separator, value)
+                .map(String::trim)
+                .filter(o -> !o.isEmpty())
                 .forEach(model::addElement);
         updating = false;
     }

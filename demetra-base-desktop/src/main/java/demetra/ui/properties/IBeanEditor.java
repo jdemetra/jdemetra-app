@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.ui.properties;
 
 import java.beans.IntrospectionException;
 import javax.annotation.Nonnull;

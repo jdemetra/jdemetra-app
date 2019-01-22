@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.ui.properties;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -28,7 +28,7 @@ import javax.swing.border.EmptyBorder;
  *
  * @author Philippe Charles
  */
-public class DhmsPropertyEditor extends PropertyEditorSupport {
+public final class DhmsPropertyEditor extends PropertyEditorSupport {
 
     private final JLabel painter;
 

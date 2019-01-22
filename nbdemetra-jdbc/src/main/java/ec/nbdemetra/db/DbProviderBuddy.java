@@ -17,9 +17,9 @@
 package ec.nbdemetra.db;
 
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.properties.DhmsPropertyEditor;
+import demetra.ui.properties.DhmsPropertyEditor;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.tss.tsproviders.IFileLoader;
 import ec.tss.tsproviders.db.DbBean;

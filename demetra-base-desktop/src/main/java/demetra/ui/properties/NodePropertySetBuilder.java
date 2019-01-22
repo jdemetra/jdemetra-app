@@ -14,15 +14,14 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.ui.properties;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import ec.tstoolkit.design.IBuilder;
+import demetra.design.BuilderPattern;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.AutoCompletionSources;
-import static internal.JTextComponents.fixMaxDecimals;
+import static demetra.ui.util.JTextComponents.fixMaxDecimals;
+import internal.ui.Collections2;
+import internal.util.Strings;
 import java.beans.FeatureDescriptor;
 import java.beans.PropertyEditor;
 import java.io.File;
@@ -50,7 +49,8 @@ import org.openide.util.Exceptions;
  *
  * @author Philippe Charles
  */
-public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> {
+@BuilderPattern(Sheet.Set.class)
+public final class NodePropertySetBuilder {
 
     private final List<Node.Property<?>> nodeProperties;
     private String name;
@@ -218,7 +218,6 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
         return new SelectStep<>(valueType, EnumStep::new);
     }
 
-    @Override
     public Sheet.Set build() {
         Sheet.Set result = name != null ? new Sheet.Set() : Sheet.createPropertiesSet();
         if (!Strings.isNullOrEmpty(name)) {
@@ -233,7 +232,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
         if (!Strings.isNullOrEmpty(shortDescription)) {
             result.setShortDescription(shortDescription);
         }
-        result.put(Iterables.toArray(nodeProperties, Node.Property.class));
+        result.put(Collections2.toArray(nodeProperties, Node.Property.class));
         return result;
     }
 
@@ -439,7 +438,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
 
         private AutoCompletedStep(Node.Property<String> nodeProperty) {
             super(nodeProperty);
-            editor(AutoCompletedPropertyEditor3.class);
+            editor(AutoCompletedPropertyEditor.class);
         }
 
         /**
@@ -451,7 +450,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          */
         @Nonnull
         public AutoCompletedStep servicePath(@Nonnull String path) {
-            return attribute(AutoCompletedPropertyEditor3.SERVICE_PATH_ATTRIBUTE, path);
+            return attribute(AutoCompletedPropertyEditor.SERVICE_PATH_ATTRIBUTE, path);
         }
 
         /**
@@ -463,7 +462,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          */
         @Nonnull
         public AutoCompletedStep promptText(@Nonnull String text) {
-            return attribute(AutoCompletedPropertyEditor3.PROMPT_TEXT_ATTRIBUTE, text);
+            return attribute(AutoCompletedPropertyEditor.PROMPT_TEXT_ATTRIBUTE, text);
         }
 
         /**
@@ -475,7 +474,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          */
         @Nonnull
         public AutoCompletedStep autoFocus(boolean autoFocus) {
-            return attribute(AutoCompletedPropertyEditor3.AUTO_FOCUS_ATTRIBUTE, autoFocus);
+            return attribute(AutoCompletedPropertyEditor.AUTO_FOCUS_ATTRIBUTE, autoFocus);
         }
 
         /**
@@ -487,7 +486,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          */
         @Nonnull
         public AutoCompletedStep delay(int delay) {
-            return attribute(AutoCompletedPropertyEditor3.DELAY_ATTRIBUTE, delay);
+            return attribute(AutoCompletedPropertyEditor.DELAY_ATTRIBUTE, delay);
         }
 
         /**
@@ -499,7 +498,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          */
         @Nonnull
         public AutoCompletedStep minLength(int minLength) {
-            return attribute(AutoCompletedPropertyEditor3.MIN_LENGTH_ATTRIBUTE, minLength);
+            return attribute(AutoCompletedPropertyEditor.MIN_LENGTH_ATTRIBUTE, minLength);
         }
 
         /**
@@ -511,7 +510,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          */
         @Nonnull
         public AutoCompletedStep separator(@Nonnull String separator) {
-            return attribute(AutoCompletedPropertyEditor3.SEPARATOR_ATTRIBUTE, separator);
+            return attribute(AutoCompletedPropertyEditor.SEPARATOR_ATTRIBUTE, separator);
         }
 
         /**
@@ -523,7 +522,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          */
         @Nonnull
         public AutoCompletedStep source(@Nonnull AutoCompletionSource source) {
-            return attribute(AutoCompletedPropertyEditor3.SOURCE_ATTRIBUTE, source);
+            return attribute(AutoCompletedPropertyEditor.SOURCE_ATTRIBUTE, source);
         }
 
         /**
@@ -555,11 +554,11 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          *
          * @param cellRenderer a non-null cell renderer
          * @return this step
-         * @see AutoCompletedPropertyEditor3#CELL_RENDERER_ATTRIBUTE
+         * @see AutoCompletedPropertyEditor#CELL_RENDERER_ATTRIBUTE
          */
         @Nonnull
         public AutoCompletedStep cellRenderer(@Nonnull ListCellRenderer cellRenderer) {
-            return attribute(AutoCompletedPropertyEditor3.CELL_RENDERER_ATTRIBUTE, cellRenderer);
+            return attribute(AutoCompletedPropertyEditor.CELL_RENDERER_ATTRIBUTE, cellRenderer);
         }
 
         /**
@@ -572,7 +571,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          */
         @Nonnull
         public AutoCompletedStep defaultValueSupplier(@Nonnull Callable<String> defaultValueSupplier) {
-            return attribute(AutoCompletedPropertyEditor3.DEFAULT_VALUE_SUPPLIER_ATTRIBUTE, defaultValueSupplier);
+            return attribute(AutoCompletedPropertyEditor.DEFAULT_VALUE_SUPPLIER_ATTRIBUTE, defaultValueSupplier);
         }
 
         /**
@@ -791,28 +790,36 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
             of(EnumSet.allOf(nodeProperty.getValueType()));
         }
 
-        @Nonnull
-        public EnumStep<T> of(@Nonnull T... values) {
+        private EnumStep<T> withValues(T... values) {
             return attribute(ComboBoxPropertyEditor.VALUES_ATTRIBUTE, values);
         }
 
         @Nonnull
+        public EnumStep<T> of(@Nonnull T... values) {
+            return withValues(values);
+        }
+
+        @Nonnull
         public EnumStep<T> of(@Nonnull Iterable<T> values) {
-            return of(Iterables.toArray(values, nodeProperty.getValueType()));
+            return withValues(Collections2.toArray(values, nodeProperty.getValueType()));
         }
 
         @Nonnull
         public EnumStep<T> noneOf(@Nonnull T... values) {
             EnumSet<T> tmp = EnumSet.allOf(nodeProperty.getValueType());
-            tmp.removeAll(Arrays.asList(values));
-            return of(tmp);
+            for (T o : values) {
+                tmp.remove(o);
+            }
+            return withValues(Collections2.toArray(tmp, nodeProperty.getValueType()));
         }
 
         @Nonnull
         public EnumStep<T> noneOf(@Nonnull Iterable<T> values) {
             EnumSet<T> tmp = EnumSet.allOf(nodeProperty.getValueType());
-            tmp.removeAll(Lists.newArrayList(values));
-            return of(tmp);
+            for (T o : values) {
+                tmp.remove(o);
+            }
+            return withValues(Collections2.toArray(tmp, nodeProperty.getValueType()));
         }
     }
 

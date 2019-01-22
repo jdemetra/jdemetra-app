@@ -29,7 +29,7 @@ import static ec.util.various.swing.FontAwesome.FA_EXTERNAL_LINK;
 import static ec.util.various.swing.FontAwesome.FA_INFO;
 import static ec.util.various.swing.FontAwesome.FA_SEARCH;
 import ec.util.various.swing.JCommand;
-import ec.util.various.swing.ext.FontAwesomeUtils;
+import demetra.ui.util.FontAwesomeUtils;
 import internal.ui.components.HasColorSchemeCommands;
 import java.awt.BorderLayout;
 import java.awt.Component;

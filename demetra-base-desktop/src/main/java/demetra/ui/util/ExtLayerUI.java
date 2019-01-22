@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.ui.util;
 
 import java.awt.Component;
 import java.awt.Graphics;

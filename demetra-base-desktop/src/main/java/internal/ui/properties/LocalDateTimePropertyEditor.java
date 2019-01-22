@@ -14,9 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package internal.ui.properties;
 
-import static ec.nbdemetra.ui.properties.Util.attr;
+import demetra.ui.properties.AbstractInplaceEditor;
+import demetra.ui.properties.AbstractExPropertyEditor;
 import java.beans.PropertyEditor;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

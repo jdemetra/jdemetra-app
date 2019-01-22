@@ -14,8 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.ui.properties;
 
+import demetra.ui.properties.AbstractInplaceEditor;
+import demetra.ui.properties.AbstractExPropertyEditor;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyEditor;
 import javax.swing.DefaultComboBoxModel;

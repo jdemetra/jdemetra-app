@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal;
+package demetra.ui.util;
 
 import java.awt.Color;
 import java.awt.event.KeyAdapter;

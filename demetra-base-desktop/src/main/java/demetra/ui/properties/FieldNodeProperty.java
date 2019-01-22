@@ -14,10 +14,8 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.ui.properties;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -29,14 +27,14 @@ import org.openide.nodes.Node;
  * @author Philippe Charles
  * @param <T>
  */
-public class FieldNodeProperty<T> extends Node.Property<T> {
+public final class FieldNodeProperty<T> extends Node.Property<T> {
 
     @Nonnull
     public static <X> FieldNodeProperty<X> create(@Nonnull Object instance, @Nonnull Class<X> valueType, @Nonnull String fieldName) {
         try {
             return new FieldNodeProperty(instance, valueType, instance.getClass().getField(fieldName));
         } catch (NoSuchFieldException | SecurityException ex) {
-            throw Throwables.propagate(ex);
+            throw new RuntimeException(ex);
         }
     }
 
@@ -45,7 +43,9 @@ public class FieldNodeProperty<T> extends Node.Property<T> {
 
     public FieldNodeProperty(Object instance, Class<T> valueType, Field field) {
         super(valueType);
-        Preconditions.checkArgument(field.getType().equals(valueType));
+        if (!field.getType().equals(valueType)) {
+            throw new IllegalArgumentException();
+        }
         this.instance = instance;
         this.field = field;
         setName(field.getName());

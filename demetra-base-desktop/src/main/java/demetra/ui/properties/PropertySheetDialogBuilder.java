@@ -14,10 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.ui.properties;
 
-import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
-import ec.tstoolkit.utilities.Trees;
+import demetra.ui.nodes.AbstractNodeBuilder;
+import demetra.util.TreeTraverser;
 import ec.util.table.swing.JTables;
 import java.awt.Component;
 import java.awt.Container;
@@ -25,7 +25,7 @@ import java.awt.Dialog;
 import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.util.Arrays;
-import java.util.stream.Stream;
+import java.util.Collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
@@ -74,7 +74,8 @@ public final class PropertySheetDialogBuilder {
         PropertySheet v = new PropertySheet();
         v.setNodes(new Node[]{node});
 
-        Trees.breadthFirstStream(v, PropertySheetDialogBuilder::childrenStream)
+        TreeTraverser.of(v, PropertySheetDialogBuilder::children)
+                .breadthFirstStream()
                 .filter(o -> o instanceof JTable)
                 .findFirst()
                 .ifPresent(o -> JTables.setWidthAsPercentages(((JTable) o), .3, .7));
@@ -97,9 +98,9 @@ public final class PropertySheetDialogBuilder {
         return editNode(new AbstractNodeBuilder().sheet(sheet).build());
     }
 
-    private static Stream<Component> childrenStream(Component c) {
+    private static Iterable<Component> children(Component c) {
         return c instanceof Container && ((Container) c).getComponentCount() > 0
-                ? Arrays.stream(((Container) c).getComponents())
-                : Stream.empty();
+                ? Arrays.asList(((Container) c).getComponents())
+                : Collections.emptyList();
     }
 }

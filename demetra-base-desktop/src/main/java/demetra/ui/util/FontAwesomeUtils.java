@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.util.various.swing.ext;
+package demetra.ui.util;
 
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.OnEDT;

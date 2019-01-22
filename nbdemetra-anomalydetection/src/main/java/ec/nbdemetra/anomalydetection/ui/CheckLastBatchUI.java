@@ -29,7 +29,7 @@ import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IActiveView;
 import demetra.ui.util.NbComponents;
-import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
+import demetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ui.tools.ToolsPersistence;

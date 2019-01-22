@@ -9,7 +9,7 @@ import demetra.ui.beans.ListenableBean;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.util.IDialogDescriptorProvider;
 import demetra.ui.util.ListenerState;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.utils.IConstraint;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;

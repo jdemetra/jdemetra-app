@@ -14,10 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.nodes;
+package demetra.ui.nodes;
 
-import com.google.common.collect.Iterables;
-import ec.tstoolkit.design.IBuilder;
+import demetra.design.BuilderPattern;
+import internal.ui.Collections2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +32,8 @@ import org.openide.nodes.Sheet;
  *
  * @author Philippe Charles
  */
-public class AbstractNodeBuilder implements IBuilder<AbstractNode> {
+@BuilderPattern(AbstractNode.class)
+public final class AbstractNodeBuilder {
 
     private final List<Node> nodes;
     private String name;
@@ -52,7 +53,7 @@ public class AbstractNodeBuilder implements IBuilder<AbstractNode> {
     }
 
     public AbstractNodeBuilder add(Iterable<? extends Node> nodes) {
-        Iterables.addAll(this.nodes, nodes);
+        Collections2.addAll(this.nodes, nodes);
         return this;
     }
 
@@ -80,10 +81,9 @@ public class AbstractNodeBuilder implements IBuilder<AbstractNode> {
         return this;
     }
 
-    @Override
     public AbstractNode build() {
         Children children = nodes.isEmpty() ? Children.LEAF : (orderable ? new Index.ArrayChildren() : new Children.Array());
-        children.add(Iterables.toArray(nodes, Node.class));
+        children.add(Collections2.toArray(nodes, Node.class));
         CustomNode result = new CustomNode(children, sheet);
         if (name != null) {
             result.setName(name);

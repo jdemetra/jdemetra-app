@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.ui.util.ExtLayerUI;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.HasObsFormat;
 import demetra.ui.components.HasTsCollection;

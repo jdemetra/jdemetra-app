@@ -14,12 +14,11 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.ui.properties;
 
-import static ec.nbdemetra.ui.properties.Util.attr;
-import static internal.JTextComponents.enableDecimalMappingOnNumpad;
-import static internal.JTextComponents.enableValidationFeedback;
-import static internal.JTextComponents.peekValue;
+import static demetra.ui.util.JTextComponents.enableDecimalMappingOnNumpad;
+import static demetra.ui.util.JTextComponents.enableValidationFeedback;
+import static demetra.ui.util.JTextComponents.peekValue;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyEditor;
@@ -36,7 +35,7 @@ import org.openide.explorer.propertysheet.PropertyEnv;
  *
  * @author Philippe Charles
  */
-public class FormattedPropertyEditor extends AbstractExPropertyEditor {
+public final class FormattedPropertyEditor extends AbstractExPropertyEditor {
 
     public static final String FORMATTER_ATTRIBUTE = "formatter";
 

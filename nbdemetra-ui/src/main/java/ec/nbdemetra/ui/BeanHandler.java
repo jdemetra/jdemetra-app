@@ -16,9 +16,9 @@
  */
 package ec.nbdemetra.ui;
 
-import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
+import demetra.ui.properties.PropertySheetDialogBuilder;
 import com.google.common.base.Converter;
-import ec.nbdemetra.ui.properties.IBeanEditor;
+import demetra.ui.properties.IBeanEditor;
 import java.beans.IntrospectionException;
 import javax.annotation.Nonnull;
 import org.openide.util.Exceptions;

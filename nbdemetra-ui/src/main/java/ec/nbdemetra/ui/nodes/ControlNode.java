@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ui.nodes;
 
+import demetra.ui.nodes.AbstractNodeBuilder;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;
@@ -13,10 +14,10 @@ import demetra.tsprovider.util.MultiLineNameUtil;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import internal.FrozenTsHelper;
-import ec.nbdemetra.ui.properties.LocalDateTimePropertyEditor;
+import internal.ui.properties.LocalDateTimePropertyEditor;
 import demetra.ui.components.TsSelectionBridge;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;

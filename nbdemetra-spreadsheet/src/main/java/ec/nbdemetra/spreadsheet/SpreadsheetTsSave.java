@@ -17,9 +17,9 @@
 package ec.nbdemetra.spreadsheet;
 
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
+import demetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.SingleFileExporter;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.nbdemetra.ui.tssave.TsSaveUtil;
 import ec.tss.Ts;

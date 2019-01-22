@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui.calendars;
 
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.NodePropertySetBuilder;
 import java.text.DecimalFormat;
 import org.openide.nodes.Sheet;
 

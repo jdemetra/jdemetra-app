@@ -20,7 +20,7 @@ import com.google.common.collect.Iterables;
 import demetra.ui.NamedService;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
+import demetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import javax.annotation.Nonnull;

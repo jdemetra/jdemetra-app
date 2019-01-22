@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.interchange;
 
 import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
+import demetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.ns.NamedServiceNode;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;

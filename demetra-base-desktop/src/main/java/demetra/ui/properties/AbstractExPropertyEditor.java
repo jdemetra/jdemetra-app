@@ -14,12 +14,15 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.ui.properties;
 
-import com.google.common.base.Suppliers;
+import demetra.design.MightBePromoted;
 import java.beans.PropertyEditorSupport;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.openide.explorer.propertysheet.ExPropertyEditor;
 import org.openide.explorer.propertysheet.InplaceEditor;
 import org.openide.explorer.propertysheet.PropertyEnv;
@@ -30,8 +33,8 @@ import org.openide.explorer.propertysheet.PropertyEnv;
  */
 public abstract class AbstractExPropertyEditor extends PropertyEditorSupport implements ExPropertyEditor, InplaceEditor.Factory {
 
-    private final Supplier<InplaceEditor> supplier = Suppliers.memoize(this::createInplaceEditor);
-
+    private final Supplier<InplaceEditor> inplaceEditor = memoize(this::createInplaceEditor);
+    
     @Override
     public void attachEnv(PropertyEnv env) {
         env.registerInplaceEditorFactory(this);
@@ -39,9 +42,31 @@ public abstract class AbstractExPropertyEditor extends PropertyEditorSupport imp
 
     @Override
     public InplaceEditor getInplaceEditor() {
-        return supplier.get();
+        return inplaceEditor.get();
     }
 
     @Nonnull
     abstract protected InplaceEditor createInplaceEditor();
+
+    @Nonnull
+    public static <T> Optional<T> attr(@Nullable PropertyEnv env, @Nonnull String attrName, @Nonnull Class<T> attrType) {
+        if (env == null) {
+            return Optional.empty();
+        }
+        Object value = env.getFeatureDescriptor().getValue(attrName);
+        return attrType.isInstance(value) ? Optional.of(attrType.cast(value)) : Optional.empty();
+    }
+
+    @MightBePromoted
+    static <T> Supplier<T> memoize(Supplier<T> supplier) {
+        AtomicReference<T> value = new AtomicReference<>();
+        return () -> {
+            T result = value.get();
+            if (result == null) {
+                result = supplier.get();
+                value.set(result);
+            }
+            return result;
+        };
+    }
 }

@@ -14,10 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package internal.ui.properties;
 
 import demetra.ui.completion.JAutoCompletionService;
-import ec.tss.tsproviders.utils.Parsers;
+import demetra.util.Parser;
 import ec.util.various.swing.TextPrompt;
 import java.awt.BorderLayout;
 import java.nio.charset.Charset;
@@ -33,7 +33,7 @@ import javax.swing.event.DocumentListener;
  * @author Philippe Charles
  * @since 1.3.2
  */
-public class CharsetComponent2 extends JComponent {
+public final class CharsetComponent extends JComponent {
 
     public static final String CHARSET_PROPERTY = "charset";
 
@@ -41,7 +41,7 @@ public class CharsetComponent2 extends JComponent {
     private final Listener listener;
     private Charset charset;
 
-    public CharsetComponent2() {
+    public CharsetComponent() {
         this.textField = new JTextField();
         this.listener = new Listener();
         this.charset = null;
@@ -113,7 +113,7 @@ public class CharsetComponent2 extends JComponent {
                 if (textField.getText().isEmpty()) {
                     setCharset(null);
                 } else {
-                    Charset charset = Parsers.charsetParser().parse(textField.getText());
+                    Charset charset = Parser.onCharset().parse(textField.getText());
                     if (charset != null) {
                         setCharset(charset);
                     }

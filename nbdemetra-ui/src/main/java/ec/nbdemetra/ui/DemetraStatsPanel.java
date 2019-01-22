@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui;
 
 import ec.nbdemetra.sa.output.INbOutputFactory;
-import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
+import demetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.ns.NamedServiceNode;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.nbdemetra.ws.ui.SpecSelectionComponent;

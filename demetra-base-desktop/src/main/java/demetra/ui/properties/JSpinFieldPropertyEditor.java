@@ -14,10 +14,9 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.ui.properties;
 
 import com.toedter.components.JSpinField;
-import static ec.nbdemetra.ui.properties.Util.attr;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyEditor;
@@ -31,7 +30,7 @@ import org.openide.explorer.propertysheet.PropertyEnv;
  *
  * @author Philippe Charles
  */
-public class JSpinFieldPropertyEditor extends AbstractExPropertyEditor {
+public final class JSpinFieldPropertyEditor extends AbstractExPropertyEditor {
 
     public static final String MAX_ATTRIBUTE = "max";
     public static final String MIN_ATTRIBUTE = "min";

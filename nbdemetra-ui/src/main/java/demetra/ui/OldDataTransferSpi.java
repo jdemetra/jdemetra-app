@@ -17,7 +17,7 @@
 package demetra.ui;
 
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.design.ServiceDefinition;
 import ec.tstoolkit.maths.matrices.Matrix;

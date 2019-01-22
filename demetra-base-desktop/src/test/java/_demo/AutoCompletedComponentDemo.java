@@ -14,9 +14,9 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package _demo;
 
-import com.google.common.base.StandardSystemProperty;
+import internal.ui.properties.AutoCompletedComponent;
 import static ec.util.completion.AutoCompletionSource.Behavior.SYNC;
 import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
@@ -47,7 +47,6 @@ final class AutoCompletedComponentDemo {
 
     private static Component create() {
         AutoCompletedComponent result = new AutoCompletedComponent();
-        result.setValue(StandardSystemProperty.FILE_SEPARATOR.name());
         result.setAutoCompletion(AutoCompletedComponentDemo::applyAutoCompletion);
         result.setDefaultValueSupplier(AutoCompletedComponentDemo::loadDefaultValue);
         return result;
@@ -58,12 +57,12 @@ final class AutoCompletedComponentDemo {
         autoCompletion.setSource(ExtAutoCompletionSource
                 .builder(AutoCompletedComponentDemo::load)
                 .behavior(SYNC)
-                .valueToString(StandardSystemProperty::name)
+                .valueToString(StandardSystemProperty::getName)
                 .build());
         autoCompletion.getList().setCellRenderer(new CustomListCellRenderer<StandardSystemProperty>() {
             @Override
             protected String getValueAsString(StandardSystemProperty value) {
-                return value.name();
+                return value.getName();
             }
         });
     }
@@ -71,15 +70,31 @@ final class AutoCompletedComponentDemo {
     private static List<StandardSystemProperty> load(String term) {
         Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
         return Stream.of(StandardSystemProperty.values())
-                .filter(o -> filter.test(o.name()))
-                .sorted(Comparator.comparing(StandardSystemProperty::name))
+                .filter(o -> filter.test(o.getName()))
+                .sorted(Comparator.comparing(StandardSystemProperty::getName))
                 .collect(Collectors.toList());
     }
 
     private static String loadDefaultValue() throws InterruptedException {
         Thread.sleep(2000);
         return Stream.of(StandardSystemProperty.values())
-                .map(StandardSystemProperty::name)
+                .map(StandardSystemProperty::getName)
                 .collect(Collectors.joining(","));
+    }
+
+    @lombok.Value
+    private static final class StandardSystemProperty {
+
+        private String name;
+
+        static StandardSystemProperty[] values() {
+            return System
+                    .getProperties()
+                    .entrySet()
+                    .stream()
+                    .map(o -> o.getKey().toString())
+                    .map(StandardSystemProperty::new)
+                    .toArray(StandardSystemProperty[]::new);
+        }
     }
 }

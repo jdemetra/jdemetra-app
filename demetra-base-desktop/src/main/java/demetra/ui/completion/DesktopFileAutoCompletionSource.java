@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.util.completion.ext;
+package demetra.ui.completion;
 
 import ec.util.completion.FileAutoCompletionSource;
 import ec.util.desktop.Desktop;
@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author Philippe Charles
  */
-public class DesktopFileAutoCompletionSource extends FileAutoCompletionSource {
+public final class DesktopFileAutoCompletionSource extends FileAutoCompletionSource {
 
     public DesktopFileAutoCompletionSource(FileFilter fileFilter, File[] paths) {
         super(false, fileFilter, paths);

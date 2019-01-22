@@ -14,8 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package internal.ui.properties;
 
+import demetra.ui.properties.AbstractInplaceEditor;
+import demetra.ui.properties.AbstractExPropertyEditor;
 import java.nio.charset.Charset;
 import javax.swing.JComponent;
 import org.openide.explorer.propertysheet.InplaceEditor;
@@ -26,7 +28,7 @@ import org.openide.nodes.PropertyEditorRegistration;
  * @author Philippe Charles
  */
 @PropertyEditorRegistration(targetType = Charset.class)
-public class CharsetPropertyEditor extends AbstractExPropertyEditor {
+public final class CharsetPropertyEditor extends AbstractExPropertyEditor {
 
     @Override
     public InplaceEditor createInplaceEditor() {
@@ -35,7 +37,7 @@ public class CharsetPropertyEditor extends AbstractExPropertyEditor {
 
     private static final class CharsetInplaceEditor extends AbstractInplaceEditor {
 
-        final CharsetComponent2 component = new CharsetComponent2();
+        final CharsetComponent component = new CharsetComponent();
 
         @Override
         public JComponent getComponent() {

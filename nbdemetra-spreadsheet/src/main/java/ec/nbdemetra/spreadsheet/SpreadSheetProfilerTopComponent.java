@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.spreadsheet;
 
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.util.various.swing.BasicFileViewer;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;

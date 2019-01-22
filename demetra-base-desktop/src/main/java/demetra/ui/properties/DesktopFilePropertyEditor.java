@@ -14,14 +14,13 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.ui.properties;
 
-import com.google.common.base.Suppliers;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import static ec.nbdemetra.ui.properties.Util.attr;
-import ec.util.completion.ext.DesktopFileAutoCompletionSource;
+import demetra.ui.completion.DesktopFileAutoCompletionSource;
+import static demetra.ui.properties.AbstractExPropertyEditor.attr;
 import ec.util.completion.swing.FileListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
+import internal.ui.DefaultThreadFactory;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.io.File;
@@ -49,7 +48,7 @@ public final class DesktopFilePropertyEditor extends ForwardingPropertyEditor im
     // => cannot register this editor
     public DesktopFilePropertyEditor() {
         super(PropertyEditorManager.findEditor(File.class));
-        this.inplaceEditor = Suppliers.memoize(DesktopFileInplaceEditor::new);
+        this.inplaceEditor = AbstractExPropertyEditor.memoize(DesktopFileInplaceEditor::new);
     }
 
     @Override
@@ -68,7 +67,7 @@ public final class DesktopFilePropertyEditor extends ForwardingPropertyEditor im
     //<editor-fold defaultstate="collapsed" desc="Internal implementation">
     private static final class DesktopFileInplaceEditor extends AbstractInplaceEditor {
 
-        private static final ExecutorService ICON_EXECUTOR = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setDaemon(true).build());
+        private static final ExecutorService ICON_EXECUTOR = Executors.newSingleThreadExecutor(DefaultThreadFactory.builder().daemon(true).build());
 
         private final JTextField component = new JTextField();
         private final JAutoCompletion autoCompletion = new JAutoCompletion(component);
