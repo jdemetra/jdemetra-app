@@ -18,11 +18,11 @@ package ec.nbdemetra.ui.demo.impl;
 
 import com.google.common.collect.ImmutableMap;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
-import ec.nbdemetra.ui.properties.CharsetPropertyEditor;
+import internal.ui.properties.CharsetPropertyEditor;
 import ec.nbdemetra.ui.properties.DataFormatPropertyEditor;
 import ec.nbdemetra.ui.properties.DayPropertyEditor;
-import ec.nbdemetra.ui.properties.DhmsPropertyEditor;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.DhmsPropertyEditor;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.properties.TsPeriodSelectorPropertyEditor;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.timeseries.Day;

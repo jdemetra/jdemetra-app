@@ -5,7 +5,7 @@
 package ec.nbdemetra.sa;
 
 import com.google.common.collect.Maps;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlRegArimaReport;

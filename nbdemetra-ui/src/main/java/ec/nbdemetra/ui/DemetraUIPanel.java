@@ -17,10 +17,10 @@
 package ec.nbdemetra.ui;
 
 import demetra.demo.DemoTsBuilder;
+import demetra.ui.NamedService;
 import demetra.ui.TsAction;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
-import ec.nbdemetra.ui.ns.INamedService;
 import ec.nbdemetra.ui.properties.DataFormatComponent2;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor;
 import demetra.ui.components.JTsChart;
@@ -261,7 +261,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         private final ColorScheme colorScheme;
 
         public ColorSchemeNamedService(ColorScheme colorScheme) {
-            super(INamedService.class, colorScheme.getName());
+            super(NamedService.class, colorScheme.getName());
             this.colorScheme = colorScheme;
         }
 

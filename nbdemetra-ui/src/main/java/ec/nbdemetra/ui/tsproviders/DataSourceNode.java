@@ -18,10 +18,10 @@ package ec.nbdemetra.ui.tsproviders;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
+import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.datatransfer.DataTransfers;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.interchange.Exportable;
-import ec.nbdemetra.ui.INameable;
-import ec.nbdemetra.ui.IReloadable;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
@@ -30,7 +30,6 @@ import static ec.nbdemetra.ui.tsproviders.DataSourceNode.ACTION_PATH;
 import ec.nbdemetra.ui.tssave.ITsSavable;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
-import ec.tss.datatransfer.DataTransfers;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceLoader;
@@ -67,7 +66,8 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import demetra.ui.DataTransfer;
+import demetra.ui.actions.Reloadable;
+import demetra.ui.actions.Renameable;
 
 /**
  * A node that represents a DataSource.
@@ -204,7 +204,7 @@ public final class DataSourceNode extends AbstractNode {
         }
     }
 
-    private final class ReloadableImpl implements IReloadable {
+    private final class ReloadableImpl implements Reloadable {
 
         @Override
         public void reload() {
@@ -219,7 +219,7 @@ public final class DataSourceNode extends AbstractNode {
         }
     }
 
-    private final class NameableImpl implements INameable {
+    private final class NameableImpl implements Renameable {
 
         @Override
         public void rename() {

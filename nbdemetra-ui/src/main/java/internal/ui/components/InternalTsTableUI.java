@@ -16,14 +16,15 @@
  */
 package internal.ui.components;
 
+import demetra.ui.util.ExtLayerUI;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.HasObsFormat;
 import demetra.ui.components.HasTsCollection;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.ThemeSupport;
-import ec.nbdemetra.ui.awt.ActionMaps;
-import ec.nbdemetra.ui.awt.InputMaps;
-import ec.nbdemetra.ui.awt.TableColumnModelAdapter;
+import demetra.ui.util.ActionMaps;
+import demetra.ui.util.InputMaps;
+import demetra.ui.util.TableColumnModelAdapter;
 import demetra.ui.components.JTsTable;
 import ec.nbdemetra.ui.DemetraUI;
 import static ec.util.chart.swing.SwingColorSchemeSupport.withAlpha;
@@ -45,7 +46,7 @@ import javax.swing.table.*;
 import org.netbeans.swing.etable.ETable;
 import org.netbeans.swing.etable.ETableColumn;
 import org.netbeans.swing.etable.ETableColumnModel;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  *

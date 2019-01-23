@@ -16,8 +16,6 @@
  */
 package internal.ui;
 
-import demetra.timeseries.TsUnit;
-import demetra.tsprovider.Ts;
 import ec.tss.datatransfer.impl.LocalObjectDataTransfer;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
@@ -32,7 +30,7 @@ import org.junit.Test;
 import org.openide.util.datatransfer.ExTransferable;
 import org.openide.util.lookup.Lookups;
 import org.slf4j.helpers.NOPLogger;
-import demetra.ui.DataTransferSpi;
+import demetra.ui.OldDataTransferSpi;
 
 /**
  *
@@ -49,24 +47,13 @@ public class DefaultDataTransferTest {
 
         assertThatThrownBy(() -> empty.fromMatrix(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.fromTable(null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> empty.fromTs(null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> empty.fromTsCollection(null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> empty.fromTsData(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.toMatrix(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.toTable(null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> empty.toTs(null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> empty.toTsCollection(null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> empty.toTsCollectionStream(null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> empty.toTsData(null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> empty.isTssTransferable(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.canImport((Transferable) null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.canImport((DataFlavor[]) null)).isInstanceOf(NullPointerException.class);
 
         assertThat(empty.fromMatrix(new Matrix(1, 1)).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTable(new Table<>(1, 1)).getTransferDataFlavors()).isEmpty();
-        assertThat(empty.fromTs(Ts.builder().build()).getTransferDataFlavors()).isEmpty();
-        assertThat(empty.fromTsCollection(demetra.tsprovider.TsCollection.EMPTY).getTransferDataFlavors()).isEmpty();
-        assertThat(empty.fromTsData(demetra.timeseries.TsData.random(TsUnit.YEAR, 0)).getTransferDataFlavors()).isEmpty();
     }
 
     @Test
@@ -77,28 +64,18 @@ public class DefaultDataTransferTest {
         DefaultDataTransfer local = of(new LocalObjectDataTransfer());
         assertThat(local.canImport(col)).isTrue();
         assertThat(local.canImport(multi)).isTrue();
-        assertThat(local.toTsCollection(col)).isEqualTo(col.getValue());
-        assertThat(local.toTsCollection(multi)).isNull();
-        assertThat(local.toTsCollectionStream(col)).containsExactly(col.getValue());
-        assertThat(local.toTsCollectionStream(multi)).containsExactly(col.getValue());
 
         DefaultDataTransfer empty = of();
         assertThat(empty.canImport(col)).isFalse();
         assertThat(empty.canImport(multi)).isFalse();
-        assertThat(empty.toTsCollection(col)).isNull();
-        assertThat(empty.toTsCollectionStream(col)).isEmpty();
 
         DefaultDataTransfer valid = of(new CustomHandler(DataFlavor.stringFlavor));
         assertThat(valid.canImport(col)).isFalse();
         assertThat(valid.canImport(multi)).isFalse();
-        assertThat(valid.toTsCollection(col)).isNull();
-        assertThat(valid.toTsCollectionStream(col)).isEmpty();
 
         DefaultDataTransfer invalid = of(new CustomHandler(LocalObjectDataTransfer.DATA_FLAVOR));
         assertThat(invalid.canImport(col)).isTrue();
         assertThat(invalid.canImport(multi)).isTrue();
-        assertThat(invalid.toTsCollection(col)).isNull();
-        assertThat(invalid.toTsCollectionStream(col)).isEmpty();
     }
 
     @Test
@@ -132,11 +109,11 @@ public class DefaultDataTransferTest {
         }).toMatrix(t)).isNull();
     }
 
-    private static DefaultDataTransfer of(DataTransferSpi... handlers) {
+    private static DefaultDataTransfer of(OldDataTransferSpi... handlers) {
         return new DefaultDataTransfer(Lookups.fixed((Object[]) handlers), NOPLogger.NOP_LOGGER, false);
     }
 
-    private static class CustomHandler implements DataTransferSpi {
+    private static class CustomHandler implements OldDataTransferSpi {
 
         private final DataFlavor df;
 

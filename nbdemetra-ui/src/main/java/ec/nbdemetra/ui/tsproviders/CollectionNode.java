@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  * A node that represents a DataSet of type collection.

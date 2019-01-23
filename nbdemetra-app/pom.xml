@@ -56,11 +56,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nbdemetra-ui</artifactId>   
+            <artifactId>demetra-base-desktop</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nbdemetra-odbc</artifactId>
+            <artifactId>nbdemetra-ui</artifactId>   
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -77,10 +77,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>nbdemetra-sa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>nbdemetra-sdmx</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

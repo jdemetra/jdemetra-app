@@ -21,7 +21,7 @@ import ec.tss.TsInformation;
 import ec.ui.interfaces.IReadDataBlockView;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
 import ec.util.various.swing.JCommand;
-import ec.util.various.swing.ext.FontAwesomeUtils;
+import demetra.ui.util.FontAwesomeUtils;
 import static java.beans.BeanInfo.ICON_COLOR_16x16;
 import javax.swing.JButton;
 import javax.swing.JToolBar;

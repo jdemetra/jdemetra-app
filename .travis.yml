@@ -1,6 +1,7 @@
 language: java
 jdk:
   - oraclejdk8
+  - openjdk11
 
 before_install:
   - git clone -b v3.0.0 --single-branch --depth=1 https://github.com/jdemetra/jdemetra-core.git ~/builds/jdemetra-core
@@ -13,22 +14,3 @@ before_install:
 cache:
   directories:
     - $HOME/.m2
-
-deploy:
-  # SNAPSHOTS from develop & jdk8
-  - provider: script
-    script: mvn deploy -Dmaven.test.skip -s .travis.settings.xml -P deploy-snapshots
-    skip_cleanup: true
-    on:
-      branch: develop
-      jdk: oraclejdk8
-      condition: $TRAVIS_PULL_REQUEST = "false"
-      
-  # RELEASES from master & jdk8
-  - provider: script
-    script: mvn deploy -Dmaven.test.skip -s .travis.settings.xml -P deploy-releases
-    skip_cleanup: true
-    on:
-      branch: master
-      jdk: oraclejdk8
-      condition: $TRAVIS_PULL_REQUEST = "false"

@@ -4,7 +4,7 @@
  */
 package ec.ui.view;
 
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.tss.html.HtmlStream;
 import ec.tss.html.HtmlTag;
 import ec.tss.html.HtmlUtil;

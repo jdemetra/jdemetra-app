@@ -33,7 +33,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.function.Supplier;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.DataTransferSpi;
+import demetra.ui.OldDataTransferSpi;
+import demetra.ui.datatransfer.DataTransferSpi;
+import org.openide.util.lookup.ServiceProviders;
 
 /**
  * XML Spreadsheet (XMLSS).
@@ -41,8 +43,11 @@ import demetra.ui.DataTransferSpi;
  * @see http://msdn.microsoft.com/en-us/library/aa140066(v=office.10).aspx
  * @author Jean Palate
  */
-@ServiceProvider(service = DataTransferSpi.class, position = 1000, supersedes = {"ec.tss.datatransfer.impl.XmlssTssTransferHandler"})
-public final class XmlssDataTransfer implements DataTransferSpi, IConfigurable {
+@ServiceProviders({
+    @ServiceProvider(service = DataTransferSpi.class, position = 1000)
+    ,@ServiceProvider(service = OldDataTransferSpi.class, position = 1000, supersedes = {"ec.tss.datatransfer.impl.XmlssTssTransferHandler"})
+})
+public final class XmlssDataTransfer implements DataTransferSpi, OldDataTransferSpi, IConfigurable {
 
     private final DataFlavor dataFlavor;
     @lombok.experimental.Delegate

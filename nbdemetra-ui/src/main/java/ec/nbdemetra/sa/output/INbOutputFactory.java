@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.sa.output;
 
-import ec.nbdemetra.ui.ns.INamedService;
+import demetra.ui.NamedService;
 import java.awt.Image;
 import org.openide.nodes.Sheet;
 
@@ -24,7 +24,7 @@ import org.openide.nodes.Sheet;
  *
  * @author Jean Palate
  */
-public interface INbOutputFactory extends INamedService {
+public interface INbOutputFactory extends NamedService {
 
     @Override
     String getName();

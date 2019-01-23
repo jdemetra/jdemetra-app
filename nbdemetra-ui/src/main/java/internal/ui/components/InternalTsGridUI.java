@@ -28,8 +28,8 @@ import demetra.ui.components.HasTsCollection;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.ThemeSupport;
-import ec.nbdemetra.ui.awt.ActionMaps;
-import ec.nbdemetra.ui.awt.InputMaps;
+import demetra.ui.util.ActionMaps;
+import demetra.ui.util.InputMaps;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
@@ -76,7 +76,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 

@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.interchange;
 
-import ec.nbdemetra.ui.actions.AbilityAction;
+import demetra.ui.actions.AbilityAction;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.List;

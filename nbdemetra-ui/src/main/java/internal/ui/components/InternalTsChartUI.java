@@ -26,12 +26,12 @@ import static demetra.ui.components.ResetableZoom.RESET_ZOOM_ACTION;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.ThemeSupport;
-import ec.nbdemetra.ui.awt.ActionMaps;
-import ec.nbdemetra.ui.awt.InputMaps;
+import demetra.ui.util.ActionMaps;
+import demetra.ui.util.InputMaps;
 import ec.tstoolkit.utilities.IntList;
 import demetra.ui.components.JTsChart;
 import demetra.ui.components.TsFeatureHelper;
-import demetra.ui.util.jfreechart.TsXYDataset;
+import demetra.ui.jfreechart.TsXYDataset;
 import ec.ui.chart.JTimeSeriesChartUtil;
 import ec.util.chart.ObsFunction;
 import ec.util.chart.ObsIndex;
@@ -60,7 +60,7 @@ import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.jfree.data.xy.IntervalXYDataset;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 public final class InternalTsChartUI implements InternalUI<JTsChart> {
 

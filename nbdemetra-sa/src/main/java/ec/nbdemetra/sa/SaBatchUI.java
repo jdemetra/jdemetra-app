@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.sa;
 
+import demetra.ui.util.NbComponents;
 import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
@@ -14,8 +15,8 @@ import demetra.ui.TsManager;
 import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
 import ec.nbdemetra.ui.Menus.DynamicPopup;
 import ec.nbdemetra.ui.*;
-import ec.nbdemetra.ui.awt.ListTableModel;
-import ec.nbdemetra.ui.awt.PopupMenuAdapter;
+import demetra.ui.util.ListTableModel;
+import demetra.ui.util.PopupMenuAdapter;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ws.WorkspaceFactory;
@@ -25,7 +26,6 @@ import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;
 import ec.tss.TsInformationType;
-import ec.tss.datatransfer.DataTransfers;
 import ec.tss.datatransfer.TransferableXml;
 import ec.tss.sa.EstimationPolicyType;
 import ec.tss.sa.SaItem;
@@ -74,7 +74,8 @@ import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.datatransfer.DataTransfers;
 
 /**
  *

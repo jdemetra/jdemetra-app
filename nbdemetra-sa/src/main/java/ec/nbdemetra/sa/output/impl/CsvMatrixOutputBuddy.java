@@ -25,10 +25,9 @@ import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.IResetable;
-import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
-import ec.nbdemetra.ui.properties.IBeanEditor;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.PropertySheetDialogBuilder;
+import demetra.ui.properties.IBeanEditor;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.output.CsvMatrixOutputConfiguration;
 import ec.tss.sa.output.CsvMatrixOutputFactory;
@@ -40,13 +39,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.actions.Resetable;
 
 /**
  *
  * @author Mats Maggi
  */
 @ServiceProvider(service = INbOutputFactory.class, position = 1100)
-public class CsvMatrixOutputBuddy implements INbOutputFactory, IConfigurable, IResetable {
+public class CsvMatrixOutputBuddy implements INbOutputFactory, IConfigurable, Resetable {
 
     private final Configurator<CsvMatrixOutputBuddy> configurator = createConfigurator();
     private CsvMatrixOutputConfiguration config = new CsvMatrixOutputConfiguration();

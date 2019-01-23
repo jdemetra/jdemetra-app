@@ -5,7 +5,7 @@
  */
 package ec.nbdemetra.ui.tssave;
 
-import ec.nbdemetra.ui.ns.INamedService;
+import demetra.ui.NamedService;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
  * @since 2.1.0
  */
 @ServiceDefinition
-public interface ITsSave extends INamedService {
+public interface ITsSave extends NamedService {
 
     @OnEDT
     void save(@Nonnull Ts[] input);

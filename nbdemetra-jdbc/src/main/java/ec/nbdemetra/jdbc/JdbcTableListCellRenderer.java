@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.jdbc;
 
-import ec.nbdemetra.ui.awt.SimpleHtmlListCellRenderer;
+import demetra.ui.util.SimpleHtmlListCellRenderer;
 import ec.util.jdbc.JdbcTable;
 
 /**

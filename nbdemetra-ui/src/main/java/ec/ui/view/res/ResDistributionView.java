@@ -4,7 +4,7 @@
  */
 package ec.ui.view.res;
 
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.dstats.Normal;
 import ec.tstoolkit.stats.AutoCorrelations;

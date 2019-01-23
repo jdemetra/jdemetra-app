@@ -8,7 +8,7 @@ import ec.nbdemetra.anomalydetection.ui.AnomalyDetectionSummary;
 import ec.nbdemetra.anomalydetection.ui.JTsAnomalyGrid;
 import ec.nbdemetra.anomalydetection.ui.OutliersTopComponent;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import demetra.ui.components.JTsGrid;
 import ec.util.various.swing.BasicSwingLauncher;

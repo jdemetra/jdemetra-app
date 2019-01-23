@@ -18,7 +18,6 @@ package demetra.ui;
 
 import demetra.tsprovider.Ts;
 import ec.nbdemetra.core.GlobalService;
-import ec.nbdemetra.ui.ns.INamedService;
 import ec.util.various.swing.OnEDT;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -40,7 +39,7 @@ public interface TsAction {
     static final String NO_ACTION = "";
 
     @Nonnull
-    List<? extends INamedService> getTsActions();
+    List<? extends NamedService> getTsActions();
 
     @OnEDT
     default void open(@Nonnull Ts ts) {

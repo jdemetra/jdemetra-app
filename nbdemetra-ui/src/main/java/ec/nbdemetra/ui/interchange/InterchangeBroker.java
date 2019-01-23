@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.ui.interchange;
 
+import demetra.ui.NamedService;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.ns.INamedService;
 import ec.tstoolkit.design.ServiceDefinition;
 import ec.util.various.swing.OnEDT;
 import java.awt.Image;
@@ -33,7 +33,7 @@ import org.openide.util.ImageUtilities;
  * @since 1.5.1
  */
 @ServiceDefinition(hasPosition = true)
-public abstract class InterchangeBroker implements INamedService {
+public abstract class InterchangeBroker implements NamedService {
 
     @Override
     public Image getIcon(int type, boolean opened) {

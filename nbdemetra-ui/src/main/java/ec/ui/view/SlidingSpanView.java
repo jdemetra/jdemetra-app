@@ -6,7 +6,7 @@ package ec.ui.view;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.components.HasColorScheme;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.satoolkit.DecompositionMode;
 import ec.tss.html.implementation.HtmlSlidingSpanDocument;
 import ec.tstoolkit.data.DataBlock;
@@ -49,7 +49,7 @@ import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultXYDataset;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  *

@@ -19,7 +19,7 @@ package ec.nbdemetra.ui.demo.impl;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import internal.ui.components.HasChartCommands;
 import ec.util.various.swing.FontAwesome;
-import ec.util.various.swing.ext.FontAwesomeUtils;
+import demetra.ui.util.FontAwesomeUtils;
 import java.beans.BeanInfo;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;

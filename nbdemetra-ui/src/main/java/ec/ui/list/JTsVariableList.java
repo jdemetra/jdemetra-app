@@ -17,12 +17,13 @@
 package ec.ui.list;
 
 import demetra.bridge.TsConverter;
+import demetra.ui.NamedService;
 import demetra.ui.TsAction;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.awt.ActionMaps;
-import ec.nbdemetra.ui.awt.InputMaps;
-import ec.nbdemetra.ui.awt.KeyStrokes;
+import demetra.ui.util.NbComponents;
+import demetra.ui.util.ActionMaps;
+import demetra.ui.util.InputMaps;
+import demetra.ui.util.KeyStrokes;
 import ec.tss.DynamicTsVariable;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -68,9 +69,8 @@ import javax.swing.table.TableRowSorter;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import demetra.ui.components.HasTsAction;
-import ec.nbdemetra.ui.ns.INamedService;
 import ec.util.table.swing.JTables;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  *
@@ -412,7 +412,7 @@ public class JTsVariableList extends JComponent implements HasTsAction {
     private JMenu buildOpenWithMenu() {
         JMenu result = new JMenu(OpenWithCommand.INSTANCE.toAction(this));
 
-        for (INamedService o : TsAction.getDefault().getTsActions()) {
+        for (NamedService o : TsAction.getDefault().getTsActions()) {
             JMenuItem item = new JMenuItem(new OpenWithItemCommand(o).toAction(this));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
@@ -488,7 +488,7 @@ public class JTsVariableList extends JComponent implements HasTsAction {
     @lombok.AllArgsConstructor
     private static final class OpenWithItemCommand extends JCommand<JTsVariableList> {
 
-        private final INamedService tsAction;
+        private final NamedService tsAction;
 
         @Override
         public void execute(JTsVariableList c) throws Exception {

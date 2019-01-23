@@ -34,7 +34,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  *

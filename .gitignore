@@ -1,10 +1,9 @@
 /nbdemetra-branding/target/
 /nbdemetra-ui/target/
 /nbdemetra-jdbc/target/
-/nbdemetra-odbc/target/
 /nbdemetra-common/target/
 /nbdemetra-spreadsheet/target/
 /nbdemetra-sa/target/
-/nbdemetra-sdmx/target/
 /nbdemetra-anomalydetection/target/
 /nbdemetra-app/target/
+/demetra-base-desktop/target/

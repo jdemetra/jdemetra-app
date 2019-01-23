@@ -26,10 +26,9 @@ import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.IResetable;
-import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
-import ec.nbdemetra.ui.properties.IBeanEditor;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.PropertySheetDialogBuilder;
+import demetra.ui.properties.IBeanEditor;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.output.TxtOutputConfiguration;
 import ec.tss.sa.output.TxtOutputFactory;
@@ -43,13 +42,14 @@ import java.util.stream.Collectors;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.actions.Resetable;
 
 /**
  *
  * @author Mats Maggi
  */
 @ServiceProvider(service = INbOutputFactory.class, position = 1500)
-public class TxtOutputBuddy implements INbOutputFactory, IConfigurable, IResetable {
+public class TxtOutputBuddy implements INbOutputFactory, IConfigurable, Resetable {
 
     private final Configurator<TxtOutputBuddy> configurator = createConfigurator();
     private TxtOutputConfiguration config = new TxtOutputConfiguration();

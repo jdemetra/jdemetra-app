@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import org.netbeans.api.settings.ConvertAsProperties;

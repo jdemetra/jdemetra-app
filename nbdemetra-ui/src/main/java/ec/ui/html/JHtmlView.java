@@ -17,7 +17,7 @@
 package ec.ui.html;
 
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.ui.AHtmlView;
 import ec.util.various.swing.JCommand;
 import java.awt.BorderLayout;

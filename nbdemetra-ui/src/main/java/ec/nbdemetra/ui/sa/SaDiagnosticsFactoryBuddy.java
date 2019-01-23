@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.ui.sa;
 
+import demetra.ui.NamedService;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.ns.INamedService;
 import ec.tstoolkit.design.ServiceDefinition;
 import java.awt.Image;
 import org.openide.util.ImageUtilities;
@@ -28,7 +28,7 @@ import org.openide.util.ImageUtilities;
  * @since 2.1.0
  */
 @ServiceDefinition(hasPosition = true)
-public abstract class SaDiagnosticsFactoryBuddy implements INamedService {
+public abstract class SaDiagnosticsFactoryBuddy implements NamedService {
 
     @Override
     public Image getIcon(int type, boolean opened) {

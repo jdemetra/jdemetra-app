@@ -105,6 +105,10 @@
         <!-- Projects -->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-base-desktop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>nbdemetra-ui</artifactId>
         </dependency>
         <dependency>

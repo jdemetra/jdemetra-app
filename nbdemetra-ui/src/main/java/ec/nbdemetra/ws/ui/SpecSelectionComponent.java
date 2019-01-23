@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ws.ui;
 
-import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
+import demetra.ui.util.IDialogDescriptorProvider;
 import ec.nbdemetra.ui.calendars.CustomDialogDescriptor;
 import ec.nbdemetra.ui.nodes.DecoratedNode;
 import ec.nbdemetra.ws.WorkspaceFactory;

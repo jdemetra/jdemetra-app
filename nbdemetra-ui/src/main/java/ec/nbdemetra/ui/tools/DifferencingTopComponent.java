@@ -12,7 +12,7 @@ import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
 import ec.nbdemetra.ui.MonikerUI;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.TsMoniker;
@@ -43,7 +43,8 @@ import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
+import java.util.Optional;
 
 /**
  * Top component which displays something.
@@ -204,9 +205,9 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            demetra.tsprovider.Ts s = DataTransfer.getDefault().toTs(support.getTransferable());
-            if (s != null) {
-                setTs(s);
+            Optional<demetra.tsprovider.Ts> s = DataTransfer.getDefault().toTs(support.getTransferable());
+            if (s.isPresent()) {
+                setTs(s.get());
                 return true;
             }
             return false;

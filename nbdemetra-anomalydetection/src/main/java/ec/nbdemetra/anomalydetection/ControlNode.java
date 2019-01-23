@@ -18,7 +18,7 @@ package ec.nbdemetra.anomalydetection;
 
 import ec.nbdemetra.anomalydetection.ui.JTsAnomalyGrid;
 import ec.nbdemetra.anomalydetection.ui.JTsCheckLastList;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tstoolkit.modelling.DefaultTransformationType;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import org.openide.explorer.ExplorerManager;

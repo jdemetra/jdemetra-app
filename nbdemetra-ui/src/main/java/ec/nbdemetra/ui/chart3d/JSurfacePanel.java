@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.chart3d;
 
-import ec.ui.ExtAction;
+import demetra.ui.actions.Actions;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -67,7 +67,7 @@ public class JSurfacePanel extends JPanel {
         JMenuItem item;
         item = new JMenuItem(new ExportJPGAction());
         item.setText("Save as image");
-        ExtAction.hideWhenDisabled(item);
+        Actions.hideWhenDisabled(item);
         result.add(item);
         return result;
     }

@@ -3,7 +3,7 @@ package ec.nbdemetra.ui.properties.l2fprod;
 import com.google.common.collect.Lists;
 import com.l2fprod.common.propertysheet.*;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.Dimension;

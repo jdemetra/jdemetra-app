@@ -17,7 +17,8 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JToolBar;
 import javax.swing.TransferHandler;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
+import java.util.Optional;
 
 /**
  *
@@ -89,9 +90,9 @@ public class TsProcessingViewer extends DefaultProcessingViewer<TsDocument> {
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            demetra.tsprovider.Ts ts = DataTransfer.getDefault().toTs(support.getTransferable());
-            if (ts != null) {
-                getDocument().setInput(TsConverter.fromTs(ts));
+            Optional<demetra.tsprovider.Ts> ts = DataTransfer.getDefault().toTs(support.getTransferable());
+            if (ts.isPresent()) {
+                getDocument().setInput(TsConverter.fromTs(ts.get()));
                 refreshAll();
                 return true;
             }

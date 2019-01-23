@@ -16,14 +16,14 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.util.table.swing.JTables;
 import ec.util.various.swing.FontAwesome;
 import static ec.util.various.swing.FontAwesome.FA_HAND_O_UP;
 import ec.util.various.swing.JCommand;
-import ec.util.various.swing.ext.FontAwesomeUtils;
-import static ec.util.various.swing.ext.FontAwesomeUtils.toSize;
+import demetra.ui.util.FontAwesomeUtils;
+import static demetra.ui.util.FontAwesomeUtils.toSize;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;

@@ -5,10 +5,10 @@
 package ec.nbdemetra.ui.calendars;
 
 import com.google.common.collect.Lists;
-import ec.nbdemetra.ui.awt.IDialogDescriptorProvider;
-import ec.nbdemetra.ui.awt.ListenerState;
-import ec.nbdemetra.ui.properties.ComboBoxPropertyEditor;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.util.IDialogDescriptorProvider;
+import demetra.ui.util.ListenerState;
+import demetra.ui.properties.ComboBoxPropertyEditor;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.utils.IConstraint;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.Day;

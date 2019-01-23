@@ -17,10 +17,10 @@
 package ec.nbdemetra.ui.ns;
 
 import com.google.common.collect.Iterables;
+import demetra.ui.NamedService;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.IResetable;
-import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
+import demetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import javax.annotation.Nonnull;
@@ -33,6 +33,7 @@ import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
+import demetra.ui.actions.Resetable;
 
 /**
  *
@@ -40,16 +41,16 @@ import org.openide.util.lookup.InstanceContent;
  */
 public class NamedServiceNode extends AbstractNode {
 
-    public NamedServiceNode(@Nonnull INamedService namedService) {
+    public NamedServiceNode(@Nonnull NamedService namedService) {
         this(namedService, new InstanceContent());
     }
 
-    private NamedServiceNode(INamedService namedService, InstanceContent abilities) {
+    private NamedServiceNode(NamedService namedService, InstanceContent abilities) {
         super(Children.LEAF, new AbstractLookup(abilities));
         // order matters !
         if (namedService instanceof IConfigurable) {
-            if (namedService instanceof IResetable) {
-                abilities.add(new LateConfigurableAndResetable((IConfigurable) namedService, (IResetable) namedService));
+            if (namedService instanceof Resetable) {
+                abilities.add(new LateConfigurableAndResetable((IConfigurable) namedService, (Resetable) namedService));
             } else {
                 abilities.add(new LateConfigurable((IConfigurable) namedService));
             }
@@ -59,8 +60,8 @@ public class NamedServiceNode extends AbstractNode {
         setDisplayName(namedService.getDisplayName());
     }
 
-    protected INamedService getNamedService() {
-        return getLookup().lookup(INamedService.class);
+    protected NamedService getNamedService() {
+        return getLookup().lookup(NamedService.class);
     }
 
     @Override
@@ -98,7 +99,7 @@ public class NamedServiceNode extends AbstractNode {
         } : super.getPreferredAction();
     }
 
-    public static void loadAll(ExplorerManager em, Iterable<? extends INamedService> items) {
+    public static void loadAll(ExplorerManager em, Iterable<? extends NamedService> items) {
         Iterable<NamedServiceNode> nodes = Iterables.transform(items, o -> new NamedServiceNode(o));
         em.setRootContext(new AbstractNodeBuilder().add(nodes).build());
     }
@@ -147,11 +148,11 @@ public class NamedServiceNode extends AbstractNode {
         }
     }
 
-    private static final class LateConfigurableAndResetable extends LateConfigurable implements IResetable {
+    private static final class LateConfigurableAndResetable extends LateConfigurable implements Resetable {
 
-        private final IResetable resetable;
+        private final Resetable resetable;
 
-        public LateConfigurableAndResetable(IConfigurable configurable, IResetable resetable) {
+        public LateConfigurableAndResetable(IConfigurable configurable, Resetable resetable) {
             super(configurable);
             this.resetable = resetable;
         }

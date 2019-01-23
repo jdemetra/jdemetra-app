@@ -20,7 +20,7 @@ import demetra.ui.TsManager;
 import demetra.ui.components.HasColorScheme;
 import demetra.ui.components.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlRevisionsDocument;

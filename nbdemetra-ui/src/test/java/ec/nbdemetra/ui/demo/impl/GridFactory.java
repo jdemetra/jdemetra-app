@@ -29,7 +29,7 @@ import com.toedter.components.JSpinField;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
-import static ec.nbdemetra.ui.awt.SwingProperties.SPIN_FIELD_VALUE_PROPERTY;
+import static demetra.ui.util.SwingProperties.SPIN_FIELD_VALUE_PROPERTY;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.tstoolkit.utilities.Id;
 import ec.util.grid.swing.XTable;

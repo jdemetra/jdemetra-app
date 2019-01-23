@@ -20,7 +20,7 @@ import demetra.bridge.TsConverter;
 import demetra.tsprovider.Ts;
 import demetra.tsprovider.TsCollection;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.tsproviders.DataSet;

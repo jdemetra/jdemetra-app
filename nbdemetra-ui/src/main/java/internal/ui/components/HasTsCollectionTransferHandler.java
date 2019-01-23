@@ -22,8 +22,6 @@ import demetra.ui.components.HasTsCollection;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
-import ec.tss.datatransfer.DataTransfers;
-import ec.tss.datatransfer.impl.LocalObjectDataTransfer;
 import java.awt.datatransfer.Transferable;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -33,7 +31,9 @@ import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 import org.openide.util.Lookup;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.datatransfer.DataTransfers;
+import demetra.ui.datatransfer.LocalObjectDataTransfer;
 
 /**
  *
@@ -127,7 +127,7 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
                 demetra.tsprovider.TsCollection.Builder result = main.toBuilder();
                 for (Ts o : col) {
                     demetra.tsprovider.TsMoniker id = TsConverter.toTsMoniker(o.getMoniker());
-                    if (!id.isProvided()|| !monikers.contains(id)) {
+                    if (!id.isProvided() || !monikers.contains(id)) {
                         result.data(TsConverter.toTs(o));
                     }
                 }

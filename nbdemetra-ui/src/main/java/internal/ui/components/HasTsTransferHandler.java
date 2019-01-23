@@ -19,7 +19,8 @@ package internal.ui.components;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTs;
 import javax.swing.TransferHandler;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
+import java.util.Optional;
 
 /**
  *
@@ -41,10 +42,10 @@ public final class HasTsTransferHandler extends TransferHandler {
 
     @Override
     public boolean importData(TransferHandler.TransferSupport support) {
-        demetra.tsprovider.Ts ts = tssSupport.toTs(support.getTransferable());
-        if (ts != null) {
-            TsManager.getDefault().loadAsync(ts, demetra.tsprovider.TsInformationType.All);
-            delegate.setTs(ts);
+        Optional<demetra.tsprovider.Ts> ts = tssSupport.toTs(support.getTransferable());
+        if (ts.isPresent()) {
+            TsManager.getDefault().loadAsync(ts.get(), demetra.tsprovider.TsInformationType.All);
+            delegate.setTs(ts.get());
             return true;
         }
         return false;

@@ -23,7 +23,7 @@ import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.l2fprod.common.propertysheet.PropertySheetTable;
 import com.l2fprod.common.propertysheet.PropertySheetTableModel;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.Dimension;

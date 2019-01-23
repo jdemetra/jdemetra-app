@@ -5,8 +5,8 @@
 package ec.ui.view;
 
 import ec.tstoolkit.utilities.Arrays2;
-import ec.nbdemetra.ui.NbComponents;
-import ec.nbdemetra.ui.awt.ExceptionPanel;
+import demetra.ui.util.NbComponents;
+import demetra.ui.components.ExceptionPanel;
 import ec.nbdemetra.ui.nodes.DecoratedNode;
 import ec.nbdemetra.ui.nodes.IdNodes;
 import ec.ui.interfaces.IDisposable;

@@ -18,7 +18,7 @@ package ec.nbdemetra.spreadsheet;
 
 import com.google.common.base.Stopwatch;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.NbComponents;
+import demetra.ui.util.NbComponents;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
 import ec.util.grid.swing.ext.SpreadSheetView;
@@ -29,7 +29,7 @@ import static ec.util.various.swing.FontAwesome.FA_EXTERNAL_LINK;
 import static ec.util.various.swing.FontAwesome.FA_INFO;
 import static ec.util.various.swing.FontAwesome.FA_SEARCH;
 import ec.util.various.swing.JCommand;
-import ec.util.various.swing.ext.FontAwesomeUtils;
+import demetra.ui.util.FontAwesomeUtils;
 import internal.ui.components.HasColorSchemeCommands;
 import java.awt.BorderLayout;
 import java.awt.Component;

@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
+import demetra.ui.properties.PropertySheetDialogBuilder;
 import ec.tss.TsMoniker;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;

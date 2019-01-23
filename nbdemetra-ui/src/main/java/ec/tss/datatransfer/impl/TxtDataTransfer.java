@@ -26,9 +26,9 @@ import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
-import ec.nbdemetra.ui.properties.IBeanEditor;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.PropertySheetDialogBuilder;
+import demetra.ui.properties.IBeanEditor;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
@@ -51,13 +51,18 @@ import java.util.Date;
 import java.util.Locale;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.DataTransferSpi;
+import demetra.ui.OldDataTransferSpi;
+import demetra.ui.datatransfer.DataTransferSpi;
+import org.openide.util.lookup.ServiceProviders;
 
 /**
  * @author Jean Palate
  */
-@ServiceProvider(service = DataTransferSpi.class, position = 2000)
-public final class TxtDataTransfer implements DataTransferSpi, IConfigurable {
+@ServiceProviders({
+    @ServiceProvider(service = DataTransferSpi.class, position = 1000)
+    ,@ServiceProvider(service = OldDataTransferSpi.class, position = 2000)
+})
+public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSpi, IConfigurable {
 
     private static final char DELIMITOR = '\t';
     private static final String NEWLINE = StandardSystemProperty.LINE_SEPARATOR.value();

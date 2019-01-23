@@ -17,7 +17,7 @@
 package ec.ui.view.tsprocessing;
 
 import com.google.common.base.Preconditions;
-import ec.nbdemetra.ui.awt.ExceptionPanel;
+import demetra.ui.components.ExceptionPanel;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.InformationExtractor;

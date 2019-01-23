@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
-import demetra.ui.DataTransfer;
+import demetra.ui.OldDataTransfer;
 
 /**
  * A command that extract a matrix from a chart and put it into the system
@@ -26,7 +26,7 @@ public abstract class MatrixChartCommand extends ChartCommand {
     @Override
     public void execute(ChartPanel chartPanel) {
         Matrix matrix = toMatrix(chartPanel);
-        Transferable t = DataTransfer.getDefault().fromMatrix(matrix);
+        Transferable t = OldDataTransfer.getDefault().fromMatrix(matrix);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
     }
 

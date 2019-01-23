@@ -16,15 +16,10 @@
  */
 package internal.ui;
 
+import demetra.ui.datatransfer.MultiTransferable;
 import com.google.common.collect.Sets;
-import demetra.timeseries.TsData;
-import demetra.tsprovider.Ts;
-import demetra.tsprovider.TsCollection;
-import demetra.tsprovider.TsInformationType;
-import demetra.ui.TsManager;
+import demetra.ui.NamedService;
 import demetra.ui.beans.ListenableBean;
-import ec.tss.datatransfer.impl.LocalObjectDataTransfer;
-import ec.tss.tsproviders.utils.FunctionWithIO;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.design.VisibleForTesting;
 import ec.tstoolkit.maths.matrices.Matrix;
@@ -46,16 +41,16 @@ import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import demetra.ui.DataTransfer;
-import ec.nbdemetra.ui.ns.INamedService;
-import ec.tss.datatransfer.DataTransfers;
-import demetra.ui.DataTransferSpi;
+import ioutil.IO;
+import demetra.ui.OldDataTransfer;
+import demetra.ui.datatransfer.DataTransfers;
+import demetra.ui.OldDataTransferSpi;
 
 /**
  * @author Philippe Charles
  */
-@ServiceProvider(service = DataTransfer.class)
-public final class DefaultDataTransfer extends ListenableBean implements DataTransfer {
+@ServiceProvider(service = OldDataTransfer.class)
+public final class DefaultDataTransfer extends ListenableBean implements OldDataTransfer {
 
     private final ClipboardValidator clipboardValidator;
     private final Lookup lookup;
@@ -86,12 +81,12 @@ public final class DefaultDataTransfer extends ListenableBean implements DataTra
         firePropertyChange(VALID_CLIPBOARD_PROPERTY, old, this.validClipboard);
     }
 
-    private Stream<? extends DataTransferSpi> lookupAll() {
-        return lookup.lookupAll(DataTransferSpi.class).stream();
+    private Stream<? extends OldDataTransferSpi> lookupAll() {
+        return lookup.lookupAll(OldDataTransferSpi.class).stream();
     }
 
     @Override
-    public List<? extends INamedService> getProviders() {
+    public List<? extends NamedService> getProviders() {
         return lookupAll().collect(Collectors.toList());
     }
 
@@ -108,24 +103,6 @@ public final class DefaultDataTransfer extends ListenableBean implements DataTra
     }
 
     @Override
-    public Transferable fromTsData(TsData data) {
-        requireNonNull(data);
-        return fromTs(Ts.builder().data(data).build());
-    }
-
-    @Override
-    public Transferable fromTs(Ts ts) {
-        requireNonNull(ts);
-        return fromTsCollection(TsCollection.of(ts));
-    }
-
-    @Override
-    public Transferable fromTsCollection(TsCollection col) {
-        requireNonNull(col);
-        return asTransferable(col, lookupAll(), TsCollectionHelper.INSTANCE);
-    }
-
-    @Override
     public Transferable fromMatrix(Matrix matrix) {
         requireNonNull(matrix);
         return asTransferable(matrix, lookupAll(), MatrixHelper.INSTANCE);
@@ -135,38 +112,6 @@ public final class DefaultDataTransfer extends ListenableBean implements DataTra
     public Transferable fromTable(Table<?> table) {
         requireNonNull(table);
         return asTransferable(table, lookupAll(), TableHelper.INSTANCE);
-    }
-
-    @Override
-    public TsData toTsData(Transferable transferable) {
-        Ts ts = toTs(transferable);
-        return ts != null
-                ? TsManager.getDefault().load(ts, TsInformationType.Data).getData()
-                : null;
-    }
-
-    @Override
-    public Ts toTs(Transferable transferable) {
-        TsCollection col = toTsCollection(transferable);
-        return col != null && !col.getData().isEmpty() ? col.getData().get(0) : null;
-    }
-
-    @Override
-    public TsCollection toTsCollection(Transferable transferable) {
-        requireNonNull(transferable);
-        return lookupAll()
-                .filter(onDataFlavors(transferable.getTransferDataFlavors()))
-                .map(o -> toTsCollection(o, transferable, logger))
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
-    }
-
-    @Override
-    public Stream<TsCollection> toTsCollectionStream(Transferable transferable) {
-        return DataTransfers.getMultiTransferables(transferable)
-                .map(this::toTsCollection)
-                .filter(Objects::nonNull);
     }
 
     @Override
@@ -191,11 +136,6 @@ public final class DefaultDataTransfer extends ListenableBean implements DataTra
                 .orElse(null);
     }
 
-    @Override
-    public boolean isTssTransferable(Transferable transferable) {
-        return transferable.isDataFlavorSupported(LocalObjectDataTransfer.DATA_FLAVOR);
-    }
-
     private final class ClipboardValidator implements FlavorListener {
 
         private boolean isValid(Clipboard clipboard) {
@@ -218,15 +158,15 @@ public final class DefaultDataTransfer extends ListenableBean implements DataTra
         }
     }
 
-    private static void logUnexpected(Logger logger, DataTransferSpi o, RuntimeException unexpected, String context) {
+    private static void logUnexpected(Logger logger, OldDataTransferSpi o, RuntimeException unexpected, String context) {
         logger.info("Unexpected exception while " + context + " using '" + getIdOrClassName(o) + "'", unexpected);
     }
 
-    private static void logExpected(Logger logger, DataTransferSpi o, Exception expected, String context) {
+    private static void logExpected(Logger logger, OldDataTransferSpi o, Exception expected, String context) {
         logger.debug("While " + context + " using '" + getIdOrClassName(o) + "'", expected);
     }
 
-    private static String getIdOrClassName(DataTransferSpi handler) {
+    private static String getIdOrClassName(OldDataTransferSpi handler) {
         try {
             return requireNonNull(handler.getName());
         } catch (RuntimeException unexpected) {
@@ -234,7 +174,7 @@ public final class DefaultDataTransfer extends ListenableBean implements DataTra
         }
     }
 
-    private static DataFlavor getDataFlavorOrNull(DataTransferSpi handler) {
+    private static DataFlavor getDataFlavorOrNull(OldDataTransferSpi handler) {
         try {
             return handler.getDataFlavor();
         } catch (RuntimeException unexpected) {
@@ -242,21 +182,7 @@ public final class DefaultDataTransfer extends ListenableBean implements DataTra
         }
     }
 
-    private static TsCollection toTsCollection(DataTransferSpi o, Transferable t, Logger logger) {
-        try {
-            Object data = t.getTransferData(requireNonNull(o.getDataFlavor()));
-            if (o.canImportTsCollection(data)) {
-                return requireNonNull(o.importTsCollection(data));
-            }
-        } catch (UnsupportedFlavorException | IOException ex) {
-            logExpected(logger, o, ex, "getting collection");
-        } catch (RuntimeException ex) {
-            logUnexpected(logger, o, ex, "getting collection");
-        }
-        return null;
-    }
-
-    private static Matrix toMatrix(DataTransferSpi o, Transferable t, Logger logger) {
+    private static Matrix toMatrix(OldDataTransferSpi o, Transferable t, Logger logger) {
         try {
             Object data = t.getTransferData(requireNonNull(o.getDataFlavor()));
             if (o.canImportMatrix(data)) {
@@ -270,7 +196,7 @@ public final class DefaultDataTransfer extends ListenableBean implements DataTra
         return null;
     }
 
-    private static Table<?> toTable(DataTransferSpi o, Transferable t, Logger logger) {
+    private static Table<?> toTable(OldDataTransferSpi o, Transferable t, Logger logger) {
         try {
             Object data = t.getTransferData(requireNonNull(o.getDataFlavor()));
             if (o.canImportTable(data)) {
@@ -285,42 +211,27 @@ public final class DefaultDataTransfer extends ListenableBean implements DataTra
     }
 
     @OnEDT
-    private static <T> Transferable asTransferable(T data, Stream<? extends DataTransferSpi> allHandlers, TypeHelper<T> helper) {
+    private static <T> Transferable asTransferable(T data, Stream<? extends OldDataTransferSpi> allHandlers, TypeHelper<T> helper) {
         return new MultiTransferable<>(
                 getHandlersByFlavor(data, allHandlers, helper),
                 getTransferDataLoader(data, helper));
     }
 
-    private static <T> Map<DataFlavor, List<DataTransferSpi>> getHandlersByFlavor(T data, Stream<? extends DataTransferSpi> allHandlers, TypeHelper<T> helper) {
+    private static <T> Map<DataFlavor, List<OldDataTransferSpi>> getHandlersByFlavor(T data, Stream<? extends OldDataTransferSpi> allHandlers, TypeHelper<T> helper) {
         return allHandlers
                 .filter(o -> helper.canTransferData(data, o))
                 .collect(Collectors.groupingBy(DefaultDataTransfer::getDataFlavorOrNull));
     }
 
-    private static <T> FunctionWithIO<DataTransferSpi, Object> getTransferDataLoader(T data, TypeHelper<T> helper) {
+    private static <T> IO.Function<OldDataTransferSpi, Object> getTransferDataLoader(T data, TypeHelper<T> helper) {
         return o -> helper.getTransferData(data, o);
     }
 
     private interface TypeHelper<T> {
 
-        boolean canTransferData(T data, DataTransferSpi handler);
+        boolean canTransferData(T data, OldDataTransferSpi handler);
 
-        Object getTransferData(T data, DataTransferSpi handler) throws IOException;
-    }
-
-    private static final class TsCollectionHelper implements TypeHelper<TsCollection> {
-
-        private static final TsCollectionHelper INSTANCE = new TsCollectionHelper();
-
-        @Override
-        public boolean canTransferData(TsCollection data, DataTransferSpi handler) {
-            return handler.canExportTsCollection(data);
-        }
-
-        @Override
-        public Object getTransferData(TsCollection data, DataTransferSpi handler) throws IOException {
-            return handler.exportTsCollection(data);
-        }
+        Object getTransferData(T data, OldDataTransferSpi handler) throws IOException;
     }
 
     private static final class MatrixHelper implements TypeHelper<Matrix> {
@@ -328,12 +239,12 @@ public final class DefaultDataTransfer extends ListenableBean implements DataTra
         private static final MatrixHelper INSTANCE = new MatrixHelper();
 
         @Override
-        public boolean canTransferData(Matrix data, DataTransferSpi handler) {
+        public boolean canTransferData(Matrix data, OldDataTransferSpi handler) {
             return handler.canExportMatrix(data);
         }
 
         @Override
-        public Object getTransferData(Matrix data, DataTransferSpi handler) throws IOException {
+        public Object getTransferData(Matrix data, OldDataTransferSpi handler) throws IOException {
             return handler.exportMatrix(data);
         }
     }
@@ -343,21 +254,21 @@ public final class DefaultDataTransfer extends ListenableBean implements DataTra
         private static final TableHelper INSTANCE = new TableHelper();
 
         @Override
-        public boolean canTransferData(Table<?> data, DataTransferSpi handler) {
+        public boolean canTransferData(Table<?> data, OldDataTransferSpi handler) {
             return handler.canExportTable(data);
         }
 
         @Override
-        public Object getTransferData(Table<?> data, DataTransferSpi handler) throws IOException {
+        public Object getTransferData(Table<?> data, OldDataTransferSpi handler) throws IOException {
             return handler.exportTable(data);
         }
     }
 
-    private static Predicate<DataTransferSpi> onDataFlavors(DataFlavor[] dataFlavors) {
+    private static Predicate<OldDataTransferSpi> onDataFlavors(DataFlavor[] dataFlavors) {
         return onDataFlavors(Sets.newHashSet(dataFlavors));
     }
 
-    private static Predicate<DataTransferSpi> onDataFlavors(Set<DataFlavor> dataFlavors) {
+    private static Predicate<OldDataTransferSpi> onDataFlavors(Set<DataFlavor> dataFlavors) {
         return o -> dataFlavors.contains((DataFlavor) (o != null ? getDataFlavorOrNull(o) : null));
     }
 }

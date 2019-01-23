@@ -22,10 +22,9 @@ import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.IResetable;
-import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
-import ec.nbdemetra.ui.properties.IBeanEditor;
-import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import demetra.ui.properties.PropertySheetDialogBuilder;
+import demetra.ui.properties.IBeanEditor;
+import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.ResidualsDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.ResidualsDiagnosticsFactory;
@@ -40,13 +39,14 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.actions.Resetable;
 
 /**
  *
  * @author Laurent Jadoul
  */
 @ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
-public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, IResetable {
+public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, Resetable {
 
     private static final String NAME = "ResidualsDiagnostics";
 

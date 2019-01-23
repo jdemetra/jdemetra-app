@@ -20,11 +20,11 @@ import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
-import ec.nbdemetra.ui.awt.KeyStrokes;
+import demetra.ui.util.KeyStrokes;
 import ec.tss.Ts;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.Arrays2;
-import ec.ui.ExtAction;
+import demetra.ui.actions.Actions;
 import ec.ui.view.JChartPanel;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.Charts;
@@ -53,7 +53,7 @@ import org.jfree.data.Range;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import demetra.ui.DataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  * Chart Panel used in popups of Revision History View
@@ -166,7 +166,7 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
         item = new JMenuItem(am.get(HasTsCollectionCommands.COPY_ACTION));
         item.setText("Copy All");
         item.setAccelerator(KeyStrokes.COPY.get(0));
-        ExtAction.hideWhenDisabled(item);
+        Actions.hideWhenDisabled(item);
         result.add(item);
 
         return result;
