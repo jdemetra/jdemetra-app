@@ -17,7 +17,6 @@
         <l2fprod.version>1.0.5</l2fprod.version>
         <jcalendar.version>1.4</jcalendar.version>
         <swinglayout.version>1.0.3</swinglayout.version>
-        <java-desktop-util.version>2.2.2</java-desktop-util.version>
     </properties>
 
     <dependencyManagement>
@@ -25,7 +24,7 @@
             <dependency>
                 <groupId>eu.europa.ec.joinup.sat</groupId>
                 <artifactId>nbdemetra-utils</artifactId>
-                <version>${java-desktop-util.version}</version>
+                <version>${project.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -165,7 +164,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>nbdemetra-utils</artifactId>
-            <version>${java-desktop-util.version}</version>
         </dependency>
 
         <!-- Other -->
