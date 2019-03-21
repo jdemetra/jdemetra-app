@@ -16,7 +16,7 @@
         <l2fprod.version>1.0.5</l2fprod.version>
         <jcalendar.version>1.4</jcalendar.version>
         <swinglayout.version>1.0.3</swinglayout.version>
-        <java-desktop-util.version>2.2.2</java-desktop-util.version>
+        <java-desktop-util.version>2.2.3-SNAPSHOT</java-desktop-util.version>
     </properties>
 
     <dependencyManagement>
@@ -40,13 +40,6 @@
                 <groupId>org.swinglabs</groupId>
                 <artifactId>swing-layout</artifactId>
                 <version>${swinglayout.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>eu.europa.ec.joinup.sat</groupId>
-                <artifactId>nbdemetra-utils</artifactId>
-                <version>${java-desktop-util.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -85,7 +78,7 @@
         <!-- compile and runtime -->
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
-            <artifactId>demetra-datatypes</artifactId>
+            <artifactId>demetra-toolkit-api</artifactId>
             <version>${jd3-basic.version}</version>
         </dependency>
         <dependency>
@@ -94,8 +87,23 @@
             <version>${jd3.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>nbdemetra-utils</artifactId>
+            <groupId>be.nbb.rd</groupId>
+            <artifactId>java-desktop-util-swing</artifactId>
+            <version>${java-desktop-util.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>be.nbb.rd</groupId>
+            <artifactId>java-desktop-util-fa</artifactId>
+            <version>${java-desktop-util.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>be.nbb.rd</groupId>
+            <artifactId>java-desktop-util-chart</artifactId>
+            <version>${java-desktop-util.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>be.nbb.rd</groupId>
+            <artifactId>java-desktop-util-os</artifactId>
             <version>${java-desktop-util.version}</version>
         </dependency>
         <dependency>
@@ -110,26 +118,26 @@
             <groupId>com.toedter</groupId>
             <artifactId>jcalendar</artifactId>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jfreesvg</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.swinglabs</groupId>
             <artifactId>swing-layout</artifactId>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna-platform</artifactId>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.netbeans.api</groupId>
