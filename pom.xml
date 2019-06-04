@@ -124,7 +124,57 @@
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-modules-javahelp</artifactId>
-                <version>${netbeans.version}</version>
+                <version>RELEASE82</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-api-progress</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-api-progress-nb</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-spi-quicksearch</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-awt</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-filesystems</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-loaders</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-modules</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-nodes</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-util-ui</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-util</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-util-lookup</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-windows</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.netbeans.api</groupId>
@@ -471,6 +521,13 @@
     </build>
 
     <repositories>
+        <repository>
+            <id>netbeans-releases</id>
+            <url>http://bits.netbeans.org/nexus/content/groups/netbeans/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
         <repository>
             <id>oss-jfrog-artifactory-releases</id>
             <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
