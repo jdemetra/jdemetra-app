@@ -52,7 +52,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.InputVerifier;
@@ -500,7 +500,7 @@ public class JTsVariableList extends JComponent implements ITsActionAble {
 
         private final ITsAction tsAction;
 
-        public OpenWithItemCommand(@Nonnull ITsAction tsAction) {
+        public OpenWithItemCommand(@NonNull ITsAction tsAction) {
             this.tsAction = tsAction;
         }
 

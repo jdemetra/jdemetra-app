@@ -34,7 +34,7 @@ import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.Action;
 import org.netbeans.api.actions.Openable;
 import org.openide.nodes.AbstractNode;
@@ -59,8 +59,8 @@ abstract public class DataSetNode extends AbstractNode {
      * @param dataSet
      * @return
      */
-    @Nonnull
-    public static DataSetNode create(@Nonnull DataSet dataSet) {
+    @NonNull
+    public static DataSetNode create(@NonNull DataSet dataSet) {
         switch (dataSet.getKind()) {
             case COLLECTION:
                 return new CollectionNode(dataSet);
@@ -72,7 +72,7 @@ abstract public class DataSetNode extends AbstractNode {
     //
     private final String actionPath;
 
-    public DataSetNode(@Nonnull DataSet dataSet, @Nonnull String actionPath) {
+    public DataSetNode(@NonNull DataSet dataSet, @NonNull String actionPath) {
         this(dataSet, new InstanceContent(), actionPath);
     }
 

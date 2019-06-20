@@ -7,8 +7,8 @@ package ec.ui.view.tsprocessing;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.InformationExtractor;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  *
@@ -16,15 +16,15 @@ import javax.annotation.Nullable;
  */
 public interface IProcDocumentViewFactory<D extends IProcDocument> {
 
-    @Nonnull
-    IProcDocumentView<D> create(@Nonnull D document);
+    @NonNull
+    IProcDocumentView<D> create(@NonNull D document);
 
     @Deprecated
     <I> void register(
-            @Nonnull Id id,
+            @NonNull Id id,
             @Nullable InformationExtractor<? super D, I> info,
-            @Nonnull ItemUI<? extends IProcDocumentView<D>, I> ui);
+            @NonNull ItemUI<? extends IProcDocumentView<D>, I> ui);
 
     @Deprecated
-    void unregister(@Nonnull Id id);
+    void unregister(@NonNull Id id);
 }

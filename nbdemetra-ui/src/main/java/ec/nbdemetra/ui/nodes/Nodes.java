@@ -23,7 +23,7 @@ import ec.tstoolkit.utilities.Trees;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.Action;
 import org.openide.nodes.Node;
 import org.openide.util.Utilities;
@@ -40,35 +40,35 @@ public final class Nodes {
         // static class
     }
 
-    @Nonnull
-    public static Action[] actionsForPath(@Nonnull String path) {
+    @NonNull
+    public static Action[] actionsForPath(@NonNull String path) {
         return Iterables.toArray(Utilities.actionsForPath(path), Action.class);
     }
 
-    @Nonnull
-    public static Stream<Node> childrenStream(@Nonnull Node root) {
+    @NonNull
+    public static Stream<Node> childrenStream(@NonNull Node root) {
         return !root.isLeaf()
                 ? Arrays.stream(root.getChildren().getNodes())
                 : Stream.empty();
     }
 
-    @Nonnull
-    public static FluentIterable<Node> childrenIterable(@Nonnull Node root) {
+    @NonNull
+    public static FluentIterable<Node> childrenIterable(@NonNull Node root) {
         return FluentIterable.from(root.isLeaf() ? Collections.emptyList() : Arrays.asList(root.getChildren().getNodes()));
     }
 
-    @Nonnull
-    public static FluentIterable<Node> breadthFirstIterable(@Nonnull Node root) {
+    @NonNull
+    public static FluentIterable<Node> breadthFirstIterable(@NonNull Node root) {
         return FluentIterable.from(root.isLeaf() ? Collections.singleton(root) : Trees.breadthFirstIterable(root, Nodes::childrenStream));
     }
 
-    @Nonnull
-    public static FluentIterable<Node> depthFirstIterable(@Nonnull Node root) {
+    @NonNull
+    public static FluentIterable<Node> depthFirstIterable(@NonNull Node root) {
         return FluentIterable.from(root.isLeaf() ? Collections.singleton(root) : Trees.depthFirstIterable(root, Nodes::childrenStream));
     }
 
-    @Nonnull
-    public static FluentIterable<Node> asIterable(@Nonnull Node[] nodes) {
+    @NonNull
+    public static FluentIterable<Node> asIterable(@NonNull Node[] nodes) {
         return FluentIterable.from(Arrays.asList(nodes));
     }
 }

@@ -25,8 +25,8 @@ import ec.util.spreadsheet.helpers.CellRefHelper;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Date;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JToolTip;
@@ -45,7 +45,7 @@ public final class SheetCellRenderer implements TableCellRenderer {
     private final boolean invertColors;
     private final DefaultTableCellRenderer2 delegate;
 
-    public SheetCellRenderer(@Nonnull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean invertColors) {
+    public SheetCellRenderer(@NonNull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean invertColors) {
         this.numberFormat = dataFormat.numberFormatter();
         this.dateFormat = dataFormat.dateFormatter();
         this.colorSchemeSupport = colorSchemeSupport;

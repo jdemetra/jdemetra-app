@@ -17,7 +17,7 @@
 package ec.ui.interfaces;
 
 import ec.nbdemetra.ui.tsaction.ITsAction;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  *

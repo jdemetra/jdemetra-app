@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.properties;
 
 import java.beans.PropertyEditor;
 import java.lang.reflect.InvocationTargetException;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.nodes.Node;
 import org.openide.nodes.PropertySupport;
 
@@ -31,7 +31,7 @@ public abstract class ForwardingNodeProperty<T> extends Node.Property<T> {
 
     private final Node.Property<T> delegate;
 
-    public ForwardingNodeProperty(@Nonnull Node.Property<T> delegate) {
+    public ForwardingNodeProperty(Node.@NonNull Property<T> delegate) {
         super(delegate.getValueType());
         this.delegate = delegate;
     }
@@ -121,8 +121,7 @@ public abstract class ForwardingNodeProperty<T> extends Node.Property<T> {
         delegate.restoreDefaultValue();
     }
 
-    @Nonnull
-    public static <T> Node.Property<T> readOnly(@Nonnull Node.Property<T> p) {
+    public static <T> Node.@NonNull Property<T> readOnly(Node.@NonNull Property<T> p) {
         return p instanceof PropertySupport.ReadOnly || p instanceof ReadOnly ? p : new ReadOnly(p);
     }
 

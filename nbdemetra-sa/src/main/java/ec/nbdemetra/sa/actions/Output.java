@@ -39,7 +39,7 @@ import ec.tstoolkit.utilities.LinearId;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.SwingWorker;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.DialogDescriptor;

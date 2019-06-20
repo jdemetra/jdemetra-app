@@ -23,7 +23,7 @@ import java.awt.Dialog;
 import java.awt.Image;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.DialogDisplayer;
@@ -44,7 +44,7 @@ public class ExceptionNode extends AbstractNode {
 
     private static int internalCounter = 0;
 
-    public ExceptionNode(@Nonnull Exception ex) {
+    public ExceptionNode(@NonNull Exception ex) {
         super(Children.LEAF, Lookups.fixed(ex, internalCounter++));
     }
 

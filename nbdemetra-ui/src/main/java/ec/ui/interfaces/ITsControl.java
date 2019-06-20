@@ -2,7 +2,7 @@ package ec.ui.interfaces;
 
 import ec.nbdemetra.ui.awt.IPropertyChangeSource;
 import ec.tss.tsproviders.utils.DataFormat;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Interface that should be implemented by every control that has to display

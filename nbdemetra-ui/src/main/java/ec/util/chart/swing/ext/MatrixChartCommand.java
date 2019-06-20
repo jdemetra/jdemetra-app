@@ -10,7 +10,7 @@ import ec.tstoolkit.maths.matrices.Matrix;
 import ec.util.chart.swing.ChartCommand;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
@@ -36,8 +36,8 @@ public abstract class MatrixChartCommand extends ChartCommand {
      * @param chartPanel the source of data
      * @return a non-null matrix
      */
-    @Nonnull
-    abstract protected Matrix toMatrix(@Nonnull ChartPanel chartPanel);
+    @NonNull
+    abstract protected Matrix toMatrix(@NonNull ChartPanel chartPanel);
 
     /**
      * Creates a command that extracts a single series from a chart and put in
@@ -47,7 +47,7 @@ public abstract class MatrixChartCommand extends ChartCommand {
      * @param series
      * @return a non-null command
      */
-    @Nonnull
+    @NonNull
     public static ChartCommand copySeries(int index, int series) {
         Preconditions.checkArgument(index >= 0, "index must be positive");
         Preconditions.checkArgument(series >= 0, "series must be positive");

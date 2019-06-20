@@ -20,7 +20,7 @@ import com.google.common.base.Optional;
 import ec.tss.tsproviders.DataSource;
 import ec.tstoolkit.design.ServiceDefinition;
 import java.awt.datatransfer.Transferable;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Class that can produce a DataSource from a Transferable. To be used through
@@ -37,7 +37,7 @@ public abstract class DataSourceTransferHandler {
      * @param t the input data
      * @return
      */
-    abstract public boolean canHandle(@Nonnull Transferable t);
+    abstract public boolean canHandle(@NonNull Transferable t);
 
     /**
      * Checks if this class can handle the specified Transferable with a
@@ -47,7 +47,7 @@ public abstract class DataSourceTransferHandler {
      * @param providerName a specific provider name
      * @return
      */
-    abstract public boolean canHandle(@Nonnull Transferable t, @Nonnull String providerName);
+    abstract public boolean canHandle(@NonNull Transferable t, @NonNull String providerName);
 
     /**
      * Retrieve a DataSource from a Transferable.
@@ -56,8 +56,8 @@ public abstract class DataSourceTransferHandler {
      * @return an optional DataSource
      * @see #canHandle(java.awt.datatransfer.Transferable)
      */
-    @Nonnull
-    abstract public Optional<DataSource> getDataSource(@Nonnull Transferable t);
+    @NonNull
+    abstract public Optional<DataSource> getDataSource(@NonNull Transferable t);
 
     /**
      * Retrieve a DataSource from a Transferable with a specific provider.
@@ -67,6 +67,6 @@ public abstract class DataSourceTransferHandler {
      * @return an optional DataSource
      * @see #canHandle(java.awt.datatransfer.Transferable, java.lang.String)
      */
-    @Nonnull
-    abstract public Optional<DataSource> getDataSource(@Nonnull Transferable t, @Nonnull String providerName);
+    @NonNull
+    abstract public Optional<DataSource> getDataSource(@NonNull Transferable t, @NonNull String providerName);
 }

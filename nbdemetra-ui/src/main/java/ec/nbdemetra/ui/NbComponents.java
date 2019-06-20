@@ -19,8 +19,8 @@ package ec.nbdemetra.ui;
 import ec.util.various.swing.ModernUI;
 import java.awt.Component;
 import java.awt.Toolkit;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.*;
 import javax.swing.border.Border;
 import org.openide.awt.Toolbar;
@@ -43,7 +43,7 @@ public final class NbComponents {
         return isXP == null ? false : isXP;
     }
 
-    @Nonnull
+    @NonNull
     public static JToolBar newInnerToolbar() {
         JToolBar result = new Toolbar();
         Border b = (Border) UIManager.get("Nb.Editor.Toolbar.border"); //NOI18N
@@ -58,33 +58,33 @@ public final class NbComponents {
         return result;
     }
 
-    @Nonnull
+    @NonNull
     public static JScrollPane newJScrollPane() {
         return ModernUI.withEmptyBorders(new JScrollPane());
     }
 
-    @Nonnull
-    public static JScrollPane newJScrollPane(@Nonnull Component view) {
+    @NonNull
+    public static JScrollPane newJScrollPane(@NonNull Component view) {
         return ModernUI.withEmptyBorders(new JScrollPane(view));
     }
 
-    @Nonnull
+    @NonNull
     public static JSplitPane newJSplitPane(int orientation) {
         return ModernUI.withEmptyBorders(new JSplitPane(orientation));
     }
 
-    @Nonnull
-    public static JSplitPane newJSplitPane(int orientation, @Nonnull Component left, @Nonnull Component right) {
+    @NonNull
+    public static JSplitPane newJSplitPane(int orientation, @NonNull Component left, @NonNull Component right) {
         return ModernUI.withEmptyBorders(new JSplitPane(orientation, left, right));
     }
 
-    @Nonnull
-    public static JSplitPane newJSplitPane(int orientation, boolean continuousLayout, @Nonnull Component left, @Nonnull Component right) {
+    @NonNull
+    public static JSplitPane newJSplitPane(int orientation, boolean continuousLayout, @NonNull Component left, @NonNull Component right) {
         return ModernUI.withEmptyBorders(new JSplitPane(orientation, continuousLayout, left, right));
     }
 
     @Nullable
-    public static <T extends TopComponent> T findTopComponentByNameAndClass(@Nonnull String name, @Nonnull Class<T> clazz) {
+    public static <T extends TopComponent> T findTopComponentByNameAndClass(@NonNull String name, @NonNull Class<T> clazz) {
         for (TopComponent o : TopComponent.getRegistry().getOpened()) {
             if (o.getName().equals(name) && clazz.isInstance(o)) {
                 return (T) o;
@@ -94,7 +94,7 @@ public final class NbComponents {
     }
 
     @Nullable
-    public static TopComponent findTopComponentByName(@Nonnull String name) {
+    public static TopComponent findTopComponentByName(@NonNull String name) {
         return findTopComponentByNameAndClass(name, TopComponent.class);
     }
 }

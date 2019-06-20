@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.nodes;
 
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
@@ -32,7 +32,7 @@ public abstract class SingleNodeAction<T extends Node> extends NodeAction {
 
     private final Class<T> nodeType;
 
-    public SingleNodeAction(@Nonnull Class<T> nodeType) {
+    public SingleNodeAction(@NonNull Class<T> nodeType) {
         this.nodeType = nodeType;
     }
 
@@ -53,7 +53,7 @@ public abstract class SingleNodeAction<T extends Node> extends NodeAction {
      *
      * @param activatedNode a non-null node to be used as context
      */
-    protected abstract void performAction(@Nonnull T activatedNode);
+    protected abstract void performAction(@NonNull T activatedNode);
 
     /**
      * Checks if the action is enabled or not. It is called before running the
@@ -62,7 +62,7 @@ public abstract class SingleNodeAction<T extends Node> extends NodeAction {
      * @param activatedNode a non-null node to be used as context
      * @return
      */
-    protected abstract boolean enable(@Nonnull T activatedNode);
+    protected abstract boolean enable(@NonNull T activatedNode);
 
     @Deprecated
     protected T getSingleNode(Node[] activatedNodes) {

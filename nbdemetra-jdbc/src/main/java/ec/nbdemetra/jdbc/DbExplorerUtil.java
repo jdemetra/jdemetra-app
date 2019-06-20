@@ -18,7 +18,7 @@ package ec.nbdemetra.jdbc;
 
 import com.google.common.base.Optional;
 import java.util.Properties;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.netbeans.api.db.explorer.ConnectionManager;
 import org.netbeans.api.db.explorer.DatabaseConnection;
 import org.netbeans.api.db.explorer.DatabaseException;
@@ -41,11 +41,11 @@ public final class DbExplorerUtil {
         // static class
     }
 
-    static boolean isConnected(@Nonnull DatabaseConnection conn) {
+    static boolean isConnected(@NonNull DatabaseConnection conn) {
         return conn.getJDBCConnection() != null;
     }
 
-    static boolean isTableOrView(@Nonnull Node node) {
+    static boolean isTableOrView(@NonNull Node node) {
         return lookupContains(node.getLookup(),
                 "org.netbeans.modules.db.explorer.node.TableNode",
                 "org.netbeans.modules.db.explorer.node.ViewNode");
@@ -63,8 +63,8 @@ public final class DbExplorerUtil {
         return false;
     }
 
-    @Nonnull
-    static Optional<DatabaseConnection> findConnection(@Nonnull Node node) {
+    @NonNull
+    static Optional<DatabaseConnection> findConnection(@NonNull Node node) {
         DatabaseConnection result = null;
         Node current = node;
         while (current != null && (result = current.getLookup().lookup(DatabaseConnection.class)) == null) {
@@ -73,16 +73,16 @@ public final class DbExplorerUtil {
         return Optional.fromNullable(result);
     }
 
-    @Nonnull
-    static Optional<JDBCDriver> getDriverByClass(@Nonnull String driverClass) {
+    @NonNull
+    static Optional<JDBCDriver> getDriverByClass(@NonNull String driverClass) {
         for (JDBCDriver o : JDBCDriverManager.getDefault().getDrivers(driverClass)) {
             return Optional.of(o);
         }
         return Optional.absent();
     }
 
-    @Nonnull
-    static Optional<DatabaseConnection> getConnectionByDisplayName(@Nonnull String displayName) {
+    @NonNull
+    static Optional<DatabaseConnection> getConnectionByDisplayName(@NonNull String displayName) {
         for (DatabaseConnection o : ConnectionManager.getDefault().getConnections()) {
             if (o.getDisplayName().equals(displayName)) {
                 return Optional.of(o);
@@ -91,7 +91,7 @@ public final class DbExplorerUtil {
         return Optional.absent();
     }
 
-    public static void importConnection(@Nonnull DriverBasedConfig config) {
+    public static void importConnection(@NonNull DriverBasedConfig config) {
         Optional<JDBCDriver> driver = getDriverByClass(config.getDriverClass());
         if (!driver.isPresent()) {
             String msg = "Cannot find driver '" + config.getDriverClass() + "'";
@@ -114,8 +114,8 @@ public final class DbExplorerUtil {
         }
     }
 
-    @Nonnull
-    public static DriverBasedConfig exportConnection(@Nonnull DatabaseConnection conn) {
+    @NonNull
+    public static DriverBasedConfig exportConnection(@NonNull DatabaseConnection conn) {
         DriverBasedConfig.Builder b = DriverBasedConfig.builder(conn.getDriverClass(), conn.getDatabaseURL(), conn.getSchema(), conn.getDisplayName());
         Properties properties = conn.getConnectionProperties();
         for (String o : properties.stringPropertyNames()) {

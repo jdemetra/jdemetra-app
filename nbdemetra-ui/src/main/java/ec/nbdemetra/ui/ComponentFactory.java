@@ -27,7 +27,7 @@ import ec.ui.chart.JTsGrowthChart;
 import ec.ui.grid.JTsGrid;
 import ec.ui.html.JHtmlView;
 import ec.ui.list.JTsList;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -39,32 +39,32 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ComponentFactory.class)
 public class ComponentFactory {
 
-    @Nonnull
+    @NonNull
     public static ComponentFactory getDefault() {
         return Lookup.getDefault().lookup(ComponentFactory.class);
     }
 
-    @Nonnull
+    @NonNull
     public ATsChart newTsChart() {
         return new JTsChart();
     }
 
-    @Nonnull
+    @NonNull
     public ATsGrid newTsGrid() {
         return new JTsGrid();
     }
 
-    @Nonnull
+    @NonNull
     public ATsGrowthChart newTsGrowthChart() {
         return new JTsGrowthChart();
     }
 
-    @Nonnull
+    @NonNull
     public ATsList newTsList() {
         return new JTsList();
     }
 
-    @Nonnull
+    @NonNull
     public AHtmlView newHtmlView() {
         return new JHtmlView();
     }

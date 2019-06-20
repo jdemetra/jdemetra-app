@@ -24,8 +24,8 @@ import ec.ui.interfaces.ITsGrid.Chronology;
 import ec.ui.interfaces.ITsGrid.Orientation;
 import ec.util.chart.ObsIndex;
 import ec.util.grid.CellIndex;
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -33,38 +33,38 @@ import javax.annotation.Nonnull;
  */
 abstract class TsGridData {
 
-    @Nonnegative
+    @NonNegative
     abstract public int getColumnCount();
 
-    @Nonnull
+    @NonNull
     abstract public String getColumnName(int j);
 
-    @Nonnegative
+    @NonNegative
     abstract public int getRowCount();
 
-    @Nonnull
+    @NonNull
     abstract public String getRowName(int i);
 
-    @Nonnull
+    @NonNull
     abstract public TsGridObs getObs(int i, int j);
 
-    @Nonnull
+    @NonNull
     public TsGridData transpose() {
         return new Transposed(this);
     }
 
-    @Nonnull
+    @NonNull
     public TsGridData flipHorizontaly() {
         return new FlippedHorizontaly(this);
     }
 
-    @Nonnull
+    @NonNull
     public TsGridData flipVerticaly() {
         return new FlippedVerticaly(this);
     }
 
-    @Nonnull
-    public ObsIndex toObsIndex(@Nonnull CellIndex index) {
+    @NonNull
+    public ObsIndex toObsIndex(@NonNull CellIndex index) {
         if (CellIndex.NULL.equals(index)) {
             return ObsIndex.NULL;
         }
@@ -75,15 +75,15 @@ abstract class TsGridData {
         return ObsIndex.valueOf(obs.getSeriesIndex(), obs.getIndex());
     }
 
-    @Nonnull
-    abstract public CellIndex toCellIndex(@Nonnull ObsIndex index);
+    @NonNull
+    abstract public CellIndex toCellIndex(@NonNull ObsIndex index);
 
-    @Nonnull
+    @NonNull
     public static TsGridData empty() {
         return Empty.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static TsGridData create(TsCollection col, int singleSeriesIndex, Orientation orientation, Chronology chronology, DataFeatureModel dataFeatureModel) {
         if (col.isEmpty() || (singleSeriesIndex != -1 && col.get(singleSeriesIndex).hasData() != TsStatus.Valid)) {
             return empty();

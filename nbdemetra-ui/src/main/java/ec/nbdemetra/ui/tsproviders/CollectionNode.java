@@ -26,7 +26,7 @@ import ec.tss.tsproviders.TsProviders;
 import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -44,7 +44,7 @@ public final class CollectionNode extends DataSetNode {
 
     public static final String ACTION_PATH = "CollectionNode";
 
-    public CollectionNode(@Nonnull DataSet dataSet) {
+    public CollectionNode(@NonNull DataSet dataSet) {
         super(dataSet, ACTION_PATH);
     }
 

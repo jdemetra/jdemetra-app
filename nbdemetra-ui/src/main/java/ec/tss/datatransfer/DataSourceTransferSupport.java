@@ -21,7 +21,7 @@ import com.google.common.collect.FluentIterable;
 import ec.nbdemetra.core.GlobalService;
 import ec.tss.tsproviders.DataSource;
 import java.awt.datatransfer.Transferable;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -34,32 +34,32 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DataSourceTransferSupport.class)
 public class DataSourceTransferSupport {
 
-    @Nonnull
+    @NonNull
     public static DataSourceTransferSupport getDefault() {
         return Lookup.getDefault().lookup(DataSourceTransferSupport.class);
     }
 
     @Deprecated
-    @Nonnull
+    @NonNull
     public static DataSourceTransferSupport getInstance() {
         return getDefault();
     }
 
-    @Nonnull
+    @NonNull
     public FluentIterable<? extends DataSourceTransferHandler> all() {
         return FluentIterable.from(Lookup.getDefault().lookupAll(DataSourceTransferHandler.class));
     }
 
-    public boolean canHandle(@Nonnull Transferable t) {
+    public boolean canHandle(@NonNull Transferable t) {
         return all().anyMatch(o -> o != null ? o.canHandle(t) : false);
     }
 
-    public boolean canHandle(@Nonnull Transferable t, @Nonnull String providerName) {
+    public boolean canHandle(@NonNull Transferable t, @NonNull String providerName) {
         return all().anyMatch(o -> o != null ? o.canHandle(t, providerName) : false);
     }
 
-    @Nonnull
-    public Optional<DataSource> getDataSource(@Nonnull Transferable t) {
+    @NonNull
+    public Optional<DataSource> getDataSource(@NonNull Transferable t) {
         for (DataSourceTransferHandler o : all().filter(o -> o != null ? o.canHandle(t) : false)) {
             Optional<DataSource> dataSource = o.getDataSource(t);
             if (dataSource.isPresent()) {
@@ -69,8 +69,8 @@ public class DataSourceTransferSupport {
         return Optional.absent();
     }
 
-    @Nonnull
-    public Optional<DataSource> getDataSource(@Nonnull Transferable t, @Nonnull String providerName) {
+    @NonNull
+    public Optional<DataSource> getDataSource(@NonNull Transferable t, @NonNull String providerName) {
         for (DataSourceTransferHandler o : all().filter(o -> o != null ? o.canHandle(t, providerName) : false)) {
             Optional<DataSource> dataSource = o.getDataSource(t, providerName);
             if (dataSource.isPresent()) {

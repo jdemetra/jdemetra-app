@@ -23,8 +23,8 @@ import ec.tstoolkit.timeseries.simplets.TsDataTableInfo;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.chart.DataFeatureModel;
 import java.util.function.Supplier;
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -33,24 +33,24 @@ import javax.annotation.Nonnull;
 @FlyweightPattern
 public abstract class TsGridObs {
 
-    @Nonnull
+    @NonNull
     abstract public TsDataTableInfo getInfo();
 
-    @Nonnegative
+    @NonNegative
     abstract public int getSeriesIndex();
 
-    @Nonnegative
+    @NonNegative
     abstract public int getIndex() throws IllegalStateException;
 
-    @Nonnull
+    @NonNull
     abstract public TsPeriod getPeriod() throws IllegalStateException;
 
     abstract public double getValue() throws IllegalStateException;
 
-    @Nonnull
+    @NonNull
     abstract public DescriptiveStatistics getStats() throws IllegalStateException;
 
-    abstract public boolean hasFeature(@Nonnull Ts.DataFeature feature) throws IllegalStateException;
+    abstract public boolean hasFeature(Ts.@NonNull DataFeature feature) throws IllegalStateException;
 
     //<editor-fold defaultstate="collapsed" desc="Internal implementation">
     static final TsGridObs empty(int seriesIndex) {

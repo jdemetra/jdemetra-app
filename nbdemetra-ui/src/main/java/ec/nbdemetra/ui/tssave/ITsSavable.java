@@ -20,7 +20,7 @@ import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
 import java.util.Arrays;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
 public interface ITsSavable {
 
     @Deprecated
-    @Nonnull
+    @NonNull
     Ts[] getAllTs();
 
     /**
@@ -37,7 +37,7 @@ public interface ITsSavable {
      * @return a non-null collection
      * @since 2.2.0
      */
-    @Nonnull
+    @NonNull
     default TsCollection getTsCollection() {
         TsCollection result = TsFactory.instance.createTsCollection();
         result.quietAppend(Arrays.asList(getAllTs()));

@@ -26,8 +26,8 @@ import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.util.Arrays;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.Icon;
 import javax.swing.JTable;
 import org.openide.DialogDescriptor;
@@ -53,24 +53,24 @@ public final class PropertySheetDialogBuilder {
         this.image = null;
     }
 
-    @Nonnull
+    @NonNull
     public PropertySheetDialogBuilder title(@Nullable String title) {
         this.title = title;
         return this;
     }
 
-    @Nonnull
+    @NonNull
     public PropertySheetDialogBuilder icon(@Nullable Image image) {
         this.image = image;
         return this;
     }
 
-    @Nonnull
+    @NonNull
     public PropertySheetDialogBuilder icon(@Nullable Icon icon) {
         return icon != null ? icon(ImageUtilities.icon2Image(icon)) : this;
     }
 
-    public boolean editNode(@Nonnull Node node) {
+    public boolean editNode(@NonNull Node node) {
         PropertySheet v = new PropertySheet();
         v.setNodes(new Node[]{node});
 
@@ -89,11 +89,11 @@ public final class PropertySheetDialogBuilder {
         return d.getValue() == DialogDescriptor.OK_OPTION;
     }
 
-    public boolean editBean(@Nonnull Object bean) throws IntrospectionException {
+    public boolean editBean(@NonNull Object bean) throws IntrospectionException {
         return editNode(new BeanNode(bean));
     }
 
-    public boolean editSheet(@Nonnull Sheet sheet) {
+    public boolean editSheet(@NonNull Sheet sheet) {
         return editNode(new AbstractNodeBuilder().sheet(sheet).build());
     }
 

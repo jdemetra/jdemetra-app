@@ -13,7 +13,7 @@ import ec.tstoolkit.descriptors.IObjectDescriptor;
 import ec.ui.view.tsprocessing.IProcDocumentView;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JComponent;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -26,7 +26,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DocumentUIServices.class)
 public class DocumentUIServices {
 
-    @Nonnull
+    @NonNull
     public static DocumentUIServices getDefault() {
         return Lookup.getDefault().lookup(DocumentUIServices.class);
     }
