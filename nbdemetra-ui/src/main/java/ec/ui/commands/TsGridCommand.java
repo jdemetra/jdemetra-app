@@ -24,7 +24,7 @@ import static ec.ui.interfaces.ITsGrid.ORIENTATION_PROPERTY;
 import static ec.ui.interfaces.ITsGrid.ZOOM_PROPERTY;
 import ec.util.various.swing.JCommand;
 import java.util.EnumMap;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -37,27 +37,27 @@ public final class TsGridCommand {
         // static class
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsGrid> transpose() {
         return TransposeCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsGrid> reverseChronology() {
         return ReverseChronologyCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsGrid> toggleMode() {
         return ToggleModeCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsGrid> applyMode(ITsGrid.Mode mode) {
         return ApplyModeCommand.VALUES.get(mode);
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsGrid> applyZoomRatio(int zoomRatio) {
         return new ZoomRatioCommand(zoomRatio);
     }

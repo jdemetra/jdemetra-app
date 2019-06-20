@@ -18,7 +18,7 @@ package ec.ui;
 
 import java.awt.Component;
 import java.beans.PropertyChangeListener;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -109,8 +109,8 @@ public abstract class ExtAction extends AbstractAction {
         abstract protected boolean canSelect();
     }
 
-    @Nonnull
-    public static <C extends AbstractButton> C hideWhenDisabled(@Nonnull C c) {
+    @NonNull
+    public static <C extends AbstractButton> C hideWhenDisabled(@NonNull C c) {
         c.setVisible(c.isEnabled());
         c.addPropertyChangeListener(HIDE);
         return c;

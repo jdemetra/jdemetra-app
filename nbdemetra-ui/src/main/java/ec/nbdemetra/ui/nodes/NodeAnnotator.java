@@ -7,7 +7,7 @@ package ec.nbdemetra.ui.nodes;
 import ec.nbdemetra.core.GlobalService;
 import ec.tstoolkit.design.ServiceDefinition;
 import java.awt.Image;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -27,7 +27,7 @@ public interface NodeAnnotator {
     @ServiceProvider(service = Support.class)
     public static class Support {
 
-        @Nonnull
+        @NonNull
         public static Support getDefault() {
             return Lookup.getDefault().lookup(Support.class);
         }

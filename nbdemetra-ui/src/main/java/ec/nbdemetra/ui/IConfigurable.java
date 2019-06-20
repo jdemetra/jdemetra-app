@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui;
 
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -24,11 +24,11 @@ import javax.annotation.Nonnull;
  */
 public interface IConfigurable {
 
-    @Nonnull
+    @NonNull
     Config getConfig();
 
-    void setConfig(@Nonnull Config config) throws IllegalArgumentException;
+    void setConfig(@NonNull Config config) throws IllegalArgumentException;
 
-    @Nonnull
-    Config editConfig(@Nonnull Config config) throws IllegalArgumentException;
+    @NonNull
+    Config editConfig(@NonNull Config config) throws IllegalArgumentException;
 }

@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.interchange;
 
 import ec.nbdemetra.ui.Config;
 import ec.util.various.swing.OnEDT;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Defines the ability of a component to export its state/configuration.
@@ -33,7 +33,7 @@ public interface Exportable {
      * @return a non-null config
      */
     @OnEDT
-    @Nonnull
+    @NonNull
     Config exportConfig();
 
 }

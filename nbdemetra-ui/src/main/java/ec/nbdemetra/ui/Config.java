@@ -31,7 +31,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.SortedMap;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -107,8 +107,7 @@ public final class Config implements IConfig, Serializable {
      * @return a non-null builder
      * @since 2.2.0
      */
-    @Nonnull
-    public Config.Builder toBuilder() {
+    public Config.@NonNull Builder toBuilder() {
         return new Builder(domain, name, version).putAll(params);
     }
 

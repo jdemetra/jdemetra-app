@@ -47,7 +47,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.Icon;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.openide.util.Lookup;
@@ -62,13 +62,13 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DemetraUI.class)
 public class DemetraUI extends ListenableBean implements IConfigurable {
 
-    @Nonnull
+    @NonNull
     public static DemetraUI getDefault() {
         return Lookup.getDefault().lookup(DemetraUI.class);
     }
 
     @Deprecated
-    @Nonnull
+    @NonNull
     public static DemetraUI getInstance() {
         return getDefault();
     }

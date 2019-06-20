@@ -43,8 +43,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 import org.slf4j.Logger;
@@ -72,13 +72,13 @@ public class TssTransferSupport extends ListenableBean {
      *
      * @return a non-null TssTransferSupport
      */
-    @Nonnull
+    @NonNull
     public static TssTransferSupport getDefault() {
         return Lookup.getDefault().lookup(TssTransferSupport.class);
     }
 
     @Deprecated
-    @Nonnull
+    @NonNull
     public static TssTransferSupport getInstance() {
         return getDefault();
     }
@@ -124,7 +124,7 @@ public class TssTransferSupport extends ListenableBean {
      * @deprecated use {@link #streamAll()} instead
      */
     @Deprecated
-    @Nonnull
+    @NonNull
     public FluentIterable<? extends TssTransferHandler> all() {
         return FluentIterable.from(Iterables.concat(lookup.lookupAll(TssTransferHandler.class), ATsCollectionFormatter.getLegacyHandlers()));
     }
@@ -134,7 +134,7 @@ public class TssTransferSupport extends ListenableBean {
      *
      * @return a non-null stream of TssTransferHandler
      */
-    @Nonnull
+    @NonNull
     public Stream<? extends TssTransferHandler> stream() {
         return Stream.concat(lookup.lookupAll(TssTransferHandler.class).stream(), ATsCollectionFormatter.getLegacyHandlers().stream());
     }
@@ -147,19 +147,19 @@ public class TssTransferSupport extends ListenableBean {
      * @deprecated use {@link #all()} instead
      */
     @Deprecated
-    @Nonnull
+    @NonNull
     public List<ITsCollectionFormatter> getFormatters() {
         return new ArrayList<>();
     }
 
     @OnEDT
-    public boolean canImport(@Nonnull DataFlavor... dataFlavors) {
+    public boolean canImport(@NonNull DataFlavor... dataFlavors) {
         // multiFlavor means "maybe", not "yes"
         return DataTransfers.isMultiFlavor(dataFlavors) || stream().anyMatch(onDataFlavors(dataFlavors));
     }
 
     @OnEDT
-    public boolean canImport(@Nonnull Transferable transferable) {
+    public boolean canImport(@NonNull Transferable transferable) {
         Set<DataFlavor> dataFlavors = DataTransfers.getMultiDataFlavors(transferable).collect(Collectors.toSet());
         return stream().anyMatch(onDataFlavors(dataFlavors));
     }
@@ -171,8 +171,8 @@ public class TssTransferSupport extends ListenableBean {
      * @return a never-null {@link Transferable}
      */
     @OnEDT
-    @Nonnull
-    public Transferable fromTsData(@Nonnull TsData data) {
+    @NonNull
+    public Transferable fromTsData(@NonNull TsData data) {
         Preconditions.checkNotNull(data);
         return fromTs(TsFactory.instance.createTs("", null, data));
     }
@@ -184,8 +184,8 @@ public class TssTransferSupport extends ListenableBean {
      * @return a never-null {@link Transferable}
      */
     @OnEDT
-    @Nonnull
-    public Transferable fromTs(@Nonnull Ts ts) {
+    @NonNull
+    public Transferable fromTs(@NonNull Ts ts) {
         Preconditions.checkNotNull(ts);
         TsCollection col = TsFactory.instance.createTsCollection();
         col.quietAdd(ts);
@@ -199,8 +199,8 @@ public class TssTransferSupport extends ListenableBean {
      * @return a never-null {@link Transferable}
      */
     @OnEDT
-    @Nonnull
-    public Transferable fromTsCollection(@Nonnull TsCollection col) {
+    @NonNull
+    public Transferable fromTsCollection(@NonNull TsCollection col) {
         Preconditions.checkNotNull(col);
         return asTransferable(col, stream(), TsCollectionHelper.INSTANCE);
     }
@@ -212,8 +212,8 @@ public class TssTransferSupport extends ListenableBean {
      * @return a never-null {@link Transferable}
      */
     @OnEDT
-    @Nonnull
-    public Transferable fromMatrix(@Nonnull Matrix matrix) {
+    @NonNull
+    public Transferable fromMatrix(@NonNull Matrix matrix) {
         Preconditions.checkNotNull(matrix);
         return asTransferable(matrix, stream(), MatrixHelper.INSTANCE);
     }
@@ -225,8 +225,8 @@ public class TssTransferSupport extends ListenableBean {
      * @return a never-null {@link Transferable}
      */
     @OnEDT
-    @Nonnull
-    public Transferable fromTable(@Nonnull Table<?> table) {
+    @NonNull
+    public Transferable fromTable(@NonNull Table<?> table) {
         Preconditions.checkNotNull(table);
         return asTransferable(table, stream(), TableHelper.INSTANCE);
     }
@@ -239,7 +239,7 @@ public class TssTransferSupport extends ListenableBean {
      */
     @OnEDT
     @Nullable
-    public TsData toTsData(@Nonnull Transferable transferable) {
+    public TsData toTsData(@NonNull Transferable transferable) {
         Ts ts = toTs(transferable);
         if (ts != null) {
             ts.load(TsInformationType.Data);
@@ -262,7 +262,7 @@ public class TssTransferSupport extends ListenableBean {
      */
     @OnEDT
     @Nullable
-    public Ts toTs(@Nonnull Transferable transferable) {
+    public Ts toTs(@NonNull Transferable transferable) {
         TsCollection col = toTsCollection(transferable);
         return col != null && !col.isEmpty() ? col.get(0) : null;
     }
@@ -280,7 +280,7 @@ public class TssTransferSupport extends ListenableBean {
      */
     @OnEDT
     @Nullable
-    public TsCollection toTsCollection(@Nonnull Transferable transferable) {
+    public TsCollection toTsCollection(@NonNull Transferable transferable) {
         Preconditions.checkNotNull(transferable);
         return stream()
                 .filter(onDataFlavors(transferable.getTransferDataFlavors()))
@@ -291,8 +291,8 @@ public class TssTransferSupport extends ListenableBean {
     }
 
     @OnEDT
-    @Nonnull
-    public Stream<TsCollection> toTsCollectionStream(@Nonnull Transferable transferable) {
+    @NonNull
+    public Stream<TsCollection> toTsCollectionStream(@NonNull Transferable transferable) {
         return DataTransfers.getMultiTransferables(transferable)
                 .map(this::toTsCollection)
                 .filter(Objects::nonNull);
@@ -306,7 +306,7 @@ public class TssTransferSupport extends ListenableBean {
      */
     @OnEDT
     @Nullable
-    public Matrix toMatrix(@Nonnull Transferable transferable) {
+    public Matrix toMatrix(@NonNull Transferable transferable) {
         Preconditions.checkNotNull(transferable);
         return stream()
                 .filter(onDataFlavors(transferable.getTransferDataFlavors()))
@@ -324,7 +324,7 @@ public class TssTransferSupport extends ListenableBean {
      */
     @OnEDT
     @Nullable
-    public Table<?> toTable(@Nonnull Transferable transferable) {
+    public Table<?> toTable(@NonNull Transferable transferable) {
         Preconditions.checkNotNull(transferable);
         return stream()
                 .filter(onDataFlavors(transferable.getTransferDataFlavors()))
@@ -341,12 +341,12 @@ public class TssTransferSupport extends ListenableBean {
      * @param transferable
      * @return
      */
-    public boolean isTssTransferable(@Nonnull Transferable transferable) {
+    public boolean isTssTransferable(@NonNull Transferable transferable) {
         return transferable.isDataFlavorSupported(LocalObjectTssTransferHandler.DATA_FLAVOR);
     }
 
     @Deprecated
-    public static boolean isMultiFlavor(@Nonnull DataFlavor[] dataFlavors) {
+    public static boolean isMultiFlavor(@NonNull DataFlavor[] dataFlavors) {
         return DataTransfers.isMultiFlavor(dataFlavors);
     }
 

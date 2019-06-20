@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui.notification;
 
 import java.awt.event.ActionListener;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import org.openide.ErrorManager;

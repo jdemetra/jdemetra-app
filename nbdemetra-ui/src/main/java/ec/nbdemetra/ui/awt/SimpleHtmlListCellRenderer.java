@@ -5,7 +5,7 @@
 package ec.nbdemetra.ui.awt;
 
 import java.awt.Component;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import org.openide.awt.HtmlRenderer;
@@ -19,7 +19,7 @@ public class SimpleHtmlListCellRenderer<T> implements ListCellRenderer {
     protected final HtmlProvider<T> htmlProvider;
     protected final HtmlRenderer.Renderer htmlRenderer;
 
-    public SimpleHtmlListCellRenderer(@Nonnull HtmlProvider<T> htmlProvider) {
+    public SimpleHtmlListCellRenderer(@NonNull HtmlProvider<T> htmlProvider) {
         this.htmlProvider = htmlProvider;
         this.htmlRenderer = HtmlRenderer.createRenderer();
     }

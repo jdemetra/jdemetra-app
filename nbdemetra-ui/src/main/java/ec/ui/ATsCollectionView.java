@@ -61,8 +61,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JCheckBoxMenuItem;
@@ -599,7 +599,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         }
     }
 
-    public static boolean canImport(@Nonnull ITsCollectionView view, @Nonnull Supplier<Transferable> toData) {
+    public static boolean canImport(@NonNull ITsCollectionView view, @NonNull Supplier<Transferable> toData) {
         if (!view.getTsUpdateMode().isReadOnly()) {
             Transferable t = toData.get();
             return TssTransferSupport.getDefault().canImport(t)
@@ -608,7 +608,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
         return false;
     }
 
-    public static boolean importData(@Nonnull ITsCollectionView view, @Nonnull Supplier<Transferable> toData) {
+    public static boolean importData(@NonNull ITsCollectionView view, @NonNull Supplier<Transferable> toData) {
         if (!view.getTsUpdateMode().isReadOnly()) {
             return TssTransferSupport.getDefault()
                     .toTsCollectionStream(toData.get())
@@ -659,7 +659,7 @@ public abstract class ATsCollectionView extends ATsControl implements ITsCollect
                     .orElse(NO);
         }
 
-        private static TransferChange of(@Nullable TsCollection source, @Nonnull TsCollection target) {
+        private static TransferChange of(@Nullable TsCollection source, @NonNull TsCollection target) {
             if (source == null) {
                 return MAYBE;
             }

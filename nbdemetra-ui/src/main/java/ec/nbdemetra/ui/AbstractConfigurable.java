@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui;
 
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -25,18 +25,18 @@ import javax.annotation.Nonnull;
  */
 public abstract class AbstractConfigurable<B> implements IConfigurable {
 
-    @Nonnull
+    @NonNull
     protected abstract B loadBean();
 
-    protected abstract void storeBean(@Nonnull B bean);
+    protected abstract void storeBean(@NonNull B bean);
 
-    protected abstract boolean editBean(@Nonnull B bean);
+    protected abstract boolean editBean(@NonNull B bean);
 
-    @Nonnull
-    protected abstract Config toConfig(@Nonnull B bean);
+    @NonNull
+    protected abstract Config toConfig(@NonNull B bean);
 
-    @Nonnull
-    protected abstract B fromConfig(@Nonnull Config config) throws IllegalArgumentException;
+    @NonNull
+    protected abstract B fromConfig(@NonNull Config config) throws IllegalArgumentException;
 
     @Override
     final public Config getConfig() {

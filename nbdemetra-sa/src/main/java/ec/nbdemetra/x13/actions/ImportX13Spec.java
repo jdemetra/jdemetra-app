@@ -30,7 +30,7 @@ import ec.tss.xml.x13.XmlX13Specification;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -98,7 +98,7 @@ public class ImportX13Spec extends SingleNodeAction<Node> implements Presenter.P
         });
     }
 
-    private static X13Specification fromConfig(@Nonnull Config config) throws IllegalArgumentException {
+    private static X13Specification fromConfig(@NonNull Config config) throws IllegalArgumentException {
         if (!X13Specification.class.getName().equals(config.getDomain())) {
             throw new IllegalArgumentException("Invalid config");
         }

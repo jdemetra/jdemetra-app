@@ -30,7 +30,7 @@ import ec.tstoolkit.design.VisibleForTesting;
 import java.util.Map;
 import java.util.Objects;
 import java.util.SortedMap;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -51,7 +51,7 @@ public final class DriverBasedConfig implements IConfig {
     private final ImmutableSortedMap<String, String> params;
 
     @VisibleForTesting
-    DriverBasedConfig(@Nonnull String driverClass, @Nonnull String databaseUrl, @Nonnull String schema, @Nonnull String displayName, @Nonnull ImmutableSortedMap<String, String> params) {
+    DriverBasedConfig(@NonNull String driverClass, @NonNull String databaseUrl, @NonNull String schema, @NonNull String displayName, @NonNull ImmutableSortedMap<String, String> params) {
         this.driverClass = driverClass;
         this.databaseUrl = databaseUrl;
         this.schema = schema;
@@ -59,22 +59,22 @@ public final class DriverBasedConfig implements IConfig {
         this.params = params;
     }
 
-    @Nonnull
+    @NonNull
     public String getDriverClass() {
         return driverClass;
     }
 
-    @Nonnull
+    @NonNull
     public String getDatabaseUrl() {
         return databaseUrl;
     }
 
-    @Nonnull
+    @NonNull
     public String getSchema() {
         return schema;
     }
 
-    @Nonnull
+    @NonNull
     public String getDisplayName() {
         return displayName;
     }
@@ -120,8 +120,8 @@ public final class DriverBasedConfig implements IConfig {
         return bean;
     }
 
-    @Nonnull
-    public static DriverBasedConfig deepCopyOf(@Nonnull String driverClass, @Nonnull String databaseUrl, @Nonnull String schema, @Nonnull String displayName, @Nonnull Map<String, String> params) {
+    @NonNull
+    public static DriverBasedConfig deepCopyOf(@NonNull String driverClass, @NonNull String databaseUrl, @NonNull String schema, @NonNull String displayName, @NonNull Map<String, String> params) {
         return new DriverBasedConfig(
                 Objects.requireNonNull(driverClass, "driverClass"),
                 Objects.requireNonNull(databaseUrl, "databaseUrl"),
@@ -130,8 +130,8 @@ public final class DriverBasedConfig implements IConfig {
                 ImmutableSortedMap.copyOf(Objects.requireNonNull(params, "params")));
     }
 
-    @Nonnull
-    public static Builder builder(@Nonnull String driverClass, @Nonnull String databaseUrl, @Nonnull String schema, @Nonnull String displayName) {
+    @NonNull
+    public static Builder builder(@NonNull String driverClass, @NonNull String databaseUrl, @NonNull String schema, @NonNull String displayName) {
         return new Builder(
                 Objects.requireNonNull(driverClass, "driverClass"),
                 Objects.requireNonNull(databaseUrl, "databaseUrl"),
@@ -139,13 +139,11 @@ public final class DriverBasedConfig implements IConfig {
                 Objects.requireNonNull(displayName, "displayName"));
     }
 
-    @Nonnull
-    public static Formatters.Formatter<DriverBasedConfig> xmlFormatter(boolean formattedOutput) {
+    public static Formatters.@NonNull Formatter<DriverBasedConfig> xmlFormatter(boolean formattedOutput) {
         return formattedOutput ? XML.get().formattedOutputFormatter : XML.get().defaultFormatter;
     }
 
-    @Nonnull
-    public static Parsers.Parser<DriverBasedConfig> xmlParser() {
+    public static Parsers.@NonNull Parser<DriverBasedConfig> xmlParser() {
         return XML.get().defaultParser;
     }
 
@@ -157,7 +155,7 @@ public final class DriverBasedConfig implements IConfig {
         private final String displayName;
 
         @VisibleForTesting
-        Builder(@Nonnull String driverClass, @Nonnull String databaseUrl, @Nonnull String schema, @Nonnull String displayName) {
+        Builder(@NonNull String driverClass, @NonNull String databaseUrl, @NonNull String schema, @NonNull String displayName) {
             this.driverClass = driverClass;
             this.databaseUrl = databaseUrl;
             this.schema = schema;

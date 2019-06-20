@@ -22,8 +22,8 @@ import static ec.ui.interfaces.IColorSchemeAble.COLOR_SCHEME_PROPERTY;
 import ec.util.chart.ColorScheme;
 import ec.util.various.swing.JCommand;
 import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  *
@@ -36,7 +36,7 @@ public final class ColorSchemeCommand {
         // static class
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<IColorSchemeAble> applyColorScheme(@Nullable ColorScheme colorScheme) {
         return new ApplyColorSchemeCommand(colorScheme);
     }

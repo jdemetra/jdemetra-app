@@ -44,7 +44,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.EnumMap;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import org.openide.DialogDisplayer;
@@ -62,62 +62,62 @@ public final class TsCollectionViewCommand {
         // static class
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsCollectionView> rename() {
         return RenameCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsCollectionView> open() {
         return OpenCommand.INSTANCE;
     }
 
-    @Nonnull
-    public static JCommand<ITsCollectionView> openWith(@Nonnull ITsAction tsAction) {
+    @NonNull
+    public static JCommand<ITsCollectionView> openWith(@NonNull ITsAction tsAction) {
         return new OpenWithCommand(tsAction);
     }
 
-    @Nonnull
-    public static JCommand<ITsCollectionView> save(@Nonnull ITsSave tsSave) {
+    @NonNull
+    public static JCommand<ITsCollectionView> save(@NonNull ITsSave tsSave) {
         return new SaveCommand(tsSave);
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsCollectionView> copy() {
         return CopyCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsCollectionView> copyAll() {
         return CopyAllCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsCollectionView> paste() {
         return PasteCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsCollectionView> delete() {
         return DeleteCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsCollectionView> clear() {
         return ClearCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsCollectionView> selectAll() {
         return SelectAllCommand.INSTANCE;
     }
 
-    @Nonnull
-    public static JCommand<ITsCollectionView> selectByFreq(@Nonnull TsFrequency freq) {
+    @NonNull
+    public static JCommand<ITsCollectionView> selectByFreq(@NonNull TsFrequency freq) {
         return SelectByFreqCommand.VALUES.get(freq);
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsCollectionView> freeze() {
         return FreezeCommand.INSTANCE;
     }
@@ -225,7 +225,7 @@ public final class TsCollectionViewCommand {
 
         private final ITsAction tsAction;
 
-        public OpenWithCommand(@Nonnull ITsAction tsAction) {
+        public OpenWithCommand(@NonNull ITsAction tsAction) {
             this.tsAction = tsAction;
         }
 
@@ -243,7 +243,7 @@ public final class TsCollectionViewCommand {
 
         private final ITsSave tsSave;
 
-        SaveCommand(@Nonnull ITsSave tsSave) {
+        SaveCommand(@NonNull ITsSave tsSave) {
             this.tsSave = tsSave;
         }
 

@@ -22,7 +22,7 @@ import static ec.ui.grid.JTsGrid.SHOW_BARS_PROPERTY;
 import static ec.ui.grid.JTsGrid.USE_COLOR_SCHEME_PROPERTY;
 import ec.util.various.swing.JCommand;
 import java.awt.Component;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -35,17 +35,17 @@ public final class JTsGridCommand {
         // static 
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<JTsGrid> toggleUseColorScheme() {
         return ToggleUseColorSchemeCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<JTsGrid> toggleShowBars() {
         return ToggleShowBarsCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<JTsGrid> toggleCrosshairVisibility() {
         return ToggleCrosshairVisibilityCommand.INSTANCE;
     }

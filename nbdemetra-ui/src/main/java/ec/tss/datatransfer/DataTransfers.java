@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.datatransfer.ExTransferable;
 import org.openide.util.datatransfer.MultiTransferObject;
 
@@ -84,25 +84,24 @@ public final class DataTransfers {
                 : Optional.<Transferable>absent();
     }
 
-    public static boolean isMultiFlavor(@Nonnull DataFlavor[] dataFlavors) {
+    public static boolean isMultiFlavor(@NonNull DataFlavor[] dataFlavors) {
         return dataFlavors.length == 1 && dataFlavors[0] == ExTransferable.multiFlavor;
     }
 
-    @Nonnull
-    public static Stream<Transferable> getMultiTransferables(@Nonnull Transferable t) {
+    @NonNull
+    public static Stream<Transferable> getMultiTransferables(@NonNull Transferable t) {
         return getMultiTransferObject(t)
                 .map(DataTransfers::asTransferableStream)
                 .orElse(Stream.of(t));
 
     }
 
-    @Nonnull
-    public static Stream<DataFlavor> getMultiDataFlavors(@Nonnull Transferable t) {
+    @NonNull
+    public static Stream<DataFlavor> getMultiDataFlavors(@NonNull Transferable t) {
         return getMultiTransferables(t).flatMap(o -> Stream.of(o.getTransferDataFlavors()));
     }
 
-    @Nonnull
-    public static java.util.Optional<MultiTransferObject> getMultiTransferObject(@Nonnull Transferable t) {
+    public static java.util.@NonNull Optional<MultiTransferObject> getMultiTransferObject(@NonNull Transferable t) {
         if (isMultiFlavor(t.getTransferDataFlavors())) {
             try {
                 return java.util.Optional.of((MultiTransferObject) t.getTransferData(ExTransferable.multiFlavor));
@@ -113,12 +112,12 @@ public final class DataTransfers {
         return java.util.Optional.empty();
     }
 
-    @Nonnull
-    public static Stream<Transferable> asTransferableStream(@Nonnull MultiTransferObject multi) {
+    @NonNull
+    public static Stream<Transferable> asTransferableStream(@NonNull MultiTransferObject multi) {
         return IntStream.range(0, multi.getCount()).mapToObj(multi::getTransferableAt);
     }
 
-    @Nonnull
+    @NonNull
     public static Transferable systemClipboardAsTransferable() {
         return new ClipboardAsTransferable(Toolkit.getDefaultToolkit().getSystemClipboard());
     }

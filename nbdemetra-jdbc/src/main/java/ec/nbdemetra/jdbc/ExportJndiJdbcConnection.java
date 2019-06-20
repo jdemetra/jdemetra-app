@@ -21,7 +21,7 @@ import ec.nbdemetra.ui.interchange.ExportAction;
 import ec.nbdemetra.ui.interchange.Exportable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -82,7 +82,7 @@ public final class ExportJndiJdbcConnection extends NodeAction implements Presen
         return DbExplorerUtil.exportConnection(DbExplorerUtil.findConnection(activatedNode).get());
     }
 
-    @Nonnull
+    @NonNull
     private static Config toConfig(DriverBasedConfig conn) {
         Config.Builder result = Config.builder(DriverBasedConfig.class.getName(), conn.getDisplayName(), "")
                 .put("driverClass", conn.getDriverClass())

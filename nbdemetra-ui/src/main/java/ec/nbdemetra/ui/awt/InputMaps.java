@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.InputMap;
 import javax.swing.KeyStroke;
 
@@ -37,8 +37,8 @@ public final class InputMaps {
         // static class
     }
 
-    @Nonnull
-    public static InputMap getRoot(@Nonnull InputMap inputMap) {
+    @NonNull
+    public static InputMap getRoot(@NonNull InputMap inputMap) {
         InputMap result = inputMap;
         while (result.getParent() != null) {
             result = result.getParent();
@@ -46,18 +46,18 @@ public final class InputMaps {
         return result;
     }
 
-    @Nonnull
-    public static Map<KeyStroke, Object> asMap(@Nonnull InputMap inputMap, boolean includeParentKeys) {
+    @NonNull
+    public static Map<KeyStroke, Object> asMap(@NonNull InputMap inputMap, boolean includeParentKeys) {
         return asKeySet(inputMap, includeParentKeys).stream().collect(Collectors.toMap(o -> o, o -> inputMap.get(o)));
     }
 
-    public static void copyEntries(@Nonnull InputMap source, boolean includeParentKeys, @Nonnull InputMap destination) {
+    public static void copyEntries(@NonNull InputMap source, boolean includeParentKeys, @NonNull InputMap destination) {
         asMap(source, includeParentKeys).forEach((k, v) -> destination.put(k, v));
     }
 
     //<editor-fold defaultstate="collapsed" desc="Internal implementation">
-    @Nonnull
-    private static Set<KeyStroke> asKeySet(final @Nonnull InputMap inputMap, final boolean includeParentKeys) {
+    @NonNull
+    private static Set<KeyStroke> asKeySet(final @NonNull InputMap inputMap, final boolean includeParentKeys) {
         return new AbstractSet<KeyStroke>() {
             @Override
             public Iterator<KeyStroke> iterator() {

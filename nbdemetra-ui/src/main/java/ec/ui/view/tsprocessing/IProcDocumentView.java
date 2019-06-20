@@ -8,8 +8,8 @@ import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.Id;
 import ec.ui.interfaces.IDisposable;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -20,13 +20,13 @@ import javax.swing.JComponent;
  */
 public interface IProcDocumentView<D extends IProcDocument> extends IDisposable {
 
-    @Nonnull
+    @NonNull
     D getDocument();
 
-    @Nonnull
+    @NonNull
     ITsViewToolkit getToolkit();
 
-    @Nonnull
+    @NonNull
     List<Id> getItems();
 
     @Nullable

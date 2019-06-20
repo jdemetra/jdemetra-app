@@ -21,7 +21,7 @@ import ec.nbdemetra.ui.nodes.Nodes;
 import ec.tss.TsCollection;
 import java.awt.event.ActionEvent;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -66,8 +66,8 @@ public final class TsSaveAction extends AbilityAction<ITsSavable> implements Pre
                 .toList();
     }
 
-    @Nonnull
-    public static JMenuItem getPopupPresenter(@Nonnull List<ITsSavable> data) {
+    @NonNull
+    public static JMenuItem getPopupPresenter(@NonNull List<ITsSavable> data) {
         JMenu result = new JMenu();
         result.setText(Bundle.CTL_TsSaveAction());
         for (ITsSave o : Lookup.getDefault().lookupAll(ITsSave.class)) {

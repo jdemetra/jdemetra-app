@@ -19,8 +19,8 @@ package ec.nbdemetra.ui.nodes;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
 
@@ -31,30 +31,30 @@ import org.openide.nodes.Node;
 public abstract class FailSafeChildFactory extends ChildFactory.Detachable<Object> {
 
     @OnAnyThread
-    abstract protected boolean tryCreateKeys(@Nonnull List<Object> list) throws Exception;
+    abstract protected boolean tryCreateKeys(@NonNull List<Object> list) throws Exception;
 
     @OnEDT
     @Nullable
-    protected Node tryCreateNodeForKey(@Nonnull Object key) throws Exception {
+    protected Node tryCreateNodeForKey(@NonNull Object key) throws Exception {
         throw new AssertionError("Neither tryCreateNodeForKey() nor tryCreateNodesForKey() overridden in " + getClass().getName());
     }
 
     @OnEDT
     @Nullable
-    protected Node[] tryCreateNodesForKey(@Nonnull Object key) throws Exception {
+    protected Node[] tryCreateNodesForKey(@NonNull Object key) throws Exception {
         Node n = tryCreateNodeForKey(key);
         return n == null ? null : new Node[]{n};
     }
 
     @OnEDT
     @Nullable
-    protected Node createExceptionNode(@Nonnull Exception ex) {
+    protected Node createExceptionNode(@NonNull Exception ex) {
         return new ExceptionNode(ex);
     }
 
     @OnEDT
     @Nullable
-    protected Node[] createExceptionNodes(@Nonnull Exception ex) {
+    protected Node[] createExceptionNodes(@NonNull Exception ex) {
         Node n = createExceptionNode(ex);
         return n == null ? null : new Node[]{n};
     }

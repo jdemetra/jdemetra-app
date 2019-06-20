@@ -18,8 +18,8 @@ package ec.nbdemetra.ui.properties;
 
 import java.awt.Image;
 import java.beans.IntrospectionException;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
 
@@ -44,12 +44,12 @@ public class OpenIdePropertySheetBeanEditor implements IBeanEditor {
     }
 
     @Deprecated
-    public static boolean editNode(@Nonnull Node node, @Nullable String title, @Nullable Image image) {
+    public static boolean editNode(@NonNull Node node, @Nullable String title, @Nullable Image image) {
         return new PropertySheetDialogBuilder().title(title).icon(image).editNode(node);
     }
 
     @Deprecated
-    public static boolean editSheet(@Nonnull Sheet sheet, @Nullable String title, @Nullable Image image) {
+    public static boolean editSheet(@NonNull Sheet sheet, @Nullable String title, @Nullable Image image) {
         return new PropertySheetDialogBuilder().title(title).icon(image).editSheet(sheet);
     }
 }

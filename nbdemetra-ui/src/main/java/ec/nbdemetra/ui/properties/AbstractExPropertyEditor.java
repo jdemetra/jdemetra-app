@@ -19,7 +19,7 @@ package ec.nbdemetra.ui.properties;
 import com.google.common.base.Suppliers;
 import java.beans.PropertyEditorSupport;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.explorer.propertysheet.ExPropertyEditor;
 import org.openide.explorer.propertysheet.InplaceEditor;
 import org.openide.explorer.propertysheet.PropertyEnv;
@@ -42,6 +42,6 @@ public abstract class AbstractExPropertyEditor extends PropertyEditorSupport imp
         return supplier.get();
     }
 
-    @Nonnull
+    @NonNull
     abstract protected InplaceEditor createInplaceEditor();
 }

@@ -20,7 +20,7 @@ import ec.tstoolkit.design.UtilityClass;
 import ec.ui.interfaces.IZoomableGrid;
 import static ec.ui.interfaces.IZoomableGrid.ZOOM_PROPERTY;
 import ec.util.various.swing.JCommand;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -29,12 +29,12 @@ import javax.annotation.Nonnull;
 @UtilityClass(IZoomableGrid.class)
 public class GridCommand {
     
-    @Nonnull
+    @NonNull
     public static JCommand<IZoomableGrid> applyZoomRatio(int zoomRatio) {
         return new ZoomRatioCommand(zoomRatio);
     }
     
-    @Nonnull
+    @NonNull
     public static JCommand<IZoomableGrid> applyColorScale(double scale) {
         return new ColorScaleCommand(scale);
     }

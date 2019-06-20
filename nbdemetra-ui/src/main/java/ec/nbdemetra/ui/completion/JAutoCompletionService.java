@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.completion;
 
 import ec.tstoolkit.design.ServiceDefinition;
 import ec.util.completion.swing.JAutoCompletion;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.text.JTextComponent;
 import org.openide.util.lookup.Lookups;
 
@@ -30,16 +30,16 @@ import org.openide.util.lookup.Lookups;
 @ServiceDefinition
 public abstract class JAutoCompletionService {
 
-    @Nonnull
-    abstract public JAutoCompletion bind(@Nonnull JTextComponent textComponent);
+    @NonNull
+    abstract public JAutoCompletion bind(@NonNull JTextComponent textComponent);
     //
     public static final String LOCALE_PATH = "JAutoCompletionService/Locale";
     public static final String DATE_PATTERN_PATH = "JAutoCompletionService/DatePattern";
     public static final String COLOR_SCHEME_PATH = "JAutoCompletionService/ColorScheme";
     public static final String CHARSET_PATH = "JAutoCompletionService/Charset";
 
-    @Nonnull
-    public static JAutoCompletion forPathBind(@Nonnull String path, @Nonnull JTextComponent textComponent) {
+    @NonNull
+    public static JAutoCompletion forPathBind(@NonNull String path, @NonNull JTextComponent textComponent) {
         JAutoCompletionService o = Lookups.forPath(path).lookup(JAutoCompletionService.class);
         return o != null ? o.bind(textComponent) : new JAutoCompletion(textComponent);
     }

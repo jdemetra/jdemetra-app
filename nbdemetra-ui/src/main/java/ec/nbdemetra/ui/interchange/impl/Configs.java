@@ -30,7 +30,7 @@ import ec.tstoolkit.design.Immutable;
 import ec.tstoolkit.design.VisibleForTesting;
 import java.io.IOException;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -57,7 +57,7 @@ public final class Configs {
         this.items = items;
     }
 
-    @Nonnull
+    @NonNull
     public String getAuthor() {
         return author;
     }
@@ -66,7 +66,7 @@ public final class Configs {
         return creationTime;
     }
 
-    @Nonnull
+    @NonNull
     public List<Config> getItems() {
         return items;
     }
@@ -80,13 +80,11 @@ public final class Configs {
         return result;
     }
 
-    @Nonnull
-    public static Formatters.Formatter<Configs> xmlFormatter(boolean formattedOutput) {
+    public static Formatters.@NonNull Formatter<Configs> xmlFormatter(boolean formattedOutput) {
         return formattedOutput ? XML.get().formattedOutputFormatter : XML.get().defaultFormatter;
     }
 
-    @Nonnull
-    public static Parsers.Parser<Configs> xmlParser() {
+    public static Parsers.@NonNull Parser<Configs> xmlParser() {
         return XML.get().defaultParser;
     }
 

@@ -30,8 +30,8 @@ import internal.FrozenTsHelper;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -43,13 +43,13 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DataSourceProviderBuddySupport.class)
 public class DataSourceProviderBuddySupport {
 
-    @Nonnull
+    @NonNull
     public static DataSourceProviderBuddySupport getDefault() {
         return Lookup.getDefault().lookup(DataSourceProviderBuddySupport.class);
     }
 
     @Deprecated
-    @Nonnull
+    @NonNull
     public static DataSourceProviderBuddySupport getInstance() {
         return getDefault();
     }
@@ -60,12 +60,12 @@ public class DataSourceProviderBuddySupport {
         fallback = CacheBuilder.newBuilder().build(new CacheLoaderImpl());
     }
 
-    @Nonnull
-    protected IDataSourceProviderBuddy getFallback(@Nonnull String providerName) {
+    @NonNull
+    protected IDataSourceProviderBuddy getFallback(@NonNull String providerName) {
         return fallback.getUnchecked(providerName);
     }
 
-    @Nonnull
+    @NonNull
     public IDataSourceProviderBuddy get(@Nullable String providerName) {
         String tmp = Strings.nullToEmpty(providerName);
         return Lookup.getDefault().lookupAll(IDataSourceProviderBuddy.class).stream()
@@ -75,23 +75,23 @@ public class DataSourceProviderBuddySupport {
                 .orElseGet(() -> getFallback(tmp));
     }
 
-    @Nonnull
-    public IDataSourceProviderBuddy get(@Nonnull IDataSourceProvider provider) {
+    @NonNull
+    public IDataSourceProviderBuddy get(@NonNull IDataSourceProvider provider) {
         return get(provider.getSource());
     }
 
-    @Nonnull
-    public IDataSourceProviderBuddy get(@Nonnull DataSource dataSource) {
+    @NonNull
+    public IDataSourceProviderBuddy get(@NonNull DataSource dataSource) {
         return get(dataSource.getProviderName());
     }
 
-    @Nonnull
-    public IDataSourceProviderBuddy get(@Nonnull DataSet dataSet) {
+    @NonNull
+    public IDataSourceProviderBuddy get(@NonNull DataSet dataSet) {
         return get(dataSet.getDataSource());
     }
 
-    @Nonnull
-    public IDataSourceProviderBuddy get(@Nonnull TsMoniker moniker) {
+    @NonNull
+    public IDataSourceProviderBuddy get(@NonNull TsMoniker moniker) {
         return get(moniker.getSource());
     }
 
@@ -104,8 +104,8 @@ public class DataSourceProviderBuddySupport {
      * @return an optional icon
      * @since 2.2.0
      */
-    @Nonnull
-    public Optional<Image> getIcon(@Nonnull String providerName, int type, boolean opened) {
+    @NonNull
+    public Optional<Image> getIcon(@NonNull String providerName, int type, boolean opened) {
         return Optional.ofNullable(get(providerName).getIcon(type, opened));
     }
 
@@ -118,8 +118,8 @@ public class DataSourceProviderBuddySupport {
      * @return an optional icon
      * @since 2.2.0
      */
-    @Nonnull
-    public Optional<Image> getIcon(@Nonnull DataSource dataSource, int type, boolean opened) {
+    @NonNull
+    public Optional<Image> getIcon(@NonNull DataSource dataSource, int type, boolean opened) {
         return Optional.ofNullable(get(dataSource).getIcon(dataSource, type, opened));
     }
 
@@ -132,8 +132,8 @@ public class DataSourceProviderBuddySupport {
      * @return an optional icon
      * @since 2.2.0
      */
-    @Nonnull
-    public Optional<Image> getIcon(@Nonnull DataSet dataSet, int type, boolean opened) {
+    @NonNull
+    public Optional<Image> getIcon(@NonNull DataSet dataSet, int type, boolean opened) {
         return Optional.ofNullable(get(dataSet).getIcon(dataSet, type, opened));
     }
 
@@ -147,8 +147,8 @@ public class DataSourceProviderBuddySupport {
      * @return an optional icon
      * @since 2.2.0
      */
-    @Nonnull
-    public Optional<Image> getIcon(@Nonnull String providerName, @Nonnull IOException ex, int type, boolean opened) {
+    @NonNull
+    public Optional<Image> getIcon(@NonNull String providerName, @NonNull IOException ex, int type, boolean opened) {
         return Optional.ofNullable(get(providerName).getIcon(ex, type, opened));
     }
 
@@ -161,8 +161,8 @@ public class DataSourceProviderBuddySupport {
      * @return an optional icon
      * @since 2.2.0
      */
-    @Nonnull
-    public Optional<Image> getIcon(@Nonnull TsMoniker moniker, int type, boolean opened) {
+    @NonNull
+    public Optional<Image> getIcon(@NonNull TsMoniker moniker, int type, boolean opened) {
         TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
         return original != null ? Optional.ofNullable(get(original).getIcon(moniker, type, opened)) : Optional.empty();
     }
@@ -174,8 +174,8 @@ public class DataSourceProviderBuddySupport {
      * @return an optional configurable
      * @since 2.2.0
      */
-    @Nonnull
-    public Optional<IConfigurable> getConfigurable(@Nonnull String providerName) {
+    @NonNull
+    public Optional<IConfigurable> getConfigurable(@NonNull String providerName) {
         IDataSourceProviderBuddy buddy = get(providerName);
         return buddy instanceof IConfigurable ? Optional.of((IConfigurable) buddy) : Optional.empty();
     }

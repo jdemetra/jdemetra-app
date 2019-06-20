@@ -30,7 +30,7 @@ import ec.tss.xml.tramoseats.XmlTramoSeatsSpecification;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -98,7 +98,7 @@ public class ImportTramoSeatsSpec extends SingleNodeAction<Node> implements Pres
         });
     }
 
-    private static TramoSeatsSpecification fromConfig(@Nonnull Config config) throws IllegalArgumentException {
+    private static TramoSeatsSpecification fromConfig(@NonNull Config config) throws IllegalArgumentException {
         if (!TramoSeatsSpecification.class.getName().equals(config.getDomain())) {
             throw new IllegalArgumentException("Invalid config");
         }

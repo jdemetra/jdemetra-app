@@ -31,7 +31,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import java.util.Arrays;
 import java.util.EnumMap;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import org.openide.DialogDisplayer;
@@ -48,17 +48,17 @@ public final class TsGrowthChartCommand {
         // static class
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsGrowthChart> copyGrowthData() {
         return CopyGrowthData.INSTANCE;
     }
 
-    @Nonnull
-    public static JCommand<ITsGrowthChart> applyGrowthKind(@Nonnull ITsGrowthChart.GrowthKind growthKind) {
+    @NonNull
+    public static JCommand<ITsGrowthChart> applyGrowthKind(ITsGrowthChart.@NonNull GrowthKind growthKind) {
         return ApplyGrowthKind.VALUES.get(growthKind);
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsGrowthChart> editLastYears() {
         return EditLastYearsCommand.INSTANCE;
     }

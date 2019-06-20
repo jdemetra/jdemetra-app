@@ -64,7 +64,7 @@ public final class GlobalServiceProcessor extends AbstractProcessor {
                 m.printMessage(kind, "Default method requires no parameters", e);
                 continue;
             }
-            if (!t.getReturnType().toString().equals(e.asType().toString())) {
+            if (!t.getReturnType().toString().contains(e.asType().toString())) {
                 m.printMessage(kind, "Default method must return the annotated type", e);
                 continue;
             }

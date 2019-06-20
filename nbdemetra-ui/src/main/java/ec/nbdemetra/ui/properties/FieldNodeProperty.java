@@ -21,7 +21,7 @@ import com.google.common.base.Throwables;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.nodes.Node;
 
 /**
@@ -31,8 +31,8 @@ import org.openide.nodes.Node;
  */
 public class FieldNodeProperty<T> extends Node.Property<T> {
 
-    @Nonnull
-    public static <X> FieldNodeProperty<X> create(@Nonnull Object instance, @Nonnull Class<X> valueType, @Nonnull String fieldName) {
+    @NonNull
+    public static <X> FieldNodeProperty<X> create(@NonNull Object instance, @NonNull Class<X> valueType, @NonNull String fieldName) {
         try {
             return new FieldNodeProperty(instance, valueType, instance.getClass().getField(fieldName));
         } catch (NoSuchFieldException | SecurityException ex) {
