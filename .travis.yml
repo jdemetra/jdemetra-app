@@ -6,7 +6,7 @@ jdk:
 
 env:
   global:
-    - DEPLOY_JDK=oraclejdk8
+    - DEPLOY_JDK=openjdk8
     - DEPLOY_REPO=jdemetra/jdemetra-app
     - DEPLOY_BIN=nbdemetra-app/target/jdemetra-*-bin.zip
 
