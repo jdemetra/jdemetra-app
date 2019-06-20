@@ -1,15 +1,17 @@
+dist: xenial
 language: java
 jdk:
-  - oraclejdk8
+  - openjdk8
   - openjdk11
+
+services:
+  - xvfb
 
 before_install:
   - git clone -b v3.0.0 --single-branch --depth=1 https://github.com/jdemetra/jdemetra-core.git ~/builds/jdemetra-core
   - pushd ~/builds/jdemetra-core
   - mvn clean install -DskipTests=true
   - popd
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
 
 cache:
   directories:
