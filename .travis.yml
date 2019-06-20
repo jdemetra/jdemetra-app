@@ -1,6 +1,7 @@
+dist: xenial
 language: java
 jdk:
-  - oraclejdk8
+  - openjdk8
   - openjdk11
 
 env:
@@ -9,7 +10,6 @@ env:
     - DEPLOY_REPO=jdemetra/jdemetra-app
     - DEPLOY_BIN=nbdemetra-app/target/jdemetra-*-bin.zip
 
-dist: xenial
 services:
   - xvfb
 
