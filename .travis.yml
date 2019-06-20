@@ -9,9 +9,9 @@ env:
     - DEPLOY_REPO=jdemetra/jdemetra-app
     - DEPLOY_BIN=nbdemetra-app/target/jdemetra-*-bin.zip
 
-before_install:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+dist: xenial
+services:
+  - xvfb
 
 deploy:
   # Maven snapshots from develop branch
