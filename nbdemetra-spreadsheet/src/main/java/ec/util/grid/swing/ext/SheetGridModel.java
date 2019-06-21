@@ -18,7 +18,7 @@ package ec.util.grid.swing.ext;
 
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.spreadsheet.Sheet;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -28,7 +28,7 @@ public final class SheetGridModel extends AbstractGridModel {
 
     private final Sheet sheet;
 
-    public SheetGridModel(@Nonnull Sheet sheet) {
+    public SheetGridModel(@NonNull Sheet sheet) {
         this.sheet = sheet;
     }
 

@@ -17,7 +17,7 @@
 package demetra.ui.actions;
 
 import java.beans.PropertyChangeListener;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 
@@ -28,8 +28,8 @@ import javax.swing.JComponent;
 @lombok.experimental.UtilityClass
 public final class Actions {
 
-    @Nonnull
-    public static <C extends AbstractButton> C hideWhenDisabled(@Nonnull C c) {
+    @NonNull
+    public static <C extends AbstractButton> C hideWhenDisabled(@NonNull C c) {
         c.setVisible(c.isEnabled());
         c.addPropertyChangeListener(HIDE);
         return c;

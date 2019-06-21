@@ -29,7 +29,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import java.util.EnumMap;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import org.openide.DialogDisplayer;
@@ -46,17 +46,17 @@ public class JTsGrowthChartCommands {
     public static final String PREVIOUS_PERIOD_ACTION = "previousPeriod";
     public static final String PREVIOUS_YEAR_ACTION = "previousYear";
 
-    @Nonnull
+    @NonNull
     public static JCommand<JTsGrowthChart> copyGrowthData() {
         return CopyGrowthData.INSTANCE;
     }
 
-    @Nonnull
-    public static JCommand<JTsGrowthChart> applyGrowthKind(@Nonnull JTsGrowthChart.GrowthKind growthKind) {
+    @NonNull
+    public static JCommand<JTsGrowthChart> applyGrowthKind(JTsGrowthChart.@NonNull GrowthKind growthKind) {
         return ApplyGrowthKind.VALUES.get(growthKind);
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<JTsGrowthChart> editLastYears() {
         return EditLastYearsCommand.INSTANCE;
     }

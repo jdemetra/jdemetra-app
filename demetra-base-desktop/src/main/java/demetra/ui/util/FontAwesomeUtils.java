@@ -23,7 +23,7 @@ import java.awt.Image;
 import java.beans.BeanInfo;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.Icon;
 
 /**
@@ -50,7 +50,7 @@ public final class FontAwesomeUtils {
     }
 
     @OnEDT
-    @Nonnull
+    @NonNull
     public static Color toColor(int type) throws IllegalArgumentException {
         switch (type) {
             case BeanInfo.ICON_COLOR_16x16:
@@ -63,14 +63,14 @@ public final class FontAwesomeUtils {
     }
 
     @OnEDT
-    @Nonnull
-    public static Icon getIcon(@Nonnull FontAwesome fa, int type) throws IllegalArgumentException {
+    @NonNull
+    public static Icon getIcon(@NonNull FontAwesome fa, int type) throws IllegalArgumentException {
         return getIcon(fa, toColor(type), toSize(type));
     }
 
     @OnEDT
-    @Nonnull
-    public static Image getImage(@Nonnull FontAwesome fa, int type) throws IllegalArgumentException {
+    @NonNull
+    public static Image getImage(@NonNull FontAwesome fa, int type) throws IllegalArgumentException {
         return getImage(fa, toColor(type), toSize(type));
     }
 

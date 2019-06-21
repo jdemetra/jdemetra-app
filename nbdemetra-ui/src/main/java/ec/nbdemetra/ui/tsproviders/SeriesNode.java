@@ -24,7 +24,7 @@ import ec.tss.tsproviders.DataSet;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.netbeans.api.actions.Openable;
@@ -51,7 +51,7 @@ public final class SeriesNode extends DataSetNode {
 
     public static final String ACTION_PATH = "SeriesNode";
 
-    public SeriesNode(@Nonnull DataSet dataSet) {
+    public SeriesNode(@NonNull DataSet dataSet) {
         super(dataSet, ACTION_PATH);
     }
 

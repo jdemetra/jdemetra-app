@@ -22,7 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.Exceptions;
 
 /**
@@ -32,8 +32,8 @@ import org.openide.util.Exceptions;
  */
 public final class ShowInFolderActionListener implements ActionListener {
 
-    @Nonnull
-    public static ShowInFolderActionListener of(@Nonnull File file) {
+    @NonNull
+    public static ShowInFolderActionListener of(@NonNull File file) {
         return new ShowInFolderActionListener(DesktopManager.get(), file);
     }
 

@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.interchange;
 
 import ec.nbdemetra.ui.Config;
 import ec.util.various.swing.OnEDT;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Defines the ability of a component to import a previous state/configuration.
@@ -33,7 +33,7 @@ public interface Importable {
      * @return a non-null domain
      */
     @OnEDT
-    @Nonnull
+    @NonNull
     String getDomain();
 
     /**
@@ -43,6 +43,6 @@ public interface Importable {
      * @throws IllegalArgumentException if the config cannot be parsed
      */
     @OnEDT
-    void importConfig(@Nonnull Config config) throws IllegalArgumentException;
+    void importConfig(@NonNull Config config) throws IllegalArgumentException;
 
 }

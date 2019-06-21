@@ -23,7 +23,7 @@ import ec.util.various.swing.OnEDT;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.ImageUtilities;
 
 /**
@@ -41,22 +41,22 @@ public abstract class InterchangeBroker implements NamedService {
     }
 
     @OnEDT
-    public boolean canImport(@Nonnull List<? extends Importable> importables) {
+    public boolean canImport(@NonNull List<? extends Importable> importables) {
         return false;
     }
 
     @OnEDT
-    public void performImport(@Nonnull List<? extends Importable> importables) throws IOException, IllegalArgumentException {
+    public void performImport(@NonNull List<? extends Importable> importables) throws IOException, IllegalArgumentException {
         throw new UnsupportedOperationException();
     }
 
     @OnEDT
-    public boolean canExport(@Nonnull List<? extends Exportable> exportables) {
+    public boolean canExport(@NonNull List<? extends Exportable> exportables) {
         return false;
     }
 
     @OnEDT
-    public void performExport(@Nonnull List<? extends Exportable> exportables) throws IOException {
+    public void performExport(@NonNull List<? extends Exportable> exportables) throws IOException {
         throw new UnsupportedOperationException();
     }
 }

@@ -27,7 +27,7 @@ import internal.ui.components.InternalUI;
 import java.awt.Dimension;
 import java.beans.Beans;
 import java.util.Objects;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JComponent;
 import javax.swing.ListSelectionModel;
@@ -109,12 +109,12 @@ public final class JTsChart extends JComponent implements TimeSeriesComponent, P
         firePropertyChange(DUAL_CHART_PROPERTY, old, this.dualChart);
     }
 
-    @Nonnull
+    @NonNull
     public ListSelectionModel getDualDispatcher() {
         return dualDispatcher;
     }
 
-    public void setDualDispatcher(@Nonnull ListSelectionModel dualDispatcher) {
+    public void setDualDispatcher(@NonNull ListSelectionModel dualDispatcher) {
         ListSelectionModel old = this.dualDispatcher;
         this.dualDispatcher = Objects.requireNonNull(dualDispatcher);
         firePropertyChange(DUAL_DISPATCHER_PROPERTY, old, this.dualDispatcher);

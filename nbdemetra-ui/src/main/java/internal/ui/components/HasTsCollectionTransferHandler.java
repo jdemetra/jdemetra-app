@@ -26,8 +26,8 @@ import java.awt.datatransfer.Transferable;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 import org.openide.util.Lookup;
@@ -80,7 +80,7 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
         return importData(delegate, tssSupport, support::getTransferable);
     }
 
-    public static boolean canImport(@Nonnull HasTsCollection view, @Nonnull DataTransfer tssSupport, @Nonnull Supplier<Transferable> toData) {
+    public static boolean canImport(@NonNull HasTsCollection view, @NonNull DataTransfer tssSupport, @NonNull Supplier<Transferable> toData) {
         if (!view.getTsUpdateMode().isReadOnly()) {
             Transferable t = toData.get();
             return tssSupport.canImport(t) && TransferChange.of(t, view.getTsCollection()).mayChangeContent();
@@ -88,7 +88,7 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
         return false;
     }
 
-    public static boolean importData(@Nonnull HasTsCollection view, @Nonnull DataTransfer tssSupport, @Nonnull Supplier<Transferable> toData) {
+    public static boolean importData(@NonNull HasTsCollection view, @NonNull DataTransfer tssSupport, @NonNull Supplier<Transferable> toData) {
         if (!view.getTsUpdateMode().isReadOnly()) {
             return tssSupport.toTsCollectionStream(toData.get())
                     .map(TsConverter::fromTsCollection)
@@ -161,7 +161,7 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
                     .orElse(NO);
         }
 
-        private static TransferChange of(@Nullable TsCollection source, @Nonnull TsCollection target) {
+        private static TransferChange of(@Nullable TsCollection source, @NonNull TsCollection target) {
             if (source == null) {
                 return MAYBE;
             }

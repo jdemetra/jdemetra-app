@@ -24,7 +24,7 @@ import ec.util.grid.swing.JGrid;
 import ec.util.various.swing.JCommand;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ListSelectionModel;
 import demetra.ui.OldDataTransfer;
 
@@ -41,23 +41,23 @@ public abstract class TableGridCommand extends JCommand<JGrid> {
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
     }
 
-    @Nonnull
+    @NonNull
     public static TableGridCommand copyAll(boolean rowHeader, boolean columnHeader) {
         return new CopyAllCommand(rowHeader, columnHeader);
     }
 
-    @Nonnull
+    @NonNull
     public static TableGridCommand copySelection(boolean rowHeader, boolean columnHeader) {
         return new CopySelectionCommand(rowHeader, columnHeader);
     }
 
-    @Nonnull
+    @NonNull
     private static TableGridCommand copyRange(Range<Integer> rowRange, Range<Integer> columnRange, boolean rowHeader, boolean columnHeader) {
         return new CopyRangeCommand(rowRange, columnRange, rowHeader, columnHeader);
     }
 
-    @Nonnull
-    abstract public Table<?> toTable(@Nonnull JGrid grid);
+    @NonNull
+    abstract public Table<?> toTable(@NonNull JGrid grid);
 
     //<editor-fold defaultstate="collapsed" desc="Implementation">
     private static Table<?> copy(GridModel model, int firstRow, int firstColumn, int lastRow, int lastColumn, boolean rowHeader, boolean columnHeader) {

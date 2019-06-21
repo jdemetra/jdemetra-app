@@ -26,7 +26,7 @@ import ec.util.various.swing.OnEDT;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 
@@ -40,7 +40,7 @@ import org.openide.util.ImageUtilities;
 @ServiceDefinition(hasPosition = true)
 public interface OldDataTransferSpi extends NamedService {
 
-    @Nonnull
+    @NonNull
     DataFlavor getDataFlavor();
 
     //<editor-fold defaultstate="collapsed" desc="INamedService impl">
@@ -61,48 +61,48 @@ public interface OldDataTransferSpi extends NamedService {
 
     //<editor-fold defaultstate="collapsed" desc="Matrix struct">
     @OnEDT
-    default boolean canExportMatrix(@Nonnull Matrix matrix) {
+    default boolean canExportMatrix(@NonNull Matrix matrix) {
         return false;
     }
 
     @OnAnyThread
-    @Nonnull
-    default Object exportMatrix(@Nonnull Matrix matrix) throws IOException {
+    @NonNull
+    default Object exportMatrix(@NonNull Matrix matrix) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @OnEDT
-    default boolean canImportMatrix(@Nonnull Object obj) {
+    default boolean canImportMatrix(@NonNull Object obj) {
         return false;
     }
 
     @OnEDT
-    @Nonnull
-    default Matrix importMatrix(@Nonnull Object obj) throws IOException, ClassCastException {
+    @NonNull
+    default Matrix importMatrix(@NonNull Object obj) throws IOException, ClassCastException {
         throw new UnsupportedOperationException();
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Table struct">
     @OnEDT
-    default boolean canExportTable(@Nonnull Table<?> table) {
+    default boolean canExportTable(@NonNull Table<?> table) {
         return false;
     }
 
     @OnAnyThread
-    @Nonnull
-    default Object exportTable(@Nonnull Table<?> table) throws IOException {
+    @NonNull
+    default Object exportTable(@NonNull Table<?> table) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @OnEDT
-    default boolean canImportTable(@Nonnull Object obj) {
+    default boolean canImportTable(@NonNull Object obj) {
         return false;
     }
 
     @OnEDT
-    @Nonnull
-    default Table<?> importTable(@Nonnull Object obj) throws IOException, ClassCastException {
+    @NonNull
+    default Table<?> importTable(@NonNull Object obj) throws IOException, ClassCastException {
         throw new UnsupportedOperationException();
     }
     //</editor-fold>

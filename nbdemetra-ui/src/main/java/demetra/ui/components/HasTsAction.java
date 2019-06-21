@@ -18,8 +18,8 @@ package demetra.ui.components;
 
 import demetra.ui.beans.PropertyChangeSource;
 import internal.ui.components.HasTsActionImpl;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  *
@@ -34,8 +34,8 @@ public interface HasTsAction {
     @Nullable
     String getTsAction();
 
-    @Nonnull
-    static HasTsAction of(@Nonnull PropertyChangeSource.Broadcaster broadcaster) {
+    @NonNull
+    static HasTsAction of(PropertyChangeSource.@NonNull Broadcaster broadcaster) {
         return new HasTsActionImpl(broadcaster);
     }
 }

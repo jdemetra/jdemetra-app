@@ -36,8 +36,8 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileChooserBuilder;
@@ -67,7 +67,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
                 .setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Xml files", "xml"));
     }
 
-    @Nonnull
+    @NonNull
     public static DataSource encode(@Nullable File file) {
         if (file != null) {
             String sfile = file.getAbsolutePath();
@@ -78,7 +78,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     }
 
     @Nullable
-    public static File decode(@Nonnull DataSource source) {
+    public static File decode(@NonNull DataSource source) {
         if (!source.getProviderName().equals(NAME)) {
             return null;
         }

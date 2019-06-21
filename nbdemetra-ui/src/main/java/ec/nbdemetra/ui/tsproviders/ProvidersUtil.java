@@ -37,7 +37,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.ErrorManager;
 import org.openide.nodes.BeanNode;
 import org.openide.nodes.Node;
@@ -53,13 +53,13 @@ final class ProvidersUtil {
         // static class
     }
 
-    @Nonnull
+    @NonNull
     public static String getDataSourceDomain() {
         return DataSource.class.getName();
     }
 
-    @Nonnull
-    public static DataSource getDataSource(@Nonnull Config config) throws IllegalArgumentException {
+    @NonNull
+    public static DataSource getDataSource(@NonNull Config config) throws IllegalArgumentException {
         return config.getParam("uri")
                 .map(DataSource.uriParser()::parse)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid config"));
@@ -99,15 +99,15 @@ final class ProvidersUtil {
         return Optional.empty();
     }
 
-    @Nonnull
+    @NonNull
     static Sheet sheetOf(List<Sheet.Set> sets) {
         Sheet result = new Sheet();
         sets.forEach(result::put);
         return result;
     }
 
-    @Nonnull
-    static List<Sheet.Set> sheetSetsOfProvider(@Nonnull String providerName) {
+    @NonNull
+    static List<Sheet.Set> sheetSetsOfProvider(@NonNull String providerName) {
         Optional<IDataSourceProvider> op = TsManager.getDefault().lookup(IDataSourceProvider.class, providerName);
         if (op.isPresent()) {
             IDataSourceProvider provider = op.get();
@@ -124,8 +124,8 @@ final class ProvidersUtil {
         return Collections.emptyList();
     }
 
-    @Nonnull
-    static List<Sheet.Set> sheetSetsOfBean(@Nonnull Object bean) throws IntrospectionException {
+    @NonNull
+    static List<Sheet.Set> sheetSetsOfBean(@NonNull Object bean) throws IntrospectionException {
         List<Sheet.Set> result = new ArrayList<>();
         for (Node.PropertySet o : new BeanNode<>(bean).getPropertySets()) {
             Sheet.Set set = Sheet.createPropertiesSet();
@@ -135,8 +135,8 @@ final class ProvidersUtil {
         return result;
     }
 
-    @Nonnull
-    static List<Sheet.Set> sheetSetsOfException(@Nonnull IOException ex) {
+    @NonNull
+    static List<Sheet.Set> sheetSetsOfException(@NonNull IOException ex) {
         List<Sheet.Set> result = new ArrayList<>();
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("IOException");
 
@@ -153,13 +153,13 @@ final class ProvidersUtil {
         return result;
     }
 
-    @Nonnull
-    static List<Sheet.Set> sheetSetsOfDataSource(@Nonnull DataSource dataSource) {
+    @NonNull
+    static List<Sheet.Set> sheetSetsOfDataSource(@NonNull DataSource dataSource) {
         return sheetSetsOfDataSource(dataSource, usingErrorManager(ProvidersUtil::sheetSetsOfBean, Collections::emptyList));
     }
 
-    @Nonnull
-    static List<Sheet.Set> sheetSetsOfDataSource(@Nonnull DataSource dataSource, @Nonnull Function<Object, List<Sheet.Set>> beanFunc) {
+    @NonNull
+    static List<Sheet.Set> sheetSetsOfDataSource(@NonNull DataSource dataSource, @NonNull Function<Object, List<Sheet.Set>> beanFunc) {
         List<Sheet.Set> result = new ArrayList<>();
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("DataSource");
         b.with(String.class).select(dataSource, "getProviderName", null).display("Source").add();
@@ -176,20 +176,19 @@ final class ProvidersUtil {
         return result;
     }
 
-    @Nonnull
+    @NonNull
     static List<Sheet.Set> sheetSetsOfDataSet(DataSet dataSet) {
         return sheetSetsOfDataSet(dataSet, ProvidersUtil::sheetSetsOfDataSource, ProvidersUtil::fillParamProperties);
     }
 
-    @Nonnull
-    static void fillParamProperties(@Nonnull NodePropertySetBuilder b, @Nonnull DataSet dataSet) {
+    static void fillParamProperties(@NonNull NodePropertySetBuilder b, @NonNull DataSet dataSet) {
         dataSet.forEach((k, v) -> b.with(String.class).selectConst(k, v).add());
     }
 
-    @Nonnull
-    static List<Sheet.Set> sheetSetsOfDataSet(@Nonnull DataSet dataSet,
-            @Nonnull Function<DataSource, List<Sheet.Set>> sourceFunc,
-            @Nonnull BiConsumer<NodePropertySetBuilder, DataSet> paramFiller) {
+    @NonNull
+    static List<Sheet.Set> sheetSetsOfDataSet(@NonNull DataSet dataSet,
+            @NonNull Function<DataSource, List<Sheet.Set>> sourceFunc,
+            @NonNull BiConsumer<NodePropertySetBuilder, DataSet> paramFiller) {
         List<Sheet.Set> result = Lists.newArrayList(sourceFunc.apply(dataSet.getDataSource()));
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("DataSet");
         b.withEnum(DataSet.Kind.class).select(dataSet, "getKind", null).display("Kind").add();
@@ -204,7 +203,7 @@ final class ProvidersUtil {
         Y apply(X x) throws IntrospectionException;
     }
 
-    @Nonnull
+    @NonNull
     static <X, Y> Function<X, Y> usingErrorManager(IntrospectionFunc<X, Y> func, Supplier<Y> defaultValue) {
         return (X x) -> {
             try {

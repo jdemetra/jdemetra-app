@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui;
 
 import ec.util.various.swing.JCommand;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ActionMap;
 
 /**
@@ -26,13 +26,13 @@ import javax.swing.ActionMap;
  */
 public interface IConfigurable {
 
-    @Nonnull
+    @NonNull
     Config getConfig();
 
-    void setConfig(@Nonnull Config config) throws IllegalArgumentException;
+    void setConfig(@NonNull Config config) throws IllegalArgumentException;
 
-    @Nonnull
-    Config editConfig(@Nonnull Config config) throws IllegalArgumentException;
+    @NonNull
+    Config editConfig(@NonNull Config config) throws IllegalArgumentException;
 
     static final String CONFIGURE_ACTION = "configure";
 

@@ -20,8 +20,8 @@ import ec.nbdemetra.core.GlobalService;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.TsMoniker;
 import java.beans.BeanInfo;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.Icon;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
@@ -36,13 +36,13 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = MonikerUI.class)
 public class MonikerUI {
 
-    @Nonnull
+    @NonNull
     public static MonikerUI getDefault() {
         return Lookup.getDefault().lookup(MonikerUI.class);
     }
 
     @Nullable
-    public Icon getIcon(@Nonnull TsMoniker moniker) {
+    public Icon getIcon(@NonNull TsMoniker moniker) {
         return DataSourceProviderBuddySupport.getDefault()
                 .getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false)
                 .map(ImageUtilities::image2Icon)

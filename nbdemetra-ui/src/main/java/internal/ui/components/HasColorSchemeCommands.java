@@ -22,8 +22,8 @@ import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.ColorSchemeIcon;
 import ec.util.various.swing.JCommand;
 import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -38,18 +38,18 @@ public class HasColorSchemeCommands {
 
     public static final String DEFAULT_COLOR_SCHEME_ACTION = "defaultColorScheme";
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasColorScheme> commandOf(@Nullable ColorScheme colorScheme) {
         return new ApplyColorSchemeCommand(colorScheme);
     }
 
-    @Nonnull
-    public static Icon iconOf(@Nonnull ColorScheme colorScheme) {
+    @NonNull
+    public static Icon iconOf(@NonNull ColorScheme colorScheme) {
         return new ColorSchemeIcon(colorScheme);
     }
 
-    @Nonnull
-    public static JMenu menuOf(@Nonnull HasColorScheme component, @Nonnull Iterable<? extends ColorScheme> colorSchemes) {
+    @NonNull
+    public static JMenu menuOf(@NonNull HasColorScheme component, @NonNull Iterable<? extends ColorScheme> colorSchemes) {
         JMenu result = new JMenu("Color scheme");
         result.add(menuItemOf(component, null));
         result.addSeparator();
@@ -58,8 +58,8 @@ public class HasColorSchemeCommands {
         return result;
     }
 
-    @Nonnull
-    public static JMenuItem menuItemOf(@Nonnull HasColorScheme component, @Nullable ColorScheme colorScheme) {
+    @NonNull
+    public static JMenuItem menuItemOf(@NonNull HasColorScheme component, @Nullable ColorScheme colorScheme) {
         JMenuItem result = new JCheckBoxMenuItem(commandOf(colorScheme).toAction(component));
         if (colorScheme != null) {
             result.setText(colorScheme.getDisplayName());

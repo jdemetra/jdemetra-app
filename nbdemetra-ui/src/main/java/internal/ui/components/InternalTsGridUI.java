@@ -58,8 +58,8 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.ActionMap;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -586,7 +586,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         private Supplier<TsFeatureHelper> tsFeatures;
         private Supplier<DescriptiveStatistics> stats;
 
-        public CustomCellRenderer(@Nonnull TableCellRenderer delegate) {
+        public CustomCellRenderer(@NonNull TableCellRenderer delegate) {
             super(false);
             setHorizontalAlignment(JLabel.TRAILING);
             setOpaque(true);
@@ -600,7 +600,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
             this.stats = () -> new DescriptiveStatistics();
         }
 
-        void update(@Nonnull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars, Supplier<TsFeatureHelper> tsFeatures, Supplier<DescriptiveStatistics> stats) {
+        void update(@NonNull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars, Supplier<TsFeatureHelper> tsFeatures, Supplier<DescriptiveStatistics> stats) {
             this.valueFormatter = dataFormat.numberFormatter();
             this.colorSchemeSupport = colorSchemeSupport;
             this.showBars = showBars;
@@ -752,8 +752,8 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
             return TsGridObs.class;
         }
 
-        @Nonnull
-        public ObsIndex toObsIndex(@Nonnull CellIndex index) {
+        @NonNull
+        public ObsIndex toObsIndex(@NonNull CellIndex index) {
             if (CellIndex.NULL.equals(index)) {
                 return ObsIndex.NULL;
             }
@@ -766,8 +766,8 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
             return ObsIndex.NULL;
         }
 
-        @Nonnull
-        public CellIndex toCellIndex(@Nonnull ObsIndex index) {
+        @NonNull
+        public CellIndex toCellIndex(@NonNull ObsIndex index) {
             return transposed
                     ? CellIndex.valueOf(rowIndexer.applyAsInt(data.getColumnIndex(index)), columnIndexer.applyAsInt(data.getRowIndex(index)))
                     : CellIndex.valueOf(rowIndexer.applyAsInt(data.getRowIndex(index)), columnIndexer.applyAsInt(data.getColumnIndex(index)));

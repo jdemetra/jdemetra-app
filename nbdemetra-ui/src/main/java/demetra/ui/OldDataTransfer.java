@@ -24,8 +24,8 @@ import ec.util.various.swing.OnEDT;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.util.Lookup;
 
 /**
@@ -46,7 +46,7 @@ public interface OldDataTransfer extends PropertyChangeSource {
      *
      * @return a non-null DataTransfer
      */
-    @Nonnull
+    @NonNull
     static OldDataTransfer getDefault() {
         return Lookup.getDefault().lookup(OldDataTransfer.class);
     }
@@ -54,10 +54,10 @@ public interface OldDataTransfer extends PropertyChangeSource {
     String VALID_CLIPBOARD_PROPERTY = "validClipboard";
 
     @OnEDT
-    boolean canImport(@Nonnull DataFlavor... dataFlavors);
+    boolean canImport(@NonNull DataFlavor... dataFlavors);
 
     @OnEDT
-    boolean canImport(@Nonnull Transferable transferable);
+    boolean canImport(@NonNull Transferable transferable);
 
     /**
      * Creates a Transferable from a Matrix.
@@ -66,8 +66,8 @@ public interface OldDataTransfer extends PropertyChangeSource {
      * @return a never-null {@link Transferable}
      */
     @OnEDT
-    @Nonnull
-    Transferable fromMatrix(@Nonnull Matrix matrix);
+    @NonNull
+    Transferable fromMatrix(@NonNull Matrix matrix);
 
     /**
      * Creates a Transferable from a Table.
@@ -76,8 +76,8 @@ public interface OldDataTransfer extends PropertyChangeSource {
      * @return a never-null {@link Transferable}
      */
     @OnEDT
-    @Nonnull
-    Transferable fromTable(@Nonnull Table<?> table);
+    @NonNull
+    Transferable fromTable(@NonNull Table<?> table);
 
     /**
      * Checks if the clipboard currently contains data that can be imported.
@@ -92,7 +92,7 @@ public interface OldDataTransfer extends PropertyChangeSource {
      *
      * @return a non-null stream of INamedService
      */
-    @Nonnull
+    @NonNull
     List<? extends NamedService> getProviders();
 
     /**
@@ -103,7 +103,7 @@ public interface OldDataTransfer extends PropertyChangeSource {
      */
     @OnEDT
     @Nullable
-    Matrix toMatrix(@Nonnull Transferable transferable);
+    Matrix toMatrix(@NonNull Transferable transferable);
 
     /**
      * Retrieves a Table from a transferable.
@@ -113,5 +113,5 @@ public interface OldDataTransfer extends PropertyChangeSource {
      */
     @OnEDT
     @Nullable
-    Table<?> toTable(@Nonnull Transferable transferable);
+    Table<?> toTable(@NonNull Transferable transferable);
 }

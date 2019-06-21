@@ -23,8 +23,8 @@ import ec.util.various.swing.TextPrompt;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.Date;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -153,7 +153,7 @@ public final class DataFormatComponent2 extends JComponent {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
-    @Nonnull
+    @NonNull
     public DataFormat getDataFormat() {
         return dataFormat;
     }

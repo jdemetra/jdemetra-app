@@ -23,8 +23,8 @@ import internal.ui.components.InternalTsGridUI;
 import internal.ui.components.InternalUI;
 import java.awt.Dimension;
 import java.beans.Beans;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
@@ -214,7 +214,7 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
         firePropertyChange(SHOW_BARS_PROPERTY, old, this.showBars);
     }
 
-    @Nonnull
+    @NonNull
     public TableCellRenderer getCellRenderer() {
         return cellRenderer;
     }

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -69,8 +69,8 @@ public final class ExportAction extends AbilityAction<Exportable> implements Pre
                 .collect(Collectors.toList());
     }
 
-    @Nonnull
-    public static JMenuItem getPopupPresenter(@Nonnull List<? extends Exportable> exportables) {
+    @NonNull
+    public static JMenuItem getPopupPresenter(@NonNull List<? extends Exportable> exportables) {
         JMenu result = new JMenu();
         result.setText(Bundle.CTL_ExportAction());
         for (InterchangeBroker o : Lookup.getDefault().lookupAll(InterchangeBroker.class)) {

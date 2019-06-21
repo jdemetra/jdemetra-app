@@ -40,8 +40,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -252,7 +252,7 @@ public class JTsAnomalyGrid extends JComponent {
         return TsConverter.fromTsCollection(grid.getTsCollection());
     }
 
-    @Nonnull
+    @NonNull
     public ObsIndex getHoveredObs() {
         return grid.getHoveredObs();
     }

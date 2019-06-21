@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui.tssave;
 
 import ec.tss.TsCollection;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -30,6 +30,6 @@ public interface ITsSavable {
      * @return a non-null collection
      * @since 2.2.0
      */
-    @Nonnull
+    @NonNull
     TsCollection getTsCollection();
 }

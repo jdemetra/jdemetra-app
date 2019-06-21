@@ -22,7 +22,7 @@ import java.awt.datatransfer.Transferable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -35,26 +35,26 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = DataSourceTransferSupport.class)
 public class DataSourceTransferSupport {
 
-    @Nonnull
+    @NonNull
     public static DataSourceTransferSupport getDefault() {
         return Lookup.getDefault().lookup(DataSourceTransferSupport.class);
     }
 
-    @Nonnull
+    @NonNull
     public Stream<? extends DataSourceTransferHandler> all() {
         return Lookup.getDefault().lookupAll(DataSourceTransferHandler.class).stream().filter(Objects::nonNull);
     }
 
-    public boolean canHandle(@Nonnull Transferable t) {
+    public boolean canHandle(@NonNull Transferable t) {
         return all().anyMatch(o -> o.canHandle(t));
     }
 
-    public boolean canHandle(@Nonnull Transferable t, @Nonnull String providerName) {
+    public boolean canHandle(@NonNull Transferable t, @NonNull String providerName) {
         return all().anyMatch(o -> o.canHandle(t, providerName));
     }
 
-    @Nonnull
-    public Optional<DataSource> getDataSource(@Nonnull Transferable t) {
+    @NonNull
+    public Optional<DataSource> getDataSource(@NonNull Transferable t) {
         return all()
                 .filter(o -> o.canHandle(t))
                 .map(o -> o.getDataSource(t))
@@ -63,8 +63,8 @@ public class DataSourceTransferSupport {
                 .findFirst();
     }
 
-    @Nonnull
-    public Optional<DataSource> getDataSource(@Nonnull Transferable t, @Nonnull String providerName) {
+    @NonNull
+    public Optional<DataSource> getDataSource(@NonNull Transferable t, @NonNull String providerName) {
         return all()
                 .filter(o -> o.canHandle(t, providerName))
                 .map(o -> o.getDataSource(t, providerName))

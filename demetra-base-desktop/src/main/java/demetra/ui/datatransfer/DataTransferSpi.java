@@ -22,7 +22,7 @@ import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
 import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import demetra.ui.NamedService;
 
 /**
@@ -35,20 +35,20 @@ import demetra.ui.NamedService;
 @ServiceDefinition(hasPosition = true)
 public interface DataTransferSpi extends NamedService {
 
-    @Nonnull
+    @NonNull
     DataFlavor getDataFlavor();
 
     @OnEDT
-    boolean canExportTsCollection(@Nonnull TsCollection col);
+    boolean canExportTsCollection(@NonNull TsCollection col);
 
     @OnAnyThread
-    @Nonnull
-    Object exportTsCollection(@Nonnull TsCollection col) throws IOException;
+    @NonNull
+    Object exportTsCollection(@NonNull TsCollection col) throws IOException;
 
     @OnEDT
-    boolean canImportTsCollection(@Nonnull Object obj);
+    boolean canImportTsCollection(@NonNull Object obj);
 
     @OnEDT
-    @Nonnull
-    TsCollection importTsCollection(@Nonnull Object obj) throws IOException, ClassCastException;
+    @NonNull
+    TsCollection importTsCollection(@NonNull Object obj) throws IOException, ClassCastException;
 }

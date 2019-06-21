@@ -7,8 +7,8 @@ package ec.ui.view.tsprocessing;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.design.ServiceDefinition;
 import ec.tstoolkit.utilities.Id;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -20,14 +20,14 @@ import javax.swing.JComponent;
 @ServiceDefinition(hasPosition = true)
 public abstract class ProcDocumentItemFactory {
 
-    @Nonnull
+    @NonNull
     abstract public Class<? extends IProcDocument> getDocumentType();
 
-    @Nonnull
+    @NonNull
     abstract public Id getItemId();
 
-    @Nonnull
-    abstract public JComponent getView(@Nonnull IProcDocumentView<? extends IProcDocument> host, @Nonnull IProcDocument doc) throws IllegalArgumentException;
+    @NonNull
+    abstract public JComponent getView(@NonNull IProcDocumentView<? extends IProcDocument> host, @NonNull IProcDocument doc) throws IllegalArgumentException;
 
     @Nullable
     public Icon getIcon() {

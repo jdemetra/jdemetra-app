@@ -18,7 +18,7 @@ package demetra.ui.components;
 
 import java.util.Optional;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ActionMap;
 
 /**
@@ -31,8 +31,8 @@ public interface PrintableWithPreview {
 
     void printWithPreview();
 
-    @Nonnull
-    static PrintableWithPreview of(@Nonnull Supplier<? extends ActionMap> actionMap) {
+    @NonNull
+    static PrintableWithPreview of(@NonNull Supplier<? extends ActionMap> actionMap) {
         return () -> Optional.ofNullable(actionMap.get().get(PRINT_ACTION)).ifPresent(o -> o.actionPerformed(null));
     }
 }

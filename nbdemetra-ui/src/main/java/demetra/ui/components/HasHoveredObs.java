@@ -19,8 +19,8 @@ package demetra.ui.components;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.util.chart.ObsIndex;
 import internal.ui.components.HasHoveredObsImpl;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  *
@@ -30,13 +30,13 @@ public interface HasHoveredObs {
 
     static final String HOVERED_OBS_PROPERTY = "hoveredObs";
 
-    @Nonnull
+    @NonNull
     ObsIndex getHoveredObs();
 
     void setHoveredObs(@Nullable ObsIndex hoveredObs);
 
-    @Nonnull
-    static HasHoveredObs of(@Nonnull PropertyChangeSource.Broadcaster broadcaster) {
+    @NonNull
+    static HasHoveredObs of(PropertyChangeSource.@NonNull Broadcaster broadcaster) {
         return new HasHoveredObsImpl(broadcaster);
     }
 }

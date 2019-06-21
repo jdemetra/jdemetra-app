@@ -19,8 +19,8 @@ package internal.ui.components;
 import demetra.ui.components.TsGridObs;
 import ec.util.chart.ObsIndex;
 import java.util.List;
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -28,26 +28,26 @@ import javax.annotation.Nonnull;
  */
 interface TsGridData {
 
-    @Nonnegative
+    @NonNegative
     int getColumnCount();
 
-    @Nonnull
+    @NonNull
     String getColumnName(int j);
 
-    @Nonnegative
+    @NonNegative
     int getRowCount();
 
-    @Nonnull
+    @NonNull
     String getRowName(int i);
 
-    @Nonnull
+    @NonNull
     TsGridObs getObs(int i, int j);
 
-    int getRowIndex(@Nonnull ObsIndex index);
+    int getRowIndex(@NonNull ObsIndex index);
 
-    int getColumnIndex(@Nonnull ObsIndex index);
+    int getColumnIndex(@NonNull ObsIndex index);
 
-    @Nonnull
+    @NonNull
     static TsGridData create(List<demetra.tsprovider.Ts> col, int singleSeriesIndex) {
         if (col.isEmpty() || (singleSeriesIndex != -1 && col.get(singleSeriesIndex).getData().isEmpty())) {
             return Empty.INSTANCE;
