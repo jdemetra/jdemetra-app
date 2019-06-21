@@ -26,8 +26,8 @@ import ec.util.various.swing.JCommand;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -45,12 +45,12 @@ public class HasObsFormatCommands {
 
     public static final String FORMAT_ACTION = "format";
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasObsFormat> applyDataFormat(@Nullable DataFormat dataFormat) {
         return new ApplyDataFormatCommand(dataFormat);
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasObsFormat> editDataFormat() {
         return EditDataFormatCommand.INSTANCE;
     }

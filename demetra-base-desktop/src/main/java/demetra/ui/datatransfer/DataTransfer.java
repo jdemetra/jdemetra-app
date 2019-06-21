@@ -46,7 +46,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.Lookup;
 
 /**
@@ -67,7 +67,7 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
      *
      * @return a non-null DataTransfer
      */
-    @Nonnull
+    @NonNull
     public static DataTransfer getDefault() {
         return INSTANCE;
     }
@@ -105,13 +105,13 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
     }
 
     @OnEDT
-    public boolean canImport(@Nonnull DataFlavor... dataFlavors) {
+    public boolean canImport(@NonNull DataFlavor... dataFlavors) {
         // multiFlavor means "maybe", not "yes"
         return DataTransfers.isMultiFlavor(dataFlavors) || lookupAll().anyMatch(onDataFlavors(dataFlavors));
     }
 
     @OnEDT
-    public boolean canImport(@Nonnull Transferable transferable) {
+    public boolean canImport(@NonNull Transferable transferable) {
         Set<DataFlavor> dataFlavors = DataTransfers.getMultiDataFlavors(transferable).collect(Collectors.toSet());
         return lookupAll().anyMatch(onDataFlavors(dataFlavors));
     }
@@ -123,8 +123,8 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
      * @return a never-null {@link Transferable}
      */
     @OnEDT
-    @Nonnull
-    public Transferable fromTs(@Nonnull Ts ts) {
+    @NonNull
+    public Transferable fromTs(@NonNull Ts ts) {
         requireNonNull(ts);
         return fromTsCollection(TsCollection.of(ts));
     }
@@ -136,8 +136,8 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
      * @return a never-null {@link Transferable}
      */
     @OnEDT
-    @Nonnull
-    public Transferable fromTsCollection(@Nonnull TsCollection col) {
+    @NonNull
+    public Transferable fromTsCollection(@NonNull TsCollection col) {
         requireNonNull(col);
         return asTransferable(col, lookupAll(), TsCollectionHelper.INSTANCE);
     }
@@ -149,8 +149,8 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
      * @return a never-null {@link Transferable}
      */
     @OnEDT
-    @Nonnull
-    public Transferable fromTsData(@Nonnull TsData data) {
+    @NonNull
+    public Transferable fromTsData(@NonNull TsData data) {
         requireNonNull(data);
         return fromTs(Ts.builder().data(data).build());
     }
@@ -162,7 +162,7 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
      * @param transferable
      * @return
      */
-    public boolean isTssTransferable(@Nonnull Transferable transferable) {
+    public boolean isTssTransferable(@NonNull Transferable transferable) {
         return transferable.isDataFlavorSupported(LocalObjectDataTransfer.DATA_FLAVOR);
     }
 
@@ -187,8 +187,8 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
      * @return an optional {@link Ts}
      */
     @OnEDT
-    @Nonnull
-    public Optional<Ts> toTs(@Nonnull Transferable transferable) {
+    @NonNull
+    public Optional<Ts> toTs(@NonNull Transferable transferable) {
         return toTsCollection(transferable)
                 .map(TsCollection::getData)
                 .filter(o -> !o.isEmpty())
@@ -207,8 +207,8 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
      * @return an optional {@link TsCollection}
      */
     @OnEDT
-    @Nonnull
-    public Optional<TsCollection> toTsCollection(@Nonnull Transferable transferable) {
+    @NonNull
+    public Optional<TsCollection> toTsCollection(@NonNull Transferable transferable) {
         requireNonNull(transferable);
         return lookupAll()
                 .filter(onDataFlavors(transferable.getTransferDataFlavors()))
@@ -218,8 +218,8 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
     }
 
     @OnEDT
-    @Nonnull
-    public Stream<TsCollection> toTsCollectionStream(@Nonnull Transferable transferable) {
+    @NonNull
+    public Stream<TsCollection> toTsCollectionStream(@NonNull Transferable transferable) {
         return DataTransfers.getMultiTransferables(transferable)
                 .map(this::toTsCollection)
                 .filter(Optional::isPresent)
@@ -233,8 +233,8 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
      * @return an optional {@link TsData}
      */
     @OnEDT
-    @Nonnull
-    public Optional<TsData> toTsData(@Nonnull Transferable transferable) {
+    @NonNull
+    public Optional<TsData> toTsData(@NonNull Transferable transferable) {
         return toTs(transferable)
                 .map(ts -> Magic.load(ts, TsInformationType.Data).getData());
     }

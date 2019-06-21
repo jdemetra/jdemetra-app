@@ -23,7 +23,7 @@ import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.explorer.ExplorerManager;
@@ -41,7 +41,7 @@ import demetra.ui.actions.Resetable;
  */
 public class NamedServiceNode extends AbstractNode {
 
-    public NamedServiceNode(@Nonnull NamedService namedService) {
+    public NamedServiceNode(@NonNull NamedService namedService) {
         this(namedService, new InstanceContent());
     }
 

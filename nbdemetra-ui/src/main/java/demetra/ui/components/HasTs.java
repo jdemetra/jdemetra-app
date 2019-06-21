@@ -20,8 +20,8 @@ import demetra.tsprovider.Ts;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import internal.ui.components.HasTsImpl;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  *
@@ -36,8 +36,8 @@ public interface HasTs {
 
     void setTs(@Nullable Ts ts);
 
-    @Nonnull
-    static HasTs of(@Nonnull PropertyChangeSource.Broadcaster broadcaster, @Nonnull TsManager manager) {
+    @NonNull
+    static HasTs of(PropertyChangeSource.@NonNull Broadcaster broadcaster, @NonNull TsManager manager) {
         return new HasTsImpl(broadcaster).register(manager);
     }
 }

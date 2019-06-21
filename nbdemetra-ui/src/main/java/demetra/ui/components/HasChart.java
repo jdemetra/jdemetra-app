@@ -2,8 +2,8 @@ package demetra.ui.components;
 
 import demetra.ui.beans.PropertyChangeSource;
 import internal.ui.components.HasChartImpl;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface HasChart {
 
@@ -34,7 +34,7 @@ public interface HasChart {
 
     static final String LINES_THICKNESS_PROPERTY = "linesThickness";
 
-    @Nonnull
+    @NonNull
     LinesThickness getLinesThickness();
 
     void setLinesThickness(@Nullable LinesThickness linesThickness);
@@ -44,8 +44,8 @@ public interface HasChart {
         Thin, Thick
     }
 
-    @Nonnull
-    static HasChart of(@Nonnull PropertyChangeSource.Broadcaster broadcaster) {
+    @NonNull
+    static HasChart of(PropertyChangeSource.@NonNull Broadcaster broadcaster) {
         return new HasChartImpl(broadcaster);
     }
 }

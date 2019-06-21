@@ -24,7 +24,7 @@ import ec.tstoolkit.utilities.InformationExtractor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.concurrent.ExecutionException;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -54,7 +54,7 @@ public class ComposedProcDocumentItemFactory<D extends IProcDocument, I> extends
      * @param informationExtractor
      * @param itemUI
      */
-    public ComposedProcDocumentItemFactory(@Nonnull Class<D> documentType, @Nonnull Id itemId, @Nonnull InformationExtractor<? super D, I> informationExtractor, @Nonnull ItemUI<? extends IProcDocumentView<D>, I> itemUI) {
+    public ComposedProcDocumentItemFactory(@NonNull Class<D> documentType, @NonNull Id itemId, @NonNull InformationExtractor<? super D, I> informationExtractor, @NonNull ItemUI<? extends IProcDocumentView<D>, I> itemUI) {
         this.documentType = Preconditions.checkNotNull(documentType, "documentType");
         this.itemId = Preconditions.checkNotNull(itemId, "itemId");
         this.informationExtractor = Preconditions.checkNotNull(informationExtractor, "informationExtractor");
@@ -90,12 +90,12 @@ public class ComposedProcDocumentItemFactory<D extends IProcDocument, I> extends
         return async ? new AsyncView(host, source) : itemUI.getView(host, info);
     }
 
-    @Nonnull
+    @NonNull
     public InformationExtractor<? super D, ?> getInformationExtractor() {
         return informationExtractor;
     }
 
-    @Nonnull
+    @NonNull
     public ItemUI getItemUI() {
         return itemUI;
     }

@@ -20,7 +20,7 @@ import demetra.ui.properties.PropertySheetDialogBuilder;
 import com.google.common.base.Converter;
 import demetra.ui.properties.IBeanEditor;
 import java.beans.IntrospectionException;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.Exceptions;
 
 /**
@@ -31,18 +31,18 @@ import org.openide.util.Exceptions;
  */
 public abstract class BeanHandler<B, R> {
 
-    @Nonnull
-    public abstract B loadBean(@Nonnull R resource);
+    @NonNull
+    public abstract B loadBean(@NonNull R resource);
 
-    public abstract void storeBean(@Nonnull R resource, @Nonnull B bean);
+    public abstract void storeBean(@NonNull R resource, @NonNull B bean);
 
-    @Nonnull
-    public Configurator<R> toConfigurator(@Nonnull Converter<B, Config> converter) {
+    @NonNull
+    public Configurator<R> toConfigurator(@NonNull Converter<B, Config> converter) {
         return new ConfiguratorImpl(this, converter, DEFAULT_EDITOR);
     }
 
-    @Nonnull
-    public Configurator<R> toConfigurator(@Nonnull Converter<B, Config> converter, @Nonnull IBeanEditor editor) {
+    @NonNull
+    public Configurator<R> toConfigurator(@NonNull Converter<B, Config> converter, @NonNull IBeanEditor editor) {
         return new ConfiguratorImpl(this, converter, editor);
     }
 

@@ -22,8 +22,8 @@ import demetra.tsprovider.TsMeta;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import lombok.AccessLevel;
 
 /**
@@ -43,8 +43,8 @@ public final class TsFeatureHelper {
 
     public static final TsFeatureHelper EMPTY = of(Collections.emptyList());
 
-    @Nonnull
-    public static TsFeatureHelper of(@Nonnull List<Ts> list) {
+    @NonNull
+    public static TsFeatureHelper of(@NonNull List<Ts> list) {
         int[] begIndexes = new int[list.size()];
         int[] endIndexes = new int[list.size()];
         for (int i = 0; i < list.size(); i++) {
@@ -58,7 +58,7 @@ public final class TsFeatureHelper {
     private final int[] begIndexes;
     private final int[] endIndexes;
 
-    public boolean hasFeature(@Nonnull Feature feature, @Nonnegative int series, @Nonnegative int obs) {
+    public boolean hasFeature(@NonNull Feature feature, @NonNegative int series, @NonNegative int obs) {
         switch (feature) {
             case Backcasts:
                 return obs < begIndexes[series];

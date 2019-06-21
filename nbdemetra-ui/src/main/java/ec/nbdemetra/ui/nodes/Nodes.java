@@ -19,7 +19,7 @@ package ec.nbdemetra.ui.nodes;
 import ec.tstoolkit.utilities.Trees;
 import java.util.Arrays;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.Action;
 import org.openide.nodes.Node;
 import org.openide.util.Utilities;
@@ -32,25 +32,25 @@ import org.openide.util.Utilities;
 @lombok.experimental.UtilityClass
 public class Nodes {
 
-    @Nonnull
-    public Action[] actionsForPath(@Nonnull String path) {
+    @NonNull
+    public Action[] actionsForPath(@NonNull String path) {
         return Utilities.actionsForPath(path).stream().toArray(Action[]::new);
     }
 
-    @Nonnull
-    public Stream<Node> childrenStream(@Nonnull Node root) {
+    @NonNull
+    public Stream<Node> childrenStream(@NonNull Node root) {
         return !root.isLeaf()
                 ? Arrays.stream(root.getChildren().getNodes())
                 : Stream.empty();
     }
 
-    @Nonnull
-    public Stream<Node> breadthFirstStream(@Nonnull Node root) {
+    @NonNull
+    public Stream<Node> breadthFirstStream(@NonNull Node root) {
         return Trees.breadthFirstStream(root, Nodes::childrenStream);
     }
 
-    @Nonnull
-    public Stream<Node> depthFirstStream(@Nonnull Node root) {
+    @NonNull
+    public Stream<Node> depthFirstStream(@NonNull Node root) {
         return Trees.depthFirstStream(root, Nodes::childrenStream);
     }
 }

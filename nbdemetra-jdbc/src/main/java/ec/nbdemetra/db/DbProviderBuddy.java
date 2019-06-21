@@ -35,7 +35,7 @@ import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
@@ -95,8 +95,8 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
     @NbBundle.Messages({
         "bean.dbName.display=Data source name",
         "bean.dbName.description=Data structure describing the connection to the database."})
-    @Nonnull
-    protected NodePropertySetBuilder withDbName(@Nonnull NodePropertySetBuilder b, @Nonnull BEAN bean) {
+    @NonNull
+    protected NodePropertySetBuilder withDbName(@NonNull NodePropertySetBuilder b, @NonNull BEAN bean) {
         return b.withAutoCompletion()
                 .select(bean, "dbName")
                 .source(getDbSource(bean))
@@ -109,8 +109,8 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
     @NbBundle.Messages({
         "bean.file.display=Database file",
         "bean.file.description=The path to the database file."})
-    @Nonnull
-    protected NodePropertySetBuilder withFileName(@Nonnull NodePropertySetBuilder b, @Nonnull BEAN bean) {
+    @NonNull
+    protected NodePropertySetBuilder withFileName(@NonNull NodePropertySetBuilder b, @NonNull BEAN bean) {
         return TsManager.getDefault()
                 .lookup(IFileLoader.class, getProviderName())
                 .map(o -> b.withFile()
@@ -135,8 +135,8 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
         "bean.valueColumn.description=A column name that defines the value of an observation.",
         "bean.versionColumn.display=Version column",
         "bean.versionColumn.description=An optional column name that defines the version of an observation.",})
-    @Nonnull
-    protected NodePropertySetBuilder withSource(@Nonnull NodePropertySetBuilder b, @Nonnull BEAN bean) {
+    @NonNull
+    protected NodePropertySetBuilder withSource(@NonNull NodePropertySetBuilder b, @NonNull BEAN bean) {
         AutoCompletionSource columns = getColumnSource(bean);
         ListCellRenderer columnCellRenderer = getColumnRenderer(bean);
 
@@ -192,8 +192,8 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
         "bean.frequency.description=The frequency of the observations in the table. An undefined frequency allows the provider to guess it.",
         "bean.aggregationType.display=Aggregation type",
         "bean.aggregationType.description=The aggregation method to use when a frequency is defined."})
-    @Nonnull
-    protected NodePropertySetBuilder withOptions(@Nonnull NodePropertySetBuilder b, @Nonnull BEAN bean) {
+    @NonNull
+    protected NodePropertySetBuilder withOptions(@NonNull NodePropertySetBuilder b, @NonNull BEAN bean) {
         b.with(DataFormat.class)
                 .select(bean, "dataFormat")
                 .display(Bundle.bean_dataFormat_display())
@@ -217,8 +217,8 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
         "bean.cacheDepth.description=The data retrieval depth. It is always more performant to get one big chunk of data instead of several smaller parts. The downside of it is the increase of memory usage. Setting this value to zero disables the cache.",
         "bean.cacheTtl.display=Time to live",
         "bean.cacheTtl.description=The lifetime of the data stored in the cache. Setting this value to zero disables the cache."})
-    @Nonnull
-    protected NodePropertySetBuilder withCache(@Nonnull NodePropertySetBuilder b, @Nonnull BEAN bean) {
+    @NonNull
+    protected NodePropertySetBuilder withCache(@NonNull NodePropertySetBuilder b, @NonNull BEAN bean) {
         b.withInt()
                 .select(bean, "cacheDepth")
                 .display(Bundle.bean_cacheDepth_display())
@@ -246,8 +246,8 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
      * @see DbBean
      * @see JAutoCompletion#setSource(ec.util.completion.AutoCompletionSource)
      */
-    @Nonnull
-    protected AutoCompletionSource getDbSource(@Nonnull BEAN bean) {
+    @NonNull
+    protected AutoCompletionSource getDbSource(@NonNull BEAN bean) {
         return AutoCompletionSources.empty();
     }
 
@@ -263,8 +263,8 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
      * @see DbBean
      * @see JAutoCompletion#setSource(ec.util.completion.AutoCompletionSource)
      */
-    @Nonnull
-    protected AutoCompletionSource getTableSource(@Nonnull BEAN bean) {
+    @NonNull
+    protected AutoCompletionSource getTableSource(@NonNull BEAN bean) {
         return AutoCompletionSources.empty();
     }
 
@@ -280,8 +280,8 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
      * @see DbBean
      * @see JAutoCompletion#setSource(ec.util.completion.AutoCompletionSource)
      */
-    @Nonnull
-    protected AutoCompletionSource getColumnSource(@Nonnull BEAN bean) {
+    @NonNull
+    protected AutoCompletionSource getColumnSource(@NonNull BEAN bean) {
         return AutoCompletionSources.empty();
     }
 
@@ -297,8 +297,8 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
      * @see DbBean
      * @see JList#setCellRenderer(javax.swing.ListCellRenderer)
      */
-    @Nonnull
-    protected ListCellRenderer getDbRenderer(@Nonnull BEAN bean) {
+    @NonNull
+    protected ListCellRenderer getDbRenderer(@NonNull BEAN bean) {
         return new DefaultListCellRenderer();
     }
 
@@ -314,8 +314,8 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
      * @see DbBean
      * @see JList#setCellRenderer(javax.swing.ListCellRenderer)
      */
-    @Nonnull
-    protected ListCellRenderer getTableRenderer(@Nonnull BEAN bean) {
+    @NonNull
+    protected ListCellRenderer getTableRenderer(@NonNull BEAN bean) {
         return new DefaultListCellRenderer();
     }
 
@@ -331,8 +331,8 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
      * @see DbBean
      * @see JList#setCellRenderer(javax.swing.ListCellRenderer)
      */
-    @Nonnull
-    protected ListCellRenderer getColumnRenderer(@Nonnull BEAN bean) {
+    @NonNull
+    protected ListCellRenderer getColumnRenderer(@NonNull BEAN bean) {
         return new DefaultListCellRenderer();
     }
 }

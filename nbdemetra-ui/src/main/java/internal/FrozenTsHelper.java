@@ -26,8 +26,8 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  *
@@ -39,22 +39,22 @@ public final class FrozenTsHelper {
         // static class
     }
 
-    public static boolean isFrozen(@Nonnull demetra.tsprovider.Ts ts) {
+    public static boolean isFrozen(demetra.tsprovider.@NonNull Ts ts) {
         return TsConverter.fromTs(ts).isFrozen();
     }
 
     @Nullable
-    public static LocalDateTime getTimestamp(@Nonnull demetra.tsprovider.Ts ts) {
+    public static LocalDateTime getTimestamp(demetra.tsprovider.@NonNull Ts ts) {
         return getTimestamp(TsConverter.fromTs(ts));
     }
 
     @Nullable
-    public static TsMoniker getOriginalMoniker(@Nonnull demetra.tsprovider.TsMoniker moniker) {
+    public static TsMoniker getOriginalMoniker(demetra.tsprovider.@NonNull TsMoniker moniker) {
         return getOriginalMoniker(TsConverter.fromTsMoniker(moniker));
     }
 
     @Nullable
-    public static String getSource(@Nonnull Ts ts) {
+    public static String getSource(@NonNull Ts ts) {
         String source = ts.getMoniker().getSource();
         if (source != null) {
             return source;
@@ -67,25 +67,25 @@ public final class FrozenTsHelper {
     }
 
     @Nullable
-    private static String getSource(@Nonnull MetaData md) {
+    private static String getSource(@NonNull MetaData md) {
         String result = TsMeta.SOURCE.load(md);
         return result != null ? result : TsMeta.SOURCE_OLD.load(md);
     }
 
     @Nullable
-    private static String getId(@Nonnull MetaData md) {
+    private static String getId(@NonNull MetaData md) {
         String result = TsMeta.ID.load(md);
         return result != null ? result : TsMeta.ID_OLD.load(md);
     }
 
     @Nullable
-    public static LocalDateTime getTimestamp(@Nonnull Ts ts) {
+    public static LocalDateTime getTimestamp(@NonNull Ts ts) {
         MetaData md = ts.getMetaData();
         return md != null ? TsMeta.TIMESTAMP.load(md) : null;
     }
 
     @Nullable
-    public static TsMoniker getOriginalMoniker(@Nonnull TsMoniker moniker) {
+    public static TsMoniker getOriginalMoniker(@NonNull TsMoniker moniker) {
         if (!moniker.isAnonymous()) {
             return moniker;
         }

@@ -26,8 +26,8 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.nodes.Sheet;
 
 /**
@@ -38,7 +38,7 @@ import org.openide.nodes.Sheet;
 @ServiceDefinition
 public interface IDataSourceProviderBuddy {
 
-    @Nonnull
+    @NonNull
     String getProviderName();
 
     @Nullable
@@ -47,50 +47,50 @@ public interface IDataSourceProviderBuddy {
     }
 
     @Nullable
-    default Image getIcon(@Nonnull DataSource dataSource, int type, boolean opened) {
+    default Image getIcon(@NonNull DataSource dataSource, int type, boolean opened) {
         return getIcon(type, opened);
     }
 
     @Nullable
-    default Image getIcon(@Nonnull DataSet dataSet, int type, boolean opened) {
+    default Image getIcon(@NonNull DataSet dataSet, int type, boolean opened) {
         return getIcon(dataSet.getDataSource(), type, opened);
     }
 
     @Nullable
-    default Image getIcon(@Nonnull IOException ex, int type, boolean opened) {
+    default Image getIcon(@NonNull IOException ex, int type, boolean opened) {
         return null;
     }
 
     @Nullable
-    default Image getIcon(@Nonnull TsMoniker moniker, int type, boolean opened) {
+    default Image getIcon(@NonNull TsMoniker moniker, int type, boolean opened) {
         return getIcon(type, opened);
     }
 
-    @Nonnull
+    @NonNull
     default Sheet createSheet() {
         List<Sheet.Set> result = ProvidersUtil.sheetSetsOfProvider(getProviderName());
         return ProvidersUtil.sheetOf(result);
     }
 
-    @Nonnull
-    default Sheet createSheet(@Nonnull DataSource dataSource) {
+    @NonNull
+    default Sheet createSheet(@NonNull DataSource dataSource) {
         List<Sheet.Set> result = ProvidersUtil.sheetSetsOfDataSource(dataSource);
         return ProvidersUtil.sheetOf(result);
     }
 
-    @Nonnull
-    default Sheet createSheet(@Nonnull DataSet dataSet) {
+    @NonNull
+    default Sheet createSheet(@NonNull DataSet dataSet) {
         List<Sheet.Set> result = ProvidersUtil.sheetSetsOfDataSet(dataSet);
         return ProvidersUtil.sheetOf(result);
     }
 
-    @Nonnull
-    default Sheet createSheet(@Nonnull IOException ex) {
+    @NonNull
+    default Sheet createSheet(@NonNull IOException ex) {
         List<Sheet.Set> result = ProvidersUtil.sheetSetsOfException(ex);
         return ProvidersUtil.sheetOf(result);
     }
 
-    default boolean editBean(@Nonnull String title, @Nonnull Object bean) throws IntrospectionException {
+    default boolean editBean(@NonNull String title, @NonNull Object bean) throws IntrospectionException {
         return new PropertySheetDialogBuilder()
                 .title(title)
                 .icon(getIcon(BeanInfo.ICON_COLOR_16x16, false))

@@ -38,7 +38,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ListCellRenderer;
 
 /**
@@ -51,7 +51,7 @@ public abstract class JdbcProviderBuddy<BEAN extends JdbcBean> extends DbProvide
 
     protected final ConnectionSupplier supplier;
 
-    public JdbcProviderBuddy(@Nonnull ConnectionSupplier supplier) {
+    public JdbcProviderBuddy(@NonNull ConnectionSupplier supplier) {
         this.supplier = supplier;
     }
 

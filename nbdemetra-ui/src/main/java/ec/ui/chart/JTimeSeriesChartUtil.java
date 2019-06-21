@@ -25,7 +25,7 @@ import static ec.util.chart.swing.JTimeSeriesChartCommand.printImage;
 import static ec.util.chart.swing.JTimeSeriesChartCommand.saveImage;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import java.awt.Color;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JMenu;
 
 /**
@@ -38,11 +38,11 @@ public final class JTimeSeriesChartUtil {
         // static class
     }
 
-    public static void setColorScheme(@Nonnull JTimeSeriesChart chart, @Nonnull ColorScheme colorScheme) {
+    public static void setColorScheme(@NonNull JTimeSeriesChart chart, @NonNull ColorScheme colorScheme) {
         chart.setColorSchemeSupport(SwingColorSchemeSupport.from(colorScheme));
     }
 
-    public static void setDataFormat(@Nonnull JTimeSeriesChart chart, @Nonnull DataFormat dataFormat) {
+    public static void setDataFormat(@NonNull JTimeSeriesChart chart, @NonNull DataFormat dataFormat) {
         try {
             chart.setPeriodFormat(dataFormat.newDateFormat());
         } catch (IllegalArgumentException ex) {
@@ -55,7 +55,7 @@ public final class JTimeSeriesChartUtil {
         }
     }
 
-    public static void setSeriesColorist(final @Nonnull JTimeSeriesChart chart, final @Nonnull SeriesFunction<ColorScheme.KnownColor> colorist) {
+    public static void setSeriesColorist(final @NonNull JTimeSeriesChart chart, final @NonNull SeriesFunction<ColorScheme.KnownColor> colorist) {
         chart.setSeriesColorist(new SeriesFunction<Color>() {
             @Override
             public Color apply(int series) {
@@ -65,8 +65,8 @@ public final class JTimeSeriesChartUtil {
         });
     }
 
-    @Nonnull
-    public static JMenu newExportImageMenu(@Nonnull JTimeSeriesChart chart) {
+    @NonNull
+    public static JMenu newExportImageMenu(@NonNull JTimeSeriesChart chart) {
         JMenu result = new JMenu("Export image to");
         result.add(printImage().toAction(chart)).setText("Printer...");
         result.add(copyImage().toAction(chart)).setText("Clipboard");
@@ -74,8 +74,7 @@ public final class JTimeSeriesChartUtil {
         return result;
     }
 
-    @Nonnull
-    public static void printWithPreview(@Nonnull JTimeSeriesChart chart) {
+    public static void printWithPreview(@NonNull JTimeSeriesChart chart) {
         chart.printImage();
     }
 }

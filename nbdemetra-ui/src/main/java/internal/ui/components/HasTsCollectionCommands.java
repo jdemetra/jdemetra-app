@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -98,14 +98,14 @@ public class HasTsCollectionCommands {
 
     public static final String COPY_ALL_ACTION = "copyAll";
 
-    @Nonnull
+    @NonNull
     static JCommand<HasTsCollection> copyAll() {
         return HasTsCollectionCommands.CopyAllCommand.INSTANCE;
     }
 
     public static final String RENAME_ACTION = "rename";
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasTsCollection> rename() {
         return HasTsCollectionCommands.RenameCommand.INSTANCE;
     }
@@ -120,7 +120,7 @@ public class HasTsCollectionCommands {
 
     public static final String OPEN_ACTION = "open";
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasTsCollection> open() {
         return HasTsCollectionCommands.OpenCommand.INSTANCE;
     }
@@ -135,8 +135,8 @@ public class HasTsCollectionCommands {
         return result;
     }
 
-    @Nonnull
-    public static JCommand<HasTsCollection> openWith(@Nonnull String tsAction) {
+    @NonNull
+    public static JCommand<HasTsCollection> openWith(@NonNull String tsAction) {
         return new HasTsCollectionCommands.OpenWithCommand(tsAction);
     }
 
@@ -160,8 +160,8 @@ public class HasTsCollectionCommands {
         return result;
     }
 
-    @Nonnull
-    public static JCommand<HasTsCollection> save(@Nonnull ITsSave tsSave) {
+    @NonNull
+    public static JCommand<HasTsCollection> save(@NonNull ITsSave tsSave) {
         return new HasTsCollectionCommands.SaveCommand(tsSave);
     }
 
@@ -184,7 +184,7 @@ public class HasTsCollectionCommands {
 
     public static final String COPY_ACTION = "copy";
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasTsCollection> copy() {
         return HasTsCollectionCommands.CopyCommand.INSTANCE;
     }
@@ -200,7 +200,7 @@ public class HasTsCollectionCommands {
 
     public static final String PASTE_ACTION = "paste";
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasTsCollection> paste() {
         return HasTsCollectionCommands.PasteCommand.INSTANCE;
     }
@@ -216,7 +216,7 @@ public class HasTsCollectionCommands {
 
     public static final String DELETE_ACTION = "delete";
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasTsCollection> delete() {
         return HasTsCollectionCommands.DeleteCommand.INSTANCE;
     }
@@ -232,7 +232,7 @@ public class HasTsCollectionCommands {
 
     public static final String CLEAR_ACTION = "clear";
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasTsCollection> clear() {
         return HasTsCollectionCommands.ClearCommand.INSTANCE;
     }
@@ -247,7 +247,7 @@ public class HasTsCollectionCommands {
 
     public static final String SELECT_ALL_ACTION = "selectAll";
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasTsCollection> selectAll() {
         return HasTsCollectionCommands.SelectAllCommand.INSTANCE;
     }
@@ -262,7 +262,7 @@ public class HasTsCollectionCommands {
 
     public static final String FREEZE_ACTION = "freeze";
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasTsCollection> freeze() {
         return HasTsCollectionCommands.FreezeCommand.INSTANCE;
     }
@@ -440,7 +440,7 @@ public class HasTsCollectionCommands {
 
         private final ITsSave tsSave;
 
-        SaveCommand(@Nonnull ITsSave tsSave) {
+        SaveCommand(@NonNull ITsSave tsSave) {
             this.tsSave = tsSave;
         }
 

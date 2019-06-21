@@ -45,8 +45,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.SwingUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.WeakListeners;
@@ -62,10 +62,10 @@ public class TsManager implements AutoCloseable {
 
     public interface UpdateListener extends EventListener {
 
-        void accept(@Nonnull TsMoniker moniker);
+        void accept(@NonNull TsMoniker moniker);
     }
 
-    @Nonnull
+    @NonNull
     public static TsManager getDefault() {
         return Lookup.getDefault().lookup(TsManager.class);
     }
@@ -110,46 +110,46 @@ public class TsManager implements AutoCloseable {
         }
     }
 
-    @Nonnull
+    @NonNull
     @NewObject
     public TsCollection newTsCollection() {
         return delegate.createTsCollection();
     }
 
-    @Nonnull
+    @NonNull
     @NewObject
     public TsCollection newTsCollectionWithName(@Nullable String name) {
         return delegate.createTsCollection(name);
     }
 
-    @Nonnull
-    public TsCollection lookupTsCollection(@Nullable String name, @Nonnull TsMoniker moniker, @Nonnull TsInformationType type) {
+    @NonNull
+    public TsCollection lookupTsCollection(@Nullable String name, @NonNull TsMoniker moniker, @NonNull TsInformationType type) {
         return delegate.createTsCollection(name, moniker, type);
     }
 
-    @Nonnull
+    @NonNull
     @NewObject
     public Ts newTs(@Nullable String string, @Nullable MetaData md, @Nullable TsData tsdata) {
         return delegate.createTs(string, md, tsdata);
     }
 
-    @Nonnull
-    public Ts lookupTs(@Nullable String name, @Nonnull TsMoniker moniker, @Nonnull TsInformationType type) {
+    @NonNull
+    public Ts lookupTs(@Nullable String name, @NonNull TsMoniker moniker, @NonNull TsInformationType type) {
         return delegate.createTs(name, moniker, type);
     }
 
-    @Nonnull
+    @NonNull
     @NewObject
     public Ts newTsWithName(@Nullable String name) {
         return delegate.createTs(name);
     }
 
     @Nullable
-    public Ts lookupTs(@Nonnull TsMoniker moniker) {
+    public Ts lookupTs(@NonNull TsMoniker moniker) {
         return delegate.getTs(moniker);
     }
 
-    @Nonnull
+    @NonNull
     public Collector<Ts, ?, TsCollection> getTsCollector() {
         return Collector.<Ts, List<Ts>, TsCollection>of(ArrayList::new, List::add, (l, r) -> {
             l.addAll(r);
@@ -157,11 +157,11 @@ public class TsManager implements AutoCloseable {
         }, o -> delegate.createTsCollection(null, null, null, o));
     }
 
-    public boolean register(@Nonnull ITsProvider provider) {
+    public boolean register(@NonNull ITsProvider provider) {
         return delegate.add(provider);
     }
 
-    public void unregister(@Nonnull ITsProvider provider) {
+    public void unregister(@NonNull ITsProvider provider) {
         delegate.remove(provider.getSource());
     }
 
@@ -171,48 +171,48 @@ public class TsManager implements AutoCloseable {
     }
 
     @OnEDT
-    public void addWeakUpdateListener(@Nonnull UpdateListener listener) {
+    public void addWeakUpdateListener(@NonNull UpdateListener listener) {
         addUpdateListener(WeakListeners.create(TsManager.UpdateListener.class, listener, this));
     }
 
     @OnEDT
-    public void addUpdateListener(@Nonnull UpdateListener listener) {
+    public void addUpdateListener(@NonNull UpdateListener listener) {
         updateListeners.add(listener);
     }
 
     @OnEDT
-    public void removeUpdateListener(@Nonnull UpdateListener listener) {
+    public void removeUpdateListener(@NonNull UpdateListener listener) {
         updateListeners.remove(listener);
     }
 
-    @Nonnull
-    public <T extends ITsProvider> Optional<T> lookup(@Nonnull Class<T> clazz, @Nonnull String providerName) {
+    @NonNull
+    public <T extends ITsProvider> Optional<T> lookup(@NonNull Class<T> clazz, @NonNull String providerName) {
         ITsProvider result = delegate.getProvider(providerName);
         return clazz.isInstance(result) ? Optional.of(clazz.cast(result)) : Optional.empty();
     }
 
-    @Nonnull
-    public <T extends ITsProvider> Optional<T> lookup(@Nonnull Class<T> clazz, @Nonnull DataSource dataSource) {
+    @NonNull
+    public <T extends ITsProvider> Optional<T> lookup(@NonNull Class<T> clazz, @NonNull DataSource dataSource) {
         return lookup(clazz, dataSource.getProviderName());
     }
 
-    @Nonnull
-    public <T extends ITsProvider> Optional<T> lookup(@Nonnull Class<T> clazz, @Nonnull DataSet dataSet) {
+    @NonNull
+    public <T extends ITsProvider> Optional<T> lookup(@NonNull Class<T> clazz, @NonNull DataSet dataSet) {
         return lookup(clazz, dataSet.getDataSource());
     }
 
-    @Nonnull
-    public <T extends ITsProvider> Optional<T> lookup(@Nonnull Class<T> clazz, @Nonnull TsMoniker moniker) {
+    @NonNull
+    public <T extends ITsProvider> Optional<T> lookup(@NonNull Class<T> clazz, @NonNull TsMoniker moniker) {
         String providerName = moniker.getSource();
         return providerName != null ? lookup(clazz, providerName) : Optional.empty();
     }
 
-    @Nonnull
+    @NonNull
     public Stream<ITsProvider> all() {
         return asList().stream();
     }
 
-    @Nonnull
+    @NonNull
     private List<ITsProvider> asList() {
         final String[] providers = delegate.getProviders();
         return new AbstractList<ITsProvider>() {
@@ -228,8 +228,8 @@ public class TsManager implements AutoCloseable {
         };
     }
 
-    @Nonnull
-    public Optional<File> tryGetFile(@Nonnull DataSource dataSource) {
+    @NonNull
+    public Optional<File> tryGetFile(@NonNull DataSource dataSource) {
         Optional<IFileLoader> loader = lookup(IFileLoader.class, dataSource.getProviderName());
         if (loader.isPresent()) {
             File file = loader.get().decodeBean(dataSource).getFile();
@@ -239,8 +239,8 @@ public class TsManager implements AutoCloseable {
         return Optional.empty();
     }
 
-    @Nonnull
-    public Optional<TsCollection> getTsCollection(@Nonnull DataSource dataSource, @Nonnull TsInformationType type) {
+    @NonNull
+    public Optional<TsCollection> getTsCollection(@NonNull DataSource dataSource, @NonNull TsInformationType type) {
         IDataSourceProvider provider = lookup(IDataSourceProvider.class, dataSource).orElse(null);
         if (provider == null) {
             return Optional.empty();
@@ -250,8 +250,8 @@ public class TsManager implements AutoCloseable {
         return Optional.of(delegate.createTsCollection(name, moniker, type));
     }
 
-    @Nonnull
-    public Optional<TsCollection> getTsCollection(@Nonnull DataSet dataSet, @Nonnull TsInformationType type) {
+    @NonNull
+    public Optional<TsCollection> getTsCollection(@NonNull DataSet dataSet, @NonNull TsInformationType type) {
         IDataSourceProvider provider = lookup(IDataSourceProvider.class, dataSet).orElse(null);
         if (provider == null) {
             return Optional.empty();
@@ -271,8 +271,8 @@ public class TsManager implements AutoCloseable {
         throw new RuntimeException("Not implemented");
     }
 
-    @Nonnull
-    public Optional<Ts> getTs(@Nonnull DataSet dataSet, @Nonnull TsInformationType type) {
+    @NonNull
+    public Optional<Ts> getTs(@NonNull DataSet dataSet, @NonNull TsInformationType type) {
         IDataSourceProvider provider = lookup(IDataSourceProvider.class, dataSet).orElse(null);
         if (provider == null) {
             return Optional.empty();
@@ -287,18 +287,17 @@ public class TsManager implements AutoCloseable {
         throw new RuntimeException("Not implemented");
     }
 
-    public void loadAsync(@Nonnull demetra.tsprovider.Ts ts, @Nonnull demetra.tsprovider.TsInformationType type) {
+    public void loadAsync(demetra.tsprovider.@NonNull Ts ts, demetra.tsprovider.@NonNull TsInformationType type) {
         TsConverter.fromTs(ts).query(TsConverter.fromType(type));
     }
 
-    @Nonnull
-    public demetra.tsprovider.Ts load(@Nonnull demetra.tsprovider.Ts ts, @Nonnull demetra.tsprovider.TsInformationType type) {
+    public demetra.tsprovider.@NonNull Ts load(demetra.tsprovider.@NonNull Ts ts, demetra.tsprovider.@NonNull TsInformationType type) {
         Ts tmp = TsConverter.fromTs(ts);
         tmp.load(TsConverter.fromType(type));
         return TsConverter.toTs(tmp);
     }
 
-    public void load(@Nonnull Ts ts, @Nonnull TsInformationType type) {
+    public void load(@NonNull Ts ts, @NonNull TsInformationType type) {
         ts.load(type);
     }
 }

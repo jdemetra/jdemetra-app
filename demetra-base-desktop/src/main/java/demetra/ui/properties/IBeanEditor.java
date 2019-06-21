@@ -17,7 +17,7 @@
 package demetra.ui.properties;
 
 import java.beans.IntrospectionException;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -25,6 +25,6 @@ import javax.annotation.Nonnull;
  */
 public interface IBeanEditor {
 
-    boolean editBean(@Nonnull Object bean) throws IntrospectionException;
+    boolean editBean(@NonNull Object bean) throws IntrospectionException;
 
 }

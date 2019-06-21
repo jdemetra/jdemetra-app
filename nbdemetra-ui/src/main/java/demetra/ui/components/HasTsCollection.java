@@ -27,8 +27,8 @@ import internal.ui.components.HasTsCollectionImpl;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JMenu;
 import javax.swing.ListSelectionModel;
 
@@ -40,14 +40,14 @@ public interface HasTsCollection {
 
     static final String TS_COLLECTION_PROPERTY = "tsCollection";
 
-    @Nonnull
+    @NonNull
     TsCollection getTsCollection();
 
-    void setTsCollection(@Nonnull TsCollection tsCollection);
+    void setTsCollection(@NonNull TsCollection tsCollection);
 
     static final String TS_SELECTION_MODEL_PROPERTY = "tsSelectionModel";
 
-    @Nonnull
+    @NonNull
     ListSelectionModel getTsSelectionModel();
 
     void setTsSelectionModel(@Nullable ListSelectionModel selectionModel);
@@ -64,7 +64,7 @@ public interface HasTsCollection {
     static final String UDPATE_MODE_PROPERTY = "tsUpdateMode";
     static final TsUpdateMode DEFAULT_UPDATEMODE = TsUpdateMode.Append;
 
-    @Nonnull
+    @NonNull
     TsUpdateMode getTsUpdateMode();
 
     void setTsUpdateMode(@Nullable TsUpdateMode updateMode);
@@ -78,12 +78,12 @@ public interface HasTsCollection {
 
     static final String DROP_CONTENT_PROPERTY = "dropContent";
 
-    @Nonnull
+    @NonNull
     TsCollection getDropContent();
 
-    void setDropContent(@Nonnull TsCollection dropContent);
+    void setDropContent(@NonNull TsCollection dropContent);
 
-    @Nonnull
+    @NonNull
     default IntStream getTsSelectionIndexStream() {
         int size = getTsCollection().getData().size();
         return JLists
@@ -91,7 +91,7 @@ public interface HasTsCollection {
                 .filter(o -> o < size);
     }
 
-    @Nonnull
+    @NonNull
     default Stream<Ts> getTsSelectionStream() {
         List<Ts> tss = getTsCollection().getData();
         return JLists
@@ -100,8 +100,8 @@ public interface HasTsCollection {
                 .mapToObj(tss::get);
     }
 
-    @Nonnull
-    static HasTsCollection of(@Nonnull PropertyChangeSource.Broadcaster broadcaster, @Nonnull TsManager manager) {
+    @NonNull
+    static HasTsCollection of(PropertyChangeSource.@NonNull Broadcaster broadcaster, @NonNull TsManager manager) {
         return new HasTsCollectionImpl(broadcaster).register(manager);
     }
 

@@ -15,7 +15,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.WeakListeners;
 
 /**
@@ -63,7 +63,7 @@ public final class ThemeSupport extends SwingColorSchemeSupport {
         return result != null ? result : demetraUI.getColorScheme();
     }
 
-    @Nonnull
+    @NonNull
     public DataFormat getDataFormat() {
         DataFormat result = obsFormatProperty != null ? obsFormatProperty.getDataFormat() : null;
         return result != null ? result : demetraUI.getDataFormat();

@@ -30,7 +30,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JComponent;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
@@ -218,8 +218,7 @@ public class ControlNode {
         return b.build();
     }
 
-    @Nonnull
-    public static Sheet.Set getDefinitionSheetSet(@Nonnull demetra.tsprovider.Ts ts, @Nonnull NodePropertySetBuilder b) {
+    public static Sheet.@NonNull Set getDefinitionSheetSet(demetra.tsprovider.@NonNull Ts ts, @NonNull NodePropertySetBuilder b) {
         b.reset("Time series");
 
         b.with(String.class)

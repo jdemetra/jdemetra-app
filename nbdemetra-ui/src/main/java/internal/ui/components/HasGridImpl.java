@@ -10,7 +10,7 @@ import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import java.awt.Component;
 import java.awt.Dimension;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -55,7 +55,7 @@ public final class HasGridImpl implements HasGrid {
         broadcaster.firePropertyChange(CROSSHAIR_VISIBLE_PROPERTY, old, this.crosshairVisible);
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasGrid> applyZoomRatio(int zoomRatio) {
         return new ZoomRatioCommand(zoomRatio);
     }
@@ -76,7 +76,7 @@ public final class HasGridImpl implements HasGrid {
         return zoom;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasGrid> toggleCrosshairVisibility() {
         return ToggleCrosshairVisibilityCommand.INSTANCE;
     }

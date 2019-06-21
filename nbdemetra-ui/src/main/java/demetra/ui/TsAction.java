@@ -20,8 +20,8 @@ import demetra.tsprovider.Ts;
 import ec.nbdemetra.core.GlobalService;
 import ec.util.various.swing.OnEDT;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.util.Lookup;
 
 /**
@@ -31,21 +31,21 @@ import org.openide.util.Lookup;
 @GlobalService
 public interface TsAction {
 
-    @Nonnull
+    @NonNull
     static TsAction getDefault() {
         return Lookup.getDefault().lookup(TsAction.class);
     }
 
     static final String NO_ACTION = "";
 
-    @Nonnull
+    @NonNull
     List<? extends NamedService> getTsActions();
 
     @OnEDT
-    default void open(@Nonnull Ts ts) {
+    default void open(@NonNull Ts ts) {
         openWith(ts, null);
     }
 
     @OnEDT
-    void openWith(@Nonnull Ts ts, @Nullable String actionName);
+    void openWith(@NonNull Ts ts, @Nullable String actionName);
 }

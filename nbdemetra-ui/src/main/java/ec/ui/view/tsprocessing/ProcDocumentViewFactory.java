@@ -10,8 +10,8 @@ import ec.tstoolkit.utilities.DefaultInformationExtractor;
 import ec.tstoolkit.utilities.Id;
 import java.util.LinkedHashMap;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -116,12 +116,12 @@ public abstract class ProcDocumentViewFactory<D extends IProcDocument> implement
         toolkit_ = toolkit != null ? toolkit : TsViewToolkit.getInstance();
     }
 
-    @Nonnull
+    @NonNull
     public ITsViewToolkit getToolkit() {
         return toolkit_;
     }
 
-    @Nonnull
+    @NonNull
     public List<Id> getItems() {
         return Lists.newArrayList(itemFactories.keySet());
     }

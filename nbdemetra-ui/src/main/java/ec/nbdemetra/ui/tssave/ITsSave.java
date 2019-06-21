@@ -13,7 +13,7 @@ import ec.tstoolkit.design.ServiceDefinition;
 import ec.util.various.swing.OnEDT;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 public interface ITsSave extends NamedService {
 
     @OnEDT
-    void save(@Nonnull Ts[] input);
+    void save(@NonNull Ts[] input);
 
     /**
      *
@@ -32,7 +32,7 @@ public interface ITsSave extends NamedService {
      * @since 2.2.0
      */
     @OnEDT
-    default void save(@Nonnull TsCollection[] input) {
+    default void save(@NonNull TsCollection[] input) {
         Function<TsCollection, Stream<Ts>> toStream = o -> {
             o.load(TsInformationType.Definition);
             return o.stream();

@@ -52,7 +52,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.ListCellRenderer;
@@ -299,7 +299,7 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
         private final Connection delegate;
         private final String defaultSchema;
 
-        public FailSafeConnection(@Nonnull Connection delegate, String defaultSchema) {
+        public FailSafeConnection(@NonNull Connection delegate, String defaultSchema) {
             this.delegate = delegate;
             this.defaultSchema = defaultSchema;
         }

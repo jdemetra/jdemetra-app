@@ -3,8 +3,8 @@ package demetra.ui.components;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.util.chart.ColorScheme;
 import internal.ui.components.HasColorSchemeImpl;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  *
@@ -19,8 +19,8 @@ public interface HasColorScheme {
     @Nullable
     ColorScheme getColorScheme();
 
-    @Nonnull
-    static HasColorScheme of(@Nonnull PropertyChangeSource.Broadcaster broadcaster) {
+    @NonNull
+    static HasColorScheme of(PropertyChangeSource.@NonNull Broadcaster broadcaster) {
         return new HasColorSchemeImpl(broadcaster);
     }
 }

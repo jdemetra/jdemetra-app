@@ -19,8 +19,8 @@ package demetra.ui.components;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.tss.tsproviders.utils.DataFormat;
 import internal.ui.components.HasObsFormatImpl;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  *
@@ -35,8 +35,8 @@ public interface HasObsFormat {
 
     void setDataFormat(@Nullable DataFormat dataFormat);
 
-    @Nonnull
-    static HasObsFormat of(@Nonnull PropertyChangeSource.Broadcaster broadcaster) {
+    @NonNull
+    static HasObsFormat of(PropertyChangeSource.@NonNull Broadcaster broadcaster) {
         return new HasObsFormatImpl(broadcaster);
     }
 }

@@ -18,8 +18,8 @@ package demetra.ui;
 
 import ec.util.various.swing.OnEDT;
 import java.awt.Image;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.nodes.Sheet;
 
 /**
@@ -30,11 +30,11 @@ import org.openide.nodes.Sheet;
 public interface NamedService {
 
     @OnEDT
-    @Nonnull
+    @NonNull
     String getName();
 
     @OnEDT
-    @Nonnull
+    @NonNull
     default String getDisplayName() {
         return getName();
     }
@@ -46,7 +46,7 @@ public interface NamedService {
     }
 
     @OnEDT
-    @Nonnull
+    @NonNull
     default Sheet createSheet() {
         return new Sheet();
     }

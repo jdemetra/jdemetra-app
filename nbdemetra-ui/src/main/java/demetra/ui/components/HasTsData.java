@@ -19,8 +19,8 @@ package demetra.ui.components;
 import demetra.timeseries.TsData;
 import demetra.ui.beans.PropertyChangeSource;
 import internal.ui.components.HasTsDataImpl;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  *
@@ -35,8 +35,8 @@ public interface HasTsData {
 
     void setTsData(@Nullable TsData tsData);
 
-    @Nonnull
-    static HasTsData of(@Nonnull PropertyChangeSource.Broadcaster support) {
+    @NonNull
+    static HasTsData of(PropertyChangeSource.@NonNull Broadcaster support) {
         return new HasTsDataImpl(support);
     }
 }

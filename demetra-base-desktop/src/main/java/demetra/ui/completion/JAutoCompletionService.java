@@ -18,7 +18,7 @@ package demetra.ui.completion;
 
 import demetra.design.ServiceDefinition;
 import ec.util.completion.swing.JAutoCompletion;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.text.JTextComponent;
 import org.openide.util.lookup.Lookups;
 
@@ -30,16 +30,16 @@ import org.openide.util.lookup.Lookups;
 @ServiceDefinition
 public interface JAutoCompletionService {
 
-    @Nonnull
-    JAutoCompletion bind(@Nonnull JTextComponent textComponent);
+    @NonNull
+    JAutoCompletion bind(@NonNull JTextComponent textComponent);
 
     public static final String LOCALE_PATH = "JAutoCompletionService/Locale";
     public static final String DATE_PATTERN_PATH = "JAutoCompletionService/DatePattern";
     public static final String COLOR_SCHEME_PATH = "JAutoCompletionService/ColorScheme";
     public static final String CHARSET_PATH = "JAutoCompletionService/Charset";
 
-    @Nonnull
-    static JAutoCompletion forPathBind(@Nonnull String path, @Nonnull JTextComponent textComponent) {
+    @NonNull
+    static JAutoCompletion forPathBind(@NonNull String path, @NonNull JTextComponent textComponent) {
         JAutoCompletionService o = Lookups.forPath(path).lookup(JAutoCompletionService.class);
         return o != null ? o.bind(textComponent) : new JAutoCompletion(textComponent);
     }

@@ -9,8 +9,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -62,7 +62,7 @@ public final class LocalObjectDataTransfer implements DataTransferSpi {
     }
 
     @Nullable
-    public TsCollection peekTsCollection(@Nonnull Transferable t) {
+    public TsCollection peekTsCollection(@NonNull Transferable t) {
         if (t.isDataFlavorSupported(DATA_FLAVOR)) {
             try {
                 Object data = t.getTransferData(DATA_FLAVOR);

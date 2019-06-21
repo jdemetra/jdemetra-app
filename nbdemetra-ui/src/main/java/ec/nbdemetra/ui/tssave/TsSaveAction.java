@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -68,8 +68,8 @@ public final class TsSaveAction extends AbilityAction<ITsSavable> implements Pre
                 .collect(Collectors.toList());
     }
 
-    @Nonnull
-    public static JMenuItem getPopupPresenter(@Nonnull List<ITsSavable> data) {
+    @NonNull
+    public static JMenuItem getPopupPresenter(@NonNull List<ITsSavable> data) {
         JMenu result = new JMenu();
         result.setText(Bundle.CTL_TsSaveAction());
         for (ITsSave o : Lookup.getDefault().lookupAll(ITsSave.class)) {

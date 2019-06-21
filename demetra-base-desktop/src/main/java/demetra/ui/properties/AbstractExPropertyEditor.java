@@ -21,8 +21,8 @@ import java.beans.PropertyEditorSupport;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.explorer.propertysheet.ExPropertyEditor;
 import org.openide.explorer.propertysheet.InplaceEditor;
 import org.openide.explorer.propertysheet.PropertyEnv;
@@ -45,11 +45,11 @@ public abstract class AbstractExPropertyEditor extends PropertyEditorSupport imp
         return inplaceEditor.get();
     }
 
-    @Nonnull
+    @NonNull
     abstract protected InplaceEditor createInplaceEditor();
 
-    @Nonnull
-    public static <T> Optional<T> attr(@Nullable PropertyEnv env, @Nonnull String attrName, @Nonnull Class<T> attrType) {
+    @NonNull
+    public static <T> Optional<T> attr(@Nullable PropertyEnv env, @NonNull String attrName, @NonNull Class<T> attrType) {
         if (env == null) {
             return Optional.empty();
         }

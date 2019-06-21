@@ -30,7 +30,7 @@ import ec.util.chart.swing.JTimeSeriesChartCommand;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import java.util.Arrays;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ActionMap;
 import javax.swing.JMenuItem;
 
@@ -72,13 +72,13 @@ public class InternalComponents {
         return result;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<PrintableWithPreview> printPreview() {
         return PrintPreviewCommand.INSTANCE;
     }
 
-    @Nonnull
-    public static JMenuItem menuItemOf(@Nonnull PrintableWithPreview component) {
+    @NonNull
+    public static JMenuItem menuItemOf(@NonNull PrintableWithPreview component) {
         JMenuItem result = new JMenuItem(printPreview().toAction(component));
         result.setIcon(DemetraUI.getDefault().getPopupMenuIcon(FontAwesome.FA_PRINT));
         result.setText("Printer...");

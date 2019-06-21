@@ -21,7 +21,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -31,7 +31,7 @@ public abstract class ForwardingPropertyEditor implements PropertyEditor {
 
     private final PropertyEditor delegate;
 
-    public ForwardingPropertyEditor(@Nonnull PropertyEditor delegate) {
+    public ForwardingPropertyEditor(@NonNull PropertyEditor delegate) {
         this.delegate = delegate;
     }
 

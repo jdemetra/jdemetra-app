@@ -32,7 +32,7 @@ import static demetra.ui.components.JTsGrid.USE_COLOR_SCHEME_PROPERTY;
 import ec.util.various.swing.JCommand;
 import java.awt.Component;
 import java.util.EnumMap;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -47,32 +47,32 @@ public class JTsGridCommands {
     public static final String MULTI_TS_ACTION = "multiTs";
     public static final String TOGGLE_MODE_ACTION = "toggleMode";
 
-    @Nonnull
+    @NonNull
     public static JCommand<JTsGrid> transpose() {
         return TransposeCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<JTsGrid> reverseChronology() {
         return ReverseChronologyCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<JTsGrid> toggleMode() {
         return ToggleModeCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<JTsGrid> applyMode(JTsGrid.Mode mode) {
         return ApplyModeCommand.VALUES.get(mode);
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<JTsGrid> toggleUseColorScheme() {
         return ToggleUseColorSchemeCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<JTsGrid> toggleShowBars() {
         return ToggleShowBarsCommand.INSTANCE;
     }

@@ -17,7 +17,7 @@
 package demetra.ui.beans;
 
 import java.beans.PropertyChangeListener;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -25,13 +25,13 @@ import javax.annotation.Nonnull;
  */
 public interface PropertyChangeSource {
 
-    void addPropertyChangeListener(@Nonnull String propertyName, @Nonnull PropertyChangeListener listener);
+    void addPropertyChangeListener(@NonNull String propertyName, @NonNull PropertyChangeListener listener);
 
-    void addPropertyChangeListener(@Nonnull PropertyChangeListener listener);
+    void addPropertyChangeListener(@NonNull PropertyChangeListener listener);
 
-    void removePropertyChangeListener(@Nonnull String propertyName, @Nonnull PropertyChangeListener listener);
+    void removePropertyChangeListener(@NonNull String propertyName, @NonNull PropertyChangeListener listener);
 
-    void removePropertyChangeListener(@Nonnull PropertyChangeListener listener);
+    void removePropertyChangeListener(@NonNull PropertyChangeListener listener);
 
     @FunctionalInterface
     interface Broadcaster {

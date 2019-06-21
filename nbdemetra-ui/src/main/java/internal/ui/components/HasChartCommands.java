@@ -34,7 +34,7 @@ import static demetra.ui.components.HasChart.LINES_THICKNESS_PROPERTY;
 import static demetra.ui.components.HasChart.TITLE_VISIBLE_PROPERTY;
 import ec.util.various.swing.JCommand;
 import java.util.Calendar;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.Icon;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbCollections;
@@ -61,7 +61,7 @@ public class HasChartCommands {
 
     public static final String TITLE_VISIBLE_ACTION = "titleVisible";
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasChart> toggleTitleVisibility() {
         return ToggleTitleVisibilityCommand.INSTANCE;
     }
@@ -75,7 +75,7 @@ public class HasChartCommands {
 
     public static final String LEGEND_VISIBLE_ACTION = "legendVisible";
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasChart> toggleLegendVisibility() {
         return ToggleLegendVisibilityCommand.INSTANCE;
     }
@@ -89,8 +89,8 @@ public class HasChartCommands {
     public static final String THIN_LINE_ACTION = "thinLine";
     public static final String THICK_LINE_ACTION = "thickLine";
 
-    @Nonnull
-    public static JCommand<HasChart> applyLineThickNess(@Nonnull HasChart.LinesThickness thickness) {
+    @NonNull
+    public static JCommand<HasChart> applyLineThickNess(HasChart.@NonNull LinesThickness thickness) {
         return HasChart.LinesThickness.Thick.equals(thickness) ? ApplyLineThickNessCommand.THICK : ApplyLineThickNessCommand.THIN;
     }
 
@@ -101,7 +101,7 @@ public class HasChartCommands {
         return result;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<HasTsCollection> splitIntoYearlyComponents() {
         return SplitIntoYearlyComponentsCommand.INSTANCE;
     }

@@ -45,8 +45,8 @@ import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import demetra.ui.OldDataTransfer;
@@ -173,7 +173,7 @@ final class AnomalyDetectionChart extends JComponent {
         private final Ts ts;
         private final OutlierEstimation[] outliers;
 
-        Model(@Nonnull Ts ts, @Nonnull PreprocessingModel model) {
+        Model(@NonNull Ts ts, @NonNull PreprocessingModel model) {
             this.ts = ts;
             TsData data = ts.getTsData();
             this.outliers = new OutlierEstimation[data.getLength()];
@@ -183,12 +183,12 @@ final class AnomalyDetectionChart extends JComponent {
             }
         }
 
-        @Nonnull
+        @NonNull
         public Ts getTs() {
             return ts;
         }
 
-        @Nonnull
+        @NonNull
         public OutlierEstimation[] getOutliers() {
             return outliers;
         }
