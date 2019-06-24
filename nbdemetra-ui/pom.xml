@@ -17,14 +17,22 @@
         <l2fprod.version>1.0.5</l2fprod.version>
         <jcalendar.version>1.4</jcalendar.version>
         <swinglayout.version>1.0.3</swinglayout.version>
+        <java-desktop-util.version>2.2.3-SNAPSHOT</java-desktop-util.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>eu.europa.ec.joinup.sat</groupId>
-                <artifactId>nbdemetra-utils</artifactId>
-                <version>${project.version}</version>
+                <groupId>be.nbb.rd</groupId>
+                <artifactId>java-desktop-util-chart</artifactId>
+                <version>${java-desktop-util.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>be.nbb.rd</groupId>
+                <artifactId>java-desktop-util-os</artifactId>
+                <version>${java-desktop-util.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -162,10 +170,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>nbdemetra-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>nbdemetra-utils</artifactId>
-        </dependency>
 
         <!-- Other -->
         <dependency>
@@ -191,6 +195,26 @@
         <dependency>
             <groupId>org.swinglabs</groupId>
             <artifactId>swing-layout</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>be.nbb.rd</groupId>
+            <artifactId>java-desktop-util-swing</artifactId>
+            <version>${java-desktop-util.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>be.nbb.rd</groupId>
+            <artifactId>java-desktop-util-chart</artifactId>
+            <version>${java-desktop-util.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>be.nbb.rd</groupId>
+            <artifactId>java-desktop-util-fa</artifactId>
+            <version>${java-desktop-util.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>be.nbb.rd</groupId>
+            <artifactId>java-desktop-util-os</artifactId>
+            <version>${java-desktop-util.version}</version>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>

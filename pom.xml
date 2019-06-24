@@ -35,7 +35,6 @@
         <module>nbdemetra-sa</module>
         <module>nbdemetra-sdmx</module>
         <module>nbdemetra-anomalydetection</module>
-        <module>nbdemetra-utils</module>
     </modules>
 
     <dependencyManagement>
