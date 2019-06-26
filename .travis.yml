@@ -8,7 +8,7 @@ env:
   global:
     - DEPLOY_JDK=openjdk8
     - DEPLOY_REPO=jdemetra/jdemetra-app
-    - DEPLOY_BIN=nbdemetra-app/target/jdemetra-*-bin.zip
+    - DEPLOY_BIN=nbdemetra-app/target/binaries/*
 
 services:
   - xvfb
