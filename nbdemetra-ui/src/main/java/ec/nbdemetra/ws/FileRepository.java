@@ -31,8 +31,7 @@ import ec.util.desktop.Desktop.KnownFolder;
 import ec.util.desktop.DesktopManager;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.InvalidPathException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
@@ -125,17 +124,16 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
             return saveAs(ws);
         }
 
-        Path target = file.toPath();
-        boolean exist = Files.exists(target);
+        boolean exist = file.exists();
         try (FileWorkspace storage = exist
-                ? FileWorkspace.open(target)
-                : FileWorkspace.create(target, FileFormat.GENERIC)) {
+                ? FileWorkspace.open(file.toPath())
+                : FileWorkspace.create(file.toPath(), FileFormat.GENERIC)) {
             storage.setName(ws.getName());
             storeCalendar(storage, ws.getContext().getGregorianCalendars());
             if (exist) {
                 removeDeletedItems(storage, ws);
             }
-        } catch (IOException ex) {
+        } catch (IOException | InvalidPathException ex) {
             Exceptions.printStackTrace(ex);
             return false;
         }
