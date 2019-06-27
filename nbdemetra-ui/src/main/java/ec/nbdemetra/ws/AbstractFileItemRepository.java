@@ -8,6 +8,7 @@ import ec.demetra.workspace.WorkspaceFamily;
 import ec.demetra.workspace.file.FileWorkspace;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.util.function.Consumer;
 import org.openide.util.Exceptions;
 
@@ -38,7 +39,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
             try (FileWorkspace storage = FileWorkspace.open(file.toPath())) {
                 onSuccess.accept((R) storage.load(toFileItem(item)));
                 return true;
-            } catch (IOException ex) {
+            } catch (IOException | InvalidPathException ex) {
                 Exceptions.printStackTrace(ex);
             }
         }
@@ -52,7 +53,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
                 storage.store(toFileItem(item), value);
                 onSuccess.run();
                 return true;
-            } catch (IOException ex) {
+            } catch (IOException | InvalidPathException ex) {
                 Exceptions.printStackTrace(ex);
             }
         }
@@ -65,7 +66,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
             try (FileWorkspace storage = FileWorkspace.open(file.toPath())) {
                 storage.delete(toFileItem(item));
                 return true;
-            } catch (IOException ex) {
+            } catch (IOException | InvalidPathException ex) {
                 Exceptions.printStackTrace(ex);
             }
         }
