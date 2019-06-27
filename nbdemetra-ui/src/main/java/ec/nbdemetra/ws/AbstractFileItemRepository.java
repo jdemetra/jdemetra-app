@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.InvalidPathException;
 import java.util.function.Consumer;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -63,7 +64,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
             try (FileWorkspace storage = FileWorkspace.open(file.toPath())) {
                 onSuccess.accept((R) storage.load(toFileItem(item)));
                 return true;
-            } catch (IOException ex) {
+            } catch (IOException | InvalidPathException ex) {
                 Exceptions.printStackTrace(ex);
             }
         }
@@ -77,7 +78,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
                 storage.store(toFileItem(item), value);
                 onSuccess.run();
                 return true;
-            } catch (IOException ex) {
+            } catch (IOException | InvalidPathException ex) {
                 Exceptions.printStackTrace(ex);
             }
         }
@@ -90,7 +91,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
             try (FileWorkspace storage = FileWorkspace.open(file.toPath())) {
                 storage.delete(toFileItem(item));
                 return true;
-            } catch (IOException ex) {
+            } catch (IOException | InvalidPathException ex) {
                 Exceptions.printStackTrace(ex);
             }
         }
