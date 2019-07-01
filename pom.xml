@@ -20,7 +20,7 @@
     <properties>
         <brandingToken>nbdemetra</brandingToken>
         <netbeans.version>RELEASE110</netbeans.version>
-        <jd2.version>2.2.2</jd2.version>
+        <jd2.version>2.2.3-SNAPSHOT</jd2.version>
         <jd3.version>${project.version}</jd3.version>
         <jd3-basic.version>1.0.0-SNAPSHOT</jd3-basic.version>
     </properties>
@@ -332,7 +332,7 @@
         <profile>
             <id>enforce-java8-api</id>
             <activation>
-                <jdk>11</jdk>
+                <jdk>[11,)</jdk>
             </activation>
             <properties>
                 <maven.compiler.release>8</maven.compiler.release>
