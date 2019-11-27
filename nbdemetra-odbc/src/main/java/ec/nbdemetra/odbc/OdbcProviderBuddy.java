@@ -28,8 +28,6 @@ import ec.tss.tsproviders.jdbc.ConnectionSupplier;
 import ec.tss.tsproviders.jdbc.JdbcBean;
 import ec.tss.tsproviders.odbc.OdbcBean;
 import ec.tss.tsproviders.odbc.OdbcProvider;
-import ec.tss.tsproviders.odbc.registry.IOdbcRegistry;
-import ec.tss.tsproviders.odbc.registry.OdbcDataSource;
 import ec.tstoolkit.utilities.GuavaCaches;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
@@ -44,9 +42,10 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.swing.ListCellRenderer;
+import nbbrd.sql.odbc.OdbcDataSource;
+import nbbrd.sql.odbc.OdbcRegistry;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -62,7 +61,7 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
 
     public OdbcProviderBuddy() {
         super(getOdbcConnectionSupplier());
-        this.dbSource = odbcDsnSource();
+        this.dbSource = odbcDsnSource(OdbcRegistry.ofServiceLoader());
         this.dbRenderer = new SimpleHtmlListCellRenderer<>((OdbcDataSource o) -> "<html><b>" + o.getName() + "</b> - <i>" + o.getServerName() + "</i>");
     }
 
@@ -138,9 +137,9 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
         }
     }
 
-    private static AutoCompletionSource odbcDsnSource() {
+    private static AutoCompletionSource odbcDsnSource(java.util.Optional<OdbcRegistry> odbcRegistry) {
         return ExtAutoCompletionSource
-                .builder(OdbcProviderBuddy::getDataSources)
+                .builder(() -> getDataSources(odbcRegistry))
                 .behavior(AutoCompletionSource.Behavior.ASYNC)
                 .postProcessor(OdbcProviderBuddy::getDataSources)
                 .valueToString(OdbcDataSource::getName)
@@ -148,10 +147,9 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
                 .build();
     }
 
-    private static List<OdbcDataSource> getDataSources() throws Exception {
-        IOdbcRegistry odbcRegistry = Lookup.getDefault().lookup(IOdbcRegistry.class);
-        return odbcRegistry != null
-                ? odbcRegistry.getDataSources(OdbcDataSource.Type.SYSTEM, OdbcDataSource.Type.USER)
+    private static List<OdbcDataSource> getDataSources(java.util.Optional<OdbcRegistry> odbcRegistry) throws Exception {
+        return odbcRegistry.isPresent()
+                ? odbcRegistry.get().getDataSources(OdbcDataSource.Type.SYSTEM, OdbcDataSource.Type.USER)
                 : Collections.emptyList();
     }
 
