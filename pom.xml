@@ -382,10 +382,15 @@
                 </plugins>
             </build>
         </profile>
-        
-        <!-- Optional checks -->
+
+        <!-- Enforce modern API -->
         <profile>
-            <id>optional-checks</id>
+            <id>enforce-modern-api</id>
+            <activation>
+                <property>
+                    <name>!skipEnforceModernAPI</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -394,7 +399,12 @@
                         <version>2.0.0</version>
                         <configuration>
                             <javaVersion>1.8</javaVersion>
-                            <!--<failOnViolations>false</failOnViolations>-->
+                            <exclusionPatterns>
+                                <exclusionPattern>com/google/common/base/Optional.*</exclusionPattern>
+                            </exclusionPatterns>
+                            <exclusions>
+                                <exclusion>com/google/common/base/Function</exclusion>
+                            </exclusions>
                         </configuration>
                         <executions>
                             <execution>
@@ -406,6 +416,15 @@
                             </execution>
                         </executions>
                     </plugin>
+                </plugins>
+            </build>
+        </profile>
+                
+        <!-- Optional checks -->
+        <profile>
+            <id>optional-checks</id>
+            <build>
+                <plugins>
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId> 

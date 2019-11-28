@@ -16,7 +16,6 @@
  */
 package ec.ui.grid;
 
-import com.google.common.base.Supplier;
 import com.google.common.primitives.Doubles;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -31,6 +30,7 @@ import ec.util.chart.ObsIndex;
 import ec.util.grid.CellIndex;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

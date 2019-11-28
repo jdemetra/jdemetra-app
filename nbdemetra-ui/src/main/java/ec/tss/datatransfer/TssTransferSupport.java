@@ -16,7 +16,6 @@
  */
 package ec.tss.datatransfer;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -173,7 +172,7 @@ public class TssTransferSupport extends ListenableBean {
     @OnEDT
     @NonNull
     public Transferable fromTsData(@NonNull TsData data) {
-        Preconditions.checkNotNull(data);
+        Objects.requireNonNull(data);
         return fromTs(TsFactory.instance.createTs("", null, data));
     }
 
@@ -186,7 +185,7 @@ public class TssTransferSupport extends ListenableBean {
     @OnEDT
     @NonNull
     public Transferable fromTs(@NonNull Ts ts) {
-        Preconditions.checkNotNull(ts);
+        Objects.requireNonNull(ts);
         TsCollection col = TsFactory.instance.createTsCollection();
         col.quietAdd(ts);
         return fromTsCollection(col);
@@ -201,7 +200,7 @@ public class TssTransferSupport extends ListenableBean {
     @OnEDT
     @NonNull
     public Transferable fromTsCollection(@NonNull TsCollection col) {
-        Preconditions.checkNotNull(col);
+        Objects.requireNonNull(col);
         return asTransferable(col, stream(), TsCollectionHelper.INSTANCE);
     }
 
@@ -214,7 +213,7 @@ public class TssTransferSupport extends ListenableBean {
     @OnEDT
     @NonNull
     public Transferable fromMatrix(@NonNull Matrix matrix) {
-        Preconditions.checkNotNull(matrix);
+        Objects.requireNonNull(matrix);
         return asTransferable(matrix, stream(), MatrixHelper.INSTANCE);
     }
 
@@ -227,7 +226,7 @@ public class TssTransferSupport extends ListenableBean {
     @OnEDT
     @NonNull
     public Transferable fromTable(@NonNull Table<?> table) {
-        Preconditions.checkNotNull(table);
+        Objects.requireNonNull(table);
         return asTransferable(table, stream(), TableHelper.INSTANCE);
     }
 
@@ -281,7 +280,7 @@ public class TssTransferSupport extends ListenableBean {
     @OnEDT
     @Nullable
     public TsCollection toTsCollection(@NonNull Transferable transferable) {
-        Preconditions.checkNotNull(transferable);
+        Objects.requireNonNull(transferable);
         return stream()
                 .filter(onDataFlavors(transferable.getTransferDataFlavors()))
                 .map(o -> toTsCollection(o, transferable, logger))
@@ -307,7 +306,7 @@ public class TssTransferSupport extends ListenableBean {
     @OnEDT
     @Nullable
     public Matrix toMatrix(@NonNull Transferable transferable) {
-        Preconditions.checkNotNull(transferable);
+        Objects.requireNonNull(transferable);
         return stream()
                 .filter(onDataFlavors(transferable.getTransferDataFlavors()))
                 .map(o -> toMatrix(o, transferable, logger))
@@ -325,7 +324,7 @@ public class TssTransferSupport extends ListenableBean {
     @OnEDT
     @Nullable
     public Table<?> toTable(@NonNull Transferable transferable) {
-        Preconditions.checkNotNull(transferable);
+        Objects.requireNonNull(transferable);
         return stream()
                 .filter(onDataFlavors(transferable.getTransferDataFlavors()))
                 .map(o -> toTable(o, transferable, logger))

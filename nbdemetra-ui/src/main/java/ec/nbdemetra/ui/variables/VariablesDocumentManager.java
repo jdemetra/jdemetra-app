@@ -103,7 +103,7 @@ public class VariablesDocumentManager extends AbstractWorkspaceItemManager<TsVar
 //            result.add(systemItem(o, manager.get(o)));
 //        }
 //        return result;
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override

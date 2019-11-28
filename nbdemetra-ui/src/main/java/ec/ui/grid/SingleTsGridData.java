@@ -16,16 +16,15 @@
  */
 package ec.ui.grid;
 
-import com.google.common.base.Supplier;
 import ec.tss.TsCollection;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.data.IReadDataBlock;
-import ec.tstoolkit.data.Values;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.chart.DataFeatureModel;
 import ec.util.chart.ObsIndex;
 import ec.util.grid.CellIndex;
+import java.util.function.Supplier;
 
 /**
  *
