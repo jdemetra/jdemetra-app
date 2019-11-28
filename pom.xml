@@ -348,12 +348,12 @@
             </properties>
         </profile>
         
-        <!-- Enforce dependency convergence -->
+        <!-- Enforce dependency rules -->
         <profile>
-            <id>enforce-dependency-convergence</id>
+            <id>enforce-dependency-rules</id>
             <activation>
                 <property>
-                    <name>!skipEnforceDependencyConvergence</name>
+                    <name>!skipEnforceDependencyRules</name>
                 </property>
             </activation>
             <build>
@@ -367,6 +367,9 @@
                                 <id>enforce</id>
                                 <configuration>
                                     <rules>
+                                        <requireMavenVersion>
+                                            <version>3.3.9</version>
+                                        </requireMavenVersion>
                                         <DependencyConvergence/>
                                     </rules>
                                 </configuration>
