@@ -326,7 +326,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
-                        <version>3.1.1</version>
+                        <version>3.2.0</version>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -361,7 +361,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-enforcer-plugin</artifactId>
-                        <version>3.0.0-M2</version>
+                        <version>3.0.0-M3</version>
                         <executions>
                             <execution>
                                 <id>enforce</id>
@@ -388,7 +388,7 @@
                     <plugin>
                         <groupId>org.gaul</groupId>
                         <artifactId>modernizer-maven-plugin</artifactId>
-                        <version>1.8.0</version>
+                        <version>2.0.0</version>
                         <configuration>
                             <javaVersion>1.8</javaVersion>
                             <!--<failOnViolations>false</failOnViolations>-->
@@ -406,7 +406,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId> 
-                        <version>0.8.3</version> 
+                        <version>0.8.5</version> 
                         <executions> 
                             <execution> 
                                 <goals> 
@@ -445,7 +445,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.1</version>
+                        <version>3.2.0</version>
                         <executions>
                             <execution>
                                 <phase>verify</phase>
@@ -478,7 +478,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.1</version>
+                        <version>3.2.0</version>
                         <executions>
                             <execution>
                                 <phase>verify</phase>
@@ -498,7 +498,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.1</version>
                 <configuration>
                     <!-- to have the jar plugin pickup the nbm generated manifest -->
                     <archive>
