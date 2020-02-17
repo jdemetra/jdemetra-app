@@ -123,7 +123,7 @@
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-modules-javahelp</artifactId>
-                <version>RELEASE82</version>
+                <version>RELEASE802</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.netbeans.api</groupId>
