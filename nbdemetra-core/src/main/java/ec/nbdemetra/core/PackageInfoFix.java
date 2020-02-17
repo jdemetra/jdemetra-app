@@ -16,21 +16,15 @@
  */
 package ec.nbdemetra.core;
 
-import ioutil.IO;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.logging.Level;
+import nbbrd.io.Resource;
 
 /**
  * A bug prevents NetBeans module to auto-load package-info classes under
@@ -47,7 +41,7 @@ class PackageInfoFix {
             Enumeration<URL> urls = classLoader.getResources("META-INF/MANIFEST.MF");
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
-                processRessource(url.toURI(), o -> loadPackageInfos(classLoader, getRootOfManifest(o)));
+                Resource.process(url.toURI(), o -> loadPackageInfos(classLoader, getRootOfManifest(o)));
             }
         } catch (IOException | URISyntaxException | UncheckedIOException ex) {
             log.log(Level.WARNING, "While loading package infos", ex);
@@ -83,17 +77,6 @@ class PackageInfoFix {
             classLoader.loadClass(className);
         } catch (ClassNotFoundException ex) {
             log.log(Level.WARNING, "Cannot load class '" + className + "'", ex);
-        }
-    }
-
-    // see https://stackoverflow.com/a/36021165
-    private void processRessource(URI uri, IO.Consumer<Path> action) throws IOException {
-        try {
-            action.acceptWithIO(Paths.get(uri));
-        } catch (FileSystemNotFoundException ex) {
-            try (FileSystem fs = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
-                action.acceptWithIO(fs.provider().getPath(uri));
-            }
         }
     }
 }
