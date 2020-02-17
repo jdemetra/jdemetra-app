@@ -130,10 +130,10 @@
                         <publicPackage>ec.demetra.workspace.file</publicPackage>
                         <publicPackage>ec.demetra.workspace.file.spi</publicPackage>
                         <publicPackage>ec.demetra.workspace.file.util</publicPackage>
-                        <publicPackage>ioutil</publicPackage>
                         <publicPackage>javax.annotation.*</publicPackage>
                         <publicPackage>javax.xml.bind.*</publicPackage>
                         <publicPackage>net.jcip.annotations</publicPackage>
+                        <publicPackage>nbbrd.io.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
