@@ -14,7 +14,7 @@
 
     <properties>
         <miglayout.version>3.7.4</miglayout.version>
-        <l2fprod.version>1.0.5</l2fprod.version>
+        <l2fprod.version>1.3.0</l2fprod.version>
         <jcalendar.version>1.4</jcalendar.version>
         <swinglayout.version>1.0.3</swinglayout.version>
         <java-desktop-util.version>2.2.3</java-desktop-util.version>
