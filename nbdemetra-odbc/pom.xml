@@ -84,7 +84,7 @@
         <dependency>
             <groupId>be.nbb.rd</groupId>
             <artifactId>java-sql-lhod</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>be.nbb.rd</groupId>
