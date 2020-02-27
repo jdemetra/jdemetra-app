@@ -16,7 +16,7 @@
  */
 package demetra.ui.datatransfer;
 
-import demetra.design.ServiceDefinition;
+import internal.ui.ServiceDefinition;
 import demetra.tsprovider.TsCollection;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;

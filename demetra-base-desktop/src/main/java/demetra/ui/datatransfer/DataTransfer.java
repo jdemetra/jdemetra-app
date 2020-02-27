@@ -25,7 +25,6 @@ import demetra.ui.beans.ListenableBean;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.util.various.swing.OnEDT;
 import internal.ui.datatransfer.Magic;
-import ioutil.IO;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -46,6 +45,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import nbbrd.io.function.IOFunction;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.Lookup;
 
@@ -312,7 +312,7 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
                 .collect(Collectors.groupingBy(DataTransfer::getDataFlavorOrNull));
     }
 
-    private static <T> IO.Function<DataTransferSpi, Object> getTransferDataLoader(T data, TypeHelper<T> helper) {
+    private static <T> IOFunction<DataTransferSpi, Object> getTransferDataLoader(T data, TypeHelper<T> helper) {
         return o -> helper.getTransferData(data, o);
     }
 

@@ -41,10 +41,10 @@ import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ioutil.IO;
 import demetra.ui.OldDataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
 import demetra.ui.OldDataTransferSpi;
+import nbbrd.io.function.IOFunction;
 
 /**
  * @author Philippe Charles
@@ -223,7 +223,7 @@ public final class DefaultDataTransfer extends ListenableBean implements OldData
                 .collect(Collectors.groupingBy(DefaultDataTransfer::getDataFlavorOrNull));
     }
 
-    private static <T> IO.Function<OldDataTransferSpi, Object> getTransferDataLoader(T data, TypeHelper<T> helper) {
+    private static <T> IOFunction<OldDataTransferSpi, Object> getTransferDataLoader(T data, TypeHelper<T> helper) {
         return o -> helper.getTransferData(data, o);
     }
 

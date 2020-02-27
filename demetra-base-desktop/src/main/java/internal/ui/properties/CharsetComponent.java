@@ -17,7 +17,6 @@
 package internal.ui.properties;
 
 import demetra.ui.completion.JAutoCompletionService;
-import demetra.util.Parser;
 import ec.util.various.swing.TextPrompt;
 import java.awt.BorderLayout;
 import java.nio.charset.Charset;
@@ -27,6 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import nbbrd.io.text.Parser;
 
 /**
  *

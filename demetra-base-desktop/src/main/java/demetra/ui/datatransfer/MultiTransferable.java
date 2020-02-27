@@ -17,7 +17,6 @@
 package demetra.ui.datatransfer;
 
 import ec.util.various.swing.OnAnyThread;
-import ioutil.IO;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -28,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import nbbrd.io.function.IOFunction;
 
 /**
  *
@@ -40,7 +40,7 @@ public final class MultiTransferable<HANDLER> implements Transferable {
     private final Map<DataFlavor, List<HANDLER>> roHandlersByFlavor;
 
     @lombok.NonNull
-    private final IO.Function<HANDLER, Object> transferDataLoader;
+    private final IOFunction<HANDLER, Object> transferDataLoader;
 
     private final ConcurrentMap<DataFlavor, Object> cache = new ConcurrentHashMap<>();
 
