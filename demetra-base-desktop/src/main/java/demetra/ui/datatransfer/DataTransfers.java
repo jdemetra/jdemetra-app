@@ -16,8 +16,6 @@
  */
 package demetra.ui.datatransfer;
 
-import demetra.util.Formatter;
-import demetra.util.Parser;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -31,6 +29,8 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.datatransfer.ExTransferable;
 import org.openide.util.datatransfer.MultiTransferObject;

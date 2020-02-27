@@ -16,11 +16,11 @@
  */
 package demetra.ui.completion;
 
-import demetra.design.ServiceDefinition;
 import ec.util.completion.swing.JAutoCompletion;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.text.JTextComponent;
 import org.openide.util.lookup.Lookups;
+import internal.ui.ServiceDefinition;
 
 /**
  *
