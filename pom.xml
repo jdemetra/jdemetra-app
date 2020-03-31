@@ -358,7 +358,13 @@
                                 <id>enforce</id>
                                 <configuration>
                                     <rules>
+                                        <requireMavenVersion>
+                                            <version>3.3.9</version>
+                                        </requireMavenVersion>
                                         <DependencyConvergence/>
+                                        <requireReleaseDeps>
+                                            <onlyWhenRelease>true</onlyWhenRelease>
+                                        </requireReleaseDeps>
                                     </rules>
                                 </configuration>
                                 <goals>
@@ -371,9 +377,14 @@
             </build>
         </profile>
         
-        <!-- Optional checks -->
+        <!-- Enforce modern API -->
         <profile>
-            <id>optional-checks</id>
+            <id>enforce-modern-api</id>
+            <activation>
+                <property>
+                    <name>!skipEnforceModernAPI</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -382,7 +393,12 @@
                         <version>2.1.0</version>
                         <configuration>
                             <javaVersion>1.8</javaVersion>
-                            <!--<failOnViolations>false</failOnViolations>-->
+                            <exclusionPatterns>
+                                <exclusionPattern>com/google/common/base/Optional.*</exclusionPattern>
+                            </exclusionPatterns>
+                            <exclusions>
+                                <exclusion>com/google/common/base/Function</exclusion>
+                            </exclusions>
                         </configuration>
                         <executions>
                             <execution>
@@ -394,29 +410,10 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId> 
-                        <version>0.8.5</version> 
-                        <executions> 
-                            <execution> 
-                                <goals> 
-                                    <goal>prepare-agent</goal> 
-                                </goals>
-                            </execution>
-                            <execution> 
-                                <id>report</id> 
-                                <phase>prepare-package</phase> 
-                                <goals> 
-                                    <goal>report</goal> 
-                                </goals> 
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
-        
+                
         <!-- Deploy SNAPSHOTS to jfrog with sources -->
         <profile>
             <id>deploy-snapshots</id>
