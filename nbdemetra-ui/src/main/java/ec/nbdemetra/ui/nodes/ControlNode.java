@@ -234,7 +234,8 @@ public class ControlNode {
         b.withEnum(TsInformationType.class).select(ts, "getType", null).display("Information type").add();
         b.with(LocalDateTime.class)
                 .selectConst("snapshot", FrozenTsHelper.getTimestamp(ts))
-                .attribute(LocalDateTimePropertyEditor.NULL_STRING, "Latest")
+//                .attribute(LocalDateTimePropertyEditor.NULL_STRING, "Latest")
+                .attribute("nullString", "Latest")
                 .display("Snapshot")
                 .add();
 

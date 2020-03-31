@@ -215,7 +215,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
@@ -258,6 +258,8 @@
                         <publicPackage>ec.tstoolkit.*</publicPackage>
                         <publicPackage>ec.ui.*</publicPackage>
                         <publicPackage>ec.util.*</publicPackage>
+                        <!-- fixme -->
+                        <publicPackage>internal.ui.components</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
