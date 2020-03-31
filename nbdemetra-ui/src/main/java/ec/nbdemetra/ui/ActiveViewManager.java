@@ -51,7 +51,7 @@ public class ActiveViewManager implements Lookup.Provider, ExplorerManager.Provi
 
     public void set(IActiveView view) {
         if (view == null) {
-            content.set(Collections.EMPTY_SET, null);
+            content.set(Collections.emptySet(), null);
             //mgr.setRootContext(Node.EMPTY);
         } else {
             content.set(Collections.singleton(view), null);

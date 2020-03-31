@@ -17,7 +17,6 @@
 package ec.ui.chart;
 
 import com.google.common.base.Preconditions;
-import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
 import ec.tss.*;
 import ec.tstoolkit.design.IBuilder;
@@ -30,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jfree.data.DomainOrder;
@@ -85,7 +85,7 @@ public final class TsXYDatasets {
         private final List<TsFacade> list = new ArrayList<>();
 
         private void checkKey(Comparable<?> key) {
-            Preconditions.checkNotNull(key, "Cannot add null key");
+            Objects.requireNonNull(key, "Cannot add null key");
             Preconditions.checkArgument(!keys.contains(key), "Duplicated key");
         }
 
@@ -95,7 +95,7 @@ public final class TsXYDatasets {
         }
 
         private void addTs(Ts ts) {
-            checkNotNull(ts, "Ts cannot be null");
+            Objects.requireNonNull(ts, "Ts cannot be null");
             checkKey(ts.getMoniker());
             if (ts.hasData().equals(TsStatus.Valid)) {
                 add(FastTs.create(ts));
@@ -105,8 +105,8 @@ public final class TsXYDatasets {
         @NonNull
         public Builder add(@NonNull Comparable<?> key, @NonNull TsPeriod start, @NonNull double[] data) {
             checkKey(key);
-            checkNotNull(start, "Start cannot be null");
-            checkNotNull(data, "Data cannot be null");
+            Objects.requireNonNull(start, "Start cannot be null");
+            Objects.requireNonNull(data, "Data cannot be null");
             if (data.length > 0) {
                 add(FastTs.create(key, start, data));
             }
@@ -116,7 +116,7 @@ public final class TsXYDatasets {
         @NonNull
         public Builder add(@NonNull Comparable<?> key, @NonNull TsData data) {
             checkKey(key);
-            checkNotNull(data, "Data cannot be null");
+            Objects.requireNonNull(data, "Data cannot be null");
             if (!data.isEmpty()) {
                 add(FastTs.create(key, data));
             }

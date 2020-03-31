@@ -23,6 +23,7 @@ import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.InformationExtractor;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JComponent;
@@ -55,10 +56,10 @@ public class ComposedProcDocumentItemFactory<D extends IProcDocument, I> extends
      * @param itemUI
      */
     public ComposedProcDocumentItemFactory(@NonNull Class<D> documentType, @NonNull Id itemId, @NonNull InformationExtractor<? super D, I> informationExtractor, @NonNull ItemUI<? extends IProcDocumentView<D>, I> itemUI) {
-        this.documentType = Preconditions.checkNotNull(documentType, "documentType");
-        this.itemId = Preconditions.checkNotNull(itemId, "itemId");
-        this.informationExtractor = Preconditions.checkNotNull(informationExtractor, "informationExtractor");
-        this.itemUI = Preconditions.checkNotNull(itemUI, "itemUI");
+        this.documentType = Objects.requireNonNull(documentType, "documentType");
+        this.itemId = Objects.requireNonNull(itemId, "itemId");
+        this.informationExtractor = Objects.requireNonNull(informationExtractor, "informationExtractor");
+        this.itemUI = Objects.requireNonNull(itemUI, "itemUI");
         this.async = false;
     }
 
