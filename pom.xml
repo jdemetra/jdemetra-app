@@ -498,11 +498,12 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
-                <version>3.14</version>
+                <version>4.5</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <useOSGiDependencies>false</useOSGiDependencies>
                     <brandingToken>${brandingToken}</brandingToken>
                     <cluster>${brandingToken}</cluster>
                 </configuration>

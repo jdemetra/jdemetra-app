@@ -47,8 +47,12 @@ public final class DbExplorerUtil {
 
     static boolean isTableOrView(@NonNull Node node) {
         return lookupContains(node.getLookup(),
-                "org.netbeans.modules.db.explorer.node.TableNode",
-                "org.netbeans.modules.db.explorer.node.ViewNode");
+                getClassName("TableNode"),
+                getClassName("ViewNode"));
+    }
+
+    private static String getClassName(String name) {
+        return "org.netbeans.modules.db.explorer.node." + name;
     }
 
     // some part of the db api is private; we need to cheat a bit
