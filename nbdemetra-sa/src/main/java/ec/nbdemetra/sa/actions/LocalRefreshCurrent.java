@@ -8,24 +8,25 @@ import ec.nbdemetra.sa.MultiProcessingManager;
 import ec.nbdemetra.sa.SaBatchUI;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.tss.sa.EstimationPolicyType;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.openide.awt.ActionID;
+import java.awt.event.ActionEvent;
+
+import org.openide.awt.ActionRegistration;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
-import org.openide.awt.ActionRegistration;
+import org.openide.awt.ActionID;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "ec.nbdemetra.sa.actions.LocalRefreshConcurrent")
-@ActionRegistration(displayName = "#CTL_LocalRefreshConcurrent")
+id = "ec.nbdemetra.sa.actions.LocalRefreshCurrent")
+@ActionRegistration(displayName = "#CTL_LocalRefreshCurrent")
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.LOCALPATH+LocalRefresh.PATH, position = 1230)
+    @ActionReference(path = MultiProcessingManager.LOCALPATH+LocalRefresh.PATH, position = 1201)
 })
-@Messages("CTL_LocalRefreshConcurrent=Concurrent")
-public final class LocalRefreshConcurrent implements ActionListener {
+@Messages("CTL_LocalRefreshCurrent=Current adjustment (AO approach)")
+public final class LocalRefreshCurrent implements ActionListener {
 
-     public LocalRefreshConcurrent() {
+    public LocalRefreshCurrent() {
     }
 
     @Override
@@ -34,6 +35,6 @@ public final class LocalRefreshConcurrent implements ActionListener {
         if (ui == null) {
             return;
         }
-        ui.refreshSelection(EstimationPolicyType.Complete, false, true);
+        ui.refreshSelection(EstimationPolicyType.Current, false, true);
     }
 }
