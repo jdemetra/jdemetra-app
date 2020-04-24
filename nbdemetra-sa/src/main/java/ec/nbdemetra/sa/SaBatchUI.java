@@ -890,6 +890,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         @Override
         protected String getText(SaItem item) {
             switch (item.getEstimationPolicy()) {
+                case Current:
+                    return "Current (AO)";
                 case Fixed:
                     return "Fixed model";
                 case FixedParameters:

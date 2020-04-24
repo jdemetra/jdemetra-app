@@ -20,7 +20,7 @@ import org.openide.util.NbBundle.Messages;
 id = "ec.nbdemetra.sa.actions.RefreshConcurrent")
 @ActionRegistration(displayName = "#CTL_RefreshConcurrent")
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH+Refresh.PATH, position = 1290)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH+Refresh.PATH, position = 1230)
 })
 @Messages("CTL_RefreshConcurrent=Concurrent")
 public final class RefreshConcurrent implements ActionListener {

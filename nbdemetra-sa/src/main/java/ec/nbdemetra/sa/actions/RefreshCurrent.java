@@ -8,24 +8,25 @@ import ec.nbdemetra.sa.MultiProcessingManager;
 import ec.nbdemetra.sa.SaBatchUI;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.tss.sa.EstimationPolicyType;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.openide.awt.ActionID;
+import java.awt.event.ActionEvent;
+
+import org.openide.awt.ActionRegistration;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
-import org.openide.awt.ActionRegistration;
+import org.openide.awt.ActionID;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "ec.nbdemetra.sa.actions.LocalRefreshFixedModel")
-@ActionRegistration(displayName = "#CTL_LocalRefreshFixedModel")
+id = "ec.nbdemetra.sa.actions.RefreshCurrent")
+@ActionRegistration(displayName = "#CTL_RefreshCurrent")
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.LOCALPATH + LocalRefreshPartial.PATH, position = 1205)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH+Refresh.PATH, position = 1201)
 })
-@Messages("CTL_LocalRefreshFixedModel=Fixed model")
-public final class LocalRefreshFixedModel implements ActionListener  {
+@Messages("CTL_RefreshCurrent=Current adjustment (AO approach)")
+public final class RefreshCurrent implements ActionListener {
 
-    public LocalRefreshFixedModel() {
+    public RefreshCurrent() {
     }
 
     @Override
@@ -34,6 +35,6 @@ public final class LocalRefreshFixedModel implements ActionListener  {
         if (ui == null) {
             return;
         }
-        ui.refreshSelection(EstimationPolicyType.Fixed, false, true);
+        ui.refresh(EstimationPolicyType.Current, false, true);
     }
 }
