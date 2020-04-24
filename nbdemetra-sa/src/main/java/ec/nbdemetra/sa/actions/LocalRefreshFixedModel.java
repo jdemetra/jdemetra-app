@@ -22,7 +22,7 @@ id = "ec.nbdemetra.sa.actions.LocalRefreshFixedModel")
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.LOCALPATH + LocalRefreshPartial.PATH, position = 1205)
 })
-@Messages("CTL_LocalRefreshFixedModel=Current adjustment")
+@Messages("CTL_LocalRefreshFixedModel=Fixed model")
 public final class LocalRefreshFixedModel implements ActionListener  {
 
     public LocalRefreshFixedModel() {
