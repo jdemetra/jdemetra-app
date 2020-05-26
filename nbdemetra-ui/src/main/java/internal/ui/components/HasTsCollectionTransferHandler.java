@@ -59,7 +59,7 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
 
     @Override
     protected Transferable createTransferable(JComponent c) {
-        demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
+        demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
         delegate.getTsSelectionStream().forEach(col::data);
         return tssSupport.fromTsCollection(col.build());
     }
@@ -114,19 +114,19 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
         }
     }
 
-    private static demetra.tsprovider.TsCollection update(HasTsCollection.TsUpdateMode mode, demetra.tsprovider.TsCollection main, TsCollection col) {
+    private static demetra.timeseries.TsCollection update(HasTsCollection.TsUpdateMode mode, demetra.timeseries.TsCollection main, TsCollection col) {
         switch (mode) {
             case None:
                 return main;
             case Single:
-                return demetra.tsprovider.TsCollection.of(TsConverter.toTs(col.get(0)));
+                return demetra.timeseries.TsCollection.of(TsConverter.toTs(col.get(0)));
             case Replace:
                 return TsConverter.toTsCollection(col);
             case Append:
-                Set<demetra.tsprovider.TsMoniker> monikers = main.getData().stream().map(demetra.tsprovider.Ts::getMoniker).collect(Collectors.toSet());
-                demetra.tsprovider.TsCollection.Builder result = main.toBuilder();
+                Set<demetra.timeseries.TsMoniker> monikers = main.getData().stream().map(demetra.timeseries.Ts::getMoniker).collect(Collectors.toSet());
+                demetra.timeseries.TsCollection.Builder result = main.toBuilder();
                 for (Ts o : col) {
-                    demetra.tsprovider.TsMoniker id = TsConverter.toTsMoniker(o.getMoniker());
+                    demetra.timeseries.TsMoniker id = TsConverter.toTsMoniker(o.getMoniker());
                     if (!id.isProvided() || !monikers.contains(id)) {
                         result.data(TsConverter.toTs(o));
                     }
@@ -147,12 +147,12 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
             return this != NO;
         }
 
-        public static TransferChange of(Transferable source, demetra.tsprovider.TsCollection target) {
+        public static TransferChange of(Transferable source, demetra.timeseries.TsCollection target) {
             LocalObjectDataTransfer handler = Lookup.getDefault().lookup(LocalObjectDataTransfer.class);
             return handler != null ? of(handler, source, target) : MAYBE;
         }
 
-        private static TransferChange of(LocalObjectDataTransfer handler, Transferable source, demetra.tsprovider.TsCollection target) {
+        private static TransferChange of(LocalObjectDataTransfer handler, Transferable source, demetra.timeseries.TsCollection target) {
             return DataTransfers.getMultiTransferables(source)
                     .map(handler::peekTsCollection)
                     .map(o -> of(TsConverter.fromTsCollection(o), TsConverter.fromTsCollection(target)))

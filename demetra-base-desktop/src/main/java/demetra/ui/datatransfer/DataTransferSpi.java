@@ -17,7 +17,7 @@
 package demetra.ui.datatransfer;
 
 import internal.ui.ServiceDefinition;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
 import java.awt.datatransfer.DataFlavor;

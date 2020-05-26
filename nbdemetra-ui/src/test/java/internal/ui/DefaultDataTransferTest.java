@@ -58,7 +58,7 @@ public class DefaultDataTransferTest {
 
     @Test
     public void testContent() {
-        LocalObjectTransferable<demetra.tsprovider.TsCollection> col = new LocalObjectTransferable<>(demetra.tsprovider.TsCollection.EMPTY);
+        LocalObjectTransferable<demetra.timeseries.TsCollection> col = new LocalObjectTransferable<>(demetra.timeseries.TsCollection.EMPTY);
         Transferable multi = new ExTransferable.Multi(new Transferable[]{col});
 
         DefaultDataTransfer local = of(new LocalObjectDataTransfer());

@@ -43,7 +43,7 @@ public final class PasteTs extends AbstractViewAction<WorkspaceTsTopComponent> {
     protected void process(WorkspaceTsTopComponent cur) {
         WorkspaceTsTopComponent top = context();
         if (top != null) {
-            Optional<demetra.tsprovider.Ts> s = DataTransfer.getDefault().toTs(DataTransfers.systemClipboardAsTransferable());
+            Optional<demetra.timeseries.Ts> s = DataTransfer.getDefault().toTs(DataTransfers.systemClipboardAsTransferable());
             if (!s.isPresent()) {
                 NotifyDescriptor nd = new NotifyDescriptor.Message("Unable to paste ts");
                 DialogDisplayer.getDefault().notify(nd);

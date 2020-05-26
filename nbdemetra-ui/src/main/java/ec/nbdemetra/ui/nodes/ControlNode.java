@@ -8,8 +8,8 @@ import demetra.ui.nodes.AbstractNodeBuilder;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;
-import demetra.tsprovider.Ts;
-import demetra.tsprovider.TsInformationType;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.util.MultiLineNameUtil;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection;
@@ -117,7 +117,7 @@ public class ControlNode {
 
     private static final class TsCollectionNode extends AbstractNode {
 
-        TsCollectionNode(demetra.tsprovider.TsCollection col) {
+        TsCollectionNode(demetra.timeseries.TsCollection col) {
             super(new TsCollectionChildren(col), Lookups.singleton(col));
             setName(col.getName());
             setDisplayName(MultiLineNameUtil.last(col.getName()));
@@ -126,7 +126,7 @@ public class ControlNode {
 
         @Override
         protected Sheet createSheet() {
-            demetra.tsprovider.TsCollection col = getLookup().lookup(demetra.tsprovider.TsCollection.class);
+            demetra.timeseries.TsCollection col = getLookup().lookup(demetra.timeseries.TsCollection.class);
             NodePropertySetBuilder b = new NodePropertySetBuilder();
             Sheet result = new Sheet();
             result.put(getDefinitionSheetSet(col, b));
@@ -135,9 +135,9 @@ public class ControlNode {
         }
 
         @lombok.AllArgsConstructor
-        static class TsCollectionChildren extends Children.Keys<demetra.tsprovider.Ts> {
+        static class TsCollectionChildren extends Children.Keys<demetra.timeseries.Ts> {
 
-            final demetra.tsprovider.TsCollection col;
+            final demetra.timeseries.TsCollection col;
 
             @Override
             protected void addNotify() {
@@ -150,7 +150,7 @@ public class ControlNode {
             }
 
             @Override
-            protected Node[] createNodes(demetra.tsprovider.Ts key) {
+            protected Node[] createNodes(demetra.timeseries.Ts key) {
                 return new Node[]{new TsNode(key)};
             }
         }
@@ -158,7 +158,7 @@ public class ControlNode {
 
     private static final class TsNode extends AbstractNode {
 
-        TsNode(demetra.tsprovider.Ts ts) {
+        TsNode(demetra.timeseries.Ts ts) {
             super(Children.LEAF, Lookups.singleton(ts));
             setName(ts.getName());
             setDisplayName(MultiLineNameUtil.last(ts.getName()));
@@ -166,7 +166,7 @@ public class ControlNode {
         }
 
         private Optional<Image> lookupIcon(int type, boolean opened) {
-            demetra.tsprovider.Ts ts = getLookup().lookup(demetra.tsprovider.Ts.class);
+            demetra.timeseries.Ts ts = getLookup().lookup(demetra.timeseries.Ts.class);
             return DataSourceProviderBuddySupport.getDefault().getIcon(TsConverter.fromTsMoniker(ts.getMoniker()), type, opened);
         }
 
@@ -182,7 +182,7 @@ public class ControlNode {
 
         @Override
         protected Sheet createSheet() {
-            demetra.tsprovider.Ts ts = getLookup().lookup(demetra.tsprovider.Ts.class);
+            demetra.timeseries.Ts ts = getLookup().lookup(demetra.timeseries.Ts.class);
             NodePropertySetBuilder b = new NodePropertySetBuilder();
             Sheet result = new Sheet();
             result.put(getDefinitionSheetSet(ts, b));
@@ -192,7 +192,7 @@ public class ControlNode {
         }
     }
 
-    private static Sheet.Set getDefinitionSheetSet(demetra.tsprovider.TsCollection col, NodePropertySetBuilder b) {
+    private static Sheet.Set getDefinitionSheetSet(demetra.timeseries.TsCollection col, NodePropertySetBuilder b) {
         b.reset("Collection");
 
         b.with(String.class)
@@ -210,7 +210,7 @@ public class ControlNode {
         return b.build();
     }
 
-    private static Sheet.Set getMetaSheetSet(demetra.tsprovider.TsCollection col, NodePropertySetBuilder b) {
+    private static Sheet.Set getMetaSheetSet(demetra.timeseries.TsCollection col, NodePropertySetBuilder b) {
         b.reset("Meta data");
         col.getMeta().entrySet().stream()
                 .sorted(Comparator.comparing(Map.Entry::getKey))
@@ -218,7 +218,7 @@ public class ControlNode {
         return b.build();
     }
 
-    public static Sheet.@NonNull Set getDefinitionSheetSet(demetra.tsprovider.@NonNull Ts ts, @NonNull NodePropertySetBuilder b) {
+    public static Sheet.@NonNull Set getDefinitionSheetSet(demetra.timeseries.@NonNull Ts ts, @NonNull NodePropertySetBuilder b) {
         b.reset("Time series");
 
         b.with(String.class)
@@ -242,7 +242,7 @@ public class ControlNode {
         return b.build();
     }
 
-    private static Sheet.Set getDataSheetSet(demetra.tsprovider.Ts ts, NodePropertySetBuilder b) {
+    private static Sheet.Set getDataSheetSet(demetra.timeseries.Ts ts, NodePropertySetBuilder b) {
         b.reset("Data");
         demetra.timeseries.TsData data = ts.getData();
         if (!data.isEmpty()) {
@@ -257,7 +257,7 @@ public class ControlNode {
         return b.build();
     }
 
-    private static Sheet.Set getMetaSheetSet(demetra.tsprovider.Ts ts, NodePropertySetBuilder b) {
+    private static Sheet.Set getMetaSheetSet(demetra.timeseries.Ts ts, NodePropertySetBuilder b) {
         b.reset("Meta data");
         ts.getMeta().entrySet().stream()
                 .filter(o -> !FrozenTsHelper.isFreezeKey(o.getKey()))
@@ -266,7 +266,7 @@ public class ControlNode {
         return b.build();
     }
 
-    private static void addDataSourceProperties(demetra.tsprovider.TsMoniker moniker, NodePropertySetBuilder b) {
+    private static void addDataSourceProperties(demetra.timeseries.TsMoniker moniker, NodePropertySetBuilder b) {
         ec.tss.TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
         if (original != null) {
             String providerName = original.getSource();

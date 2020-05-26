@@ -42,9 +42,9 @@ public final class HasTsTransferHandler extends TransferHandler {
 
     @Override
     public boolean importData(TransferHandler.TransferSupport support) {
-        Optional<demetra.tsprovider.Ts> ts = tssSupport.toTs(support.getTransferable());
+        Optional<demetra.timeseries.Ts> ts = tssSupport.toTs(support.getTransferable());
         if (ts.isPresent()) {
-            TsManager.getDefault().loadAsync(ts.get(), demetra.tsprovider.TsInformationType.All);
+            TsManager.getDefault().loadAsync(ts.get(), demetra.timeseries.TsInformationType.All);
             delegate.setTs(ts.get());
             return true;
         }

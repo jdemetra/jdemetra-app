@@ -39,7 +39,7 @@ public final class TsViewsTsAction implements TsActionSpi {
     }
 
     @Override
-    public void open(demetra.tsprovider.Ts ts) {
+    public void open(demetra.timeseries.Ts ts) {
         TopComponent.getRegistry().getOpened().stream()
                 .filter(HasTs.class::isInstance)
                 .forEach(o -> ((HasTs) o).setTs(ts));

@@ -16,8 +16,8 @@
  */
 package internal.ui.datatransfer;
 
-import demetra.tsprovider.Ts;
-import demetra.tsprovider.TsInformationType;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsInformationType;
 
 /**
  *

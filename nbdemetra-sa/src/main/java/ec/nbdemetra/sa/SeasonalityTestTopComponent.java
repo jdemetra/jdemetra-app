@@ -5,7 +5,7 @@
 package ec.nbdemetra.sa;
 
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTs;
 import demetra.ui.components.HasTsCollection;
@@ -139,7 +139,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
     // End of variables declaration//GEN-END:variables
 
     private void showTests() {
-        demetra.tsprovider.Ts cur = getTs();
+        demetra.timeseries.Ts cur = getTs();
         if (cur == null) {
             jEditorPane1.loadContent("");
         } else {
@@ -185,12 +185,12 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
     }
 
     @Override
-    public demetra.tsprovider.Ts getTs() {
+    public demetra.timeseries.Ts getTs() {
         return jTsChart1.getTsCollection().getData().stream().findFirst().orElse(null);
     }
 
     @Override
-    public void setTs(demetra.tsprovider.Ts ts) {
+    public void setTs(demetra.timeseries.Ts ts) {
         jTsChart1.setTsCollection(TsCollection.of(ts));
         //test(ts);
     }

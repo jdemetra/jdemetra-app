@@ -54,7 +54,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
         public static final Column NAME = builder()
                 .name("Name")
                 .type(String.class)
-                .mapper(demetra.tsprovider.Ts::getName)
+                .mapper(demetra.timeseries.Ts::getName)
                 .build();
 
         public static final Column FREQ = builder()
@@ -91,7 +91,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
         public static final Column DATA = builder()
                 .name("Data")
                 .type(demetra.timeseries.TsData.class)
-                .mapper(demetra.tsprovider.Ts::getData)
+                .mapper(demetra.timeseries.Ts::getData)
                 .comparator((l, r) -> -1)
                 .renderer(o -> new TsDataTableCellRenderer(o, DemetraUI.getDefault()))
                 .build();
@@ -113,7 +113,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
 
         @lombok.NonNull
         @lombok.Builder.Default
-        private Function<demetra.tsprovider.Ts, ?> mapper = Function.identity();
+        private Function<demetra.timeseries.Ts, ?> mapper = Function.identity();
 
         @lombok.NonNull
         @lombok.Builder.Default

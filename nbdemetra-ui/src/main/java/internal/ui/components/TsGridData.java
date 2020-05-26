@@ -48,7 +48,7 @@ interface TsGridData {
     int getColumnIndex(@NonNull ObsIndex index);
 
     @NonNull
-    static TsGridData create(List<demetra.tsprovider.Ts> col, int singleSeriesIndex) {
+    static TsGridData create(List<demetra.timeseries.Ts> col, int singleSeriesIndex) {
         if (col.isEmpty() || (singleSeriesIndex != -1 && col.get(singleSeriesIndex).getData().isEmpty())) {
             return Empty.INSTANCE;
         }

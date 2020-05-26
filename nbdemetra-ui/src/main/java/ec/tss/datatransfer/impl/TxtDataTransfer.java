@@ -99,12 +99,12 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
     }
 
     @Override
-    public boolean canExportTsCollection(demetra.tsprovider.TsCollection col) {
+    public boolean canExportTsCollection(demetra.timeseries.TsCollection col) {
         return config.exportTimeSeries && !col.getData().isEmpty();
     }
 
     @Override
-    public Object exportTsCollection(demetra.tsprovider.TsCollection col) throws IOException {
+    public Object exportTsCollection(demetra.timeseries.TsCollection col) throws IOException {
         TsCollection tmp = TsConverter.fromTsCollection(col);
         tmp.load(TsInformationType.Data);
         return tsCollectionToString(tmp);
@@ -116,7 +116,7 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
     }
 
     @Override
-    public demetra.tsprovider.TsCollection importTsCollection(Object obj) throws IOException {
+    public demetra.timeseries.TsCollection importTsCollection(Object obj) throws IOException {
         TsCollection result = tsCollectionFromString((String) obj);
         if (result != null) {
             return TsConverter.toTsCollection(result);

@@ -287,11 +287,11 @@ public class TsManager implements AutoCloseable {
         throw new RuntimeException("Not implemented");
     }
 
-    public void loadAsync(demetra.tsprovider.@NonNull Ts ts, demetra.tsprovider.@NonNull TsInformationType type) {
+    public void loadAsync(demetra.timeseries.@NonNull Ts ts, demetra.timeseries.@NonNull TsInformationType type) {
         TsConverter.fromTs(ts).query(TsConverter.fromType(type));
     }
 
-    public demetra.tsprovider.@NonNull Ts load(demetra.tsprovider.@NonNull Ts ts, demetra.tsprovider.@NonNull TsInformationType type) {
+    public demetra.timeseries.@NonNull Ts load(demetra.timeseries.@NonNull Ts ts, demetra.timeseries.@NonNull TsInformationType type) {
         Ts tmp = TsConverter.fromTs(ts);
         tmp.load(TsConverter.fromType(type));
         return TsConverter.toTs(tmp);

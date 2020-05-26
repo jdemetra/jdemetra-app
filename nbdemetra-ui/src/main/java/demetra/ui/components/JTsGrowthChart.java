@@ -131,7 +131,7 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
         return computeGrowthData(getTsCollection(), getGrowthKind(), getLastYears());
     }
 
-    private static Ts[] computeGrowthData(demetra.tsprovider.TsCollection input, GrowthKind kind, int lastyears) {
+    private static Ts[] computeGrowthData(demetra.timeseries.TsCollection input, GrowthKind kind, int lastyears) {
         Ts[] tss = input.getData().stream().map(TsConverter::fromTs).toArray(Ts[]::new);
         return computeGrowthData(tss, kind, computeSelector(tss, lastyears));
     }

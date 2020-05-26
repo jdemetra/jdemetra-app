@@ -5,7 +5,7 @@
 package ec.nbdemetra.ui.tools;
 
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
@@ -100,7 +100,7 @@ public final class AggregationTopComponent extends TopComponent {
     private void initList() {
         inputList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             TsData sum = null;
-            for (demetra.tsprovider.Ts o : inputList.getTsCollection().getData()) {
+            for (demetra.timeseries.Ts o : inputList.getTsCollection().getData()) {
                 Ts s = TsConverter.fromTs(o);
                 if (s.hasData() == TsStatus.Undefined) {
                     TsManager.getDefault().load(s, TsInformationType.Data);

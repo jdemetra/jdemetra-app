@@ -20,7 +20,7 @@ import com.google.common.base.Suppliers;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsPeriod;
-import demetra.tsprovider.Ts;
+import demetra.timeseries.Ts;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.HasColorScheme;
 import demetra.ui.components.HasObsFormat;
@@ -690,7 +690,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            demetra.tsprovider.Ts ts = (demetra.tsprovider.Ts) value;
+            demetra.timeseries.Ts ts = (demetra.timeseries.Ts) value;
             setText(ts.getName());
             setIcon(monikerUI.getIcon(TsConverter.fromTsMoniker(ts.getMoniker())));
             if (colorSchemeSupport != null && index != -1) {

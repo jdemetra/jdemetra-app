@@ -90,7 +90,7 @@ public class TsProcessingViewer extends DefaultProcessingViewer<TsDocument> {
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            Optional<demetra.tsprovider.Ts> ts = DataTransfer.getDefault().toTs(support.getTransferable());
+            Optional<demetra.timeseries.Ts> ts = DataTransfer.getDefault().toTs(support.getTransferable());
             if (ts.isPresent()) {
                 getDocument().setInput(TsConverter.fromTs(ts.get()));
                 refreshAll();

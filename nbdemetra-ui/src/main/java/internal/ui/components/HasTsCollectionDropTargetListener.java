@@ -45,7 +45,7 @@ public final class HasTsCollectionDropTargetListener implements DropTargetListen
         if (!target.getTsUpdateMode().isReadOnly()) {
             Transferable t = dtde.getTransferable();
             if (transferSupport.canImport(t)) {
-                demetra.tsprovider.TsCollection.Builder dropContent = demetra.tsprovider.TsCollection.builder();
+                demetra.timeseries.TsCollection.Builder dropContent = demetra.timeseries.TsCollection.builder();
                 transferSupport
                         .toTsCollectionStream(t)
                         .flatMap(o -> o.getData().stream())
@@ -65,7 +65,7 @@ public final class HasTsCollectionDropTargetListener implements DropTargetListen
 
     @Override
     public void dragExit(DropTargetEvent dte) {
-        target.setDropContent(demetra.tsprovider.TsCollection.EMPTY);
+        target.setDropContent(demetra.timeseries.TsCollection.EMPTY);
     }
 
     @Override

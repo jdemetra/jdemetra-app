@@ -46,7 +46,7 @@ public abstract class TsDragRenderer {
 
         @Override
         public Component getTsDragRendererComponent(List<? extends Ts> selection) {
-            demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
+            demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
             selection.forEach(o -> col.data(TsConverter.toTs(o)));
             JTsChart result = supplier.get();
             result.setTsCollection(col.build());

@@ -150,11 +150,11 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> 
 
         @Override
         public void execute(HasTs component) throws Exception {
-            Optional<demetra.tsprovider.Ts> ts = TsManager.getDefault()
+            Optional<demetra.timeseries.Ts> ts = TsManager.getDefault()
                     .getTs(dataSet, TsInformationType.Definition)
                     .map(TsConverter::toTs);
             if (ts.isPresent()) {
-                TsManager.getDefault().loadAsync(ts.get(), demetra.tsprovider.TsInformationType.All);
+                TsManager.getDefault().loadAsync(ts.get(), demetra.timeseries.TsInformationType.All);
             }
             component.setTs(ts.orElse(null));
         }

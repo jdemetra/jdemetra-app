@@ -16,7 +16,7 @@
  */
 package internal.ui;
 
-import demetra.tsprovider.Ts;
+import demetra.timeseries.Ts;
 import demetra.ui.NamedService;
 import demetra.ui.TsAction;
 import demetra.ui.TsActionSpi;

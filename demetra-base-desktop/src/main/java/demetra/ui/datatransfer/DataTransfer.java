@@ -18,9 +18,9 @@ package demetra.ui.datatransfer;
 
 import demetra.design.VisibleForTesting;
 import demetra.timeseries.TsData;
-import demetra.tsprovider.Ts;
-import demetra.tsprovider.TsCollection;
-import demetra.tsprovider.TsInformationType;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsInformationType;
 import demetra.ui.beans.ListenableBean;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.util.various.swing.OnEDT;

@@ -390,7 +390,7 @@ public class HasTsCollectionCommands {
         private void rename(HasTsCollection c, Ts ts, String newName) {
             List<Ts> tmp = c.getTsCollection().getData().stream().map(TsConverter::fromTs).collect(Collectors.toList());
             tmp.set(tmp.indexOf(ts), ts.rename(newName));
-            demetra.tsprovider.TsCollection.Builder result = demetra.tsprovider.TsCollection.builder();
+            demetra.timeseries.TsCollection.Builder result = demetra.timeseries.TsCollection.builder();
             tmp.forEach(o -> result.data(TsConverter.toTs(o)));
             c.setTsCollection(result.build());
         }
@@ -462,7 +462,7 @@ public class HasTsCollectionCommands {
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
+            demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
             c.getTsSelectionStream().forEach(col::data);
             Transferable transferable = DataTransfer.getDefault().fromTsCollection(col.build());
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
@@ -514,8 +514,8 @@ public class HasTsCollectionCommands {
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            Set<demetra.tsprovider.Ts> selection = c.getTsSelectionStream().collect(Collectors.toSet());
-            demetra.tsprovider.TsCollection.Builder result = demetra.tsprovider.TsCollection.builder();
+            Set<demetra.timeseries.Ts> selection = c.getTsSelectionStream().collect(Collectors.toSet());
+            demetra.timeseries.TsCollection.Builder result = demetra.timeseries.TsCollection.builder();
             c.getTsCollection().getData().stream().filter(o -> !selection.contains(o)).forEach(result::data);
             c.setTsCollection(result.build());
         }
@@ -536,7 +536,7 @@ public class HasTsCollectionCommands {
 
         @Override
         public void execute(HasTsCollection component) throws Exception {
-            component.setTsCollection(demetra.tsprovider.TsCollection.EMPTY);
+            component.setTsCollection(demetra.timeseries.TsCollection.EMPTY);
         }
     }
 
@@ -578,7 +578,7 @@ public class HasTsCollectionCommands {
             JLists.getSelectionIndexStream(c.getTsSelectionModel())
                     .findFirst()
                     .ifPresent(o -> {
-                        demetra.tsprovider.TsCollection tmp = c.getTsCollection();
+                        demetra.timeseries.TsCollection tmp = c.getTsCollection();
                         c.setTsCollection(tmp.toBuilder().data(TsConverter.toTs(TsConverter.fromTs(tmp.getData().get(0)).freeze())).build());
                     });
         }

@@ -5,7 +5,7 @@
 package ec.ui.view;
 
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import ec.tss.Ts;
 import demetra.ui.components.JTsChart;
 import java.awt.BorderLayout;

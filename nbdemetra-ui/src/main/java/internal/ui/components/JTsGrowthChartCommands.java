@@ -77,7 +77,7 @@ public class JTsGrowthChartCommands {
 
         @Override
         public void execute(JTsGrowthChart c) throws Exception {
-            demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
+            demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
             Stream.of(c.computeGrowthData()).map(TsConverter::toTs).forEach(col::data);
             Transferable transferable = DataTransfer.getDefault().fromTsCollection(col.build());
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);

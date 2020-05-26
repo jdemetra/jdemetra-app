@@ -552,7 +552,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     public void copySeries(Collection<SaItem> litems) {
-        demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
+        demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
         litems.stream()
                 .map(SaItem::getTs)
                 .map(TsConverter::toTs)
@@ -562,7 +562,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     public void copyComponents(List<String> components) {
-        demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
+        demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
         for (SaItem item : getSelection()) {
             components.stream().forEach((comp) -> {
                 TsData tsData = item.process().getData(comp, TsData.class);

@@ -19,7 +19,7 @@ package ec.nbdemetra.anomalydetection.ui;
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.anomalydetection.ControlNode;
@@ -528,7 +528,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
             summary.set(null, null);
             chart.setTsCollection(TsCollection.EMPTY);
         } else {
-            demetra.tsprovider.Ts single = list.getTsCollection().getData().get(singleSelection.getAsInt());
+            demetra.timeseries.Ts single = list.getTsCollection().getData().get(singleSelection.getAsInt());
             AnomalyItem a = list.getMap().get(single.getName());
             if (a.isInvalid() || a.isNotProcessable()) {
                 summary.set(null, null);

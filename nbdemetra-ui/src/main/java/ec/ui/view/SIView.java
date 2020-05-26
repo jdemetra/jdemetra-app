@@ -270,7 +270,7 @@ public final class SIView extends JComponent implements TimeSeriesComponent, Has
 
     @Nullable
     private TsInformation getTsInformation() {
-        demetra.tsprovider.Ts ts = getTs();
+        demetra.timeseries.Ts ts = getTs();
         return ts != null ? TsConverter.fromTs(ts).toInfo(TsInformationType.Data) : null;
     }
 

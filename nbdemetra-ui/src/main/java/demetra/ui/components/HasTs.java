@@ -16,7 +16,7 @@
  */
 package demetra.ui.components;
 
-import demetra.tsprovider.Ts;
+import demetra.timeseries.Ts;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import internal.ui.components.HasTsImpl;

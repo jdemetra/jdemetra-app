@@ -17,8 +17,8 @@
 package demetra.ui.datatransfer;
 
 import demetra.timeseries.TsUnit;
-import demetra.tsprovider.Ts;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -54,13 +54,13 @@ public class DataTransferTest {
         assertThatThrownBy(() -> empty.canImport((DataFlavor[]) null)).isInstanceOf(NullPointerException.class);
 
         assertThat(empty.fromTs(Ts.builder().build()).getTransferDataFlavors()).isEmpty();
-        assertThat(empty.fromTsCollection(demetra.tsprovider.TsCollection.EMPTY).getTransferDataFlavors()).isEmpty();
+        assertThat(empty.fromTsCollection(demetra.timeseries.TsCollection.EMPTY).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTsData(demetra.timeseries.TsData.random(TsUnit.YEAR, 0)).getTransferDataFlavors()).isEmpty();
     }
 
     @Test
     public void testContent() {
-        LocalObjectTransferable<demetra.tsprovider.TsCollection> col = new LocalObjectTransferable<>(demetra.tsprovider.TsCollection.EMPTY);
+        LocalObjectTransferable<demetra.timeseries.TsCollection> col = new LocalObjectTransferable<>(demetra.timeseries.TsCollection.EMPTY);
         Transferable multi = new ExTransferable.Multi(new Transferable[]{col});
 
         DataTransfer local = of(new LocalObjectDataTransfer());

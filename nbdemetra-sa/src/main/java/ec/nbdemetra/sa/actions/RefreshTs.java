@@ -41,7 +41,7 @@ public final class RefreshTs extends AbstractViewAction<WorkspaceTsTopComponent>
     protected void process(WorkspaceTsTopComponent cur) {
         WorkspaceTsTopComponent top = context();
         if (top != null) {
-            demetra.tsprovider.Ts s = top.getTs();
+            demetra.timeseries.Ts s = top.getTs();
             top.setTs(TsConverter.toTs(TsConverter.fromTs(s).unfreeze()));
         }
     }

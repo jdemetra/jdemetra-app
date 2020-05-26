@@ -337,7 +337,7 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
         result.add(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
+                demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
                 col.data(TsConverter.toTs(TsManager.getDefault().newTs("series", null, data.series)));
                 col.data(TsConverter.toTs(TsManager.getDefault().newTs("lower", null, data.lower)));
                 col.data(TsConverter.toTs(TsManager.getDefault().newTs("upper", null, data.upper)));

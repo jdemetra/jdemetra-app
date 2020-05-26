@@ -39,17 +39,17 @@ public final class FrozenTsHelper {
         // static class
     }
 
-    public static boolean isFrozen(demetra.tsprovider.@NonNull Ts ts) {
+    public static boolean isFrozen(demetra.timeseries.@NonNull Ts ts) {
         return TsConverter.fromTs(ts).isFrozen();
     }
 
     @Nullable
-    public static LocalDateTime getTimestamp(demetra.tsprovider.@NonNull Ts ts) {
+    public static LocalDateTime getTimestamp(demetra.timeseries.@NonNull Ts ts) {
         return getTimestamp(TsConverter.fromTs(ts));
     }
 
     @Nullable
-    public static TsMoniker getOriginalMoniker(demetra.tsprovider.@NonNull TsMoniker moniker) {
+    public static TsMoniker getOriginalMoniker(demetra.timeseries.@NonNull TsMoniker moniker) {
         return getOriginalMoniker(TsConverter.fromTsMoniker(moniker));
     }
 

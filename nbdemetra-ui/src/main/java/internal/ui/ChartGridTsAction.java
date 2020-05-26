@@ -17,8 +17,8 @@
 package internal.ui;
 
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.Ts;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
 import demetra.ui.components.HasChart.LinesThickness;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.MonikerUI;
@@ -61,7 +61,7 @@ public final class ChartGridTsAction implements TsActionSpi {
 
     @Override
     public void open(Ts ts) {
-        TsManager.getDefault().loadAsync(ts, demetra.tsprovider.TsInformationType.All);
+        TsManager.getDefault().loadAsync(ts, demetra.timeseries.TsInformationType.All);
 
         String name = getName() + ts.getMoniker().toString();
         TopComponent c = NbComponents.findTopComponentByName(name);
