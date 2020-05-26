@@ -17,7 +17,7 @@
 package internal.ui.components;
 
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.Ts;
+import demetra.timeseries.Ts;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.components.HasTs;
@@ -55,7 +55,7 @@ public final class HasTsImpl implements HasTs, TsManager.UpdateListener {
     @Override
     public void accept(TsMoniker moniker) {
         if (ts != null) {
-            demetra.tsprovider.TsMoniker id = TsConverter.toTsMoniker(moniker);
+            demetra.timeseries.TsMoniker id = TsConverter.toTsMoniker(moniker);
             if (id.equals(ts.getMoniker())) {
                 ec.tss.Ts newData = TsManager.getDefault().lookupTs(moniker);
                 setTs(TsConverter.toTs(newData));

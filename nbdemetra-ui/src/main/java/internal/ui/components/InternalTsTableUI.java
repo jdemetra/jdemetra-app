@@ -254,15 +254,15 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
 
     private static final class TsTableModel extends AbstractTableModel {
 
-        private demetra.tsprovider.TsCollection data;
+        private demetra.timeseries.TsCollection data;
         private List<JTsTable.Column> columns;
 
         public TsTableModel() {
-            this.data = demetra.tsprovider.TsCollection.EMPTY;
+            this.data = demetra.timeseries.TsCollection.EMPTY;
             this.columns = Collections.emptyList();
         }
 
-        public void setData(demetra.tsprovider.TsCollection data) {
+        public void setData(demetra.timeseries.TsCollection data) {
             this.data = data;
             fireTableDataChanged();
         }
@@ -287,7 +287,7 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
             if (rowIndex == -1) {
                 return null;
             }
-            demetra.tsprovider.Ts ts = data.getData().get(rowIndex);
+            demetra.timeseries.Ts ts = data.getData().get(rowIndex);
             return columns.get(columnIndex).getMapper().apply(ts);
         }
 

@@ -5,7 +5,7 @@
 package ec.nbdemetra.x13.ui;
 
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
 import ec.satoolkit.DecompositionMode;
@@ -102,7 +102,7 @@ public class X13Summary extends JComponent implements IDisposable {
             siPanel_.reset();
     }
 
-    private demetra.tsprovider.Ts getMainSeries(String str) {
+    private demetra.timeseries.Ts getMainSeries(String str) {
         return TsConverter.toTs(DocumentManager.instance.getTs(doc_, str));
     }
 

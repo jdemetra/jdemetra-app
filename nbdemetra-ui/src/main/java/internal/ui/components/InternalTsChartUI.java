@@ -245,7 +245,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
 
     private void onCollectionChange() {
         selectionListener.setEnabled(false);
-        demetra.tsprovider.TsCollection tss = target.getTsCollection();
+        demetra.timeseries.TsCollection tss = target.getTsCollection();
         tsFeatures = TsFeatureHelper.of(tss.getData());
         chartPanel.setDataset(TsXYDataset.of(tss.getData()));
         updateNoDataMessage();
@@ -269,14 +269,14 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
     }
 
     private void onDropContentChange() {
-        demetra.tsprovider.TsCollection collection = target.getTsCollection();
-        demetra.tsprovider.TsCollection dropContent = target.getDropContent();
+        demetra.timeseries.TsCollection collection = target.getTsCollection();
+        demetra.timeseries.TsCollection dropContent = target.getDropContent();
 
-        List<demetra.tsprovider.Ts> tmp = new ArrayList<>();
+        List<demetra.timeseries.Ts> tmp = new ArrayList<>();
         tmp.addAll(dropContent.getData());
         tmp.removeAll(collection.getData());
 
-        List<demetra.tsprovider.Ts> tss = Stream
+        List<demetra.timeseries.Ts> tss = Stream
                 .concat(collection.getData().stream(), tmp.stream())
                 .collect(Collectors.toList());
         chartPanel.setDataset(TsXYDataset.of(tss));

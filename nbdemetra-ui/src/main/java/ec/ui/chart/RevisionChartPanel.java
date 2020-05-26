@@ -218,7 +218,7 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
     }
 
     protected Transferable transferableOnSelection() {
-        demetra.tsprovider.TsCollection.Builder col = demetra.tsprovider.TsCollection.builder();
+        demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
         Ts ts = TsManager.getDefault().newTs("Reference serie", null, reference);
         col.data(TsConverter.toTs(ts));
         if (revs != null) {

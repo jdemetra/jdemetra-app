@@ -16,8 +16,8 @@
  */
 package demetra.ui.components;
 
+import demetra.timeseries.Ts;
 import demetra.timeseries.TsData;
-import demetra.tsprovider.Ts;
 import demetra.tsprovider.TsMeta;
 import java.time.LocalDateTime;
 import java.util.Collections;

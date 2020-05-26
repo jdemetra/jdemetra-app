@@ -6,7 +6,7 @@ package ec.nbdemetra.ui.tools;
 
 import com.google.common.collect.Iterables;
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection;
 import ec.nbdemetra.ui.Config;
@@ -86,7 +86,7 @@ public final class ToolsPersistence {
     public static void readTsCollection(HasTsCollection view, Properties p) {
         if (DemetraUI.getDefault().isPersistToolsContent()) {
             tryGet(p, "content", CONTENT_PARSER, true).ifPresent(o -> {
-                List<demetra.tsprovider.Ts> tmp = o.collection.stream().map(TsConverter::toTs).collect(Collectors.toList());
+                List<demetra.timeseries.Ts> tmp = o.collection.stream().map(TsConverter::toTs).collect(Collectors.toList());
                 view.setTsCollection(TsCollection.builder().data(tmp).build());
                 view.getTsSelectionModel().clearSelection();
                 tmp

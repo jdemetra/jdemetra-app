@@ -39,7 +39,7 @@ final class SingleTsGridData implements TsGridData {
     private final int startPosition;
     private final TsGridObs obs;
 
-    public SingleTsGridData(List<demetra.tsprovider.Ts> col, int seriesIndex) {
+    public SingleTsGridData(List<demetra.timeseries.Ts> col, int seriesIndex) {
         this.seriesIndex = seriesIndex;
         Ts ts = TsConverter.fromTs(col.get(seriesIndex));
         this.data = ts.getTsData();

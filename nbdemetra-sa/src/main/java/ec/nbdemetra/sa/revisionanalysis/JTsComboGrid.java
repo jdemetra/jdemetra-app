@@ -76,7 +76,7 @@ public class JTsComboGrid extends JComponent {
     }
 
     private void showAllTs() {
-        demetra.tsprovider.TsCollection.Builder coll = demetra.tsprovider.TsCollection.builder();
+        demetra.timeseries.TsCollection.Builder coll = demetra.timeseries.TsCollection.builder();
         for (Map.Entry<Ts, TsCollection> entry : collections.entrySet()) {
             TsCollection c = entry.getValue();
             for (int i = 0; i < c.getCount(); i++) {

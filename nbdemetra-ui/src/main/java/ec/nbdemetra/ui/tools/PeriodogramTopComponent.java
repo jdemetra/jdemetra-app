@@ -108,12 +108,12 @@ public final class PeriodogramTopComponent extends TopComponent implements HasTs
     }
 
     @Override
-    public demetra.tsprovider.Ts getTs() {
+    public demetra.timeseries.Ts getTs() {
         return null;
     }
 
     @Override
-    public void setTs(demetra.tsprovider.Ts ts) {
+    public void setTs(demetra.timeseries.Ts ts) {
         view.setTs(ts);
     }
 

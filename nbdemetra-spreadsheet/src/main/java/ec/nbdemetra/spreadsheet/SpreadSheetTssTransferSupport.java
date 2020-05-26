@@ -18,7 +18,7 @@ package ec.nbdemetra.spreadsheet;
 
 import com.google.common.base.Converter;
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;

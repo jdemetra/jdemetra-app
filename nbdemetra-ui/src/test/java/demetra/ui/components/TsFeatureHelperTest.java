@@ -18,7 +18,7 @@ package demetra.ui.components;
 
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsPeriod;
-import demetra.tsprovider.Ts;
+import demetra.timeseries.Ts;
 import demetra.tsprovider.TsMeta;
 import static demetra.ui.components.TsFeatureHelper.Feature.*;
 import java.util.Arrays;

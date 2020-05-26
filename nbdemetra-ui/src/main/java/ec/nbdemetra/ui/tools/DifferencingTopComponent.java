@@ -5,7 +5,7 @@
 package ec.nbdemetra.ui.tools;
 
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTs;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
@@ -205,7 +205,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            Optional<demetra.tsprovider.Ts> s = DataTransfer.getDefault().toTs(support.getTransferable());
+            Optional<demetra.timeseries.Ts> s = DataTransfer.getDefault().toTs(support.getTransferable());
             if (s.isPresent()) {
                 setTs(s.get());
                 return true;
@@ -243,7 +243,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
     }
 
     @Override
-    public void setTs(demetra.tsprovider.Ts s) {
+    public void setTs(demetra.timeseries.Ts s) {
         ts_ = TsConverter.fromTs(s).freeze();
         TsManager.getDefault().load(ts_, TsInformationType.All);
         refreshHeader();
@@ -251,7 +251,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
     }
 
     @Override
-    public demetra.tsprovider.Ts getTs() {
+    public demetra.timeseries.Ts getTs() {
         return TsConverter.toTs(ts_);
     }
 

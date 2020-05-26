@@ -60,12 +60,12 @@ public abstract class TsTopComponent extends TopComponent implements ExplorerMan
     }
 
     @Override
-    public demetra.tsprovider.Ts getTs() {
+    public demetra.timeseries.Ts getTs() {
         return TsConverter.toTs(panel.getDocument().getTs());
     }
 
     @Override
-    public void setTs(demetra.tsprovider.Ts ts) {
+    public void setTs(demetra.timeseries.Ts ts) {
         panel.getDocument().setTs(TsConverter.fromTs(ts));
         panel.refreshAll();
     }

@@ -5,7 +5,7 @@
 package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;

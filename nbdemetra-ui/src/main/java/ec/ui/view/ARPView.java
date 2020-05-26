@@ -125,7 +125,7 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
 
     @Nullable
     private TsInformation getTsInformation() {
-        demetra.tsprovider.Ts ts = getTs();
+        demetra.timeseries.Ts ts = getTs();
         return ts != null ? TsConverter.fromTs(ts).toInfo(TsInformationType.Data) : null;
     }
 

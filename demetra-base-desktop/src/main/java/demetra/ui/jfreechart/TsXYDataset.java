@@ -16,7 +16,7 @@
  */
 package demetra.ui.jfreechart;
 
-import demetra.tsprovider.Ts;
+import demetra.timeseries.Ts;
 import java.time.ZoneOffset;
 import java.util.List;
 import org.jfree.data.DomainOrder;

@@ -16,7 +16,7 @@
  */
 package internal;
 
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import internal.ui.components.InternalUI;
 import static demetra.ui.components.HasObsFormat.DATA_FORMAT_PROPERTY;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
@@ -113,7 +113,7 @@ public final class InternalResidualsViewUI implements InternalUI<ResidualsView> 
 
     private void onTsDataChange(ResidualsView view) {
         demetra.timeseries.TsData data = view.getTsData();
-        demetra.tsprovider.Ts ts = demetra.tsprovider.Ts.builder().name("Residuals").data(data).build();
+        demetra.timeseries.Ts ts = demetra.timeseries.Ts.builder().name("Residuals").data(data).build();
         chartPanel.getChart().getXYPlot().setDataset(TsXYDataset.of(Arrays.asList(ts)));
         if (!data.isEmpty()) {
             Range rng = calcRange(data.getValues().toArray());

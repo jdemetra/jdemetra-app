@@ -207,8 +207,8 @@ public class HasChartCommands {
             c.requestActive();
         }
 
-        private demetra.tsprovider.TsCollection split(Ts ts) {
-            demetra.tsprovider.TsCollection.Builder result = demetra.tsprovider.TsCollection.builder();
+        private demetra.timeseries.TsCollection split(Ts ts) {
+            demetra.timeseries.TsCollection.Builder result = demetra.timeseries.TsCollection.builder();
             Calendar cal = Calendar.getInstance();
             YearIterator yearIterator = new YearIterator(ts.getTsData());
             for (TsDataBlock o : NbCollections.iterable(yearIterator)) {

@@ -16,7 +16,7 @@
  */
 package demetra.ui;
 
-import demetra.tsprovider.Ts;
+import demetra.timeseries.Ts;
 import ec.tstoolkit.design.ServiceDefinition;
 import ec.util.various.swing.OnEDT;
 import org.checkerframework.checker.nullness.qual.NonNull;

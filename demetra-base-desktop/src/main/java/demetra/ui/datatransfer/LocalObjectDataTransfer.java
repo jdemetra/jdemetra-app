@@ -4,7 +4,7 @@
  */
 package demetra.ui.datatransfer;
 
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;

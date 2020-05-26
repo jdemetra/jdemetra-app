@@ -17,7 +17,7 @@
 package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import ec.tss.Ts;
 import ec.tss.html.HtmlUtil;

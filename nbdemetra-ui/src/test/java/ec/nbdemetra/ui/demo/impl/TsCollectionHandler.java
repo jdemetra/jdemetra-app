@@ -37,7 +37,7 @@ import demetra.ui.util.FontAwesomeUtils;
 import demetra.demo.DemoTsBuilder;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import demetra.ui.components.TsSelectionBridge;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -190,9 +190,9 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            LinkedList<demetra.tsprovider.Ts> tmp = new LinkedList<>(c.getTsCollection().getData());
+            LinkedList<demetra.timeseries.Ts> tmp = new LinkedList<>(c.getTsCollection().getData());
             tmp.removeLast();
-            c.setTsCollection(demetra.tsprovider.TsCollection.builder().data(tmp).build());
+            c.setTsCollection(demetra.timeseries.TsCollection.builder().data(tmp).build());
         }
     }
 

@@ -89,7 +89,7 @@ public class InternalComponents {
         return getNoDataMessage(o.getTsCollection(), o.getTsUpdateMode());
     }
 
-    private static String getNoDataMessage(demetra.tsprovider.TsCollection input, TsUpdateMode updateMode) {
+    private static String getNoDataMessage(demetra.timeseries.TsCollection input, TsUpdateMode updateMode) {
         switch (input.getData().size()) {
             case 0:
                 return updateMode.isReadOnly() ? "No data" : "Drop data here";

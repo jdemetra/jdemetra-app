@@ -25,6 +25,6 @@ public final class NullTsAction implements TsActionSpi {
     }
 
     @Override
-    public void open(demetra.tsprovider.Ts ts) {
+    public void open(demetra.timeseries.Ts ts) {
     }
 }

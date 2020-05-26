@@ -17,8 +17,8 @@
 package internal.ui.components;
 
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.Ts;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.components.HasTsCollection;
@@ -115,7 +115,7 @@ public final class HasTsCollectionImpl implements HasTsCollection, TsManager.Upd
     @Override
     public void accept(TsMoniker moniker) {
         TsCollection col = getTsCollection();
-        demetra.tsprovider.TsMoniker id = TsConverter.toTsMoniker(moniker);
+        demetra.timeseries.TsMoniker id = TsConverter.toTsMoniker(moniker);
         if (id.equals(col.getMoniker())) {
             ec.tss.TsCollection newData = TsManager.getDefault().lookupTsCollection(col.getName(), moniker, TsConverter.fromType(col.getType()));
             setTsCollection(TsConverter.toTsCollection(newData));
@@ -130,7 +130,7 @@ public final class HasTsCollectionImpl implements HasTsCollection, TsManager.Upd
         }
     }
 
-    private static int indexOf(List<Ts> list, demetra.tsprovider.TsMoniker moniker) {
+    private static int indexOf(List<Ts> list, demetra.timeseries.TsMoniker moniker) {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getMoniker().equals(moniker)) {
                 return i;

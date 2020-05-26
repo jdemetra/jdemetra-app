@@ -36,9 +36,9 @@ final class MultiTsGridData implements TsGridData {
     private final TsDataTable.Cursor cursor;
     private final TsGridObs obs;
 
-    public MultiTsGridData(List<demetra.tsprovider.Ts> col) {
-        this.names = col.stream().map(demetra.tsprovider.Ts::getName).collect(Collectors.toList());
-        this.dataTable = TsDataTable.of(col, demetra.tsprovider.Ts::getData);
+    public MultiTsGridData(List<demetra.timeseries.Ts> col) {
+        this.names = col.stream().map(demetra.timeseries.Ts::getName).collect(Collectors.toList());
+        this.dataTable = TsDataTable.of(col, demetra.timeseries.Ts::getData);
         this.domain = dataTable.getDomain();
         this.cursor = dataTable.cursor(TsDataTable.DistributionType.FIRST);
         this.obs = new TsGridObs();

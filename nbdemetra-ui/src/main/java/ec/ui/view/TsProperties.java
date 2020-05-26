@@ -1,7 +1,7 @@
 package ec.ui.view;
 
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.TsCollection;
+import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
@@ -150,7 +150,7 @@ public class TsProperties extends JComponent implements IDisposable {
 
         @Override
         public boolean importData(TransferSupport support) {
-            Optional<demetra.tsprovider.Ts> s = DataTransfer.getDefault().toTs(support.getTransferable());
+            Optional<demetra.timeseries.Ts> s = DataTransfer.getDefault().toTs(support.getTransferable());
             if (s.isPresent()) {
                 setTs(TsConverter.fromTs(s.get()));
             }
