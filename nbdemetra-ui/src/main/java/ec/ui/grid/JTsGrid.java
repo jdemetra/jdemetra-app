@@ -45,8 +45,8 @@ import java.awt.Font;
 import java.beans.Beans;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JCheckBoxMenuItem;
@@ -353,7 +353,7 @@ public class JTsGrid extends ATsGrid {
         firePropertyChange(SHOW_BARS_PROPERTY, old, this.showBars);
     }
 
-    @Nonnull
+    @NonNull
     public TableCellRenderer getCellRenderer() {
         return cellRenderer;
     }
@@ -374,7 +374,7 @@ public class JTsGrid extends ATsGrid {
         firePropertyChange(CROSSHAIR_VISIBLE_PROPERTY, old, this.crosshairVisible);
     }
 
-    @Nonnull
+    @NonNull
     public ObsIndex getHoveredObs() {
         return hoveredObs;
     }
@@ -604,7 +604,7 @@ public class JTsGrid extends ATsGrid {
         private SwingColorSchemeSupport colorSchemeSupport;
         private boolean showBars;
 
-        public CustomCellRenderer(@Nonnull TableCellRenderer delegate) {
+        public CustomCellRenderer(@NonNull TableCellRenderer delegate) {
             super(false);
             setHorizontalAlignment(JLabel.TRAILING);
             setOpaque(true);
@@ -616,7 +616,7 @@ public class JTsGrid extends ATsGrid {
             this.showBars = false;
         }
 
-        void update(@Nonnull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars) {
+        void update(@NonNull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars) {
             this.valueFormatter = dataFormat.numberFormatter();
             this.colorSchemeSupport = colorSchemeSupport;
             this.showBars = showBars;

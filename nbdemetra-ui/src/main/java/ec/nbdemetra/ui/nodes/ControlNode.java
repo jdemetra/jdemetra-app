@@ -31,7 +31,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
@@ -230,8 +230,7 @@ public class ControlNode {
         return b.build();
     }
 
-    @Nonnull
-    public static Sheet.Set getDefinitionSheetSet(@Nonnull Ts ts, @Nonnull NodePropertySetBuilder b) {
+    public static Sheet.@NonNull Set getDefinitionSheetSet(@NonNull Ts ts, @NonNull NodePropertySetBuilder b) {
         b.reset("Time series");
 
         b.with(String.class)

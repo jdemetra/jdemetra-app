@@ -26,7 +26,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.filesystems.FileChooserBuilder;
 
 /**
@@ -36,15 +36,15 @@ import org.openide.filesystems.FileChooserBuilder;
 @lombok.experimental.UtilityClass
 public class TsSaveUtil {
 
-    @Nonnull
-    public TsCollection[] toCollections(@Nonnull Ts[] input) {
+    @NonNull
+    public TsCollection[] toCollections(@NonNull Ts[] input) {
         TsCollection col = TsFactory.instance.createTsCollection();
         col.quietAppend(Arrays.asList(input));
         return new TsCollection[]{col};
     }
 
-    @Nonnull
-    public TsCollectionInformation loadContent(@Nonnull TsCollection[] data) {
+    @NonNull
+    public TsCollectionInformation loadContent(@NonNull TsCollection[] data) {
         TsCollectionInformation result = new TsCollectionInformation();
         for (TsCollection col : data) {
             col.load(TsInformationType.All);
@@ -53,15 +53,15 @@ public class TsSaveUtil {
         return result;
     }
 
-    public void saveToFile(@Nonnull FileChooserBuilder fileChooser, @Nonnull Predicate<File> predicate, @Nonnull Consumer<File> action) {
+    public void saveToFile(@NonNull FileChooserBuilder fileChooser, @NonNull Predicate<File> predicate, @NonNull Consumer<File> action) {
         File target = fileChooser.showSaveDialog();
         if (target != null && predicate.test(target)) {
             action.accept(target);
         }
     }
 
-    @Nonnull
-    public FileChooserBuilder fileChooser(@Nonnull Class type) {
+    @NonNull
+    public FileChooserBuilder fileChooser(@NonNull Class type) {
         return new FileChooserBuilder(type).setSelectionApprover(SingleFileExporter.overwriteApprover());
     }
 }

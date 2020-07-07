@@ -21,7 +21,7 @@ import ec.tss.tsproviders.utils.Parsers;
 import ec.util.various.swing.TextPrompt;
 import java.awt.BorderLayout;
 import java.nio.charset.Charset;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.border.Border;

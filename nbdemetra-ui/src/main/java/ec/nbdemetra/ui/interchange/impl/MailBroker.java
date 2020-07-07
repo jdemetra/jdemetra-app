@@ -23,7 +23,7 @@ import ec.util.desktop.DesktopManager;
 import ec.util.desktop.MailtoBuilder;
 import java.io.IOException;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -53,7 +53,7 @@ public class MailBroker extends InterchangeBroker {
         store(getDesktop(), configs);
     }
 
-    private static void store(@Nonnull Desktop desktop, @Nonnull Configs configs) throws IOException {
+    private static void store(@NonNull Desktop desktop, @NonNull Configs configs) throws IOException {
         String subject = configs.getItems().size() == 1 ? configs.getItems().get(0).getName() : "Configs";
         String body = Configs.xmlFormatter(true).formatValueAsString(configs).orElseThrow(RuntimeException::new);
         desktop.mail(new MailtoBuilder().subject(subject).body(body).build());

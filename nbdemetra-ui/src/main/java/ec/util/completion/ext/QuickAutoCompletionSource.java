@@ -23,7 +23,7 @@ import ec.util.completion.AbstractAutoCompletionSource;
 import ec.util.completion.AutoCompletionSources;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * An implementation of AutoCompletionSource that allows to quickly construct a
@@ -36,8 +36,8 @@ import javax.annotation.Nonnull;
 @Deprecated
 public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletionSource<T> {
 
-    @Nonnull
-    public static <X> QuickAutoCompletionSource<X> from(@Nonnull Iterable<X> list) {
+    @NonNull
+    public static <X> QuickAutoCompletionSource<X> from(@NonNull Iterable<X> list) {
         return new QuickAutoCompletionSource<X>() {
             @Override
             protected Iterable<X> getAllValues() throws Exception {
@@ -66,8 +66,8 @@ public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletio
      * #matches(ec.util.completion.AbstractAutoCompletionSource.TermMatcher,
      * java.lang.Object)
      */
-    @Nonnull
-    protected Predicate<T> getFilter(@Nonnull String term) {
+    @NonNull
+    protected Predicate<T> getFilter(@NonNull String term) {
         final TermMatcher termMatcher = createTermMatcher(term);
         return o -> matches(termMatcher, o);
     }
@@ -78,7 +78,7 @@ public abstract class QuickAutoCompletionSource<T> extends AbstractAutoCompletio
      *
      * @return a new ordering
      */
-    @Nonnull
+    @NonNull
     protected Ordering getSorter() {
         return Ordering.from(this);
     }

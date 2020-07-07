@@ -20,7 +20,7 @@ import ec.nbdemetra.ui.ns.INamedService;
 import ec.tss.Ts;
 import ec.tstoolkit.design.ServiceDefinition;
 import ec.util.various.swing.OnEDT;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -31,5 +31,5 @@ import javax.annotation.Nonnull;
 public interface ITsAction extends INamedService {
 
     @OnEDT
-    void open(@Nonnull Ts ts);
+    void open(@NonNull Ts ts);
 }

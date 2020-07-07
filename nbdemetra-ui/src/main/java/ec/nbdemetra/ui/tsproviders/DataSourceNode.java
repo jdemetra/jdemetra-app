@@ -48,7 +48,7 @@ import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
@@ -91,7 +91,7 @@ public final class DataSourceNode extends AbstractNode {
 
     public static final String ACTION_PATH = "SourceNode";
 
-    public DataSourceNode(@Nonnull DataSource dataSource) {
+    public DataSourceNode(@NonNull DataSource dataSource) {
         this(dataSource, new InstanceContent());
     }
 
@@ -309,7 +309,7 @@ public final class DataSourceNode extends AbstractNode {
         private static final DataFlavor LOCAL_FILE_DATA_FLAVOR = DataTransfers.newLocalObjectDataFlavor(File.class);
         private final File file;
 
-        public LocalFileTransferable(@Nonnull File file) {
+        public LocalFileTransferable(@NonNull File file) {
             super(LOCAL_FILE_DATA_FLAVOR);
             this.file = file;
         }

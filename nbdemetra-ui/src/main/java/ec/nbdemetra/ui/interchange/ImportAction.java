@@ -22,7 +22,7 @@ import ec.nbdemetra.ui.tsproviders.ProvidersNode;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -74,8 +74,8 @@ public final class ImportAction extends AbilityAction<Importable> implements Pre
                 .toList();
     }
 
-    @Nonnull
-    public static JMenuItem getPopupPresenter(@Nonnull List<? extends Importable> importables) {
+    @NonNull
+    public static JMenuItem getPopupPresenter(@NonNull List<? extends Importable> importables) {
         JMenu result = new JMenu();
         result.setText(Bundle.CTL_ImportAction());
         for (InterchangeBroker o : Lookup.getDefault().lookupAll(InterchangeBroker.class)) {

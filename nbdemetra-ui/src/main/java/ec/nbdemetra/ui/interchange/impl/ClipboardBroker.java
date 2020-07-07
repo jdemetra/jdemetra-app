@@ -27,7 +27,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -77,8 +77,8 @@ public class ClipboardBroker extends InterchangeBroker {
         store(getClipboard(), configs);
     }
 
-    @Nonnull
-    private static Configs load(@Nonnull Clipboard clipboard) throws IOException {
+    @NonNull
+    private static Configs load(@NonNull Clipboard clipboard) throws IOException {
         String xml = readString(clipboard);
         if (xml == null) {
             throw new IOException("Not string input");
@@ -90,7 +90,7 @@ public class ClipboardBroker extends InterchangeBroker {
         return result;
     }
 
-    private static void store(@Nonnull Clipboard clipboard, @Nonnull Configs configs) throws IOException {
+    private static void store(@NonNull Clipboard clipboard, @NonNull Configs configs) throws IOException {
         String xml = Configs.xmlFormatter(true).formatAsString(configs);
         if (xml == null) {
             throw new IOException("Cannot format configs");
@@ -98,7 +98,7 @@ public class ClipboardBroker extends InterchangeBroker {
         clipboard.setContents(new StringSelection(xml), null);
     }
 
-    private static String readString(@Nonnull Clipboard clipboard) throws IOException {
+    private static String readString(@NonNull Clipboard clipboard) throws IOException {
         if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
             try {
                 return (String) clipboard.getData(DataFlavor.stringFlavor);

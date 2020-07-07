@@ -33,8 +33,8 @@ import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JMenu;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -90,7 +90,7 @@ public abstract class ARPView extends ATsView {
         }
     }
 
-    public void setData(@Nonnull String name, @Nonnegative int freq, @Nonnull IReadDataBlock values) {
+    public void setData(@NonNull String name, @NonNegative int freq, @NonNull IReadDataBlock values) {
         data = ARPData.copyOf(name, freq, values);
         onARPDataChange();
         onColorSchemeChange();

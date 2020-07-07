@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 
@@ -39,8 +39,8 @@ public final class ActionMaps {
         // static class
     }
 
-    @Nonnull
-    public static ActionMap getRoot(@Nonnull ActionMap actionMap) {
+    @NonNull
+    public static ActionMap getRoot(@NonNull ActionMap actionMap) {
         ActionMap result = actionMap;
         while (result.getParent() != null) {
             result = result.getParent();
@@ -48,16 +48,16 @@ public final class ActionMaps {
         return result;
     }
 
-    @Nonnull
-    public static Map<Object, Action> asMap(@Nonnull ActionMap actionMap, boolean includeParentKeys) {
+    @NonNull
+    public static Map<Object, Action> asMap(@NonNull ActionMap actionMap, boolean includeParentKeys) {
         return asKeySet(actionMap, includeParentKeys).stream().collect(Collectors.toMap(o -> o, o -> actionMap.get(o)));
     }
 
-    public static void copyEntries(@Nonnull ActionMap source, boolean includeParentKeys, @Nonnull ActionMap destination) {
+    public static void copyEntries(@NonNull ActionMap source, boolean includeParentKeys, @NonNull ActionMap destination) {
         asMap(source, includeParentKeys).forEach((k, v) -> destination.put(k, v));
     }
 
-    public static void performAction(@Nonnull ActionMap actionMap, @Nonnull String actionName, @Nonnull MouseEvent e) {
+    public static void performAction(@NonNull ActionMap actionMap, @NonNull String actionName, @NonNull MouseEvent e) {
         Action action = actionMap.get(actionName);
         if (action != null && action.isEnabled()) {
             action.actionPerformed(new ActionEvent(e.getSource(), ActionEvent.ACTION_PERFORMED, actionName));
@@ -65,8 +65,8 @@ public final class ActionMaps {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Internal implementation">
-    @Nonnull
-    private static Set<Object> asKeySet(final @Nonnull ActionMap actionMap, final boolean includeParentKeys) {
+    @NonNull
+    private static Set<Object> asKeySet(final @NonNull ActionMap actionMap, final boolean includeParentKeys) {
         return new AbstractSet<Object>() {
             @Override
             public Iterator<Object> iterator() {

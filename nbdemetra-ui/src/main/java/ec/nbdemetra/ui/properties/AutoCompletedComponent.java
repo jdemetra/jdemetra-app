@@ -32,8 +32,8 @@ import java.beans.BeanInfo;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.BorderFactory;
 import javax.swing.CellRendererPane;
 import javax.swing.DefaultListModel;
@@ -143,7 +143,7 @@ final class AutoCompletedComponent extends JComponent {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getter/Setters">
-    @Nonnull
+    @NonNull
     public String getValue() {
         return value;
     }
@@ -176,7 +176,7 @@ final class AutoCompletedComponent extends JComponent {
         firePropertyChange(DEFAULT_VALUE_SUPPLIER_PROPERTY, old, this.defaultValueSupplier);
     }
 
-    @Nonnull
+    @NonNull
     public String getSeparator() {
         return separator;
     }

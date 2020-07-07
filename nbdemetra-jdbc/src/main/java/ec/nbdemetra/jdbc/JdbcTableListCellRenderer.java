@@ -11,6 +11,7 @@ import ec.util.jdbc.JdbcTable;
  *
  * @author Philippe Charles
  */
+@Deprecated
 public class JdbcTableListCellRenderer extends SimpleHtmlListCellRenderer<JdbcTable> {
 
     public JdbcTableListCellRenderer() {

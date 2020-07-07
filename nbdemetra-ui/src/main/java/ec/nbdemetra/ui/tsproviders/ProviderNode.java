@@ -31,7 +31,7 @@ import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.Action;
 import org.netbeans.api.actions.Openable;
 import org.openide.awt.ActionID;
@@ -63,7 +63,7 @@ public final class ProviderNode extends AbstractNode {
 
     public static final String ACTION_PATH = "ProviderNode";
 
-    public ProviderNode(@Nonnull IDataSourceProvider provider) {
+    public ProviderNode(@NonNull IDataSourceProvider provider) {
         this(provider, new InstanceContent());
     }
 

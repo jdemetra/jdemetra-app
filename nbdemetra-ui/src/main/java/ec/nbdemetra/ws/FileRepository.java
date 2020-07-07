@@ -36,12 +36,13 @@ import ec.util.desktop.DesktopManager;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileChooserBuilder;
@@ -79,7 +80,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
                 .setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Xml files", "xml"));
     }
 
-    @Nonnull
+    @NonNull
     public static DataSource encode(@Nullable File file) {
         if (file != null) {
             String sfile = file.getAbsolutePath();
@@ -90,7 +91,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     }
 
     @Nullable
-    public static File decode(@Nonnull DataSource source) {
+    public static File decode(@NonNull DataSource source) {
         if (!source.getProviderName().equals(NAME)) {
             return null;
         }
@@ -137,17 +138,16 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
             return saveAs(ws);
         }
 
-        Path target = file.toPath();
-        boolean exist = Files.exists(target);
+        boolean exist = file.exists();
         try (FileWorkspace storage = exist
-                ? FileWorkspace.open(target)
-                : FileWorkspace.create(target, FileFormat.GENERIC)) {
+                ? FileWorkspace.open(file.toPath())
+                : FileWorkspace.create(file.toPath(), FileFormat.GENERIC)) {
             storage.setName(ws.getName());
             storeCalendar(storage, ws.getContext().getGregorianCalendars());
             if (exist) {
                 removeDeletedItems(storage, ws);
             }
-        } catch (IOException ex) {
+        } catch (IOException | InvalidPathException ex) {
             Exceptions.printStackTrace(ex);
             return false;
         }
@@ -195,7 +195,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
             ws.setName(storage.getName());
             loadCalendars(storage, ws);
             loadItems(storage.getItems(), ws);
-        } catch (IOException ex) {
+        } catch (IOException | InvalidPathException ex) {
             Exceptions.printStackTrace(ex);
             return false;
         }

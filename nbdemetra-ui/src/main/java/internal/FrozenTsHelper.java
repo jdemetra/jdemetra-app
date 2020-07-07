@@ -23,8 +23,8 @@ import ec.tstoolkit.MetaData;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  *
@@ -37,7 +37,7 @@ public final class FrozenTsHelper {
     }
 
     @Nullable
-    public static String getSource(@Nonnull Ts ts) {
+    public static String getSource(@NonNull Ts ts) {
         String source = ts.getMoniker().getSource();
         if (source != null) {
             return source;
@@ -50,13 +50,13 @@ public final class FrozenTsHelper {
     }
 
     @Nullable
-    private static String getSource(@Nonnull MetaData md) {
+    private static String getSource(@NonNull MetaData md) {
         String result = md.get(MetaData.SOURCE);
         return result != null ? result : md.get(Ts.SOURCE_OLD);
     }
 
     @Nullable
-    private static String getId(@Nonnull MetaData md) {
+    private static String getId(@NonNull MetaData md) {
         String result = md.get(MetaData.ID);
         return result != null ? result : md.get(Ts.ID_OLD);
     }
@@ -64,19 +64,19 @@ public final class FrozenTsHelper {
     private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ROOT);
 
     @Nullable
-    public static LocalDateTime getTimestamp(@Nonnull Ts ts) {
+    public static LocalDateTime getTimestamp(@NonNull Ts ts) {
         MetaData md = ts.getMetaData();
         return md != null ? getTimestamp(md) : null;
     }
 
     @Nullable
-    private static LocalDateTime getTimestamp(@Nonnull MetaData md) {
+    private static LocalDateTime getTimestamp(@NonNull MetaData md) {
         String dateAsString = md.get(MetaData.DATE);
         return dateAsString != null ? LocalDateTime.parse(dateAsString, TIMESTAMP_FORMATTER) : null;
     }
 
     @Nullable
-    public static TsMoniker getOriginalMoniker(@Nonnull TsMoniker moniker) {
+    public static TsMoniker getOriginalMoniker(@NonNull TsMoniker moniker) {
         if (!moniker.isAnonymous()) {
             return moniker;
         }

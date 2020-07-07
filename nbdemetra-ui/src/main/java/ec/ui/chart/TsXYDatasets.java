@@ -17,7 +17,6 @@
 package ec.ui.chart;
 
 import com.google.common.base.Preconditions;
-import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
 import ec.tss.*;
 import ec.tstoolkit.design.IBuilder;
@@ -30,8 +29,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jfree.data.DomainOrder;
 import org.jfree.data.general.AbstractSeriesDataset;
 import org.jfree.data.xy.IntervalXYDataset;
@@ -52,23 +52,23 @@ public final class TsXYDatasets {
     // a shared builder used in the event dispatch thread
     private static final Builder EDT_BUILDER = new Builder();
 
-    @Nonnull
-    public static IntervalXYDataset from(@Nonnull Comparable<?> key, @Nonnull TsPeriod start, @Nonnull double[] data) {
+    @NonNull
+    public static IntervalXYDataset from(@NonNull Comparable<?> key, @NonNull TsPeriod start, @NonNull double[] data) {
         return EDT_BUILDER.clear().add(key, start, data).build();
     }
 
-    @Nonnull
-    public static IntervalXYDataset from(@Nonnull Comparable<?> key, @Nonnull TsData data) {
+    @NonNull
+    public static IntervalXYDataset from(@NonNull Comparable<?> key, @NonNull TsData data) {
         return EDT_BUILDER.clear().add(key, data).build();
     }
 
-    @Nonnull
-    public static IntervalXYDataset from(@Nonnull Iterable<? extends Ts> tss) {
+    @NonNull
+    public static IntervalXYDataset from(@NonNull Iterable<? extends Ts> tss) {
         return EDT_BUILDER.clear().add(tss).build();
     }
 
-    @Nonnull
-    public static IntervalXYDataset from(@Nonnull Ts... tss) {
+    @NonNull
+    public static IntervalXYDataset from(@NonNull Ts... tss) {
         return EDT_BUILDER.clear().add(tss).build();
     }
 
@@ -78,12 +78,12 @@ public final class TsXYDatasets {
      * @deprecated use {@link Charts#emptyXYDataset()} instead
      */
     @Deprecated
-    @Nonnull
+    @NonNull
     public static IntervalXYDataset empty() {
         return Charts.emptyXYDataset();
     }
 
-    @Nonnull
+    @NonNull
     @NewObject
     public static Builder builder() {
         return new Builder();
@@ -96,7 +96,7 @@ public final class TsXYDatasets {
         private final List<TsFacade> list = new ArrayList<>();
 
         private void checkKey(Comparable<?> key) {
-            Preconditions.checkNotNull(key, "Cannot add null key");
+            Objects.requireNonNull(key, "Cannot add null key");
             Preconditions.checkArgument(!keys.contains(key), "Duplicated key");
         }
 
@@ -106,51 +106,51 @@ public final class TsXYDatasets {
         }
 
         private void addTs(Ts ts) {
-            checkNotNull(ts, "Ts cannot be null");
+            Objects.requireNonNull(ts, "Ts cannot be null");
             checkKey(ts.getMoniker());
             if (ts.hasData().equals(TsStatus.Valid)) {
                 add(FastTs.create(ts));
             }
         }
 
-        @Nonnull
-        public Builder add(@Nonnull Comparable<?> key, @Nonnull TsPeriod start, @Nonnull double[] data) {
+        @NonNull
+        public Builder add(@NonNull Comparable<?> key, @NonNull TsPeriod start, @NonNull double[] data) {
             checkKey(key);
-            checkNotNull(start, "Start cannot be null");
-            checkNotNull(data, "Data cannot be null");
+            Objects.requireNonNull(start, "Start cannot be null");
+            Objects.requireNonNull(data, "Data cannot be null");
             if (data.length > 0) {
                 add(FastTs.create(key, start, data));
             }
             return this;
         }
 
-        @Nonnull
-        public Builder add(@Nonnull Comparable<?> key, @Nonnull TsData data) {
+        @NonNull
+        public Builder add(@NonNull Comparable<?> key, @NonNull TsData data) {
             checkKey(key);
-            checkNotNull(data, "Data cannot be null");
+            Objects.requireNonNull(data, "Data cannot be null");
             if (!data.isEmpty()) {
                 add(FastTs.create(key, data));
             }
             return this;
         }
 
-        @Nonnull
-        public Builder add(@Nonnull Iterable<? extends Ts> tss) {
+        @NonNull
+        public Builder add(@NonNull Iterable<? extends Ts> tss) {
             for (Ts o : tss) {
                 addTs(o);
             }
             return this;
         }
 
-        @Nonnull
-        public Builder add(@Nonnull Ts... tss) {
+        @NonNull
+        public Builder add(@NonNull Ts... tss) {
             for (Ts o : tss) {
                 addTs(o);
             }
             return this;
         }
 
-        @Nonnull
+        @NonNull
         public Builder clear() {
             keys.clear();
             list.clear();
@@ -223,7 +223,7 @@ public final class TsXYDatasets {
 
         private final List<TsFacade> list;
 
-        private MultiTsXYDataset(@Nonnull List<TsFacade> list) {
+        private MultiTsXYDataset(@NonNull List<TsFacade> list) {
             this.list = list;
         }
 
@@ -267,7 +267,7 @@ public final class TsXYDatasets {
 
         private final TsFacade singleton;
 
-        private SingleTsXYDataset(@Nonnull TsFacade singleton) {
+        private SingleTsXYDataset(@NonNull TsFacade singleton) {
             this.singleton = singleton;
         }
 
@@ -333,18 +333,18 @@ public final class TsXYDatasets {
         private static final Calendar EDT_CALENDAR = Calendar.getInstance();
 
         // FACTORY METHODS
-        @Nonnull
-        static FastTs create(@Nonnull Ts ts) {
+        @NonNull
+        static FastTs create(@NonNull Ts ts) {
             return create(ts.getMoniker(), ts.getTsData());
         }
 
-        @Nonnull
-        static FastTs create(@Nonnull Comparable<?> key, @Nonnull TsData data) {
+        @NonNull
+        static FastTs create(@NonNull Comparable<?> key, @NonNull TsData data) {
             return create(key, data.getStart(), data.internalStorage());
         }
 
-        @Nonnull
-        static FastTs create(@Nonnull Comparable<?> key, @Nonnull TsPeriod start, @Nonnull double[] data) {
+        @NonNull
+        static FastTs create(@NonNull Comparable<?> key, @NonNull TsPeriod start, @NonNull double[] data) {
             int freq = start.getFrequency().intValue();
             int id = start.hashCode(); // quick&dirty hack
             return (id >= 0)
@@ -359,7 +359,7 @@ public final class TsXYDatasets {
         private final int startPos;
         private final double[] data;
 
-        private FastTs(@Nonnull Calendar cal, @Nonnull Comparable<?> key, int freq, int startYear, int startPos, @Nonnull double[] data) {
+        private FastTs(@NonNull Calendar cal, @NonNull Comparable<?> key, int freq, int startYear, int startPos, @NonNull double[] data) {
             this.cal = cal;
             this.key = key;
             this.freq = freq;

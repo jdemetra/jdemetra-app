@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.openide.filesystems.FileChooserBuilder;
@@ -98,8 +98,8 @@ public class FileBroker extends InterchangeBroker {
         return index != -1 ? input : new File(input.getPath() + ".cfgx");
     }
 
-    @Nonnull
-    public static Configs load(@Nonnull Path file) throws IOException {
+    @NonNull
+    public static Configs load(@NonNull Path file) throws IOException {
         CharSequence xml = readGZIP(file);
         Configs result = Configs.xmlParser().parse(xml);
         if (result == null) {
@@ -108,7 +108,7 @@ public class FileBroker extends InterchangeBroker {
         return result;
     }
 
-    public static void store(@Nonnull Path file, @Nonnull Configs configs) throws IOException {
+    public static void store(@NonNull Path file, @NonNull Configs configs) throws IOException {
         CharSequence xml = Configs.xmlFormatter(true).format(configs);
         if (xml == null) {
             throw new IOException("Cannot format configs");

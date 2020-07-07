@@ -32,7 +32,7 @@ import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -65,7 +65,7 @@ public final class RandomTsBuilder implements IBuilder<TsInformation> {
         return obsCount;
     }
 
-    @Nonnull
+    @NonNull
     public IRandomNumberGenerator getRng() {
         return rng;
     }
@@ -74,55 +74,55 @@ public final class RandomTsBuilder implements IBuilder<TsInformation> {
         return forecastCount;
     }
 
-    @Nonnull
+    @NonNull
     public TsStatus getStatus() {
         return status;
     }
 
-    @Nonnull
-    public RandomTsBuilder withName(@Nonnull String name) {
+    @NonNull
+    public RandomTsBuilder withName(@NonNull String name) {
         this.name = Objects.requireNonNull(name);
         return this;
     }
 
-    @Nonnull
-    public RandomTsBuilder withStatus(@Nonnull TsStatus status) {
+    @NonNull
+    public RandomTsBuilder withStatus(@NonNull TsStatus status) {
         this.status = Objects.requireNonNull(status);
         return this;
     }
 
-    @Nonnull
-    public RandomTsBuilder withStart(@Nonnull TsPeriod start) {
+    @NonNull
+    public RandomTsBuilder withStart(@NonNull TsPeriod start) {
         this.start = Objects.requireNonNull(start);
         return this;
     }
 
-    @Nonnull
-    public RandomTsBuilder withGenerator(@Nonnull BiFunction<Integer, IRandomNumberGenerator, double[]> generator) {
+    @NonNull
+    public RandomTsBuilder withGenerator(@NonNull BiFunction<Integer, IRandomNumberGenerator, double[]> generator) {
         this.generator = Objects.requireNonNull(generator);
         return this;
     }
 
-    @Nonnull
+    @NonNull
     public RandomTsBuilder withForecastCount(int forecastCount) {
         this.forecastCount = forecastCount;
         return this;
     }
 
-    @Nonnull
+    @NonNull
     public RandomTsBuilder withMissingCount(int missingCount) {
         this.missingCount = missingCount;
         return this;
     }
 
-    @Nonnull
+    @NonNull
     public RandomTsBuilder withObsCount(int obsCount) {
         this.obsCount = obsCount;
         return this;
     }
 
-    @Nonnull
-    public RandomTsBuilder withRng(@Nonnull IRandomNumberGenerator rng) {
+    @NonNull
+    public RandomTsBuilder withRng(@NonNull IRandomNumberGenerator rng) {
         this.rng = Objects.requireNonNull(rng);
         return this;
     }

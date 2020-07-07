@@ -14,6 +14,7 @@ import javax.swing.Icon;
  *
  * @author Philippe Charles
  */
+@Deprecated
 public class JdbcColumnListCellRenderer extends DbColumnListCellRenderer<JdbcColumn> {
 
     @Override

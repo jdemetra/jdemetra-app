@@ -1,17 +1,22 @@
+dist: xenial
 language: java
 jdk:
-  - oraclejdk8
+  - openjdk8
   - openjdk11
+  - openjdk-ea
+
+matrix:
+  allow_failures:
+    - jdk: openjdk-ea
 
 env:
   global:
-    - DEPLOY_JDK=oraclejdk8
+    - DEPLOY_JDK=openjdk8
     - DEPLOY_REPO=jdemetra/jdemetra-app
-    - DEPLOY_BIN=nbdemetra-app/target/jdemetra-*-bin.zip
+    - DEPLOY_BIN=nbdemetra-app/target/binaries/*
 
-before_install:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+services:
+  - xvfb
 
 deploy:
   # Maven snapshots from develop branch

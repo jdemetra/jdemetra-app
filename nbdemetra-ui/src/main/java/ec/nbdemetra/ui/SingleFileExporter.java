@@ -27,7 +27,7 @@ import java.util.concurrent.CompletionException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.SwingUtilities;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.DialogDisplayer;
@@ -53,55 +53,55 @@ public final class SingleFileExporter {
         this.success = f -> notifySuccess(f, "Export succeeded");
     }
 
-    @Nonnull
-    public SingleFileExporter fileChooser(@Nonnull Supplier<File> fileChooser) {
+    @NonNull
+    public SingleFileExporter fileChooser(@NonNull Supplier<File> fileChooser) {
         this.fileChooser = Objects.requireNonNull(fileChooser);
         return this;
     }
 
-    @Nonnull
-    public SingleFileExporter file(@Nonnull File file) {
+    @NonNull
+    public SingleFileExporter file(@NonNull File file) {
         Objects.requireNonNull(file);
         return fileChooser(() -> file);
     }
 
-    @Nonnull
-    public SingleFileExporter progressHandle(@Nonnull Supplier<ProgressHandle> progressHandle) {
+    @NonNull
+    public SingleFileExporter progressHandle(@NonNull Supplier<ProgressHandle> progressHandle) {
         this.progressHandle = Objects.requireNonNull(progressHandle);
         return this;
     }
 
-    @Nonnull
-    public SingleFileExporter progressLabel(@Nonnull String displayName) {
+    @NonNull
+    public SingleFileExporter progressLabel(@NonNull String displayName) {
         Objects.requireNonNull(displayName);
         return progressHandle(() -> ProgressHandle.createHandle(displayName));
     }
 
-    @Nonnull
-    public SingleFileExporter onError(@Nonnull BiConsumer<File, Throwable> error) {
+    @NonNull
+    public SingleFileExporter onError(@NonNull BiConsumer<File, Throwable> error) {
         this.error = Objects.requireNonNull(error);
         return this;
     }
 
-    @Nonnull
-    public SingleFileExporter onErrorNotify(@Nonnull String message) {
+    @NonNull
+    public SingleFileExporter onErrorNotify(@NonNull String message) {
         Objects.requireNonNull(message);
         return onError((f, t) -> notifyError(f, t, message));
     }
 
-    @Nonnull
-    public SingleFileExporter onSussess(@Nonnull Consumer<File> success) {
+    @NonNull
+    public SingleFileExporter onSussess(@NonNull Consumer<File> success) {
         this.success = Objects.requireNonNull(success);
         return this;
     }
 
-    @Nonnull
-    public SingleFileExporter onSussessNotify(@Nonnull String message) {
+    @NonNull
+    public SingleFileExporter onSussessNotify(@NonNull String message) {
         Objects.requireNonNull(message);
         return onSussess(f -> notifySuccess(f, message));
     }
 
-    public void execAsync(@Nonnull SingleFileTask task) {
+    public void execAsync(@NonNull SingleFileTask task) {
         Objects.requireNonNull(task);
         File file = fileChooser.get();
         if (file != null) {
@@ -141,8 +141,8 @@ public final class SingleFileExporter {
         NotifyUtil.error(message, getMessageOrElseType(t), t);
     }
 
-    @Nonnull
-    private static String getMessageOrElseType(@Nonnull Throwable t) {
+    @NonNull
+    private static String getMessageOrElseType(@NonNull Throwable t) {
         String msg = t.getMessage();
         return msg != null ? t.getMessage() : t.getClass().getSimpleName();
     }
@@ -155,8 +155,7 @@ public final class SingleFileExporter {
         return ex.getCause() != null && Arrays.stream(types).anyMatch(o -> o.isInstance(ex)) ? unwrapException(ex.getCause(), types) : ex;
     }
 
-    @Nonnull
-    public static FileChooserBuilder.SelectionApprover overwriteApprover() {
+    public static FileChooserBuilder.@NonNull SelectionApprover overwriteApprover() {
         return new SaveSelectionApprover();
     }
 

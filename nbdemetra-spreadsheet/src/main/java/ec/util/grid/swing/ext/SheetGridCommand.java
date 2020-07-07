@@ -26,7 +26,7 @@ import ec.util.spreadsheet.Cell;
 import ec.util.various.swing.JCommand;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ListSelectionModel;
 
 /**
@@ -43,15 +43,15 @@ public abstract class SheetGridCommand extends JCommand<JGrid> {
     }
 
     // TODO: merge some code with TableGridCommand
-    @Nonnull
-    abstract public Table<?> toTable(@Nonnull JGrid grid);
+    @NonNull
+    abstract public Table<?> toTable(@NonNull JGrid grid);
 
-    @Nonnull
+    @NonNull
     public static SheetGridCommand copyAll(boolean rowHeader, boolean columnHeader) {
         return new CopyAllCommand(rowHeader, columnHeader);
     }
 
-    @Nonnull
+    @NonNull
     public static SheetGridCommand copySelection(boolean rowHeader, boolean columnHeader) {
         return new CopySelectionCommand(rowHeader, columnHeader);
     }

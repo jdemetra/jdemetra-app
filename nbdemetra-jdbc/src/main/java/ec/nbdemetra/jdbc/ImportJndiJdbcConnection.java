@@ -22,7 +22,7 @@ import ec.nbdemetra.ui.interchange.ImportAction;
 import ec.nbdemetra.ui.interchange.Importable;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -81,8 +81,8 @@ public final class ImportJndiJdbcConnection extends SingleNodeAction<Node> imple
         });
     }
 
-    @Nonnull
-    private static DriverBasedConfig fromConfig(@Nonnull Config config) throws IllegalArgumentException {
+    @NonNull
+    private static DriverBasedConfig fromConfig(@NonNull Config config) throws IllegalArgumentException {
         if (!DriverBasedConfig.class.getName().equals(config.getDomain())) {
             throw new IllegalArgumentException("Invalid config");
         }

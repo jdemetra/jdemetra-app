@@ -29,7 +29,7 @@ import ec.tstoolkit.algorithm.IProcSpecification;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -97,7 +97,7 @@ public class ImportTramoSpec extends SingleNodeAction<Node> implements Presenter
         });
     }
 
-    private static TramoSpecification fromConfig(@Nonnull Config config) throws IllegalArgumentException {
+    private static TramoSpecification fromConfig(@NonNull Config config) throws IllegalArgumentException {
         if (!TramoSpecification.class.getName().equals(config.getDomain())) {
             throw new IllegalArgumentException("Invalid config");
         }

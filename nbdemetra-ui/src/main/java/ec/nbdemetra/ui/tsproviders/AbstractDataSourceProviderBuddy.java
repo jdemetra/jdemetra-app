@@ -25,7 +25,7 @@ import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.nodes.Sheet;
 import org.openide.nodes.Sheet.Set;
 import org.openide.util.ImageUtilities;
@@ -86,28 +86,27 @@ public abstract class AbstractDataSourceProviderBuddy implements IDataSourceProv
         return new PropertySheetDialogBuilder().title(title).icon(image).editSheet(sheet);
     }
 
-    @Nonnull
+    @NonNull
     protected List<Set> createSheetSets() {
         return ProvidersUtil.sheetSetsOfProvider(getProviderName());
     }
 
-    @Nonnull
-    protected List<Set> createSheetSets(@Nonnull DataSource dataSource) {
+    @NonNull
+    protected List<Set> createSheetSets(@NonNull DataSource dataSource) {
         return ProvidersUtil.sheetSetsOfDataSource(dataSource, ProvidersUtil.usingErrorManager(this::createSheetSets, Collections::emptyList));
     }
 
-    @Nonnull
-    protected List<Set> createSheetSets(@Nonnull DataSet dataSet) {
+    @NonNull
+    protected List<Set> createSheetSets(@NonNull DataSet dataSet) {
         return ProvidersUtil.sheetSetsOfDataSet(dataSet, this::createSheetSets, this::fillParamProperties);
     }
 
-    @Nonnull
-    protected void fillParamProperties(@Nonnull NodePropertySetBuilder b, @Nonnull DataSet dataSet) {
+    protected void fillParamProperties(@NonNull NodePropertySetBuilder b, @NonNull DataSet dataSet) {
         ProvidersUtil.fillParamProperties(b, dataSet);
     }
 
-    @Nonnull
-    protected List<Set> createSheetSets(@Nonnull Object bean) throws IntrospectionException {
+    @NonNull
+    protected List<Set> createSheetSets(@NonNull Object bean) throws IntrospectionException {
         return ProvidersUtil.sheetSetsOfBean(bean);
     }
 

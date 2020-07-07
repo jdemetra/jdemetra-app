@@ -16,7 +16,6 @@
  */
 package ec.ui.grid;
 
-import com.google.common.base.Supplier;
 import com.google.common.primitives.Doubles;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -31,8 +30,9 @@ import ec.util.chart.ObsIndex;
 import ec.util.grid.CellIndex;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import java.util.function.Supplier;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -140,12 +140,12 @@ final class MultiTsGridData extends TsGridData implements Supplier<DescriptiveSt
             obsIndex = currentSeries.convertRowIndexToModel(periodId);
         }
 
-        @Nonnegative
+        @NonNegative
         public int getObsIndex() {
             return obsIndex;
         }
 
-        @Nonnull
+        @NonNull
         public TsPeriod getPeriod() {
             return currentSeries.getPeriod(obsIndex);
         }

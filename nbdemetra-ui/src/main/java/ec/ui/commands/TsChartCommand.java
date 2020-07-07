@@ -39,7 +39,7 @@ import ec.ui.interfaces.ITsCollectionView;
 import static ec.ui.interfaces.ITsCollectionView.SELECTION_PROPERTY;
 import ec.util.various.swing.JCommand;
 import java.util.Calendar;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.Icon;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbCollections;
@@ -55,27 +55,27 @@ public final class TsChartCommand {
         // static class
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsChart> toggleTitleVisibility() {
         return ToggleTitleVisibilityCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsChart> toggleLegendVisibility() {
         return ToggleLegendVisibilityCommand.INSTANCE;
     }
 
-    @Nonnull
-    public static JCommand<ITsChart> applyLineThickNess(@Nonnull ITsChart.LinesThickness thickness) {
+    @NonNull
+    public static JCommand<ITsChart> applyLineThickNess(ITsChart.@NonNull LinesThickness thickness) {
         return ITsChart.LinesThickness.Thick.equals(thickness) ? ApplyLineThickNessCommand.THICK : ApplyLineThickNessCommand.THIN;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsChart> showAll() {
         return ShowAllCommand.INSTANCE;
     }
 
-    @Nonnull
+    @NonNull
     public static JCommand<ITsChart> splitIntoYearlyComponents() {
         return SplitIntoYearlyComponentsCommand.INSTANCE;
     }

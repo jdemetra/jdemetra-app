@@ -28,7 +28,7 @@ import ec.util.various.swing.OnEDT;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 
@@ -42,7 +42,7 @@ import org.openide.util.ImageUtilities;
 @ServiceDefinition(hasPosition = true)
 public abstract class TssTransferHandler implements INamedService {
 
-    @Nonnull
+    @NonNull
     abstract public DataFlavor getDataFlavor();
 
     //<editor-fold defaultstate="collapsed" desc="INamedService impl">
@@ -63,72 +63,72 @@ public abstract class TssTransferHandler implements INamedService {
 
     //<editor-fold defaultstate="collapsed" desc="TimeSeries struct">
     @OnEDT
-    public boolean canExportTsCollection(@Nonnull TsCollection col) {
+    public boolean canExportTsCollection(@NonNull TsCollection col) {
         return false;
     }
 
     @OnAnyThread
-    @Nonnull
-    public Object exportTsCollection(@Nonnull TsCollection col) throws IOException {
+    @NonNull
+    public Object exportTsCollection(@NonNull TsCollection col) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @OnEDT
-    public boolean canImportTsCollection(@Nonnull Object obj) {
+    public boolean canImportTsCollection(@NonNull Object obj) {
         return false;
     }
 
     @OnEDT
-    @Nonnull
-    public TsCollection importTsCollection(@Nonnull Object obj) throws IOException, ClassCastException {
+    @NonNull
+    public TsCollection importTsCollection(@NonNull Object obj) throws IOException, ClassCastException {
         throw new UnsupportedOperationException();
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Matrix struct">
     @OnEDT
-    public boolean canExportMatrix(@Nonnull Matrix matrix) {
+    public boolean canExportMatrix(@NonNull Matrix matrix) {
         return false;
     }
 
     @OnAnyThread
-    @Nonnull
-    public Object exportMatrix(@Nonnull Matrix matrix) throws IOException {
+    @NonNull
+    public Object exportMatrix(@NonNull Matrix matrix) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @OnEDT
-    public boolean canImportMatrix(@Nonnull Object obj) {
+    public boolean canImportMatrix(@NonNull Object obj) {
         return false;
     }
 
     @OnEDT
-    @Nonnull
-    public Matrix importMatrix(@Nonnull Object obj) throws IOException, ClassCastException {
+    @NonNull
+    public Matrix importMatrix(@NonNull Object obj) throws IOException, ClassCastException {
         throw new UnsupportedOperationException();
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Table struct">
     @OnEDT
-    public boolean canExportTable(@Nonnull Table<?> table) {
+    public boolean canExportTable(@NonNull Table<?> table) {
         return false;
     }
 
     @OnAnyThread
-    @Nonnull
-    public Object exportTable(@Nonnull Table<?> table) throws IOException {
+    @NonNull
+    public Object exportTable(@NonNull Table<?> table) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @OnEDT
-    public boolean canImportTable(@Nonnull Object obj) {
+    public boolean canImportTable(@NonNull Object obj) {
         return false;
     }
 
     @OnEDT
-    @Nonnull
-    public Table<?> importTable(@Nonnull Object obj) throws IOException, ClassCastException {
+    @NonNull
+    public Table<?> importTable(@NonNull Object obj) throws IOException, ClassCastException {
         throw new UnsupportedOperationException();
     }
     //</editor-fold>

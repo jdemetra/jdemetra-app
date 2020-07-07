@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.ListCellRenderer;
 import javax.swing.text.NumberFormatter;
 import org.openide.nodes.Node;
@@ -72,7 +72,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
      * @param name a programmatic name
      * @return this builder
      */
-    @Nonnull
+    @NonNull
     public NodePropertySetBuilder reset(@Nullable String name) {
         this.nodeProperties.clear();
         this.name = name;
@@ -88,7 +88,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
      * @param name a programmatic name
      * @return this builder
      */
-    @Nonnull
+    @NonNull
     public NodePropertySetBuilder name(@Nullable String name) {
         this.name = name;
         return this;
@@ -102,7 +102,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
      * @see
      * http://platform.netbeans.org/tutorials/nbm-nodesapi2.html#separate-property-groups
      */
-    @Nonnull
+    @NonNull
     public NodePropertySetBuilder group(@Nullable String tabName) {
         this.tabName = tabName;
         return this;
@@ -114,7 +114,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
      * @param displayName a display name
      * @return this builder
      */
-    @Nonnull
+    @NonNull
     public NodePropertySetBuilder display(@Nullable String displayName) {
         this.displayName = displayName;
         return this;
@@ -126,7 +126,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
      * @param shortDescription a short description
      * @return this builder
      */
-    @Nonnull
+    @NonNull
     public NodePropertySetBuilder description(@Nullable String shortDescription) {
         this.shortDescription = shortDescription;
         return this;
@@ -138,8 +138,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
      * @param nodeProperty a non-null property
      * @return this builder
      */
-    @Nonnull
-    public NodePropertySetBuilder add(@Nonnull Node.Property<?> nodeProperty) {
+    @NonNull
+    public NodePropertySetBuilder add(Node.@NonNull Property<?> nodeProperty) {
         nodeProperties.add(nodeProperty);
         return this;
     }
@@ -151,8 +151,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
      * @param valueType
      * @return a non-null selection step
      */
-    @Nonnull
-    public <T> SelectStep<T, DefaultStep> with(@Nonnull Class<T> valueType) {
+    @NonNull
+    public <T> SelectStep<T, DefaultStep> with(@NonNull Class<T> valueType) {
         return new SelectStep<>(valueType, DefaultStep::new);
     }
 
@@ -161,7 +161,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
      *
      * @return a non-null selection step
      */
-    @Nonnull
+    @NonNull
     public SelectStep<File, FileStep> withFile() {
         return new SelectStep<>(File.class, FileStep::new);
     }
@@ -171,7 +171,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
      *
      * @return a non-null selection step
      */
-    @Nonnull
+    @NonNull
     public SelectStep<String, AutoCompletedStep> withAutoCompletion() {
         return new SelectStep<>(String.class, AutoCompletedStep::new);
     }
@@ -181,7 +181,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
      *
      * @return a non-null selection step
      */
-    @Nonnull
+    @NonNull
     public SelectStep<Boolean, BooleanStep> withBoolean() {
         return new SelectStep<>(boolean.class, BooleanStep::new);
     }
@@ -191,7 +191,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
      *
      * @return a non-null selection step
      */
-    @Nonnull
+    @NonNull
     public SelectStep<Integer, IntStep> withInt() {
         return new SelectStep<>(int.class, IntStep::new);
     }
@@ -201,7 +201,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
      *
      * @return a non-null selection step
      */
-    @Nonnull
+    @NonNull
     public SelectStep<Double, DoubleStep> withDouble() {
         return new SelectStep<>(double.class, DoubleStep::new);
     }
@@ -213,8 +213,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
      * @param valueType
      * @return a non-null selection step
      */
-    @Nonnull
-    public <T extends Enum<T>> SelectStep<T, EnumStep<T>> withEnum(@Nonnull Class<T> valueType) {
+    @NonNull
+    public <T extends Enum<T>> SelectStep<T, EnumStep<T>> withEnum(@NonNull Class<T> valueType) {
         return new SelectStep<>(valueType, EnumStep::new);
     }
 
@@ -247,13 +247,13 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
             this.next = next;
         }
 
-        @Nonnull
-        public NEXT_STEP select(@Nonnull Node.Property<T> property) {
+        @NonNull
+        public NEXT_STEP select(Node.@NonNull Property<T> property) {
             return next.apply(property);
         }
 
-        @Nonnull
-        public NEXT_STEP select(@Nonnull Object bean, @Nonnull String property) {
+        @NonNull
+        public NEXT_STEP select(@NonNull Object bean, @NonNull String property) {
             try {
                 return next.apply(new PropertySupport.Reflection<>(bean, valueType, property));
             } catch (NoSuchMethodException ex) {
@@ -261,8 +261,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
             }
         }
 
-        @Nonnull
-        public NEXT_STEP select(@Nonnull Object bean, @Nonnull String getter, @Nullable String setter) {
+        @NonNull
+        public NEXT_STEP select(@NonNull Object bean, @NonNull String getter, @Nullable String setter) {
             try {
                 return next.apply(new PropertySupport.Reflection<>(bean, valueType, getter, setter));
             } catch (NoSuchMethodException ex) {
@@ -270,8 +270,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
             }
         }
 
-        @Nonnull
-        public <X> NEXT_STEP select(@Nonnull Object bean, @Nonnull String property, @Nonnull Class<X> source, @Nonnull Function<X, T> forward, @Nonnull Function<T, X> backward) {
+        @NonNull
+        public <X> NEXT_STEP select(@NonNull Object bean, @NonNull String property, @NonNull Class<X> source, @NonNull Function<X, T> forward, @NonNull Function<T, X> backward) {
             try {
                 return next.apply(new PropertyAdapter<>(new PropertySupport.Reflection<>(bean, source, property), valueType, forward, backward));
             } catch (NoSuchMethodException ex) {
@@ -288,8 +288,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * {@link #selectConst(java.lang.String, java.lang.Object)} instead
          */
         @Deprecated
-        @Nonnull
-        public NEXT_STEP select(@Nonnull String name, @Nonnull T value) {
+        @NonNull
+        public NEXT_STEP select(@NonNull String name, @NonNull T value) {
             return selectConst(name, value);
         }
 
@@ -300,13 +300,13 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @return
          * @since 2.2.0
          */
-        @Nonnull
-        public NEXT_STEP selectConst(@Nonnull String name, @Nullable T value) {
+        @NonNull
+        public NEXT_STEP selectConst(@NonNull String name, @Nullable T value) {
             return next.apply(new ConstProperty<>(value, name, valueType, null, null));
         }
 
-        @Nonnull
-        public NEXT_STEP selectField(@Nonnull Object bean, @Nonnull String fieldName) {
+        @NonNull
+        public NEXT_STEP selectField(@NonNull Object bean, @NonNull String fieldName) {
             return next.apply(FieldNodeProperty.create(bean, valueType, fieldName));
         }
     }
@@ -333,8 +333,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param name The programmatic name of the property/method/event
          * @return a reference to this object.
          */
-        @Nonnull
-        public THIS name(@Nonnull String name) {
+        @NonNull
+        public THIS name(@NonNull String name) {
             nodeProperty.setName(Objects.requireNonNull(name));
             return (THIS) this;
         }
@@ -347,7 +347,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * property/method/event.
          * @return a reference to this object.
          */
-        @Nonnull
+        @NonNull
         public THIS display(@Nullable String displayName) {
             nodeProperty.setDisplayName(displayName);
             return (THIS) this;
@@ -372,7 +372,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * implementation is null.
          * @return a reference to this object.
          */
-        @Nonnull
+        @NonNull
         public THIS htmlDisplay(@Nullable String htmlDisplayName) {
             nodeProperty.setHtmlDisplayName(htmlDisplayName);
             return (THIS) this;
@@ -386,7 +386,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * property/method/event. This defaults to be the display name.
          * @return a reference to this object.
          */
-        @Nonnull
+        @NonNull
         public THIS description(@Nullable String description) {
             nodeProperty.setShortDescription(description);
             return (THIS) this;
@@ -400,8 +400,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param value The value.
          * @return a reference to this object.
          */
-        @Nonnull
-        public THIS attribute(@Nonnull String attributeName, @Nonnull Object value) {
+        @NonNull
+        public THIS attribute(@NonNull String attributeName, @NonNull Object value) {
             nodeProperty.setValue(attributeName, value);
             return (THIS) this;
         }
@@ -412,7 +412,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param editorType class type of the property editor
          * @return a reference to this object.
          */
-        @Nonnull
+        @NonNull
         protected THIS editor(@Nullable Class<? extends PropertyEditor> editorType) {
             nodeProperty.setPropertyEditorClass(editorType);
             return (THIS) this;
@@ -423,7 +423,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          *
          * @return a reference to the builder
          */
-        @Nonnull
+        @NonNull
         public NodePropertySetBuilder add() {
             return NodePropertySetBuilder.this.add(nodeProperty);
         }
@@ -463,8 +463,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @return this step
          * @see AutoCompletedPropertyEditor3.SERVICE_PATH_ATTRIBUTE
          */
-        @Nonnull
-        public AutoCompletedStep servicePath(@Nonnull String path) {
+        @NonNull
+        public AutoCompletedStep servicePath(@NonNull String path) {
             return attribute(AutoCompletedPropertyEditor3.SERVICE_PATH_ATTRIBUTE, path);
         }
 
@@ -475,8 +475,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @return this step
          * @see AutoCompletedPropertyEditor3.PROMPT_TEXT_ATTRIBUTE
          */
-        @Nonnull
-        public AutoCompletedStep promptText(@Nonnull String text) {
+        @NonNull
+        public AutoCompletedStep promptText(@NonNull String text) {
             return attribute(AutoCompletedPropertyEditor3.PROMPT_TEXT_ATTRIBUTE, text);
         }
 
@@ -487,7 +487,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @return this step
          * @see AutoCompletedPropertyEditor3.AUTO_FOCUS_ATTRIBUTE
          */
-        @Nonnull
+        @NonNull
         public AutoCompletedStep autoFocus(boolean autoFocus) {
             return attribute(AutoCompletedPropertyEditor3.AUTO_FOCUS_ATTRIBUTE, autoFocus);
         }
@@ -499,7 +499,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @return this step
          * @see AutoCompletedPropertyEditor3.DELAY_ATTRIBUTE
          */
-        @Nonnull
+        @NonNull
         public AutoCompletedStep delay(int delay) {
             return attribute(AutoCompletedPropertyEditor3.DELAY_ATTRIBUTE, delay);
         }
@@ -511,7 +511,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @return this step
          * @see AutoCompletedPropertyEditor3.MIN_LENGTH_ATTRIBUTE
          */
-        @Nonnull
+        @NonNull
         public AutoCompletedStep minLength(int minLength) {
             return attribute(AutoCompletedPropertyEditor3.MIN_LENGTH_ATTRIBUTE, minLength);
         }
@@ -523,8 +523,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @return this step
          * @see AutoCompletedPropertyEditor3.SEPARATOR_ATTRIBUTE
          */
-        @Nonnull
-        public AutoCompletedStep separator(@Nonnull String separator) {
+        @NonNull
+        public AutoCompletedStep separator(@NonNull String separator) {
             return attribute(AutoCompletedPropertyEditor3.SEPARATOR_ATTRIBUTE, separator);
         }
 
@@ -535,8 +535,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @return this step
          * @see AutoCompletedPropertyEditor3.SOURCE_ATTRIBUTE
          */
-        @Nonnull
-        public AutoCompletedStep source(@Nonnull AutoCompletionSource source) {
+        @NonNull
+        public AutoCompletedStep source(@NonNull AutoCompletionSource source) {
             return attribute(AutoCompletedPropertyEditor3.SOURCE_ATTRIBUTE, source);
         }
 
@@ -547,8 +547,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @return this step
          * @see AutoCompletedPropertyEditor3.SOURCE_ATTRIBUTE
          */
-        @Nonnull
-        public AutoCompletedStep source(@Nonnull Object... list) {
+        @NonNull
+        public AutoCompletedStep source(@NonNull Object... list) {
             return source(Arrays.asList(list));
         }
 
@@ -559,8 +559,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @return this step
          * @see AutoCompletedPropertyEditor3.SOURCE_ATTRIBUTE
          */
-        @Nonnull
-        public AutoCompletedStep source(@Nonnull Iterable<?> list) {
+        @NonNull
+        public AutoCompletedStep source(@NonNull Iterable<?> list) {
             return source(AutoCompletionSources.of(false, list));
         }
 
@@ -571,8 +571,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @return this step
          * @see AutoCompletedPropertyEditor3#CELL_RENDERER_ATTRIBUTE
          */
-        @Nonnull
-        public AutoCompletedStep cellRenderer(@Nonnull ListCellRenderer cellRenderer) {
+        @NonNull
+        public AutoCompletedStep cellRenderer(@NonNull ListCellRenderer cellRenderer) {
             return attribute(AutoCompletedPropertyEditor3.CELL_RENDERER_ATTRIBUTE, cellRenderer);
         }
 
@@ -584,8 +584,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @since 2.2.0
          * @see AutoCompletedPropertyEditor3.DEFAULT_VALUE_SUPPLIER_ATTRIBUTE
          */
-        @Nonnull
-        public AutoCompletedStep defaultValueSupplier(@Nonnull Callable<String> defaultValueSupplier) {
+        @NonNull
+        public AutoCompletedStep defaultValueSupplier(@NonNull Callable<String> defaultValueSupplier) {
             return attribute(AutoCompletedPropertyEditor3.DEFAULT_VALUE_SUPPLIER_ATTRIBUTE, defaultValueSupplier);
         }
 
@@ -597,8 +597,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @since 2.2.0
          * @see AutoCompletedPropertyEditor3.DEFAULT_VALUE_SUPPLIER_ATTRIBUTE
          */
-        @Nonnull
-        public AutoCompletedStep defaultValueSupplier(@Nonnull String defaultValue) {
+        @NonNull
+        public AutoCompletedStep defaultValueSupplier(@NonNull String defaultValue) {
             return AutoCompletedStep.this.defaultValueSupplier(() -> defaultValue);
         }
     }
@@ -616,8 +616,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
             //editor(FileEditor.class);
         }
 
-        @Nonnull
-        public FileStep paths(@Nonnull File[] paths) {
+        @NonNull
+        public FileStep paths(@NonNull File[] paths) {
             return attribute(DesktopFilePropertyEditor.PATHS_ATTRIBUTE, paths);
         }
 
@@ -627,8 +627,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param fileFilter
          * @return
          */
-        @Nonnull
-        public FileStep filterForSwing(@Nonnull javax.swing.filechooser.FileFilter fileFilter) {
+        @NonNull
+        public FileStep filterForSwing(javax.swing.filechooser.@NonNull FileFilter fileFilter) {
             return attribute("filter", fileFilter);
         }
 
@@ -638,8 +638,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param fileFilter
          * @return
          */
-        @Nonnull
-        public FileStep filter(@Nonnull java.io.FileFilter fileFilter) {
+        @NonNull
+        public FileStep filter(java.io.@NonNull FileFilter fileFilter) {
             return attribute("filter", fileFilter);
         }
 
@@ -649,8 +649,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param fileNameFilter
          * @return
          */
-        @Nonnull
-        public FileStep filterByName(@Nonnull java.io.FilenameFilter fileNameFilter) {
+        @NonNull
+        public FileStep filterByName(java.io.@NonNull FilenameFilter fileNameFilter) {
             return attribute("filter", fileNameFilter);
         }
 
@@ -660,7 +660,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param selectables
          * @return
          */
-        @Nonnull
+        @NonNull
         public FileStep directories(boolean selectables) {
             return attribute("directories", selectables);
         }
@@ -671,7 +671,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param selectables
          * @return
          */
-        @Nonnull
+        @NonNull
         public FileStep files(boolean selectables) {
             return attribute("files", selectables);
         }
@@ -682,8 +682,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param file
          * @return
          */
-        @Nonnull
-        public FileStep currentDir(@Nonnull File file) {
+        @NonNull
+        public FileStep currentDir(@NonNull File file) {
             return attribute("currentDir", file);
         }
 
@@ -702,8 +702,8 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param file
          * @return
          */
-        @Nonnull
-        public FileStep baseDir(@Nonnull File file) {
+        @NonNull
+        public FileStep baseDir(@NonNull File file) {
             return attribute("baseDir", file);
         }
     }
@@ -734,7 +734,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param max maximum legal value that can be input
          * @return this step
          */
-        @Nonnull
+        @NonNull
         public IntStep max(int max) {
             return attribute(JSpinFieldPropertyEditor.MAX_ATTRIBUTE, max);
         }
@@ -745,7 +745,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param min minimum legal value that can be input
          * @return this step
          */
-        @Nonnull
+        @NonNull
         public IntStep min(int min) {
             return attribute(JSpinFieldPropertyEditor.MIN_ATTRIBUTE, min);
         }
@@ -773,7 +773,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param max maximum legal value that can be input
          * @return this step
          */
-        @Nonnull
+        @NonNull
         public DoubleStep max(double max) {
             formatter.setMaximum(max);
             return this;
@@ -785,7 +785,7 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
          * @param min minimum legal value that can be input
          * @return this step
          */
-        @Nonnull
+        @NonNull
         public DoubleStep min(double min) {
             formatter.setMinimum(min);
             return this;
@@ -805,36 +805,35 @@ public final class NodePropertySetBuilder implements IBuilder<Node.PropertySet> 
             of(EnumSet.allOf(nodeProperty.getValueType()));
         }
 
-        @Nonnull
-        public EnumStep<T> of(@Nonnull T... values) {
+        @NonNull
+        public EnumStep<T> of(@NonNull T... values) {
             return attribute(ComboBoxPropertyEditor.VALUES_ATTRIBUTE, values);
         }
 
-        @Nonnull
-        public EnumStep<T> of(@Nonnull Iterable<T> values) {
+        @NonNull
+        public EnumStep<T> of(@NonNull Iterable<T> values) {
             return of(Iterables.toArray(values, nodeProperty.getValueType()));
         }
 
-        @Nonnull
-        public EnumStep<T> noneOf(@Nonnull T... values) {
+        @NonNull
+        public EnumStep<T> noneOf(@NonNull T... values) {
             EnumSet<T> tmp = EnumSet.allOf(nodeProperty.getValueType());
             tmp.removeAll(Arrays.asList(values));
             return of(tmp);
         }
 
-        @Nonnull
-        public EnumStep<T> noneOf(@Nonnull Iterable<T> values) {
+        @NonNull
+        public EnumStep<T> noneOf(@NonNull Iterable<T> values) {
             EnumSet<T> tmp = EnumSet.allOf(nodeProperty.getValueType());
             tmp.removeAll(Lists.newArrayList(values));
             return of(tmp);
         }
     }
 
-    @Nonnull
-    public static <X, Y> Node.Property<Y> adapt(
-            @Nonnull Object bean, @Nonnull String property,
-            @Nonnull Class<X> source, @Nonnull Class<Y> target,
-            @Nonnull Function<X, Y> forward, @Nonnull Function<Y, X> backward) {
+    public static <X, Y> Node.@NonNull Property<Y> adapt(
+            @NonNull Object bean, @NonNull String property,
+            @NonNull Class<X> source, @NonNull Class<Y> target,
+            @NonNull Function<X, Y> forward, @NonNull Function<Y, X> backward) {
         try {
             return new PropertyAdapter<>(new PropertySupport.Reflection<>(bean, source, property), target, forward, backward);
         } catch (NoSuchMethodException ex) {

@@ -23,7 +23,7 @@ import ec.nbdemetra.ui.IResetable;
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.explorer.ExplorerManager;
@@ -40,7 +40,7 @@ import org.openide.util.lookup.InstanceContent;
  */
 public class NamedServiceNode extends AbstractNode {
 
-    public NamedServiceNode(@Nonnull INamedService namedService) {
+    public NamedServiceNode(@NonNull INamedService namedService) {
         this(namedService, new InstanceContent());
     }
 

@@ -28,7 +28,7 @@ import ec.util.chart.ColorScheme;
 import internal.TsEventHelper;
 import java.util.Observable;
 import java.util.Observer;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.TransferHandler;
 
 /**

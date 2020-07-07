@@ -29,8 +29,8 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -42,13 +42,13 @@ public final class DemoUtils {
         // static class
     }
 
-    @Nonnull
+    @NonNull
     public static TsCollection randomTsCollection(int nSeries) {
         return randomTsCollection(nSeries, 24, new XorshiftRNG(0));
     }
 
-    @Nonnull
-    public static TsCollection randomTsCollection(@Nonnegative int nSeries, @Nonnegative int nObs, @Nonnull IRandomNumberGenerator rng) {
+    @NonNull
+    public static TsCollection randomTsCollection(@NonNegative int nSeries, @NonNegative int nObs, @NonNull IRandomNumberGenerator rng) {
         RandomTsBuilder builder = new RandomTsBuilder();
         return IntStream.range(0, nSeries)
                 .mapToObj(o -> builder.withObsCount(nObs).withRng(rng).withName("S" + o).build().toTs())
@@ -80,63 +80,63 @@ public final class DemoUtils {
         }
 
         //<editor-fold defaultstate="collapsed" desc="Options">
-        @Nonnull
-        public RandomTsCollectionBuilder withSeries(@Nonnegative int count) {
+        @NonNull
+        public RandomTsCollectionBuilder withSeries(@NonNegative int count) {
             this.nSeries = count;
             return this;
         }
 
-        @Nonnull
-        public RandomTsCollectionBuilder withObs(@Nonnegative int count) {
+        @NonNull
+        public RandomTsCollectionBuilder withObs(@NonNegative int count) {
             delegate.withObsCount(count);
             return this;
         }
 
-        @Nonnull
-        public RandomTsCollectionBuilder withRNG(@Nonnull IRandomNumberGenerator rng) {
+        @NonNull
+        public RandomTsCollectionBuilder withRNG(@NonNull IRandomNumberGenerator rng) {
             delegate.withRng(rng);
             return this;
         }
 
-        @Nonnull
-        public RandomTsCollectionBuilder withForecast(@Nonnegative int count) {
+        @NonNull
+        public RandomTsCollectionBuilder withForecast(@NonNegative int count) {
             delegate.withForecastCount(count);
             return this;
         }
 
-        @Nonnull
+        @NonNull
         public RandomTsCollectionBuilder withStartTimeMillis(long time) {
             this.startTimeMillis = time;
             return this;
         }
 
-        @Nonnull
-        public RandomTsCollectionBuilder withFrequency(@Nonnull TsFrequency frequency) {
+        @NonNull
+        public RandomTsCollectionBuilder withFrequency(@NonNull TsFrequency frequency) {
             this.frequency = frequency;
             return this;
         }
 
-        @Nonnull
-        public RandomTsCollectionBuilder withStartPeriod(@Nonnull TsPeriod period) {
+        @NonNull
+        public RandomTsCollectionBuilder withStartPeriod(@NonNull TsPeriod period) {
             this.frequency = period.getFrequency();
             this.startTimeMillis = period.firstday().getTimeInMillis();
             return this;
         }
 
-        @Nonnull
-        public RandomTsCollectionBuilder withStatus(@Nonnull TsStatus status) {
+        @NonNull
+        public RandomTsCollectionBuilder withStatus(@NonNull TsStatus status) {
             delegate.withStatus(status);
             return this;
         }
 
-        @Nonnull
-        public RandomTsCollectionBuilder withNaming(@Nonnull TsNamingScheme naming) {
+        @NonNull
+        public RandomTsCollectionBuilder withNaming(@NonNull TsNamingScheme naming) {
             this.naming = naming;
             return this;
         }
 
-        @Nonnull
-        public RandomTsCollectionBuilder withMissingValues(@Nonnegative int missingValues) {
+        @NonNull
+        public RandomTsCollectionBuilder withMissingValues(@NonNegative int missingValues) {
             delegate.withMissingCount(missingValues);
             return this;
         }
