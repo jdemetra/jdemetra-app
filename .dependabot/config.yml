@@ -1,0 +1,25 @@
+version: 1
+update_configs:
+  - package_manager: "java:maven"
+    directory: "/"
+    update_schedule: "daily"
+    automerged_updates:
+        - match:
+            dependency_name: "org.apache.maven.plugins:*"
+        - match:
+            dependency_name: "org.codehaus.mojo:*"
+        - match:
+            dependency_name: "org.gaul:modernizer-maven-plugin"
+        - match:
+            dependency_name: "org.jacoco:jacoco-maven-plugin"
+        - match:
+            dependency_name: "org.checkerframework:checker-qual"
+        - match:
+            dependency_name: "org.assertj:assertj-core"
+        - match:
+            dependency_name: "org.openjdk.jmh:*"
+        - match:
+            dependency_name: "com.akathist.maven.plugins.launch4j:launch4j-maven-plugin"
+        - match:
+            dependency_name: "net.nicoulaj.maven.plugins:checksum-maven-plugin"
+            
