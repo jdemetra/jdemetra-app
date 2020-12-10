@@ -42,7 +42,7 @@ jobs:
           git clone -b develop --single-branch --depth=1 https://github.com/jdemetra/jdemetra-core.git jdemetra-core
           cd jdemetra-core
           mvn -B install -DskipTests=true
-          cd..
+          cd ..
 
       - name: Build and test with Maven
         run: mvn -B package --file pom.xml
