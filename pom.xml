@@ -547,7 +547,7 @@
     <repositories>
         <repository>
             <id>netbeans-releases-mirror</id>
-            <url>https://repo.spring.io/plugins-release</url>
+            <url>https://raw.githubusercontent.com/nbbrd/netbeans-maven-mirror/main</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
