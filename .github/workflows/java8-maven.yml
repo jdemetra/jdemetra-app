@@ -1,0 +1,86 @@
+name: Java8+ with Maven
+
+on: [ push, pull_request ]
+
+jobs:
+  build-and-test-job:
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ 8, 11 ]
+        os: [ ubuntu-latest, macOS-latest, windows-latest ]
+        experimental: [ false ]
+        include:
+          - java: '>11'
+            os: ubuntu-latest
+            experimental: true
+
+    name: JDK${{ matrix.java }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+
+      - name: Setup Maven cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build and test with Maven
+        run: mvn -B package --file pom.xml
+
+  release-job:
+    needs: build-and-test-job
+    if: startsWith(github.repository, 'nbbrd/') && startsWith(github.ref, 'refs/tags/v')
+    strategy:
+      matrix:
+        java: [ 11 ]
+        os: [ ubuntu-latest ]
+
+    name: Release on tag
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+
+      - name: Setup Maven cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml -DskipTests=true
+
+      - name: Create draft release and upload assets
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: 'binaries/*'
+
+      - name: Deploy with Maven
+        run: test -f ci.settings.xml && mvn -B deploy -Dmaven.test.skip -s ci.settings.xml -P deploy-releases
+        env:
+          CI_DEPLOY_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME }}
+          CI_DEPLOY_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD }}

@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.run.params.ide/>
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
-        <project.x.binaries>${project.build.directory}/binaries</project.x.binaries>
+        <project.x.binaries>${project.basedir}/../binaries</project.x.binaries>
         <project.x.zipname>jdemetra-${project.version}-bin</project.x.zipname>
     </properties>
 
@@ -125,7 +125,7 @@
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <phase>verify</phase>
+                        <phase>package</phase>
                         <configuration>
                             <target>
                                 <copy file="${project.build.directory}/${project.x.zipname}.zip" 
@@ -146,6 +146,7 @@
                 <version>1.9</version>
                 <executions>
                     <execution>
+                        <phase>package</phase>
                         <goals>
                             <goal>files</goal>
                         </goals>
