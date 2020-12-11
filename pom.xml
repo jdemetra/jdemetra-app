@@ -510,13 +510,6 @@
     
     <repositories>
         <repository>
-            <id>netbeans-releases</id>
-            <url>http://bits.netbeans.org/nexus/content/groups/netbeans/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
             <id>oss-jfrog-artifactory-releases</id>
             <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
             <snapshots>
@@ -524,10 +517,10 @@
             </snapshots>
         </repository>
         <repository>
-            <id>oss-jfrog-artifactory-snapshots</id>
-            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+            <id>netbeans-releases-mirror</id>
+            <url>https://raw.githubusercontent.com/nbbrd/netbeans-maven-mirror/main</url>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
         </repository>
     </repositories>

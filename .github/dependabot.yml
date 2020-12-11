@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: maven
+    target-branch: "develop"
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+  - package-ecosystem: maven
+    target-branch: "v3.0.0"
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
