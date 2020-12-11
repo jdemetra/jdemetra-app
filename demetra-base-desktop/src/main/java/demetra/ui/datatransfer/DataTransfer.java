@@ -16,7 +16,7 @@
  */
 package demetra.ui.datatransfer;
 
-import demetra.design.VisibleForTesting;
+import nbbrd.design.VisibleForTesting;
 import demetra.timeseries.TsData;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;

@@ -16,7 +16,7 @@
  */
 package internal.ui;
 
-import demetra.design.MightBePromoted;
+import nbbrd.design.MightBePromoted;
 import java.util.concurrent.ThreadFactory;
 
 /**
