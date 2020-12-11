@@ -16,7 +16,7 @@
  */
 package internal.ui;
 
-import demetra.design.MightBePromoted;
+import nbbrd.design.MightBePromoted;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;

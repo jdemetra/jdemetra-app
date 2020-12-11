@@ -32,9 +32,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>eu.europa.ec.joinup.sat</groupId>
-            <artifactId>demetra-design</artifactId>
-            <version>${jd3-basic.version}</version>
+            <groupId>be.nbb.rd</groupId>
+            <artifactId>java-design-annotation</artifactId>
+            <version>1.0.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -148,6 +148,12 @@
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
             <artifactId>demetra-utils</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>be.nbb.rd</groupId>
+                    <artifactId>java-io-xml</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
@@ -177,8 +183,8 @@
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
-            <artifactId>demetra-bridge</artifactId>
-            <version>${jd3-basic.version}</version>
+            <artifactId>demetra-tsp-bridge</artifactId>
+            <version>${jd3.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>eu.europa.ec.joinup.sat</groupId>
@@ -190,7 +196,7 @@
                 </exclusion>
                 <exclusion>
                     <groupId>eu.europa.ec.joinup.sat</groupId>
-                    <artifactId>demetra-io-core</artifactId>
+                    <artifactId>demetra-tsp-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

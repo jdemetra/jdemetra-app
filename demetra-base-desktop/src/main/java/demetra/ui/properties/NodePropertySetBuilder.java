@@ -16,7 +16,7 @@
  */
 package demetra.ui.properties;
 
-import demetra.design.BuilderPattern;
+import nbbrd.design.BuilderPattern;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.AutoCompletionSources;
 import static demetra.ui.util.JTextComponents.fixMaxDecimals;

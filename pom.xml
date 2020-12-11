@@ -19,8 +19,8 @@
 
     <properties>
         <brandingToken>nbdemetra</brandingToken>
-        <netbeans.version>RELEASE120-1</netbeans.version>
-        <jd2.version>2.2.4-SNAPSHOT</jd2.version>
+        <netbeans.version>RELEASE122</netbeans.version>
+        <jd2.version>2.2.3</jd2.version>
         <jd3.version>${project.version}</jd3.version>
         <jd3-basic.version>1.0.0-SNAPSHOT</jd3-basic.version>
     </properties>
@@ -129,7 +129,7 @@
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-modules-javahelp</artifactId>
-                <version>RELEASE82</version>
+                <version>RELEASE80</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.netbeans.api</groupId>
@@ -510,13 +510,6 @@
     
     <repositories>
         <repository>
-            <id>netbeans-releases</id>
-            <url>http://bits.netbeans.org/nexus/content/groups/netbeans/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
             <id>oss-jfrog-artifactory-releases</id>
             <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
             <snapshots>
@@ -524,10 +517,10 @@
             </snapshots>
         </repository>
         <repository>
-            <id>oss-jfrog-artifactory-snapshots</id>
-            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+            <id>netbeans-releases-mirror</id>
+            <url>https://raw.githubusercontent.com/nbbrd/netbeans-maven-mirror/main</url>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
         </repository>
     </repositories>

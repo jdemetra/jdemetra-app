@@ -16,7 +16,7 @@
  */
 package demetra.ui.properties;
 
-import demetra.design.MightBePromoted;
+import nbbrd.design.MightBePromoted;
 import java.beans.PropertyEditorSupport;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;

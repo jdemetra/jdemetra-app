@@ -16,7 +16,7 @@
  */
 package demetra.ui.nodes;
 
-import demetra.design.BuilderPattern;
+import nbbrd.design.BuilderPattern;
 import internal.ui.Collections2;
 import java.util.ArrayList;
 import java.util.Arrays;
