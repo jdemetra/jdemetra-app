@@ -37,6 +37,13 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Build jdemetra-core snapshots
+        run: |
+          git clone -b develop --single-branch --depth=1 https://github.com/jdemetra/jdemetra-core.git jdemetra-core
+          cd jdemetra-core
+          mvn -B install -DskipTests=true
+          cd ..
+
       - name: Build and test with Maven
         run: mvn -B package --file pom.xml
 
