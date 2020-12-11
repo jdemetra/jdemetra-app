@@ -20,7 +20,7 @@
     <properties>
         <brandingToken>nbdemetra</brandingToken>
         <netbeans.version>RELEASE122</netbeans.version>
-        <jd2.version>2.2.4-SNAPSHOT</jd2.version>
+        <jd2.version>2.2.3</jd2.version>
         <jd3.version>${project.version}</jd3.version>
         <jd3-basic.version>1.0.0-SNAPSHOT</jd3-basic.version>
     </properties>

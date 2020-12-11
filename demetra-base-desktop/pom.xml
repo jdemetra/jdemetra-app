@@ -192,7 +192,7 @@
                         <publicPackage>demetra.ui.*</publicPackage>
                         <!-- core libs -->
                         <publicPackage>demetra.*</publicPackage>
-                        <publicPackage>ioutil</publicPackage>
+                        <publicPackage>nbbrd.io.*</publicPackage>
                         <publicPackage>javax.annotation.*</publicPackage>
                         <!-- desktop libs -->
                         <publicPackage>ec.util.chart.*</publicPackage>
