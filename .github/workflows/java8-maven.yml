@@ -44,12 +44,14 @@ jobs:
           mvn -B install -DskipTests=true
           cd ..
 
-      - name: Build and test with Maven
-        run: mvn -B package --file pom.xml
+      - name: Build and (headless) test with Maven
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: mvn -B package --file pom.xml
 
   release-job:
     needs: build-and-test-job
-    if: startsWith(github.repository, 'nbbrd/') && startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.repository, 'jdemetra/') && startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         java: [ 11 ]
@@ -78,6 +80,9 @@ jobs:
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml -DskipTests=true
+
+      - name: Create dummy file if no assets
+        run: test -d "binaries" || (mkdir binaries && echo "no assets" > binaries/no_assets.txt)
 
       - name: Create draft release and upload assets
         uses: xresloader/upload-to-github-release@v1
