@@ -130,6 +130,8 @@
                         <publicPackage>javax.xml.bind.*</publicPackage>
                         <publicPackage>net.jcip.annotations</publicPackage>
                         <publicPackage>nbbrd.io.*</publicPackage>
+                        <!-- strange bug (that appeared after guava update in demetra-core) solved by this: -->
+                        <publicPackage>org.checkerframework.checker.nullness.qual</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
