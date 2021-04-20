@@ -82,12 +82,12 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>be.nbb.rd</groupId>
+            <groupId>com.github.nbbrd.java-sql-util</groupId>
             <artifactId>java-sql-lhod</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
             <exclusions>
                 <exclusion>
-                    <groupId>be.nbb.rd</groupId>
+                    <groupId>com.github.nbbrd.java-sql-util</groupId>
                     <artifactId>java-sql-jdbc</artifactId>
                 </exclusion>
             </exclusions>

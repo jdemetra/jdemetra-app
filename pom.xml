@@ -588,10 +588,10 @@
 
     <repositories>
         <repository>
-            <id>oss-jfrog-artifactory-releases</id>
-            <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
+            <id>ossrh-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
         <repository>
