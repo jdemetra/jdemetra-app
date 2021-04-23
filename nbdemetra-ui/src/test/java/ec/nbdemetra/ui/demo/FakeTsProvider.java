@@ -66,9 +66,10 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author Philippe Charles
  */
-@lombok.extern.slf4j.Slf4j
 @ServiceProvider(service = ITsProvider.class)
 public final class FakeTsProvider implements IDataSourceProvider {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FakeTsProvider.class);
 
     private enum DataType {
 

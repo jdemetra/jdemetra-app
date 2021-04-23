@@ -107,13 +107,13 @@ public final class L2fprodFactory extends DemoComponentFactory {
     }
 
     @lombok.experimental.UtilityClass
-    private class PropertyDescriptors {
+    private static class PropertyDescriptors {
 
-        List<EnhancedPropertyDescriptor> descriptorsOf(Class<?> beanClass) {
+        static List<EnhancedPropertyDescriptor> descriptorsOf(Class<?> beanClass) {
             return descriptorsOf(beanClass, Stream.of(beanClass.getDeclaredFields()).map(Field::getName).collect(Collectors.toList()));
         }
 
-        List<EnhancedPropertyDescriptor> descriptorsOf(Class<?> beanClass, List<String> propertyNames) {
+        static List<EnhancedPropertyDescriptor> descriptorsOf(Class<?> beanClass, List<String> propertyNames) {
             List<EnhancedPropertyDescriptor> result = new ArrayList<>();
             for (int i = 0; i < propertyNames.size(); i++) {
                 result.add(descriptorOf(beanClass, propertyNames.get(i), i));
@@ -121,7 +121,7 @@ public final class L2fprodFactory extends DemoComponentFactory {
             return result;
         }
 
-        EnhancedPropertyDescriptor descriptorOf(Class<?> beanClass, String propertyName, int position) {
+        static EnhancedPropertyDescriptor descriptorOf(Class<?> beanClass, String propertyName, int position) {
             try {
                 PropertyDescriptor desc = new PropertyDescriptor(propertyName, beanClass);
                 String displayName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, desc.getName()).replace("-", " ");
@@ -140,15 +140,15 @@ public final class L2fprodFactory extends DemoComponentFactory {
             }
         }
 
-        Optional<Class<?>> getRegisteredEditor(PropertyDescriptor desc) {
+        static Optional<Class<?>> getRegisteredEditor(PropertyDescriptor desc) {
             return getRegisteredEditor(desc.getPropertyType());
         }
 
-        Optional<Class<?>> getRegisteredEditor(Class<?> propertyType) {
+        static Optional<Class<?>> getRegisteredEditor(Class<?> propertyType) {
             return Optional.ofNullable(CustomPropertyEditorRegistry.INSTANCE.getRegistry().getEditor(propertyType)).map(Object::getClass);
         }
 
-        boolean isL2fprodEditor(Class<?> registeredEditor) {
+        static boolean isL2fprodEditor(Class<?> registeredEditor) {
             return registeredEditor.getPackage().getName().startsWith("com.l2fprod");
         }
     }
