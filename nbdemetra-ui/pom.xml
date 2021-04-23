@@ -67,6 +67,8 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
+            <!-- Force version to override the one defined in java-desktop-util imports -->
+            <version>1.18.20</version>
         </dependency>
         <dependency>
             <groupId>org.checkerframework</groupId>
