@@ -12,6 +12,7 @@
 
     <name>NbDemetra - SDMX</name>
     <description>This module provides basic SDMX IO to Demetra.</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <dependencies>
         <!-- Demetra -->

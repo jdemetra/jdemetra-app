@@ -12,6 +12,7 @@
 
     <name>NbDemetra - Common</name>
     <description>This module provides IO to Demetra for the following formats: TSW, TXT, CSV, USCB and XML files.</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <dependencies>
         <!-- NetBeans -->

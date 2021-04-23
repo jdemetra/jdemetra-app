@@ -1,12 +1,2 @@
-/nbdemetra-branding/target/
-/nbdemetra-core/target/
-/nbdemetra-ui/target/
-/nbdemetra-jdbc/target/
-/nbdemetra-odbc/target/
-/nbdemetra-common/target/
-/nbdemetra-spreadsheet/target/
-/nbdemetra-sa/target/
-/nbdemetra-sdmx/target/
-/nbdemetra-anomalydetection/target/
-/nbdemetra-app/target/
+target/
 /binaries/

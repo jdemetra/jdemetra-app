@@ -11,6 +11,8 @@
     <packaging>nbm</packaging>
 
     <name>NbDemetra - UI</name>
+    <description>JDemetra+ - UI</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <properties>
         <miglayout.version>3.7.4</miglayout.version>

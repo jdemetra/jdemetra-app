@@ -12,13 +12,15 @@
     <packaging>nbm-application</packaging>
 
     <name>NbDemetra</name>
+    <description>JDemetra+</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.run.params.ide/>
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
         <project.x.binaries>${project.basedir}/../binaries</project.x.binaries>
-        <project.x.zipname>jdemetra-${project.version}-bin</project.x.zipname>
+        <project.x.fileName>jdemetra</project.x.fileName>
     </properties>
 
     <dependencies>
@@ -111,34 +113,70 @@
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
-                    <finalName>${project.x.zipname}</finalName>
-                    <installersFilePrefix>jdemetra-${project.version}-setup</installersFilePrefix>
-                    <!--<installerPack200Enable>false</installerPack200Enable>-->
+<!--                    <finalName>${project.artifactId}-${project.version}-bin</finalName>-->
+                    <installersFilePrefix>${project.x.fileName}-${project.version}-setup</installersFilePrefix>
+<!--                    <installerPack200Enable>false</installerPack200Enable>-->
                     <etcConfFile>src/main/resources/nbdemetra.conf</etcConfFile>
                 </configuration>
             </plugin>
-            
-            <!-- Generates binaries folder -->
+
+            <!-- Copies files to binaries -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.x.binaries}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>${project.build.finalName}.zip</include>
+                                        <include>${project.build.finalName}.zip.asc</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Renames binaries -->
+            <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
-                        <configuration>
-                            <target>
-                                <copy file="${project.build.directory}/${project.x.zipname}.zip" 
-                                      tofile="${project.x.binaries}/${project.x.zipname}.zip"/>
-                            </target>
-                        </configuration>
+                        <phase>install</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
+                        <configuration>
+                            <target>
+                                <move todir="${project.x.binaries}">
+                                    <fileset dir="${project.x.binaries}">
+                                        <include name="**/${project.build.finalName}.zip*"/>
+                                    </fileset>
+                                    <mapper type="glob" from="${project.build.finalName}.zip*" to="${project.build.finalName}-bin.zip*"/>
+                                </move>
+                                <move todir="${project.x.binaries}">
+                                    <fileset dir="${project.x.binaries}">
+                                        <include name="**/${project.artifactId}-*"/>
+                                    </fileset>
+                                    <mapper type="glob" from="${project.artifactId}-*" to="${project.x.fileName}-*"/>
+                                </move>
+                            </target>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
-            
+
             <!-- Generates SHA256 on binaries -->
             <plugin>
                 <groupId>net.nicoulaj.maven.plugins</groupId>
@@ -146,7 +184,7 @@
                 <version>1.9</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>files</goal>
                         </goals>
@@ -161,6 +199,7 @@
                             <directory>${project.x.binaries}</directory>
                             <excludes>
                                 <exclude>*.sha256</exclude>
+                                <exclude>*.asc</exclude>
                             </excludes>
                         </fileSet>
                     </fileSets>

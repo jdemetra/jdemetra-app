@@ -12,6 +12,8 @@
     <packaging>nbm</packaging>
 
     <name>NbDemetra - Branding</name>
+    <description>JDemetra+ - Branding</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <dependencies>
         <dependency>

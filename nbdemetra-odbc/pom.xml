@@ -12,6 +12,7 @@
 
     <name>NbDemetra - ODBC</name>
     <description>This module provides ODBC IO to Demetra.</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <dependencies>
         <!-- NetBeans -->

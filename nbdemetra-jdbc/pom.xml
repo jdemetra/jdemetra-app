@@ -12,6 +12,7 @@
 
     <name>NbDemetra - JDBC</name>
     <description>This module provides JDBC IO to Demetra.</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <dependencies>
         <!-- compile only -->

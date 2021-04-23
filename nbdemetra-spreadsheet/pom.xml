@@ -12,6 +12,7 @@
 
     <name>NbDemetra - Spreadsheet</name>
     <description>This module provides spreadsheet IO (such as Excel files) to Demetra.</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <dependencies>
         <!-- compile only -->

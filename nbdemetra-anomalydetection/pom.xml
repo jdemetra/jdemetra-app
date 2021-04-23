@@ -11,6 +11,8 @@
     <packaging>nbm</packaging>
 
     <name>NbDemetra - Anomaly Detection</name>
+    <description>JDemetra+ - Anomaly Detection</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <dependencies>
         <!-- compile only -->

@@ -12,6 +12,7 @@
 
     <name>NbDemetra - Core</name>
     <description>Wrapper module for Demetra core libraries.</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <dependencyManagement>
         <dependencies>

@@ -37,17 +37,47 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Build jdemetra-core snapshots
-        run: |
-          git clone -b develop --single-branch --depth=1 https://github.com/jdemetra/jdemetra-core.git jdemetra-core
-          cd jdemetra-core
-          mvn -B install -DskipTests=true
-          cd ..
-
       - name: Build and (headless) test with Maven
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: mvn -B package --file pom.xml
+          run: mvn -B -ntp package
+
+  snapshot-job:
+    needs: build-and-test-job
+    if: startsWith(github.repository, 'jdemetra/') && startsWith(github.ref, 'refs/heads/develop')
+    strategy:
+      matrix:
+        java: [ 11 ]
+        os: [ ubuntu-latest ]
+
+    name: Snapshot on develop
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+
+      - name: Setup Maven cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Deploy snapshot with Maven if settings defined
+        run: test ! -f ci.settings.xml || mvn -B -ntp deploy -DskipTests=true -s ci.settings.xml -P base-deploy,snapshot-deploy,!non-deployable-modules
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          SIGN_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          SIGN_KEY_PASS: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
   release-job:
     needs: build-and-test-job
@@ -78,8 +108,19 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml -DskipTests=true
+      - name: Deploy with Maven if settings defined
+        run: test ! -f ci.settings.xml || mvn -B -ntp deploy -DskipTests=true -s ci.settings.xml -P base-deploy,release-deploy,!non-deployable-modules
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          SIGN_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          SIGN_KEY_PASS: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
+      - name: Build assets with Maven
+        run: mvn -B -ntp install -DskipTests=true -P base-deploy
+        env:
+          SIGN_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          SIGN_KEY_PASS: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - name: Create dummy file if no assets
         run: test -d "binaries" || (mkdir binaries && echo "no assets" > binaries/no_assets.txt)
@@ -90,9 +131,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           file: 'binaries/*'
-
-      - name: Deploy with Maven
-        run: test -f ci.settings.xml && mvn -B deploy -Dmaven.test.skip -s ci.settings.xml -P deploy-releases
-        env:
-          CI_DEPLOY_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME }}
-          CI_DEPLOY_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD }}
