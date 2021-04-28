@@ -337,10 +337,13 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
         return FontAwesomeUtils.getIcon(fa, BeanInfo.ICON_COLOR_16x16);
     }
 
-    @lombok.AllArgsConstructor
     static final class AddDataSourceCommand extends JCommand<HasTsCollection> {
 
         private final DataSource dataSource;
+
+        public AddDataSourceCommand(DataSource dataSource) {
+            this.dataSource = dataSource;
+        }
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
@@ -350,10 +353,13 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
         }
     }
 
-    @lombok.AllArgsConstructor
     static final class AddDataSetCommand extends JCommand<HasTsCollection> {
 
         private final DataSet dataSet;
+
+        public AddDataSetCommand(DataSet dataSet) {
+            this.dataSet = dataSet;
+        }
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
