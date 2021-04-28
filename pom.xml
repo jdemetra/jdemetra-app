@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.europa.ec.joinup.sat</groupId>
@@ -19,8 +20,8 @@
 
     <properties>
         <brandingToken>nbdemetra</brandingToken>
-        <netbeans.version>RELEASE122</netbeans.version>
-        <jd2.version>2.2.3</jd2.version>
+        <netbeans.version>RELEASE123</netbeans.version>
+        <jd2.version>2.2.4-SNAPSHOT</jd2.version>
         <jd3.version>${project.version}</jd3.version>
         <jd3-basic.version>1.0.0-SNAPSHOT</jd3-basic.version>
     </properties>
@@ -52,7 +53,7 @@
             <dependency>
                 <groupId>org.checkerframework</groupId>
                 <artifactId>checker-qual</artifactId>
-                <version>3.6.1</version>
+                <version>3.12.0</version>
             </dependency>
 
             <!-- NetBeans deps > -->
@@ -305,7 +306,7 @@
             <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <maven.compiler.target>1.8</maven.compiler.target>
-                <maven.compiler.source>1.8</maven.compiler.source>                
+                <maven.compiler.source>1.8</maven.compiler.source>
             </properties>
             <build>
                 <plugins>
@@ -338,7 +339,7 @@
                 <maven.compiler.release>8</maven.compiler.release>
             </properties>
         </profile>
-        
+
         <!-- Enforce dependency convergence -->
         <profile>
             <id>enforce-dependency-convergence</id>
@@ -376,7 +377,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <!-- Enforce modern API -->
         <profile>
             <id>enforce-modern-api</id>
@@ -390,7 +391,7 @@
                     <plugin>
                         <groupId>org.gaul</groupId>
                         <artifactId>modernizer-maven-plugin</artifactId>
-                        <version>2.1.0</version>
+                        <version>2.2.0</version>
                         <configuration>
                             <javaVersion>1.8</javaVersion>
                             <exclusionPatterns>
@@ -413,7 +414,7 @@
                 </plugins>
             </build>
         </profile>
-                
+
         <!-- Deploy SNAPSHOTS to jfrog with sources -->
         <profile>
             <id>deploy-snapshots</id>
@@ -478,7 +479,7 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>    
+        </profile>
     </profiles>
 
     <build>
@@ -497,7 +498,7 @@
             <plugin>
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
-                <version>4.5</version>
+                <version>4.6</version>
                 <extensions>true</extensions>
                 <configuration>
                     <useOSGiDependencies>false</useOSGiDependencies>
@@ -507,13 +508,13 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <repositories>
         <repository>
-            <id>oss-jfrog-artifactory-releases</id>
-            <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
+            <id>ossrh-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
         <repository>
