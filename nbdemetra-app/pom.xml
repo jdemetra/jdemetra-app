@@ -11,7 +11,7 @@
     <artifactId>nbdemetra-app</artifactId>
     <packaging>nbm-application</packaging>
 
-    <name>NbDemetra</name>
+    <name>JD3 - NbDemetra</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

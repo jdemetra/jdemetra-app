@@ -10,7 +10,7 @@
     <artifactId>nbdemetra-ui</artifactId>
     <packaging>nbm</packaging>
 
-    <name>NbDemetra - UI</name>
+    <name>JD3 - NbDemetra - UI</name>
 
     <dependencyManagement>
         <dependencies>

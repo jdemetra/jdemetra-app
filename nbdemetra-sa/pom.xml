@@ -10,7 +10,7 @@
     <artifactId>nbdemetra-sa</artifactId>
     <packaging>nbm</packaging>
     
-    <name>NbDemetra - SA</name>
+    <name>JD3 - NbDemetra - SA</name>
     <description>This module provides Java implementations of the two leading algorithms: Tramo-Seats and X13-Arima/Seats.
         This implementation can lead to small differences in comparison with the original programs
     </description>

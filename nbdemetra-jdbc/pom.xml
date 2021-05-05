@@ -10,7 +10,7 @@
     <artifactId>nbdemetra-jdbc</artifactId>
     <packaging>nbm</packaging>
 
-    <name>NbDemetra - JDBC</name>
+    <name>JD3 - NbDemetra - JDBC</name>
     <description>This module provides JDBC IO to Demetra.</description>
 
     <dependencies>

@@ -8,7 +8,7 @@
     <version>3.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>NbDemetra - Parent</name>
+    <name>JD3 - NbDemetra - Parent</name>
 
     <url>https://github.com/jdemetra/jdemetra-app</url>
     <licenses>

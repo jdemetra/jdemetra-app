@@ -11,7 +11,7 @@
     <artifactId>nbdemetra-branding</artifactId>
     <packaging>nbm</packaging>
 
-    <name>NbDemetra - Branding</name>
+    <name>JD3 - NbDemetra - Branding</name>
 
     <dependencies>
         <dependency>

@@ -10,7 +10,7 @@
     <artifactId>nbdemetra-spreadsheet</artifactId>
     <packaging>nbm</packaging>
 
-    <name>NbDemetra - Spreadsheet</name>
+    <name>JD3 - NbDemetra - Spreadsheet</name>
     <description>This module provides spreadsheet IO (such as Excel files) to Demetra.</description>
 
     <dependencies>

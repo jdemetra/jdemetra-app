@@ -10,7 +10,7 @@
     <artifactId>nbdemetra-common</artifactId>
     <packaging>nbm</packaging>
 
-    <name>NbDemetra - Common</name>
+    <name>JD3 - NbDemetra - Common</name>
     <description>This module provides IO to Demetra for the following formats: TSW, TXT, CSV, USCB and XML files.</description>
 
     <dependencies>

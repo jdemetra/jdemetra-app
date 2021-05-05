@@ -10,7 +10,7 @@
     <artifactId>nbdemetra-anomalydetection</artifactId>
     <packaging>nbm</packaging>
 
-    <name>NbDemetra - Anomaly Detection</name>
+    <name>JD3 - NbDemetra - Anomaly Detection</name>
 
     <dependencies>
         <!-- compile only -->
