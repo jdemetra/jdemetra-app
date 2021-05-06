@@ -148,12 +148,12 @@
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
             <artifactId>demetra-utils</artifactId>
-            <exclusions>
+<!--            <exclusions>
                 <exclusion>
                     <groupId>com.github.nbbrd.java-io-util</groupId>
                     <artifactId>java-io-xml</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>

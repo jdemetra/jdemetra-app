@@ -71,7 +71,7 @@ public class ControlNode {
         if (view.getTsSelectionModel().isSelectionEmpty()) {
             selectSingleIfReadonly(mgr, view);
         } else {
-            Ts[] tss = view.getTsSelectionStream().map(TsConverter::fromTs).toArray(Ts[]::new);
+            Ts[] tss = view.getTsSelectionStream().toArray(Ts[]::new);
             selectNodes(mgr, tss);
         }
     }
