@@ -16,13 +16,13 @@
  */
 package internal.ui.components;
 
-import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsMoniker;
+import demetra.ui.NextTsManager;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.components.HasTsCollection;
-import ec.tss.TsMoniker;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -45,7 +45,7 @@ public final class HasTsCollectionImpl implements HasTsCollection, TsManager.Upd
     private boolean freezeOnImport = DEFAULT_FREEZE_ON_IMPORT;
     private TsCollection dropContent = TsCollection.EMPTY;
 
-    public HasTsCollectionImpl register(TsManager manager) {
+    public HasTsCollectionImpl register(NextTsManager manager) {
         manager.addWeakUpdateListener(this);
         return this;
     }
@@ -113,24 +113,23 @@ public final class HasTsCollectionImpl implements HasTsCollection, TsManager.Upd
     }
 
     @Override
-    public void accept(TsMoniker moniker) {
+    public void accept(NextTsManager manager, TsMoniker moniker) {
         TsCollection col = getTsCollection();
-        demetra.timeseries.TsMoniker id = TsConverter.toTsMoniker(moniker);
-        if (id.equals(col.getMoniker())) {
-            ec.tss.TsCollection newData = TsManager.getDefault().lookupTsCollection(col.getName(), moniker, TsConverter.fromType(col.getType()));
-            setTsCollection(TsConverter.toTsCollection(newData));
+        if (moniker.equals(col.getMoniker())) {
+            TsCollection newData = manager.lookupTsCollection2(col.getName(), moniker, col.getType());
+            setTsCollection(newData);
         } else {
-            int index = indexOf(col.getData(), id);
+            int index = indexOf(col.getData(), moniker);
             if (index != -1) {
-                ec.tss.Ts newData = TsManager.getDefault().lookupTs(moniker);
+                Ts newData = manager.lookupTs2(moniker);
                 List<Ts> list = new ArrayList<>(col.getData());
-                list.set(index, TsConverter.toTs(newData));
+                list.set(index, newData);
                 setTsCollection(col.toBuilder().clearData().data(list).build());
             }
         }
     }
 
-    private static int indexOf(List<Ts> list, demetra.timeseries.TsMoniker moniker) {
+    private static int indexOf(List<Ts> list, TsMoniker moniker) {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getMoniker().equals(moniker)) {
                 return i;

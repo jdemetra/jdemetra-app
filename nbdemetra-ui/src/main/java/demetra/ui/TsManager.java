@@ -38,7 +38,6 @@ import ec.util.various.swing.OnEDT;
 import java.io.File;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 import java.util.Observable;
 import java.util.Optional;
@@ -49,7 +48,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.SwingUtilities;
 import org.openide.util.Lookup;
-import org.openide.util.WeakListeners;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -58,12 +56,7 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @GlobalService
 @ServiceProvider(service = TsManager.class)
-public class TsManager implements AutoCloseable {
-
-    public interface UpdateListener extends EventListener {
-
-        void accept(@NonNull TsMoniker moniker);
-    }
+public class TsManager implements NextTsManager {
 
     @NonNull
     public static TsManager getDefault() {
@@ -98,14 +91,16 @@ public class TsManager implements AutoCloseable {
         TsEvent event;
         while ((event = events.poll()) != null) {
             if (event.isSeries()) {
-                TsMoniker tsMoniker = event.ts.getMoniker();
-                updateListeners.stream().forEach(o -> o.accept(tsMoniker));
+                demetra.timeseries.TsMoniker tsMoniker = TsConverter.toTsMoniker(event.ts.getMoniker());
+                updateListeners.forEach(listener -> listener.accept(this, tsMoniker));
             } else {
                 TsCollection col = event.tscollection;
-                updateListeners.stream().forEach(o -> {
-                    o.accept(col.getMoniker());
-                    col.forEach(ts -> o.accept(ts.getMoniker()));
-                });
+                demetra.timeseries.TsMoniker colMoniker = TsConverter.toTsMoniker(col.getMoniker());
+                updateListeners.forEach(listener -> listener.accept(this, colMoniker));
+                col.stream()
+                        .map(Ts::getMoniker)
+                        .map(TsConverter::toTsMoniker)
+                        .forEach(tsMoniker -> updateListeners.forEach(listener -> listener.accept(this, tsMoniker)));
             }
         }
     }
@@ -125,6 +120,11 @@ public class TsManager implements AutoCloseable {
     @NonNull
     public TsCollection lookupTsCollection(@Nullable String name, @NonNull TsMoniker moniker, @NonNull TsInformationType type) {
         return delegate.createTsCollection(name, moniker, type);
+    }
+
+    @Override
+    public demetra.timeseries.@NonNull TsCollection lookupTsCollection2(@Nullable String name, demetra.timeseries.@NonNull TsMoniker moniker, demetra.timeseries.@NonNull TsInformationType type) {
+        return TsConverter.toTsCollection(delegate.createTsCollection(name, TsConverter.fromTsMoniker(moniker), TsConverter.fromType(type)));
     }
 
     @NonNull
@@ -149,6 +149,11 @@ public class TsManager implements AutoCloseable {
         return delegate.getTs(moniker);
     }
 
+    @Override
+    public demetra.timeseries.@Nullable Ts lookupTs2(demetra.timeseries.@NonNull TsMoniker moniker) {
+        return TsConverter.toTs(delegate.getTs(TsConverter.fromTsMoniker(moniker)));
+    }
+
     @NonNull
     public Collector<Ts, ?, TsCollection> getTsCollector() {
         return Collector.<Ts, List<Ts>, TsCollection>of(ArrayList::new, List::add, (l, r) -> {
@@ -170,18 +175,13 @@ public class TsManager implements AutoCloseable {
         delegate.dispose();
     }
 
-    @OnEDT
-    public void addWeakUpdateListener(@NonNull UpdateListener listener) {
-        addUpdateListener(WeakListeners.create(TsManager.UpdateListener.class, listener, this));
-    }
-
-    @OnEDT
-    public void addUpdateListener(@NonNull UpdateListener listener) {
+    @Override
+    public void addUpdateListener(UpdateListener listener) {
         updateListeners.add(listener);
     }
 
-    @OnEDT
-    public void removeUpdateListener(@NonNull UpdateListener listener) {
+    @Override
+    public void removeUpdateListener(UpdateListener listener) {
         updateListeners.remove(listener);
     }
 

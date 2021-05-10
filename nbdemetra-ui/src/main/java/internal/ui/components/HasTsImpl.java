@@ -16,26 +16,25 @@
  */
 package internal.ui.components;
 
-import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
-import demetra.ui.TsManager;
+import demetra.timeseries.TsMoniker;
+import demetra.ui.NextTsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.components.HasTs;
-import ec.tss.TsMoniker;
 
 /**
  *
  * @author Philippe Charles
  */
 @lombok.RequiredArgsConstructor
-public final class HasTsImpl implements HasTs, TsManager.UpdateListener {
+public final class HasTsImpl implements HasTs, NextTsManager.UpdateListener {
 
     @lombok.NonNull
     private final PropertyChangeSource.Broadcaster broadcaster;
 
     private Ts ts = null;
 
-    public HasTsImpl register(TsManager manager) {
+    public HasTsImpl register(NextTsManager manager) {
         manager.addWeakUpdateListener(this);
         return this;
     }
@@ -53,12 +52,10 @@ public final class HasTsImpl implements HasTs, TsManager.UpdateListener {
     }
 
     @Override
-    public void accept(TsMoniker moniker) {
+    public void accept(NextTsManager manager, TsMoniker moniker) {
         if (ts != null) {
-            demetra.timeseries.TsMoniker id = TsConverter.toTsMoniker(moniker);
-            if (id.equals(ts.getMoniker())) {
-                ec.tss.Ts newData = TsManager.getDefault().lookupTs(moniker);
-                setTs(TsConverter.toTs(newData));
+            if (moniker.equals(ts.getMoniker())) {
+                setTs(manager.lookupTs2(moniker));
             }
         }
     }
