@@ -1,7 +1,7 @@
-package demetra.ui.components;
+package demetra.ui.components.parts;
 
-import demetra.ui.beans.PropertyChangeSource;
-import internal.ui.components.HasGridImpl;
+import demetra.ui.beans.PropertyChangeBroadcaster;
+import internal.ui.components.parts.HasGridImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -23,7 +23,7 @@ public interface HasGrid {
     void setCrosshairVisible(boolean crosshairVisible);
 
     @NonNull
-    static HasGrid of(PropertyChangeSource.@NonNull Broadcaster broadcaster) {
+    static HasGrid of(@NonNull PropertyChangeBroadcaster broadcaster) {
         return new HasGridImpl(broadcaster);
     }
 }

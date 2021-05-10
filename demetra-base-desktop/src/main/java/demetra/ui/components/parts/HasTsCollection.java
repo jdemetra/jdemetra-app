@@ -14,22 +14,19 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package demetra.ui.components;
+package demetra.ui.components.parts;
 
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
-import demetra.ui.TsManager;
-import demetra.ui.beans.PropertyChangeSource;
-import ec.nbdemetra.ui.DemetraUI;
+import demetra.ui.NextTsManager;
+import demetra.ui.beans.PropertyChangeBroadcaster;
 import ec.util.list.swing.JLists;
-import internal.ui.components.HasTsCollectionCommands;
-import internal.ui.components.HasTsCollectionImpl;
+import internal.ui.components.parts.HasTsCollectionImpl;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import javax.swing.JMenu;
 import javax.swing.ListSelectionModel;
 
 /**
@@ -101,12 +98,7 @@ public interface HasTsCollection {
     }
 
     @NonNull
-    static HasTsCollection of(PropertyChangeSource.@NonNull Broadcaster broadcaster, @NonNull TsManager manager) {
+    static HasTsCollection of(@NonNull PropertyChangeBroadcaster broadcaster, @NonNull NextTsManager manager) {
         return new HasTsCollectionImpl(broadcaster).register(manager);
-    }
-
-    @Deprecated
-    static JMenu newDefaultMenu(HasTsCollection col, DemetraUI demetraUI) {
-        return HasTsCollectionCommands.newDefaultMenu(col, demetraUI);
     }
 }

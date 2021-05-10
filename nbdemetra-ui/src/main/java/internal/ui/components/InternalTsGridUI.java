@@ -22,9 +22,9 @@ import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.Ts;
 import demetra.ui.components.TsSelectionBridge;
-import demetra.ui.components.HasColorScheme;
-import demetra.ui.components.HasObsFormat;
-import demetra.ui.components.HasTsCollection;
+import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.HasObsFormat;
+import demetra.ui.components.parts.HasTsCollection;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.ThemeSupport;
@@ -179,7 +179,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
                 case HasColorScheme.COLOR_SCHEME_PROPERTY:
                     onColorSchemeChange();
                     break;
-                case HasObsFormat.DATA_FORMAT_PROPERTY:
+                case HasObsFormat.OBS_FORMAT_PROPERTY:
                     onDataFormatChange();
                     break;
                 case JTsGrid.ORIENTATION_PROPERTY:
@@ -477,12 +477,12 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_TASKS));
         result.add(item);
 
-        item = new JCheckBoxMenuItem(HasGridImpl.toggleCrosshairVisibility().toAction(target));
+        item = new JCheckBoxMenuItem(HasGridCommands.toggleCrosshairVisibility().toAction(target));
         item.setText("Show crosshair");
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_CROSSHAIRS));
         result.add(item);
 
-        result.add(HasGridImpl.newZoomRationMenu(target, demetraUI));
+        result.add(HasGridCommands.newZoomRationMenu(target));
 
         return result;
     }

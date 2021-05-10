@@ -5,7 +5,7 @@
 package ec.ui.view;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.util.NbComponents;
 import ec.satoolkit.DecompositionMode;
 import ec.tss.html.implementation.HtmlSlidingSpanDocument;

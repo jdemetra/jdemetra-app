@@ -17,11 +17,11 @@
 package internal.ui.components;
 
 import demetra.ui.components.TsSelectionBridge;
-import demetra.ui.components.HasChart;
-import demetra.ui.components.HasChart.LinesThickness;
-import demetra.ui.components.HasColorScheme;
-import demetra.ui.components.HasObsFormat;
-import demetra.ui.components.HasTsCollection;
+import demetra.ui.components.parts.HasChart;
+import demetra.ui.components.parts.HasChart.LinesThickness;
+import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.HasObsFormat;
+import demetra.ui.components.parts.HasTsCollection;
 import static demetra.ui.components.PrintableWithPreview.PRINT_ACTION;
 import static demetra.ui.components.ResetableZoom.RESET_ZOOM_ACTION;
 import ec.nbdemetra.ui.DemetraUI;
@@ -178,7 +178,7 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
                 case HasColorScheme.COLOR_SCHEME_PROPERTY:
                     onColorSchemeChange();
                     break;
-                case HasObsFormat.DATA_FORMAT_PROPERTY:
+                case HasObsFormat.OBS_FORMAT_PROPERTY:
                     onDataFormatChange();
                     break;
                 case HasChart.LEGEND_VISIBLE_PROPERTY:

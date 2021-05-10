@@ -28,8 +28,8 @@ import ec.tss.tsproviders.IDataSourceProvider;
 import java.beans.BeanInfo;
 import java.util.Optional;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.components.HasChart;
-import demetra.ui.components.HasTsCollection.TsUpdateMode;
+import demetra.ui.components.parts.HasChart;
+import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.TsActionSpi;
 import ec.tss.TsMoniker;
 

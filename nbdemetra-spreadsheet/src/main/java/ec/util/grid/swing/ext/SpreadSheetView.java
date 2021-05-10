@@ -16,7 +16,7 @@
  */
 package ec.util.grid.swing.ext;
 
-import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.parts.HasColorScheme;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;

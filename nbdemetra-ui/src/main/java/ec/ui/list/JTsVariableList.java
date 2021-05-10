@@ -68,7 +68,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import demetra.ui.components.HasTsAction;
+import demetra.ui.components.parts.HasTsAction;
 import ec.util.table.swing.JTables;
 import demetra.ui.datatransfer.DataTransfer;
 

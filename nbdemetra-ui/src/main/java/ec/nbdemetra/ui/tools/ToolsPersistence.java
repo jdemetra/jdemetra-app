@@ -8,7 +8,7 @@ import com.google.common.collect.Iterables;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
-import demetra.ui.components.HasTsCollection;
+import demetra.ui.components.parts.HasTsCollection;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;

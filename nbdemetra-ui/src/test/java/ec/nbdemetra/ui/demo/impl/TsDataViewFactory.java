@@ -24,7 +24,7 @@ import java.awt.Component;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.components.HasTsData;
+import demetra.ui.components.parts.HasTsData;
 
 /**
  *

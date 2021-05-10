@@ -17,7 +17,7 @@
 package internal.ui.components;
 
 import demetra.ui.TsManager;
-import demetra.ui.components.HasTs;
+import demetra.ui.components.parts.HasTs;
 import javax.swing.TransferHandler;
 import demetra.ui.datatransfer.DataTransfer;
 import java.util.Optional;

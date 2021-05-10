@@ -14,12 +14,12 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package demetra.ui.components;
+package demetra.ui.components.parts;
 
 import demetra.timeseries.Ts;
-import demetra.ui.TsManager;
-import demetra.ui.beans.PropertyChangeSource;
-import internal.ui.components.HasTsImpl;
+import demetra.ui.NextTsManager;
+import demetra.ui.beans.PropertyChangeBroadcaster;
+import internal.ui.components.parts.HasTsImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -37,7 +37,7 @@ public interface HasTs {
     void setTs(@Nullable Ts ts);
 
     @NonNull
-    static HasTs of(PropertyChangeSource.@NonNull Broadcaster broadcaster, @NonNull TsManager manager) {
+    static HasTs of(@NonNull PropertyChangeBroadcaster broadcaster, @NonNull NextTsManager manager) {
         return new HasTsImpl(broadcaster).register(manager);
     }
 }

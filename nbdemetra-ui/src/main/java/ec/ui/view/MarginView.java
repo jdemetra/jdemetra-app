@@ -18,7 +18,7 @@ package ec.ui.view;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
-import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.parts.HasColorScheme;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
@@ -26,8 +26,8 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.tstoolkit.utilities.Jdk6;
 import ec.ui.chart.TsCharts;
 import ec.ui.chart.TsXYDatasets;
-import demetra.ui.components.HasChart.LinesThickness;
-import demetra.ui.components.HasObsFormat;
+import demetra.ui.components.parts.HasChart.LinesThickness;
+import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.datatransfer.DataTransfer;
 import ec.nbdemetra.ui.ThemeSupport;
@@ -150,7 +150,7 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
                 case COLOR_SCHEME_PROPERTY:
                     onColorSchemeChange();
                     break;
-                case DATA_FORMAT_PROPERTY:
+                case OBS_FORMAT_PROPERTY:
                     onDataFormatChange();
                     break;
                 case DATA_PROPERTY:

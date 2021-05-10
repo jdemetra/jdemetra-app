@@ -16,6 +16,9 @@
  */
 package demetra.ui.components;
 
+import demetra.ui.components.parts.HasObsFormat;
+import demetra.ui.components.parts.HasTsAction;
+import demetra.ui.components.parts.HasTsCollection;
 import demetra.bridge.TsConverter;
 import demetra.demo.DemoTsBuilder;
 import demetra.ui.TsManager;

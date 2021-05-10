@@ -17,8 +17,8 @@
 package ec.nbdemetra.ui.chart3d.functions;
 
 import demetra.ui.TsManager;
-import demetra.ui.components.HasColorScheme;
-import demetra.ui.components.HasTs;
+import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tstoolkit.data.DataBlock;

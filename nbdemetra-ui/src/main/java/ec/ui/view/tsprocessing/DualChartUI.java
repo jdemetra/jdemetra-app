@@ -6,7 +6,7 @@ package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
-import demetra.ui.components.HasTsCollection.TsUpdateMode;
+import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.tss.TsCollection;
 import ec.tss.documents.DocumentManager;
 import ec.tss.documents.TsDocument;

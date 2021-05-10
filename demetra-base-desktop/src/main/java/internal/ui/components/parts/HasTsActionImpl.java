@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 National Bank of Belgium
+ * Copyright 2018 National Bank of Belgium
  * 
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,26 +14,31 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.ui.commands;
+package internal.ui.components.parts;
 
-import ec.util.various.swing.JCommand;
-import java.awt.Component;
+import demetra.ui.beans.PropertyChangeBroadcaster;
+import demetra.ui.components.parts.HasTsAction;
 
 /**
  *
  * @author Philippe Charles
  */
-public abstract class ComponentCommand<C> extends JCommand<C> {
+@lombok.RequiredArgsConstructor
+public final class HasTsActionImpl implements HasTsAction {
 
-    private final String[] properties;
+    @lombok.NonNull
+    private final PropertyChangeBroadcaster broadcaster;
+    private String tsAction = null;
 
-    public ComponentCommand(String... properties) {
-        this.properties = properties;
+    @Override
+    public void setTsAction(String tsAction) {
+        String old = this.tsAction;
+        this.tsAction = tsAction;
+        broadcaster.firePropertyChange(TS_ACTION_PROPERTY, old, this.tsAction);
     }
 
     @Override
-    public JCommand.ActionAdapter toAction(C c) {
-        JCommand.ActionAdapter result = super.toAction(c);
-        return c instanceof Component ? result.withWeakPropertyChangeListener((Component) c, properties) : result;
+    public String getTsAction() {
+        return tsAction;
     }
 }

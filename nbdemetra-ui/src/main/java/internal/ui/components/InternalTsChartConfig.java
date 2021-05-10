@@ -18,7 +18,7 @@ package internal.ui.components;
 
 import com.google.common.base.Converter;
 import com.google.common.base.Preconditions;
-import demetra.ui.components.HasChart;
+import demetra.ui.components.parts.HasChart;
 import ec.nbdemetra.ui.BeanHandler;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.Configurator;
@@ -40,11 +40,11 @@ import org.openide.nodes.Sheet;
  */
 public final class InternalTsChartConfig {
 
-    public boolean legendVisible = HasChartImpl.DEFAULT_LEGENDVISIBLE;
-    public boolean titleVisible = HasChartImpl.DEFAULT_TITLEVISIBLE;
-    public boolean axisVisible = HasChartImpl.DEFAULT_AXISVISIBLE;
-    public String title = HasChartImpl.DEFAULT_TITLE;
-    public HasChart.LinesThickness linesThickness = HasChartImpl.DEFAULT_LINES_THICKNESS;
+    public boolean legendVisible = true;
+    public boolean titleVisible = true;
+    public boolean axisVisible = true;
+    public String title = "";
+    public HasChart.LinesThickness linesThickness = HasChart.LinesThickness.Thin;
     public String colorSchemeName = "";
     public double[] zoom = new double[0];
 
@@ -114,11 +114,11 @@ public final class InternalTsChartConfig {
     private static final class TsChartConfigConverter extends Converter<InternalTsChartConfig, Config> {
 
         private static final String DOMAIN = "ec.ui.chart.JTsChart", NAME = "", VERSION = "";
-        private static final IParam<Config, Boolean> LEGEND_VISIBLE = Params.onBoolean(HasChartImpl.DEFAULT_LEGENDVISIBLE, "legendVisible");
-        private static final IParam<Config, Boolean> TITLE_VISIBLE = Params.onBoolean(HasChartImpl.DEFAULT_TITLEVISIBLE, "titleVisible");
-        private static final IParam<Config, Boolean> AXIS_VISIBLE = Params.onBoolean(HasChartImpl.DEFAULT_AXISVISIBLE, "axisVisible");
-        private static final IParam<Config, String> TITLE = Params.onString(HasChartImpl.DEFAULT_TITLE, "title");
-        private static final IParam<Config, HasChart.LinesThickness> LINES_THICKNESS = Params.onEnum(HasChartImpl.DEFAULT_LINES_THICKNESS, "linesThickness");
+        private static final IParam<Config, Boolean> LEGEND_VISIBLE = Params.onBoolean(true, "legendVisible");
+        private static final IParam<Config, Boolean> TITLE_VISIBLE = Params.onBoolean(true, "titleVisible");
+        private static final IParam<Config, Boolean> AXIS_VISIBLE = Params.onBoolean(true, "axisVisible");
+        private static final IParam<Config, String> TITLE = Params.onString("", "title");
+        private static final IParam<Config, HasChart.LinesThickness> LINES_THICKNESS = Params.onEnum(HasChart.LinesThickness.Thin, "linesThickness");
         private static final IParam<Config, String> COLOR_SCHEME_NAME = Params.onString("", "colorSchemeName");
         private static final IParam<Config, double[]> ZOOM = Params.onDoubleArray("zoom", new double[0]);
 

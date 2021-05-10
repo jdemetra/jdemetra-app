@@ -32,7 +32,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.ui.action.ActionMenuItem;
-import demetra.ui.components.HasChart;
+import demetra.ui.components.parts.HasChart;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tstoolkit.utilities.Arrays2;

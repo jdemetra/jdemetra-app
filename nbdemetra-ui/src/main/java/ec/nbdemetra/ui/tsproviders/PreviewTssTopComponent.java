@@ -6,7 +6,7 @@ package ec.nbdemetra.ui.tsproviders;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
-import demetra.ui.components.HasTsCollection.TsUpdateMode;
+import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import java.util.Optional;

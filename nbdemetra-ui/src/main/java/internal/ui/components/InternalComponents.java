@@ -18,8 +18,8 @@ package internal.ui.components;
 
 import com.google.common.base.Strings;
 import demetra.bridge.TsConverter;
-import demetra.ui.components.HasTsCollection;
-import demetra.ui.components.HasTsCollection.TsUpdateMode;
+import demetra.ui.components.parts.HasTsCollection;
+import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.components.PrintableWithPreview;
 import static demetra.ui.components.ResetableZoom.RESET_ZOOM_ACTION;
 import ec.nbdemetra.ui.DemetraUI;

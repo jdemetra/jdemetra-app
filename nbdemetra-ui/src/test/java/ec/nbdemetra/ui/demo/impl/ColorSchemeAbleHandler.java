@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.parts.HasColorScheme;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;

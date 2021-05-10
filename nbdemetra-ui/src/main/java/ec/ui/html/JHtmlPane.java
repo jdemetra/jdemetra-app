@@ -16,7 +16,7 @@
  */
 package ec.ui.html;
 
-import ec.ui.commands.ComponentCommand;
+import demetra.ui.components.ComponentCommand;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;

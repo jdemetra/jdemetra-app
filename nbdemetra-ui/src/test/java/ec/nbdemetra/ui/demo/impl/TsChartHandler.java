@@ -26,7 +26,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import org.openide.awt.DropDownButtonFactory;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.components.HasChart;
+import demetra.ui.components.parts.HasChart;
 
 /**
  *

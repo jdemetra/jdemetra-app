@@ -4,8 +4,10 @@
  */
 package ec.nbdemetra.ui;
 
-import demetra.ui.components.HasColorScheme;
-import demetra.ui.components.HasObsFormat;
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.util.ObsFormat;
+import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.HasObsFormat;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorScheme.KnownColor;
@@ -65,8 +67,8 @@ public final class ThemeSupport extends SwingColorSchemeSupport {
 
     @NonNull
     public DataFormat getDataFormat() {
-        DataFormat result = obsFormatProperty != null ? obsFormatProperty.getDataFormat() : null;
-        return result != null ? result : demetraUI.getDataFormat();
+        ObsFormat result = obsFormatProperty != null ? obsFormatProperty.getObsFormat() : null;
+        return result != null ? TsConverter.fromObsFormat(result) : demetraUI.getDataFormat();
     }
 
     @Override
@@ -90,7 +92,7 @@ public final class ThemeSupport extends SwingColorSchemeSupport {
                     }
                     break;
                 case DemetraUI.DATA_FORMAT_PROPERTY:
-                    if (obsFormatProperty != null && obsFormatProperty.getDataFormat() == null) {
+                    if (obsFormatProperty != null && obsFormatProperty.getObsFormat() == null) {
                         onObsFormatChange.run();
                     }
                     break;

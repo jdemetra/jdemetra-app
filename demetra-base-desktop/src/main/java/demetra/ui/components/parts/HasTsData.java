@@ -14,10 +14,11 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package demetra.ui.components;
+package demetra.ui.components.parts;
 
-import demetra.ui.beans.PropertyChangeSource;
-import internal.ui.components.HasTsActionImpl;
+import demetra.timeseries.TsData;
+import demetra.ui.beans.PropertyChangeBroadcaster;
+import internal.ui.components.parts.HasTsDataImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -25,17 +26,17 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * @author Philippe Charles
  */
-public interface HasTsAction {
+public interface HasTsData {
 
-    static final String TS_ACTION_PROPERTY = "tsAction";
-
-    void setTsAction(@Nullable String tsAction);
+    static final String TS_DATA_PROPERTY = "tsData";
 
     @Nullable
-    String getTsAction();
+    TsData getTsData();
+
+    void setTsData(@Nullable TsData tsData);
 
     @NonNull
-    static HasTsAction of(PropertyChangeSource.@NonNull Broadcaster broadcaster) {
-        return new HasTsActionImpl(broadcaster);
+    static HasTsData of(@NonNull PropertyChangeBroadcaster support) {
+        return new HasTsDataImpl(support);
     }
 }

@@ -19,8 +19,7 @@ package ec.nbdemetra.ui.demo.impl;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import demetra.ui.components.JTsGrid;
-import ec.nbdemetra.ui.DemetraUI;
-import internal.ui.components.HasGridImpl;
+import internal.ui.components.HasGridCommands;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 import org.openide.awt.DropDownButtonFactory;
@@ -43,6 +42,6 @@ public final class TsGridHandler extends DemoComponentHandler.InstanceOf<JTsGrid
     }
 
     static JButton createZoomButton(JTsGrid view) {
-        return DropDownButtonFactory.createDropDownButton(DemetraUiIcon.MAGNIFYING_TOOL, HasGridImpl.newZoomRationMenu(view, DemetraUI.getDefault()).getPopupMenu());
+        return DropDownButtonFactory.createDropDownButton(DemetraUiIcon.MAGNIFYING_TOOL, HasGridCommands.newZoomRationMenu(view).getPopupMenu());
     }
 }

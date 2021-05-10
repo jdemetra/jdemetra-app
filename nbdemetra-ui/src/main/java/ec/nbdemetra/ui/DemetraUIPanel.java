@@ -16,14 +16,16 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.bridge.TsConverter;
 import demetra.demo.DemoTsBuilder;
 import demetra.ui.NamedService;
 import demetra.ui.TsAction;
-import demetra.ui.components.HasTsCollection.TsUpdateMode;
+import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.properties.DataFormatComponent2;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor;
 import demetra.ui.components.JTsChart;
+import ec.tss.tsproviders.utils.DataFormat;
 import ec.util.chart.ColorScheme;
 import internal.ui.components.HasColorSchemeCommands;
 import java.awt.Image;
@@ -248,7 +250,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(DataFormatComponent2.DATA_FORMAT_PROPERTY) && evt.getNewValue() != null) {
-            colorSchemePreviewer.setDataFormat(dataFormatComponent.getDataFormat());
+            colorSchemePreviewer.setObsFormat(TsConverter.toObsFormat(dataFormatComponent.getDataFormat()));
         }
     }
 

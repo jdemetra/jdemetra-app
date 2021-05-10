@@ -6,7 +6,7 @@ package ec.nbdemetra.x13.ui;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.ui.components.HasTsCollection.TsUpdateMode;
+import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.x11.X11Results;

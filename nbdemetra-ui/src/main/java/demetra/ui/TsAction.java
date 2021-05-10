@@ -18,34 +18,70 @@ package demetra.ui;
 
 import demetra.timeseries.Ts;
 import ec.nbdemetra.core.GlobalService;
+import ec.nbdemetra.ui.DemetraUI;
 import ec.util.various.swing.OnEDT;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
 @GlobalService
-public interface TsAction {
+@ServiceProvider(service = TsAction.class)
+public class TsAction {
 
     @NonNull
-    static TsAction getDefault() {
+    public static TsAction getDefault() {
         return Lookup.getDefault().lookup(TsAction.class);
     }
 
-    static final String NO_ACTION = "";
+    public static final String NO_ACTION = "";
 
     @NonNull
-    List<? extends NamedService> getTsActions();
+    public List<? extends NamedService> getTsActions() {
+        return lookupAll().collect(Collectors.toList());
+    }
 
     @OnEDT
-    default void open(@NonNull Ts ts) {
+    public void open(@NonNull Ts ts) {
         openWith(ts, null);
     }
 
     @OnEDT
-    void openWith(@NonNull Ts ts, @Nullable String actionName);
+    public void openWith(@NonNull Ts ts, @Nullable String actionName) {
+        Objects.requireNonNull(ts);
+
+        String target = actionName != null ? actionName : DemetraUI.getDefault().getTsActionName();
+
+        Optional<? extends TsActionSpi> action = lookupAll().filter(o -> o.getName().equals(target)).findFirst();
+        if (action.isPresent()) {
+            failSafeOpen(action.get(), ts);
+        } else {
+            reportMissingAction(actionName);
+        }
+    }
+
+    private void failSafeOpen(TsActionSpi action, Ts ts) {
+        try {
+            action.open(ts);
+        } catch (RuntimeException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    private void reportMissingAction(String name) {
+    }
+
+    private Stream<? extends TsActionSpi> lookupAll() {
+        return Lookup.getDefault().lookupAll(TsActionSpi.class).stream();
+    }
 }

@@ -14,32 +14,32 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package internal.ui.components.parts;
 
-import demetra.timeseries.TsData;
-import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.components.HasTsData;
+import demetra.tsprovider.util.ObsFormat;
+import demetra.ui.beans.PropertyChangeBroadcaster;
+import demetra.ui.components.parts.HasObsFormat;
 
 /**
  *
  * @author Philippe Charles
  */
 @lombok.RequiredArgsConstructor
-public final class HasTsDataImpl implements HasTsData {
+public final class HasObsFormatImpl implements HasObsFormat {
 
     @lombok.NonNull
-    private final PropertyChangeSource.Broadcaster broadcaster;
-    private TsData tsData = null;
+    private final PropertyChangeBroadcaster broadcaster;
+    private ObsFormat dataFormat = null;
 
     @Override
-    public TsData getTsData() {
-        return tsData;
+    public ObsFormat getObsFormat() {
+        return dataFormat;
     }
 
     @Override
-    public void setTsData(TsData tsData) {
-        TsData old = this.tsData;
-        this.tsData = tsData;
-        broadcaster.firePropertyChange(TS_DATA_PROPERTY, old, this.tsData);
+    public void setObsFormat(ObsFormat dataFormat) {
+        ObsFormat old = this.dataFormat;
+        this.dataFormat = dataFormat;
+        broadcaster.firePropertyChange(OBS_FORMAT_PROPERTY, old, this.dataFormat);
     }
 }

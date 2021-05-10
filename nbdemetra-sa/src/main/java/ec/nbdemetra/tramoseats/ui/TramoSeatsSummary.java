@@ -6,7 +6,7 @@ package ec.nbdemetra.tramoseats.ui;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.ui.components.HasTsCollection.TsUpdateMode;
+import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
 import ec.satoolkit.ComponentDescriptor;
 import ec.satoolkit.seats.SeatsResults;

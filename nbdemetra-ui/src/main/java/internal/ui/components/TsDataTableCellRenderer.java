@@ -16,7 +16,9 @@
  */
 package internal.ui.components;
 
-import demetra.ui.components.HasObsFormat;
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.util.ObsFormat;
+import demetra.ui.components.parts.HasObsFormat;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.Formatters;
@@ -56,8 +58,8 @@ public final class TsDataTableCellRenderer implements TableCellRenderer {
     }
 
     private DataFormat lookupObsFormat() {
-        DataFormat result = target.getDataFormat();
-        return result != null ? result : demetraUI.getDataFormat();
+        ObsFormat result = target.getObsFormat();
+        return result != null ? TsConverter.fromObsFormat(result) : demetraUI.getDataFormat();
     }
 
     private String formatValue(Number o) {

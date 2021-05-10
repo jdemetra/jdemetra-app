@@ -14,32 +14,29 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.ui.components.parts;
 
-import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.components.HasObsFormat;
-import ec.tss.tsproviders.utils.DataFormat;
+import demetra.ui.beans.PropertyChangeBroadcaster;
+import ec.util.chart.ObsIndex;
+import internal.ui.components.parts.HasHoveredObsImpl;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  *
  * @author Philippe Charles
  */
-@lombok.RequiredArgsConstructor
-public final class HasObsFormatImpl implements HasObsFormat {
+public interface HasHoveredObs {
 
-    @lombok.NonNull
-    private final PropertyChangeSource.Broadcaster broadcaster;
-    private DataFormat dataFormat = null;
+    static final String HOVERED_OBS_PROPERTY = "hoveredObs";
 
-    @Override
-    public DataFormat getDataFormat() {
-        return dataFormat;
-    }
+    @NonNull
+    ObsIndex getHoveredObs();
 
-    @Override
-    public void setDataFormat(DataFormat dataFormat) {
-        DataFormat old = this.dataFormat;
-        this.dataFormat = dataFormat;
-        broadcaster.firePropertyChange(DATA_FORMAT_PROPERTY, old, this.dataFormat);
+    void setHoveredObs(@Nullable ObsIndex hoveredObs);
+
+    @NonNull
+    static HasHoveredObs of(@NonNull PropertyChangeBroadcaster broadcaster) {
+        return new HasHoveredObsImpl(broadcaster);
     }
 }

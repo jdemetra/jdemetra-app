@@ -16,8 +16,8 @@
  */
 package ec.ui.view.res;
 
-import demetra.ui.components.HasObsFormat;
-import demetra.ui.components.HasTsData;
+import demetra.ui.components.parts.HasObsFormat;
+import demetra.ui.components.parts.HasTsData;
 import demetra.ui.components.TimeSeriesComponent;
 import internal.InternalResidualsViewUI;
 import internal.ui.components.InternalUI;

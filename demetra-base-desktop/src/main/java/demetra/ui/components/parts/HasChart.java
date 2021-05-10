@@ -1,7 +1,7 @@
-package demetra.ui.components;
+package demetra.ui.components.parts;
 
-import demetra.ui.beans.PropertyChangeSource;
-import internal.ui.components.HasChartImpl;
+import demetra.ui.beans.PropertyChangeBroadcaster;
+import internal.ui.components.parts.HasChartImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -45,7 +45,7 @@ public interface HasChart {
     }
 
     @NonNull
-    static HasChart of(PropertyChangeSource.@NonNull Broadcaster broadcaster) {
+    static HasChart of(@NonNull PropertyChangeBroadcaster broadcaster) {
         return new HasChartImpl(broadcaster);
     }
 }

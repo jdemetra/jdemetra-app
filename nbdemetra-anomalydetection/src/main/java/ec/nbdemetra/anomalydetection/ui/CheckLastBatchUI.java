@@ -20,7 +20,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.ui.components.HasTsCollection.TsUpdateMode;
+import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.anomalydetection.ControlNode;
 import ec.nbdemetra.anomalydetection.report.CheckLastReportAction;

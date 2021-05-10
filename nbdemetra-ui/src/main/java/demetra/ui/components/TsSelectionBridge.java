@@ -16,6 +16,8 @@
  */
 package demetra.ui.components;
 
+import demetra.ui.components.parts.HasTsCollection;
+import demetra.ui.beans.PropertyChangeBroadcaster;
 import demetra.ui.beans.PropertyChangeSource;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -33,7 +35,7 @@ public final class TsSelectionBridge {
     public static final String TS_SELECTION_PROPERTY = "selection";
 
     @lombok.NonNull
-    private final PropertyChangeSource.Broadcaster broadcaster;
+    private final PropertyChangeBroadcaster broadcaster;
 
     private final PropertyChangeBridge propertyChangeBridge = new PropertyChangeBridge();
     private final ListSelectionBridge listSelectionBridge = new ListSelectionBridge();

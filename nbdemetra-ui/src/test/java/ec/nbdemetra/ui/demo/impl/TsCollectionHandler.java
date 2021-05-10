@@ -18,9 +18,9 @@ package ec.nbdemetra.ui.demo.impl;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
-import demetra.ui.components.HasTsAction;
-import demetra.ui.components.HasTsCollection;
-import demetra.ui.components.HasTsCollection.TsUpdateMode;
+import demetra.ui.components.parts.HasTsAction;
+import demetra.ui.components.parts.HasTsCollection;
+import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.DemoTsActions;

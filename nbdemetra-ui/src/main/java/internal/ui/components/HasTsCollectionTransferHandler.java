@@ -18,7 +18,7 @@ package internal.ui.components;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
-import demetra.ui.components.HasTsCollection;
+import demetra.ui.components.parts.HasTsCollection;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;

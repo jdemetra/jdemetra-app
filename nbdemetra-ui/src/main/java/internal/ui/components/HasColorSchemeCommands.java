@@ -16,8 +16,8 @@
  */
 package internal.ui.components;
 
-import demetra.ui.components.HasColorScheme;
-import ec.ui.commands.ComponentCommand;
+import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.ComponentCommand;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.ColorSchemeIcon;
 import ec.util.various.swing.JCommand;

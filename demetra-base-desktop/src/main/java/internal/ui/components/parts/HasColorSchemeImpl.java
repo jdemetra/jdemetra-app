@@ -14,10 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package internal.ui.components.parts;
 
-import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.components.HasColorScheme;
+import demetra.ui.beans.PropertyChangeBroadcaster;
+import demetra.ui.components.parts.HasColorScheme;
 import ec.util.chart.ColorScheme;
 
 /**
@@ -28,7 +28,7 @@ import ec.util.chart.ColorScheme;
 public final class HasColorSchemeImpl implements HasColorScheme {
 
     @lombok.NonNull
-    private final PropertyChangeSource.Broadcaster broadcaster;
+    private final PropertyChangeBroadcaster broadcaster;
     private ColorScheme colorScheme = null;
 
     @Override

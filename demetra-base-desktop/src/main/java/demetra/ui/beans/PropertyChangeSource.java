@@ -32,10 +32,4 @@ public interface PropertyChangeSource {
     void removePropertyChangeListener(@NonNull String propertyName, @NonNull PropertyChangeListener listener);
 
     void removePropertyChangeListener(@NonNull PropertyChangeListener listener);
-
-    @FunctionalInterface
-    interface Broadcaster {
-
-        void firePropertyChange(String propertyName, Object oldValue, Object newValue);
-    }
 }

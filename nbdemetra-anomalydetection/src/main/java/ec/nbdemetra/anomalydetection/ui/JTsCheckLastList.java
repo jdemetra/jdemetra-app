@@ -18,8 +18,8 @@ package ec.nbdemetra.anomalydetection.ui;
 
 import demetra.bridge.TsConverter;
 import demetra.demo.DemoTsBuilder;
-import demetra.ui.components.HasTsCollection;
-import static demetra.ui.components.HasTsCollection.TS_COLLECTION_PROPERTY;
+import demetra.ui.components.parts.HasTsCollection;
+import static demetra.ui.components.parts.HasTsCollection.TS_COLLECTION_PROPERTY;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.util.ActionMaps;
@@ -64,6 +64,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
 import demetra.ui.OldDataTransfer;
+import demetra.ui.components.TmpHasTsCollection;
 
 /**
  * List component containing input and output results of a Check Last batch
@@ -248,7 +249,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
     private JPopupMenu buildPopupMenu() {
         ActionMap am = getActionMap();
-        JPopupMenu result = HasTsCollection.newDefaultMenu(this, DemetraUI.getDefault()).getPopupMenu();
+        JPopupMenu result = TmpHasTsCollection.newDefaultMenu(this, DemetraUI.getDefault()).getPopupMenu();
 
         int index = 11;
         JMenuItem item;

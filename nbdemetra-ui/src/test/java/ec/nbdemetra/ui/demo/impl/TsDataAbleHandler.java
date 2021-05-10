@@ -26,7 +26,7 @@ import static java.beans.BeanInfo.ICON_COLOR_16x16;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.components.HasTsData;
+import demetra.ui.components.parts.HasTsData;
 import ec.tss.tsproviders.utils.OptionalTsData;
 
 /**

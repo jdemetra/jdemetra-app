@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 National Bank of Belgium
+ * Copyright 2013 National Bank of Belgium
  * 
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -16,27 +16,24 @@
  */
 package demetra.ui.components;
 
-import demetra.ui.beans.PropertyChangeSource;
-import ec.util.chart.ObsIndex;
-import internal.ui.components.HasHoveredObsImpl;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import ec.util.various.swing.JCommand;
+import java.awt.Component;
 
 /**
  *
  * @author Philippe Charles
  */
-public interface HasHoveredObs {
+public abstract class ComponentCommand<C> extends JCommand<C> {
 
-    static final String HOVERED_OBS_PROPERTY = "hoveredObs";
+    private final String[] properties;
 
-    @NonNull
-    ObsIndex getHoveredObs();
+    public ComponentCommand(String... properties) {
+        this.properties = properties;
+    }
 
-    void setHoveredObs(@Nullable ObsIndex hoveredObs);
-
-    @NonNull
-    static HasHoveredObs of(PropertyChangeSource.@NonNull Broadcaster broadcaster) {
-        return new HasHoveredObsImpl(broadcaster);
+    @Override
+    public JCommand.ActionAdapter toAction(C c) {
+        JCommand.ActionAdapter result = super.toAction(c);
+        return c instanceof Component ? result.withWeakPropertyChangeListener((Component) c, properties) : result;
     }
 }

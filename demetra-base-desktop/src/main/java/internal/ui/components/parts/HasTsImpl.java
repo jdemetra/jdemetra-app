@@ -14,13 +14,14 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package internal.ui.components.parts;
 
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsMoniker;
 import demetra.ui.NextTsManager;
+import demetra.ui.beans.PropertyChangeBroadcaster;
 import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.components.HasTs;
+import demetra.ui.components.parts.HasTs;
 
 /**
  *
@@ -30,7 +31,7 @@ import demetra.ui.components.HasTs;
 public final class HasTsImpl implements HasTs, NextTsManager.UpdateListener {
 
     @lombok.NonNull
-    private final PropertyChangeSource.Broadcaster broadcaster;
+    private final PropertyChangeBroadcaster broadcaster;
 
     private Ts ts = null;
 

@@ -18,8 +18,8 @@ package internal.ui.components;
 
 import demetra.ui.util.ExtLayerUI;
 import demetra.ui.components.TsSelectionBridge;
-import demetra.ui.components.HasObsFormat;
-import demetra.ui.components.HasTsCollection;
+import demetra.ui.components.parts.HasObsFormat;
+import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.ThemeSupport;
 import demetra.ui.util.ActionMaps;
@@ -161,7 +161,7 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
                 case HasTsCollection.UDPATE_MODE_PROPERTY:
                     onUpdateModeChange();
                     break;
-                case HasObsFormat.DATA_FORMAT_PROPERTY:
+                case HasObsFormat.OBS_FORMAT_PROPERTY:
                     onDataFormatChange();
                     break;
                 case "transferHandler":

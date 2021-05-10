@@ -14,31 +14,35 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package internal.ui.components.parts;
 
-import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.components.HasTsAction;
+import demetra.ui.beans.PropertyChangeBroadcaster;
+import demetra.ui.components.parts.HasHoveredObs;
+import ec.util.chart.ObsIndex;
 
 /**
  *
  * @author Philippe Charles
  */
 @lombok.RequiredArgsConstructor
-public final class HasTsActionImpl implements HasTsAction {
+public final class HasHoveredObsImpl implements HasHoveredObs {
 
     @lombok.NonNull
-    private final PropertyChangeSource.Broadcaster broadcaster;
-    private String tsAction = null;
+    private final PropertyChangeBroadcaster broadcaster;
+
+    private ObsIndex hoveredObs = DEFAULT_HOVERED_OBS;
 
     @Override
-    public void setTsAction(String tsAction) {
-        String old = this.tsAction;
-        this.tsAction = tsAction;
-        broadcaster.firePropertyChange(TS_ACTION_PROPERTY, old, this.tsAction);
+    public ObsIndex getHoveredObs() {
+        return hoveredObs;
     }
 
     @Override
-    public String getTsAction() {
-        return tsAction;
+    public void setHoveredObs(ObsIndex hoveredObs) {
+        ObsIndex old = this.hoveredObs;
+        this.hoveredObs = hoveredObs != null ? hoveredObs : DEFAULT_HOVERED_OBS;
+        broadcaster.firePropertyChange(HOVERED_OBS_PROPERTY, old, this.hoveredObs);
     }
+
+    private static final ObsIndex DEFAULT_HOVERED_OBS = ObsIndex.NULL;
 }

@@ -16,7 +16,7 @@
  */
 package internal.ui.components;
 
-import demetra.ui.components.HasTsCollection;
+import demetra.ui.components.parts.HasTsCollection;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;

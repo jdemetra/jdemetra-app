@@ -4,7 +4,7 @@
  */
 package ec.ui.view;
 
-import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.util.NbComponents;
 import ec.tss.html.implementation.HtmlRevisionsDocument;
 import ec.tstoolkit.timeseries.TsPeriodSelector;

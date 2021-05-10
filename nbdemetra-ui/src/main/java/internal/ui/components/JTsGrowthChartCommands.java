@@ -21,7 +21,7 @@ import com.toedter.components.JSpinField;
 import demetra.bridge.TsConverter;
 import demetra.ui.components.JTsGrowthChart;
 import static demetra.ui.components.JTsGrowthChart.GROWTH_KIND_PROPERTY;
-import ec.ui.commands.ComponentCommand;
+import demetra.ui.components.ComponentCommand;
 import ec.util.various.swing.JCommand;
 import java.awt.Dimension;
 import java.awt.FlowLayout;

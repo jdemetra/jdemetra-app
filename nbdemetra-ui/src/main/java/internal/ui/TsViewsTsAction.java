@@ -16,7 +16,7 @@
  */
 package internal.ui;
 
-import demetra.ui.components.HasTs;
+import demetra.ui.components.parts.HasTs;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
 import demetra.ui.TsActionSpi;

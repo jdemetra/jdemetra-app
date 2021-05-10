@@ -18,8 +18,8 @@ package ec.ui.view;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
-import demetra.ui.components.HasColorScheme;
-import demetra.ui.components.HasTs;
+import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.TsInformation;

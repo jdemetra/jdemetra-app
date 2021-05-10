@@ -17,8 +17,8 @@
 package ec.nbdemetra.anomalydetection.ui;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.components.HasHoveredObs;
-import demetra.ui.components.HasTsCollection;
+import demetra.ui.components.parts.HasHoveredObs;
+import demetra.ui.components.parts.HasTsCollection;
 import ec.nbdemetra.ui.properties.l2fprod.ColorChooser;
 import ec.tss.Ts;
 import ec.tss.TsCollection;

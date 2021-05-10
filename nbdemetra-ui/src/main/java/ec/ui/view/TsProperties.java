@@ -3,7 +3,7 @@ package ec.ui.view;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
-import demetra.ui.components.HasTsCollection.TsUpdateMode;
+import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;

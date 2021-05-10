@@ -16,7 +16,7 @@
  */
 package ec.ui.view;
 
-import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.parts.HasColorScheme;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.data.IReadDataBlock;
@@ -24,7 +24,7 @@ import ec.tstoolkit.dstats.BoundaryType;
 import ec.tstoolkit.dstats.IContinuousDistribution;
 import ec.ui.chart.TsCharts;
 import ec.ui.interfaces.IReadDataBlockView;
-import demetra.ui.components.HasChart.LinesThickness;
+import demetra.ui.components.parts.HasChart.LinesThickness;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tstoolkit.utilities.Arrays2;

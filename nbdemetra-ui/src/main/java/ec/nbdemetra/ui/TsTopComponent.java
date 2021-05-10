@@ -5,7 +5,7 @@
 package ec.nbdemetra.ui;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.components.HasTs;
+import demetra.ui.components.parts.HasTs;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.ui.view.tsprocessing.TsProcessingViewer;

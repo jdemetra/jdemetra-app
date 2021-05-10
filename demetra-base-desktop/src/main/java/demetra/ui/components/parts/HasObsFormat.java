@@ -14,11 +14,11 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.ui.components;
+package demetra.ui.components.parts;
 
-import demetra.ui.beans.PropertyChangeSource;
-import ec.tss.tsproviders.utils.DataFormat;
-import internal.ui.components.HasObsFormatImpl;
+import demetra.tsprovider.util.ObsFormat;
+import demetra.ui.beans.PropertyChangeBroadcaster;
+import internal.ui.components.parts.HasObsFormatImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -28,15 +28,15 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public interface HasObsFormat {
 
-    static final String DATA_FORMAT_PROPERTY = "dataFormat";
+    static final String OBS_FORMAT_PROPERTY = "obsFormat";
 
     @Nullable
-    DataFormat getDataFormat();
+    ObsFormat getObsFormat();
 
-    void setDataFormat(@Nullable DataFormat dataFormat);
+    void setObsFormat(@Nullable ObsFormat obsFormat);
 
     @NonNull
-    static HasObsFormat of(PropertyChangeSource.@NonNull Broadcaster broadcaster) {
+    static HasObsFormat of(@NonNull PropertyChangeBroadcaster broadcaster) {
         return new HasObsFormatImpl(broadcaster);
     }
 }

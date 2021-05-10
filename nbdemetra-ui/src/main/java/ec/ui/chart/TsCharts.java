@@ -2,7 +2,7 @@ package ec.ui.chart;
 
 import demetra.bridge.TsConverter;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import demetra.ui.components.HasChart.LinesThickness;
+import demetra.ui.components.parts.HasChart.LinesThickness;
 import ec.tss.tsproviders.utils.OptionalTsData;
 import java.awt.BasicStroke;
 import java.awt.Color;

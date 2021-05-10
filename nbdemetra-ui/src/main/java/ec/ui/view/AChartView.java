@@ -4,7 +4,7 @@
  */
 package ec.ui.view;
 
-import demetra.ui.components.HasColorScheme;
+import demetra.ui.components.parts.HasColorScheme;
 import ec.nbdemetra.ui.ThemeSupport;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;

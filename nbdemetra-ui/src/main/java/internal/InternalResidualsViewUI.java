@@ -18,14 +18,14 @@ package internal;
 
 import demetra.timeseries.TsCollection;
 import internal.ui.components.InternalUI;
-import static demetra.ui.components.HasObsFormat.DATA_FORMAT_PROPERTY;
-import demetra.ui.components.HasTsCollection.TsUpdateMode;
-import static demetra.ui.components.HasTsData.TS_DATA_PROPERTY;
+import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
+import static demetra.ui.components.parts.HasTsData.TS_DATA_PROPERTY;
 import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import demetra.ui.components.JTsGrid;
+import static demetra.ui.components.parts.HasObsFormat.OBS_FORMAT_PROPERTY;
 import demetra.ui.jfreechart.TsXYDataset;
 import ec.ui.chart.TsCharts;
 import ec.ui.view.res.ResidualsView;
@@ -99,7 +99,7 @@ public final class InternalResidualsViewUI implements InternalUI<ResidualsView> 
     private void enableProperties(ResidualsView view) {
         view.addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
-                case DATA_FORMAT_PROPERTY:
+                case OBS_FORMAT_PROPERTY:
                     onDataFormatChange(view);
                     break;
                 case TS_DATA_PROPERTY:
@@ -127,7 +127,7 @@ public final class InternalResidualsViewUI implements InternalUI<ResidualsView> 
     }
 
     private void onDataFormatChange(ResidualsView view) {
-        grid.setDataFormat(view.getDataFormat());
+        grid.setObsFormat(view.getObsFormat());
         try {
             DateFormat dateFormat = themeSupport.getDataFormat().newDateFormat();
             ((DateAxis) chartPanel.getChart().getXYPlot().getDomainAxis()).setDateFormatOverride(dateFormat);

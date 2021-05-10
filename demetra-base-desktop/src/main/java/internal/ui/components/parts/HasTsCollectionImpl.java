@@ -14,15 +14,14 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package internal.ui.components.parts;
 
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsMoniker;
 import demetra.ui.NextTsManager;
-import demetra.ui.TsManager;
-import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.components.HasTsCollection;
+import demetra.ui.beans.PropertyChangeBroadcaster;
+import demetra.ui.components.parts.HasTsCollection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -34,10 +33,10 @@ import javax.swing.ListSelectionModel;
  * @author Philippe Charles
  */
 @lombok.RequiredArgsConstructor
-public final class HasTsCollectionImpl implements HasTsCollection, TsManager.UpdateListener {
+public final class HasTsCollectionImpl implements HasTsCollection, NextTsManager.UpdateListener {
 
     @lombok.NonNull
-    private final PropertyChangeSource.Broadcaster broadcaster;
+    private final PropertyChangeBroadcaster broadcaster;
 
     private TsCollection tsCollection = TsCollection.EMPTY;
     private ListSelectionModel selectionModel = new DefaultListSelectionModel();

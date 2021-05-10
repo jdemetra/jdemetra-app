@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import demetra.ui.components.HasTsCollection;
+import demetra.ui.components.parts.HasTsCollection;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.nbdemetra.ui.demo.ReflectComponent;
 import ec.tstoolkit.utilities.Id;

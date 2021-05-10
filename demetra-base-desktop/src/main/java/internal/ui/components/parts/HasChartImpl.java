@@ -14,10 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package internal.ui.components.parts;
 
-import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.components.HasChart;
+import demetra.ui.beans.PropertyChangeBroadcaster;
+import demetra.ui.components.parts.HasChart;
 
 /**
  *
@@ -33,7 +33,7 @@ public final class HasChartImpl implements HasChart {
     public static final LinesThickness DEFAULT_LINES_THICKNESS = LinesThickness.Thin;
 
     @lombok.NonNull
-    private final PropertyChangeSource.Broadcaster broadcaster;
+    private final PropertyChangeBroadcaster broadcaster;
 
     private boolean legendVisible = DEFAULT_LEGENDVISIBLE;
     private boolean titleVisible = DEFAULT_TITLEVISIBLE;

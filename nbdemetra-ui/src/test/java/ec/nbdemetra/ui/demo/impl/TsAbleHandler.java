@@ -19,7 +19,7 @@ package ec.nbdemetra.ui.demo.impl;
 import demetra.bridge.TsConverter;
 import demetra.demo.PocProvider;
 import demetra.ui.TsManager;
-import demetra.ui.components.HasTs;
+import demetra.ui.components.parts.HasTs;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import static ec.nbdemetra.ui.demo.impl.TsCollectionHandler.getIcon;
 import ec.tss.TsInformation;

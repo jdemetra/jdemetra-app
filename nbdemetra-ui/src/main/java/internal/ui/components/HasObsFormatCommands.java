@@ -16,11 +16,12 @@
  */
 package internal.ui.components;
 
-import demetra.ui.components.HasObsFormat;
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.util.ObsFormat;
+import demetra.ui.components.parts.HasObsFormat;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.properties.DataFormatComponent2;
-import ec.tss.tsproviders.utils.DataFormat;
-import ec.ui.commands.ComponentCommand;
+import demetra.ui.components.ComponentCommand;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import java.awt.Dimension;
@@ -46,7 +47,7 @@ public class HasObsFormatCommands {
     public static final String FORMAT_ACTION = "format";
 
     @NonNull
-    public static JCommand<HasObsFormat> applyDataFormat(@Nullable DataFormat dataFormat) {
+    public static JCommand<HasObsFormat> applyDataFormat(@Nullable ObsFormat dataFormat) {
         return new ApplyDataFormatCommand(dataFormat);
     }
 
@@ -64,21 +65,21 @@ public class HasObsFormatCommands {
 
     private static final class ApplyDataFormatCommand extends ComponentCommand<HasObsFormat> {
 
-        private final DataFormat dataFormat;
+        private final ObsFormat dataFormat;
 
-        public ApplyDataFormatCommand(DataFormat dataFormat) {
-            super(HasObsFormat.DATA_FORMAT_PROPERTY);
+        public ApplyDataFormatCommand(ObsFormat dataFormat) {
+            super(HasObsFormat.OBS_FORMAT_PROPERTY);
             this.dataFormat = dataFormat;
         }
 
         @Override
         public void execute(HasObsFormat component) throws Exception {
-            component.setDataFormat(dataFormat);
+            component.setObsFormat(dataFormat);
         }
 
         @Override
         public boolean isSelected(HasObsFormat component) {
-            return Objects.equals(dataFormat, component.getDataFormat());
+            return Objects.equals(dataFormat, component.getObsFormat());
         }
     }
 
@@ -101,14 +102,14 @@ public class HasObsFormatCommands {
                     editor.setPreviewVisible(false);
                 }
             });
-            editor.setDataFormat(component.getDataFormat());
-            if (component.getDataFormat() != null) {
+            editor.setDataFormat(TsConverter.fromObsFormat(component.getObsFormat()));
+            if (component.getObsFormat() != null) {
                 JButton b = new JButton(new ApplyDataFormatCommand(null).toAction(component));
                 b.setText("Restore");
                 descriptor.setAdditionalOptions(new Object[]{b});
             }
-            if (DialogDisplayer.getDefault().notify(descriptor) == NotifyDescriptor.OK_OPTION && !editor.getDataFormat().equals(component.getDataFormat())) {
-                component.setDataFormat(editor.getDataFormat());
+            if (DialogDisplayer.getDefault().notify(descriptor) == NotifyDescriptor.OK_OPTION && !editor.getDataFormat().equals(component.getObsFormat())) {
+                component.setObsFormat(TsConverter.toObsFormat(editor.getDataFormat()));
             }
         }
     }

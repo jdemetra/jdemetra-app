@@ -16,10 +16,10 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import demetra.ui.components.HasObsFormat;
+import demetra.tsprovider.util.ObsFormat;
+import demetra.ui.components.parts.HasObsFormat;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.tss.tsproviders.utils.DataFormat;
 import ec.util.various.swing.JCommand;
 import internal.ui.components.HasObsFormatCommands;
 import java.util.Locale;
@@ -41,10 +41,10 @@ public final class TsControlHandler extends DemoComponentHandler.InstanceOf<HasO
 
     public TsControlHandler() {
         super(HasObsFormat.class);
-        DataFormat[] dataFormats = {
-            new DataFormat(Locale.FRENCH, "YYYY-MM", null),
-            new DataFormat(Locale.US, "MM/YY", "0 $"),
-            new DataFormat(Locale.GERMAN, "(yyyy)MMM", "0.00 €"),};
+        ObsFormat[] dataFormats = {
+            ObsFormat.of(Locale.FRENCH, "YYYY-MM", null),
+            ObsFormat.of(Locale.US, "MM/YY", "0 $"),
+            ObsFormat.of(Locale.GERMAN, "(yyyy)MMM", "0.00 €"),};
         this.dataFormatCommand = new DataFormatCommand(dataFormats);
     }
 
@@ -56,17 +56,17 @@ public final class TsControlHandler extends DemoComponentHandler.InstanceOf<HasO
 
     private static final class DataFormatCommand extends JCommand<HasObsFormat> {
 
-        private final DataFormat[] dataFormats;
+        private final ObsFormat[] dataFormats;
         private int position;
 
-        public DataFormatCommand(DataFormat[] dataFormats) {
+        public DataFormatCommand(ObsFormat[] dataFormats) {
             this.dataFormats = dataFormats;
             this.position = 0;
         }
 
         @Override
         public void execute(HasObsFormat component) throws Exception {
-            component.setDataFormat(dataFormats[position]);
+            component.setObsFormat(dataFormats[position]);
             position = (position + 1) % dataFormats.length;
         }
 
@@ -79,7 +79,7 @@ public final class TsControlHandler extends DemoComponentHandler.InstanceOf<HasO
             JPopupMenu popup = new JPopupMenu();
             popup.add(new JCheckBoxMenuItem(HasObsFormatCommands.applyDataFormat(null).toAction(c))).setText("Default");
             popup.addSeparator();
-            for (DataFormat o : dataFormats) {
+            for (ObsFormat o : dataFormats) {
                 popup.add(new JCheckBoxMenuItem(HasObsFormatCommands.applyDataFormat(o).toAction(c))).setText(o.toString());
             }
             JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LOCALE_ALTERNATE_16, popup);

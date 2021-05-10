@@ -7,7 +7,7 @@ package ec.nbdemetra.ui.calendars;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
-import demetra.ui.components.HasTsCollection.TsUpdateMode;
+import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tstoolkit.data.DataBlock;

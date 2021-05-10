@@ -17,7 +17,7 @@
 package internal.ui.components;
 
 import demetra.ui.components.JTsGrid;
-import ec.ui.commands.ComponentCommand;
+import demetra.ui.components.ComponentCommand;
 import static demetra.ui.components.JTsGrid.CHRONOLOGY_PROPERTY;
 import static demetra.ui.components.JTsGrid.Chronology.ASCENDING;
 import static demetra.ui.components.JTsGrid.Chronology.DESCENDING;
