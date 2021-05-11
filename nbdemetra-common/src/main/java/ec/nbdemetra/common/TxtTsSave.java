@@ -17,6 +17,8 @@
 package ec.nbdemetra.common;
 
 import com.google.common.io.Files;
+import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsInformationType;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
@@ -25,9 +27,6 @@ import ec.nbdemetra.ui.SingleFileExporter;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.nbdemetra.ui.tssave.TsSaveUtil;
-import ec.tss.Ts;
-import ec.tss.TsCollection;
-import ec.tss.TsInformationType;
 import ec.tss.datatransfer.impl.TxtDataTransfer;
 import ec.tss.tsproviders.common.txt.TxtFileFilter;
 import ec.util.various.swing.OnAnyThread;
@@ -36,6 +35,7 @@ import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import javax.swing.filechooser.FileFilter;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.filesystems.FileChooserBuilder;
@@ -75,12 +75,7 @@ public final class TxtTsSave implements ITsSave {
     }
 
     @Override
-    public void save(Ts[] input) {
-        save(TsSaveUtil.toCollections(input));
-    }
-
-    @Override
-    public void save(TsCollection[] input) {
+    public void save(List<TsCollection> input) {
         TsSaveUtil.saveToFile(fileChooser, o -> editBean(options), o -> store(input, o, options));
     }
 
@@ -91,7 +86,7 @@ public final class TxtTsSave implements ITsSave {
     }
 
     @OnEDT
-    private static void store(TsCollection[] data, File file, OptionsBean opts) {
+    private static void store(List<TsCollection> data, File file, OptionsBean opts) {
         new SingleFileExporter()
                 .file(file)
                 .progressLabel("Saving to text file")
@@ -101,13 +96,12 @@ public final class TxtTsSave implements ITsSave {
     }
 
     @OnAnyThread
-    private static void store(TsCollection[] data, File file, OptionsBean options, ProgressHandle ph) throws IOException {
+    private static void store(List<TsCollection> data, File file, OptionsBean options, ProgressHandle ph) throws IOException {
         ph.start();
         ph.progress("Loading time series");
-        TsCollection content = TsManager.getDefault().newTsCollection();
+        TsCollection.Builder content = TsCollection.builder();
         for (TsCollection col : data) {
-            col.load(TsInformationType.All);
-            content.quietAppend(col);
+            content.data(TsManager.getDefault().load(col, TsInformationType.All).getData());
         }
 
         ph.progress("Creating content");
@@ -119,7 +113,7 @@ public final class TxtTsSave implements ITsSave {
                 .put("vertical", options.vertical)
                 .build();
         handler.setConfig(config);
-        String stringContent = handler.tsCollectionToString(content);
+        String stringContent = handler.tsCollectionToString(content.build());
 
         ph.progress("Writing file");
         Files.write(stringContent, file, StandardCharsets.UTF_8);

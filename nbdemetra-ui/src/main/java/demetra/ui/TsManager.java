@@ -29,14 +29,12 @@ import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.IFileLoader;
-import ec.tstoolkit.MetaData;
-import ec.tstoolkit.design.NewObject;
+import ec.tss.tsproviders.utils.OptionalTsData;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.Files2;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
 import java.io.File;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -45,7 +43,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.SwingUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -56,7 +53,7 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @GlobalService
 @ServiceProvider(service = TsManager.class)
-public class TsManager implements NextTsManager {
+public class TsManager {
 
     @NonNull
     public static TsManager getDefault() {
@@ -65,13 +62,13 @@ public class TsManager implements NextTsManager {
 
     private final TsFactory delegate;
     private final ConcurrentLinkedQueue<TsEvent> events;
-    private final List<UpdateListener> updateListeners;
+    private final NextTsManagerImpl nextTsManager;
 
     public TsManager() {
         this.delegate = TsFactory.instance;
         this.events = new ConcurrentLinkedQueue<>();
-        this.updateListeners = new ArrayList<>();
         delegate.addObserver(this::onDelegateChange);
+        this.nextTsManager = new NextTsManagerImpl();
     }
 
     @OnAnyThread
@@ -90,68 +87,16 @@ public class TsManager implements NextTsManager {
     private void notifyUpdateListeners() {
         TsEvent event;
         while ((event = events.poll()) != null) {
-            if (event.isSeries()) {
-                demetra.timeseries.TsMoniker tsMoniker = TsConverter.toTsMoniker(event.ts.getMoniker());
-                updateListeners.forEach(listener -> listener.accept(this, tsMoniker));
-            } else {
-                TsCollection col = event.tscollection;
-                demetra.timeseries.TsMoniker colMoniker = TsConverter.toTsMoniker(col.getMoniker());
-                updateListeners.forEach(listener -> listener.accept(this, colMoniker));
-                col.stream()
-                        .map(Ts::getMoniker)
-                        .map(TsConverter::toTsMoniker)
-                        .forEach(tsMoniker -> updateListeners.forEach(listener -> listener.accept(this, tsMoniker)));
-            }
+            getMonikers(event)
+                    .map(moniker -> new demetra.ui.TsEvent(nextTsManager, TsConverter.toTsMoniker(moniker)))
+                    .forEach(x -> nextTsManager.notifyListeners(x));
         }
     }
 
-    @NonNull
-    @NewObject
-    public TsCollection newTsCollection() {
-        return delegate.createTsCollection();
-    }
-
-    @NonNull
-    @NewObject
-    public TsCollection newTsCollectionWithName(@Nullable String name) {
-        return delegate.createTsCollection(name);
-    }
-
-    @NonNull
-    public TsCollection lookupTsCollection(@Nullable String name, @NonNull TsMoniker moniker, @NonNull TsInformationType type) {
-        return delegate.createTsCollection(name, moniker, type);
-    }
-
-    @Override
-    public demetra.timeseries.@NonNull TsCollection lookupTsCollection2(@Nullable String name, demetra.timeseries.@NonNull TsMoniker moniker, demetra.timeseries.@NonNull TsInformationType type) {
-        return TsConverter.toTsCollection(delegate.createTsCollection(name, TsConverter.fromTsMoniker(moniker), TsConverter.fromType(type)));
-    }
-
-    @NonNull
-    @NewObject
-    public Ts newTs(@Nullable String string, @Nullable MetaData md, @Nullable TsData tsdata) {
-        return delegate.createTs(string, md, tsdata);
-    }
-
-    @NonNull
-    public Ts lookupTs(@Nullable String name, @NonNull TsMoniker moniker, @NonNull TsInformationType type) {
-        return delegate.createTs(name, moniker, type);
-    }
-
-    @NonNull
-    @NewObject
-    public Ts newTsWithName(@Nullable String name) {
-        return delegate.createTs(name);
-    }
-
-    @Nullable
-    public Ts lookupTs(@NonNull TsMoniker moniker) {
-        return delegate.getTs(moniker);
-    }
-
-    @Override
-    public demetra.timeseries.@Nullable Ts lookupTs2(demetra.timeseries.@NonNull TsMoniker moniker) {
-        return TsConverter.toTs(delegate.getTs(TsConverter.fromTsMoniker(moniker)));
+    private Stream<TsMoniker> getMonikers(TsEvent event) {
+        return event.isSeries()
+                ? Stream.of(event.ts.getMoniker())
+                : Stream.concat(Stream.of(event.tscollection.getMoniker()), event.tscollection.stream().map(Ts::getMoniker));
     }
 
     @NonNull
@@ -170,19 +115,8 @@ public class TsManager implements NextTsManager {
         delegate.remove(provider.getSource());
     }
 
-    @Override
     public void close() {
         delegate.dispose();
-    }
-
-    @Override
-    public void addUpdateListener(UpdateListener listener) {
-        updateListeners.add(listener);
-    }
-
-    @Override
-    public void removeUpdateListener(UpdateListener listener) {
-        updateListeners.remove(listener);
     }
 
     @NonNull
@@ -209,23 +143,7 @@ public class TsManager implements NextTsManager {
 
     @NonNull
     public Stream<ITsProvider> all() {
-        return asList().stream();
-    }
-
-    @NonNull
-    private List<ITsProvider> asList() {
-        final String[] providers = delegate.getProviders();
-        return new AbstractList<ITsProvider>() {
-            @Override
-            public ITsProvider get(int index) {
-                return delegate.getProvider(providers[index]);
-            }
-
-            @Override
-            public int size() {
-                return providers.length;
-            }
-        };
+        return Stream.of(delegate.getProviders()).map(delegate::getProvider);
     }
 
     @NonNull
@@ -297,7 +215,54 @@ public class TsManager implements NextTsManager {
         return TsConverter.toTs(tmp);
     }
 
+    public demetra.timeseries.@NonNull TsCollection load(demetra.timeseries.@NonNull TsCollection col, demetra.timeseries.@NonNull TsInformationType type) {
+        TsCollection tmp = TsConverter.fromTsCollection(col);
+        tmp.load(TsConverter.fromType(type));
+        return TsConverter.toTsCollection(tmp);
+    }
+
     public void load(@NonNull Ts ts, @NonNull TsInformationType type) {
         ts.load(type);
+    }
+
+    public static demetra.timeseries.@NonNull Ts toTs(@NonNull String name, @NonNull TsData data) {
+        return demetra.timeseries.Ts.builder().name(name).data(TsConverter.toTsData(OptionalTsData.present(data))).build();
+    }
+
+    public static demetra.timeseries.@NonNull Ts toTs(@NonNull TsData data) {
+        return demetra.timeseries.Ts.builder().data(TsConverter.toTsData(OptionalTsData.present(data))).build();
+    }
+
+    public NextTsManager getNextTsManager() {
+        return nextTsManager;
+    }
+
+    private final class NextTsManagerImpl implements NextTsManager {
+
+        private final List<TsListener> updateListeners = new ArrayList<>();
+
+        void notifyListeners(demetra.ui.TsEvent event) {
+            updateListeners.forEach(listener -> listener.tsUpdated(event));
+        }
+
+        @Override
+        public demetra.timeseries.TsCollection getTsCollection(demetra.timeseries.TsMoniker moniker, demetra.timeseries.TsInformationType type) {
+            return TsConverter.toTsCollection(delegate.createTsCollection(null, TsConverter.fromTsMoniker(moniker), TsConverter.fromType(type)));
+        }
+
+        @Override
+        public demetra.timeseries.Ts getTs(demetra.timeseries.TsMoniker moniker, demetra.timeseries.TsInformationType type) {
+            return TsConverter.toTs(delegate.createTs(null, TsConverter.fromTsMoniker(moniker), TsConverter.fromType(type)));
+        }
+
+        @Override
+        public void addListener(TsListener listener) {
+            updateListeners.add(listener);
+        }
+
+        @Override
+        public void removeListener(TsListener listener) {
+            updateListeners.remove(listener);
+        }
     }
 }

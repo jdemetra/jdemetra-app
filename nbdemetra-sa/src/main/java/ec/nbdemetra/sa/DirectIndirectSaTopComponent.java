@@ -187,8 +187,8 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
                 }
                 sum = TsData.add(sum, s.getTsData());
             }
-            Ts t = TsManager.getDefault().newTs("Total", null, sum);
-            saChart.setTsCollection(TsCollection.of(TsConverter.toTs(t)));
+            demetra.timeseries.Ts t = TsManager.toTs("Total", sum);
+            saChart.setTsCollection(TsCollection.of(t));
             clear();
         });
     }

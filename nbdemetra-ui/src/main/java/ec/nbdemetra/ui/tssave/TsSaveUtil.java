@@ -16,15 +16,8 @@
  */
 package ec.nbdemetra.ui.tssave;
 
-import demetra.ui.TsManager;
 import ec.nbdemetra.ui.SingleFileExporter;
-import ec.tss.Ts;
-import ec.tss.TsCollection;
-import ec.tss.TsCollectionInformation;
-import ec.tss.TsInformation;
-import ec.tss.TsInformationType;
 import java.io.File;
-import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -36,23 +29,6 @@ import org.openide.filesystems.FileChooserBuilder;
  */
 @lombok.experimental.UtilityClass
 public class TsSaveUtil {
-
-    @NonNull
-    public TsCollection[] toCollections(@NonNull Ts[] input) {
-        TsCollection col = TsManager.getDefault().newTsCollection();
-        col.quietAppend(Arrays.asList(input));
-        return new TsCollection[]{col};
-    }
-
-    @NonNull
-    public TsCollectionInformation loadContent(@NonNull TsCollection[] data) {
-        TsCollectionInformation result = new TsCollectionInformation();
-        for (TsCollection col : data) {
-            col.load(TsInformationType.All);
-            col.stream().map(o -> new TsInformation(o, TsInformationType.All)).forEach(result.items::add);
-        }
-        return result;
-    }
 
     public void saveToFile(@NonNull FileChooserBuilder fileChooser, @NonNull Predicate<File> predicate, @NonNull Consumer<File> action) {
         File target = fileChooser.showSaveDialog();

@@ -72,12 +72,12 @@ public final class BenchmarkingView extends JComponent {
                 .data(TsConverter.toTs(benchSa))
                 .build();
         chart_.setTsCollection(all);
-        TsData sdiff = mul ? (TsData.divide(benchSa.getTsData(), sa.getTsData()).minus(1))
+        TsData sdiff = mul
+                ? TsData.divide(benchSa.getTsData(), sa.getTsData()).minus(1)
                 : TsData.subtract(benchSa.getTsData(), sa.getTsData());
-        Ts diff = TsManager.getDefault().newTsWithName("Differences");
-        diff.set(sdiff);
-        dchart_.setTsCollection(TsCollection.of(TsConverter.toTs(diff)));
-        grid_.setTsCollection(all.toBuilder().data(TsConverter.toTs(diff)).build());
+        demetra.timeseries.Ts diff = TsManager.toTs("Differences", sdiff);
+        dchart_.setTsCollection(TsCollection.of(diff));
+        grid_.setTsCollection(all.toBuilder().data(diff).build());
 
         HtmlTsDifferenceDocument document = new HtmlTsDifferenceDocument(benchSa, sa, mul);
         Disposables.disposeAndRemoveAll(documentPanel_).add(toolkit_.getHtmlViewer(document));

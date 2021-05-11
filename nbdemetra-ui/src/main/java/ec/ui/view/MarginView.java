@@ -16,7 +16,6 @@
  */
 package ec.ui.view;
 
-import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasColorScheme;
 import ec.tstoolkit.data.DescriptiveStatistics;
@@ -337,11 +336,13 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
         result.add(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
-                col.data(TsConverter.toTs(TsManager.getDefault().newTs("series", null, data.series)));
-                col.data(TsConverter.toTs(TsManager.getDefault().newTs("lower", null, data.lower)));
-                col.data(TsConverter.toTs(TsManager.getDefault().newTs("upper", null, data.upper)));
-                Transferable t = DataTransfer.getDefault().fromTsCollection(col.build());
+                demetra.timeseries.TsCollection col = demetra.timeseries.TsCollection
+                        .builder()
+                        .data(TsManager.toTs("series", data.series))
+                        .data(TsManager.toTs("lower", data.lower))
+                        .data(TsManager.toTs("upper", data.upper))
+                        .build();
+                Transferable t = DataTransfer.getDefault().fromTsCollection(col);
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
             }
         }).setText("Copy all series");

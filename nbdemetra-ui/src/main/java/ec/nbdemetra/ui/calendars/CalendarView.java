@@ -5,8 +5,10 @@
 package ec.nbdemetra.ui.calendars;
 
 import demetra.bridge.TsConverter;
+import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
-import demetra.ui.TsManager;
+import demetra.timeseries.TsData;
+import demetra.timeseries.TsPeriod;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
 import demetra.ui.properties.NodePropertySetBuilder;
@@ -15,7 +17,6 @@ import ec.tstoolkit.timeseries.calendars.IGregorianCalendarProvider;
 import ec.tstoolkit.timeseries.calendars.LengthOfPeriodType;
 import ec.tstoolkit.timeseries.calendars.TradingDaysType;
 import ec.tstoolkit.timeseries.regression.LeapYearVariable;
-import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import demetra.ui.components.JTsGrid;
@@ -80,7 +81,7 @@ public class CalendarView extends JComponent {
         add(sp2, BorderLayout.CENTER);
         pView.setDifferencingOrder(0);
         pView.setLimitVisible(false);
-        
+
     }
 
     protected void onTsGridSelectionChange() {
@@ -106,10 +107,14 @@ public class CalendarView extends JComponent {
             new LeapYearVariable(ltype).data(domain.getStart(), buffer.get(nx - 1));
         }
 
+        TsPeriod domainStart = TsConverter.toTsPeriod(domain.getStart());
         TsCollection.Builder tss = TsCollection.builder();
         for (int i = 0; i < nx; ++i) {
-            TsData data = new TsData(domain.getStart(), buffer.get(i).getData(), false);
-            tss.data(TsConverter.toTs(TsManager.getDefault().newTs(getCmpName(i), null, data)));
+            tss.data(Ts
+                    .builder()
+                    .name(getCmpName(i))
+                    .data(TsData.ofInternal(domainStart, buffer.get(i).getData()))
+                    .build());
         }
 
         tsGrid.setTsCollection(tss.build());

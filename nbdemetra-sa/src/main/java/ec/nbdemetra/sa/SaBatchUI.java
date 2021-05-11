@@ -567,7 +567,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             components.stream().forEach((comp) -> {
                 TsData tsData = item.process().getData(comp, TsData.class);
                 if (tsData != null) {
-                    col.data(TsConverter.toTs(TsManager.getDefault().newTs("[" + comp + "] " + item.getTs().getName(), null, tsData)));
+                    col.data(TsManager.toTs("[" + comp + "] " + item.getTs().getName(), tsData));
                 }
             });
         }

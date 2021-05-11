@@ -21,23 +21,22 @@ import demetra.ui.components.parts.HasTsAction;
 import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.components.parts.HasChart;
 import demetra.ui.components.parts.HasColorScheme;
-import demetra.bridge.TsConverter;
 import demetra.demo.DemoTsBuilder;
+import demetra.timeseries.TimeSelector;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsData;
+import demetra.timeseries.TsDataTable;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.tss.Ts;
-import ec.tss.TsStatus;
-import ec.tstoolkit.MetaData;
-import ec.tstoolkit.timeseries.Day;
-import ec.tstoolkit.timeseries.Month;
-import ec.tstoolkit.timeseries.TsPeriodSelector;
-import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.tstoolkit.timeseries.simplets.TsDataTable;
 import internal.ui.components.InternalTsGrowthChartUI;
 import internal.ui.components.InternalUI;
 import java.awt.Dimension;
 import java.beans.Beans;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.JComponent;
 
 /**
@@ -92,7 +91,7 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
     private final InternalUI<JTsGrowthChart> internalUI;
 
     public JTsGrowthChart() {
-        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
+        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault().getNextTsManager());
         this.tsAction = HasTsAction.of(this::firePropertyChange);
         this.chart = HasChart.of(this::firePropertyChange);
         this.colorScheme = HasColorScheme.of(this::firePropertyChange);
@@ -132,56 +131,41 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
     }
 
     //<editor-fold defaultstate="collapsed" desc="Growth data tools">
-    public Ts[] computeGrowthData() {
+    public List<Ts> computeGrowthData() {
         return computeGrowthData(getTsCollection(), getGrowthKind(), getLastYears());
     }
 
-    private static Ts[] computeGrowthData(demetra.timeseries.TsCollection input, GrowthKind kind, int lastyears) {
-        Ts[] tss = input.getData().stream().map(TsConverter::fromTs).toArray(Ts[]::new);
+    private static List<Ts> computeGrowthData(TsCollection input, GrowthKind kind, int lastyears) {
+        List<Ts> tss = input.getData();
         return computeGrowthData(tss, kind, computeSelector(tss, lastyears));
     }
 
-    private static Ts[] computeGrowthData(Ts[] input, GrowthKind kind, TsPeriodSelector selector) {
-        Ts[] result = new Ts[input.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = TsManager.getDefault().newTs(input[i].getName(), new MetaData(), computeGrowthData(input[i].getTsData(), kind, selector));
-        }
-        return result;
+    private static List<Ts> computeGrowthData(List<Ts> input, GrowthKind kind, TimeSelector selector) {
+        return input
+                .stream()
+                .map(ts -> Ts.builder().name(ts.getName()).data(computeGrowthData(ts.getData(), kind, selector)).build())
+                .collect(Collectors.toList());
     }
 
-    private static TsPeriodSelector computeSelector(Ts[] tss, int lastyears) {
-        TsPeriodSelector result = new TsPeriodSelector();
-        boolean isvalid = false;
-        for (Ts o : tss) {
-            if (o.hasData() == TsStatus.Valid) {
-                isvalid = true;
-                break;
-            }
+    private static TimeSelector computeSelector(List<Ts> tss, int lastyears) {
+        if (tss.stream().anyMatch(ts -> ts.getData().isEmpty() && ts.getData().getCause() != null)) {
+            return TimeSelector.all();
         }
-        if (isvalid) {
-            TsDataTable tmp = new TsDataTable();
-            for (Ts o : tss) {
-                if (o.hasData() == TsStatus.Valid) {
-                    tmp.insert(-1, o.getTsData().cleanExtremities());
-                }
-            }
-            int year = tmp.getDomain().getLast().getYear() - lastyears;
-            result.from(new Day(year, Month.valueOf(0), 0));
-        }
-        return result;
+        int year = TsDataTable.of(tss, ts -> ts.getData().cleanExtremities()).getDomain().getLastPeriod().year() - lastyears;
+        return TimeSelector.from(LocalDate.of(year, 1, 1).atStartOfDay());
     }
 
-    private static TsData computeGrowthData(TsData input, GrowthKind kind, TsPeriodSelector selector) {
+    private static TsData computeGrowthData(TsData input, GrowthKind kind, TimeSelector selector) {
         if (input == null) {
             return null;
         }
         TsData result = input.cleanExtremities();
-        result = result.pctVariation(kind == GrowthKind.PreviousPeriod ? 1 : result.getFrequency().intValue());
+        result = result.pctVariation(kind == GrowthKind.PreviousPeriod ? 1 : result.getAnnualFrequency());
         if (result == null) {
             return null;
         }
         result = result.select(selector);
-        result.apply(x -> x * .01);
+        result.fastFn(x -> x * .01);
         return result;
     }
     //</editor-fold>

@@ -27,11 +27,11 @@ class TsCollectionAnalyser {
     Date[] dates;
     Matrix data;
 
-    public TsCollection create() {
+    public demetra.timeseries.TsCollection create() {
         if (titles == null || dates == null || data == null) {
             return null;
         }
-        TsCollection coll = TsManager.getDefault().newTsCollection();
+        demetra.timeseries.TsCollection.Builder coll = demetra.timeseries.TsCollection.builder();
         for (int i = 1; i < titles.length; ++i) {
             TsDataCollector cur = new TsDataCollector();
             for (int j = 0; j < dates.length; ++j) {
@@ -40,12 +40,10 @@ class TsCollectionAnalyser {
                     cur.addObservation(dates[j], val);
                 }
             }
-            TsData sdata = cur.make(TsFrequency.Undefined, TsAggregationType.None);
-            Ts s = TsManager.getDefault().newTsWithName(titles[i]);
-            s.set(sdata);
-            coll.quietAdd(s);
+            TsData data = cur.make(TsFrequency.Undefined, TsAggregationType.None);
+            coll.data(TsManager.toTs(titles[i], data));
         }
-        return coll;
+        return coll.build();
     }
 
     void set(TsCollection col, boolean begin) {

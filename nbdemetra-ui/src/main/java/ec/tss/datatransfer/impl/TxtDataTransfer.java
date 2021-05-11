@@ -59,8 +59,8 @@ import org.openide.util.lookup.ServiceProviders;
  * @author Jean Palate
  */
 @ServiceProviders({
-    @ServiceProvider(service = DataTransferSpi.class, position = 1000)
-    ,@ServiceProvider(service = OldDataTransferSpi.class, position = 2000)
+    @ServiceProvider(service = DataTransferSpi.class, position = 1000),
+    @ServiceProvider(service = OldDataTransferSpi.class, position = 2000)
 })
 public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSpi, IConfigurable {
 
@@ -189,6 +189,10 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
             return numberFormat.format((Number) value);
         }
         return value.toString();
+    }
+
+    public String tsCollectionToString(demetra.timeseries.TsCollection col) throws IOException {
+        return tsCollectionToString(TsConverter.fromTsCollection(col));
     }
 
     //writes the collection of ts in a tab delimited txt format into a string
@@ -337,7 +341,7 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
             analyser.data = (datesAreVertical ? datamatrix : datamatrix.transpose());
             analyser.dates = dates;
             analyser.titles = titles;
-            result = analyser.create();
+            result = TsConverter.fromTsCollection(analyser.create());
 
             for (Ts s : result) {
                 if (s.hasData() == TsStatus.Valid) {

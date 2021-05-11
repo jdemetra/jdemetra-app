@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.sa.composite;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.diagnostics.IBTest;
@@ -61,13 +62,13 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
         }
     };
 
-    public static class AllSaExtractor extends DocumentInformationExtractor<MultiSaDocument, TsCollection> {
+    public static class AllSaExtractor extends DocumentInformationExtractor<MultiSaDocument, demetra.timeseries.TsCollection> {
 
         public static final AllSaExtractor INSTANCE = new AllSaExtractor();
 
         @Override
-        protected TsCollection buildInfo(MultiSaDocument source) {
-            TsCollection all = TsManager.getDefault().newTsCollection();
+        protected demetra.timeseries.TsCollection buildInfo(MultiSaDocument source) {
+            demetra.timeseries.TsCollection.Builder result = demetra.timeseries.TsCollection.builder();
             IProcResults results = source.getResults();
             TsCollection input = source.getInput();
             int icmp = 0;
@@ -75,19 +76,19 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 String name = s.getName() + " (sa)";
                 String id = InformationSet.item(MultiSaSpecification.COMPONENT + (icmp++), ModellingDictionary.SA);
                 TsData sa = results.getData(id, TsData.class);
-                all.quietAdd(TsManager.getDefault().newTs(name, null, sa));
+                result.data(TsManager.toTs(name, sa));
             }
-            return all;
+            return result.build();
         }
     }
 
-    public static class AllBenchSaExtractor extends DocumentInformationExtractor<MultiSaDocument, TsCollection> {
+    public static class AllBenchSaExtractor extends DocumentInformationExtractor<MultiSaDocument, demetra.timeseries.TsCollection> {
 
         public static final AllBenchSaExtractor INSTANCE = new AllBenchSaExtractor();
 
         @Override
-        protected TsCollection buildInfo(MultiSaDocument source) {
-            TsCollection all = TsManager.getDefault().newTsCollection();
+        protected demetra.timeseries.TsCollection buildInfo(MultiSaDocument source) {
+            demetra.timeseries.TsCollection.Builder all = demetra.timeseries.TsCollection.builder();
             IProcResults results = source.getResults().get(MultiSaProcessingFactory.BENCHMARKING);
             TsCollection input = source.getInput();
             int icmp = 0;
@@ -95,9 +96,9 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 String name = s.getName() + " (benchmarked sa)";
                 String id = MultiSaSpecification.COMPONENT + (icmp++);
                 TsData sa = results.getData(id, TsData.class);
-                all.quietAdd(TsManager.getDefault().newTs(name, null, sa));
+                all.data(TsManager.toTs(name, sa));
             }
-            return all;
+            return all.build();
         }
     }
 
@@ -121,7 +122,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 return null;
             }
             info.s = s;
-            info.del=1;
+            info.del = 1;
             info.mul = false;
             DecompositionMode mode = source.getResults().getData(InformationSet.item(MultiSaSpecification.DIRECT, ModellingDictionary.MODE), DecompositionMode.class);
             if (mode != null) {
@@ -181,7 +182,6 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER IB_TEST">
-
 //    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100000 + 1000)
     public static class IBTestFactory extends ItemFactory<IProcResults> {
 
@@ -275,8 +275,8 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 @Override
                 protected IHtmlElement getHtmlElement(IProcDocumentView<MultiSaDocument> host, IProcResults information) {
                     TsCollection input = host.getDocument().getInput();
-                    TsCollection sa = AllSaExtractor.INSTANCE.retrieve(host.getDocument());
-                    TsCollection bsa = AllBenchSaExtractor.INSTANCE.retrieve(host.getDocument());
+                    TsCollection sa = TsConverter.fromTsCollection(AllSaExtractor.INSTANCE.retrieve(host.getDocument()));
+                    TsCollection bsa = TsConverter.fromTsCollection(AllBenchSaExtractor.INSTANCE.retrieve(host.getDocument()));
                     return new DirectIndirectSummary(input, sa, bsa, host.getDocument().getSpecification());
                 }
             });
@@ -284,7 +284,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 400000 + 2000)
-    public static class AllSaFactory extends ItemFactory<TsCollection> {
+    public static class AllSaFactory extends ItemFactory<demetra.timeseries.TsCollection> {
 
         public AllSaFactory() {
             super(ALL_SA, AllSaExtractor.INSTANCE, new DefaultTableUI());
@@ -292,7 +292,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 400000 + 3000)
-    public static class AllBenchSaFactory extends ItemFactory<TsCollection> {
+    public static class AllBenchSaFactory extends ItemFactory<demetra.timeseries.TsCollection> {
 
         public AllBenchSaFactory() {
             super(ALL_BENCH_SA, AllBenchSaExtractor.INSTANCE, new DefaultTableUI());

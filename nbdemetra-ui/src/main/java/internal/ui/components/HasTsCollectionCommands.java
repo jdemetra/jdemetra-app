@@ -17,6 +17,7 @@
 package internal.ui.components;
 
 import demetra.bridge.TsConverter;
+import demetra.timeseries.TsCollection;
 import demetra.ui.NamedService;
 import demetra.ui.TsAction;
 import demetra.ui.components.TsSelectionBridge;
@@ -63,6 +64,7 @@ import java.awt.Image;
 import demetra.ui.OldDataTransfer;
 import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
+import java.util.Collections;
 
 /**
  *
@@ -446,12 +448,11 @@ public class HasTsCollectionCommands {
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            Ts[] selection = JLists.getSelectionIndexStream(c.getTsSelectionModel())
+            List<demetra.timeseries.Ts> selection = JLists.getSelectionIndexStream(c.getTsSelectionModel())
                     .mapToObj(c.getTsCollection().getData()::get)
-                    .map(TsConverter::fromTs)
-                    .toArray(Ts[]::new);
-            if (selection.length > 0) {
-                tsSave.save(selection);
+                    .collect(Collectors.toList());
+            if (!selection.isEmpty()) {
+                tsSave.save(Collections.singletonList(TsCollection.builder().data(selection).build()));
             }
         }
     }

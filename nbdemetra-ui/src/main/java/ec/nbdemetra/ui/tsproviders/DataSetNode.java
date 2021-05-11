@@ -23,7 +23,6 @@ import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.tssave.ITsSavable;
-import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
@@ -170,10 +169,11 @@ abstract public class DataSetNode extends AbstractNode {
     private final class TsSavableImpl implements ITsSavable {
 
         @Override
-        public TsCollection getTsCollection() {
+        public demetra.timeseries.TsCollection getTsCollection() {
             return TsManager.getDefault()
                     .getTsCollection(getLookup().lookup(DataSet.class), SHOULD_BE_NONE)
-                    .orElseGet(TsManager.getDefault()::newTsCollection);
+                    .map(TsConverter::toTsCollection)
+                    .orElse(demetra.timeseries.TsCollection.EMPTY);
         }
     }
 

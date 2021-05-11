@@ -434,14 +434,19 @@ public class JTsVariableList extends JComponent implements HasTsAction {
         return null;
     }
 
-    private static Ts toTs(TsVariable variable) {
+    private static demetra.timeseries.Ts toTs(TsVariable variable) {
         String name = variable.getDescription();
         if (name == null) {
             name = variable.getName();
         }
         return variable instanceof DynamicTsVariable
-                ? TsManager.getDefault().lookupTs(name, ((DynamicTsVariable) variable).getMoniker(), TsInformationType.None)
-                : TsManager.getDefault().newTs(name, null, variable.getTsData());
+                ? TsManager.getDefault()
+                        .getNextTsManager()
+                        .getTs(TsConverter.toTsMoniker(((DynamicTsVariable) variable).getMoniker()), demetra.timeseries.TsInformationType.None)
+                        .toBuilder()
+                        .name(name)
+                        .build()
+                : TsManager.toTs(name, variable.getTsData());
     }
 
     private static final class OpenCommand extends JCommand<JTsVariableList> {
@@ -450,8 +455,7 @@ public class JTsVariableList extends JComponent implements HasTsAction {
 
         @Override
         public void execute(JTsVariableList c) throws Exception {
-            Ts ts = toTs(getSelectedVariable(c));
-            TsAction.getDefault().openWith(TsConverter.toTs(ts), c.getTsAction());
+            TsAction.getDefault().openWith(toTs(getSelectedVariable(c)), c.getTsAction());
         }
 
         @Override
@@ -492,7 +496,7 @@ public class JTsVariableList extends JComponent implements HasTsAction {
 
         @Override
         public void execute(JTsVariableList c) throws Exception {
-            TsAction.getDefault().openWith(TsConverter.toTs(toTs(getSelectedVariable(c))), tsAction.getName());
+            TsAction.getDefault().openWith(toTs(getSelectedVariable(c)), tsAction.getName());
         }
     }
 

@@ -5,14 +5,11 @@
  */
 package ec.nbdemetra.ui.tssave;
 
+import demetra.timeseries.TsCollection;
 import demetra.ui.NamedService;
-import ec.tss.Ts;
-import ec.tss.TsCollection;
-import ec.tss.TsInformationType;
 import ec.tstoolkit.design.ServiceDefinition;
 import ec.util.various.swing.OnEDT;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import java.util.List;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -24,19 +21,5 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public interface ITsSave extends NamedService {
 
     @OnEDT
-    void save(@NonNull Ts[] input);
-
-    /**
-     *
-     * @param input
-     * @since 2.2.0
-     */
-    @OnEDT
-    default void save(@NonNull TsCollection[] input) {
-        Function<TsCollection, Stream<Ts>> toStream = o -> {
-            o.load(TsInformationType.Definition);
-            return o.stream();
-        };
-        save(Stream.of(input).flatMap(toStream).toArray(Ts[]::new));
-    }
+    void save(@NonNull List<TsCollection> input);
 }

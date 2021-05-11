@@ -137,7 +137,7 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
     private final InternalUI<JTsGrid> internalUI;
 
     public JTsGrid() {
-        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
+        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault().getNextTsManager());
         this.grid = HasGrid.of(this::firePropertyChange);
         this.tsAction = HasTsAction.of(this::firePropertyChange);
         this.colorScheme = HasColorScheme.of(this::firePropertyChange);

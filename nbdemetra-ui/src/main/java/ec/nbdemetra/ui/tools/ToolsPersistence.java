@@ -13,7 +13,6 @@ import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.tss.Ts;
-import ec.tss.TsInformationType;
 import ec.tss.TsMoniker;
 import ec.tss.tsproviders.utils.Formatters;
 import ec.tss.tsproviders.utils.IFormatter;
@@ -137,8 +136,13 @@ public final class ToolsPersistence {
             Content result = new Content(new ArrayList<>(), new ArrayList<>());
             if (input.items != null) {
                 for (ContentItemBean o : input.items) {
-                    TsMoniker moniker = new TsMoniker(o.source, o.id);
-                    Ts ts = TsManager.getDefault().lookupTs(o.name, moniker, TsInformationType.Definition);
+                    Ts ts = TsConverter.fromTs(
+                            TsManager.getDefault().getNextTsManager()
+                                    .getTs(demetra.timeseries.TsMoniker.of(o.source, o.id), demetra.timeseries.TsInformationType.Definition)
+                                    .toBuilder()
+                                    .name(o.name)
+                                    .build()
+                    );
                     if (o.selected) {
                         result.selection.add(ts);
                     }

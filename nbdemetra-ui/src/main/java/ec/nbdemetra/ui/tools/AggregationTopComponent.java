@@ -5,17 +5,17 @@
 package ec.nbdemetra.ui.tools;
 
 import demetra.bridge.TsConverter;
+import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
-import ec.tss.Ts;
-import ec.tss.TsInformationType;
-import ec.tss.TsStatus;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import demetra.ui.components.JTsChart;
 import demetra.ui.components.JTsTable;
+import ec.tss.tsproviders.utils.OptionalTsData;
 import java.awt.BorderLayout;
+import java.util.Optional;
 import javax.swing.JSplitPane;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -99,16 +99,16 @@ public final class AggregationTopComponent extends TopComponent {
 
     private void initList() {
         inputList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
-            TsData sum = null;
-            for (demetra.timeseries.Ts o : inputList.getTsCollection().getData()) {
-                Ts s = TsConverter.fromTs(o);
-                if (s.hasData() == TsStatus.Undefined) {
-                    TsManager.getDefault().load(s, TsInformationType.Data);
-                }
-                sum = TsData.add(sum, s.getTsData());
-            }
-            Ts t = TsManager.getDefault().newTs("Total", null, sum);
-            aggChart.setTsCollection(TsCollection.of(TsConverter.toTs(t)));
+            Optional<Ts> sum = inputList.getTsCollection()
+                    .getData()
+                    .stream()
+                    .map(ts -> TsManager.getDefault().getNextTsManager().getTs(ts.getMoniker(), demetra.timeseries.TsInformationType.Data).getData())
+                    .map(TsConverter::fromTsData)
+                    .filter(OptionalTsData::isPresent)
+                    .map(OptionalTsData::get)
+                    .reduce(TsData::add)
+                    .map(TsManager::toTs);
+            aggChart.setTsCollection(sum.map(TsCollection::of).orElse(TsCollection.EMPTY));
         });
     }
 }

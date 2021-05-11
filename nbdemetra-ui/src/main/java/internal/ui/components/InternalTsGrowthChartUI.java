@@ -31,7 +31,6 @@ import demetra.ui.util.InputMaps;
 import demetra.ui.components.JTsGrowthChart;
 import demetra.ui.actions.Actions;
 import ec.ui.chart.JTimeSeriesChartUtil;
-import ec.ui.chart.TsXYDatasets;
 import ec.util.chart.ObsFunction;
 import ec.util.chart.SeriesFunction;
 import ec.util.chart.SeriesPredicate;
@@ -51,6 +50,7 @@ import java.util.Date;
 import javax.swing.*;
 import org.jfree.data.xy.IntervalXYDataset;
 import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.jfreechart.TsXYDataset;
 
 /**
  *
@@ -228,7 +228,7 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
     }
 
     private void onCollectionChange() {
-        chartPanel.setDataset(TsXYDatasets.from(target.computeGrowthData()));
+        chartPanel.setDataset(TsXYDataset.of(target.computeGrowthData()));
         chartPanel.resetZoom();
 //        refreshRange(plot);
     }

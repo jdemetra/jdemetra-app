@@ -85,7 +85,7 @@ public final class JTsChart extends JComponent implements TimeSeriesComponent, P
     private final InternalUI<JTsChart> internalUI;
 
     public JTsChart() {
-        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
+        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault().getNextTsManager());
         this.tsAction = HasTsAction.of(this::firePropertyChange);
         this.chart = HasChart.of(this::firePropertyChange);
         this.colorScheme = HasColorScheme.of(this::firePropertyChange);

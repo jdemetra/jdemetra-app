@@ -73,7 +73,7 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
     protected ARPData data;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
+    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault().getNextTsManager());
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);

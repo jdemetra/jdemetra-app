@@ -227,8 +227,8 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
         if (ifreq > 1 && seasonalDiffOrder > 0) {
             s = s.delta(ifreq, seasonalDiffOrder);
         }
-        Ts del = TsManager.getDefault().newTs("Differenced series", null, s);
-        grid.setTsCollection(TsCollection.of(TsConverter.toTs(del)));
+        demetra.timeseries.Ts del = TsManager.toTs("Differenced series", s);
+        grid.setTsCollection(TsCollection.of(del));
         AutoCorrelations ac = new AutoCorrelations(s);
         acView.setLength(ifreq * 3);
         acView.setAutoCorrelations(ac);

@@ -16,9 +16,8 @@
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
-import ec.tss.Ts;
-import ec.tss.TsCollection;
 import ec.tss.sa.revisions.RevisionAnalysisDocument;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.CompositeResults.Node;
@@ -70,12 +69,12 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER ALL SA">
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 1000)
-    public static class AllSaFactory extends ItemFactory<Map<Ts, TsCollection>> {
+    public static class AllSaFactory extends ItemFactory<Map<demetra.timeseries.Ts, demetra.timeseries.TsCollection>> {
 
         public AllSaFactory() {
-            super(ALL_SA, AllSaExtractor.INSTANCE, new DefaultItemUI<IProcDocumentView<RevisionAnalysisDocument>, Map<Ts, TsCollection>>() {
+            super(ALL_SA, AllSaExtractor.INSTANCE, new DefaultItemUI<IProcDocumentView<RevisionAnalysisDocument>, Map<demetra.timeseries.Ts, demetra.timeseries.TsCollection>>() {
                 @Override
-                public JComponent getView(IProcDocumentView<RevisionAnalysisDocument> host, Map<Ts, TsCollection> information) {
+                public JComponent getView(IProcDocumentView<RevisionAnalysisDocument> host, Map<demetra.timeseries.Ts, demetra.timeseries.TsCollection> information) {
                     return new JTsComboGrid(information);
                 }
 
@@ -113,14 +112,14 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
     }
 
     //<editor-fold defaultstate="collapsed" desc="EXTRACTORS">
-    public static class AllSaExtractor extends DocumentInformationExtractor<RevisionAnalysisDocument, Map<Ts, TsCollection>> {
+    public static class AllSaExtractor extends DocumentInformationExtractor<RevisionAnalysisDocument, Map<demetra.timeseries.Ts, demetra.timeseries.TsCollection>> {
 
         public static final AllSaExtractor INSTANCE = new AllSaExtractor();
 
         @Override
-        protected Map<Ts, TsCollection> buildInfo(RevisionAnalysisDocument source) {
-            Map<Ts, TsCollection> all = new LinkedHashMap<>();
-            
+        protected Map<demetra.timeseries.Ts, demetra.timeseries.TsCollection> buildInfo(RevisionAnalysisDocument source) {
+            Map<demetra.timeseries.Ts, demetra.timeseries.TsCollection> all = new LinkedHashMap<>();
+
             if (source.getInput() == null || source.getInput().isEmpty()) {
                 return null;
             }
@@ -133,7 +132,7 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
                 }
                 Map<String, Class> dictionary = n.results.getDictionary();
                 Integer curIndex = 0;
-                TsCollection col = TsManager.getDefault().newTsCollectionWithName(source.getInput().get(curIndex).getName());
+                demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder().name(source.getInput().get(curIndex).getName());
                 for (String s : dictionary.keySet()) {
                     String[] splitted = s.split("\\.");
                     if (s.endsWith(".sa")) {
@@ -141,14 +140,14 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
                         String name = splitted[0].replaceAll("series", "");
                         Integer sIndex = Integer.parseInt(name);
                         if (sIndex != curIndex) {
-                            all.put(source.getInput().get(curIndex), col);
+                            all.put(TsConverter.toTs(source.getInput().get(curIndex)), col.build());
                             curIndex = sIndex;
-                            col = TsManager.getDefault().newTsCollectionWithName(source.getInput().get(curIndex).getName());
+                            col = demetra.timeseries.TsCollection.builder().name(source.getInput().get(curIndex).getName());
                         }
-                        col.quietAdd(TsManager.getDefault().newTs(splitted[1], null, tsData));
+                        col.data(TsManager.toTs(splitted[1],tsData));
                     }
                 }
-                all.put(source.getInput().get(curIndex), col);
+                all.put(TsConverter.toTs(source.getInput().get(curIndex)), col.build());
             }
 
             return all;

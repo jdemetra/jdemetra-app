@@ -85,7 +85,7 @@ public final class StabilityView extends JComponent implements TimeSeriesCompone
     private int indexSelected = -1;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
+    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault().getNextTsManager());
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);

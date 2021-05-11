@@ -17,7 +17,6 @@
 package ec.nbdemetra.ui.tssave;
 
 import demetra.ui.actions.AbilityAction;
-import ec.tss.TsCollection;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Objects;
@@ -92,7 +91,7 @@ public final class TsSaveAction extends AbilityAction<ITsSavable> implements Pre
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            o.save(data.stream().map(ITsSavable::getTsCollection).toArray(TsCollection[]::new));
+            o.save(data.stream().map(ITsSavable::getTsCollection).collect(Collectors.toList()));
         }
     }
 }

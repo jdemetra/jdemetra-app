@@ -18,8 +18,8 @@ package internal.ui.components;
 
 import demetra.bridge.TsConverter;
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.TsManager;
+import demetra.ui.components.TsSelectionBridge;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.tss.Ts;
@@ -220,7 +220,7 @@ public class HasChartCommands {
                 }
                 String name = String.valueOf(o.start.getYear());
                 TsData tmp = dc.make(o.start.getFrequency(), TsAggregationType.None);
-                result.data(TsConverter.toTs(TsManager.getDefault().newTs(name, null, tmp)));
+                result.data(TsManager.toTs(name, tmp));
             }
             return result.build();
         }

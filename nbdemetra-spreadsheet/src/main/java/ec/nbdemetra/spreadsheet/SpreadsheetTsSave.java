@@ -16,17 +16,13 @@
  */
 package ec.nbdemetra.spreadsheet;
 
+import demetra.timeseries.TsCollection;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.SingleFileExporter;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.nbdemetra.ui.tssave.TsSaveUtil;
-import ec.tss.Ts;
-import ec.tss.TsCollection;
-import ec.tss.TsCollectionInformation;
-import ec.tss.TsInformation;
-import ec.tss.TsInformationType;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
 import ec.tss.tsproviders.spreadsheet.engine.TsExportOptions;
 import ec.util.spreadsheet.Book;
@@ -36,6 +32,7 @@ import ec.util.various.swing.OnEDT;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import javax.swing.filechooser.FileFilter;
 import org.netbeans.api.progress.ProgressHandle;
@@ -76,12 +73,7 @@ public final class SpreadsheetTsSave implements ITsSave {
     }
 
     @Override
-    public void save(Ts[] input) {
-        save(TsSaveUtil.toCollections(input));
-    }
-
-    @Override
-    public void save(TsCollection[] input) {
+    public void save(List<TsCollection> input) {
         TsSaveUtil.saveToFile(fileChooser, o -> editBean(options), o -> store(input, o, options));
     }
 
@@ -92,7 +84,7 @@ public final class SpreadsheetTsSave implements ITsSave {
     }
 
     @OnEDT
-    private static void store(TsCollection[] data, File file, OptionsBean opts) {
+    private static void store(List<TsCollection> data, File file, OptionsBean opts) {
         new SingleFileExporter()
                 .file(file)
                 .progressLabel("Saving to spreadsheet")
@@ -102,16 +94,15 @@ public final class SpreadsheetTsSave implements ITsSave {
     }
 
     @OnAnyThread
-    private static void store(TsCollection[] data, File file, TsExportOptions options, ProgressHandle ph) throws IOException {
+    private static void store(List<TsCollection> data, File file, TsExportOptions options, ProgressHandle ph) throws IOException {
         ph.progress("Loading time series");
-        TsCollectionInformation content = new TsCollectionInformation();
+        TsCollection.Builder content = TsCollection.builder();
         for (TsCollection col : data) {
-            col.load(TsInformationType.All);
-            col.stream().map(o -> new TsInformation(o, TsInformationType.All)).forEach(content.items::add);
+            content.data(demetra.ui.TsManager.getDefault().load(col, demetra.timeseries.TsInformationType.All).getData());
         }
 
         ph.progress("Creating content");
-        ArraySheet sheet = SpreadSheetFactory.getDefault().fromTsCollectionInfo(content, options);
+        ArraySheet sheet = SpreadSheetFactory.getDefault().fromTsCollectionInfo(demetra.bridge.TsConverter.fromTsCollectionBuilder(content), options);
 
         ph.progress("Writing file");
         getFactoryByFile(file)

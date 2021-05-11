@@ -43,6 +43,7 @@ import ec.util.spreadsheet.helpers.ArraySheet;
 import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.io.IOException;
+import java.util.stream.Collectors;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
@@ -93,10 +94,14 @@ final class SpreadSheetTssTransferSupport {
         try (Book book = resource.toBook(obj)) {
             if (book.getSheetCount() > 0) {
                 TsCollectionInformation info = resource.getFactory().toTsCollectionInfo(book.getSheet(0), resource.getInternalConfig().getTsImportOptions());
-                return TsConverter.toTsCollection(info.items.stream()
-                        .filter(TsInformation::hasData)
-                        .map(o -> TsManager.getDefault().newTs(o.name, null, o.data))
-                        .collect(TsManager.getDefault().getTsCollector()));
+                return TsCollection
+                        .builder()
+                        .data(info.items
+                                .stream()
+                                .filter(TsInformation::hasData)
+                                .map(o -> TsManager.toTs(o.name, o.data))
+                                .collect(Collectors.toList()))
+                        .build();
             }
             return TsCollection.EMPTY;
         }

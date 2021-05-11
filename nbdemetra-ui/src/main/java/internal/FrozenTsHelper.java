@@ -17,12 +17,14 @@
 package internal;
 
 import demetra.bridge.TsConverter;
+import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.TsMeta;
 import demetra.ui.TsManager;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
 import ec.tstoolkit.MetaData;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,13 +69,13 @@ public final class FrozenTsHelper {
     }
 
     @Nullable
-    private static String getSource(@NonNull MetaData md) {
+    private static String getSource(@NonNull Map<String, String> md) {
         String result = TsMeta.SOURCE.load(md);
         return result != null ? result : TsMeta.SOURCE_OLD.load(md);
     }
 
     @Nullable
-    private static String getId(@NonNull MetaData md) {
+    private static String getId(@NonNull Map<String, String> md) {
         String result = TsMeta.ID.load(md);
         return result != null ? result : TsMeta.ID_OLD.load(md);
     }
@@ -89,19 +91,15 @@ public final class FrozenTsHelper {
         if (!moniker.isAnonymous()) {
             return moniker;
         }
-        Ts ts = TsManager.getDefault().lookupTs(moniker);
+        demetra.timeseries.Ts ts = TsManager.getDefault().getNextTsManager().getTs(TsConverter.toTsMoniker(moniker), TsInformationType.MetaData);
         if (ts == null) {
             return null;
         }
-        MetaData md = ts.getMetaData();
-        if (md == null) {
-            return null;
-        }
-        String source = getSource(md);
+        String source = getSource(ts.getMeta());
         if (source == null) {
             return null;
         }
-        String id = getId(md);
+        String id = getId(ts.getMeta());
         if (id == null) {
             return null;
         }

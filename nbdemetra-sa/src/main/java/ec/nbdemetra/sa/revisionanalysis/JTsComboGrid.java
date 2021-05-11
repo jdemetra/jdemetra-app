@@ -17,10 +17,10 @@
 package ec.nbdemetra.sa.revisionanalysis;
 
 import demetra.bridge.TsConverter;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.MonikerUI;
-import ec.tss.Ts;
-import ec.tss.TsCollection;
 import demetra.ui.components.JTsGrid;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
@@ -60,7 +60,7 @@ public class JTsComboGrid extends JComponent {
                     Object item = event.getItem();
                     if (item != null) {
                         if (item instanceof Ts) {
-                            grid.setTsCollection(TsConverter.toTsCollection(collections.get((Ts) item)));
+                            grid.setTsCollection(collections.get((Ts) item));
                         } else {
                             showAllTs();
                         }
@@ -79,8 +79,8 @@ public class JTsComboGrid extends JComponent {
         demetra.timeseries.TsCollection.Builder coll = demetra.timeseries.TsCollection.builder();
         for (Map.Entry<Ts, TsCollection> entry : collections.entrySet()) {
             TsCollection c = entry.getValue();
-            for (int i = 0; i < c.getCount(); i++) {
-                coll.data(TsConverter.toTs(c.get(i).rename(entry.getKey().getName() + " (" + c.get(i).getName() + ")")));
+            for (int i = 0; i < c.getData().size(); i++) {
+                coll.data(c.getData().get(i).toBuilder().name(entry.getKey().getName() + " (" + c.getData().get(i).getName() + ")").build());
             }
         }
         grid.setTsCollection(coll.build());
@@ -113,7 +113,7 @@ public class JTsComboGrid extends JComponent {
         } else {
             Ts ts = (Ts) value;
             label.setText(ts.getName());
-            label.setIcon(MonikerUI.getDefault().getIcon(ts.getMoniker()));
+            label.setIcon(MonikerUI.getDefault().getIcon(TsConverter.fromTsMoniker(ts.getMoniker())));
         }
     }
 }

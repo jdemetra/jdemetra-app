@@ -20,6 +20,8 @@ import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsMoniker;
 import demetra.ui.NextTsManager;
+import demetra.ui.TsEvent;
+import demetra.ui.TsListener;
 import demetra.ui.beans.PropertyChangeBroadcaster;
 import demetra.ui.components.parts.HasTsCollection;
 import java.util.ArrayList;
@@ -33,19 +35,19 @@ import javax.swing.ListSelectionModel;
  * @author Philippe Charles
  */
 @lombok.RequiredArgsConstructor
-public final class HasTsCollectionImpl implements HasTsCollection, NextTsManager.UpdateListener {
+public final class HasTsCollectionImpl implements HasTsCollection, TsListener {
 
     @lombok.NonNull
     private final PropertyChangeBroadcaster broadcaster;
 
-    private TsCollection tsCollection = TsCollection.EMPTY;
-    private ListSelectionModel selectionModel = new DefaultListSelectionModel();
-    private TsUpdateMode updateMode = DEFAULT_UPDATEMODE;
-    private boolean freezeOnImport = DEFAULT_FREEZE_ON_IMPORT;
-    private TsCollection dropContent = TsCollection.EMPTY;
+    TsCollection tsCollection = TsCollection.EMPTY;
+    ListSelectionModel selectionModel = new DefaultListSelectionModel();
+    TsUpdateMode updateMode = DEFAULT_UPDATEMODE;
+    boolean freezeOnImport = DEFAULT_FREEZE_ON_IMPORT;
+    TsCollection dropContent = TsCollection.EMPTY;
 
     public HasTsCollectionImpl register(NextTsManager manager) {
-        manager.addWeakUpdateListener(this);
+        manager.addWeakListener(this);
         return this;
     }
 
@@ -112,15 +114,16 @@ public final class HasTsCollectionImpl implements HasTsCollection, NextTsManager
     }
 
     @Override
-    public void accept(NextTsManager manager, TsMoniker moniker) {
+    public void tsUpdated(TsEvent event) {
         TsCollection col = getTsCollection();
-        if (moniker.equals(col.getMoniker())) {
-            TsCollection newData = manager.lookupTsCollection2(col.getName(), moniker, col.getType());
+        if (event.getMoniker().equals(col.getMoniker())) {
+            TsCollection newData = event.getSource().getTsCollection(event.getMoniker(), col.getType());
             setTsCollection(newData);
         } else {
-            int index = indexOf(col.getData(), moniker);
+            int index = indexOf(col.getData(), event.getMoniker());
             if (index != -1) {
-                Ts newData = manager.lookupTs2(moniker);
+                Ts oldData = col.getData().get(index);
+                Ts newData = event.getSource().getTs(oldData.getMoniker(), oldData.getType());
                 List<Ts> list = new ArrayList<>(col.getData());
                 list.set(index, newData);
                 setTsCollection(col.toBuilder().clearData().data(list).build());

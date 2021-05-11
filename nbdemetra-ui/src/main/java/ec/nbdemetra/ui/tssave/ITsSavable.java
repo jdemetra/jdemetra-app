@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.tssave;
 
-import ec.tss.TsCollection;
+import demetra.timeseries.TsCollection;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
