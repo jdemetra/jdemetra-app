@@ -17,7 +17,6 @@
 package demetra.ui;
 
 import demetra.ui.beans.PropertyChangeSource;
-import ec.nbdemetra.core.GlobalService;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.util.various.swing.OnEDT;

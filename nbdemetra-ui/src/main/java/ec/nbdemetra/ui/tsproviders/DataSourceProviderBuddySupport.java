@@ -20,7 +20,7 @@ import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import ec.nbdemetra.core.GlobalService;
+import demetra.ui.GlobalService;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.tss.TsMoniker;
 import ec.tss.tsproviders.DataSet;

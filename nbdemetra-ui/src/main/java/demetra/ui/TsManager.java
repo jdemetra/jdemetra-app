@@ -17,7 +17,6 @@
 package demetra.ui;
 
 import demetra.bridge.TsConverter;
-import ec.nbdemetra.core.GlobalService;
 import ec.tss.ITsProvider;
 import ec.tss.Ts;
 import ec.tss.TsCollection;

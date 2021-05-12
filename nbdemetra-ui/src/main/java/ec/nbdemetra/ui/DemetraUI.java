@@ -18,7 +18,7 @@ package ec.nbdemetra.ui;
 
 import com.google.common.base.Preconditions;
 import demetra.ui.beans.ListenableBean;
-import ec.nbdemetra.core.GlobalService;
+import demetra.ui.GlobalService;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
 import internal.ui.ChartGridTsAction;
 import ec.nbdemetra.ui.tssave.ITsSave;

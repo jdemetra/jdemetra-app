@@ -17,7 +17,6 @@
 package demetra.ui;
 
 import demetra.timeseries.Ts;
-import ec.nbdemetra.core.GlobalService;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.util.various.swing.OnEDT;
 import java.util.List;

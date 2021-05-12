@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui.nodes;
 
-import ec.nbdemetra.core.GlobalService;
+import demetra.ui.GlobalService;
 import ec.tstoolkit.design.ServiceDefinition;
 import java.awt.Image;
 import org.checkerframework.checker.nullness.qual.NonNull;

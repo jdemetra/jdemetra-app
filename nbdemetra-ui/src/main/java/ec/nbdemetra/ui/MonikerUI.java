@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui;
 
-import ec.nbdemetra.core.GlobalService;
+import demetra.ui.GlobalService;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.TsMoniker;
 import java.beans.BeanInfo;

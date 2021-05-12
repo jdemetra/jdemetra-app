@@ -21,9 +21,11 @@ import demetra.timeseries.TsData;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
+import demetra.ui.GlobalService;
 import demetra.ui.beans.ListenableBean;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.util.various.swing.OnEDT;
+import internal.ui.Providers;
 import internal.ui.datatransfer.Magic;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -33,6 +35,7 @@ import java.awt.datatransfer.FlavorListener;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +51,7 @@ import java.util.stream.Stream;
 import nbbrd.io.function.IOFunction;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.Lookup;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * A support class that deals with the clipboard. It allows the user to get/set
@@ -59,7 +63,9 @@ import org.openide.util.Lookup;
  * @author Philippe Charles
  */
 @lombok.extern.java.Log
-public final class DataTransfer extends ListenableBean implements PropertyChangeSource {
+@GlobalService
+@ServiceProvider(service = DataTransfer.class)
+public class DataTransfer extends ListenableBean implements PropertyChangeSource {
 
     /**
      * A convenient method to get the current single instance of DataTransfer.
@@ -69,27 +75,25 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
      */
     @NonNull
     public static DataTransfer getDefault() {
-        return INSTANCE;
+        return Lookup.getDefault().lookup(DataTransfer.class);
     }
-
-    private static final DataTransfer INSTANCE = new DataTransfer();
 
     public static final String VALID_CLIPBOARD_PROPERTY = "validClipboard";
 
     private final ClipboardValidator clipboardValidator;
-    private final Lookup lookup;
+    private final Providers<DataTransferSpi> providers;
     private final Logger logger;
     private boolean validClipboard;
 
     public DataTransfer() {
-        this(Lookup.getDefault(), log, false);
+        this(Providers.ofLookup(DataTransferSpi.class), log, false);
         clipboardValidator.register(Toolkit.getDefaultToolkit().getSystemClipboard());
     }
 
     @VisibleForTesting
-    DataTransfer(Lookup lookup, Logger logger, boolean validClipboard) {
+    DataTransfer(Providers<DataTransferSpi> providers, Logger logger, boolean validClipboard) {
         this.clipboardValidator = new ClipboardValidator();
-        this.lookup = lookup;
+        this.providers = providers;
         this.logger = logger;
         this.validClipboard = validClipboard;
     }
@@ -100,20 +104,16 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
         firePropertyChange(VALID_CLIPBOARD_PROPERTY, old, this.validClipboard);
     }
 
-    private Stream<? extends DataTransferSpi> lookupAll() {
-        return lookup.lookupAll(DataTransferSpi.class).stream();
-    }
-
     @OnEDT
     public boolean canImport(@NonNull DataFlavor... dataFlavors) {
         // multiFlavor means "maybe", not "yes"
-        return DataTransfers.isMultiFlavor(dataFlavors) || lookupAll().anyMatch(onDataFlavors(dataFlavors));
+        return DataTransfers.isMultiFlavor(dataFlavors) || providers.stream().anyMatch(onDataFlavors(dataFlavors));
     }
 
     @OnEDT
     public boolean canImport(@NonNull Transferable transferable) {
         Set<DataFlavor> dataFlavors = DataTransfers.getMultiDataFlavors(transferable).collect(Collectors.toSet());
-        return lookupAll().anyMatch(onDataFlavors(dataFlavors));
+        return providers.stream().anyMatch(onDataFlavors(dataFlavors));
     }
 
     /**
@@ -139,7 +139,7 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
     @NonNull
     public Transferable fromTsCollection(@NonNull TsCollection col) {
         requireNonNull(col);
-        return asTransferable(col, lookupAll(), TsCollectionHelper.INSTANCE);
+        return asTransferable(col, providers.stream(), TsCollectionHelper.INSTANCE);
     }
 
     /**
@@ -210,7 +210,7 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
     @NonNull
     public Optional<TsCollection> toTsCollection(@NonNull Transferable transferable) {
         requireNonNull(transferable);
-        return lookupAll()
+        return providers.stream()
                 .filter(onDataFlavors(transferable.getTransferDataFlavors()))
                 .map(o -> toTsCollection(o, transferable, logger))
                 .filter(Objects::nonNull)
@@ -339,11 +339,7 @@ public final class DataTransfer extends ListenableBean implements PropertyChange
     }
 
     private static Predicate<DataTransferSpi> onDataFlavors(DataFlavor[] dataFlavors) {
-        HashSet<DataFlavor> set = new HashSet<>();
-        for (DataFlavor o : dataFlavors) {
-            set.add(o);
-        }
-        return onDataFlavors(set);
+        return onDataFlavors(new HashSet<>(Arrays.asList(dataFlavors)));
     }
 
     private static Predicate<DataTransferSpi> onDataFlavors(Set<DataFlavor> dataFlavors) {

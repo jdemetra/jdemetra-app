@@ -14,14 +14,16 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.core;
+package internal.ui;
 
+import demetra.ui.GlobalService;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
@@ -35,10 +37,15 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = Processor.class)
-@SupportedAnnotationTypes("ec.nbdemetra.core.GlobalService")
+@SupportedAnnotationTypes("demetra.ui.GlobalService")
 public final class GlobalServiceProcessor extends AbstractProcessor {
 
     private final Diagnostic.Kind kind = Diagnostic.Kind.ERROR;
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
+    }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {

@@ -19,6 +19,7 @@ package demetra.ui.datatransfer;
 import demetra.timeseries.TsUnit;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
+import internal.ui.Providers;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -29,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.Test;
 import org.openide.util.datatransfer.ExTransferable;
-import org.openide.util.lookup.Lookups;
 
 /**
  *
@@ -122,7 +122,7 @@ public class DataTransferTest {
     }
 
     private static DataTransfer of(DataTransferSpi... handlers) {
-        return new DataTransfer(Lookups.fixed((Object[]) handlers), Logger.getAnonymousLogger(), false);
+        return new DataTransfer(Providers.of(java.util.Arrays.asList(handlers)), Logger.getAnonymousLogger(), false);
     }
 
     private static class CustomHandler implements DataTransferSpi {
