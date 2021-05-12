@@ -4,7 +4,7 @@
  */
 package internal.ui;
 
-import demetra.ui.TsAction;
+import demetra.ui.TsActions;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.ns.NamedServiceChoicePanel;
 import java.awt.Component;
@@ -43,7 +43,7 @@ public final class ChooseTsActionAction extends AbstractAction implements Presen
     public ChooseTsActionAction() {
         this.choicePanel = new NamedServiceChoicePanel();
         DemetraUI demetraUI = DemetraUI.getDefault();
-        choicePanel.setContent(TsAction.getDefault().getTsActions());
+        choicePanel.setContent(TsActions.getDefault().getOpenActions());
         choicePanel.setSelectedServiceName(demetraUI.getTsActionName());
         choicePanel.getExplorerManager().addVetoableChangeListener(this);
         demetraUI.addPropertyChangeListener(WeakListeners.propertyChange(this, demetraUI));

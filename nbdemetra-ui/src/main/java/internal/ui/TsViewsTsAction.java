@@ -19,14 +19,14 @@ package internal.ui;
 import demetra.ui.components.parts.HasTs;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
-import demetra.ui.TsActionSpi;
+import demetra.ui.TsActionsOpenSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = TsActionSpi.class)
-public final class TsViewsTsAction implements TsActionSpi {
+@ServiceProvider(service = TsActionsOpenSpi.class)
+public final class TsViewsTsAction implements TsActionsOpenSpi {
 
     @Override
     public String getName() {

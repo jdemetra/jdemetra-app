@@ -17,8 +17,8 @@
 package demetra.ui;
 
 import demetra.timeseries.Ts;
-import ec.tstoolkit.design.ServiceDefinition;
 import ec.util.various.swing.OnEDT;
+import internal.ui.ServiceDefinition;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -27,7 +27,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * @since 1.0.0
  */
 @ServiceDefinition
-public interface TsActionSpi extends NamedService {
+public interface TsActionsOpenSpi extends NamedService {
 
     @OnEDT
     void open(@NonNull Ts ts);

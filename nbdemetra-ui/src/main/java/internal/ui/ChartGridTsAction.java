@@ -37,15 +37,15 @@ import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
-import demetra.ui.TsActionSpi;
 import demetra.ui.TsManager;
+import demetra.ui.TsActionsOpenSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = TsActionSpi.class)
-public final class ChartGridTsAction implements TsActionSpi {
+@ServiceProvider(service = TsActionsOpenSpi.class)
+public final class ChartGridTsAction implements TsActionsOpenSpi {
 
     public static final String NAME = "ChartGridTsAction";
 

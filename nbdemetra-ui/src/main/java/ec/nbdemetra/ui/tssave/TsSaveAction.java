@@ -16,6 +16,9 @@
  */
 package ec.nbdemetra.ui.tssave;
 
+import demetra.timeseries.TsCollection;
+import demetra.ui.NamedService;
+import demetra.ui.TsActions;
 import demetra.ui.actions.AbilityAction;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -29,9 +32,9 @@ import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
+import demetra.ui.actions.TsCollectable;
 
 /**
  *
@@ -40,10 +43,10 @@ import org.openide.util.actions.Presenter;
 @ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction")
 @ActionRegistration(displayName = "#CTL_TsSaveAction", lazy = false)
 @Messages("CTL_TsSaveAction=Save to")
-public final class TsSaveAction extends AbilityAction<ITsSavable> implements Presenter.Popup {
+public final class TsSaveAction extends AbilityAction<TsCollectable> implements Presenter.Popup {
 
     public TsSaveAction() {
-        super(ITsSavable.class);
+        super(TsCollectable.class);
     }
 
     @Override
@@ -52,7 +55,7 @@ public final class TsSaveAction extends AbilityAction<ITsSavable> implements Pre
     }
 
     @Override
-    protected void performAction(Stream<ITsSavable> items) {
+    protected void performAction(Stream<TsCollectable> items) {
     }
 
     @Override
@@ -60,18 +63,18 @@ public final class TsSaveAction extends AbilityAction<ITsSavable> implements Pre
         return null;
     }
 
-    private static List<ITsSavable> getAll(Node[] activatedNodes) {
+    private static List<TsCollectable> getAll(Node[] activatedNodes) {
         return Stream.of(activatedNodes)
-                .map(o -> o.getLookup().lookup(ITsSavable.class))
+                .map(o -> o.getLookup().lookup(TsCollectable.class))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
     @NonNull
-    public static JMenuItem getPopupPresenter(@NonNull List<ITsSavable> data) {
+    public static JMenuItem getPopupPresenter(@NonNull List<TsCollectable> data) {
         JMenu result = new JMenu();
         result.setText(Bundle.CTL_TsSaveAction());
-        for (ITsSave o : Lookup.getDefault().lookupAll(ITsSave.class)) {
+        for (NamedService o : TsActions.getDefault().getSaveActions()) {
             JMenuItem item = result.add(new ItemAction(o, data));
             item.setText(o.getDisplayName());
         }
@@ -80,10 +83,10 @@ public final class TsSaveAction extends AbilityAction<ITsSavable> implements Pre
 
     private static final class ItemAction extends AbstractAction {
 
-        private final ITsSave o;
-        private final List<ITsSavable> data;
+        private final NamedService o;
+        private final List<TsCollectable> data;
 
-        private ItemAction(ITsSave o, List<ITsSavable> data) {
+        private ItemAction(NamedService o, List<TsCollectable> data) {
             super(o.getName());
             this.o = o;
             this.data = data;
@@ -91,7 +94,8 @@ public final class TsSaveAction extends AbilityAction<ITsSavable> implements Pre
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            o.save(data.stream().map(ITsSavable::getTsCollection).collect(Collectors.toList()));
+            List<TsCollection> xdata = data.stream().map(TsCollectable::getTsCollection).collect(Collectors.toList());
+            TsActions.getDefault().saveWith(xdata, o.getName());
         }
     }
 }

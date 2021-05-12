@@ -30,15 +30,15 @@ import java.util.Optional;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.components.parts.HasChart;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
-import demetra.ui.TsActionSpi;
 import ec.tss.TsMoniker;
+import demetra.ui.TsActionsOpenSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = TsActionSpi.class)
-public final class SimpleChartTsAction implements TsActionSpi {
+@ServiceProvider(service = TsActionsOpenSpi.class)
+public final class SimpleChartTsAction implements TsActionsOpenSpi {
 
     @Override
     public String getName() {

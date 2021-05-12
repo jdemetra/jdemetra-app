@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.tssave;
+package demetra.ui;
 
 import demetra.timeseries.TsCollection;
-import demetra.ui.NamedService;
-import ec.tstoolkit.design.ServiceDefinition;
 import ec.util.various.swing.OnEDT;
+import internal.ui.ServiceDefinition;
 import java.util.List;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -18,7 +17,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * @since 2.1.0
  */
 @ServiceDefinition
-public interface ITsSave extends NamedService {
+public interface TsActionsSaveSpi extends NamedService {
 
     @OnEDT
     void save(@NonNull List<TsCollection> input);

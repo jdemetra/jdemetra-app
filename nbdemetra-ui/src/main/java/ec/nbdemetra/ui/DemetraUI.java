@@ -21,7 +21,6 @@ import demetra.ui.GlobalService;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
 import internal.ui.ChartGridTsAction;
-import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;
@@ -344,13 +343,6 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Utils">
-    public List<? extends ITsSave> getTsSave() {
-        return Lookup.getDefault().lookupAll(ITsSave.class)
-                .stream()
-                .sorted(Comparator.comparing(ITsSave::getDisplayName))
-                .collect(Collectors.toList());
-    }
-
     public ColorScheme getColorScheme() {
         return find(ColorScheme.class, ColorScheme::getName, properties.colorSchemeName, COLOR_SCHEME_NAME.defaultValue());
     }

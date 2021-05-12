@@ -5,14 +5,14 @@
 package internal.ui;
 
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.TsActionSpi;
+import demetra.ui.TsActionsOpenSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = TsActionSpi.class)
-public final class NullTsAction implements TsActionSpi {
+@ServiceProvider(service = TsActionsOpenSpi.class)
+public final class NullTsAction implements TsActionsOpenSpi {
 
     @Override
     public String getName() {

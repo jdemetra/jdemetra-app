@@ -27,7 +27,6 @@ import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.star.StarList;
 import static ec.nbdemetra.ui.tsproviders.DataSourceNode.ACTION_PATH;
-import ec.nbdemetra.ui.tssave.ITsSavable;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.DataSource;
@@ -67,6 +66,7 @@ import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import demetra.ui.actions.Reloadable;
 import demetra.ui.actions.Renameable;
+import demetra.ui.actions.TsCollectable;
 
 /**
  * A node that represents a DataSource.
@@ -101,7 +101,7 @@ public final class DataSourceNode extends AbstractNode {
         {
             abilities.add(NodeAnnotator.Support.getDefault());
             abilities.add(new NameableImpl());
-            abilities.add(new TsSavableImpl());
+            abilities.add(new TsCollectableImpl());
             abilities.add(new ReloadableImpl());
             if (TsManager.getDefault().lookup(IDataSourceLoader.class, dataSource).isPresent()) {
                 abilities.add(new EditableImpl());
@@ -279,7 +279,7 @@ public final class DataSourceNode extends AbstractNode {
         }
     }
 
-    private final class TsSavableImpl implements ITsSavable {
+    private final class TsCollectableImpl implements TsCollectable {
 
         @Override
         public demetra.timeseries.TsCollection getTsCollection() {

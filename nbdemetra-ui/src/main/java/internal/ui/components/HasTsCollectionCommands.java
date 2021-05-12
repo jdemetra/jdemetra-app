@@ -19,7 +19,7 @@ package internal.ui.components;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.NamedService;
-import demetra.ui.TsAction;
+import demetra.ui.TsActions;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsAction;
@@ -28,7 +28,6 @@ import static demetra.ui.components.parts.HasTsCollection.TS_COLLECTION_PROPERTY
 import static demetra.ui.components.parts.HasTsCollection.UDPATE_MODE_PROPERTY;
 import ec.nbdemetra.ui.DemetraUI;
 import demetra.ui.util.KeyStrokes;
-import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.tss.Ts;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
@@ -78,22 +77,22 @@ public class HasTsCollectionCommands {
 
         JMenu result = new JMenu();
 
-        result.add(HasTsCollectionCommands.newOpenMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newOpenWithMenu(col, demetraUI));
+        result.add(newOpenMenu(am, demetraUI));
+        result.add(newOpenWithMenu(col, demetraUI));
 
-        JMenu menu = HasTsCollectionCommands.newSaveMenu(col, demetraUI);
+        JMenu menu = newSaveMenu(col, demetraUI);
         if (menu.getSubElements().length > 0) {
             result.add(menu);
         }
 
-        result.add(HasTsCollectionCommands.newRenameMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newFreezeMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newCopyMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newPasteMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newDeleteMenu(am, demetraUI));
+        result.add(newRenameMenu(am, demetraUI));
+        result.add(newFreezeMenu(am, demetraUI));
+        result.add(newCopyMenu(am, demetraUI));
+        result.add(newPasteMenu(am, demetraUI));
+        result.add(newDeleteMenu(am, demetraUI));
         result.addSeparator();
-        result.add(HasTsCollectionCommands.newSelectAllMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newClearMenu(am, demetraUI));
+        result.add(newSelectAllMenu(am, demetraUI));
+        result.add(newClearMenu(am, demetraUI));
 
         return result;
     }
@@ -102,18 +101,18 @@ public class HasTsCollectionCommands {
 
     @NonNull
     static JCommand<HasTsCollection> copyAll() {
-        return HasTsCollectionCommands.CopyAllCommand.INSTANCE;
+        return CopyAllCommand.INSTANCE;
     }
 
     public static final String RENAME_ACTION = "rename";
 
     @NonNull
     public static JCommand<HasTsCollection> rename() {
-        return HasTsCollectionCommands.RenameCommand.INSTANCE;
+        return RenameCommand.INSTANCE;
     }
 
     public static JMenuItem newRenameMenu(ActionMap am, DemetraUI demetraUI) {
-        JMenuItem result = new JMenuItem(am.get(HasTsCollectionCommands.RENAME_ACTION));
+        JMenuItem result = new JMenuItem(am.get(RENAME_ACTION));
         result.setText("Rename");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_PENCIL_SQUARE_O));
         Actions.hideWhenDisabled(result);
@@ -124,11 +123,11 @@ public class HasTsCollectionCommands {
 
     @NonNull
     public static JCommand<HasTsCollection> open() {
-        return HasTsCollectionCommands.OpenCommand.INSTANCE;
+        return OpenCommand.INSTANCE;
     }
 
     public static JMenuItem newOpenMenu(ActionMap am, DemetraUI demetraUI) {
-        JMenuItem result = new JMenuItem(am.get(HasTsCollectionCommands.OPEN_ACTION));
+        JMenuItem result = new JMenuItem(am.get(OPEN_ACTION));
         result.setText("Open");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_FOLDER_OPEN_O));
         Actions.hideWhenDisabled(result);
@@ -139,7 +138,7 @@ public class HasTsCollectionCommands {
 
     @NonNull
     public static JCommand<HasTsCollection> openWith(@NonNull String tsAction) {
-        return new HasTsCollectionCommands.OpenWithCommand(tsAction);
+        return new OpenWithCommand(tsAction);
     }
 
     public static JMenu newOpenWithMenu(HasTsCollection c, DemetraUI demetraUI) {
@@ -148,8 +147,8 @@ public class HasTsCollectionCommands {
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_BAR_CHART_O));
         Actions.hideWhenDisabled(result);
 
-        for (NamedService o : TsAction.getDefault().getTsActions()) {
-            JMenuItem item = new JMenuItem(HasTsCollectionCommands.openWith(o.getName()).toAction(c));
+        for (NamedService o : TsActions.getDefault().getOpenActions()) {
+            JMenuItem item = new JMenuItem(openWith(o.getName()).toAction(c));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
             Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
@@ -163,16 +162,16 @@ public class HasTsCollectionCommands {
     }
 
     @NonNull
-    public static JCommand<HasTsCollection> save(@NonNull ITsSave tsSave) {
-        return new HasTsCollectionCommands.SaveCommand(tsSave);
+    public static JCommand<HasTsCollection> save(@NonNull NamedService tsSave) {
+        return new SaveCommand(tsSave);
     }
 
     public static JMenu newSaveMenu(HasTsCollection c, DemetraUI demetraUI) {
         JMenu result = new JMenu(new MainSaveCommand().toAction(c));
         result.setText("Save");
         Actions.hideWhenDisabled(result);
-        for (ITsSave o : demetraUI.getTsSave()) {
-            JMenuItem item = new JMenuItem(HasTsCollectionCommands.save(o).toAction(c));
+        for (NamedService o : TsActions.getDefault().getSaveActions()) {
+            JMenuItem item = new JMenuItem(save(o).toAction(c));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
             Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
@@ -188,11 +187,11 @@ public class HasTsCollectionCommands {
 
     @NonNull
     public static JCommand<HasTsCollection> copy() {
-        return HasTsCollectionCommands.CopyCommand.INSTANCE;
+        return CopyCommand.INSTANCE;
     }
 
     public static JMenuItem newCopyMenu(ActionMap am, DemetraUI demetraUI) {
-        JMenuItem result = new JMenuItem(am.get(HasTsCollectionCommands.COPY_ACTION));
+        JMenuItem result = new JMenuItem(am.get(COPY_ACTION));
         result.setText("Copy");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_FILES_O));
         result.setAccelerator(KeyStrokes.COPY.get(0));
@@ -204,11 +203,11 @@ public class HasTsCollectionCommands {
 
     @NonNull
     public static JCommand<HasTsCollection> paste() {
-        return HasTsCollectionCommands.PasteCommand.INSTANCE;
+        return PasteCommand.INSTANCE;
     }
 
     public static JMenuItem newPasteMenu(ActionMap am, DemetraUI demetraUI) {
-        JMenuItem result = new JMenuItem(am.get(HasTsCollectionCommands.PASTE_ACTION));
+        JMenuItem result = new JMenuItem(am.get(PASTE_ACTION));
         result.setText("Paste");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
         result.setAccelerator(KeyStrokes.PASTE.get(0));
@@ -220,11 +219,11 @@ public class HasTsCollectionCommands {
 
     @NonNull
     public static JCommand<HasTsCollection> delete() {
-        return HasTsCollectionCommands.DeleteCommand.INSTANCE;
+        return DeleteCommand.INSTANCE;
     }
 
     public static JMenuItem newDeleteMenu(ActionMap am, DemetraUI demetraUI) {
-        JMenuItem result = new JMenuItem(am.get(HasTsCollectionCommands.DELETE_ACTION));
+        JMenuItem result = new JMenuItem(am.get(DELETE_ACTION));
         result.setText("Remove");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_TRASH_O));
         result.setAccelerator(KeyStrokes.DELETE.get(0));
@@ -236,11 +235,11 @@ public class HasTsCollectionCommands {
 
     @NonNull
     public static JCommand<HasTsCollection> clear() {
-        return HasTsCollectionCommands.ClearCommand.INSTANCE;
+        return ClearCommand.INSTANCE;
     }
 
     public static JMenuItem newClearMenu(ActionMap am, DemetraUI demetraUI) {
-        JMenuItem result = new JMenuItem(am.get(HasTsCollectionCommands.CLEAR_ACTION));
+        JMenuItem result = new JMenuItem(am.get(CLEAR_ACTION));
         result.setText("Clear");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_ERASER));
         result.setAccelerator(KeyStrokes.CLEAR.get(0));
@@ -251,11 +250,11 @@ public class HasTsCollectionCommands {
 
     @NonNull
     public static JCommand<HasTsCollection> selectAll() {
-        return HasTsCollectionCommands.SelectAllCommand.INSTANCE;
+        return SelectAllCommand.INSTANCE;
     }
 
     public static JMenuItem newSelectAllMenu(ActionMap am, DemetraUI demetraUI) {
-        JMenuItem result = new JMenuItem(am.get(HasTsCollectionCommands.SELECT_ALL_ACTION));
+        JMenuItem result = new JMenuItem(am.get(SELECT_ALL_ACTION));
         result.setText("Select all");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_ASTERISK));
         result.setAccelerator(KeyStrokes.SELECT_ALL.get(0));
@@ -266,11 +265,11 @@ public class HasTsCollectionCommands {
 
     @NonNull
     public static JCommand<HasTsCollection> freeze() {
-        return HasTsCollectionCommands.FreezeCommand.INSTANCE;
+        return FreezeCommand.INSTANCE;
     }
 
     public static JMenuItem newFreezeMenu(ActionMap am, DemetraUI demetraUI) {
-        JMenuItem result = new JMenuItem(am.get(HasTsCollectionCommands.FREEZE_ACTION));
+        JMenuItem result = new JMenuItem(am.get(FREEZE_ACTION));
         result.setText("Freeze");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_LOCK));
         Actions.hideWhenDisabled(result);
@@ -405,7 +404,11 @@ public class HasTsCollectionCommands {
         @Override
         public void execute(HasTsCollection c) throws Exception {
             if (c instanceof HasTsAction) {
-                TsAction.getDefault().openWith(TsConverter.toTs(getSingleTs(c)), ((HasTsAction) c).getTsAction());
+                String actionName = ((HasTsAction) c).getTsAction();
+                if (actionName == null) {
+                    actionName = DemetraUI.getDefault().getTsActionName();
+                }
+                TsActions.getDefault().openWith(TsConverter.toTs(getSingleTs(c)), actionName);
             }
         }
     }
@@ -434,15 +437,15 @@ public class HasTsCollectionCommands {
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            TsAction.getDefault().openWith(TsConverter.toTs(getSingleTs(c)), tsAction);
+            TsActions.getDefault().openWith(TsConverter.toTs(getSingleTs(c)), tsAction);
         }
     }
 
     private static final class SaveCommand extends AnySelectionCommand {
 
-        private final ITsSave tsSave;
+        private final NamedService tsSave;
 
-        SaveCommand(@NonNull ITsSave tsSave) {
+        SaveCommand(@NonNull NamedService tsSave) {
             this.tsSave = tsSave;
         }
 
@@ -452,7 +455,8 @@ public class HasTsCollectionCommands {
                     .mapToObj(c.getTsCollection().getData()::get)
                     .collect(Collectors.toList());
             if (!selection.isEmpty()) {
-                tsSave.save(Collections.singletonList(TsCollection.builder().data(selection).build()));
+                List<TsCollection> data = Collections.singletonList(TsCollection.builder().data(selection).build());
+                TsActions.getDefault().saveWith(data, tsSave.getName());
             }
         }
     }

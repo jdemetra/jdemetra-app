@@ -17,12 +17,12 @@
 package ec.nbdemetra.ui.tsproviders;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.TsAction;
+import demetra.ui.TsActions;
 import demetra.ui.TsManager;
+import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
-import ec.nbdemetra.ui.tssave.ITsSavable;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.IDataSourceProvider;
@@ -42,6 +42,7 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
+import demetra.ui.actions.TsCollectable;
 
 /**
  * A node that represents a DataSet.
@@ -88,7 +89,7 @@ abstract public class DataSetNode extends AbstractNode {
                     break;
             }
             abilities.add(NodeAnnotator.Support.getDefault());
-            abilities.add(new TsSavableImpl());
+            abilities.add(new TsCollectableImpl());
         }
         // 3. Name and display name
         applyText(TsManager.getDefault().lookup(IDataSourceProvider.class, dataSet).get().getDisplayNodeName(dataSet));
@@ -162,11 +163,11 @@ abstract public class DataSetNode extends AbstractNode {
             TsManager.getDefault()
                     .getTs(getLookup().lookup(DataSet.class), TsInformationType.None)
                     .map(TsConverter::toTs)
-                    .ifPresent(TsAction.getDefault()::open);
+                    .ifPresent(ts -> TsActions.getDefault().openWith(ts, DemetraUI.getDefault().getTsActionName()));
         }
     }
 
-    private final class TsSavableImpl implements ITsSavable {
+    private final class TsCollectableImpl implements TsCollectable {
 
         @Override
         public demetra.timeseries.TsCollection getTsCollection() {

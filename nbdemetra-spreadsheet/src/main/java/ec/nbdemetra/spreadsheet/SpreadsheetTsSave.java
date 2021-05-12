@@ -21,7 +21,6 @@ import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.SingleFileExporter;
 import demetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.tssave.ITsSave;
 import ec.nbdemetra.ui.tssave.TsSaveUtil;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
 import ec.tss.tsproviders.spreadsheet.engine.TsExportOptions;
@@ -41,13 +40,14 @@ import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.TsActionsSaveSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = ITsSave.class)
-public final class SpreadsheetTsSave implements ITsSave {
+@ServiceProvider(service = TsActionsSaveSpi.class)
+public final class SpreadsheetTsSave implements TsActionsSaveSpi {
 
     private final FileChooserBuilder fileChooser;
     private final OptionsBean options;

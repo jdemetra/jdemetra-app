@@ -19,7 +19,7 @@ package ec.nbdemetra.ui.demo;
 import com.google.common.collect.Lists;
 import demetra.bridge.FromDataSourceProvider;
 import demetra.demo.PocProvider;
-import demetra.ui.TsAction;
+import demetra.ui.TsActions;
 import demetra.ui.TsManager;
 import demetra.ui.components.JTsTable;
 import demetra.ui.util.NbComponents;
@@ -102,7 +102,7 @@ public final class ComponentsDemo {
         dnd.setShowHeader(false);
         dnd.setColumns(Arrays.asList(Column.TS_IDENTIFIER, Column.DATA));
         dnd.setPreferredSize(new Dimension(250, 200));
-        dnd.setTsAction(TsAction.NO_ACTION);
+        dnd.setTsAction(TsActions.NO_ACTION);
 
         JSplitPane left = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, NbComponents.newJScrollPane(tree), dnd);
         JSplitPane splitPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, main);

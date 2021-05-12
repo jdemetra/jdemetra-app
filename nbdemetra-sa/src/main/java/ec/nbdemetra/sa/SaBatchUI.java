@@ -10,7 +10,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.bridge.TsConverter;
-import demetra.ui.TsAction;
+import demetra.ui.TsActions;
 import demetra.ui.TsManager;
 import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
 import ec.nbdemetra.ui.Menus.DynamicPopup;
@@ -633,7 +633,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 int row = result.getSelectedRow();
                 if (e.getClickCount() > 1 && row != -1) {
                     SaItem item = model.getValues().get(result.getRowSorter().convertRowIndexToModel(row));
-                    TsAction.getDefault().open(TsConverter.toTs(item.getTs()));
+                    TsActions.getDefault().openWith(TsConverter.toTs(item.getTs()), DemetraUI.getDefault().getTsActionName());
                 }
             }
         });

@@ -10,14 +10,14 @@ import java.awt.Image;
 import javax.swing.JOptionPane;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.TsActionSpi;
+import demetra.ui.TsActionsOpenSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = TsActionSpi.class)
-public final class DemoTsActions implements TsActionSpi {
+@ServiceProvider(service = TsActionsOpenSpi.class)
+public final class DemoTsActions implements TsActionsOpenSpi {
 
     public static final String NAME = "Demo";
     

@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.tssave;
+package demetra.ui.actions;
 
 import demetra.timeseries.TsCollection;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -23,7 +23,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * @author Philippe Charles
  */
-public interface ITsSavable {
+public interface TsCollectable {
 
     /**
      *

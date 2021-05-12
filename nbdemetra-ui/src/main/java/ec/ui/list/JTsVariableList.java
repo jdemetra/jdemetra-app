@@ -18,7 +18,7 @@ package ec.ui.list;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.NamedService;
-import demetra.ui.TsAction;
+import demetra.ui.TsActions;
 import demetra.ui.TsManager;
 import demetra.ui.util.NbComponents;
 import demetra.ui.util.ActionMaps;
@@ -71,6 +71,7 @@ import org.openide.NotifyDescriptor;
 import demetra.ui.components.parts.HasTsAction;
 import ec.util.table.swing.JTables;
 import demetra.ui.datatransfer.DataTransfer;
+import ec.nbdemetra.ui.DemetraUI;
 
 /**
  *
@@ -412,7 +413,7 @@ public class JTsVariableList extends JComponent implements HasTsAction {
     private JMenu buildOpenWithMenu() {
         JMenu result = new JMenu(OpenWithCommand.INSTANCE.toAction(this));
 
-        for (NamedService o : TsAction.getDefault().getTsActions()) {
+        for (NamedService o : TsActions.getDefault().getOpenActions()) {
             JMenuItem item = new JMenuItem(new OpenWithItemCommand(o).toAction(this));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
@@ -455,7 +456,11 @@ public class JTsVariableList extends JComponent implements HasTsAction {
 
         @Override
         public void execute(JTsVariableList c) throws Exception {
-            TsAction.getDefault().openWith(toTs(getSelectedVariable(c)), c.getTsAction());
+            String actionName = c.getTsAction();
+            if (actionName == null) {
+                actionName = DemetraUI.getDefault().getTsActionName();
+            }
+            TsActions.getDefault().openWith(toTs(getSelectedVariable(c)), actionName);
         }
 
         @Override
@@ -496,7 +501,7 @@ public class JTsVariableList extends JComponent implements HasTsAction {
 
         @Override
         public void execute(JTsVariableList c) throws Exception {
-            TsAction.getDefault().openWith(toTs(getSelectedVariable(c)), tsAction.getName());
+            TsActions.getDefault().openWith(toTs(getSelectedVariable(c)), tsAction.getName());
         }
     }
 
