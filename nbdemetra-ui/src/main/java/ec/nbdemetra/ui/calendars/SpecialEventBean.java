@@ -44,7 +44,7 @@ public class SpecialEventBean extends AbstractEventBean {
     public void setDayEvent(DayEvent dayEvent) {
         DayEvent old = this.dayEvent;
         this.dayEvent = dayEvent;
-        firePropertyChange(DAY_EVENT_PROPERTY, old, this.dayEvent);
+        broadcaster.firePropertyChange(DAY_EVENT_PROPERTY, old, this.dayEvent);
     }
 
     public int getOffset() {
@@ -54,7 +54,7 @@ public class SpecialEventBean extends AbstractEventBean {
     public void setOffset(int offset) {
         int old = this.offset;
         this.offset = offset;
-        firePropertyChange(OFFSET_PROPERTY, old, this.offset);
+        broadcaster.firePropertyChange(OFFSET_PROPERTY, old, this.offset);
     }
 
     @Override

@@ -16,25 +16,29 @@
  */
 package ec.nbdemetra.sa;
 
-import demetra.ui.beans.ListenableBean;
+import demetra.ui.beans.PropertyChangeSource;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 /**
  *
  * @author Philippe Charles
  */
-public final class MultiProcessingController extends ListenableBean {
+public final class MultiProcessingController implements PropertyChangeSource {
 
     public enum SaProcessingState {
 
         READY, STARTED, PENDING, DONE, CANCELLED;
 
         public boolean isFinished() {
-            return this == DONE || this == CANCELLED ;
+            return this == DONE || this == CANCELLED;
         }
     };
 
     public static final String SAPROCESSING_STATE_PROPERTY = "SaProcessingState";
+
+    @lombok.experimental.Delegate(types = PropertyChangeSource.class)
+    private final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
 
     private SaProcessingState state;
 
@@ -48,15 +52,15 @@ public final class MultiProcessingController extends ListenableBean {
 
     public void setState(SaProcessingState state) {
         this.state = state;
-        firePropertyChange(SAPROCESSING_STATE_PROPERTY, null, this.state); // force refreshing in all cases
+        broadcaster.firePropertyChange(SAPROCESSING_STATE_PROPERTY, null, this.state); // force refreshing in all cases
     }
-    
-    public void dispose(){
-        
-        PropertyChangeListener[] ls = this.support.getPropertyChangeListeners();
-        if (ls != null){
-            for (int i=0; i<ls.length; ++i){
-                this.support.removePropertyChangeListener(ls[i]);
+
+    public void dispose() {
+
+        PropertyChangeListener[] ls = broadcaster.getPropertyChangeListeners();
+        if (ls != null) {
+            for (int i = 0; i < ls.length; ++i) {
+                broadcaster.removePropertyChangeListener(ls[i]);
             }
         }
     }

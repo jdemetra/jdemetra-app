@@ -22,7 +22,6 @@ import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
 import demetra.ui.GlobalService;
-import demetra.ui.beans.ListenableBean;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.util.various.swing.OnEDT;
 import internal.ui.Providers;
@@ -34,6 +33,7 @@ import java.awt.datatransfer.FlavorEvent;
 import java.awt.datatransfer.FlavorListener;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -65,7 +65,7 @@ import org.openide.util.lookup.ServiceProvider;
 @lombok.extern.java.Log
 @GlobalService
 @ServiceProvider(service = DataTransfer.class)
-public class DataTransfer extends ListenableBean implements PropertyChangeSource {
+public class DataTransfer implements PropertyChangeSource {
 
     /**
      * A convenient method to get the current single instance of DataTransfer.
@@ -79,6 +79,9 @@ public class DataTransfer extends ListenableBean implements PropertyChangeSource
     }
 
     public static final String VALID_CLIPBOARD_PROPERTY = "validClipboard";
+
+    @lombok.experimental.Delegate(types = PropertyChangeSource.class)
+    private final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
 
     private final ClipboardValidator clipboardValidator;
     private final Providers<DataTransferSpi> providers;
@@ -101,7 +104,7 @@ public class DataTransfer extends ListenableBean implements PropertyChangeSource
     private void setValidClipboard(boolean validClipboard) {
         boolean old = this.validClipboard;
         this.validClipboard = validClipboard;
-        firePropertyChange(VALID_CLIPBOARD_PROPERTY, old, this.validClipboard);
+        broadcaster.firePropertyChange(VALID_CLIPBOARD_PROPERTY, old, this.validClipboard);
     }
 
     @OnEDT

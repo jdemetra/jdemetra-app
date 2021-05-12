@@ -50,7 +50,7 @@ public class FixedWeekEventBean extends AbstractEventBean {
     public void setDayOfWeek(DayOfWeek dayOfWeek) {
         DayOfWeek old = this.dayOfWeek;
         this.dayOfWeek = dayOfWeek;
-        firePropertyChange(DAY_OF_WEEK_PROPERTY, old, this.dayOfWeek);
+        broadcaster.firePropertyChange(DAY_OF_WEEK_PROPERTY, old, this.dayOfWeek);
     }
 
     public int getWeek() {
@@ -60,7 +60,7 @@ public class FixedWeekEventBean extends AbstractEventBean {
     public void setWeek(int week) {
         int old = this.week;
         this.week = week;
-        firePropertyChange(WEEK_PROPERTY, old, this.week);
+        broadcaster.firePropertyChange(WEEK_PROPERTY, old, this.week);
     }
 
     public Month getMonth() {
@@ -70,7 +70,7 @@ public class FixedWeekEventBean extends AbstractEventBean {
     public void setMonth(Month month) {
         Month old = this.month;
         this.month = month;
-        firePropertyChange(MONTH_PROPERTY, old, this.month);
+        broadcaster.firePropertyChange(MONTH_PROPERTY, old, this.month);
     }
 
     @Override

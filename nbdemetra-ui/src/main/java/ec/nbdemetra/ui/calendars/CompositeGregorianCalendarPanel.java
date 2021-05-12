@@ -5,7 +5,7 @@
 package ec.nbdemetra.ui.calendars;
 
 import com.google.common.collect.ImmutableList;
-import demetra.ui.beans.ListenableBean;
+import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.util.IDialogDescriptorProvider;
 import demetra.ui.util.ListenerState;
@@ -18,6 +18,7 @@ import ec.tstoolkit.utilities.WeightedItem;
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -202,12 +203,16 @@ public class CompositeGregorianCalendarPanel extends JPanel implements ExplorerM
         return em;
     }
 
-    public static class WeightedItemBean extends ListenableBean {
+    public static class WeightedItemBean implements PropertyChangeSource {
 
         // PROPERTIES DEFINITIONS
         public static final String NAME_PROPERTY = "name";
         public static final String USED_PROPERTY = "used";
         public static final String WEIGHT_PROPERTY = "weight";
+
+        @lombok.experimental.Delegate(types = PropertyChangeSource.class)
+        private final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
+
         // PROPERTIES
         private String name;
         private boolean used;
@@ -227,7 +232,7 @@ public class CompositeGregorianCalendarPanel extends JPanel implements ExplorerM
         public void setName(String name) {
             String old = this.name;
             this.name = name;
-            firePropertyChange(NAME_PROPERTY, old, this.name);
+            broadcaster.firePropertyChange(NAME_PROPERTY, old, this.name);
         }
 
         public boolean isUsed() {
@@ -237,7 +242,7 @@ public class CompositeGregorianCalendarPanel extends JPanel implements ExplorerM
         public void setUsed(boolean used) {
             boolean old = this.used;
             this.used = used;
-            firePropertyChange(USED_PROPERTY, old, this.used);
+            broadcaster.firePropertyChange(USED_PROPERTY, old, this.used);
         }
 
         public double getWeight() {
@@ -247,7 +252,7 @@ public class CompositeGregorianCalendarPanel extends JPanel implements ExplorerM
         public void setWeight(double weight) {
             double old = this.weight;
             this.weight = weight;
-            firePropertyChange(WEIGHT_PROPERTY, old, this.weight);
+            broadcaster.firePropertyChange(WEIGHT_PROPERTY, old, this.weight);
         }
         //</editor-fold>
 

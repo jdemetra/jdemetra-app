@@ -16,7 +16,8 @@
  */
 package ec.nbdemetra.ui.mru;
 
-import demetra.ui.beans.ListenableBean;
+import demetra.ui.beans.PropertyChangeSource;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.List;
  *
  * @author Philippe Charles
  */
-public final class MruList extends ListenableBean implements Iterable<SourceId> {
+public final class MruList implements PropertyChangeSource, Iterable<SourceId> {
 
     public static final String CONTENT_PROPERTY = "123";
     private static final MruList PROVIDERS = new MruList();
@@ -38,6 +39,10 @@ public final class MruList extends ListenableBean implements Iterable<SourceId> 
     public static MruList getWorkspacesInstance() {
         return WORKSPACES;
     }
+
+    @lombok.experimental.Delegate(types = PropertyChangeSource.class)
+    private final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
+
     //
     private final List<SourceId> list;
     private int maxSize;
@@ -49,7 +54,7 @@ public final class MruList extends ListenableBean implements Iterable<SourceId> 
 
     public void clear() {
         list.clear();
-        firePropertyChange(CONTENT_PROPERTY, null, list);
+        broadcaster.firePropertyChange(CONTENT_PROPERTY, null, list);
     }
 
     public boolean isEmpty() {
@@ -69,7 +74,7 @@ public final class MruList extends ListenableBean implements Iterable<SourceId> 
         while (list.size() > maxSize) {
             list.remove(list.size() - 1);
         }
-        firePropertyChange(CONTENT_PROPERTY, null, list);
+        broadcaster.firePropertyChange(CONTENT_PROPERTY, null, list);
     }
 
     @Override

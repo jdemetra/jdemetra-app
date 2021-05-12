@@ -19,7 +19,6 @@ package internal.ui;
 import demetra.ui.datatransfer.MultiTransferable;
 import com.google.common.collect.Sets;
 import demetra.ui.NamedService;
-import demetra.ui.beans.ListenableBean;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.design.VisibleForTesting;
 import ec.tstoolkit.maths.matrices.Matrix;
@@ -44,13 +43,18 @@ import org.slf4j.LoggerFactory;
 import demetra.ui.OldDataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
 import demetra.ui.OldDataTransferSpi;
+import demetra.ui.beans.PropertyChangeSource;
+import java.beans.PropertyChangeSupport;
 import nbbrd.io.function.IOFunction;
 
 /**
  * @author Philippe Charles
  */
 @ServiceProvider(service = OldDataTransfer.class)
-public final class DefaultDataTransfer extends ListenableBean implements OldDataTransfer {
+public final class DefaultDataTransfer implements PropertyChangeSource, OldDataTransfer {
+
+    @lombok.experimental.Delegate(types = PropertyChangeSource.class)
+    private final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
 
     private final ClipboardValidator clipboardValidator;
     private final Lookup lookup;
@@ -78,7 +82,7 @@ public final class DefaultDataTransfer extends ListenableBean implements OldData
     private void setValidClipboard(boolean validClipboard) {
         boolean old = this.validClipboard;
         this.validClipboard = validClipboard;
-        firePropertyChange(VALID_CLIPBOARD_PROPERTY, old, this.validClipboard);
+        broadcaster.firePropertyChange(VALID_CLIPBOARD_PROPERTY, old, this.validClipboard);
     }
 
     private Stream<? extends OldDataTransferSpi> lookupAll() {

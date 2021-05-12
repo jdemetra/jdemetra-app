@@ -46,7 +46,7 @@ public class FixedEventBean extends AbstractEventBean {
     public void setDay(int day) {
         int old = this.day;
         this.day = day;
-        firePropertyChange(DAY_PROPERTY, old, this.day);
+        broadcaster.firePropertyChange(DAY_PROPERTY, old, this.day);
     }
 
     public Month getMonth() {
@@ -56,7 +56,7 @@ public class FixedEventBean extends AbstractEventBean {
     public void setMonth(Month month) {
         Month old = this.month;
         this.month = month;
-        firePropertyChange(MONTH_PROPERTY, old, this.month);
+        broadcaster.firePropertyChange(MONTH_PROPERTY, old, this.month);
     }
 
     @Override

@@ -17,8 +17,8 @@
 package ec.nbdemetra.ui;
 
 import com.google.common.base.Preconditions;
-import demetra.ui.beans.ListenableBean;
 import demetra.ui.GlobalService;
+import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
 import internal.ui.ChartGridTsAction;
 import ec.nbdemetra.ui.tssave.ITsSave;
@@ -39,6 +39,7 @@ import ec.util.chart.ColorScheme;
 import ec.util.chart.impl.SmartColorScheme;
 import ec.util.various.swing.FontAwesome;
 import java.awt.Color;
+import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -59,7 +60,7 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @GlobalService
 @ServiceProvider(service = DemetraUI.class)
-public class DemetraUI extends ListenableBean implements IConfigurable {
+public class DemetraUI implements PropertyChangeSource, IConfigurable {
 
     @NonNull
     public static DemetraUI getDefault() {
@@ -110,6 +111,9 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
             BasicConfiguration.allSaSeries(false).stream().toArray(String[]::new));
     static final IParam<Config, Integer> HTML_ZOOM_RATIO = Params.onInteger(100, HTML_ZOOM_RATIO_PROPERTY);
 
+    @lombok.experimental.Delegate(types = PropertyChangeSource.class)
+    private final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
+
     // PROPERTIES
     private final ConfigBean properties;
 
@@ -125,7 +129,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setColorSchemeName(String colorSchemeName) {
         String old = this.properties.colorSchemeName;
         this.properties.colorSchemeName = colorSchemeName != null ? colorSchemeName : COLOR_SCHEME_NAME.defaultValue();
-        firePropertyChange(COLOR_SCHEME_NAME_PROPERTY, old, this.properties.colorSchemeName);
+        broadcaster.firePropertyChange(COLOR_SCHEME_NAME_PROPERTY, old, this.properties.colorSchemeName);
     }
 
     public DataFormat getDataFormat() {
@@ -135,7 +139,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setDataFormat(DataFormat dataFormat) {
         DataFormat old = this.properties.dataFormat;
         this.properties.dataFormat = dataFormat != null ? dataFormat : DATA_FORMAT.defaultValue();
-        firePropertyChange(DATA_FORMAT_PROPERTY, old, this.properties.dataFormat);
+        broadcaster.firePropertyChange(DATA_FORMAT_PROPERTY, old, this.properties.dataFormat);
     }
 
     public boolean isShowUnavailableTsProviders() {
@@ -145,7 +149,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setShowUnavailableTsProviders(boolean show) {
         boolean old = this.properties.showUnavailableTsProviders;
         this.properties.showUnavailableTsProviders = show;
-        firePropertyChange(SHOW_UNAVAILABLE_TSPROVIDER_PROPERTY, old, this.properties.showUnavailableTsProviders);
+        broadcaster.firePropertyChange(SHOW_UNAVAILABLE_TSPROVIDER_PROPERTY, old, this.properties.showUnavailableTsProviders.booleanValue());
     }
 
     public boolean isShowTsProviderNodes() {
@@ -155,7 +159,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setShowTsProviderNodes(boolean show) {
         boolean old = this.properties.showTsProviderNodes;
         this.properties.showTsProviderNodes = show;
-        firePropertyChange(SHOW_TSPROVIDER_NODES_PROPERTY, old, this.properties.showTsProviderNodes);
+        broadcaster.firePropertyChange(SHOW_TSPROVIDER_NODES_PROPERTY, old, this.properties.showTsProviderNodes.booleanValue());
     }
 
     public String getTsActionName() {
@@ -165,7 +169,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setTsActionName(String tsActionName) {
         String old = this.properties.tsActionName;
         this.properties.tsActionName = tsActionName != null ? tsActionName : TS_ACTION_NAME.defaultValue();
-        firePropertyChange(TS_ACTION_NAME_PROPERTY, old, this.properties.tsActionName);
+        broadcaster.firePropertyChange(TS_ACTION_NAME_PROPERTY, old, this.properties.tsActionName);
     }
 
     public boolean isPersistToolsContent() {
@@ -175,7 +179,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setPersistToolsContent(boolean persistToolsContent) {
         boolean old = this.properties.persistToolsContent;
         this.properties.persistToolsContent = persistToolsContent;
-        firePropertyChange(PERSIST_TOOLS_CONTENT_PROPERTY, old, this.properties.persistToolsContent);
+        broadcaster.firePropertyChange(PERSIST_TOOLS_CONTENT_PROPERTY, old, this.properties.persistToolsContent);
     }
 
     public boolean isPersistOpenedDataSources() {
@@ -185,7 +189,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setPersistOpenedDataSources(boolean persistOpenedDataSources) {
         boolean old = this.properties.persistOpenedDataSources;
         this.properties.persistOpenedDataSources = persistOpenedDataSources;
-        firePropertyChange(PERSIST_OPENED_DATASOURCES_PROPERTY, old, this.properties.persistOpenedDataSources);
+        broadcaster.firePropertyChange(PERSIST_OPENED_DATASOURCES_PROPERTY, old, this.properties.persistOpenedDataSources);
     }
 
     public ThreadPoolSize getBatchPoolSize() {
@@ -195,7 +199,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setBatchPoolSize(ThreadPoolSize batchPoolSize) {
         ThreadPoolSize old = this.properties.batchPoolSize;
         this.properties.batchPoolSize = batchPoolSize != null ? batchPoolSize : BATCH_POOL_SIZE.defaultValue();
-        firePropertyChange(BATCH_POOL_SIZE_PROPERTY, old, this.properties.batchPoolSize);
+        broadcaster.firePropertyChange(BATCH_POOL_SIZE_PROPERTY, old, this.properties.batchPoolSize);
     }
 
     public ThreadPriority getBatchPriority() {
@@ -205,7 +209,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setBatchPriority(ThreadPriority batchPriority) {
         ThreadPriority old = this.properties.batchPriority;
         this.properties.batchPriority = batchPriority != null ? batchPriority : BATCH_PRIORITY.defaultValue();
-        firePropertyChange(BATCH_PRIORITY_PROPERTY, old, this.properties.batchPriority);
+        broadcaster.firePropertyChange(BATCH_PRIORITY_PROPERTY, old, this.properties.batchPriority);
     }
 
     public Integer getGrowthLastYears() {
@@ -215,7 +219,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setGrowthLastYears(Integer lastYears) {
         Integer old = this.properties.growthLastYears;
         properties.growthLastYears = lastYears != null ? lastYears : GROWTH_LAST_YEARS.defaultValue();
-        firePropertyChange(GROWTH_CHART_LENGTH_PROPERTY, old, properties.growthLastYears);
+        broadcaster.firePropertyChange(GROWTH_CHART_LENGTH_PROPERTY, old, properties.growthLastYears);
     }
 
     public Integer getSpectralLastYears() {
@@ -225,7 +229,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setSpectralLastYears(Integer lastYears) {
         Integer old = this.properties.spectralLastYears;
         properties.spectralLastYears = lastYears != null ? lastYears : SPECTRAL_LAST_YEARS.defaultValue();
-        firePropertyChange(SPECTRAL_YEARS_PROPERTY, old, properties.spectralLastYears);
+        broadcaster.firePropertyChange(SPECTRAL_YEARS_PROPERTY, old, properties.spectralLastYears);
     }
 
     public Integer getStabilityLength() {
@@ -235,7 +239,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setStabilityLength(Integer length) {
         Integer old = this.properties.stabilityLength;
         properties.stabilityLength = length != null ? length : STABILITY_LENGTH.defaultValue();
-        firePropertyChange(STABILITY_YEARS_PROPERTY, old, properties.stabilityLength);
+        broadcaster.firePropertyChange(STABILITY_YEARS_PROPERTY, old, properties.stabilityLength);
     }
 
     public EstimationPolicyType getEstimationPolicyType() {
@@ -245,7 +249,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setEstimationPolicyType(EstimationPolicyType type) {
         EstimationPolicyType old = this.properties.estimationPolicyType;
         this.properties.estimationPolicyType = type != null ? type : ESTIMATION_POLICY_TYPE.defaultValue();
-        firePropertyChange(ESTIMATION_POLICY_PROPERTY, old, this.properties.estimationPolicyType);
+        broadcaster.firePropertyChange(ESTIMATION_POLICY_PROPERTY, old, this.properties.estimationPolicyType);
     }
 
     public ISaSpecification getDefaultSASpec() {
@@ -285,7 +289,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setDefaultSASpec(String spec) {
         String old = this.properties.defaultSASpec;
         this.properties.defaultSASpec = spec != null ? spec : DEFAULT_SA_SPEC.defaultValue();
-        firePropertyChange(DEFAULT_SA_SPEC_PROPERTY, old, this.properties.defaultSASpec);
+        broadcaster.firePropertyChange(DEFAULT_SA_SPEC_PROPERTY, old, this.properties.defaultSASpec);
     }
 
     public boolean getPopupMenuIconsVisible() {
@@ -295,7 +299,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setPopupMenuIconsVisible(boolean visible) {
         boolean old = this.properties.popupMenuIconsVisible;
         this.properties.popupMenuIconsVisible = visible;
-        firePropertyChange(POPUP_MENU_ICONS_VISIBLE_PROPERTY, old, this.properties.popupMenuIconsVisible);
+        broadcaster.firePropertyChange(POPUP_MENU_ICONS_VISIBLE_PROPERTY, old, this.properties.popupMenuIconsVisible);
     }
 
     public PrespecificiedOutliersEditor getPrespecifiedOutliersEditor() {
@@ -305,7 +309,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setPrespecifiedOutliersEditor(PrespecificiedOutliersEditor prespecifiedOutliersEditor) {
         PrespecificiedOutliersEditor old = this.properties.prespecifiedOutliersEditor;
         this.properties.prespecifiedOutliersEditor = prespecifiedOutliersEditor != null ? prespecifiedOutliersEditor : PRESPECIFIED_OUTLIERS_EDITOR.defaultValue();
-        firePropertyChange(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, old, this.properties.prespecifiedOutliersEditor);
+        broadcaster.firePropertyChange(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, old, this.properties.prespecifiedOutliersEditor);
     }
 
     public List<String> getSelectedDiagFields() {
@@ -315,7 +319,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setSelectedDiagFields(List<String> fields) {
         List<String> old = this.properties.selectedDiagFields;
         this.properties.selectedDiagFields = fields;
-        firePropertyChange(SELECTED_DIAG_FIELDS_PROPERTY, old, this.properties.selectedDiagFields);
+        broadcaster.firePropertyChange(SELECTED_DIAG_FIELDS_PROPERTY, old, this.properties.selectedDiagFields);
     }
 
     public List<String> getSelectedSeriesFields() {
@@ -325,7 +329,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setSelectedSeriesFields(List<String> fields) {
         List<String> old = this.properties.selectedSeriesFields;
         this.properties.selectedSeriesFields = fields;
-        firePropertyChange(SELECTED_SERIES_FIELDS_PROPERTY, old, this.properties.selectedSeriesFields);
+        broadcaster.firePropertyChange(SELECTED_SERIES_FIELDS_PROPERTY, old, this.properties.selectedSeriesFields);
     }
 
     public int getHtmlZoomRatio() {
@@ -335,7 +339,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     public void setHtmlZoomRatio(int htmlZoomRatio) {
         int old = this.properties.htmlZoomRatio;
         this.properties.htmlZoomRatio = htmlZoomRatio >= 10 && htmlZoomRatio <= 200 ? htmlZoomRatio : 100;
-        firePropertyChange(HTML_ZOOM_RATIO_PROPERTY, old, this.properties.htmlZoomRatio);
+        broadcaster.firePropertyChange(HTML_ZOOM_RATIO_PROPERTY, old, this.properties.htmlZoomRatio);
     }
     //</editor-fold>
 
