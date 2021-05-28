@@ -19,13 +19,16 @@ package ec.nbdemetra.sa.revisionanalysis;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsSeq;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.MonikerUI;
 import demetra.ui.components.JTsGrid;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.event.ItemEvent;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -76,14 +79,14 @@ public class JTsComboGrid extends JComponent {
     }
 
     private void showAllTs() {
-        demetra.timeseries.TsCollection.Builder coll = demetra.timeseries.TsCollection.builder();
+        List<demetra.timeseries.Ts> coll = new ArrayList<>();
         for (Map.Entry<Ts, TsCollection> entry : collections.entrySet()) {
             TsCollection c = entry.getValue();
             for (int i = 0; i < c.getData().size(); i++) {
-                coll.data(c.getData().get(i).toBuilder().name(entry.getKey().getName() + " (" + c.getData().get(i).getName() + ")").build());
+                coll.add(c.getData().get(i).toBuilder().name(entry.getKey().getName() + " (" + c.getData().get(i).getName() + ")").build());
             }
         }
-        grid.setTsCollection(coll.build());
+        grid.setTsCollection(TsCollection.of(TsSeq.of(coll)));
     }
 
     /**

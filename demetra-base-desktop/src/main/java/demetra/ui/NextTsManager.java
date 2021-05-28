@@ -6,7 +6,6 @@ import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsMoniker;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
-import java.util.stream.Collector;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.WeakListeners;
 
@@ -33,14 +32,4 @@ public interface NextTsManager {
 
     @OnEDT
     void removeListener(@NonNull TsListener listener);
-
-    @NonNull
-    static Collector<Ts, ?, TsCollection> getTsCollector() {
-        return Collector.<Ts, TsCollection.Builder, TsCollection>of(
-                TsCollection::builder,
-                TsCollection.Builder::data,
-                (l, r) -> l.data(r.getData()),
-                TsCollection.Builder::build);
-    }
-
 }

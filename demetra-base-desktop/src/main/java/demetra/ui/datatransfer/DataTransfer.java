@@ -21,6 +21,7 @@ import demetra.timeseries.TsData;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
+import demetra.timeseries.TsSeq;
 import demetra.ui.GlobalService;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.util.various.swing.OnEDT;
@@ -129,7 +130,7 @@ public class DataTransfer implements PropertyChangeSource {
     @NonNull
     public Transferable fromTs(@NonNull Ts ts) {
         requireNonNull(ts);
-        return fromTsCollection(TsCollection.of(ts));
+        return fromTsCollection(TsCollection.of(TsSeq.of(ts)));
     }
 
     /**

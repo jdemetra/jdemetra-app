@@ -10,6 +10,7 @@ import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.tss.documents.DocumentManager;
 import ec.tss.documents.TsDocument;
 import demetra.ui.components.JTsChart;
+import java.util.stream.Stream;
 
 /**
  *
@@ -24,19 +25,11 @@ public class DualChartUI<D extends TsDocument<?, ?>> extends PooledItemUI<IProcD
     @Override
     protected void init(JTsChart c, IProcDocumentView<D> host, String[][] information) {
         String[] hnames = information[0], lnames = information[1];
-        TsCollection.Builder items = TsCollection.builder();
-        if (hnames != null) {
-            for (int i = 0; i < hnames.length; ++i) {
-                items.data(TsConverter.toTs(DocumentManager.instance.getTs(host.getDocument(), hnames[i])));
-            }
-        }
-        if (lnames != null) {
-            for (int i = 0; i < lnames.length; ++i) {
-                items.data(TsConverter.toTs(DocumentManager.instance.getTs(host.getDocument(), lnames[i])));
-            }
-        }
+        TsCollection col = Stream.concat(hnames != null ? Stream.of(hnames) : Stream.empty(), lnames != null ? Stream.of(lnames) : Stream.empty())
+                .map(name -> TsConverter.toTs(DocumentManager.instance.getTs(host.getDocument(), name)))
+                .collect(TsCollection.toTsCollection());
         c.setDualChart(true);
-        c.setTsCollection(items.build());
+        c.setTsCollection(col);
         c.setTsUpdateMode(TsUpdateMode.None);
         int i = 0;
         c.getDualDispatcher().clearSelection();

@@ -18,6 +18,7 @@ package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsSeq;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.tss.Ts;
 import ec.tss.html.HtmlUtil;
@@ -30,6 +31,7 @@ import demetra.ui.components.JTsChart;
 import demetra.ui.components.JTsGrid;
 import demetra.ui.components.JTsGrid.Mode;
 import demetra.ui.components.JTsGrowthChart;
+import demetra.util.Collections2;
 import ec.ui.interfaces.IDisposable;
 import ec.ui.html.JHtmlView;
 import ec.ui.view.SpectralView;
@@ -86,7 +88,7 @@ public final class TsViewToolkit implements ITsViewToolkit {
         JTsGrid result = gridPool.getOrCreate();
         result.setTsUpdateMode(TsUpdateMode.None);
         result.setMode(Mode.SINGLETS);
-        result.setTsCollection(TsCollection.builder().data(TsConverter.toTs(series)).build());
+        result.setTsCollection(TsCollection.of(TsSeq.of(TsConverter.toTs(series))));
 
         return new JDisposable(result) {
             @Override
@@ -228,10 +230,9 @@ public final class TsViewToolkit implements ITsViewToolkit {
     }
 
     private static TsCollection toTsCollection(Iterable<Ts> list) {
-        TsCollection.Builder col = TsCollection.builder();
-        for (Ts ts : list) {
-            col.data(TsConverter.toTs(ts));
-        }
-        return col.build();
+        return Collections2
+                .streamOf(list)
+                .map(TsConverter::toTs)
+                .collect(TsCollection.toTsCollection());
     }
 }

@@ -5,7 +5,7 @@
 package ec.nbdemetra.ui.tsproviders;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.NextTsManager;
+import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.tss.TsInformationType;
@@ -124,7 +124,7 @@ public final class PreviewTssTopComponent extends TopComponent implements Lookup
                             .filter(Optional::isPresent)
                             .map(Optional::get)
                             .map(TsConverter::toTs)
-                            .collect(NextTsManager.getTsCollector())
+                            .collect(TsCollection.toTsCollection())
             );
         }
     }

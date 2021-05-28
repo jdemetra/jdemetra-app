@@ -8,6 +8,7 @@ import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
+import demetra.timeseries.TsSeq;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.tstoolkit.timeseries.regression.ITsVariable;
@@ -15,6 +16,7 @@ import ec.tstoolkit.timeseries.regression.TsVariableList;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JComponent;
 
 /**
@@ -30,7 +32,7 @@ public class RegressorsUI<V extends IProcDocumentView<?>> extends DefaultItemUI<
     }
 
     private TsCollection createRegressors(PreprocessingModel information) {
-        TsCollection.Builder collection = TsCollection.builder();
+        List<Ts> collection = new ArrayList<>();
         TsDomain edomain = information.description.getSeriesDomain();
         TsPeriod start = edomain.getStart();
         int n = edomain.getLength();
@@ -46,7 +48,7 @@ public class RegressorsUI<V extends IProcDocumentView<?>> extends DefaultItemUI<
                 }
                 cur.data(edomain, tmp);
                 for (int j = 0; j < dim; ++j) {
-                    collection.data(Ts
+                    collection.add(Ts
                             .builder()
                             .name(cur.getItemDescription(j, information.getFrequency()))
                             .data(TsData.ofInternal(TsConverter.toTsPeriod(start), tmp.get(j).getData()))
@@ -54,6 +56,6 @@ public class RegressorsUI<V extends IProcDocumentView<?>> extends DefaultItemUI<
                 }
             }
         }
-        return collection.build();
+        return TsCollection.of(TsSeq.of(collection));
     }
 }

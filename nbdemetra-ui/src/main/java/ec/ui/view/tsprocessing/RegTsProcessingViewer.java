@@ -6,6 +6,7 @@ package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsSeq;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.components.JTsTable;
 import ec.tss.Ts;
@@ -108,10 +109,8 @@ public class RegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocume
             yList.setTsCollection(TsCollection.EMPTY);
             xList.setTsCollection(TsCollection.EMPTY);
         } else {
-            yList.setTsCollection(TsCollection.of(TsConverter.toTs(s[0])));
-            TsCollection.Builder col = TsCollection.builder();
-            Stream.of(s).skip(1).map(TsConverter::toTs).forEach(col::data);
-            xList.setTsCollection(col.build());
+            yList.setTsCollection(TsCollection.of(TsSeq.of(TsConverter.toTs(s[0]))));
+            xList.setTsCollection(Stream.of(s).skip(1).map(TsConverter::toTs).collect(TsCollection.toTsCollection()));
         }
     }
 

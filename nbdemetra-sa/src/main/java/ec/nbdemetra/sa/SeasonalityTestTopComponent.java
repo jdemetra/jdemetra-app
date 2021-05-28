@@ -6,6 +6,7 @@ package ec.nbdemetra.sa;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.parts.HasTsCollection;
@@ -191,7 +192,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
 
     @Override
     public void setTs(demetra.timeseries.Ts ts) {
-        jTsChart1.setTsCollection(TsCollection.of(ts));
+        jTsChart1.setTsCollection(TsCollection.of(TsSeq.of(ts)));
         //test(ts);
     }
 

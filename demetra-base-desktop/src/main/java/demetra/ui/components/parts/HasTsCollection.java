@@ -18,6 +18,7 @@ package demetra.ui.components.parts;
 
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsSeq;
 import demetra.ui.NextTsManager;
 import demetra.ui.beans.PropertyChangeBroadcaster;
 import ec.util.list.swing.JLists;
@@ -90,7 +91,7 @@ public interface HasTsCollection {
 
     @NonNull
     default Stream<Ts> getTsSelectionStream() {
-        List<Ts> tss = getTsCollection().getData();
+        TsSeq tss = getTsCollection().getData();
         return JLists
                 .getSelectionIndexStream(getTsSelectionModel())
                 .filter(o -> o < tss.size())

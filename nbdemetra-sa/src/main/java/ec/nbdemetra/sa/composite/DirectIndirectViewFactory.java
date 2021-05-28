@@ -5,6 +5,7 @@
 package ec.nbdemetra.sa.composite;
 
 import demetra.bridge.TsConverter;
+import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.diagnostics.IBTest;
@@ -38,6 +39,8 @@ import ec.ui.view.tsprocessing.sa.SeasonalityTestUI2;
 import ec.ui.view.tsprocessing.DocumentInformationExtractor;
 import ec.ui.view.tsprocessing.ItemUI;
 import ec.ui.view.tsprocessing.ProcDocumentItemFactory;
+import java.util.ArrayList;
+import java.util.List;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -68,7 +71,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
 
         @Override
         protected demetra.timeseries.TsCollection buildInfo(MultiSaDocument source) {
-            demetra.timeseries.TsCollection.Builder result = demetra.timeseries.TsCollection.builder();
+            List<demetra.timeseries.Ts> result = new ArrayList<>();
             IProcResults results = source.getResults();
             TsCollection input = source.getInput();
             int icmp = 0;
@@ -76,9 +79,9 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 String name = s.getName() + " (sa)";
                 String id = InformationSet.item(MultiSaSpecification.COMPONENT + (icmp++), ModellingDictionary.SA);
                 TsData sa = results.getData(id, TsData.class);
-                result.data(TsManager.toTs(name, sa));
+                result.add(TsManager.toTs(name, sa));
             }
-            return result.build();
+            return demetra.timeseries.TsCollection.of(TsSeq.of(result));
         }
     }
 
@@ -88,7 +91,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
 
         @Override
         protected demetra.timeseries.TsCollection buildInfo(MultiSaDocument source) {
-            demetra.timeseries.TsCollection.Builder all = demetra.timeseries.TsCollection.builder();
+            List<demetra.timeseries.Ts> result = new ArrayList<>();
             IProcResults results = source.getResults().get(MultiSaProcessingFactory.BENCHMARKING);
             TsCollection input = source.getInput();
             int icmp = 0;
@@ -96,9 +99,9 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 String name = s.getName() + " (benchmarked sa)";
                 String id = MultiSaSpecification.COMPONENT + (icmp++);
                 TsData sa = results.getData(id, TsData.class);
-                all.data(TsManager.toTs(name, sa));
+                result.add(TsManager.toTs(name, sa));
             }
-            return all.build();
+            return demetra.timeseries.TsCollection.of(TsSeq.of(result));
         }
     }
 

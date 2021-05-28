@@ -6,6 +6,7 @@ package ec.nbdemetra.tramoseats.ui;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsSeq;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
 import ec.satoolkit.ComponentDescriptor;
@@ -117,12 +118,11 @@ public class TramoSeatsSummary extends JComponent implements IDisposable {
         Disposables.disposeAndRemoveAll(document_).add(toolkit_.getHtmlViewer(document));
 
         chart_.setTsCollection(
-                TsCollection
-                        .builder()
-                        .data(getMainSeries(ModellingDictionary.Y))
-                        .data(getMainSeries(ModellingDictionary.T))
-                        .data(getMainSeries(ModellingDictionary.SA))
-                        .build()
+                TsCollection.of(TsSeq.of(
+                        getMainSeries(ModellingDictionary.Y),
+                        getMainSeries(ModellingDictionary.T),
+                        getMainSeries(ModellingDictionary.SA)
+                ))
         );
 
         if (seats != null) {

@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.timeseries.TsCollection;
 import demetra.ui.components.parts.HasTsCollection;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
@@ -45,12 +46,11 @@ public final class HasTsCollectionDropTargetListener implements DropTargetListen
         if (!target.getTsUpdateMode().isReadOnly()) {
             Transferable t = dtde.getTransferable();
             if (transferSupport.canImport(t)) {
-                demetra.timeseries.TsCollection.Builder dropContent = demetra.timeseries.TsCollection.builder();
-                transferSupport
+                demetra.timeseries.TsCollection dropContent = transferSupport
                         .toTsCollectionStream(t)
-                        .flatMap(o -> o.getData().stream())
-                        .forEach(dropContent::data);
-                target.setDropContent(dropContent.build());
+                        .flatMap(col -> col.getData().stream())
+                        .collect(TsCollection.toTsCollection());
+                target.setDropContent(dropContent);
             }
         }
     }

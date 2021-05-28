@@ -16,6 +16,8 @@
  */
 package ec.ui.chart;
 
+import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
@@ -52,6 +54,7 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import demetra.ui.datatransfer.DataTransfer;
+import java.util.ArrayList;
 
 /**
  * Chart Panel used in popups of Revision History View
@@ -216,16 +219,16 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
     }
 
     protected Transferable transferableOnSelection() {
-        demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
+        List<demetra.timeseries.Ts> col = new ArrayList<>();
         demetra.timeseries.Ts ts = TsManager.toTs("Reference serie", reference);
-        col.data(ts);
+        col.add(ts);
         if (revs != null) {
             for (int i = 0; i < revs.size(); i++) {
                 ts = TsManager.toTs("Rev->" + ts.getData().getDomain().getLastPeriod().toString(), revs.get(i));
-                col.data(ts);
+                col.add(ts);
             }
         }
-        return DataTransfer.getDefault().fromTsCollection(col.build());
+        return DataTransfer.getDefault().fromTsCollection(TsCollection.of(TsSeq.of(col)));
     }
 
     private void onColorSchemeChange() {

@@ -19,6 +19,7 @@ package internal.ui;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsSeq;
 import demetra.ui.components.parts.HasChart.LinesThickness;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.MonikerUI;
@@ -123,7 +124,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
         @Override
         public MultiViewElement createElement() {
             ChartTopComponent result = new ChartTopComponent();
-            result.getChart().setTsCollection(TsCollection.of(ts));
+            result.getChart().setTsCollection(TsCollection.of(TsSeq.of(ts)));
             result.getChart().setTsUpdateMode(TsUpdateMode.None);
             result.getChart().setLegendVisible(true);
             result.getChart().setTitleVisible(false);
@@ -166,7 +167,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
         @Override
         public MultiViewElement createElement() {
             GridTopComponent result = new GridTopComponent();
-            result.getGrid().setTsCollection(TsCollection.of(ts));
+            result.getGrid().setTsCollection(TsCollection.of(TsSeq.of(ts)));
             result.getGrid().setTsUpdateMode(TsUpdateMode.None);
             result.getGrid().setMode(JTsGrid.Mode.SINGLETS);
             return result;

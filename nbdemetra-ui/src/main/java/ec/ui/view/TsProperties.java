@@ -2,6 +2,7 @@ package ec.ui.view;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
@@ -76,7 +77,7 @@ public class TsProperties extends JComponent implements IDisposable {
     public void setTs(Ts ts) {
         TsManager.getDefault().load(ts, TsInformationType.All);
 
-        TsCollection col = TsCollection.builder().data(TsConverter.toTs(ts)).build();
+        TsCollection col = TsCollection.of(TsSeq.of(TsConverter.toTs(ts)));
 
         chart_.setTsCollection(col);
         grid_.setTsCollection(col);

@@ -141,7 +141,7 @@ public class ControlNode {
 
             @Override
             protected void addNotify() {
-                setKeys(col.getData());
+                setKeys(col.getData().getItems());
             }
 
             @Override
@@ -252,7 +252,7 @@ public class ControlNode {
             b.withInt().select(data, "length", null).display("Obs count").add();
             b.with(demetra.timeseries.TsData.class).selectConst("values", data).display("Values").add();
         } else {
-            b.with(String.class).selectConst("InvalidDataCause", data.getCause()).display("Invalid data cause").add();
+            b.with(String.class).selectConst("InvalidDataCause", data.getEmptyCause()).display("Invalid data cause").add();
         }
         return b.build();
     }

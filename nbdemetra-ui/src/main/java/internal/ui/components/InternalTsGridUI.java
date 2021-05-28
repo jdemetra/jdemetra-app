@@ -21,6 +21,7 @@ import demetra.bridge.TsConverter;
 import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.Ts;
+import demetra.timeseries.TsSeq;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasObsFormat;
@@ -55,7 +56,6 @@ import java.awt.Component;
 import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -385,7 +385,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
     private void updateComboModel() {
         if (target.getMode() == JTsGrid.Mode.SINGLETS && target.getTsCollection().getData().size() > 1) {
-            combo.setModel(new DefaultComboBoxModel(target.getTsCollection().getData().toArray()));
+            combo.setModel(new DefaultComboBoxModel<>(target.getTsCollection().getData().toArray(Ts[]::new)));
             combo.setVisible(true);
         } else {
             combo.setVisible(false);
@@ -393,8 +393,8 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     }
 
     private void updateGridCellRenderer() {
-        List<Ts> data = target.getTsCollection().getData();
-        Supplier<TsFeatureHelper> tsFeatures = Suppliers.memoize(() -> TsFeatureHelper.of(data));
+        TsSeq data = target.getTsCollection().getData();
+        Supplier<TsFeatureHelper> tsFeatures = Suppliers.memoize(() -> TsFeatureHelper.of(data.getItems()));
         Supplier<DescriptiveStatistics> stats = Suppliers.memoize(() -> {
             return target.getSingleTsIndex() != -1
                     ? new DescriptiveStatistics(data.stream().flatMapToDouble(o -> o.getData().getValues().stream()).toArray())

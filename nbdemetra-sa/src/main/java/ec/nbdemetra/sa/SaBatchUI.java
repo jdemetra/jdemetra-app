@@ -10,6 +10,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.bridge.TsConverter;
+import demetra.timeseries.TsCollection;
 import demetra.ui.TsActions;
 import demetra.ui.TsManager;
 import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
@@ -552,27 +553,26 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     public void copySeries(Collection<SaItem> litems) {
-        demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
-        litems.stream()
+        demetra.timeseries.TsCollection col = litems.stream()
                 .map(SaItem::getTs)
                 .map(TsConverter::toTs)
-                .forEach(col::data);
-        Transferable transferable = DataTransfer.getDefault().fromTsCollection(col.build());
+                .collect(demetra.timeseries.TsCollection.toTsCollection());
+        Transferable transferable = DataTransfer.getDefault().fromTsCollection(col);
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
     }
 
     public void copyComponents(List<String> components) {
-        demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
+        List<demetra.timeseries.Ts> col = new java.util.ArrayList<>();
         for (SaItem item : getSelection()) {
             components.stream().forEach((comp) -> {
                 TsData tsData = item.process().getData(comp, TsData.class);
                 if (tsData != null) {
-                    col.data(TsManager.toTs("[" + comp + "] " + item.getTs().getName(), tsData));
+                    col.add(TsManager.toTs("[" + comp + "] " + item.getTs().getName(), tsData));
                 }
             });
         }
 
-        Transferable transferable = DataTransfer.getDefault().fromTsCollection(col.build());
+        Transferable transferable = DataTransfer.getDefault().fromTsCollection(TsCollection.of(demetra.timeseries.TsSeq.of(col)));
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
     }
 

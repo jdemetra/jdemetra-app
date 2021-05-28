@@ -6,6 +6,7 @@ package ec.nbdemetra.x13.ui;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsSeq;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
 import ec.satoolkit.DecompositionMode;
@@ -80,12 +81,10 @@ public class X13Summary extends JComponent implements IDisposable {
         Disposables.disposeAndRemoveAll(document_).add(toolkit_.getHtmlViewer(summary));
 
         chart_.setTsCollection(
-                TsCollection
-                        .builder()
-                        .data(getMainSeries(ModellingDictionary.Y))
-                        .data(getMainSeries(ModellingDictionary.T))
-                        .data(getMainSeries(ModellingDictionary.SA))
-                        .build()
+                TsCollection.of(TsSeq.of(
+                        getMainSeries(ModellingDictionary.Y),
+                        getMainSeries(ModellingDictionary.T),
+                        getMainSeries(ModellingDictionary.SA)))
         );
 
         X11Results x11 = doc.getDecompositionPart();
@@ -98,8 +97,9 @@ public class X13Summary extends JComponent implements IDisposable {
             }
 
             siPanel_.setSiData(seas, si);
-        }else
+        } else {
             siPanel_.reset();
+        }
     }
 
     private demetra.timeseries.Ts getMainSeries(String str) {

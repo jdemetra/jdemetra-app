@@ -19,6 +19,7 @@ package internal.ui.components;
 import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsDomain;
 import demetra.timeseries.TsPeriod;
+import demetra.timeseries.TsSeq;
 import demetra.ui.components.TsGridObs;
 import ec.util.chart.ObsIndex;
 import java.util.List;
@@ -36,7 +37,7 @@ final class MultiTsGridData implements TsGridData {
     private final TsDataTable.Cursor cursor;
     private final TsGridObs obs;
 
-    public MultiTsGridData(List<demetra.timeseries.Ts> col) {
+    public MultiTsGridData(TsSeq col) {
         this.names = col.stream().map(demetra.timeseries.Ts::getName).collect(Collectors.toList());
         this.dataTable = TsDataTable.of(col, demetra.timeseries.Ts::getData);
         this.domain = dataTable.getDomain();

@@ -18,6 +18,7 @@ package internal.ui.components;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsSeq;
 import demetra.ui.NamedService;
 import demetra.ui.TsActions;
 import demetra.ui.components.TsSelectionBridge;
@@ -63,6 +64,7 @@ import java.awt.Image;
 import demetra.ui.OldDataTransfer;
 import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
+import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -322,7 +324,7 @@ public class HasTsCollectionCommands {
 
         @Override
         public boolean isEnabled(HasTsCollection component) {
-            return component.getTsCollection().getData().size() > 0;
+            return !component.getTsCollection().getData().isEmpty();
         }
 
         @Override
@@ -391,9 +393,7 @@ public class HasTsCollectionCommands {
         private void rename(HasTsCollection c, Ts ts, String newName) {
             List<Ts> tmp = c.getTsCollection().getData().stream().map(TsConverter::fromTs).collect(Collectors.toList());
             tmp.set(tmp.indexOf(ts), ts.rename(newName));
-            demetra.timeseries.TsCollection.Builder result = demetra.timeseries.TsCollection.builder();
-            tmp.forEach(o -> result.data(TsConverter.toTs(o)));
-            c.setTsCollection(result.build());
+            c.setTsCollection(tmp.stream().map(TsConverter::toTs).collect(TsCollection.toTsCollection()));
         }
     }
 
@@ -451,11 +451,11 @@ public class HasTsCollectionCommands {
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            List<demetra.timeseries.Ts> selection = JLists.getSelectionIndexStream(c.getTsSelectionModel())
+            TsSeq selection = JLists.getSelectionIndexStream(c.getTsSelectionModel())
                     .mapToObj(c.getTsCollection().getData()::get)
-                    .collect(Collectors.toList());
+                    .collect(TsSeq.toTsSeq());
             if (!selection.isEmpty()) {
-                List<TsCollection> data = Collections.singletonList(TsCollection.builder().data(selection).build());
+                List<TsCollection> data = Collections.singletonList(TsCollection.of(selection));
                 TsActions.getDefault().saveWith(data, tsSave.getName());
             }
         }
@@ -467,9 +467,8 @@ public class HasTsCollectionCommands {
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
-            c.getTsSelectionStream().forEach(col::data);
-            Transferable transferable = DataTransfer.getDefault().fromTsCollection(col.build());
+            TsSeq data = c.getTsSelectionStream().collect(TsSeq.toTsSeq());
+            Transferable transferable = DataTransfer.getDefault().fromTsCollection(TsCollection.of(data));
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
         }
     }
@@ -520,9 +519,12 @@ public class HasTsCollectionCommands {
         @Override
         public void execute(HasTsCollection c) throws Exception {
             Set<demetra.timeseries.Ts> selection = c.getTsSelectionStream().collect(Collectors.toSet());
-            demetra.timeseries.TsCollection.Builder result = demetra.timeseries.TsCollection.builder();
-            c.getTsCollection().getData().stream().filter(o -> !selection.contains(o)).forEach(result::data);
-            c.setTsCollection(result.build());
+            TsCollection result = c.getTsCollection()
+                    .getData()
+                    .stream()
+                    .filter(ts -> !selection.contains(ts))
+                    .collect(TsCollection.toTsCollection());
+            c.setTsCollection(result);
         }
     }
 
@@ -536,7 +538,7 @@ public class HasTsCollectionCommands {
 
         @Override
         public boolean isEnabled(HasTsCollection component) {
-            return !component.getTsUpdateMode().isReadOnly() && component.getTsCollection().getData().size() > 0;
+            return !component.getTsUpdateMode().isReadOnly() && !component.getTsCollection().getData().isEmpty();
         }
 
         @Override
@@ -582,9 +584,11 @@ public class HasTsCollectionCommands {
         public void execute(HasTsCollection c) throws Exception {
             JLists.getSelectionIndexStream(c.getTsSelectionModel())
                     .findFirst()
-                    .ifPresent(o -> {
+                    .ifPresent(i -> {
                         demetra.timeseries.TsCollection tmp = c.getTsCollection();
-                        c.setTsCollection(tmp.toBuilder().data(TsConverter.toTs(TsConverter.fromTs(tmp.getData().get(0)).freeze())).build());
+                        List<demetra.timeseries.Ts> list = new ArrayList<>(tmp.getData().getItems());
+                        list.add(list.get(i).freeze());
+                        c.setTsCollection(tmp.toBuilder().data(TsSeq.ofInternal(list)).build());
                     });
         }
     }

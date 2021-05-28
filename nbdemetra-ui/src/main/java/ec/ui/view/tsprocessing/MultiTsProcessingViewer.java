@@ -64,9 +64,7 @@ public class MultiTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocu
             IProcSpecification spec = doc.getSpecification();
             specLabel.setText("Spec: " + (spec != null ? spec.toString() : ""));
             quietRefresh = true;
-            TsCollection.Builder col = TsCollection.builder();
-            Stream.of(doc.getTs()).map(TsConverter::toTs).forEach(col::data);
-            tsList.setTsCollection(col.build());
+            tsList.setTsCollection(Stream.of(doc.getTs()).map(TsConverter::toTs).collect(TsCollection.toTsCollection()));
         } catch (Exception err) {
         } finally {
             quietRefresh = false;

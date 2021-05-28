@@ -77,7 +77,7 @@ public final class TsDataTableCellRenderer implements TableCellRenderer {
             demetra.timeseries.TsData data = (demetra.timeseries.TsData) value;
             switch (data.length()) {
                 case 0:
-                    String cause = data.getCause();
+                    String cause = data.getEmptyCause();
                     return renderUsingLabel(table, cause.isEmpty() ? "loading? invalid?" : cause, isSelected, hasFocus, row, column);
                 case 1:
                     return renderUsingLabel(table, "Single: " + formatValue(data.getValue(0)), isSelected, hasFocus, row, column);

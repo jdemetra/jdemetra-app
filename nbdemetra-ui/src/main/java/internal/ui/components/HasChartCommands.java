@@ -17,6 +17,8 @@
 package internal.ui.components;
 
 import demetra.bridge.TsConverter;
+import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsSeq;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.TsManager;
 import demetra.ui.components.TsSelectionBridge;
@@ -46,6 +48,8 @@ import demetra.ui.components.ComponentCommand;
 import ec.util.list.swing.JLists;
 import ec.util.various.swing.FontAwesome;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalInt;
 import javax.swing.ActionMap;
 import javax.swing.JCheckBoxMenuItem;
@@ -208,7 +212,7 @@ public class HasChartCommands {
         }
 
         private demetra.timeseries.TsCollection split(Ts ts) {
-            demetra.timeseries.TsCollection.Builder result = demetra.timeseries.TsCollection.builder();
+            List<demetra.timeseries.Ts> result = new ArrayList<>();
             Calendar cal = Calendar.getInstance();
             YearIterator yearIterator = new YearIterator(ts.getTsData());
             for (TsDataBlock o : NbCollections.iterable(yearIterator)) {
@@ -220,9 +224,9 @@ public class HasChartCommands {
                 }
                 String name = String.valueOf(o.start.getYear());
                 TsData tmp = dc.make(o.start.getFrequency(), TsAggregationType.None);
-                result.data(TsManager.toTs(name, tmp));
+                result.add(TsManager.toTs(name, tmp));
             }
-            return result.build();
+            return TsCollection.of(TsSeq.ofInternal(result));
         }
     }
     //</editor-fold>

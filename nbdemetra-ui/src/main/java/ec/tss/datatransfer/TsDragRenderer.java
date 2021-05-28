@@ -6,6 +6,7 @@ package ec.tss.datatransfer;
 
 import com.google.common.base.Suppliers;
 import demetra.bridge.TsConverter;
+import demetra.timeseries.TsCollection;
 import demetra.ui.util.TransferHandlers;
 import ec.tss.Ts;
 import demetra.ui.components.JTsChart;
@@ -46,10 +47,8 @@ public abstract class TsDragRenderer {
 
         @Override
         public Component getTsDragRendererComponent(List<? extends Ts> selection) {
-            demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder();
-            selection.forEach(o -> col.data(TsConverter.toTs(o)));
             JTsChart result = supplier.get();
-            result.setTsCollection(col.build());
+            result.setTsCollection(selection.stream().map(TsConverter::toTs).collect(TsCollection.toTsCollection()));
             return result;
         }
 

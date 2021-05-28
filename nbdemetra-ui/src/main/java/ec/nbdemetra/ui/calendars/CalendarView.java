@@ -27,6 +27,7 @@ import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
+import java.util.stream.IntStream;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
 import org.openide.explorer.propertysheet.PropertySheet;
@@ -108,16 +109,12 @@ public class CalendarView extends JComponent {
         }
 
         TsPeriod domainStart = TsConverter.toTsPeriod(domain.getStart());
-        TsCollection.Builder tss = TsCollection.builder();
-        for (int i = 0; i < nx; ++i) {
-            tss.data(Ts
-                    .builder()
-                    .name(getCmpName(i))
-                    .data(TsData.ofInternal(domainStart, buffer.get(i).getData()))
-                    .build());
-        }
+        TsCollection tss = IntStream
+                .range(0, nx)
+                .mapToObj(i -> Ts.builder().name(getCmpName(i)).data(TsData.ofInternal(domainStart, buffer.get(i).getData())).build())
+                .collect(TsCollection.toTsCollection());
 
-        tsGrid.setTsCollection(tss.build());
+        tsGrid.setTsCollection(tss);
         tsGrid.getTsSelectionModel().clearSelection();
         tsGrid.getTsSelectionModel().addSelectionInterval(0, 0);
     }

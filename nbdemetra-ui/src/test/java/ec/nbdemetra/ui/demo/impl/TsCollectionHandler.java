@@ -35,9 +35,11 @@ import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import demetra.ui.util.FontAwesomeUtils;
 import demetra.demo.DemoTsBuilder;
+import demetra.timeseries.Ts;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsSeq;
 import demetra.ui.components.TsSelectionBridge;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -45,10 +47,11 @@ import java.awt.event.ActionListener;
 import java.beans.BeanInfo;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
+import java.util.List;
 import java.util.stream.IntStream;
 import javax.swing.*;
 import org.openide.awt.DropDownButtonFactory;
@@ -67,22 +70,22 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
 
     public TsCollectionHandler() {
         super(HasTsCollection.class);
-        TsCollection.Builder tmp = TsCollection.builder();
+        List<Ts> tmp = new ArrayList<>();
 
         int nbrYears = 3;
 
         BUILDER.forecastCount(2);
         EnumSet.complementOf(EnumSet.of(TsFrequency.Undefined)).forEach((o) -> {
-            tmp.data(BUILDER.start(TsPeriod.of(TsConverter.toTsUnit(o), 0)).obsCount(nbrYears * o.intValue()).name(o.name()).build());
+            tmp.add(BUILDER.start(TsPeriod.of(TsConverter.toTsUnit(o), 0)).obsCount(nbrYears * o.intValue()).name(o.name()).build());
         });
 
         BUILDER.start(TsPeriod.of(TsUnit.MONTH, 0));
-        tmp.data(BUILDER.obsCount(1).missingCount(0).name("Single").build());
-        tmp.data(BUILDER.obsCount(nbrYears * 12).missingCount(3).name("Missing").build());
-        tmp.data(BUILDER.obsCount(0).missingCount(0).name("Empty").build());
+        tmp.add(BUILDER.obsCount(1).missingCount(0).name("Single").build());
+        tmp.add(BUILDER.obsCount(nbrYears * 12).missingCount(3).name("Missing").build());
+        tmp.add(BUILDER.obsCount(0).missingCount(0).name("Empty").build());
 //        col.items.add(BUILDER.withType(TsStatus.Invalid).withName("Invalid").build());
 //        col.items.add(BUILDER.withType(TsStatus.Undefined).withName("Undefined").build());
-        this.col = tmp.build();
+        this.col = TsCollection.of(TsSeq.of(tmp));
     }
 
     @Override
@@ -131,11 +134,9 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
                     .start(startPeriod)
                     .forecastCount(3)
                     .missingCount(0);
-            TsCollection.Builder result = TsCollection.builder();
-            IntStream.range(0, size)
+            c.setTsCollection(IntStream.range(0, size)
                     .mapToObj(o -> BUILDER.name("S" + o).build())
-                    .forEach(result::data);
-            c.setTsCollection(result.build());
+                    .collect(TsCollection.toTsCollection()));
         }
     }
 
@@ -157,11 +158,9 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
                         .forecastCount(panel.getForecastCount())
                         //                        .withNaming(panel.getNaming())
                         .missingCount(panel.getMissingValues());
-                TsCollection.Builder result = c.getTsCollection().toBuilder();
-                IntStream.range(0, panel.getSeriesCount())
+                c.setTsCollection(IntStream.range(0, panel.getSeriesCount())
                         .mapToObj(o -> BUILDER.name("S" + o).build())
-                        .forEach(result::data);
-                c.setTsCollection(result.build());
+                        .collect(TsCollection.toTsCollection()));
             }
         }
     }
@@ -190,9 +189,9 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            LinkedList<demetra.timeseries.Ts> tmp = new LinkedList<>(c.getTsCollection().getData());
+            LinkedList<demetra.timeseries.Ts> tmp = new LinkedList<>(c.getTsCollection().getData().getItems());
             tmp.removeLast();
-            c.setTsCollection(demetra.timeseries.TsCollection.builder().data(tmp).build());
+            c.setTsCollection(demetra.timeseries.TsCollection.of(TsSeq.of(tmp)));
         }
     }
 
@@ -349,7 +348,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
         public void execute(HasTsCollection c) throws Exception {
             ec.tss.TsCollection col = TsManager.getDefault().getTsCollection(dataSource, TsInformationType.Definition).get();
             col.query(TsInformationType.All);
-            c.setTsCollection(c.getTsCollection().toBuilder().data(col.stream().map(TsConverter::toTs).collect(Collectors.toList())).build());
+            c.setTsCollection(c.getTsCollection().toBuilder().data(col.stream().map(TsConverter::toTs).collect(TsSeq.toTsSeq())).build());
         }
     }
 
@@ -365,7 +364,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
         public void execute(HasTsCollection c) throws Exception {
             ec.tss.TsCollection col = TsManager.getDefault().getTsCollection(dataSet, TsInformationType.Definition).get();
             col.query(TsInformationType.All);
-            c.setTsCollection(c.getTsCollection().toBuilder().data(col.stream().map(TsConverter::toTs).collect(Collectors.toList())).build());
+            c.setTsCollection(c.getTsCollection().toBuilder().data(col.stream().map(TsConverter::toTs).collect(TsSeq.toTsSeq())).build());
         }
     }
 }

@@ -4,6 +4,7 @@
  */
 package ec.tss.datatransfer.impl;
 
+import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -15,7 +16,9 @@ import ec.tstoolkit.timeseries.simplets.TsDataTable;
 import ec.tstoolkit.timeseries.simplets.TsDataTableInfo;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -31,7 +34,7 @@ class TsCollectionAnalyser {
         if (titles == null || dates == null || data == null) {
             return null;
         }
-        demetra.timeseries.TsCollection.Builder coll = demetra.timeseries.TsCollection.builder();
+        List<demetra.timeseries.Ts> coll = new ArrayList<>();
         for (int i = 1; i < titles.length; ++i) {
             TsDataCollector cur = new TsDataCollector();
             for (int j = 0; j < dates.length; ++j) {
@@ -41,9 +44,9 @@ class TsCollectionAnalyser {
                 }
             }
             TsData data = cur.make(TsFrequency.Undefined, TsAggregationType.None);
-            coll.data(TsManager.toTs(titles[i], data));
+            coll.add(TsManager.toTs(titles[i], data));
         }
-        return coll.build();
+        return demetra.timeseries.TsCollection.of(TsSeq.of(coll));
     }
 
     void set(TsCollection col, boolean begin) {

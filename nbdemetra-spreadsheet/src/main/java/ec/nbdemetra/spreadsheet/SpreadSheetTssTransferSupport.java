@@ -19,7 +19,6 @@ package ec.nbdemetra.spreadsheet;
 import com.google.common.base.Converter;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.properties.PropertySheetDialogBuilder;
@@ -43,7 +42,6 @@ import ec.util.spreadsheet.helpers.ArraySheet;
 import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.io.IOException;
-import java.util.stream.Collectors;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
@@ -94,14 +92,11 @@ final class SpreadSheetTssTransferSupport {
         try (Book book = resource.toBook(obj)) {
             if (book.getSheetCount() > 0) {
                 TsCollectionInformation info = resource.getFactory().toTsCollectionInfo(book.getSheet(0), resource.getInternalConfig().getTsImportOptions());
-                return TsCollection
-                        .builder()
-                        .data(info.items
-                                .stream()
-                                .filter(TsInformation::hasData)
-                                .map(o -> TsManager.toTs(o.name, o.data))
-                                .collect(Collectors.toList()))
-                        .build();
+                return info.items
+                        .stream()
+                        .filter(TsInformation::hasData)
+                        .map(tsInfo -> TsConverter.toTsBuilder(tsInfo).build())
+                        .collect(TsCollection.toTsCollection());
             }
             return TsCollection.EMPTY;
         }
