@@ -20,7 +20,6 @@ import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.anomalydetection.ControlNode;
@@ -529,7 +528,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
             summary.set(null, null);
             chart.setTsCollection(TsCollection.EMPTY);
         } else {
-            demetra.timeseries.Ts single = list.getTsCollection().getData().get(singleSelection.getAsInt());
+            demetra.timeseries.Ts single = list.getTsCollection().get(singleSelection.getAsInt());
             AnomalyItem a = list.getMap().get(single.getName());
             if (a.isInvalid() || a.isNotProcessable()) {
                 summary.set(null, null);
@@ -540,7 +539,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
                 summary.set(a, cl.getEstimatedModel());
             }
 
-            chart.setTsCollection(TsCollection.of(TsSeq.of(TsConverter.toTs(a.getTs()))));
+            chart.setTsCollection(TsCollection.of(TsConverter.toTs(a.getTs())));
             chart.repaint();
         }
         summary.repaint();

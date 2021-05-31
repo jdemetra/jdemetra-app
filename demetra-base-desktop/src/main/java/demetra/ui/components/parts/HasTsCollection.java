@@ -18,12 +18,10 @@ package demetra.ui.components.parts;
 
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import demetra.ui.NextTsManager;
 import demetra.ui.beans.PropertyChangeBroadcaster;
 import ec.util.list.swing.JLists;
 import internal.ui.components.parts.HasTsCollectionImpl;
-import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -83,7 +81,7 @@ public interface HasTsCollection {
 
     @NonNull
     default IntStream getTsSelectionIndexStream() {
-        int size = getTsCollection().getData().size();
+        int size = getTsCollection().size();
         return JLists
                 .getSelectionIndexStream(getTsSelectionModel())
                 .filter(o -> o < size);
@@ -91,11 +89,11 @@ public interface HasTsCollection {
 
     @NonNull
     default Stream<Ts> getTsSelectionStream() {
-        TsSeq tss = getTsCollection().getData();
+        TsCollection col = getTsCollection();
         return JLists
                 .getSelectionIndexStream(getTsSelectionModel())
-                .filter(o -> o < tss.size())
-                .mapToObj(tss::get);
+                .filter(o -> o < col.size())
+                .mapToObj(col::get);
     }
 
     @NonNull

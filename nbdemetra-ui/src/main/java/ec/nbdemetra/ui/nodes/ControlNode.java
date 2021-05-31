@@ -86,7 +86,7 @@ public class ControlNode {
     }
 
     private static Ts getSingleOrNull(HasTsCollection view) {
-        return view.getTsCollection().getData().stream().findFirst().orElse(null);
+        return view.getTsCollection().stream().findFirst().orElse(null);
     }
 
     private static void selectSingleIfReadonly(ExplorerManager mgr, HasTsCollection view) {
@@ -141,7 +141,7 @@ public class ControlNode {
 
             @Override
             protected void addNotify() {
-                setKeys(col.getData().getItems());
+                setKeys(col.getItems());
             }
 
             @Override
@@ -205,7 +205,7 @@ public class ControlNode {
         }
 
         b.withEnum(TsInformationType.class).select(col, "getType", null).display("Information type").add();
-        b.withInt().select(col.getData(), "getSize", null).display("Series count").add();
+        b.withInt().select(col, "getSize", null).display("Series count").add();
 
         return b.build();
     }

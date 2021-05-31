@@ -170,7 +170,7 @@ public class JTsAnomalyGrid extends JComponent {
 
     public Ts getSelectedItem() {
         OptionalInt singleSelection = JLists.getSelectionIndexStream(grid.getTsSelectionModel()).findFirst();
-        return singleSelection.isPresent() ? TsConverter.fromTs(grid.getTsCollection().getData().get(singleSelection.getAsInt())) : null;
+        return singleSelection.isPresent() ? TsConverter.fromTs(grid.getTsCollection().get(singleSelection.getAsInt())) : null;
     }
 
     public boolean isShowAO() {

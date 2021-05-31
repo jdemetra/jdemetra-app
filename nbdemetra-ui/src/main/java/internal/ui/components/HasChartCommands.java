@@ -18,7 +18,6 @@ package internal.ui.components;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.TsManager;
 import demetra.ui.components.TsSelectionBridge;
@@ -191,7 +190,7 @@ public class HasChartCommands {
         public boolean isEnabled(HasTsCollection c) {
             OptionalInt selection = JLists.getSelectionIndexStream(c.getTsSelectionModel()).findFirst();
             if (selection.isPresent()) {
-                demetra.timeseries.TsData data = c.getTsCollection().getData().get(selection.getAsInt()).getData();
+                demetra.timeseries.TsData data = c.getTsCollection().get(selection.getAsInt()).getData();
                 return !data.isEmpty() && Duration.between(data.getDomain().start(), data.getDomain().end()).toDays() > 365;
             }
             return false;
@@ -199,7 +198,7 @@ public class HasChartCommands {
 
         @Override
         public void execute(HasTsCollection component) throws Exception {
-            Ts ts = TsConverter.fromTs(component.getTsCollection().getData().get(component.getTsSelectionModel().getMinSelectionIndex()));
+            Ts ts = TsConverter.fromTs(component.getTsCollection().get(component.getTsSelectionModel().getMinSelectionIndex()));
             ChartTopComponent c = new ChartTopComponent();
             c.getChart().setTitle(ts.getName());
             c.getChart().setObsFormat(ObsFormat.of(null, "MMM", null));
@@ -226,7 +225,7 @@ public class HasChartCommands {
                 TsData tmp = dc.make(o.start.getFrequency(), TsAggregationType.None);
                 result.add(TsManager.toTs(name, tmp));
             }
-            return TsCollection.of(TsSeq.ofInternal(result));
+            return TsCollection.of(result);
         }
     }
     //</editor-fold>

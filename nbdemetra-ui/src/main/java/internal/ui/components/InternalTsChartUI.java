@@ -125,8 +125,8 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
         chartPanel.setSeriesFormatter(new SeriesFunction<String>() {
             @Override
             public String apply(int series) {
-                return target.getTsCollection().getData().size() > series
-                        ? target.getTsCollection().getData().get(series).getName()
+                return target.getTsCollection().size() > series
+                        ? target.getTsCollection().get(series).getName()
                         : chartPanel.getDataset().getSeriesKey(series).toString();
             }
         });
@@ -138,7 +138,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
                 CharSequence value = chartPanel.getValueFormat().format(dataset.getY(series, obs));
                 StringBuilder result = new StringBuilder();
                 result.append(period).append(": ").append(value);
-                if (series < target.getTsCollection().getData().size() && tsFeatures.hasFeature(TsFeatureHelper.Feature.Forecasts, series, obs)) {
+                if (series < target.getTsCollection().size() && tsFeatures.hasFeature(TsFeatureHelper.Feature.Forecasts, series, obs)) {
                     result.append("\nForecast");
                 }
                 return result.toString();
@@ -147,13 +147,13 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
         chartPanel.setDashPredicate(new ObsPredicate() {
             @Override
             public boolean apply(int series, int obs) {
-                return series < target.getTsCollection().getData().size() && tsFeatures.hasFeature(TsFeatureHelper.Feature.Forecasts, series, obs);
+                return series < target.getTsCollection().size() && tsFeatures.hasFeature(TsFeatureHelper.Feature.Forecasts, series, obs);
             }
         });
         chartPanel.setLegendVisibilityPredicate(new SeriesPredicate() {
             @Override
             public boolean apply(int series) {
-                return series < target.getTsCollection().getData().size();
+                return series < target.getTsCollection().size();
             }
         });
     }
@@ -246,8 +246,8 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
     private void onCollectionChange() {
         selectionListener.setEnabled(false);
         demetra.timeseries.TsCollection tss = target.getTsCollection();
-        tsFeatures = TsFeatureHelper.of(tss.getData().getItems());
-        chartPanel.setDataset(TsXYDataset.of(tss.getData().getItems()));
+        tsFeatures = TsFeatureHelper.of(tss.getItems());
+        chartPanel.setDataset(TsXYDataset.of(tss.getItems()));
         updateNoDataMessage();
         selectionListener.setEnabled(true);
     }
@@ -273,25 +273,25 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
         demetra.timeseries.TsCollection dropContent = target.getDropContent();
 
         List<demetra.timeseries.Ts> tmp = new ArrayList<>();
-        tmp.addAll(dropContent.getData().getItems());
-        tmp.removeAll(collection.getData().getItems());
+        tmp.addAll(dropContent.getItems());
+        tmp.removeAll(collection.getItems());
 
         List<demetra.timeseries.Ts> tss = Stream
-                .concat(collection.getData().stream(), tmp.stream())
+                .concat(collection.stream(), tmp.stream())
                 .collect(Collectors.toList());
         chartPanel.setDataset(TsXYDataset.of(tss));
 
         selectionListener.setEnabled(false);
         ListSelectionModel m = chartPanel.getSeriesSelectionModel();
-        if (dropContent.getData().size() > 0) {
+        if (dropContent.size() > 0) {
             savedSelection.clear();
             for (int series = m.getMinSelectionIndex(); series <= m.getMaxSelectionIndex(); series++) {
                 if (m.isSelectedIndex(series)) {
                     savedSelection.add(series);
                 }
             }
-            int offset = target.getTsCollection().getData().size();
-            m.setSelectionInterval(offset, offset + dropContent.getData().size());
+            int offset = target.getTsCollection().size();
+            m.setSelectionInterval(offset, offset + dropContent.size());
         } else {
             m.clearSelection();
             for (int series : savedSelection.toArray()) {

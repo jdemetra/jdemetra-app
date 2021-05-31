@@ -8,7 +8,6 @@ import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
-import demetra.timeseries.TsSeq;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.tstoolkit.timeseries.regression.ITsVariable;
@@ -56,6 +55,6 @@ public class RegressorsUI<V extends IProcDocumentView<?>> extends DefaultItemUI<
                 }
             }
         }
-        return TsCollection.of(TsSeq.of(collection));
+        return TsCollection.of(collection);
     }
 }

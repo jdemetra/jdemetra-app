@@ -21,7 +21,7 @@ import demetra.bridge.TsConverter;
 import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.Ts;
-import demetra.timeseries.TsSeq;
+import demetra.timeseries.TsCollection;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasObsFormat;
@@ -339,8 +339,8 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     }
 
     private void updateGridModel() {
-        int index = target.getMode() == JTsGrid.Mode.SINGLETS ? Math.min(target.getSingleTsIndex(), target.getTsCollection().getData().size() - 1) : -1;
-        TsGridData data = TsGridData.create(target.getTsCollection().getData(), index);
+        int index = target.getMode() == JTsGrid.Mode.SINGLETS ? Math.min(target.getSingleTsIndex(), target.getTsCollection().size() - 1) : -1;
+        TsGridData data = TsGridData.create(target.getTsCollection().getItems(), index);
         boolean transposed = target.getOrientation().equals(JTsGrid.Orientation.REVERSED);
         boolean ascending = target.getChronology().equals(JTsGrid.Chronology.ASCENDING);
         boolean single = index != -1;
@@ -372,8 +372,8 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         if (selectionListener.isEnabled()) {
             if (target.getMode() == JTsGrid.Mode.MULTIPLETS) {
                 selectionListener.changeSelection(target.getOrientation() == JTsGrid.Orientation.NORMAL ? grid.getColumnSelectionModel() : grid.getRowSelectionModel());
-            } else if (target.getTsCollection().getData().size() > 0) {
-                int index = Math.min(target.getSingleTsIndex(), target.getTsCollection().getData().size() - 1);
+            } else if (target.getTsCollection().size() > 0) {
+                int index = Math.min(target.getSingleTsIndex(), target.getTsCollection().size() - 1);
                 if (combo.isVisible()) {
                     combo.setSelectedIndex(index);
                 }
@@ -384,8 +384,8 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     }
 
     private void updateComboModel() {
-        if (target.getMode() == JTsGrid.Mode.SINGLETS && target.getTsCollection().getData().size() > 1) {
-            combo.setModel(new DefaultComboBoxModel<>(target.getTsCollection().getData().toArray(Ts[]::new)));
+        if (target.getMode() == JTsGrid.Mode.SINGLETS && target.getTsCollection().size() > 1) {
+            combo.setModel(new DefaultComboBoxModel<>(target.getTsCollection().toArray(Ts[]::new)));
             combo.setVisible(true);
         } else {
             combo.setVisible(false);
@@ -393,7 +393,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     }
 
     private void updateGridCellRenderer() {
-        TsSeq data = target.getTsCollection().getData();
+        TsCollection data = target.getTsCollection();
         Supplier<TsFeatureHelper> tsFeatures = Suppliers.memoize(() -> TsFeatureHelper.of(data.getItems()));
         Supplier<DescriptiveStatistics> stats = Suppliers.memoize(() -> {
             return target.getSingleTsIndex() != -1
@@ -497,7 +497,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         protected void selectionChanged(ListSelectionModel model) {
             if (target.getMode() == JTsGrid.Mode.MULTIPLETS) {
                 super.selectionChanged(model);
-            } else if (target.getTsCollection().getData().size() > target.getSingleTsIndex()) {
+            } else if (target.getTsCollection().size() > target.getSingleTsIndex()) {
                 int index = target.getSingleTsIndex();
                 target.getTsSelectionModel().clearSelection();
                 target.getTsSelectionModel().setSelectionInterval(index, index);

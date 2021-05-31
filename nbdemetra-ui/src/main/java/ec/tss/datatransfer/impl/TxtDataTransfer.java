@@ -100,7 +100,7 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
 
     @Override
     public boolean canExportTsCollection(demetra.timeseries.TsCollection col) {
-        return config.exportTimeSeries && !col.getData().isEmpty();
+        return config.exportTimeSeries && !col.isEmpty();
     }
 
     @Override

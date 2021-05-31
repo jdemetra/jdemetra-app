@@ -18,8 +18,6 @@ package internal.ui.components.parts;
 
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsMoniker;
-import demetra.timeseries.TsSeq;
 import demetra.ui.NextTsManager;
 import demetra.ui.TsEvent;
 import demetra.ui.TsListener;
@@ -28,7 +26,6 @@ import demetra.ui.components.parts.HasTsCollection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.ListSelectionModel;
 
@@ -122,13 +119,13 @@ public final class HasTsCollectionImpl implements HasTsCollection, TsListener {
             TsCollection newData = event.getSource().getTsCollection(event.getMoniker(), col.getType());
             setTsCollection(newData);
         } else {
-            int index = col.getData().indexOf(ts -> ts.getMoniker().equals(event.getMoniker()));
+            int index = col.indexOf(ts -> ts.getMoniker().equals(event.getMoniker()));
             if (index != -1) {
-                Ts oldData = col.getData().get(index);
+                Ts oldData = col.get(index);
                 Ts newData = event.getSource().getTs(oldData.getMoniker(), oldData.getType());
-                List<Ts> list = new ArrayList<>(col.getData().getItems());
+                List<Ts> list = new ArrayList<>(col.getItems());
                 list.set(index, newData);
-                setTsCollection(col.toBuilder().data(TsSeq.ofInternal(list)).build());
+                setTsCollection(col.toBuilder().items(list).build());
             }
         }
     }

@@ -101,7 +101,7 @@ public final class TxtTsSave implements TsActionsSaveSpi {
         ph.progress("Loading time series");
         TsCollection.Builder content = TsCollection.builder();
         for (TsCollection col : data) {
-            content.data(TsManager.getDefault().load(col, TsInformationType.All).getData());
+            content.items(TsManager.getDefault().load(col, TsInformationType.All).getItems());
         }
 
         ph.progress("Creating content");

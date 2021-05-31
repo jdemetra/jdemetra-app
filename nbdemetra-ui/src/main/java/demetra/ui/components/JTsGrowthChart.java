@@ -27,7 +27,6 @@ import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDataTable;
-import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.DemetraUI;
@@ -137,18 +136,17 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
     }
 
     private static List<Ts> computeGrowthData(TsCollection input, GrowthKind kind, int lastyears) {
-        TsSeq tss = input.getData();
-        return computeGrowthData(tss, kind, computeSelector(tss, lastyears));
+        return computeGrowthData(input, kind, computeSelector(input, lastyears));
     }
 
-    private static List<Ts> computeGrowthData(TsSeq input, GrowthKind kind, TimeSelector selector) {
+    private static List<Ts> computeGrowthData(TsCollection input, GrowthKind kind, TimeSelector selector) {
         return input
                 .stream()
                 .map(ts -> Ts.builder().name(ts.getName()).data(computeGrowthData(ts.getData(), kind, selector)).build())
                 .collect(Collectors.toList());
     }
 
-    private static TimeSelector computeSelector(TsSeq tss, int lastyears) {
+    private static TimeSelector computeSelector(TsCollection tss, int lastyears) {
         if (tss.stream().anyMatch(ts -> ts.getData().isEmpty() && ts.getData().getEmptyCause() != null)) {
             return TimeSelector.all();
         }

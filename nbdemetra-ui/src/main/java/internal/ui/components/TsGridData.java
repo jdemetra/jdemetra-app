@@ -16,9 +16,10 @@
  */
 package internal.ui.components;
 
-import demetra.timeseries.TsSeq;
+import demetra.timeseries.Ts;
 import demetra.ui.components.TsGridObs;
 import ec.util.chart.ObsIndex;
+import java.util.List;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -48,7 +49,7 @@ interface TsGridData {
     int getColumnIndex(@NonNull ObsIndex index);
 
     @NonNull
-    static TsGridData create(TsSeq col, int singleSeriesIndex) {
+    static TsGridData create(List<Ts> col, int singleSeriesIndex) {
         if (col.isEmpty() || (singleSeriesIndex != -1 && col.get(singleSeriesIndex).getData().isEmpty())) {
             return Empty.INSTANCE;
         }

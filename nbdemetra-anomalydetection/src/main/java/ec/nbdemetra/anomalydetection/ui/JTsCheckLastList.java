@@ -18,7 +18,7 @@ package ec.nbdemetra.anomalydetection.ui;
 
 import demetra.bridge.TsConverter;
 import demetra.demo.DemoTsBuilder;
-import demetra.timeseries.TsSeq;
+import demetra.timeseries.TsCollection;
 import demetra.ui.components.parts.HasTsCollection;
 import static demetra.ui.components.parts.HasTsCollection.TS_COLLECTION_PROPERTY;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
@@ -318,7 +318,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         Map<String, AnomalyItem> temp = new HashMap<>();
         items.clear();
-        TsSeq collection = getTsCollection().getData();
+        TsCollection collection = getTsCollection();
         for (int i = 0; i < collection.size(); i++) {
             String name = collection.get(i).getName();
             if (map.containsKey(name)) {
@@ -362,7 +362,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     }
 
     private Optional<AnomalyItem> getAnomaly(demetra.timeseries.Ts ts) {
-        int index = getTsCollection().getData().indexOf(Predicate.isEqual(ts));
+        int index = getTsCollection().indexOf(Predicate.isEqual(ts));
         return index != -1 ? Optional.ofNullable(getItems().get(index)) : Optional.empty();
     }
 
@@ -532,7 +532,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
             if (result instanceof JLabel) {
                 JLabel c = (JLabel) result;
                 int rowIndex = table.convertRowIndexToModel(row);
-                if (getTsCollection().getData().size() > row) {
+                if (getTsCollection().size() > row) {
                     c.setOpaque(true);
                     if (!isSelected) {
                         c.setOpaque(true);

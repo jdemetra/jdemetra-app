@@ -4,7 +4,6 @@
  */
 package ec.tss.datatransfer.impl;
 
-import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
@@ -46,7 +45,7 @@ class TsCollectionAnalyser {
             TsData data = cur.make(TsFrequency.Undefined, TsAggregationType.None);
             coll.add(TsManager.toTs(titles[i], data));
         }
-        return demetra.timeseries.TsCollection.of(TsSeq.of(coll));
+        return demetra.timeseries.TsCollection.of(coll);
     }
 
     void set(TsCollection col, boolean begin) {

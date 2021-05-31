@@ -7,7 +7,6 @@ package ec.nbdemetra.sa;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import ec.nbdemetra.sa.composite.DirectIndirectViewFactory;
 import ec.nbdemetra.ui.ActiveViewManager;
@@ -181,7 +180,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     private void initList() {
         inputList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             TsData sum = null;
-            for (demetra.timeseries.Ts o : inputList.getTsCollection().getData()) {
+            for (demetra.timeseries.Ts o : inputList.getTsCollection()) {
                 Ts s = TsConverter.fromTs(o);
                 if (s.hasData() == TsStatus.Undefined) {
                     TsManager.getDefault().load(s, TsInformationType.Data);
@@ -189,7 +188,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
                 sum = TsData.add(sum, s.getTsData());
             }
             demetra.timeseries.Ts t = TsManager.toTs("Total", sum);
-            saChart.setTsCollection(TsCollection.of(TsSeq.of(t)));
+            saChart.setTsCollection(TsCollection.of(t));
             clear();
         });
     }

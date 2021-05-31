@@ -6,7 +6,6 @@ package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.components.JTsTable;
 import ec.tss.Ts;
@@ -86,14 +85,14 @@ public class RegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocume
         try {
 
             quietRefresh = true;
-            if (yList.getTsCollection().getData().isEmpty()) {
+            if (yList.getTsCollection().isEmpty()) {
                 getDocument().setInput(null);
             }
-            if (xList.getTsCollection().getData().isEmpty()) {
-                Ts[] y = yList.getTsCollection().getData().stream().map(TsConverter::fromTs).toArray(Ts[]::new);
+            if (xList.getTsCollection().isEmpty()) {
+                Ts[] y = yList.getTsCollection().stream().map(TsConverter::fromTs).toArray(Ts[]::new);
                 getDocument().setInput(y);
             } else {
-                Ts[] tmp = Stream.concat(yList.getTsCollection().getData().stream(), xList.getTsCollection().getData().stream()).map(TsConverter::fromTs).toArray(Ts[]::new);
+                Ts[] tmp = Stream.concat(yList.getTsCollection().stream(), xList.getTsCollection().stream()).map(TsConverter::fromTs).toArray(Ts[]::new);
                 getDocument().setInput(tmp);
             }
             refreshAll();
@@ -109,7 +108,7 @@ public class RegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocume
             yList.setTsCollection(TsCollection.EMPTY);
             xList.setTsCollection(TsCollection.EMPTY);
         } else {
-            yList.setTsCollection(TsCollection.of(TsSeq.of(TsConverter.toTs(s[0]))));
+            yList.setTsCollection(TsCollection.of(TsConverter.toTs(s[0])));
             xList.setTsCollection(Stream.of(s).skip(1).map(TsConverter::toTs).collect(TsCollection.toTsCollection()));
         }
     }

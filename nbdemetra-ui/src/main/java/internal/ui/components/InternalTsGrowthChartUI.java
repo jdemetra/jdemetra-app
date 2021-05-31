@@ -123,8 +123,8 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
         chartPanel.setSeriesFormatter(new SeriesFunction<String>() {
             @Override
             public String apply(int series) {
-                return target.getTsCollection().getData().size() > series
-                        ? target.getTsCollection().getData().get(series).getName()
+                return target.getTsCollection().size() > series
+                        ? target.getTsCollection().get(series).getName()
                         : chartPanel.getDataset().getSeriesKey(series).toString();
             }
         });
@@ -142,7 +142,7 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
         chartPanel.setLegendVisibilityPredicate(new SeriesPredicate() {
             @Override
             public boolean apply(int series) {
-                return series < target.getTsCollection().getData().size();
+                return series < target.getTsCollection().size();
             }
         });
         chartPanel.setSeriesRenderer(SeriesFunction.always(TimeSeriesChart.RendererType.COLUMN));

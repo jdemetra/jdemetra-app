@@ -17,7 +17,6 @@
 package internal;
 
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import internal.ui.components.InternalUI;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import static demetra.ui.components.parts.HasTsData.TS_DATA_PROPERTY;
@@ -120,7 +119,7 @@ public final class InternalResidualsViewUI implements InternalUI<ResidualsView> 
             Range rng = calcRange(data.getValues().toArray());
             ((NumberAxis) chartPanel.getChart().getXYPlot().getRangeAxis()).setTickUnit(new NumberTickUnit(calcTick(rng)), true, false);
 
-            grid.setTsCollection(TsCollection.of(TsSeq.of(ts)));
+            grid.setTsCollection(TsCollection.of(ts));
         } else {
             grid.setTsCollection(TsCollection.EMPTY);
         }

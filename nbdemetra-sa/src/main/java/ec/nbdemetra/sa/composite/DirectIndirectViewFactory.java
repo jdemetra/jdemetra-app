@@ -5,7 +5,6 @@
 package ec.nbdemetra.sa.composite;
 
 import demetra.bridge.TsConverter;
-import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.diagnostics.IBTest;
@@ -81,7 +80,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 TsData sa = results.getData(id, TsData.class);
                 result.add(TsManager.toTs(name, sa));
             }
-            return demetra.timeseries.TsCollection.of(TsSeq.of(result));
+            return demetra.timeseries.TsCollection.of(result);
         }
     }
 
@@ -101,7 +100,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 TsData sa = results.getData(id, TsData.class);
                 result.add(TsManager.toTs(name, sa));
             }
-            return demetra.timeseries.TsCollection.of(TsSeq.of(result));
+            return demetra.timeseries.TsCollection.of(result);
         }
     }
 

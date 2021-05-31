@@ -52,7 +52,7 @@ public class MultiTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocu
         
         tsList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             if (!quietRefresh) {
-                getDocument().setInput(tsList.getTsCollection().getData().stream().map(TsConverter::fromTs).toArray());
+                getDocument().setInput(tsList.getTsCollection().stream().map(TsConverter::fromTs).toArray());
             }
         });
     }

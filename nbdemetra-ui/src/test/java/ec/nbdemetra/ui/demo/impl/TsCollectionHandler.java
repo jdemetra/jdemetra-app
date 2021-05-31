@@ -39,7 +39,6 @@ import demetra.timeseries.Ts;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import demetra.ui.components.TsSelectionBridge;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -52,6 +51,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.swing.*;
 import org.openide.awt.DropDownButtonFactory;
@@ -85,7 +85,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
         tmp.add(BUILDER.obsCount(0).missingCount(0).name("Empty").build());
 //        col.items.add(BUILDER.withType(TsStatus.Invalid).withName("Invalid").build());
 //        col.items.add(BUILDER.withType(TsStatus.Undefined).withName("Undefined").build());
-        this.col = TsCollection.of(TsSeq.of(tmp));
+        this.col = TsCollection.of(tmp);
     }
 
     @Override
@@ -184,14 +184,14 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
 
         @Override
         public boolean isEnabled(HasTsCollection component) {
-            return component.getTsCollection().getData().size() > 0;
+            return component.getTsCollection().size() > 0;
         }
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            LinkedList<demetra.timeseries.Ts> tmp = new LinkedList<>(c.getTsCollection().getData().getItems());
+            LinkedList<demetra.timeseries.Ts> tmp = new LinkedList<>(c.getTsCollection().getItems());
             tmp.removeLast();
-            c.setTsCollection(demetra.timeseries.TsCollection.of(TsSeq.of(tmp)));
+            c.setTsCollection(demetra.timeseries.TsCollection.of(tmp));
         }
     }
 
@@ -241,7 +241,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
             new AbstractAction("All") {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    view.getTsSelectionModel().setSelectionInterval(0, view.getTsCollection().getData().size());
+                    view.getTsSelectionModel().setSelectionInterval(0, view.getTsCollection().size());
                 }
             },
             new AbstractAction("None") {
@@ -254,7 +254,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     view.getTsSelectionModel().clearSelection();
-                    for (int i = 0; i < view.getTsCollection().getData().size(); i += 2) {
+                    for (int i = 0; i < view.getTsCollection().size(); i += 2) {
                         view.getTsSelectionModel().addSelectionInterval(i, i);
                     }
                 }
@@ -263,7 +263,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     int[] selection = IntStream
-                            .range(0, view.getTsCollection().getData().size())
+                            .range(0, view.getTsCollection().size())
                             .filter(i -> !view.getTsSelectionModel().isSelectedIndex(i))
                             .toArray();
                     view.getTsSelectionModel().clearSelection();
@@ -293,7 +293,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
             ((JComponent) view).addPropertyChangeListener(evt -> {
                 switch (evt.getPropertyName()) {
                     case TsSelectionBridge.TS_SELECTION_PROPERTY:
-                        result.setText(" [" + JLists.getSelectionIndexSize(view.getTsSelectionModel()) + "/" + view.getTsCollection().getData().size() + "] ");
+                        result.setText(" [" + JLists.getSelectionIndexSize(view.getTsSelectionModel()) + "/" + view.getTsCollection().size() + "] ");
                         break;
                 }
             });
@@ -348,7 +348,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
         public void execute(HasTsCollection c) throws Exception {
             ec.tss.TsCollection col = TsManager.getDefault().getTsCollection(dataSource, TsInformationType.Definition).get();
             col.query(TsInformationType.All);
-            c.setTsCollection(c.getTsCollection().toBuilder().data(col.stream().map(TsConverter::toTs).collect(TsSeq.toTsSeq())).build());
+            c.setTsCollection(c.getTsCollection().toBuilder().items(col.stream().map(TsConverter::toTs).collect(Collectors.toList())).build());
         }
     }
 
@@ -364,7 +364,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
         public void execute(HasTsCollection c) throws Exception {
             ec.tss.TsCollection col = TsManager.getDefault().getTsCollection(dataSet, TsInformationType.Definition).get();
             col.query(TsInformationType.All);
-            c.setTsCollection(c.getTsCollection().toBuilder().data(col.stream().map(TsConverter::toTs).collect(TsSeq.toTsSeq())).build());
+            c.setTsCollection(c.getTsCollection().toBuilder().items(col.stream().map(TsConverter::toTs).collect(Collectors.toList())).build());
         }
     }
 }

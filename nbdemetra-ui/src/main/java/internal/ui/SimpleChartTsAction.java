@@ -19,7 +19,6 @@ package internal.ui;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
@@ -73,7 +72,7 @@ public final class SimpleChartTsAction implements TsActionsOpenSpi {
                 c.setDisplayName(ts.getName());
             }
 
-            c.getChart().setTsCollection(TsCollection.of(TsSeq.of(ts)));
+            c.getChart().setTsCollection(TsCollection.of(ts));
             c.getChart().setTsUpdateMode(TsUpdateMode.None);
             c.getChart().setLegendVisible(false);
             c.getChart().setTitle(ts.getName());

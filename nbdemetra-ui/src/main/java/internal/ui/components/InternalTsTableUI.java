@@ -274,7 +274,7 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
 
         @Override
         public int getRowCount() {
-            return data.getData().size();
+            return data.size();
         }
 
         @Override
@@ -287,7 +287,7 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
             if (rowIndex == -1) {
                 return null;
             }
-            demetra.timeseries.Ts ts = data.getData().get(rowIndex);
+            demetra.timeseries.Ts ts = data.get(rowIndex);
             return columns.get(columnIndex).getMapper().apply(ts);
         }
 

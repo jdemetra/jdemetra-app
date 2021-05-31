@@ -17,14 +17,14 @@
 package internal.ui.components;
 
 import demetra.bridge.TsConverter;
+import demetra.timeseries.Ts;
 import demetra.timeseries.TsDataTable;
-import demetra.timeseries.TsSeq;
-import ec.tss.Ts;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import demetra.ui.components.TsGridObs;
 import ec.util.chart.ObsIndex;
+import java.util.List;
 
 /**
  *
@@ -39,9 +39,9 @@ final class SingleTsGridData implements TsGridData {
     private final int startPosition;
     private final TsGridObs obs;
 
-    public SingleTsGridData(TsSeq col, int seriesIndex) {
+    public SingleTsGridData(List<Ts> col, int seriesIndex) {
         this.seriesIndex = seriesIndex;
-        Ts ts = TsConverter.fromTs(col.get(seriesIndex));
+        ec.tss.Ts ts = TsConverter.fromTs(col.get(seriesIndex));
         this.data = ts.getTsData();
         this.domain = ts.getTsData().getDomain();
         this.startYear = domain.getStart().getYear();

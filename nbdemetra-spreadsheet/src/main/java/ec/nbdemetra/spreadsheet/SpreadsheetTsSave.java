@@ -98,11 +98,11 @@ public final class SpreadsheetTsSave implements TsActionsSaveSpi {
         ph.progress("Loading time series");
         TsCollection.Builder content = TsCollection.builder();
         for (TsCollection col : data) {
-            content.data(demetra.ui.TsManager.getDefault().load(col, demetra.timeseries.TsInformationType.All).getData());
+            content.items(demetra.ui.TsManager.getDefault().load(col, demetra.timeseries.TsInformationType.All).getItems());
         }
 
         ph.progress("Creating content");
-        ArraySheet sheet = SpreadSheetFactory.getDefault().fromTsCollectionInfo(demetra.bridge.TsConverter.fromTsCollectionBuilder(content), options);
+        ArraySheet sheet = SpreadSheetFactory.getDefault().fromTsCollectionInfo(demetra.bridge.TsConverter.fromTsCollectionBuilder(content.build()), options);
 
         ph.progress("Writing file");
         getFactoryByFile(file)

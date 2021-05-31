@@ -7,7 +7,6 @@ package ec.nbdemetra.ui.tools;
 import com.google.common.collect.Iterables;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsCollection;
 import ec.nbdemetra.ui.Config;
@@ -77,7 +76,7 @@ public final class ToolsPersistence {
         }
         if (DemetraUI.getDefault().isPersistToolsContent()) {
             Content content = new Content(
-                    view.getTsCollection().getData().stream().map(TsConverter::fromTs).collect(Collectors.toList()),
+                    view.getTsCollection().stream().map(TsConverter::fromTs).collect(Collectors.toList()),
                     view.getTsSelectionStream().map(TsConverter::fromTs).collect(Collectors.toList()));
             tryPut(p, "content", CONTENT_FORMATTER, true, content);
         }
@@ -87,11 +86,11 @@ public final class ToolsPersistence {
         if (DemetraUI.getDefault().isPersistToolsContent()) {
             tryGet(p, "content", CONTENT_PARSER, true).ifPresent(o -> {
                 List<demetra.timeseries.Ts> tmp = o.collection.stream().map(TsConverter::toTs).collect(Collectors.toList());
-                view.setTsCollection(TsCollection.of(TsSeq.of(tmp)));
+                view.setTsCollection(TsCollection.of(tmp));
                 view.getTsSelectionModel().clearSelection();
                 tmp
                         .stream()
-                        .mapToInt(view.getTsCollection().getData().getItems()::indexOf)
+                        .mapToInt(view.getTsCollection().getItems()::indexOf)
                         .forEach(i -> view.getTsSelectionModel().addSelectionInterval(i, i));
             });
         }

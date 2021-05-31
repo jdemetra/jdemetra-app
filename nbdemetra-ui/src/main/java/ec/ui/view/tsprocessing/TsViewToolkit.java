@@ -18,7 +18,6 @@ package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.tss.Ts;
 import ec.tss.html.HtmlUtil;
@@ -88,7 +87,7 @@ public final class TsViewToolkit implements ITsViewToolkit {
         JTsGrid result = gridPool.getOrCreate();
         result.setTsUpdateMode(TsUpdateMode.None);
         result.setMode(Mode.SINGLETS);
-        result.setTsCollection(TsCollection.of(TsSeq.of(TsConverter.toTs(series))));
+        result.setTsCollection(TsCollection.of(TsConverter.toTs(series)));
 
         return new JDisposable(result) {
             @Override

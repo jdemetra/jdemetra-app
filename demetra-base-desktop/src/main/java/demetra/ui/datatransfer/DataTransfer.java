@@ -21,7 +21,6 @@ import demetra.timeseries.TsData;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
-import demetra.timeseries.TsSeq;
 import demetra.ui.GlobalService;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.util.various.swing.OnEDT;
@@ -37,6 +36,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +130,7 @@ public class DataTransfer implements PropertyChangeSource {
     @NonNull
     public Transferable fromTs(@NonNull Ts ts) {
         requireNonNull(ts);
-        return fromTsCollection(TsCollection.of(TsSeq.of(ts)));
+        return fromTsCollection(TsCollection.of(Collections.singletonList(ts)));
     }
 
     /**
@@ -194,7 +194,7 @@ public class DataTransfer implements PropertyChangeSource {
     @NonNull
     public Optional<Ts> toTs(@NonNull Transferable transferable) {
         return toTsCollection(transferable)
-                .map(TsCollection::getData)
+                .map(TsCollection::getItems)
                 .filter(o -> !o.isEmpty())
                 .map(o -> o.get(0));
     }

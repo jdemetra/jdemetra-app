@@ -87,7 +87,7 @@ public class CalendarView extends JComponent {
 
     protected void onTsGridSelectionChange() {
         OptionalInt selection = JLists.getSelectionIndexStream(tsGrid.getTsSelectionModel()).findFirst();
-        pView.setTs(selection.isPresent() ? tsGrid.getTsCollection().getData().get(selection.getAsInt()) : null);
+        pView.setTs(selection.isPresent() ? tsGrid.getTsCollection().get(selection.getAsInt()) : null);
     }
 
     protected void onCalendarProviderChange() {

@@ -7,7 +7,6 @@ package ec.nbdemetra.ui.tools;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
@@ -101,7 +100,6 @@ public final class AggregationTopComponent extends TopComponent {
     private void initList() {
         inputList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             Optional<Ts> sum = inputList.getTsCollection()
-                    .getData()
                     .stream()
                     .map(ts -> TsManager.getDefault().getNextTsManager().getTs(ts.getMoniker(), demetra.timeseries.TsInformationType.Data).getData())
                     .map(TsConverter::fromTsData)
@@ -109,7 +107,7 @@ public final class AggregationTopComponent extends TopComponent {
                     .map(OptionalTsData::get)
                     .reduce(TsData::add)
                     .map(TsManager::toTs);
-            aggChart.setTsCollection(sum.map(TsSeq::of).map(TsCollection::of).orElse(TsCollection.EMPTY));
+            aggChart.setTsCollection(sum.map(TsCollection::of).orElse(TsCollection.EMPTY));
         });
     }
 }

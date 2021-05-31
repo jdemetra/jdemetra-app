@@ -49,7 +49,7 @@ public final class TsControlFactory extends DemoComponentFactory {
 
     private static Component marginView() {
         MarginView result = new MarginView();
-        TsData series = TsConverter.fromTsData(DemoTsBuilder.randomTsCollection(1).getData().get(0).getData()).get();
+        TsData series = TsConverter.fromTsData(DemoTsBuilder.randomTsCollection(1).get(0).getData()).get();
         DescriptiveStatistics stats = new DescriptiveStatistics(series);
         double val = (stats.getMax() - stats.getMin()) / 2;
         TsData lower = series.drop(14, 0).minus(val);

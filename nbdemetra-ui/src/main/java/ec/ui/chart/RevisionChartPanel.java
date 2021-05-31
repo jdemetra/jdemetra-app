@@ -17,7 +17,6 @@
 package ec.ui.chart;
 
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
@@ -228,7 +227,7 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
                 col.add(ts);
             }
         }
-        return DataTransfer.getDefault().fromTsCollection(TsCollection.of(TsSeq.of(col)));
+        return DataTransfer.getDefault().fromTsCollection(TsCollection.of(col));
     }
 
     private void onColorSchemeChange() {

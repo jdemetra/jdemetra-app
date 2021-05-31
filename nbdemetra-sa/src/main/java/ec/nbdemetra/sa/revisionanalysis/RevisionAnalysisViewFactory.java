@@ -18,7 +18,6 @@ package ec.nbdemetra.sa.revisionanalysis;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
-import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import ec.tss.sa.revisions.RevisionAnalysisDocument;
 import ec.tstoolkit.algorithm.CompositeResults;
@@ -148,9 +147,9 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
                             curIndex = sIndex;
                             col = demetra.timeseries.TsCollection.builder().name(source.getInput().get(curIndex).getName());
                         }
-                        List<Ts> tmp = new ArrayList<>(col.getData().getItems());
+                        List<Ts> tmp = new ArrayList<>(col.build().getItems());
                         tmp.add(TsManager.toTs(splitted[1], tsData));
-                        col.data(TsSeq.of(tmp));
+                        col.items(tmp);
                     }
                 }
                 all.put(TsConverter.toTs(source.getInput().get(curIndex)), col.build());

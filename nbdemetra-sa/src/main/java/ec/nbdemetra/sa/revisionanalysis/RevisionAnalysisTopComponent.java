@@ -203,7 +203,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
     }
 
     private void onCollectionChange() {
-        int nbElements = inputList.getTsCollection().getData().size();
+        int nbElements = inputList.getTsCollection().size();
         itemsLabel.setText(nbElements == 0 ? "No items" : nbElements + (nbElements < 2 ? " item" : " items"));
 
         runButton.setEnabled(nbElements != 0);
@@ -292,7 +292,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
             doc.setSpecification(curSpec.clone());
             doc.getResults();
 
-            StatusDisplayer.getDefault().setStatusText("Processed " + inputList.getTsCollection().getData().size() + " items in " + stopwatch.stop().toString());
+            StatusDisplayer.getDefault().setStatusText("Processed " + inputList.getTsCollection().size() + " items in " + stopwatch.stop().toString());
             if (!active) {
                 requestAttention(false);
             }

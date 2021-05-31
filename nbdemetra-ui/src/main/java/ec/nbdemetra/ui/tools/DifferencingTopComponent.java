@@ -6,7 +6,6 @@ package ec.nbdemetra.ui.tools;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
@@ -229,7 +228,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
             s = s.delta(ifreq, seasonalDiffOrder);
         }
         demetra.timeseries.Ts del = TsManager.toTs("Differenced series", s);
-        grid.setTsCollection(TsCollection.of(TsSeq.of(del)));
+        grid.setTsCollection(TsCollection.of(del));
         AutoCorrelations ac = new AutoCorrelations(s);
         acView.setLength(ifreq * 3);
         acView.setAutoCorrelations(ac);

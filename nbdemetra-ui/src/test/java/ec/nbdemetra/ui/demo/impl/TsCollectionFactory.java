@@ -55,7 +55,7 @@ public final class TsCollectionFactory extends DemoComponentFactory {
                     JTsChart result = new JTsChart();
                     result.setDualChart(true);
                     result.addPropertyChangeListener(HasTsCollection.TS_COLLECTION_PROPERTY, evt -> {
-                        if (result.getTsCollection().getData().size() > 0) {
+                        if (result.getTsCollection().size() > 0) {
                             result.getDualDispatcher().setSelectionInterval(0, 0);
                         }
                     });

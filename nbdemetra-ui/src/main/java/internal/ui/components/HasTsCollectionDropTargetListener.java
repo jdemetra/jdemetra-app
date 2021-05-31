@@ -48,7 +48,7 @@ public final class HasTsCollectionDropTargetListener implements DropTargetListen
             if (transferSupport.canImport(t)) {
                 demetra.timeseries.TsCollection dropContent = transferSupport
                         .toTsCollectionStream(t)
-                        .flatMap(col -> col.getData().stream())
+                        .flatMap(TsCollection::stream)
                         .collect(TsCollection.toTsCollection());
                 target.setDropContent(dropContent);
             }

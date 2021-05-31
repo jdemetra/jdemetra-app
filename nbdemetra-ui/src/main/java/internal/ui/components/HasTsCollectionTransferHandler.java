@@ -17,7 +17,6 @@
 package internal.ui.components;
 
 import demetra.bridge.TsConverter;
-import demetra.timeseries.TsSeq;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsCollection;
 import ec.tss.Ts;
@@ -121,19 +120,19 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
             case None:
                 return main;
             case Single:
-                return demetra.timeseries.TsCollection.of(TsSeq.of(TsConverter.toTs(col.get(0))));
+                return demetra.timeseries.TsCollection.of(TsConverter.toTs(col.get(0)));
             case Replace:
                 return TsConverter.toTsCollection(col);
             case Append:
-                Set<demetra.timeseries.TsMoniker> monikers = main.getData().stream().map(demetra.timeseries.Ts::getMoniker).collect(Collectors.toSet());
-                List<demetra.timeseries.Ts> result = new ArrayList<>(main.getData().getItems());
+                Set<demetra.timeseries.TsMoniker> monikers = main.stream().map(demetra.timeseries.Ts::getMoniker).collect(Collectors.toSet());
+                List<demetra.timeseries.Ts> result = new ArrayList<>(main.getItems());
                 for (Ts o : col) {
                     demetra.timeseries.TsMoniker id = TsConverter.toTsMoniker(o.getMoniker());
                     if (!id.isProvided() || !monikers.contains(id)) {
                         result.add(TsConverter.toTs(o));
                     }
                 }
-                return main.toBuilder().data(TsSeq.ofInternal(result)).build();
+                return main.toBuilder().items(result).build();
         }
         return main;
     }

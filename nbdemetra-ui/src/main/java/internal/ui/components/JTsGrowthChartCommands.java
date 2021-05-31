@@ -19,7 +19,6 @@ package internal.ui.components;
 import demetra.ui.components.TsSelectionBridge;
 import com.toedter.components.JSpinField;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import demetra.ui.components.JTsGrowthChart;
 import static demetra.ui.components.JTsGrowthChart.GROWTH_KIND_PROPERTY;
 import demetra.ui.components.ComponentCommand;
@@ -77,7 +76,7 @@ public class JTsGrowthChartCommands {
 
         @Override
         public void execute(JTsGrowthChart c) throws Exception {
-            TsCollection col = TsCollection.of(TsSeq.ofInternal(c.computeGrowthData()));
+            TsCollection col = TsCollection.of(c.computeGrowthData());
             Transferable transferable = DataTransfer.getDefault().fromTsCollection(col);
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
         }

@@ -90,11 +90,11 @@ public class InternalComponents {
     }
 
     private static String getNoDataMessage(demetra.timeseries.TsCollection input, TsUpdateMode updateMode) {
-        switch (input.getData().size()) {
+        switch (input.size()) {
             case 0:
                 return updateMode.isReadOnly() ? "No data" : "Drop data here";
             case 1:
-                Ts single = TsConverter.fromTs(input.getData().get(0));
+                Ts single = TsConverter.fromTs(input.get(0));
                 switch (single.hasData()) {
                     case Invalid:
                         String cause = single.getInvalidDataCause();
@@ -107,8 +107,8 @@ public class InternalComponents {
             default:
                 int[] counter = new int[TsStatus.values().length];
                 Arrays.fill(counter, 0);
-                input.getData().stream().map(TsConverter::fromTs).forEach(o -> counter[o.hasData().ordinal()]++);
-                if (counter[TsStatus.Invalid.ordinal()] == input.getData().size()) {
+                input.stream().map(TsConverter::fromTs).forEach(o -> counter[o.hasData().ordinal()]++);
+                if (counter[TsStatus.Invalid.ordinal()] == input.size()) {
                     return "Invalid data";
                 }
                 if (counter[TsStatus.Undefined.ordinal()] > 1) {

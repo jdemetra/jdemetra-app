@@ -19,7 +19,6 @@ package ec.nbdemetra.sa.revisionanalysis;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsSeq;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.MonikerUI;
 import demetra.ui.components.JTsGrid;
@@ -82,11 +81,11 @@ public class JTsComboGrid extends JComponent {
         List<demetra.timeseries.Ts> coll = new ArrayList<>();
         for (Map.Entry<Ts, TsCollection> entry : collections.entrySet()) {
             TsCollection c = entry.getValue();
-            for (int i = 0; i < c.getData().size(); i++) {
-                coll.add(c.getData().get(i).toBuilder().name(entry.getKey().getName() + " (" + c.getData().get(i).getName() + ")").build());
+            for (int i = 0; i < c.size(); i++) {
+                coll.add(c.get(i).toBuilder().name(entry.getKey().getName() + " (" + c.get(i).getName() + ")").build());
             }
         }
-        grid.setTsCollection(TsCollection.of(TsSeq.of(coll)));
+        grid.setTsCollection(TsCollection.of(coll));
     }
 
     /**

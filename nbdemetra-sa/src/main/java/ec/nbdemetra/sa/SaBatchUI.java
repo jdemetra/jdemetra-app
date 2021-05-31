@@ -572,7 +572,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             });
         }
 
-        Transferable transferable = DataTransfer.getDefault().fromTsCollection(TsCollection.of(demetra.timeseries.TsSeq.of(col)));
+        Transferable transferable = DataTransfer.getDefault().fromTsCollection(TsCollection.of(col));
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
     }
 
