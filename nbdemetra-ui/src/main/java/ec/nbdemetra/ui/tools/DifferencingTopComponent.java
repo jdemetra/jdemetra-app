@@ -13,9 +13,6 @@ import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
 import ec.nbdemetra.ui.MonikerUI;
 import demetra.ui.util.NbComponents;
-import ec.tss.Ts;
-import ec.tss.TsInformationType;
-import ec.tss.TsMoniker;
 import ec.tstoolkit.stats.AutoCorrelations;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import demetra.ui.components.JTsGrid.Mode;
@@ -77,7 +74,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
     private final PeriodogramView periodogramView;
     private final AutoCorrelationsView acView;
     private final JTsGrid grid;
-    private Ts ts_;
+    private demetra.timeseries.Ts ts_;
     private Node node;
     private boolean isLog = false;
     private int diffOrder = 1, seasonalDiffOrder = 1;
@@ -134,8 +131,8 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
         } else {
             dropDataLabel.setVisible(false);
             tsLabel.setText(ts_.getName());
-            TsMoniker moniker = ts_.getMoniker();
-            tsLabel.setIcon(MonikerUI.getDefault().getIcon(moniker));
+            demetra.timeseries.TsMoniker moniker = ts_.getMoniker();
+            tsLabel.setIcon(MonikerUI.getDefault().getIcon(TsConverter.fromTsMoniker(moniker)));
             tsLabel.setToolTipText(tsLabel.getText() + (moniker.getSource() != null ? (" (" + moniker.getSource() + ")") : ""));
             tsLabel.setVisible(true);
         }
@@ -216,7 +213,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
 
     void showTests() {
         clear();
-        TsData s = ts_.getTsData();
+        TsData s = TsConverter.fromTsData(ts_.getData()).get();
         if (isLog) {
             s = s.log();
         }
@@ -244,15 +241,14 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
 
     @Override
     public void setTs(demetra.timeseries.Ts s) {
-        ts_ = TsConverter.fromTs(s).freeze();
-        TsManager.getDefault().load(ts_, TsInformationType.All);
+        ts_ = TsManager.getDefault().getNextTsManager().loadTs(s, demetra.timeseries.TsInformationType.All).freeze();
         refreshHeader();
         showTests();
     }
 
     @Override
     public demetra.timeseries.Ts getTs() {
-        return TsConverter.toTs(ts_);
+        return ts_;
     }
 
     @Override

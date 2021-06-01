@@ -99,10 +99,11 @@ public final class TxtTsSave implements TsActionsSaveSpi {
     private static void store(List<TsCollection> data, File file, OptionsBean options, ProgressHandle ph) throws IOException {
         ph.start();
         ph.progress("Loading time series");
-        TsCollection.Builder content = TsCollection.builder();
-        for (TsCollection col : data) {
-            content.items(TsManager.getDefault().load(col, TsInformationType.All).getItems());
-        }
+        TsCollection content = data
+                .stream()
+                .map(col -> TsManager.getDefault().getNextTsManager().loadTsCollection(col, TsInformationType.All))
+                .flatMap(TsCollection::stream)
+                .collect(TsCollection.toTsCollection());
 
         ph.progress("Creating content");
         TxtDataTransfer handler = new TxtDataTransfer();
@@ -113,7 +114,7 @@ public final class TxtTsSave implements TsActionsSaveSpi {
                 .put("vertical", options.vertical)
                 .build();
         handler.setConfig(config);
-        String stringContent = handler.tsCollectionToString(content.build());
+        String stringContent = handler.tsCollectionToString(content);
 
         ph.progress("Writing file");
         Files.write(stringContent, file, StandardCharsets.UTF_8);

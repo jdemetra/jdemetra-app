@@ -17,6 +17,7 @@
 package ec.nbdemetra.spreadsheet;
 
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsInformationType;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.SingleFileExporter;
@@ -41,6 +42,7 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.TsActionsSaveSpi;
+import demetra.ui.TsManager;
 
 /**
  *
@@ -96,13 +98,14 @@ public final class SpreadsheetTsSave implements TsActionsSaveSpi {
     @OnAnyThread
     private static void store(List<TsCollection> data, File file, TsExportOptions options, ProgressHandle ph) throws IOException {
         ph.progress("Loading time series");
-        TsCollection.Builder content = TsCollection.builder();
-        for (TsCollection col : data) {
-            content.items(demetra.ui.TsManager.getDefault().load(col, demetra.timeseries.TsInformationType.All).getItems());
-        }
+        TsCollection content = data
+                .stream()
+                .map(col -> TsManager.getDefault().getNextTsManager().loadTsCollection(col, TsInformationType.All))
+                .flatMap(TsCollection::stream)
+                .collect(TsCollection.toTsCollection());
 
         ph.progress("Creating content");
-        ArraySheet sheet = SpreadSheetFactory.getDefault().fromTsCollectionInfo(demetra.bridge.TsConverter.fromTsCollectionBuilder(content.build()), options);
+        ArraySheet sheet = SpreadSheetFactory.getDefault().fromTsCollectionInfo(demetra.bridge.TsConverter.fromTsCollectionBuilder(content), options);
 
         ph.progress("Writing file");
         getFactoryByFile(file)

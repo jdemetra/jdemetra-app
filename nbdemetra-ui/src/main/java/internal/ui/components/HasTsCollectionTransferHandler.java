@@ -16,12 +16,12 @@
  */
 package internal.ui.components;
 
-import demetra.bridge.TsConverter;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsInformationType;
+import demetra.timeseries.TsMoniker;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsCollection;
-import ec.tss.Ts;
-import ec.tss.TsCollection;
-import ec.tss.TsInformationType;
 import java.awt.datatransfer.Transferable;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -34,8 +34,8 @@ import org.openide.util.Lookup;
 import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
 import demetra.ui.datatransfer.LocalObjectDataTransfer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  *
@@ -61,7 +61,7 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
 
     @Override
     protected Transferable createTransferable(JComponent c) {
-        demetra.timeseries.TsCollection data = delegate.getTsSelectionStream().collect(demetra.timeseries.TsCollection.toTsCollection());
+        TsCollection data = delegate.getTsSelectionStream().collect(TsCollection.toTsCollection());
         return tssSupport.fromTsCollection(data);
     }
 
@@ -92,8 +92,7 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
     public static boolean importData(@NonNull HasTsCollection view, @NonNull DataTransfer tssSupport, @NonNull Supplier<Transferable> toData) {
         if (!view.getTsUpdateMode().isReadOnly()) {
             return tssSupport.toTsCollectionStream(toData.get())
-                    .map(TsConverter::fromTsCollection)
-                    .peek(o -> importData(view, o))
+                    .peek(col -> importData(view, col))
                     .count() > 0;
         }
         return false;
@@ -101,44 +100,38 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
 
     private static void importData(HasTsCollection view, TsCollection data) {
         if (view.isFreezeOnImport()) {
-            data.load(TsInformationType.All);
-            view.setTsCollection(update(view.getTsUpdateMode(), view.getTsCollection(), freezedCopyOf(data)));
+            TsCollection latest = TsManager.getDefault().getNextTsManager().getTsCollection(data.getMoniker(), TsInformationType.All);
+            view.setTsCollection(update(view.getTsUpdateMode(), view.getTsCollection(), freezedCopyOf(latest)));
         } else {
             if (TransferChange.isNotYetLoaded(data)) {
                 // TODO: put load in a separate thread
-                data.load(TsInformationType.Definition);
+                TsManager.getDefault().getNextTsManager().loadTsCollection(data, TsInformationType.Definition);
             }
             if (!data.isEmpty()) {
-                data.query(TsInformationType.All);
+                TsManager.getDefault().loadAsync(data, TsInformationType.All);
                 view.setTsCollection(update(view.getTsUpdateMode(), view.getTsCollection(), data));
             }
         }
     }
 
-    private static demetra.timeseries.TsCollection update(HasTsCollection.TsUpdateMode mode, demetra.timeseries.TsCollection main, TsCollection col) {
+    private static TsCollection update(HasTsCollection.TsUpdateMode mode, TsCollection first, TsCollection second) {
         switch (mode) {
             case None:
-                return main;
+                return first;
             case Single:
-                return demetra.timeseries.TsCollection.of(TsConverter.toTs(col.get(0)));
+                return TsCollection.of(second.get(0));
             case Replace:
-                return TsConverter.toTsCollection(col);
+                return second;
             case Append:
-                Set<demetra.timeseries.TsMoniker> monikers = main.stream().map(demetra.timeseries.Ts::getMoniker).collect(Collectors.toSet());
-                List<demetra.timeseries.Ts> result = new ArrayList<>(main.getItems());
-                for (Ts o : col) {
-                    demetra.timeseries.TsMoniker id = TsConverter.toTsMoniker(o.getMoniker());
-                    if (!id.isProvided() || !monikers.contains(id)) {
-                        result.add(TsConverter.toTs(o));
-                    }
-                }
-                return main.toBuilder().items(result).build();
+                Set<TsMoniker> firstMonikers = first.stream().map(Ts::getMoniker).collect(Collectors.toSet());
+                Predicate<TsMoniker> filter = moniker -> !moniker.isProvided() || !firstMonikers.contains(moniker);
+                return Stream.concat(first.stream(), second.stream().filter(internal.ui.Collections2.compose(filter, Ts::getMoniker))).collect(TsCollection.toTsCollection());
         }
-        return main;
+        return first;
     }
 
     private static TsCollection freezedCopyOf(TsCollection input) {
-        return input.stream().map(Ts::freeze).collect(TsManager.getDefault().getTsCollector());
+        return input.stream().map(Ts::freeze).collect(TsCollection.toTsCollection());
     }
 
     private enum TransferChange {
@@ -148,15 +141,15 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
             return this != NO;
         }
 
-        public static TransferChange of(Transferable source, demetra.timeseries.TsCollection target) {
+        public static TransferChange of(Transferable source, TsCollection target) {
             LocalObjectDataTransfer handler = Lookup.getDefault().lookup(LocalObjectDataTransfer.class);
             return handler != null ? of(handler, source, target) : MAYBE;
         }
 
-        private static TransferChange of(LocalObjectDataTransfer handler, Transferable source, demetra.timeseries.TsCollection target) {
+        private static TransferChange of(LocalObjectDataTransfer handler, Transferable source, TsCollection target) {
             return DataTransfers.getMultiTransferables(source)
                     .map(handler::peekTsCollection)
-                    .map(o -> of(TsConverter.fromTsCollection(o), TsConverter.fromTsCollection(target)))
+                    .map(col -> of(col, target))
                     .filter(TransferChange::mayChangeContent)
                     .findFirst()
                     .orElse(NO);
@@ -169,14 +162,14 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
             if (isNotYetLoaded(source)) {
                 return MAYBE;
             }
-            if (!source.stream().allMatch(target::contains)) {
+            if (!source.stream().allMatch(target.getItems()::contains)) {
                 return YES;
             }
             return NO;
         }
 
         public static boolean isNotYetLoaded(TsCollection o) {
-            return !o.getMoniker().isAnonymous() && o.isEmpty();
+            return o.getMoniker().isProvided() && o.isEmpty();
         }
     }
 }

@@ -17,12 +17,8 @@ import ec.nbdemetra.ws.ui.SpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.benchmarking.MultiSaBenchmarkingSpec;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
-import ec.tss.Ts;
-import ec.tss.TsInformationType;
-import ec.tss.TsStatus;
 import ec.tss.sa.composite.MultiSaDocument;
 import ec.tss.sa.composite.MultiSaSpecification;
-import ec.tstoolkit.timeseries.simplets.TsData;
 import demetra.ui.components.JTsChart;
 import demetra.ui.components.JTsTable;
 import ec.ui.view.AbstractDocumentViewer;
@@ -179,15 +175,12 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
 
     private void initList() {
         inputList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
-            TsData sum = null;
-            for (demetra.timeseries.Ts o : inputList.getTsCollection()) {
-                Ts s = TsConverter.fromTs(o);
-                if (s.hasData() == TsStatus.Undefined) {
-                    TsManager.getDefault().load(s, TsInformationType.Data);
-                }
-                sum = TsData.add(sum, s.getTsData());
-            }
-            demetra.timeseries.Ts t = TsManager.toTs("Total", sum);
+            demetra.timeseries.TsData sum = TsManager.getDefault().getNextTsManager()
+                    .loadTsCollection(inputList.getTsCollection(), demetra.timeseries.TsInformationType.Data)
+                    .stream()
+                    .map(demetra.timeseries.Ts::getData)
+                    .reduce(null, demetra.timeseries.TsData::add);
+            demetra.timeseries.Ts t = demetra.timeseries.Ts.builder().name("Total").data(sum).build();
             saChart.setTsCollection(TsCollection.of(t));
             clear();
         });

@@ -12,9 +12,6 @@ import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
-import ec.tss.Ts;
-import ec.tss.TsInformationType;
-import ec.tss.TsStatus;
 import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlSeasonalityDiagnostics;
 import ec.tstoolkit.modelling.arima.tramo.SeasonalityTests;
@@ -143,15 +140,13 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
         if (cur == null) {
             jEditorPane1.loadContent("");
         } else {
-            test(TsConverter.fromTs(cur));
+            test(cur);
         }
     }
 
-    private void test(Ts cur) {
-        if (cur.hasData() == TsStatus.Undefined) {
-            TsManager.getDefault().load(cur, TsInformationType.Data);
-        }
-        TsData s = cur.getTsData();
+    private void test(demetra.timeseries.Ts cur) {
+        cur = TsManager.getDefault().getNextTsManager().loadTs(cur, demetra.timeseries.TsInformationType.Data);
+        TsData s = TsConverter.fromTsData(cur.getData()).orNull();
         if (s == null) {
             return;
         }

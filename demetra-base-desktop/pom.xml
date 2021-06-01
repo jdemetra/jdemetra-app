@@ -192,6 +192,8 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>demetra.ui.*</publicPackage>
+                        <!-- tmp -->
+                        <publicPackage>internal.ui</publicPackage>
                         <!-- core libs -->
                         <publicPackage>demetra.*</publicPackage>
                         <publicPackage>nbbrd.io.*</publicPackage>

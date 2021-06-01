@@ -32,4 +32,28 @@ public interface NextTsManager {
 
     @OnEDT
     void removeListener(@NonNull TsListener listener);
+
+    @OnAnyThread
+    @NonNull
+    default Ts loadTs(@NonNull Ts ts, @NonNull TsInformationType type) {
+        if (ts.getType().encompass(type)) {
+            return ts;
+        }
+        if (!ts.getMoniker().isProvided()) {
+            return ts;
+        } 
+        return getTs(ts.getMoniker(), type);
+    }
+
+    @OnAnyThread
+    @NonNull
+    default TsCollection loadTsCollection(@NonNull TsCollection col, @NonNull TsInformationType type) {
+        if (col.getType().encompass(type)) {
+            return col;
+        }
+        if (!col.getMoniker().isProvided()) {
+            return col.stream().map(ts -> loadTs(ts, type)).collect(TsCollection.toTsCollection());
+        } 
+        return getTsCollection(col.getMoniker(), type);
+    }
 }

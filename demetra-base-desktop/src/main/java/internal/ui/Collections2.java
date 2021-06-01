@@ -20,6 +20,8 @@ import nbbrd.design.MightBePromoted;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -49,5 +51,9 @@ public class Collections2 {
                 x.add(o);
             }
         }
+    }
+
+    public static <X, Y> Predicate<Y> compose(Predicate<X> predicate, Function<? super Y, ? extends X> func) {
+        return o -> predicate.test(func.apply(o));
     }
 }

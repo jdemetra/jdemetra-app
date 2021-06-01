@@ -5,8 +5,6 @@ import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
-import ec.tss.Ts;
-import ec.tss.TsInformationType;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import demetra.ui.components.JTsGrid.Mode;
 import ec.ui.interfaces.IDisposable;
@@ -21,7 +19,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import org.openide.util.NbCollections;
 import demetra.ui.datatransfer.DataTransfer;
-import java.util.Optional;
+import ec.tstoolkit.timeseries.simplets.TsData;
 
 /**
  *
@@ -73,10 +71,10 @@ public class TsProperties extends JComponent implements IDisposable {
         tree_.setTransferHandler(new TsHandler());
     }
 
-    public void setTs(Ts ts) {
-        TsManager.getDefault().load(ts, TsInformationType.All);
+    public void setTs(demetra.timeseries.Ts ts) {
+        ts = TsManager.getDefault().getNextTsManager().loadTs(ts, demetra.timeseries.TsInformationType.All);
 
-        TsCollection col = TsCollection.of(TsConverter.toTs(ts));
+        TsCollection col = TsCollection.of(ts);
 
         chart_.setTsCollection(col);
         grid_.setTsCollection(col);
@@ -84,22 +82,22 @@ public class TsProperties extends JComponent implements IDisposable {
         labelSeries_.setText(ts.getName());
         labelSource_.setText(ts.getMoniker().getSource());
 
-        DescriptiveStatistics ds = new DescriptiveStatistics(ts.getTsData());
+        TsData tsData = TsConverter.fromTsData(ts.getData()).get();
+
+        DescriptiveStatistics ds = new DescriptiveStatistics(tsData);
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode();
         DefaultMutableTreeNode metaNode = new DefaultMutableTreeNode("Metadata");
-        if (ts.getMetaData() != null) {
-            for (String name : ts.getMetaData().keySet()) {
-                metaNode.add(new DefaultMutableTreeNode(name + " = " + ts.getMetaData().get(name)));
-            }
+        for (String name : ts.getMeta().keySet()) {
+            metaNode.add(new DefaultMutableTreeNode(name + " = " + ts.getMeta().get(name)));
         }
         root.add(metaNode);
         DefaultMutableTreeNode statNode = new DefaultMutableTreeNode("Statistics");
         statNode.setAllowsChildren(true);
         statNode.add(new DefaultMutableTreeNode("Time span: "
-                + ts.getTsData().getDomain().getStart()
+                + tsData.getDomain().getStart()
                 + " to "
-                + ts.getTsData().getDomain().getEnd()));
+                + tsData.getDomain().getEnd()));
         statNode.add(new DefaultMutableTreeNode("Number of observations: "
                 + ds.getDataCount()));
         statNode.add(new DefaultMutableTreeNode("Number of missing values: "
@@ -150,10 +148,7 @@ public class TsProperties extends JComponent implements IDisposable {
 
         @Override
         public boolean importData(TransferSupport support) {
-            Optional<demetra.timeseries.Ts> s = DataTransfer.getDefault().toTs(support.getTransferable());
-            if (s.isPresent()) {
-                setTs(TsConverter.fromTs(s.get()));
-            }
+            DataTransfer.getDefault().toTs(support.getTransferable()).ifPresent(TsProperties.this::setTs);
             return super.importData(support);
         }
     }

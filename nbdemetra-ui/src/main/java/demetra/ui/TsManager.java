@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Collector;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.SwingUtilities;
@@ -96,14 +95,6 @@ public class TsManager {
         return event.isSeries()
                 ? Stream.of(event.ts.getMoniker())
                 : Stream.concat(Stream.of(event.tscollection.getMoniker()), event.tscollection.stream().map(Ts::getMoniker));
-    }
-
-    @NonNull
-    public Collector<Ts, ?, TsCollection> getTsCollector() {
-        return Collector.<Ts, List<Ts>, TsCollection>of(ArrayList::new, List::add, (l, r) -> {
-            l.addAll(r);
-            return l;
-        }, o -> delegate.createTsCollection(null, null, null, o));
     }
 
     public boolean register(@NonNull ITsProvider provider) {
@@ -208,20 +199,8 @@ public class TsManager {
         TsConverter.fromTs(ts).query(TsConverter.fromType(type));
     }
 
-    public demetra.timeseries.@NonNull Ts load(demetra.timeseries.@NonNull Ts ts, demetra.timeseries.@NonNull TsInformationType type) {
-        Ts tmp = TsConverter.fromTs(ts);
-        tmp.load(TsConverter.fromType(type));
-        return TsConverter.toTs(tmp);
-    }
-
-    public demetra.timeseries.@NonNull TsCollection load(demetra.timeseries.@NonNull TsCollection col, demetra.timeseries.@NonNull TsInformationType type) {
-        TsCollection tmp = TsConverter.fromTsCollection(col);
-        tmp.load(TsConverter.fromType(type));
-        return TsConverter.toTsCollection(tmp);
-    }
-
-    public void load(@NonNull Ts ts, @NonNull TsInformationType type) {
-        ts.load(type);
+    public void loadAsync(demetra.timeseries.@NonNull TsCollection col, demetra.timeseries.@NonNull TsInformationType type) {
+        TsConverter.fromTsCollection(col).query(TsConverter.fromType(type));
     }
 
     public static demetra.timeseries.@NonNull Ts toTs(@NonNull String name, @NonNull TsData data) {
