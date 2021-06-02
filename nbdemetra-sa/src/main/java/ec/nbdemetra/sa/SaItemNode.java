@@ -35,7 +35,7 @@ public class SaItemNode extends AbstractNode {
 
     private Optional<Image> lookupIcon(int type, boolean opened) {
         SaItem item = getLookup().lookup(SaItem.class);
-        return DataSourceProviderBuddySupport.getDefault().getIcon(item.getMoniker(), type, opened);
+        return DataSourceProviderBuddySupport.getDefault().getIcon(TsConverter.toTsMoniker(item.getMoniker()), type, opened);
     }
 
     @Override

@@ -16,7 +16,7 @@
  */
 package internal;
 
-import ec.tss.TsInformationType;
+import demetra.timeseries.TsInformationType;
 
 /**
  *

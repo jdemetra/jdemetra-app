@@ -16,6 +16,11 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.DataSource;
+import demetra.tsprovider.DataSourceListener;
+import demetra.tsprovider.DataSourceLoader;
+import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUI;
@@ -23,9 +28,6 @@ import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.interchange.Importable;
 import static ec.nbdemetra.ui.tsproviders.ProvidersNode.ACTION_PATH;
 import ec.tss.datatransfer.DataSourceTransferSupport;
-import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.IDataSourceListener;
-import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.IDataSourceProvider;
 import java.awt.datatransfer.Transferable;
 import java.beans.PropertyChangeEvent;
@@ -57,16 +59,11 @@ import org.openide.util.lookup.InstanceContent;
  * @author Philippe Charles
  */
 @ActionReferences({
-    @ActionReference(path = ACTION_PATH, position = 1310, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tsproviders.actions.OpenProvidersAction"))
-    ,
-    @ActionReference(path = ACTION_PATH, position = 1320, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.mru.ProviderMruAction"))
-    ,
-    @ActionReference(path = ACTION_PATH, position = 1410, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.PasteProvidersAction"))
-    ,
-    @ActionReference(path = ACTION_PATH, position = 1430, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ImportAction"))
-    ,
-    @ActionReference(path = ACTION_PATH, position = 1460, separatorBefore = 1450, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.ShowProvidersAction"))
-    ,
+    @ActionReference(path = ACTION_PATH, position = 1310, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tsproviders.actions.OpenProvidersAction")),
+    @ActionReference(path = ACTION_PATH, position = 1320, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.mru.ProviderMruAction")),
+    @ActionReference(path = ACTION_PATH, position = 1410, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.PasteProvidersAction")),
+    @ActionReference(path = ACTION_PATH, position = 1430, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ImportAction")),
+    @ActionReference(path = ACTION_PATH, position = 1460, separatorBefore = 1450, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.ShowProvidersAction")),
     @ActionReference(path = ACTION_PATH, position = 1520, separatorBefore = 1500, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ConfigureAction"))
 })
 public final class ProvidersNode extends AbstractNode {
@@ -101,7 +98,7 @@ public final class ProvidersNode extends AbstractNode {
         return null;
     }
 
-    private static final class ProvidersChildFactory extends ChildFactory.Detachable<Object> implements LookupListener, PropertyChangeListener, IDataSourceListener {
+    private static final class ProvidersChildFactory extends ChildFactory.Detachable<Object> implements LookupListener, PropertyChangeListener, DataSourceListener {
 
         // FIXME: use TsManager instead of lookup
         private final Lookup.Result<IDataSourceProvider> lookupResult;
@@ -135,7 +132,7 @@ public final class ProvidersNode extends AbstractNode {
         @Override
         protected Node createNodeForKey(Object key) {
             return demetraUI.isShowTsProviderNodes()
-                    ? new ProviderNode((IDataSourceProvider) key)
+                    ? new ProviderNode((DataSourceProvider) key)
                     : new DataSourceNode((DataSource) key);
         }
 
@@ -145,10 +142,10 @@ public final class ProvidersNode extends AbstractNode {
                     : providerStream().flatMap(o -> o.getDataSources().stream()).sorted(ON_TO_STRING).collect(Collectors.toList());
         }
 
-        private Stream<? extends IDataSourceProvider> providerStream() {
-            return TsManager.getDefault().all()
-                    .filter(IDataSourceProvider.class::isInstance)
-                    .map(IDataSourceProvider.class::cast)
+        private Stream<? extends DataSourceProvider> providerStream() {
+            return TsManager.getDefault().getProviders()
+                    .filter(DataSourceProvider.class::isInstance)
+                    .map(DataSourceProvider.class::cast)
                     .filter(demetraUI.isShowUnavailableTsProviders() ? (o -> true) : o -> o.isAvailable());
         }
 
@@ -173,23 +170,23 @@ public final class ProvidersNode extends AbstractNode {
         }
         //</editor-fold>
 
-        //<editor-fold defaultstate="collapsed" desc="IDataSourceListener">
+        //<editor-fold defaultstate="collapsed" desc="DataSourceListener">
         @Override
-        public void opened(DataSource dataSource) {
+        public void opened(demetra.tsprovider.DataSource dataSource) {
             if (!demetraUI.isShowTsProviderNodes()) {
                 refresh(true);
             }
         }
 
         @Override
-        public void closed(DataSource dataSource) {
+        public void closed(demetra.tsprovider.DataSource dataSource) {
             if (!demetraUI.isShowTsProviderNodes()) {
                 refresh(true);
             }
         }
 
         @Override
-        public void changed(DataSource dataSource) {
+        public void changed(demetra.tsprovider.DataSource dataSource) {
             if (!demetraUI.isShowTsProviderNodes()) {
                 refresh(true);
             }
@@ -214,7 +211,7 @@ public final class ProvidersNode extends AbstractNode {
         @Override
         public void importConfig(Config config) throws IllegalArgumentException {
             DataSource dataSource = ProvidersUtil.getDataSource(config);
-            Optional<IDataSourceLoader> loader = TsManager.getDefault().lookup(IDataSourceLoader.class, dataSource);
+            Optional<DataSourceLoader> loader = TsManager.getDefault().getProvider(DataSourceLoader.class, dataSource);
             if (loader.isPresent()) {
                 loader.get().open(dataSource);
                 Optional<Node> node = ProvidersUtil.findNode(dataSource, ProvidersNode.this);
@@ -237,7 +234,7 @@ public final class ProvidersNode extends AbstractNode {
         public Transferable paste() throws IOException {
             Optional<DataSource> dataSource = DataSourceTransferSupport.getDefault().getDataSource(t);
             if (dataSource.isPresent()) {
-                Optional<IDataSourceLoader> loader = TsManager.getDefault().lookup(IDataSourceLoader.class, dataSource.get());
+                Optional<DataSourceLoader> loader = TsManager.getDefault().getProvider(DataSourceLoader.class, dataSource.get());
                 if (loader.isPresent()) {
                     loader.get().open(dataSource.get());
                 }
@@ -246,9 +243,9 @@ public final class ProvidersNode extends AbstractNode {
         }
     }
 
-    private static final Comparator<IDataSourceProvider> ON_CLASS_SIMPLENAME = Comparator.comparing(o -> o.getClass().getSimpleName());
+    private static final Comparator<DataSourceProvider> ON_CLASS_SIMPLENAME = Comparator.comparing(o -> o.getClass().getSimpleName());
 
-    private static final Comparator<DataSource> ON_TO_STRING = Comparator.comparing(Object::toString);
+    private static final Comparator<demetra.tsprovider.DataSource> ON_TO_STRING = Comparator.comparing(Object::toString);
 
     public static boolean isProvidersNode(Node[] activatedNodes) {
         return activatedNodes != null && activatedNodes.length == 0;

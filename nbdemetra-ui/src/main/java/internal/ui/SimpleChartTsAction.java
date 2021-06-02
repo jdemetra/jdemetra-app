@@ -16,21 +16,18 @@
  */
 package internal.ui;
 
-import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
+import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.TsManager;
 import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.IDataSourceProvider;
 import java.beans.BeanInfo;
 import java.util.Optional;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.components.parts.HasChart;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
-import ec.tss.TsMoniker;
 import demetra.ui.TsActionsOpenSpi;
 
 /**
@@ -60,12 +57,11 @@ public final class SimpleChartTsAction implements TsActionsOpenSpi {
             c = new ChartTopComponent();
             c.setName(name);
 
-            TsMoniker tmp = TsConverter.fromTsMoniker(ts.getMoniker());
-            Optional<IDataSourceProvider> provider = TsManager.getDefault().lookup(IDataSourceProvider.class, tmp);
+            Optional<DataSourceProvider> provider = TsManager.getDefault().getProvider(DataSourceProvider.class, ts.getMoniker());
             if (provider.isPresent()) {
-                DataSet dataSet = provider.get().toDataSet(tmp);
+                demetra.tsprovider.DataSet dataSet = provider.get().toDataSet(ts.getMoniker()).orElse(null);
                 if (dataSet != null) {
-                    c.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(tmp, BeanInfo.ICON_COLOR_16x16, false).orElse(null));
+                    c.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false).orElse(null));
                     c.setDisplayName(provider.get().getDisplayNodeName(dataSet));
                 }
             } else {

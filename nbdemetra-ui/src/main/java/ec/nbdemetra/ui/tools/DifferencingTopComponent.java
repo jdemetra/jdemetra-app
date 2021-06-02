@@ -6,6 +6,7 @@ package ec.nbdemetra.ui.tools;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
+import demetra.ui.OldTsUtil;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
@@ -132,7 +133,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
             dropDataLabel.setVisible(false);
             tsLabel.setText(ts_.getName());
             demetra.timeseries.TsMoniker moniker = ts_.getMoniker();
-            tsLabel.setIcon(MonikerUI.getDefault().getIcon(TsConverter.fromTsMoniker(moniker)));
+            tsLabel.setIcon(MonikerUI.getDefault().getIcon(moniker));
             tsLabel.setToolTipText(tsLabel.getText() + (moniker.getSource() != null ? (" (" + moniker.getSource() + ")") : ""));
             tsLabel.setVisible(true);
         }
@@ -224,7 +225,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
         if (ifreq > 1 && seasonalDiffOrder > 0) {
             s = s.delta(ifreq, seasonalDiffOrder);
         }
-        demetra.timeseries.Ts del = TsManager.toTs("Differenced series", s);
+        demetra.timeseries.Ts del = OldTsUtil.toTs("Differenced series", s);
         grid.setTsCollection(TsCollection.of(del));
         AutoCorrelations ac = new AutoCorrelations(s);
         acView.setLength(ifreq * 3);
@@ -241,7 +242,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
 
     @Override
     public void setTs(demetra.timeseries.Ts s) {
-        ts_ = TsManager.getDefault().getNextTsManager().loadTs(s, demetra.timeseries.TsInformationType.All).freeze();
+        ts_ = s.load(demetra.timeseries.TsInformationType.All, TsManager.getDefault()).freeze();
         refreshHeader();
         showTests();
     }

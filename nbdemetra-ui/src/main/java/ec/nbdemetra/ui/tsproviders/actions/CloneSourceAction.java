@@ -4,12 +4,13 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.DataSourceLoader;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.tsproviders.DataSourceNode;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.IDataSourceLoader;
 import java.beans.IntrospectionException;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
@@ -36,18 +37,21 @@ public final class CloneSourceAction extends SingleNodeAction<DataSourceNode> {
     }
 
     static DataSource clone(DataSource dataSource) throws IntrospectionException {
-        IDataSourceLoader loader = TsManager.getDefault().lookup(IDataSourceLoader.class, dataSource).get();
-        final Object bean = loader.decodeBean(dataSource);
+        demetra.tsprovider.DataSource tmp = TsConverter.toDataSource(dataSource);
+        DataSourceLoader loader = TsManager.getDefault().getProvider(DataSourceLoader.class, tmp).get();
+        final Object bean = loader.decodeBean(tmp);
         if (DataSourceProviderBuddySupport.getDefault().get(loader).editBean("Clone data source", bean)) {
-            DataSource newDataSource = loader.encodeBean(bean);
-            return loader.open(newDataSource) ? newDataSource : null;
+            demetra.tsprovider.DataSource newDataSource = loader.encodeBean(bean);
+            return loader.open(newDataSource) ? TsConverter.fromDataSource(newDataSource) : null;
         }
         return null;
     }
 
     @Override
     protected boolean enable(DataSourceNode activatedNode) {
-        return TsManager.getDefault().lookup(IDataSourceLoader.class, activatedNode.getLookup().lookup(DataSource.class)).isPresent();
+        DataSource dataSource = activatedNode.getLookup().lookup(DataSource.class);
+        demetra.tsprovider.DataSource tmp = TsConverter.toDataSource(dataSource);
+        return TsManager.getDefault().getProvider(DataSourceLoader.class, tmp).isPresent();
     }
 
     @Override

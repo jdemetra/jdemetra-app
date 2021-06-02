@@ -101,7 +101,7 @@ public final class TxtTsSave implements TsActionsSaveSpi {
         ph.progress("Loading time series");
         TsCollection content = data
                 .stream()
-                .map(col -> TsManager.getDefault().getNextTsManager().loadTsCollection(col, TsInformationType.All))
+                .map(col -> col.load(TsInformationType.All, TsManager.getDefault()))
                 .flatMap(TsCollection::stream)
                 .collect(TsCollection.toTsCollection());
 

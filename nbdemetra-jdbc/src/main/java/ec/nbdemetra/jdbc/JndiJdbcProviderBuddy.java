@@ -17,6 +17,7 @@
 package ec.nbdemetra.jdbc;
 
 import com.google.common.base.Preconditions;
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import ec.nbdemetra.db.DbIcon;
 import ec.nbdemetra.ui.Config;
@@ -24,7 +25,6 @@ import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.util.SimpleHtmlListCellRenderer;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
-import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.db.DbBean;
 import ec.tss.tsproviders.jdbc.ConnectionSupplier;
 import ec.tss.tsproviders.jdbc.JdbcBean;
@@ -95,7 +95,10 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
     // this overrides default connection supplier since we don't have JNDI in JavaSE
     private void overrideDefaultConnectionSupplier() {
         TsManager.getDefault()
-                .lookup(JndiJdbcProvider.class, JndiJdbcProvider.SOURCE)
+                .getProvider(JndiJdbcProvider.SOURCE)
+                .map(TsConverter::fromTsProvider)
+                .filter(JndiJdbcProvider.class::isInstance)
+                .map(JndiJdbcProvider.class::cast)
                 .ifPresent(o -> o.setConnectionSupplier(supplier));
     }
 
@@ -110,9 +113,9 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
     }
 
     @Override
-    public Image getIcon(DataSource dataSource, int type, boolean opened) {
+    public Image getIcon(demetra.tsprovider.DataSource dataSource, int type, boolean opened) {
         Image image = super.getIcon(dataSource, type, opened);
-        String dbName = DbBean.X_DBNAME.get(dataSource);
+        String dbName = DbBean.X_DBNAME.get(TsConverter.fromDataSource(dataSource));
         switch (DbConnStatus.lookupByDisplayName(dbName)) {
             case DISCONNECTED:
                 return ImageUtilities.mergeImages(image, warningBadge, 8, 8);
@@ -123,10 +126,10 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
     }
 
     @Override
-    protected List<Sheet.Set> createSheetSets(DataSource dataSource) {
+    protected List<Sheet.Set> createSheetSets(demetra.tsprovider.DataSource dataSource) {
         List<Sheet.Set> result = super.createSheetSets(dataSource);
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("Connection");
-        b.add(new DbConnStatusProperty(DbBean.X_DBNAME.get(dataSource)));
+        b.add(new DbConnStatusProperty(DbBean.X_DBNAME.get(TsConverter.fromDataSource(dataSource))));
         result.add(b.build());
         return result;
     }

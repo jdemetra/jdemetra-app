@@ -4,12 +4,13 @@
  */
 package ec.nbdemetra.ui.mru;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.DataSourceListener;
+import demetra.tsprovider.DataSourceLoader;
+import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.TsManager;
 import ec.nbdemetra.core.InstallerStep;
-import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.utils.DataSourceAdapter;
 import java.util.prefs.Preferences;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
@@ -31,36 +32,49 @@ public class MruProvidersStep extends InstallerStep.LookupStep<IDataSourceProvid
     @Override
     protected void onResultChanged(Lookup.Result<IDataSourceProvider> lookup) {
         // won't be added twice
-        TsManager.getDefault().all()
-                .filter(IDataSourceLoader.class::isInstance)
-                .map(IDataSourceLoader.class::cast)
+        TsManager.getDefault().getProviders()
+                .filter(DataSourceLoader.class::isInstance)
+                .map(DataSourceLoader.class::cast)
                 .forEach(o -> o.addDataSourceListener(listener));
     }
 
     @Override
     protected void onRestore(Lookup.Result<IDataSourceProvider> lookup) {
         MruPreferences.INSTANCE.load(prefs, MruList.getProvidersInstance());
-        TsManager.getDefault().all()
-                .filter(IDataSourceLoader.class::isInstance)
-                .map(IDataSourceLoader.class::cast)
+        TsManager.getDefault().getProviders()
+                .filter(DataSourceLoader.class::isInstance)
+                .map(DataSourceLoader.class::cast)
                 .forEach(o -> o.addDataSourceListener(listener));
     }
 
     @Override
     protected void onClose(Lookup.Result<IDataSourceProvider> lookup) {
-        TsManager.getDefault().all()
-                .filter(IDataSourceLoader.class::isInstance)
-                .map(IDataSourceLoader.class::cast)
+        TsManager.getDefault().getProviders()
+                .filter(DataSourceLoader.class::isInstance)
+                .map(DataSourceLoader.class::cast)
                 .forEach(o -> o.removeDataSourceListener(listener));
         MruPreferences.INSTANCE.store(prefs, MruList.getProvidersInstance());
     }
 
-    static class Listener extends DataSourceAdapter {
+    static class Listener implements DataSourceListener {
 
         @Override
-        public void opened(DataSource dataSource) {
-            IDataSourceProvider provider = TsManager.getDefault().lookup(IDataSourceProvider.class, dataSource).get();
-            MruList.getProvidersInstance().add(new SourceId(dataSource, provider.getDisplayName(dataSource)));
+        public void opened(demetra.tsprovider.DataSource dataSource) {
+            TsManager.getDefault()
+                    .getProvider(DataSourceProvider.class, dataSource)
+                    .ifPresent(provider -> MruList.getProvidersInstance().add(new SourceId(dataSource, provider.getDisplayName(dataSource))));
+        }
+
+        @Override
+        public void closed(demetra.tsprovider.DataSource ds) {
+        }
+
+        @Override
+        public void changed(demetra.tsprovider.DataSource ds) {
+        }
+
+        @Override
+        public void allClosed(String string) {
         }
     }
 }

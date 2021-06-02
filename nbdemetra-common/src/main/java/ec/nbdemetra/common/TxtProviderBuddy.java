@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.common;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
@@ -70,7 +70,10 @@ public class TxtProviderBuddy extends AbstractDataSourceProviderBuddy {
 
         b.reset("Source");
         TsManager.getDefault()
-                .lookup(IFileLoader.class, TxtProvider.SOURCE)
+                .getProvider(TxtProvider.SOURCE)
+                .map(TsConverter::fromTsProvider)
+                .filter(TxtProvider.class::isInstance)
+                .map(TxtProvider.class::cast)
                 .ifPresent(o -> addFileProperty(b, bean, o));
         addReaderProperty(b, bean);
         addCsvDialectProperty(b, bean);
@@ -89,7 +92,7 @@ public class TxtProviderBuddy extends AbstractDataSourceProviderBuddy {
                 .select(bean, "file")
                 .display("Text file")
                 .description("The path to the text file.")
-                .filterForSwing(new FileLoaderFileFilter(loader))
+              //  .filterForSwing(new FileLoaderFileFilter(loader))
                 .paths(loader.getPaths())
                 .directories(false)
                 .add();

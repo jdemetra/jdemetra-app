@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
-import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import ec.nbdemetra.ui.DemetraUiIcon;
@@ -115,7 +114,7 @@ public class JTsComboGrid extends JComponent {
         } else {
             Ts ts = (Ts) value;
             label.setText(ts.getName());
-            label.setIcon(MonikerUI.getDefault().getIcon(TsConverter.fromTsMoniker(ts.getMoniker())));
+            label.setIcon(MonikerUI.getDefault().getIcon(ts.getMoniker()));
         }
     }
 }

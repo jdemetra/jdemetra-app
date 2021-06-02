@@ -5,7 +5,7 @@
 package ec.nbdemetra.sa.composite;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.TsManager;
+import demetra.ui.OldTsUtil;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.diagnostics.IBTest;
 import ec.tss.Ts;
@@ -78,7 +78,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 String name = s.getName() + " (sa)";
                 String id = InformationSet.item(MultiSaSpecification.COMPONENT + (icmp++), ModellingDictionary.SA);
                 TsData sa = results.getData(id, TsData.class);
-                result.add(TsManager.toTs(name, sa));
+                result.add(OldTsUtil.toTs(name, sa));
             }
             return demetra.timeseries.TsCollection.of(result);
         }
@@ -98,7 +98,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 String name = s.getName() + " (benchmarked sa)";
                 String id = MultiSaSpecification.COMPONENT + (icmp++);
                 TsData sa = results.getData(id, TsData.class);
-                result.add(TsManager.toTs(name, sa));
+                result.add(OldTsUtil.toTs(name, sa));
             }
             return demetra.timeseries.TsCollection.of(result);
         }

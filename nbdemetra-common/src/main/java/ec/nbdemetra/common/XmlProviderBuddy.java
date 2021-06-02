@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.common;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
@@ -64,7 +64,10 @@ public class XmlProviderBuddy extends AbstractDataSourceProviderBuddy {
 
         b.reset("Source");
         TsManager.getDefault()
-                .lookup(IFileLoader.class, XmlProvider.SOURCE)
+                .getProvider(XmlProvider.SOURCE)
+                .map(TsConverter::fromTsProvider)
+                .filter(XmlProvider.class::isInstance)
+                .map(XmlProvider.class::cast)
                 .ifPresent(o -> addFileProperty(b, bean, o));
         addReaderProperty(b, bean);
         result.add(b.build());
@@ -77,7 +80,7 @@ public class XmlProviderBuddy extends AbstractDataSourceProviderBuddy {
                 .select(bean, "file")
                 .display("Xml file")
                 .description("The path to the xml file.")
-                .filterForSwing(new FileLoaderFileFilter(loader))
+             //   .filterForSwing(new FileLoaderFileFilter(loader))
                 .paths(loader.getPaths())
                 .directories(false)
                 .add();

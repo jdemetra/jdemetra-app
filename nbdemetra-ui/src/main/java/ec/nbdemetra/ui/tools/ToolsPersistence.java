@@ -137,8 +137,8 @@ public final class ToolsPersistence {
             if (input.items != null) {
                 for (ContentItemBean o : input.items) {
                     Ts ts = TsConverter.fromTs(
-                            TsManager.getDefault().getNextTsManager()
-                                    .getTs(demetra.timeseries.TsMoniker.of(o.source, o.id), demetra.timeseries.TsInformationType.Definition)
+                            TsManager.getDefault()
+                                    .makeTs(demetra.timeseries.TsMoniker.of(o.source, o.id), demetra.timeseries.TsInformationType.Definition)
                                     .toBuilder()
                                     .name(o.name)
                                     .build()

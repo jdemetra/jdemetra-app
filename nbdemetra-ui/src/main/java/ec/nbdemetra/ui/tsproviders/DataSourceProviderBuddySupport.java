@@ -20,12 +20,12 @@ import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import demetra.timeseries.TsMoniker;
+import demetra.tsprovider.DataSet;
+import demetra.tsprovider.DataSource;
+import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.GlobalService;
 import ec.nbdemetra.ui.IConfigurable;
-import ec.tss.TsMoniker;
-import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.IDataSourceProvider;
 import internal.FrozenTsHelper;
 import java.awt.Image;
 import java.io.IOException;
@@ -60,6 +60,11 @@ public class DataSourceProviderBuddySupport {
     }
 
     @NonNull
+    public IDataSourceProviderBuddy get(@Nullable DataSourceProvider provider) {
+        return get(provider.getSource());
+    }
+
+    @NonNull
     public IDataSourceProviderBuddy get(@Nullable String providerName) {
         String tmp = Strings.nullToEmpty(providerName);
         return Lookup.getDefault().lookupAll(IDataSourceProviderBuddy.class).stream()
@@ -67,11 +72,6 @@ public class DataSourceProviderBuddySupport {
                 .map(o -> (IDataSourceProviderBuddy) o)
                 .findFirst()
                 .orElseGet(() -> getFallback(tmp));
-    }
-
-    @NonNull
-    public IDataSourceProviderBuddy get(@NonNull IDataSourceProvider provider) {
-        return get(provider.getSource());
     }
 
     @NonNull

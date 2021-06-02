@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.bridge.TsConverter;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.tss.TsIdentifier;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
@@ -48,7 +49,7 @@ public final class TsIdentifierTableCellRenderer extends DefaultTableCellRendere
                 result.setText(MultiLineNameUtil.join(text));
                 result.setToolTipText(MultiLineNameUtil.toHtml(text));
             }
-            result.setIcon(monikerUI.getIcon(id.getMoniker()));
+            result.setIcon(monikerUI.getIcon(TsConverter.toTsMoniker(id.getMoniker())));
         }
         return result;
     }

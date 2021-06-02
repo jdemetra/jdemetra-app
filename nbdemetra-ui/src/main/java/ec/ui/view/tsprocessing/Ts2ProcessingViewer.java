@@ -82,7 +82,7 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
             tsLabely.setVisible(false);
         } else {
             dropDataLabely.setVisible(false);
-            TsMoniker monikery = input[0].getMoniker();
+            demetra.timeseries.TsMoniker monikery = TsConverter.toTsMoniker(input[0].getMoniker());
             tsLabely.setIcon(MonikerUI.getDefault().getIcon(monikery));
             tsLabely.setToolTipText(tsLabely.getText() + (monikery.getSource() != null ? (" (" + monikery.getSource() + ")") : ""));
             tsLabely.setVisible(true);
@@ -92,7 +92,7 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
             tsLabelz.setVisible(false);
         } else {
             dropDataLabelz.setVisible(false);
-            TsMoniker monikerz = input[1].getMoniker();
+            demetra.timeseries.TsMoniker monikerz = TsConverter.toTsMoniker(input[1].getMoniker());
             tsLabelz.setIcon(MonikerUI.getDefault().getIcon(monikerz));
             tsLabelz.setToolTipText(tsLabelz.getText() + (monikerz.getSource() != null ? (" (" + monikerz.getSource() + ")") : ""));
             tsLabelz.setVisible(true);

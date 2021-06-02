@@ -17,11 +17,11 @@
 package ec.nbdemetra.ws;
 
 import com.google.common.base.StandardSystemProperty;
+import demetra.tsprovider.DataSource;
 import ec.demetra.workspace.WorkspaceFamily;
 import ec.demetra.workspace.file.FileFormat;
 import ec.demetra.workspace.file.FileWorkspace;
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
-import ec.tss.tsproviders.DataSource;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
 import ec.tstoolkit.timeseries.calendars.IGregorianCalendarProvider;
 import ec.tstoolkit.utilities.LinearId;

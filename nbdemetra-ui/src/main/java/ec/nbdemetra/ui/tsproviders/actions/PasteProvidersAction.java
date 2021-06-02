@@ -16,11 +16,11 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
+import demetra.tsprovider.DataSource;
+import demetra.tsprovider.DataSourceLoader;
 import demetra.ui.TsManager;
 import demetra.ui.datatransfer.DataTransfers;
 import ec.tss.datatransfer.DataSourceTransferSupport;
-import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.IDataSourceLoader;
 import java.util.Optional;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
@@ -38,10 +38,9 @@ public final class PasteProvidersAction extends NodeAction {
     protected void performAction(Node[] activatedNodes) {
         Optional<DataSource> dataSource = DataSourceTransferSupport.getDefault().getDataSource(DataTransfers.systemClipboardAsTransferable());
         if (dataSource.isPresent()) {
-            Optional<IDataSourceLoader> loader = TsManager.getDefault().lookup(IDataSourceLoader.class, dataSource.get());
-            if (loader.isPresent()) {
-                loader.get().open(dataSource.get());
-            }
+            TsManager.getDefault()
+                    .getProvider(DataSourceLoader.class, dataSource.get())
+                    .ifPresent(loader -> loader.open(dataSource.get()));
         }
     }
 

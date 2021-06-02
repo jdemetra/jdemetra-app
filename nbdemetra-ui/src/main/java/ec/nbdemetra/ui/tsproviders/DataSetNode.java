@@ -17,15 +17,14 @@
 package ec.nbdemetra.ui.tsproviders;
 
 import demetra.bridge.TsConverter;
+import demetra.tsprovider.DataSet;
+import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.TsActions;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
-import ec.tss.TsInformationType;
-import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.IDataSourceProvider;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.Image;
@@ -43,6 +42,7 @@ import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import demetra.ui.actions.TsCollectable;
+import java.util.Optional;
 
 /**
  * A node that represents a DataSet.
@@ -92,7 +92,9 @@ abstract public class DataSetNode extends AbstractNode {
             abilities.add(new TsCollectableImpl());
         }
         // 3. Name and display name
-        applyText(TsManager.getDefault().lookup(IDataSourceProvider.class, dataSet).get().getDisplayNodeName(dataSet));
+        TsManager.getDefault()
+                .getProvider(DataSourceProvider.class, dataSet)
+                .ifPresent(provider -> applyText(provider.getDisplayNodeName(dataSet)));
     }
 
     @Override
@@ -138,7 +140,13 @@ abstract public class DataSetNode extends AbstractNode {
 
         @Override
         protected boolean tryCreateKeys(List<Object> list) throws Exception {
-            list.addAll(TsManager.getDefault().lookup(IDataSourceProvider.class, dataSet).get().children(dataSet));
+            Optional<DataSourceProvider> provider = TsManager.getDefault().getProvider(DataSourceProvider.class, dataSet);
+            if (provider.isPresent()) {
+                provider.get()
+                        .children(dataSet)
+                        .stream()
+                        .forEach(list::add);
+            }
             return true;
         }
 
@@ -160,9 +168,9 @@ abstract public class DataSetNode extends AbstractNode {
 
         @Override
         public void open() {
+            DataSet dataSet = getLookup().lookup(DataSet.class);
             TsManager.getDefault()
-                    .getTs(getLookup().lookup(DataSet.class), TsInformationType.None)
-                    .map(TsConverter::toTs)
+                    .getTs(dataSet, demetra.timeseries.TsInformationType.None)
                     .ifPresent(ts -> TsActions.getDefault().openWith(ts, DemetraUI.getDefault().getTsActionName()));
         }
     }
@@ -171,9 +179,9 @@ abstract public class DataSetNode extends AbstractNode {
 
         @Override
         public demetra.timeseries.TsCollection getTsCollection() {
+            DataSet dataSet = getLookup().lookup(DataSet.class);
             return TsManager.getDefault()
-                    .getTsCollection(getLookup().lookup(DataSet.class), SHOULD_BE_NONE)
-                    .map(TsConverter::toTsCollection)
+                    .getTsCollection(dataSet, SHOULD_BE_NONE)
                     .orElse(demetra.timeseries.TsCollection.EMPTY);
         }
     }

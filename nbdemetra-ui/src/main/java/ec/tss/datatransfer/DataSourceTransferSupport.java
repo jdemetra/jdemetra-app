@@ -16,8 +16,8 @@
  */
 package ec.tss.datatransfer;
 
+import demetra.tsprovider.DataSource;
 import demetra.ui.GlobalService;
-import ec.tss.tsproviders.DataSource;
 import java.awt.datatransfer.Transferable;
 import java.util.Objects;
 import java.util.Optional;

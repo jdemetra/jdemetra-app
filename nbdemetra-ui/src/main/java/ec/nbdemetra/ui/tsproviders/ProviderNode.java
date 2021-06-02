@@ -18,13 +18,17 @@ package ec.nbdemetra.ui.tsproviders;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.DataSource;
+import demetra.tsprovider.DataSourceListener;
+import demetra.tsprovider.DataSourceLoader;
+import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.interchange.Importable;
 import static ec.nbdemetra.ui.tsproviders.ProviderNode.ACTION_PATH;
 import ec.tss.datatransfer.DataSourceTransferSupport;
-import ec.tss.tsproviders.*;
 import java.awt.Image;
 import java.awt.datatransfer.Transferable;
 import java.beans.IntrospectionException;
@@ -63,17 +67,17 @@ public final class ProviderNode extends AbstractNode {
 
     public static final String ACTION_PATH = "ProviderNode";
 
-    public ProviderNode(@NonNull IDataSourceProvider provider) {
+    public ProviderNode(@NonNull DataSourceProvider provider) {
         this(provider, new InstanceContent());
     }
 
-    private ProviderNode(IDataSourceProvider provider, InstanceContent abilities) {
+    private ProviderNode(DataSourceProvider provider, InstanceContent abilities) {
         // 1. Children and lookup
         super(Children.create(new ProviderChildFactory(provider), true),
                 new ProxyLookup(Lookups.singleton(provider), new AbstractLookup(abilities)));
         // 2. Abilities
         {
-            if (provider instanceof IDataSourceLoader) {
+            if (provider instanceof DataSourceLoader) {
                 abilities.add(new OpenableImpl());
                 abilities.add(new ImportableDataSource());
             }
@@ -92,7 +96,7 @@ public final class ProviderNode extends AbstractNode {
     }
 
     private java.util.Optional<Image> lookupIcon(int type, boolean opened) {
-        IDataSourceProvider o = getLookup().lookup(IDataSourceProvider.class);
+        DataSourceProvider o = getLookup().lookup(DataSourceProvider.class);
         return DataSourceProviderBuddySupport.getDefault().getIcon(o.getSource(), type, opened);
     }
 
@@ -108,13 +112,13 @@ public final class ProviderNode extends AbstractNode {
 
     @Override
     protected Sheet createSheet() {
-        IDataSourceProvider o = getLookup().lookup(IDataSourceProvider.class);
+        DataSourceProvider o = getLookup().lookup(DataSourceProvider.class);
         return DataSourceProviderBuddySupport.getDefault().get(o).createSheet();
     }
 
     @Override
     public PasteType getDropType(Transferable t, int action, int index) {
-        IDataSourceLoader loader = getLookup().lookup(IDataSourceLoader.class);
+        DataSourceLoader loader = getLookup().lookup(DataSourceLoader.class);
         if (loader != null && DataSourceTransferSupport.getDefault().canHandle(t, loader.getSource())) {
             return new PasteTypeImpl(t, loader);
         }
@@ -122,7 +126,7 @@ public final class ProviderNode extends AbstractNode {
     }
 
     public void paste(DataSource dataSource) {
-        IDataSourceLoader loader = getLookup().lookup(IDataSourceLoader.class);
+        DataSourceLoader loader = getLookup().lookup(DataSourceLoader.class);
         Preconditions.checkArgument(loader != null);
         Preconditions.checkArgument(dataSource.getProviderName().equals(loader.getSource()));
         loader.open(dataSource);
@@ -133,11 +137,11 @@ public final class ProviderNode extends AbstractNode {
         return false;
     }
 
-    private static final class ProviderChildFactory extends ChildFactory.Detachable<DataSource> implements IDataSourceListener {
+    private static final class ProviderChildFactory extends ChildFactory.Detachable<DataSource> implements DataSourceListener {
 
-        private final IDataSourceProvider provider;
+        private final DataSourceProvider provider;
 
-        public ProviderChildFactory(IDataSourceProvider provider) {
+        public ProviderChildFactory(DataSourceProvider provider) {
             this.provider = provider;
         }
 
@@ -189,7 +193,7 @@ public final class ProviderNode extends AbstractNode {
 
         @Override
         public void open() {
-            IDataSourceLoader loader = getLookup().lookup(IDataSourceLoader.class);
+            DataSourceLoader loader = getLookup().lookup(DataSourceLoader.class);
             Object bean = loader.newBean();
             try {
                 if (DataSourceProviderBuddySupport.getDefault().get(loader).editBean("Open data source", bean)) {
@@ -212,9 +216,9 @@ public final class ProviderNode extends AbstractNode {
         public void importConfig(Config config) throws IllegalArgumentException {
             DataSource dataSource = ProvidersUtil.getDataSource(config);
             TsManager.getDefault()
-                    .lookup(IDataSourceLoader.class, dataSource)
-                    .ifPresent(o -> {
-                        o.open(dataSource);
+                    .getProvider(DataSourceLoader.class, dataSource)
+                    .ifPresent(provider -> {
+                        provider.open(dataSource);
                         ProvidersUtil.findNode(dataSource, ProviderNode.this)
                                 .ifPresent(node -> node.setDisplayName(config.getName()));
                     });
@@ -224,9 +228,9 @@ public final class ProviderNode extends AbstractNode {
     private static final class PasteTypeImpl extends PasteType {
 
         private final Transferable t;
-        private final IDataSourceLoader loader;
+        private final DataSourceLoader loader;
 
-        public PasteTypeImpl(Transferable t, IDataSourceLoader loader) {
+        public PasteTypeImpl(Transferable t, DataSourceLoader loader) {
             this.t = t;
             this.loader = loader;
         }

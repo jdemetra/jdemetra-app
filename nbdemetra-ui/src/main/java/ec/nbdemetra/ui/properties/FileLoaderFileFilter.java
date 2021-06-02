@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.properties;
 
-import ec.tss.tsproviders.IFileLoader;
+import demetra.tsprovider.FileLoader;
 import java.io.File;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -26,9 +26,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  */
 public class FileLoaderFileFilter extends javax.swing.filechooser.FileFilter implements java.io.FileFilter {
 
-    private final IFileLoader loader;
+    private final FileLoader loader;
 
-    public FileLoaderFileFilter(@NonNull IFileLoader loader) {
+    public FileLoaderFileFilter(@NonNull FileLoader loader) {
         this.loader = loader;
     }
 

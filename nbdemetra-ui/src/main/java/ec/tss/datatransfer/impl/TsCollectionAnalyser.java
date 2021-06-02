@@ -4,7 +4,7 @@
  */
 package ec.tss.datatransfer.impl;
 
-import demetra.ui.TsManager;
+import demetra.ui.OldTsUtil;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tstoolkit.maths.matrices.Matrix;
@@ -43,7 +43,7 @@ class TsCollectionAnalyser {
                 }
             }
             TsData data = cur.make(TsFrequency.Undefined, TsAggregationType.None);
-            coll.add(TsManager.toTs(titles[i], data));
+            coll.add(OldTsUtil.toTs(titles[i], data));
         }
         return demetra.timeseries.TsCollection.of(coll);
     }

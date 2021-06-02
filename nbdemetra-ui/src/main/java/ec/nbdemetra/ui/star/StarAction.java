@@ -16,9 +16,9 @@
  */
 package ec.nbdemetra.ui.star;
 
+import demetra.tsprovider.DataSource;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.tsproviders.DataSourceNode;
-import ec.tss.tsproviders.DataSource;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

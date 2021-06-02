@@ -18,6 +18,7 @@ package ec.ui.list;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.NamedService;
+import demetra.ui.OldTsUtil;
 import demetra.ui.TsActions;
 import demetra.ui.TsManager;
 import demetra.ui.util.NbComponents;
@@ -442,12 +443,11 @@ public class JTsVariableList extends JComponent implements HasTsAction {
         }
         return variable instanceof DynamicTsVariable
                 ? TsManager.getDefault()
-                        .getNextTsManager()
-                        .getTs(TsConverter.toTsMoniker(((DynamicTsVariable) variable).getMoniker()), demetra.timeseries.TsInformationType.None)
+                        .makeTs(TsConverter.toTsMoniker(((DynamicTsVariable) variable).getMoniker()), demetra.timeseries.TsInformationType.None)
                         .toBuilder()
                         .name(name)
                         .build()
-                : TsManager.toTs(name, variable.getTsData());
+                : OldTsUtil.toTs(name, variable.getTsData());
     }
 
     private static final class OpenCommand extends JCommand<JTsVariableList> {

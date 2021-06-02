@@ -11,8 +11,8 @@ import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
+import demetra.ui.OldTsUtil;
 import demetra.ui.TsActions;
-import demetra.ui.TsManager;
 import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
 import ec.nbdemetra.ui.Menus.DynamicPopup;
 import ec.nbdemetra.ui.*;
@@ -567,7 +567,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             components.stream().forEach((comp) -> {
                 TsData tsData = item.process().getData(comp, TsData.class);
                 if (tsData != null) {
-                    col.add(TsManager.toTs("[" + comp + "] " + item.getTs().getName(), tsData));
+                    col.add(OldTsUtil.toTs("[" + comp + "] " + item.getTs().getName(), tsData));
                 }
             });
         }
@@ -864,7 +864,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         public Icon getIcon(SaItem item) {
-            return monikerUI.getIcon(item.getTs().getMoniker());
+            return monikerUI.getIcon(TsConverter.toTsMoniker(item.getTs().getMoniker()));
         }
     }
 

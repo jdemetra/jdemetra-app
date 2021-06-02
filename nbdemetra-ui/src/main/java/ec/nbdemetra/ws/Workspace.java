@@ -4,9 +4,9 @@
  */
 package ec.nbdemetra.ws;
 
+import demetra.tsprovider.DataSource;
 import ec.nbdemetra.ui.mru.SourceId;
 import ec.nbdemetra.ws.IWorkspaceItemManager.ItemType;
-import ec.tss.tsproviders.DataSource;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.utilities.Id;
 import ec.ui.interfaces.IDisposable;
@@ -29,7 +29,7 @@ public class Workspace implements IDisposable {
     static final AtomicLong wsId = new AtomicLong(0);
     static final AtomicLong curId = new AtomicLong(0);
     private SourceId id;
-    private final ProcessingContext context_=new ProcessingContext();
+    private final ProcessingContext context_ = new ProcessingContext();
     private boolean dirty_ = false;
     private final List<WorkspaceItem<?>> items_ = new ArrayList<>();
     private final HashMap<Id, Id> defaultSpecs_ = new HashMap<>();
@@ -192,10 +192,10 @@ public class Workspace implements IDisposable {
     public String getName() {
         return id.getLabel();
     }
-    
-    public ProcessingContext getContext(){
+
+    public ProcessingContext getContext() {
         return context_;
-    } 
+    }
 
     public void setName(String value) {
         id = new SourceId(id.getDataSource(), value);
@@ -303,7 +303,7 @@ public class Workspace implements IDisposable {
                     // could happen during the shut down...
                     SwingUtilities.invokeAndWait(item::closeView);
                 } catch (InterruptedException | InvocationTargetException ex) {
-                Thread.currentThread().interrupt();
+                    Thread.currentThread().interrupt();
                     Exceptions.printStackTrace(ex);
                 }
             } else if (!item.closeView()) {

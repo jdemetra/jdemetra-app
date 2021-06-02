@@ -16,8 +16,8 @@
  */
 package internal.ui.components;
 
-import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
+import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.NamedService;
 import demetra.ui.TsActions;
 import demetra.ui.components.TsSelectionBridge;
@@ -28,9 +28,6 @@ import static demetra.ui.components.parts.HasTsCollection.TS_COLLECTION_PROPERTY
 import static demetra.ui.components.parts.HasTsCollection.UDPATE_MODE_PROPERTY;
 import ec.nbdemetra.ui.DemetraUI;
 import demetra.ui.util.KeyStrokes;
-import ec.tss.Ts;
-import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.IDataSourceProvider;
 import demetra.ui.components.ComponentCommand;
 import demetra.ui.actions.Actions;
 import ec.util.list.swing.JLists;
@@ -344,8 +341,8 @@ public class HasTsCollectionCommands {
             return JLists.isSingleSelectionIndex(c.getTsSelectionModel());
         }
 
-        protected Ts getSingleTs(HasTsCollection c) {
-            return TsConverter.fromTs(c.getTsCollection().get(c.getTsSelectionModel().getMinSelectionIndex()));
+        protected demetra.timeseries.Ts getSingleTs(HasTsCollection c) {
+            return c.getTsCollection().get(c.getTsSelectionModel().getMinSelectionIndex());
         }
     }
 
@@ -367,16 +364,16 @@ public class HasTsCollectionCommands {
 
         @Override
         public void execute(final HasTsCollection c) throws Exception {
-            final Ts ts = getSingleTs(c);
+            final demetra.timeseries.Ts ts = getSingleTs(c);
             NotifyDescriptor.InputLine descriptor = new NotifyDescriptor.InputLine("New name:", "Rename time series");
             descriptor.setInputText(ts.getName());
-            if (!ts.getMoniker().isAnonymous()) {
+            if (ts.getMoniker().isProvided()) {
                 descriptor.setAdditionalOptions(new Object[]{new JButton(new AbstractAction("Restore") {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        Optional<IDataSourceProvider> provider = TsManager.getDefault().lookup(IDataSourceProvider.class, ts.getMoniker());
+                        Optional<DataSourceProvider> provider = TsManager.getDefault().getProvider(DataSourceProvider.class, ts.getMoniker());
                         if (provider.isPresent()) {
-                            DataSet dataSet = provider.get().toDataSet(ts.getMoniker());
+                            demetra.tsprovider.DataSet dataSet = provider.get().toDataSet(ts.getMoniker()).orElse(null);
                             if (dataSet != null) {
                                 rename(c, ts, provider.get().getDisplayName(dataSet));
                             }
@@ -389,10 +386,10 @@ public class HasTsCollectionCommands {
             }
         }
 
-        private void rename(HasTsCollection c, Ts ts, String newName) {
-            List<Ts> tmp = c.getTsCollection().stream().map(TsConverter::fromTs).collect(Collectors.toList());
-            tmp.set(tmp.indexOf(ts), ts.rename(newName));
-            c.setTsCollection(tmp.stream().map(TsConverter::toTs).collect(TsCollection.toTsCollection()));
+        private void rename(HasTsCollection c, demetra.timeseries.Ts ts, String newName) {
+            List<demetra.timeseries.Ts> tmp = c.getTsCollection().toList();
+            tmp.set(tmp.indexOf(ts), ts.withName(newName));
+            c.setTsCollection(TsCollection.of(tmp));
         }
     }
 
@@ -407,7 +404,7 @@ public class HasTsCollectionCommands {
                 if (actionName == null) {
                     actionName = DemetraUI.getDefault().getTsActionName();
                 }
-                TsActions.getDefault().openWith(TsConverter.toTs(getSingleTs(c)), actionName);
+                TsActions.getDefault().openWith(getSingleTs(c), actionName);
             }
         }
     }
@@ -436,7 +433,7 @@ public class HasTsCollectionCommands {
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            TsActions.getDefault().openWith(TsConverter.toTs(getSingleTs(c)), tsAction);
+            TsActions.getDefault().openWith(getSingleTs(c), tsAction);
         }
     }
 
@@ -584,7 +581,7 @@ public class HasTsCollectionCommands {
                     .findFirst()
                     .ifPresent(i -> {
                         demetra.timeseries.TsCollection tmp = c.getTsCollection();
-                        List<demetra.timeseries.Ts> list = new ArrayList<>(tmp.getItems());
+                        List<demetra.timeseries.Ts> list = tmp.toList();
                         list.add(list.get(i).freeze());
                         c.setTsCollection(tmp.toBuilder().items(list).build());
                     });

@@ -16,9 +16,9 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.timeseries.TsMoniker;
 import demetra.ui.GlobalService;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import ec.tss.TsMoniker;
 import java.beans.BeanInfo;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;

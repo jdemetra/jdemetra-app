@@ -17,11 +17,11 @@
 package internal.ui.components.parts;
 
 import demetra.timeseries.Ts;
-import demetra.ui.NextTsManager;
 import demetra.ui.TsEvent;
 import demetra.ui.TsListener;
 import demetra.ui.beans.PropertyChangeBroadcaster;
 import demetra.ui.components.parts.HasTs;
+import demetra.ui.TsManager;
 
 /**
  *
@@ -35,7 +35,7 @@ public final class HasTsImpl implements HasTs, TsListener {
 
     Ts ts = null;
 
-    public HasTsImpl register(NextTsManager manager) {
+    public HasTsImpl register(TsManager manager) {
         manager.addWeakListener(this);
         return this;
     }
@@ -55,7 +55,7 @@ public final class HasTsImpl implements HasTs, TsListener {
     @Override
     public void tsUpdated(TsEvent event) {
         if (hasTs() && event.getMoniker().equals(ts.getMoniker())) {
-            setTs(event.getSource().getTs(ts.getMoniker(), ts.getType()));
+            setTs(event.getSource().makeTs(ts.getMoniker(), ts.getType()));
         }
     }
 

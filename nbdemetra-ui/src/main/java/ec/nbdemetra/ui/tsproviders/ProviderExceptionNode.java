@@ -16,9 +16,9 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.nodes.ExceptionNode;
-import ec.tss.tsproviders.IDataSourceProvider;
 import java.awt.Image;
 import java.io.IOException;
 import org.openide.nodes.Sheet;
@@ -44,7 +44,7 @@ final class ProviderExceptionNode extends ExceptionNode {
     @Override
     public String getDisplayName() {
         IOException ex = getLookup().lookup(IOException.class);
-        return TsManager.getDefault().lookup(IDataSourceProvider.class, providerName).get().getDisplayName(ex);
+        return TsManager.getDefault().getProvider(DataSourceProvider.class, providerName).get().getDisplayName(ex);
     }
 
     private java.util.Optional<Image> lookupIcon(int type, boolean opened) {

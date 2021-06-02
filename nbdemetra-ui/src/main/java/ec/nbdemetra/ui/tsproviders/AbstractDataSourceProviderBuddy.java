@@ -16,9 +16,10 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.tsprovider.DataSet;
+import demetra.tsprovider.DataSource;
 import demetra.ui.properties.PropertySheetDialogBuilder;
 import demetra.ui.properties.NodePropertySetBuilder;
-import ec.tss.tsproviders.*;
 import java.awt.Image;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;

@@ -6,9 +6,10 @@ package ec.nbdemetra.core;
 
 import com.google.common.collect.ImmutableList;
 import ec.tss.tsproviders.utils.IFormatter;
-import ec.tss.tsproviders.utils.IParser;
 import java.util.Optional;
 import java.util.prefs.Preferences;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.NbPreferences;
@@ -97,7 +98,7 @@ public abstract class InstallerStep {
         }
     }
 
-    public static <X> Optional<X> tryGet(Preferences prefs, String key, IParser<X> parser) {
+    public static <X> Optional<X> tryGet(Preferences prefs, String key, Parser<X> parser) {
         String stringValue = prefs.get(key, null);
         if (stringValue == null) {
             return Optional.empty();
@@ -105,7 +106,7 @@ public abstract class InstallerStep {
         return Optional.ofNullable(parser.parse(stringValue));
     }
 
-    public static <X> boolean tryPut(Preferences prefs, String key, IFormatter<X> formatter, X value) {
+    public static <X> boolean tryPut(Preferences prefs, String key, Formatter<X> formatter, X value) {
         CharSequence stringValue = formatter.format(value);
         if (stringValue == null) {
             return false;

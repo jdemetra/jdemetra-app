@@ -19,7 +19,7 @@ package internal.ui.components;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.TsManager;
+import demetra.ui.OldTsUtil;
 import demetra.ui.components.TsSelectionBridge;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
@@ -204,7 +204,7 @@ public class HasChartCommands {
             c.getChart().setObsFormat(ObsFormat.of(null, "MMM", null));
             c.getChart().setTsUpdateMode(TsUpdateMode.None);
             c.getChart().setTsCollection(split(ts));
-            Icon icon = MonikerUI.getDefault().getIcon(ts.getMoniker());
+            Icon icon = MonikerUI.getDefault().getIcon(TsConverter.toTsMoniker(ts.getMoniker()));
             c.setIcon(icon != null ? ImageUtilities.icon2Image(icon) : null);
             c.open();
             c.requestActive();
@@ -223,7 +223,7 @@ public class HasChartCommands {
                 }
                 String name = String.valueOf(o.start.getYear());
                 TsData tmp = dc.make(o.start.getFrequency(), TsAggregationType.None);
-                result.add(TsManager.toTs(name, tmp));
+                result.add(OldTsUtil.toTs(name, tmp));
             }
             return TsCollection.of(result);
         }

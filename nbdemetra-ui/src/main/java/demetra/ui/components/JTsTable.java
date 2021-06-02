@@ -154,7 +154,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
     private final InternalUI<JTsTable> internalUI;
 
     public JTsTable() {
-        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault().getNextTsManager());
+        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
         this.tsAction = HasTsAction.of(this::firePropertyChange);
         this.obsFormat = HasObsFormat.of(this::firePropertyChange);
         this.showHeader = DEFAULT_SHOW_HEADER;

@@ -18,16 +18,13 @@ package ec.nbdemetra.ui.demo.impl;
 
 import demetra.bridge.TsConverter;
 import demetra.demo.PocProvider;
+import demetra.tsprovider.DataSourceListener;
+import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTs;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import static ec.nbdemetra.ui.demo.impl.TsCollectionHandler.getIcon;
 import ec.tss.TsInformation;
-import ec.tss.TsInformationType;
-import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.IDataSourceListener;
-import ec.tss.tsproviders.IDataSourceProvider;
 import ec.util.various.swing.FontAwesome;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
 import ec.util.various.swing.JCommand;
@@ -87,7 +84,7 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> 
 
     private static JButton createFakeProviderButton(HasTs view) {
         JMenu providerMenu = TsManager.getDefault()
-                .lookup(IDataSourceProvider.class, PocProvider.NAME)
+                .getProvider(DataSourceProvider.class, PocProvider.NAME)
                 .map(o -> createFakeProviderMenu(o, view))
                 .orElseGet(JMenu::new);
         JButton result = DropDownButtonFactory.createDropDownButton(getIcon(FontAwesome.FA_DATABASE), providerMenu.getPopupMenu());
@@ -97,14 +94,26 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> 
     }
 
     private static void enableTickFeedback(JButton button) {
-        Optional<IDataSourceProvider> p = TsManager.getDefault().lookup(IDataSourceProvider.class, PocProvider.NAME);
+        Optional<DataSourceProvider> p = TsManager.getDefault().getProvider(DataSourceProvider.class, PocProvider.NAME);
         if (p.isPresent()) {
-            IDataSourceListener changeListener = new IDataSourceListener() {
+            DataSourceListener changeListener = new DataSourceListener() {
                 Icon icon1 = getIcon(FontAwesome.FA_DATABASE);
                 Icon icon2 = FontAwesome.FA_DATABASE.getIcon(Color.ORANGE.darker(), FontAwesomeUtils.toSize(ICON_COLOR_16x16));
 
                 @Override
-                public void changed(DataSource dataSource) {
+                public void opened(demetra.tsprovider.DataSource ds) {
+                }
+
+                @Override
+                public void closed(demetra.tsprovider.DataSource ds) {
+                }
+
+                @Override
+                public void allClosed(String string) {
+                }
+
+                @Override
+                public void changed(demetra.tsprovider.DataSource dataSource) {
                     SwingUtilities.invokeLater(() -> {
                         if (icon1.equals(button.getClientProperty("stuff"))) {
                             button.putClientProperty("stuff", icon2);
@@ -121,13 +130,13 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> 
         }
     }
 
-    private static JMenu createFakeProviderMenu(IDataSourceProvider provider, HasTs view) {
+    private static JMenu createFakeProviderMenu(DataSourceProvider provider, HasTs view) {
         JMenu result = new JMenu();
-        for (DataSource dataSource : provider.getDataSources()) {
+        for (demetra.tsprovider.DataSource dataSource : provider.getDataSources()) {
             JMenu subMenu = new JMenu(provider.getDisplayName(dataSource));
             subMenu.setIcon(getIcon(FontAwesome.FA_FOLDER));
             try {
-                for (DataSet dataSet : provider.children(dataSource)) {
+                for (demetra.tsprovider.DataSet dataSet : provider.children(dataSource)) {
                     JMenuItem item = subMenu.add(new AddDataSetCommand(dataSet).toAction(view));
                     item.setText(provider.getDisplayNodeName(dataSet));
                     item.setIcon(getIcon(FontAwesome.FA_LINE_CHART));
@@ -142,17 +151,16 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> 
 
     private static final class AddDataSetCommand extends JCommand<HasTs> {
 
-        private final DataSet dataSet;
+        private final demetra.tsprovider.DataSet dataSet;
 
-        public AddDataSetCommand(DataSet dataSet) {
+        public AddDataSetCommand(demetra.tsprovider.DataSet dataSet) {
             this.dataSet = dataSet;
         }
 
         @Override
         public void execute(HasTs component) throws Exception {
             Optional<demetra.timeseries.Ts> ts = TsManager.getDefault()
-                    .getTs(dataSet, TsInformationType.Definition)
-                    .map(TsConverter::toTs);
+                    .getTs(dataSet, demetra.timeseries.TsInformationType.Definition);
             if (ts.isPresent()) {
                 TsManager.getDefault().loadAsync(ts.get(), demetra.timeseries.TsInformationType.All);
             }

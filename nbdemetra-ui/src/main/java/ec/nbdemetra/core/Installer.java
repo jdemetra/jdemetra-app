@@ -17,11 +17,11 @@
 package ec.nbdemetra.core;
 
 import com.google.common.collect.Lists;
-import demetra.bridge.FromDataSourceProvider;
 import demetra.demo.PocProvider;
+import demetra.timeseries.TsProvider;
+import demetra.tsprovider.FileLoader;
 import demetra.ui.TsManager;
 import ec.tss.DynamicTsVariable;
-import ec.tss.ITsProvider;
 import ec.tss.sa.ISaDiagnosticsFactory;
 import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.ISaProcessingFactory;
@@ -45,6 +45,8 @@ import java.util.stream.Stream;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
 import org.openide.util.Lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,33 +78,33 @@ public final class Installer {
         }
     }
 
-    private static final class ProvidersStep extends InstallerStep.LookupStep<ITsProvider> {
+    private static final class ProvidersStep extends InstallerStep.LookupStep<TsProvider> {
 
         final Preferences prefs = prefs();
-        final IParser<File[]> pathsParser = Parsers.onJAXB(PathsBean.class).andThen(o -> o.paths != null ? o.paths : new File[0]);
-        final IFormatter<File[]> pathsFormatter = Formatters.onJAXB(PathsBean.class, false).compose(PathsBean::create);
+        final Parser<File[]> pathsParser = Parsers.onJAXB(PathsBean.class).andThen(o -> o.paths != null ? o.paths : new File[0])::parse;
+        final Formatter<File[]> pathsFormatter = Formatters.onJAXB(PathsBean.class, false).compose(PathsBean::create)::format;
 
         ProvidersStep() {
-            super(ITsProvider.class);
+            super(TsProvider.class);
         }
 
-        private void register(Iterable<? extends ITsProvider> providers) {
+        private void register(Iterable<? extends TsProvider> providers) {
             Preferences pathsNode = prefs.node("paths");
-            for (ITsProvider o : providers) {
+            for (TsProvider o : providers) {
                 TsManager.getDefault().register(o);
                 if (o instanceof IFileLoader) {
                     tryGet(pathsNode, o.getSource(), pathsParser)
                             .ifPresent(bean -> ((IFileLoader) o).setPaths(bean));
                 }
             }
-            TsManager.getDefault().register(new FromDataSourceProvider(new PocProvider()));
+            TsManager.getDefault().register(new PocProvider());
         }
 
-        private void unregister(Iterable<? extends ITsProvider> providers) {
+        private void unregister(Iterable<? extends TsProvider> providers) {
             Preferences pathsNode = prefs.node("paths");
-            for (ITsProvider o : providers) {
-                if (o instanceof IFileLoader) {
-                    tryPut(pathsNode, o.getSource(), pathsFormatter, ((IFileLoader) o).getPaths());
+            for (TsProvider o : providers) {
+                if (o instanceof FileLoader) {
+                    tryPut(pathsNode, o.getSource(), pathsFormatter, ((FileLoader) o).getPaths());
                 }
                 TsManager.getDefault().unregister(o);
             }
@@ -114,30 +116,30 @@ public final class Installer {
             return result;
         }
 
-        private static String toString(Stream<? extends ITsProvider> providers) {
+        private static String toString(Stream<? extends TsProvider> providers) {
             return providers
                     .map(o -> o.getSource() + "(" + o.getClass().getName() + ")")
                     .collect(Collectors.joining(", "));
         }
 
         @Override
-        protected void onResultChanged(Lookup.Result<ITsProvider> lookup) {
-            List<ITsProvider> old = TsManager.getDefault().all().collect(Collectors.toList());
-            List<ITsProvider> current = Lists.newArrayList(lookup.allInstances());
+        protected void onResultChanged(Lookup.Result<TsProvider> lookup) {
+            List<TsProvider> old = TsManager.getDefault().getProviders().collect(Collectors.toList());
+            List<TsProvider> current = Lists.newArrayList(lookup.allInstances());
 
             unregister(except(old, current));
             register(except(current, old));
         }
 
         @Override
-        protected void onRestore(Lookup.Result<ITsProvider> lookup) {
+        protected void onRestore(Lookup.Result<TsProvider> lookup) {
             register(lookup.allInstances());
-            LOGGER.debug("Loaded providers: [{}]", toString(TsManager.getDefault().all()));
+            LOGGER.debug("Loaded providers: [{}]", toString(TsManager.getDefault().getProviders()));
         }
 
         @Override
-        protected void onClose(Lookup.Result<ITsProvider> lookup) {
-            unregister(TsManager.getDefault().all().collect(Collectors.toList()));
+        protected void onClose(Lookup.Result<TsProvider> lookup) {
+            unregister(TsManager.getDefault().getProviders().collect(Collectors.toList()));
             try {
                 prefs.flush();
             } catch (BackingStoreException ex) {

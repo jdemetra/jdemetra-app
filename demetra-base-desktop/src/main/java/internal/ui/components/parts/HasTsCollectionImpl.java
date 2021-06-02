@@ -18,16 +18,15 @@ package internal.ui.components.parts;
 
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
-import demetra.ui.NextTsManager;
 import demetra.ui.TsEvent;
 import demetra.ui.TsListener;
 import demetra.ui.beans.PropertyChangeBroadcaster;
 import demetra.ui.components.parts.HasTsCollection;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.ListSelectionModel;
+import demetra.ui.TsManager;
 
 /**
  *
@@ -45,7 +44,7 @@ public final class HasTsCollectionImpl implements HasTsCollection, TsListener {
     boolean freezeOnImport = DEFAULT_FREEZE_ON_IMPORT;
     TsCollection dropContent = TsCollection.EMPTY;
 
-    public HasTsCollectionImpl register(NextTsManager manager) {
+    public HasTsCollectionImpl register(TsManager manager) {
         manager.addWeakListener(this);
         return this;
     }
@@ -116,16 +115,16 @@ public final class HasTsCollectionImpl implements HasTsCollection, TsListener {
     public void tsUpdated(TsEvent event) {
         TsCollection col = getTsCollection();
         if (event.getMoniker().equals(col.getMoniker())) {
-            TsCollection newData = event.getSource().getTsCollection(event.getMoniker(), col.getType());
+            TsCollection newData = event.getSource().makeTsCollection(event.getMoniker(), col.getType());
             setTsCollection(newData);
         } else {
             int index = col.indexOf(ts -> ts.getMoniker().equals(event.getMoniker()));
             if (index != -1) {
                 Ts oldData = col.get(index);
-                Ts newData = event.getSource().getTs(oldData.getMoniker(), oldData.getType());
-                List<Ts> list = new ArrayList<>(col.getItems());
+                Ts newData = event.getSource().makeTs(oldData.getMoniker(), oldData.getType());
+                List<Ts> list = col.toList();
                 list.set(index, newData);
-                setTsCollection(col.toBuilder().items(list).build());
+                setTsCollection(col.toBuilder().clearItems().items(list).build());
             }
         }
     }

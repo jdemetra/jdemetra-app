@@ -10,6 +10,8 @@ import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsInformationType;
+import demetra.timeseries.TsMoniker;
+import demetra.tsprovider.DataSourceProvider;
 import demetra.tsprovider.util.MultiLineNameUtil;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsCollection;
@@ -17,10 +19,7 @@ import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import internal.FrozenTsHelper;
-import internal.ui.properties.LocalDateTimePropertyEditor;
 import demetra.ui.components.TsSelectionBridge;
-import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.IDataSourceProvider;
 import java.awt.Image;
 import java.beans.PropertyVetoException;
 import java.time.LocalDateTime;
@@ -167,7 +166,7 @@ public class ControlNode {
 
         private Optional<Image> lookupIcon(int type, boolean opened) {
             demetra.timeseries.Ts ts = getLookup().lookup(demetra.timeseries.Ts.class);
-            return DataSourceProviderBuddySupport.getDefault().getIcon(TsConverter.fromTsMoniker(ts.getMoniker()), type, opened);
+            return DataSourceProviderBuddySupport.getDefault().getIcon(ts.getMoniker(), type, opened);
         }
 
         @Override
@@ -234,7 +233,7 @@ public class ControlNode {
         b.withEnum(TsInformationType.class).select(ts, "getType", null).display("Information type").add();
         b.with(LocalDateTime.class)
                 .selectConst("snapshot", FrozenTsHelper.getTimestamp(ts))
-//                .attribute(LocalDateTimePropertyEditor.NULL_STRING, "Latest")
+                //                .attribute(LocalDateTimePropertyEditor.NULL_STRING, "Latest")
                 .attribute("nullString", "Latest")
                 .display("Snapshot")
                 .add();
@@ -267,26 +266,24 @@ public class ControlNode {
     }
 
     private static void addDataSourceProperties(demetra.timeseries.TsMoniker moniker, NodePropertySetBuilder b) {
-        ec.tss.TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
+        TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
         if (original != null) {
             String providerName = original.getSource();
-            if (providerName != null) {
-                IDataSourceProvider p = TsManager.getDefault().lookup(IDataSourceProvider.class, providerName).orElse(null);
-                b.with(String.class).selectConst("Provider", getProviderDisplayName(p, providerName)).add();
-                b.with(String.class).selectConst("Data source", getDataSourceDisplayName(p, original, "unavailable")).add();
-            }
+            DataSourceProvider p = TsManager.getDefault().getProvider(DataSourceProvider.class, providerName).orElse(null);
+            b.with(String.class).selectConst("Provider", getProviderDisplayName(p, providerName)).add();
+            b.with(String.class).selectConst("Data source", getDataSourceDisplayName(p, original, "unavailable")).add();
         }
     }
 
-    private static String getProviderDisplayName(IDataSourceProvider provider, String fallback) {
+    private static String getProviderDisplayName(DataSourceProvider provider, String fallback) {
         return provider != null ? provider.getDisplayName() : fallback;
     }
 
-    private static String getDataSourceDisplayName(IDataSourceProvider provider, ec.tss.TsMoniker moniker, String fallback) {
+    private static String getDataSourceDisplayName(DataSourceProvider provider, TsMoniker moniker, String fallback) {
         if (provider != null) {
-            DataSet dataSet = provider.toDataSet(moniker);
-            if (dataSet != null) {
-                return provider.getDisplayName(dataSet.getDataSource());
+            Optional<demetra.tsprovider.DataSet> dataSet = provider.toDataSet(moniker);
+            if (dataSet.isPresent()) {
+                return provider.getDisplayName(dataSet.get().getDataSource());
             }
         }
         return fallback;

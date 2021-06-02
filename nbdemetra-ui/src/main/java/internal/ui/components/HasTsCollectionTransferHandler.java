@@ -100,12 +100,12 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
 
     private static void importData(HasTsCollection view, TsCollection data) {
         if (view.isFreezeOnImport()) {
-            TsCollection latest = TsManager.getDefault().getNextTsManager().getTsCollection(data.getMoniker(), TsInformationType.All);
+            TsCollection latest = TsManager.getDefault().makeTsCollection(data.getMoniker(), TsInformationType.All);
             view.setTsCollection(update(view.getTsUpdateMode(), view.getTsCollection(), freezedCopyOf(latest)));
         } else {
             if (TransferChange.isNotYetLoaded(data)) {
                 // TODO: put load in a separate thread
-                TsManager.getDefault().getNextTsManager().loadTsCollection(data, TsInformationType.Definition);
+                data.load(TsInformationType.Definition, TsManager.getDefault());
             }
             if (!data.isEmpty()) {
                 TsManager.getDefault().loadAsync(data, TsInformationType.All);

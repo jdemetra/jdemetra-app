@@ -1,6 +1,6 @@
 package ec.nbdemetra.ui.star;
 
-import ec.tss.tsproviders.DataSource;
+import demetra.tsprovider.DataSource;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashSet;

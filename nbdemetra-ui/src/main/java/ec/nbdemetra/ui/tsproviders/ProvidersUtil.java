@@ -17,16 +17,16 @@
 package ec.nbdemetra.ui.tsproviders;
 
 import com.google.common.collect.Lists;
+import demetra.tsprovider.DataSet;
+import demetra.tsprovider.DataSource;
+import demetra.tsprovider.DataSourceLoader;
+import demetra.tsprovider.DataSourceProvider;
+import demetra.tsprovider.FileLoader;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.Config;
 import demetra.ui.properties.ForwardingNodeProperty;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.TsAsyncMode;
-import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.IDataSourceLoader;
-import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.IFileLoader;
 import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -108,16 +108,16 @@ final class ProvidersUtil {
 
     @NonNull
     static List<Sheet.Set> sheetSetsOfProvider(@NonNull String providerName) {
-        Optional<IDataSourceProvider> op = TsManager.getDefault().lookup(IDataSourceProvider.class, providerName);
+        Optional<DataSourceProvider> op = TsManager.getDefault().getProvider(DataSourceProvider.class, providerName);
         if (op.isPresent()) {
-            IDataSourceProvider provider = op.get();
+            DataSourceProvider provider = op.get();
             List<Sheet.Set> result = new ArrayList<>();
             NodePropertySetBuilder b = new NodePropertySetBuilder();
             b.with(String.class).select(provider, "getSource", null).display("Source").add();
             b.withEnum(TsAsyncMode.class).select(provider, "getAsyncMode", null).display("Async mode").add();
             b.with(Boolean.class).select(provider, "isAvailable", null).display("Available").add();
-            b.withBoolean().selectConst("Loadable", provider instanceof IDataSourceLoader).add();
-            b.withBoolean().selectConst("Files as source", provider instanceof IFileLoader).add();
+            b.withBoolean().selectConst("Loadable", provider instanceof DataSourceLoader).add();
+            b.withBoolean().selectConst("Files as source", provider instanceof FileLoader).add();
             result.add(b.build());
             return result;
         }
@@ -164,7 +164,7 @@ final class ProvidersUtil {
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("DataSource");
         b.with(String.class).select(dataSource, "getProviderName", null).display("Source").add();
         b.with(String.class).select(dataSource, "getVersion", null).display("Version").add();
-        Optional<IDataSourceLoader> loader = TsManager.getDefault().lookup(IDataSourceLoader.class, dataSource);
+        Optional<DataSourceLoader> loader = TsManager.getDefault().getProvider(DataSourceLoader.class, dataSource);
         if (loader.isPresent()) {
             Object bean = loader.get().decodeBean(dataSource);
             beanFunc.apply(bean).stream()

@@ -4,14 +4,15 @@
  */
 package ec.tss.datatransfer.impl;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.DataSource;
 import ec.tss.datatransfer.DataSourceTransferHandler;
-import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.utils.Parsers;
 import java.awt.datatransfer.Transferable;
 import java.util.Optional;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
+import nbbrd.io.text.Parser;
 
 /**
  *
@@ -19,7 +20,7 @@ import demetra.ui.datatransfer.DataTransfers;
  */
 public abstract class ParserTransferHandler extends DataSourceTransferHandler {
 
-    abstract protected Parsers.Parser<DataSource> getParser();
+    abstract protected Parser<DataSource> getParser();
 
     @Override
     public boolean canHandle(Transferable t) {
@@ -47,8 +48,8 @@ public abstract class ParserTransferHandler extends DataSourceTransferHandler {
     public static class XmlParserHandler extends ParserTransferHandler {
 
         @Override
-        protected Parsers.Parser<DataSource> getParser() {
-            return DataSource.xmlParser();
+        protected Parser<DataSource> getParser() {
+            return ec.tss.tsproviders.DataSource.xmlParser().andThen(TsConverter::toDataSource)::parse;
         }
     }
 
@@ -56,7 +57,7 @@ public abstract class ParserTransferHandler extends DataSourceTransferHandler {
     public static class UriParserHandler extends ParserTransferHandler {
 
         @Override
-        protected Parsers.Parser<DataSource> getParser() {
+        protected Parser<DataSource> getParser() {
             return DataSource.uriParser();
         }
     }

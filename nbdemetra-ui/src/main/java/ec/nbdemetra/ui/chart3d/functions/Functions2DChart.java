@@ -63,7 +63,7 @@ public final class Functions2DChart extends JComponent implements TimeSeriesComp
     private final XYLineAndShapeRenderer optimumRenderer;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault().getNextTsManager());
+    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
     
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);

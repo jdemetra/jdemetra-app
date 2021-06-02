@@ -8,7 +8,6 @@ import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
-import ec.tss.TsInformationType;
 import ec.tss.tsproviders.DataSet;
 import java.util.Optional;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -120,10 +119,11 @@ public final class PreviewTssTopComponent extends TopComponent implements Lookup
                             .allInstances()
                             .stream()
                             .filter(o -> o instanceof SeriesNode)
-                            .map(o -> TsManager.getDefault().getTs(o.getLookup().lookup(DataSet.class), TsInformationType.None))
+                            .map(o -> o.getLookup().lookup(DataSet.class))
+                            .map(TsConverter::toDataSet)
+                            .map(o -> TsManager.getDefault().getTs(o, demetra.timeseries.TsInformationType.None))
                             .filter(Optional::isPresent)
                             .map(Optional::get)
-                            .map(TsConverter::toTs)
                             .collect(TsCollection.toTsCollection())
             );
         }

@@ -24,6 +24,7 @@ import ec.ui.view.SIView;
 import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;
 import java.awt.BorderLayout;
+import java.util.stream.Stream;
 import javax.swing.*;
 
 /**
@@ -80,10 +81,11 @@ public class X13Summary extends JComponent implements IDisposable {
         Disposables.disposeAndRemoveAll(document_).add(toolkit_.getHtmlViewer(summary));
 
         chart_.setTsCollection(
-                TsCollection.of(
+                Stream.of(
                         getMainSeries(ModellingDictionary.Y),
                         getMainSeries(ModellingDictionary.T),
-                        getMainSeries(ModellingDictionary.SA))
+                        getMainSeries(ModellingDictionary.SA)
+                ).collect(TsCollection.toTsCollection())
         );
 
         X11Results x11 = doc.getDecompositionPart();

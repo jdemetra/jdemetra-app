@@ -6,7 +6,7 @@ package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.ui.TsManager;
+import demetra.ui.OldTsUtil;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
 import ec.tss.Ts;
@@ -71,8 +71,8 @@ public final class BenchmarkingView extends JComponent {
                 ? TsData.divide(benchSa.getTsData(), sa.getTsData()).minus(1)
                 : TsData.subtract(benchSa.getTsData(), sa.getTsData());
 
-        TsCollection base = TsCollection.of(TsConverter.toTs(sa), TsConverter.toTs(benchSa));
-        TsCollection diff = TsCollection.of(TsManager.toTs("Differences", sdiff));
+        TsCollection base = Stream.of(TsConverter.toTs(sa), TsConverter.toTs(benchSa)).collect(TsCollection.toTsCollection());
+        TsCollection diff = TsCollection.of(OldTsUtil.toTs("Differences", sdiff));
         TsCollection all = Stream.concat(base.stream(), diff.stream()).collect(TsCollection.toTsCollection());
         
         chart_.setTsCollection(base);

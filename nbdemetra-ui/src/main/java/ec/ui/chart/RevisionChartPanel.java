@@ -17,7 +17,7 @@
 package ec.ui.chart;
 
 import demetra.timeseries.TsCollection;
-import demetra.ui.TsManager;
+import demetra.ui.OldTsUtil;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
 import demetra.ui.util.KeyStrokes;
@@ -219,11 +219,11 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
 
     protected Transferable transferableOnSelection() {
         List<demetra.timeseries.Ts> col = new ArrayList<>();
-        demetra.timeseries.Ts ts = TsManager.toTs("Reference serie", reference);
+        demetra.timeseries.Ts ts = OldTsUtil.toTs("Reference serie", reference);
         col.add(ts);
         if (revs != null) {
             for (int i = 0; i < revs.size(); i++) {
-                ts = TsManager.toTs("Rev->" + ts.getData().getDomain().getLastPeriod().toString(), revs.get(i));
+                ts = OldTsUtil.toTs("Rev->" + ts.getData().getDomain().getLastPeriod().toString(), revs.get(i));
                 col.add(ts);
             }
         }

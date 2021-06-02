@@ -16,10 +16,10 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.timeseries.TsMoniker;
+import demetra.tsprovider.DataSet;
+import demetra.tsprovider.DataSource;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import ec.tss.TsMoniker;
-import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.DataSource;
 import ec.tstoolkit.design.ServiceDefinition;
 import java.awt.Image;
 import java.beans.BeanInfo;

@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.mru;
 
+import demetra.bridge.TsConverter;
 import ec.nbdemetra.ws.FileRepository;
 import ec.nbdemetra.ws.IWorkspaceRepository;
 import ec.nbdemetra.ws.Workspace;
@@ -96,7 +97,7 @@ public final class WorkspaceMruAction extends AbstractAction implements Presente
             }
             setEnabled(true);
             for (SourceId item : MruList.getWorkspacesInstance()) {
-                WorkspaceStatus status = WorkspaceStatus.get(item.getDataSource());
+                WorkspaceStatus status = WorkspaceStatus.get(TsConverter.fromDataSource(item.getDataSource()));
                 JMenuItem menuItem = new JMenuItem(new OpenAction(item));
                 menuItem.setText(item.getLabel());
                 menuItem.setEnabled(status.equals(WorkspaceStatus.LOADABLE));
@@ -148,7 +149,7 @@ public final class WorkspaceMruAction extends AbstractAction implements Presente
             if (WorkspaceFactory.getInstance().getRepository(dataSource.getProviderName()) == null) {
                 return UNLOADABLE;
             }
-            File file = FileRepository.decode(dataSource);
+            File file = FileRepository.decode(TsConverter.toDataSource(dataSource));
             if (file == null) {
                 return UNLOADABLE;
             }

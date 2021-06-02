@@ -91,7 +91,7 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
     private final InternalUI<JTsGrowthChart> internalUI;
 
     public JTsGrowthChart() {
-        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault().getNextTsManager());
+        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
         this.tsAction = HasTsAction.of(this::firePropertyChange);
         this.chart = HasChart.of(this::firePropertyChange);
         this.colorScheme = HasColorScheme.of(this::firePropertyChange);

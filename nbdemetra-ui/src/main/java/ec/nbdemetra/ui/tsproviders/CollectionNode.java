@@ -16,11 +16,10 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import demetra.bridge.TsConverter;
+import demetra.timeseries.TsInformationType;
+import demetra.tsprovider.DataSet;
 import demetra.ui.TsManager;
 import static ec.nbdemetra.ui.tsproviders.CollectionNode.ACTION_PATH;
-import ec.tss.TsInformationType;
-import ec.tss.tsproviders.DataSet;
 import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
@@ -48,9 +47,9 @@ public final class CollectionNode extends DataSetNode {
     }
 
     private Transferable getData(TsInformationType type) throws IOException {
+        DataSet dataSet = getLookup().lookup(DataSet.class);
         return TsManager.getDefault()
-                .getTsCollection(getLookup().lookup(DataSet.class), type)
-                .map(TsConverter::toTsCollection)
+                .getTsCollection(dataSet, type)
                 .map(DataTransfer.getDefault()::fromTsCollection)
                 .orElseThrow(() -> new IOException("Cannot create the TS collection '" + getDisplayName() + "'; check the logs for further details."));
     }

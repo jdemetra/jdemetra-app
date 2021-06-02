@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui.mru;
 
-import ec.tss.tsproviders.DataSource;
+import demetra.tsprovider.DataSource;
 
 /**
  *

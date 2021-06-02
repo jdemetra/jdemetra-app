@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.tsprovider.FileLoader;
 import demetra.ui.TsManager;
 import demetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
@@ -181,14 +182,14 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
 
     static class FileLoaderNode extends AbstractNode {
 
-        public FileLoaderNode(Children children, IFileLoader loader) {
+        public FileLoaderNode(Children children, FileLoader loader) {
             super(children, Lookups.singleton(loader));
             setName(loader.getSource());
             setDisplayName(loader.getDisplayName());
         }
 
         private Optional<Image> lookupIcon(int type, boolean opened) {
-            IFileLoader o = getLookup().lookup(IFileLoader.class);
+            FileLoader o = getLookup().lookup(FileLoader.class);
             return DataSourceProviderBuddySupport.getDefault().getIcon(o.getSource(), type, opened);
         }
 
@@ -257,13 +258,13 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
     }
 
     void load() {
-        List<IFileLoader> loaders = TsManager.getDefault().all()
-                .filter(IFileLoader.class::isInstance)
-                .map(IFileLoader.class::cast)
+        List<FileLoader> loaders = TsManager.getDefault().getProviders()
+                .filter(FileLoader.class::isInstance)
+                .map(FileLoader.class::cast)
                 .collect(Collectors.toList());
         Node[] fileLoaderNodes = new Node[loaders.size()];
         for (int i = 0; i < fileLoaderNodes.length; i++) {
-            IFileLoader loader = loaders.get(i);
+            FileLoader loader = loaders.get(i);
             File[] paths = loader.getPaths();
             Node[] pathNodes = new Node[paths.length];
             for (int j = 0; j < pathNodes.length; j++) {

@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.common;
 
+import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
@@ -64,7 +64,10 @@ public class TswProviderBuddy extends AbstractDataSourceProviderBuddy {
 
         b.reset("Source");
         TsManager.getDefault()
-                .lookup(IFileLoader.class, TswProvider.SOURCE)
+                .getProvider(TswProvider.SOURCE)
+                .map(TsConverter::fromTsProvider)
+                .filter(TswProvider.class::isInstance)
+                .map(TswProvider.class::cast)
                 .ifPresent(o -> addFileProperty(b, bean, o));
         result.add(b.build());
 
@@ -76,7 +79,7 @@ public class TswProviderBuddy extends AbstractDataSourceProviderBuddy {
                 .select(bean, "file")
                 .display("Directory")
                 .description("The path to the directory containing TSW files.")
-                .filterForSwing(new FileLoaderFileFilter(loader))
+//                .filterForSwing(new FileLoaderFileFilter(loader))
                 .paths(loader.getPaths())
                 .directories(true)
                 .files(false)

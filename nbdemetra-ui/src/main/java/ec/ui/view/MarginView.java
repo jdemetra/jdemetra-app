@@ -17,7 +17,7 @@
 package ec.ui.view;
 
 import demetra.timeseries.TsCollection;
-import demetra.ui.TsManager;
+import demetra.ui.OldTsUtil;
 import demetra.ui.components.parts.HasColorScheme;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -53,6 +53,7 @@ import java.awt.event.KeyListener;
 import java.awt.geom.Ellipse2D;
 import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Stream;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
@@ -337,10 +338,11 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
         result.add(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TsCollection col = TsCollection.of(
-                        TsManager.toTs("series", data.series),
-                        TsManager.toTs("lower", data.lower),
-                        TsManager.toTs("upper", data.upper));
+                TsCollection col = Stream.of(
+                        OldTsUtil.toTs("series", data.series),
+                        OldTsUtil.toTs("lower", data.lower),
+                        OldTsUtil.toTs("upper", data.upper)
+                ).collect(TsCollection.toTsCollection());
                 Transferable t = DataTransfer.getDefault().fromTsCollection(col);
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
             }

@@ -4,12 +4,12 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
+import demetra.tsprovider.DataSource;
+import demetra.tsprovider.DataSourceLoader;
 import demetra.ui.datatransfer.DataTransfers;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.tsproviders.ProviderNode;
 import ec.tss.datatransfer.DataSourceTransferSupport;
-import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.IDataSourceLoader;
 import java.util.Optional;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
@@ -26,7 +26,7 @@ public final class PasteProviderAction extends SingleNodeAction<ProviderNode> {
 
     @Override
     protected boolean enable(ProviderNode activatedNode) {
-        IDataSourceLoader loader = activatedNode.getLookup().lookup(IDataSourceLoader.class);
+        DataSourceLoader loader = activatedNode.getLookup().lookup(DataSourceLoader.class);
         return loader != null && DataSourceTransferSupport.getDefault().canHandle(DataTransfers.systemClipboardAsTransferable(), loader.getSource());
     }
 
@@ -37,7 +37,7 @@ public final class PasteProviderAction extends SingleNodeAction<ProviderNode> {
 
     @Override
     protected void performAction(ProviderNode activatedNode) {
-        IDataSourceLoader loader = activatedNode.getLookup().lookup(IDataSourceLoader.class);
+        DataSourceLoader loader = activatedNode.getLookup().lookup(DataSourceLoader.class);
         Optional<DataSource> dataSource = DataSourceTransferSupport.getDefault().getDataSource(DataTransfers.systemClipboardAsTransferable(), loader.getSource());
         if (dataSource.isPresent()) {
             activatedNode.paste(dataSource.get());

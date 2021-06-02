@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ws.nodes;
 
+import demetra.bridge.TsConverter;
 import ec.nbdemetra.ui.NbUtilities;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ws.Workspace;
@@ -37,7 +38,7 @@ public class WsRootNode extends AbstractNode {
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("Active workspace");
         b.with(String.class).selectConst("Name", ws_.getName()).add();
         sheet.put(b.build());
-        sheet.put(NbUtilities.creatDataSourcePropertiesSet(ws_.getDataSource()));
+        sheet.put(NbUtilities.creatDataSourcePropertiesSet(TsConverter.fromDataSource(ws_.getDataSource())));
         return sheet;
     }
 }

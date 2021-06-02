@@ -17,7 +17,8 @@
 package ec.nbdemetra.ui;
 
 import com.google.common.collect.Iterables;
-import demetra.ui.TsManager;
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.DataSourceLoader;
 import ec.nbdemetra.core.InstallerStep;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.ui.interchange.InterchangeBroker;
@@ -28,10 +29,7 @@ import ec.nbdemetra.ui.star.StarHelper;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.IDataSourceLoader;
 import ec.tss.tsproviders.utils.Formatters;
-import ec.tss.tsproviders.utils.IFormatter;
-import ec.tss.tsproviders.utils.IParser;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.util.chart.swing.Charts;
 import java.util.Collection;
@@ -54,6 +52,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import demetra.ui.OldDataTransfer;
 import demetra.ui.OldDataTransferSpi;
+import demetra.ui.TsManager;
+import java.util.stream.Collectors;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
 
 public final class Installer extends ModuleInstall {
 
@@ -145,15 +147,15 @@ public final class Installer extends ModuleInstall {
         public void restore() {
             if (DemetraUI.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
-                IParser<DataSourcesBean> parser = Parsers.onJAXB(DataSourcesBean.class);
-                TsManager.getDefault().all()
-                        .filter(IDataSourceLoader.class::isInstance)
-                        .map(IDataSourceLoader.class::cast)
+                Parser<DataSourcesBean> parser = Parsers.onJAXB(DataSourcesBean.class)::parse;
+                TsManager.getDefault().getProviders()
+                        .filter(DataSourceLoader.class::isInstance)
+                        .map(DataSourceLoader.class::cast)
                         .forEach(o -> {
                             Optional<DataSourcesBean> value = tryGet(prefs, o.getSource(), parser);
                             if (value.isPresent()) {
                                 for (DataSource dataSource : value.get()) {
-                                    o.open(dataSource);
+                                    o.open(TsConverter.toDataSource(dataSource));
                                 }
                             }
                         });
@@ -164,13 +166,13 @@ public final class Installer extends ModuleInstall {
         public void close() {
             if (DemetraUI.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
-                IFormatter<DataSourcesBean> formatter = Formatters.onJAXB(DataSourcesBean.class, false);
-                TsManager.getDefault().all()
-                        .filter(IDataSourceLoader.class::isInstance)
-                        .map(IDataSourceLoader.class::cast)
+                Formatter<DataSourcesBean> formatter = Formatters.onJAXB(DataSourcesBean.class, false)::format;
+                TsManager.getDefault().getProviders()
+                        .filter(DataSourceLoader.class::isInstance)
+                        .map(DataSourceLoader.class::cast)
                         .forEach(o -> {
                             DataSourcesBean value = new DataSourcesBean();
-                            value.dataSources = o.getDataSources();
+                            value.dataSources = o.getDataSources().stream().map(TsConverter::fromDataSource).collect(Collectors.toList());
                             tryPut(prefs, o.getSource(), formatter, value);
                         });
                 try {
@@ -247,7 +249,7 @@ public final class Installer extends ModuleInstall {
     //</editor-fold>
 
     public static void loadConfig(Collection<?> list, Preferences root) {
-        IParser<Config> parser = Config.xmlParser();
+        Parser<Config> parser = Config.xmlParser()::parse;
         for (IConfigurable o : Iterables.filter(list, IConfigurable.class)) {
             Config current = o.getConfig();
             try {
@@ -269,7 +271,7 @@ public final class Installer extends ModuleInstall {
     }
 
     private static void storeConfig(Stream<?> stream, Preferences root) {
-        Formatters.Formatter<Config> formatter = Config.xmlFormatter(false);
+        Formatter<Config> formatter = Config.xmlFormatter(false)::format;
         stream
                 .filter(IConfigurable.class::isInstance)
                 .forEach(o -> {

@@ -18,7 +18,6 @@ package demetra.ui.components.parts;
 
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
-import demetra.ui.NextTsManager;
 import demetra.ui.beans.PropertyChangeBroadcaster;
 import ec.util.list.swing.JLists;
 import internal.ui.components.parts.HasTsCollectionImpl;
@@ -27,6 +26,7 @@ import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.ListSelectionModel;
+import demetra.ui.TsManager;
 
 /**
  *
@@ -97,7 +97,7 @@ public interface HasTsCollection {
     }
 
     @NonNull
-    static HasTsCollection of(@NonNull PropertyChangeBroadcaster broadcaster, @NonNull NextTsManager manager) {
+    static HasTsCollection of(@NonNull PropertyChangeBroadcaster broadcaster, @NonNull TsManager manager) {
         return new HasTsCollectionImpl(broadcaster).register(manager);
     }
 }

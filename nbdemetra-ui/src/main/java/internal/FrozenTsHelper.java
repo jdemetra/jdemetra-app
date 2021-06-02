@@ -50,9 +50,9 @@ public final class FrozenTsHelper {
         return getTimestamp(TsConverter.fromTs(ts));
     }
 
-    @Nullable
-    public static TsMoniker getOriginalMoniker(demetra.timeseries.@NonNull TsMoniker moniker) {
-        return getOriginalMoniker(TsConverter.fromTsMoniker(moniker));
+    public static demetra.timeseries.@Nullable TsMoniker getOriginalMoniker(demetra.timeseries.@NonNull TsMoniker moniker) {
+        TsMoniker result = getOriginalMoniker(TsConverter.fromTsMoniker(moniker));
+        return result != null ? TsConverter.toTsMoniker(result) : null;
     }
 
     @Nullable
@@ -91,7 +91,7 @@ public final class FrozenTsHelper {
         if (!moniker.isAnonymous()) {
             return moniker;
         }
-        demetra.timeseries.Ts ts = TsManager.getDefault().getNextTsManager().getTs(TsConverter.toTsMoniker(moniker), TsInformationType.MetaData);
+        demetra.timeseries.Ts ts = TsManager.getDefault().makeTs(TsConverter.toTsMoniker(moniker), TsInformationType.MetaData);
         if (ts == null) {
             return null;
         }

@@ -69,7 +69,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
             MultiViewDescription[] descriptions = {new ChartTab(ts), new GridTab(ts)};
             c = MultiViewFactory.createMultiView(descriptions, descriptions[0], null);
             c.setName(name);
-            c.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(TsConverter.fromTsMoniker(ts.getMoniker()), BeanInfo.ICON_COLOR_16x16, false).orElse(null));
+            c.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false).orElse(null));
             applyText(ts.getName(), c);
             c.open();
         }
@@ -106,7 +106,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
 
         @Override
         public Image getIcon() {
-            Icon icon = MonikerUI.getDefault().getIcon(TsConverter.fromTsMoniker(ts.getMoniker()));
+            Icon icon = MonikerUI.getDefault().getIcon(ts.getMoniker());
             return icon != null ? ImageUtilities.icon2Image(icon) : null;
         }
 
@@ -149,7 +149,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
 
         @Override
         public Image getIcon() {
-            Icon icon = MonikerUI.getDefault().getIcon(TsConverter.fromTsMoniker(ts.getMoniker()));
+            Icon icon = MonikerUI.getDefault().getIcon(ts.getMoniker());
             return icon != null ? ImageUtilities.icon2Image(icon) : null;
         }
 

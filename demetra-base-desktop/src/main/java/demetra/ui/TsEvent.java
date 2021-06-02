@@ -14,13 +14,13 @@ public final class TsEvent extends EventObject {
     @lombok.Getter
     private final TsMoniker moniker;
     
-    public TsEvent(@NonNull NextTsManager source, @NonNull TsMoniker moniker) {
+    public TsEvent(@NonNull TsManager source, @NonNull TsMoniker moniker) {
         super(source);
         this.moniker = Objects.requireNonNull(moniker);
     }
 
     @Override
-    public NextTsManager getSource() {
-        return (NextTsManager) super.getSource();
+    public TsManager getSource() {
+        return (TsManager) super.getSource();
     }
 }

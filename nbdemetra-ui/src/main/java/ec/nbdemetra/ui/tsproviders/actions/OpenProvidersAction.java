@@ -16,11 +16,11 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
+import demetra.tsprovider.DataSourceLoader;
+import demetra.tsprovider.FileLoader;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.tsproviders.IDataSourceLoader;
-import ec.tss.tsproviders.IDataSourceProvider;
-import ec.tss.tsproviders.IFileLoader;
 import ec.util.list.swing.JLists;
 import java.awt.event.ActionEvent;
 import java.beans.BeanInfo;
@@ -63,23 +63,23 @@ public final class OpenProvidersAction extends AbstractAction implements Present
     @Override
     public JMenuItem getPopupPresenter() {
         JMenu result = new JMenu(Bundle.CTL_OpenProvidersAction());
-        TsManager.getDefault().all()
-                .filter(IFileLoader.class::isInstance)
-                .map(IFileLoader.class::cast)
+        TsManager.getDefault().getProviders()
+                .filter(FileLoader.class::isInstance)
+                .map(FileLoader.class::cast)
                 .sorted(ON_CLASS_SIMPLENAME)
                 .forEach(o -> result.add(new AbstractActionImpl(o)));
         return result;
     }
 
-    public static List<IFileLoader> getLoaders(final File file) {
-        return TsManager.getDefault().all()
-                .filter(IFileLoader.class::isInstance)
-                .map(IFileLoader.class::cast)
+    public static List<FileLoader> getLoaders(final File file) {
+        return TsManager.getDefault().getProviders()
+                .filter(FileLoader.class::isInstance)
+                .map(FileLoader.class::cast)
                 .filter(o -> o.accept(file))
                 .collect(Collectors.toList());
     }
 
-    public static <T extends IDataSourceLoader> Optional<T> chooseLoader(List<T> loaders) {
+    public static <T extends DataSourceLoader> Optional<T> chooseLoader(List<T> loaders) {
         if (loaders.size() == 1) {
             return Optional.of(loaders.get(0));
         }
@@ -98,13 +98,13 @@ public final class OpenProvidersAction extends AbstractAction implements Present
         label.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(loader.getSource(), BeanInfo.ICON_COLOR_16x16, false).map(ImageUtilities::image2Icon).orElse(null));
     }
 
-    private static final Comparator<IDataSourceProvider> ON_CLASS_SIMPLENAME = Comparator.comparing(o -> o.getClass().getSimpleName());
+    private static final Comparator<FileLoader> ON_CLASS_SIMPLENAME = Comparator.comparing(o -> o.getClass().getSimpleName());
 
     private static final class AbstractActionImpl extends AbstractAction {
 
-        private final IFileLoader loader;
+        private final FileLoader loader;
 
-        public AbstractActionImpl(IFileLoader loader) {
+        public AbstractActionImpl(FileLoader loader) {
             super(loader.getDisplayName());
             DataSourceProviderBuddySupport.getDefault()
                     .getIcon(loader.getSource(), BeanInfo.ICON_COLOR_16x16, false)

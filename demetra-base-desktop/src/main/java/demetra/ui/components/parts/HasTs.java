@@ -17,11 +17,11 @@
 package demetra.ui.components.parts;
 
 import demetra.timeseries.Ts;
-import demetra.ui.NextTsManager;
 import demetra.ui.beans.PropertyChangeBroadcaster;
 import internal.ui.components.parts.HasTsImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import demetra.ui.TsManager;
 
 /**
  *
@@ -37,7 +37,7 @@ public interface HasTs {
     void setTs(@Nullable Ts ts);
 
     @NonNull
-    static HasTs of(@NonNull PropertyChangeBroadcaster broadcaster, @NonNull NextTsManager manager) {
+    static HasTs of(@NonNull PropertyChangeBroadcaster broadcaster, @NonNull TsManager manager) {
         return new HasTsImpl(broadcaster).register(manager);
     }
 }

@@ -4,8 +4,8 @@
  */
 package ec.nbdemetra.ui.star;
 
+import demetra.tsprovider.DataSource;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
-import ec.tss.tsproviders.DataSource;
 import java.awt.Image;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;

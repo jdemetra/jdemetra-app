@@ -145,7 +145,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
     }
 
     private void test(demetra.timeseries.Ts cur) {
-        cur = TsManager.getDefault().getNextTsManager().loadTs(cur, demetra.timeseries.TsInformationType.Data);
+        cur = cur.load(demetra.timeseries.TsInformationType.Data, TsManager.getDefault());
         TsData s = TsConverter.fromTsData(cur.getData()).orNull();
         if (s == null) {
             return;

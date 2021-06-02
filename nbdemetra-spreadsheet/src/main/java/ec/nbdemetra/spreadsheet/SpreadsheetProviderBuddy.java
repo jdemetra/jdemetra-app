@@ -16,14 +16,14 @@
  */
 package ec.nbdemetra.spreadsheet;
 
+import demetra.bridge.TsConverter;
+import demetra.tsprovider.FileLoader;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.DataSet;
-import ec.tss.tsproviders.DataSource;
-import ec.tss.tsproviders.IFileLoader;
 import ec.tss.tsproviders.spreadsheet.SpreadSheetBean;
 import ec.tss.tsproviders.spreadsheet.SpreadSheetProvider;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetCollection;
@@ -58,12 +58,12 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
     }
 
     @Override
-    public Image getIcon(DataSource dataSource, int type, boolean opened) {
+    public Image getIcon(demetra.tsprovider.DataSource dataSource, int type, boolean opened) {
         return ImageUtilities.loadImage("ec/nbdemetra/spreadsheet/tables.png", true);
     }
 
     @Override
-    public Image getIcon(DataSet dataSet, int type, boolean opened) {
+    public Image getIcon(demetra.tsprovider.DataSet dataSet, int type, boolean opened) {
         switch (dataSet.getKind()) {
             case COLLECTION:
                 return ImageUtilities.loadImage("ec/nbdemetra/spreadsheet/table-sheet.png", true);
@@ -84,14 +84,14 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
         "dataset.seriesName.display=Series name"
     })
     @Override
-    protected void fillParamProperties(NodePropertySetBuilder b, DataSet dataSet) {
+    protected void fillParamProperties(NodePropertySetBuilder b, demetra.tsprovider.DataSet dataSet) {
         b.with(String.class)
-                .selectConst("sheetName", SpreadSheetProvider.Y_SHEETNAME.get(dataSet))
+                .selectConst("sheetName", SpreadSheetProvider.Y_SHEETNAME.get(TsConverter.fromDataSet(dataSet)))
                 .display(Bundle.dataset_sheetName_display())
                 .add();
         if (dataSet.getKind().equals(DataSet.Kind.SERIES)) {
             b.with(String.class)
-                    .selectConst("seriesName", SpreadSheetProvider.Z_SERIESNAME.get(dataSet))
+                    .selectConst("seriesName", SpreadSheetProvider.Z_SERIESNAME.get(TsConverter.fromDataSet(dataSet)))
                     .display(Bundle.dataset_seriesName_display())
                     .add();
         }
@@ -125,7 +125,7 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
 
         b.reset("source").display(Bundle.bean_source_display());
         TsManager.getDefault()
-                .lookup(IFileLoader.class, SpreadSheetProvider.SOURCE)
+                .getProvider(FileLoader.class, SpreadSheetProvider.SOURCE)
                 .ifPresent(o -> addFileProperty(b, bean, o));
         result.add(b.build());
 
@@ -137,12 +137,15 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
         return result;
     }
 
-    private static SpreadSheetCollection.AlignType getAlignType(DataSet dataSet) {
+    private static SpreadSheetCollection.AlignType getAlignType(demetra.tsprovider.DataSet dataSet) {
         return TsManager.getDefault()
-                .lookup(SpreadSheetProvider.class, SpreadSheetProvider.SOURCE)
+                .getProvider(SpreadSheetProvider.SOURCE)
+                .map(TsConverter::fromTsProvider)
+                .filter(SpreadSheetProvider.class::isInstance)
+                .map(SpreadSheetProvider.class::cast)
                 .map(o -> {
                     try {
-                        return o.getSeries(dataSet).alignType;
+                        return o.getSeries(TsConverter.fromDataSet(dataSet)).alignType;
                     } catch (IOException ex) {
                         // TODO: log this?
                         return SpreadSheetCollection.AlignType.UNKNOWN;
@@ -150,7 +153,7 @@ public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
                 }).orElse(SpreadSheetCollection.AlignType.UNKNOWN);
     }
 
-    private static void addFileProperty(NodePropertySetBuilder b, SpreadSheetBean bean, IFileLoader loader) {
+    private static void addFileProperty(NodePropertySetBuilder b, SpreadSheetBean bean, FileLoader loader) {
         b.withFile()
                 .select(bean, "file")
                 .display(Bundle.bean_file_display())

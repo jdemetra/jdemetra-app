@@ -72,7 +72,7 @@ public class TsProperties extends JComponent implements IDisposable {
     }
 
     public void setTs(demetra.timeseries.Ts ts) {
-        ts = TsManager.getDefault().getNextTsManager().loadTs(ts, demetra.timeseries.TsInformationType.All);
+        ts = ts.load(demetra.timeseries.TsInformationType.All, TsManager.getDefault());
 
         TsCollection col = TsCollection.of(ts);
 

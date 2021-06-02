@@ -16,11 +16,10 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import demetra.bridge.TsConverter;
+import demetra.timeseries.TsInformationType;
+import demetra.tsprovider.DataSet;
 import demetra.ui.TsManager;
 import static ec.nbdemetra.ui.tsproviders.SeriesNode.ACTION_PATH;
-import ec.tss.TsInformationType;
-import ec.tss.tsproviders.DataSet;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -39,12 +38,9 @@ import demetra.ui.datatransfer.DataTransfer;
  * @author Philippe Charles
  */
 @ActionReferences({
-    @ActionReference(path = ACTION_PATH, position = 1310, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.OpenAction"))
-    ,
-    @ActionReference(path = ACTION_PATH, position = 1320, separatorBefore = 1300, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.actions.OpenWithSetAction"))
-    ,
-    @ActionReference(path = ACTION_PATH, position = 1420, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "org.openide.actions.CopyAction"))
-    ,
+    @ActionReference(path = ACTION_PATH, position = 1310, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.OpenAction")),
+    @ActionReference(path = ACTION_PATH, position = 1320, separatorBefore = 1300, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.actions.OpenWithSetAction")),
+    @ActionReference(path = ACTION_PATH, position = 1420, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "org.openide.actions.CopyAction")),
     @ActionReference(path = ACTION_PATH, position = 1425, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction"))
 })
 public final class SeriesNode extends DataSetNode {
@@ -56,9 +52,9 @@ public final class SeriesNode extends DataSetNode {
     }
 
     private Transferable getData(TsInformationType type) throws IOException {
+        DataSet dataSet = getLookup().lookup(DataSet.class);
         return TsManager.getDefault()
-                .getTs(getLookup().lookup(DataSet.class), type)
-                .map(TsConverter::toTs)
+                .getTs(dataSet, type)
                 .map(DataTransfer.getDefault()::fromTs)
                 .orElseThrow(() -> new IOException("Cannot create the TS '" + getDisplayName() + "'; check the logs for further details."));
     }
