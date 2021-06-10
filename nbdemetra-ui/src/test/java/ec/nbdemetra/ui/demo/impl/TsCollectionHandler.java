@@ -24,7 +24,6 @@ import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.DemoTsActions;
-import ec.tss.TsInformationType;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import internal.ui.components.HasTsCollectionCommands;
 import ec.util.list.swing.JLists;
@@ -32,11 +31,14 @@ import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import demetra.ui.util.FontAwesomeUtils;
 import demetra.demo.DemoTsBuilder;
+import demetra.demo.PocProvider;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;
 import demetra.timeseries.TsCollection;
-import demetra.tsprovider.DataSourceProvider;
+import demetra.timeseries.TsInformationType;
+import demetra.tsprovider.DataSet;
+import demetra.tsprovider.DataSource;
 import demetra.ui.components.TsSelectionBridge;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -300,11 +302,12 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
 
     static JButton createFakeProviderButton(HasTsCollection view) {
         JMenu menu = new JMenu();
-        TsManager.getDefault().getProviders()
-                .filter(DataSourceProvider.class::isInstance)
-                .map(DataSourceProvider.class::cast)
+        TsManager.getDefault()
+                .getProviders()
+                .filter(PocProvider.class::isInstance)
+                .map(PocProvider.class::cast)
                 .forEach(provider -> {
-                    for (demetra.tsprovider.DataSource dataSource : provider.getDataSources()) {
+                    for (DataSource dataSource : provider.getDataSources()) {
                         JMenu subMenu = new JMenu(provider.getDisplayName(dataSource));
                         subMenu.setIcon(getIcon(FontAwesome.FA_FOLDER));
                         JMenuItem all = subMenu.add(new AddDataSourceCommand(dataSource).toAction(view));
@@ -312,7 +315,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
                         all.setIcon(getIcon(FontAwesome.FA_FOLDER));
                         subMenu.addSeparator();
                         try {
-                            for (demetra.tsprovider.DataSet dataSet : provider.children(dataSource)) {
+                            for (DataSet dataSet : provider.children(dataSource)) {
                                 JMenuItem item = subMenu.add(new AddDataSetCommand(dataSet).toAction(view));
                                 item.setText(provider.getDisplayNodeName(dataSet));
                                 item.setIcon(getIcon(FontAwesome.FA_LINE_CHART));
@@ -323,7 +326,7 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
                         menu.add(subMenu);
                     }
                 });
-        menu.add(new AddDataSourceCommand(demetra.tsprovider.DataSource.of("Missing", "")).toAction(view)).setText("Missing provider");
+        menu.add(new AddDataSourceCommand(DataSource.of("Missing", "")).toAction(view)).setText("Missing provider");
         JButton result = DropDownButtonFactory.createDropDownButton(getIcon(FontAwesome.FA_DATABASE), menu.getPopupMenu());
         result.setToolTipText("Data sources");
         return result;
@@ -335,33 +338,33 @@ public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<H
 
     static final class AddDataSourceCommand extends JCommand<HasTsCollection> {
 
-        private final demetra.tsprovider.DataSource dataSource;
+        private final DataSource dataSource;
 
-        public AddDataSourceCommand(demetra.tsprovider.DataSource dataSource) {
+        public AddDataSourceCommand(DataSource dataSource) {
             this.dataSource = dataSource;
         }
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            TsCollection col = TsManager.getDefault().getTsCollection(dataSource, TsConverter.toType(TsInformationType.Definition)).get();
-            TsManager.getDefault().loadAsync(col, demetra.timeseries.TsInformationType.All);
+            TsCollection col = TsManager.getDefault().getTsCollection(dataSource, TsInformationType.Definition).get();
             c.setTsCollection(c.getTsCollection().toBuilder().items(col.getItems()).build());
+            TsManager.getDefault().loadAsync(col, TsInformationType.All, c::replaceTsCollection);
         }
     }
 
     static final class AddDataSetCommand extends JCommand<HasTsCollection> {
 
-        private final demetra.tsprovider.DataSet dataSet;
+        private final DataSet dataSet;
 
-        public AddDataSetCommand(demetra.tsprovider.DataSet dataSet) {
+        public AddDataSetCommand(DataSet dataSet) {
             this.dataSet = dataSet;
         }
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            TsCollection col = TsManager.getDefault().getTsCollection(dataSet, TsConverter.toType(TsInformationType.Definition)).get();
-            TsManager.getDefault().loadAsync(col, demetra.timeseries.TsInformationType.All);
+            TsCollection col = TsManager.getDefault().getTsCollection(dataSet, TsInformationType.Definition).get();
             c.setTsCollection(c.getTsCollection().toBuilder().items(col.getItems()).build());
+            TsManager.getDefault().loadAsync(col, TsInformationType.All, c::replaceTsCollection);
         }
     }
 }

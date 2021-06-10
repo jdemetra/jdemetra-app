@@ -16,7 +16,6 @@
  */
 package internal.ui;
 
-import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.ui.components.parts.HasChart.LinesThickness;
@@ -61,8 +60,6 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
 
     @Override
     public void open(Ts ts) {
-        TsManager.getDefault().loadAsync(ts, demetra.timeseries.TsInformationType.All);
-
         String name = getName() + ts.getMoniker().toString();
         TopComponent c = NbComponents.findTopComponentByName(name);
         if (c == null) {
@@ -122,12 +119,14 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
 
         @Override
         public MultiViewElement createElement() {
+            TsCollection col = TsCollection.of(ts);
             ChartTopComponent result = new ChartTopComponent();
-            result.getChart().setTsCollection(TsCollection.of(ts));
+            result.getChart().setTsCollection(col);
             result.getChart().setTsUpdateMode(TsUpdateMode.None);
             result.getChart().setLegendVisible(true);
             result.getChart().setTitleVisible(false);
             result.getChart().setLinesThickness(LinesThickness.Thick);
+            TsManager.getDefault().loadAsync(col, demetra.timeseries.TsInformationType.All, result.getChart()::replaceTsCollection);
             return result;
         }
     }
@@ -165,10 +164,12 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
 
         @Override
         public MultiViewElement createElement() {
+            TsCollection col = TsCollection.of(ts);
             GridTopComponent result = new GridTopComponent();
-            result.getGrid().setTsCollection(TsCollection.of(ts));
+            result.getGrid().setTsCollection(col);
             result.getGrid().setTsUpdateMode(TsUpdateMode.None);
             result.getGrid().setMode(JTsGrid.Mode.SINGLETS);
+            TsManager.getDefault().loadAsync(col, demetra.timeseries.TsInformationType.All, result.getGrid()::replaceTsCollection);
             return result;
         }
     }

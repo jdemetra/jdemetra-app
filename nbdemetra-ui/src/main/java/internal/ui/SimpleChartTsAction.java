@@ -49,8 +49,6 @@ public final class SimpleChartTsAction implements TsActionsOpenSpi {
 
     @Override
     public void open(Ts ts) {
-        TsManager.getDefault().loadAsync(ts, demetra.timeseries.TsInformationType.All);
-
         String name = getName() + ts.getMoniker().toString();
         ChartTopComponent c = NbComponents.findTopComponentByNameAndClass(name, ChartTopComponent.class);
         if (c == null) {
@@ -68,12 +66,16 @@ public final class SimpleChartTsAction implements TsActionsOpenSpi {
                 c.setDisplayName(ts.getName());
             }
 
-            c.getChart().setTsCollection(TsCollection.of(ts));
+            TsCollection col = TsCollection.of(ts);
+            
+            c.getChart().setTsCollection(col);
             c.getChart().setTsUpdateMode(TsUpdateMode.None);
             c.getChart().setLegendVisible(false);
             c.getChart().setTitle(ts.getName());
             c.getChart().setLinesThickness(HasChart.LinesThickness.Thick);
             c.open();
+
+            TsManager.getDefault().loadAsync(col, demetra.timeseries.TsInformationType.All, c.getChart()::replaceTsCollection);
         }
         c.requestActive();
     }

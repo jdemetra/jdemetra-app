@@ -35,6 +35,13 @@ public interface HasTs {
     Ts getTs();
 
     void setTs(@Nullable Ts ts);
+    
+    default void replaceTs(@NonNull Ts ts) {
+        Ts current = getTs();
+        if (current != null && current.getMoniker().equals(ts.getMoniker())) {
+            setTs(ts);
+        }
+    }
 
     @NonNull
     static HasTs of(@NonNull PropertyChangeBroadcaster broadcaster, @NonNull TsManager manager) {

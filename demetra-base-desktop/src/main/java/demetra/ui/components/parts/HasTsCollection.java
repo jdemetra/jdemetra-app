@@ -43,6 +43,10 @@ public interface HasTsCollection {
 
     static final String TS_SELECTION_MODEL_PROPERTY = "tsSelectionModel";
 
+    default void replaceTsCollection(@NonNull TsCollection tsCollection) {
+        setTsCollection(getTsCollection().replaceAll(tsCollection));
+    }
+    
     @NonNull
     ListSelectionModel getTsSelectionModel();
 

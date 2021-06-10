@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.timeseries.TsInformationType;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTs;
 import javax.swing.TransferHandler;
@@ -44,8 +45,8 @@ public final class HasTsTransferHandler extends TransferHandler {
     public boolean importData(TransferHandler.TransferSupport support) {
         Optional<demetra.timeseries.Ts> ts = tssSupport.toTs(support.getTransferable());
         if (ts.isPresent()) {
-            TsManager.getDefault().loadAsync(ts.get(), demetra.timeseries.TsInformationType.All);
             delegate.setTs(ts.get());
+            TsManager.getDefault().loadAsync(ts.get(), TsInformationType.All, delegate::replaceTs);
             return true;
         }
         return false;

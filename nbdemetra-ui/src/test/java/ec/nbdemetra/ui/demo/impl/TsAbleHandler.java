@@ -18,6 +18,8 @@ package ec.nbdemetra.ui.demo.impl;
 
 import demetra.bridge.TsConverter;
 import demetra.demo.PocProvider;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.DataSourceListener;
 import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.TsManager;
@@ -158,13 +160,14 @@ public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> 
         }
 
         @Override
-        public void execute(HasTs component) throws Exception {
-            Optional<demetra.timeseries.Ts> ts = TsManager.getDefault()
-                    .getTs(dataSet, demetra.timeseries.TsInformationType.Definition);
+        public void execute(HasTs c) throws Exception {
+            Optional<Ts> ts = TsManager.getDefault().getTs(dataSet, TsInformationType.Definition);
             if (ts.isPresent()) {
-                TsManager.getDefault().loadAsync(ts.get(), demetra.timeseries.TsInformationType.All);
+                c.setTs(ts.get());
+                TsManager.getDefault().loadAsync(ts.get(), TsInformationType.All, c::replaceTs);
+            } else {
+                c.setTs(null);
             }
-            component.setTs(ts.orElse(null));
         }
     }
 }

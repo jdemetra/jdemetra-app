@@ -94,25 +94,17 @@ public class InternalComponents {
             case 0:
                 return updateMode.isReadOnly() ? "No data" : "Drop data here";
             case 1:
-                Ts single = TsConverter.fromTs(input.get(0));
-                switch (single.hasData()) {
-                    case Invalid:
-                        String cause = single.getInvalidDataCause();
-                        return !Strings.isNullOrEmpty(cause) ? cause : "Invalid data without cause";
-                    case Undefined:
-                        return "Loading" + System.lineSeparator() + single.getName();
-                    case Valid:
-                        return "No obs";
+                demetra.timeseries.Ts single = input.get(0);
+                if (single.getType().hasData()) {
+                    String cause = single.getData().getEmptyCause();
+                    return !Strings.isNullOrEmpty(cause) ? cause : "No obs";
+                } else {
+                    return "Loading" + System.lineSeparator() + single.getName();
                 }
             default:
-                int[] counter = new int[TsStatus.values().length];
-                Arrays.fill(counter, 0);
-                input.stream().map(TsConverter::fromTs).forEach(o -> counter[o.hasData().ordinal()]++);
-                if (counter[TsStatus.Invalid.ordinal()] == input.size()) {
-                    return "Invalid data";
-                }
-                if (counter[TsStatus.Undefined.ordinal()] > 1) {
-                    return "Loading " + counter[TsStatus.Undefined.ordinal()] + " series";
+                long count = input.stream().filter(ts -> !ts.getType().hasData()).count();
+                if (count > 1) {
+                    return "Loading " + count + " series";
                 }
                 return "Nothing to display";
         }

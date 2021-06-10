@@ -105,11 +105,11 @@ public final class HasTsCollectionTransferHandler extends TransferHandler {
         } else {
             if (TransferChange.isNotYetLoaded(data)) {
                 // TODO: put load in a separate thread
-                data.load(TsInformationType.Definition, TsManager.getDefault());
+                data = data.load(TsInformationType.Definition, TsManager.getDefault());
             }
             if (!data.isEmpty()) {
-                TsManager.getDefault().loadAsync(data, TsInformationType.All);
                 view.setTsCollection(update(view.getTsUpdateMode(), view.getTsCollection(), data));
+                TsManager.getDefault().loadAsync(data, TsInformationType.All, view::replaceTsCollection);
             }
         }
     }

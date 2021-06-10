@@ -18,11 +18,11 @@ package internal.ui.components.parts;
 
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsInformationType;
 import demetra.ui.TsEvent;
 import demetra.ui.TsListener;
 import demetra.ui.beans.PropertyChangeBroadcaster;
 import demetra.ui.components.parts.HasTsCollection;
-import java.util.List;
 import java.util.Objects;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.ListSelectionModel;
@@ -113,19 +113,28 @@ public final class HasTsCollectionImpl implements HasTsCollection, TsListener {
 
     @Override
     public void tsUpdated(TsEvent event) {
-        TsCollection col = getTsCollection();
-        if (event.getMoniker().equals(col.getMoniker())) {
-            TsCollection newData = event.getSource().makeTsCollection(event.getMoniker(), col.getType());
+        TsCollection currentData = getTsCollection();
+        if (isEventRelatedToCollection(event, currentData)) {
+            TsCollection newData = event.getSource().makeTsCollection(event.getMoniker(), currentData.getType());
             setTsCollection(newData);
         } else {
-            int index = col.indexOf(ts -> ts.getMoniker().equals(event.getMoniker()));
-            if (index != -1) {
-                Ts oldData = col.get(index);
-                Ts newData = event.getSource().makeTs(oldData.getMoniker(), oldData.getType());
-                List<Ts> list = col.toList();
-                list.set(index, newData);
-                setTsCollection(col.toBuilder().clearItems().items(list).build());
+            boolean requireChange = false;
+            TsCollection.Builder newData = currentData.toBuilder().clearItems();
+            for (Ts ts : currentData) {
+                if (event.getRelated().test(ts.getMoniker())) {
+                    requireChange = true;
+                    newData.item(event.getSource().makeTs(ts.getMoniker(), TsInformationType.All));
+                } else {
+                    newData.item(ts);
+                }
+            }
+            if (requireChange) {
+                setTsCollection(newData.build());
             }
         }
+    }
+    
+    private static boolean isEventRelatedToCollection(TsEvent event, TsCollection col) {
+        return !col.getMoniker().isNull() && col.getMoniker().equals(event.getMoniker());
     }
 }

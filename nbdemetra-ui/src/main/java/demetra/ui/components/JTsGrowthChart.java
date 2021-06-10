@@ -27,6 +27,7 @@ import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDataTable;
+import demetra.timeseries.TsDomain;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.DemetraUI;
@@ -147,10 +148,11 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
     }
 
     private static TimeSelector computeSelector(TsCollection tss, int lastyears) {
-        if (tss.stream().anyMatch(ts -> ts.getData().isEmpty() && ts.getData().getEmptyCause() != null)) {
+        TsDomain globalDomain = TsDataTable.of(tss, ts -> ts.getData().cleanExtremities()).getDomain();
+        if (globalDomain.isEmpty()) {
             return TimeSelector.all();
         }
-        int year = TsDataTable.of(tss, ts -> ts.getData().cleanExtremities()).getDomain().getLastPeriod().year() - lastyears;
+        int year = globalDomain.getLastPeriod().year() - lastyears;
         return TimeSelector.from(LocalDate.of(year, 1, 1).atStartOfDay());
     }
 

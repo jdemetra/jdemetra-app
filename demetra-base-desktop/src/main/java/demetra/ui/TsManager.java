@@ -36,6 +36,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.swing.SwingUtilities;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -86,9 +88,9 @@ public class TsManager implements DataSourceFactory, Closeable {
 
     @OnAnyThread
     public boolean unregister(@NonNull TsProvider provider) {
-        providers.remove(provider.getSource());
-        if (provider instanceof DataSourceProvider) {
-            ((DataSourceProvider) provider).removeDataSourceListener(listener);
+        TsProvider removedProvider = providers.remove(provider.getSource());
+        if (removedProvider instanceof DataSourceProvider) {
+            ((DataSourceProvider) removedProvider).removeDataSourceListener(listener);
         }
         return true;
     }
@@ -113,14 +115,20 @@ public class TsManager implements DataSourceFactory, Closeable {
         return Optional.ofNullable(providers.get(name));
     }
 
-    @OnAnyThread
-    public void loadAsync(@NonNull Ts ts, @NonNull TsInformationType info) {
-        executor.execute(() -> notify(makeTs(ts.getMoniker(), info).getMoniker()));
+    @OnEDT
+    public void loadAsync(@NonNull Ts ts, @NonNull TsInformationType info, @NonNull Consumer<? super Ts> onLoaded) {
+        executor.execute(() -> {
+            Ts loaded = makeTs(ts.getMoniker(), info);
+            SwingUtilities.invokeLater(() -> onLoaded.accept(loaded));
+        });
     }
 
-    @OnAnyThread
-    public void loadAsync(@NonNull TsCollection col, @NonNull TsInformationType info) {
-        executor.execute(() -> notify(makeTsCollection(col.getMoniker(), info).getMoniker()));
+    @OnEDT
+    public void loadAsync(@NonNull TsCollection col, @NonNull TsInformationType info, @NonNull Consumer<? super TsCollection> onLoaded) {
+        executor.execute(() -> {
+            TsCollection loaded = makeTsCollection(col.getMoniker(), info);
+            SwingUtilities.invokeLater(() -> onLoaded.accept(loaded));
+        });
     }
 
     @Override
@@ -129,8 +137,8 @@ public class TsManager implements DataSourceFactory, Closeable {
     }
 
     @OnAnyThread
-    private void notify(TsMoniker moniker) {
-        events.add(new TsEvent(this, moniker));
+    private void notify(TsMoniker moniker, Predicate<TsMoniker> related) {
+        events.add(new TsEvent(this, moniker, related));
         SwingUtilities.invokeLater(this::notifyUpdateListeners);
     }
 
@@ -157,9 +165,19 @@ public class TsManager implements DataSourceFactory, Closeable {
         @OnAnyThread
         @Override
         public void changed(DataSource ds) {
-            getProvider(DataSourceProvider.class, ds)
-                    .map(provider -> provider.toMoniker(ds))
-                    .ifPresent(TsManager.this::notify);
+            Optional<DataSourceProvider> provider = getProvider(DataSourceProvider.class, ds);
+            if (provider.isPresent()) {
+                TsMoniker dataSourceMoniker = provider.get().toMoniker(ds);
+                TsManager.this.notify(dataSourceMoniker, dataSetMoniker -> isRelated(provider.get(), ds, dataSetMoniker));
+            }
+        }
+
+        private boolean isRelated(DataSourceProvider provider, DataSource dataSource, TsMoniker dataSetMoniker) {
+            return dataSetMoniker.getSource().equals(provider.getSource())
+                    && provider
+                            .toDataSet(dataSetMoniker)
+                            .filter(dataSet -> dataSet.getDataSource().equals(dataSource))
+                            .isPresent();
         }
 
         @Override
