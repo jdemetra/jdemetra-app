@@ -82,7 +82,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
             return null;
         }
         if (source.getVersion().equals(VERSION)) {
-            String file = source.get(FILENAME);
+            String file = source.getParameter(FILENAME);
             if (file != null) {
                 return new File(file);
             }

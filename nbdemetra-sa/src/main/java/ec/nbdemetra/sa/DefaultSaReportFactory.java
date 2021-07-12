@@ -140,7 +140,7 @@ public class DefaultSaReportFactory implements ISaReportFactory {
         out.write("Workspace\t");
         if (sourceId != null) {
             out.write(sourceId.getLabel());
-            for (Entry<String, String> p : sourceId.getDataSource().getParams().entrySet()) {
+            for (Entry<String, String> p : sourceId.getDataSource().getParameters().entrySet()) {
                 out.write('\t');
                 out.write(p.getKey());
                 out.write('=');

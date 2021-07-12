@@ -58,7 +58,7 @@ public abstract class ParserTransferHandler extends DataSourceTransferHandler {
 
         @Override
         protected Parser<DataSource> getParser() {
-            return DataSource.uriParser();
+            return Parser.of(DataSource::parse);
         }
     }
 }

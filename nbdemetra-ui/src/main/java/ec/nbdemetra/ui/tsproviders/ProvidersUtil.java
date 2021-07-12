@@ -61,13 +61,13 @@ final class ProvidersUtil {
     @NonNull
     public static DataSource getDataSource(@NonNull Config config) throws IllegalArgumentException {
         return config.getParam("uri")
-                .map(DataSource.uriParser()::parse)
+                .map(DataSource::parse)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid config"));
     }
 
     public static Config getConfig(DataSource dataSource, String displayName) {
         return Config.builder(getDataSourceDomain(), displayName, "")
-                .put("uri", DataSource.uriFormatter().formatAsString(dataSource))
+                .put("uri", dataSource.toString())
                 .build();
     }
 
@@ -182,7 +182,7 @@ final class ProvidersUtil {
     }
 
     static void fillParamProperties(@NonNull NodePropertySetBuilder b, @NonNull DataSet dataSet) {
-        dataSet.forEach((k, v) -> b.with(String.class).selectConst(k, v).add());
+        dataSet.getParameters().forEach((k, v) -> b.with(String.class).selectConst(k, v).add());
     }
 
     @NonNull
