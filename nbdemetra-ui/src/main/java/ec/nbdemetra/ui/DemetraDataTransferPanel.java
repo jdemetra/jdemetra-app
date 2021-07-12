@@ -21,6 +21,7 @@ import ec.nbdemetra.ui.ns.NamedServiceNode;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import demetra.ui.OldDataTransfer;
+import demetra.ui.actions.Configurable;
 
 final class DemetraDataTransferPanel extends javax.swing.JPanel implements ExplorerManager.Provider {
 
@@ -36,7 +37,7 @@ final class DemetraDataTransferPanel extends javax.swing.JPanel implements Explo
         em.addVetoableChangeListener(evt -> {
             if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
                 Node[] nodes = (Node[]) evt.getNewValue();
-                editButton.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IConfigurable.class) != null);
+                editButton.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(Configurable.class) != null);
             }
         });
     }

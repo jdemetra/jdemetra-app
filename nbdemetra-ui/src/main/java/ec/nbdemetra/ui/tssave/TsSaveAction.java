@@ -34,7 +34,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
-import demetra.ui.actions.TsCollectable;
+import demetra.ui.TsCollectable;
 
 /**
  *

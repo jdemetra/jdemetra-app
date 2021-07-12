@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.interchange;
 
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.util.various.swing.OnEDT;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

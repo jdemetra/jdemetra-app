@@ -16,24 +16,19 @@
  */
 package ec.nbdemetra.sa.output.impl;
 
-import com.google.common.base.Converter;
 import com.google.common.base.Splitter;
 import ec.nbdemetra.sa.output.AbstractOutputNode;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.sa.output.Series;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
+import demetra.ui.ConfigEditor;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.output.TxtOutputConfiguration;
 import ec.tss.sa.output.TxtOutputFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.io.File;
@@ -43,15 +38,24 @@ import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Mats Maggi
  */
 @ServiceProvider(service = INbOutputFactory.class, position = 1500)
-public class TxtOutputBuddy implements INbOutputFactory, IConfigurable, Resetable {
+public class TxtOutputBuddy implements INbOutputFactory, Configurable, Persistable, ConfigEditor, Resetable {
 
-    private final Configurator<TxtOutputBuddy> configurator = createConfigurator();
+    private final BeanConfigurator<TxtOutputConfiguration, TxtOutputBuddy> configurator = createConfigurator();
     private TxtOutputConfiguration config = new TxtOutputConfiguration();
 
     @Override
@@ -85,6 +89,11 @@ public class TxtOutputBuddy implements INbOutputFactory, IConfigurable, Resetabl
     }
 
     @Override
+    public void configure() {
+        Configurable.configure(this, this);
+    }
+
+    @Override
     public void reset() {
         config = new TxtOutputConfiguration();
     }
@@ -94,11 +103,11 @@ public class TxtOutputBuddy implements INbOutputFactory, IConfigurable, Resetabl
         return ImageUtilities.icon2Image(DemetraUiIcon.DOCUMENT_16);
     }
 
-    private static Configurator<TxtOutputBuddy> createConfigurator() {
-        return new TxtOutputBeanHandler().toConfigurator(new TxtOutputConverter(), new TxtOutputBeanEditor());
+    private static BeanConfigurator<TxtOutputConfiguration, TxtOutputBuddy> createConfigurator() {
+        return new BeanConfigurator<>(new TxtOutputBeanHandler(), new TxtOutputConverter(), new TxtOutputBeanEditor());
     }
 
-    private static final class TxtOutputBeanHandler extends BeanHandler<TxtOutputConfiguration, TxtOutputBuddy> {
+    private static final class TxtOutputBeanHandler implements BeanHandler<TxtOutputConfiguration, TxtOutputBuddy> {
 
         @Override
         public TxtOutputConfiguration loadBean(TxtOutputBuddy resource) {
@@ -111,7 +120,7 @@ public class TxtOutputBuddy implements INbOutputFactory, IConfigurable, Resetabl
         }
     }
 
-    private static final class TxtOutputBeanEditor implements IBeanEditor {
+    private static final class TxtOutputBeanEditor implements BeanEditor {
 
         @Override
         public boolean editBean(Object bean) throws IntrospectionException {
@@ -121,27 +130,27 @@ public class TxtOutputBuddy implements INbOutputFactory, IConfigurable, Resetabl
         }
     }
 
-    private static final class TxtOutputConverter extends Converter<TxtOutputConfiguration, Config> {
+    private static final class TxtOutputConverter implements Converter<TxtOutputConfiguration, Config> {
 
-        private final IParam<Config, File> folderParam = Params.onFile(new File(""), "folder");
-        private final IParam<Config, String> seriesParam = Params.onString("y,t,sa,s,i,ycal", "series");
-        private final IParam<Config, Boolean> fullNameParam = Params.onBoolean(true, "fullName");
+        private final Property<File> folderParam = Property.of("folder", new File(""), Parser.onFile(), Formatter.onFile());
+        private final Property<String> seriesParam = Property.of("series", "y,t,sa,s,i,ycal", Parser.onString(), Formatter.onString());
+        private final BooleanProperty fullNameParam = BooleanProperty.of("fullName", true);
 
         @Override
-        protected Config doForward(TxtOutputConfiguration a) {
+        public Config doForward(TxtOutputConfiguration a) {
             Config.Builder result = Config.builder(INbOutputFactory.class.getName(), "Txt", "");
-            folderParam.set(result, a.getFolder());
-            seriesParam.set(result, a.getSeries().stream().collect(Collectors.joining(",")));
-            fullNameParam.set(result, a.isFullName());
+            folderParam.set(result::parameter, a.getFolder());
+            seriesParam.set(result::parameter, a.getSeries().stream().collect(Collectors.joining(",")));
+            fullNameParam.set(result::parameter, a.isFullName());
             return result.build();
         }
 
         @Override
-        protected TxtOutputConfiguration doBackward(Config b) {
+        public TxtOutputConfiguration doBackward(Config b) {
             TxtOutputConfiguration result = new TxtOutputConfiguration();
-            result.setFolder(folderParam.get(b));
-            result.setSeries(Splitter.on(",").trimResults().splitToList(seriesParam.get(b)));
-            result.setFullName(fullNameParam.get(b));
+            result.setFolder(folderParam.get(b::getParameter));
+            result.setSeries(Splitter.on(",").trimResults().splitToList(seriesParam.get(b::getParameter)));
+            result.setFullName(fullNameParam.get(b::getParameter));
             return result;
         }
     }

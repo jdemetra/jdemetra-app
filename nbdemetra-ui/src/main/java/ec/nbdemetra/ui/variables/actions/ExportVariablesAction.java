@@ -16,8 +16,7 @@
  */
 package ec.nbdemetra.ui.variables.actions;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.interchange.ExportAction;
 import ec.nbdemetra.ui.interchange.Exportable;
 import ec.nbdemetra.ui.variables.VariablesDocumentManager;
@@ -36,6 +35,7 @@ import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.NodeAction;
 import org.openide.util.actions.Presenter;
+import demetra.ui.Converter;
 
 /**
  *
@@ -104,7 +104,7 @@ public final class ExportVariablesAction extends NodeAction implements Presenter
         @Override
         public Config exportConfig() {
             TsVariables value = (TsVariables) input.getItem().getElement();
-            return CONVERTER.convert(value);
+            return CONVERTER.doForward(value);
         }
     }
 }

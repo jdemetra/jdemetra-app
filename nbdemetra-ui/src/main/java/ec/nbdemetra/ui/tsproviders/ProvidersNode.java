@@ -22,7 +22,7 @@ import demetra.tsprovider.DataSourceListener;
 import demetra.tsprovider.DataSourceLoader;
 import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.interchange.Importable;

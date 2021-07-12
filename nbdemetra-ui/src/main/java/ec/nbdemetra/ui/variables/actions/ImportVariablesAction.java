@@ -16,9 +16,8 @@
  */
 package ec.nbdemetra.ui.variables.actions;
 
-import com.google.common.base.Converter;
 import com.google.common.collect.ImmutableList;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.interchange.ImportAction;
 import ec.nbdemetra.ui.interchange.Importable;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
@@ -37,6 +36,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
+import demetra.ui.Converter;
 
 /**
  *
@@ -87,7 +87,7 @@ public final class ImportVariablesAction extends SingleNodeAction<ItemWsNode> im
 
         @Override
         public void importConfig(Config config) throws IllegalArgumentException {
-            TsVariables value = CONVERTER.convert(config);
+            TsVariables value = CONVERTER.doForward(config);
             if (value == null || value.isEmpty()) {
                 return;
             }

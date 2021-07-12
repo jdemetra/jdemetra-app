@@ -10,7 +10,6 @@ import ec.nbdemetra.ws.WorkspaceItem;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.Serializable;
 import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewFactory;
@@ -85,7 +84,7 @@ public final class MultiAnalysisAction implements ActionListener {
         return result;
     }
 
-    static class QuickAndDirtyDescription implements MultiViewDescription, Serializable {
+    static class QuickAndDirtyDescription implements MultiViewDescription {
 
         final String name;
         final MultiViewElement multiViewElement;

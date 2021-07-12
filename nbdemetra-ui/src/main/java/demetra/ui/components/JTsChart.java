@@ -25,8 +25,10 @@ import demetra.ui.components.parts.HasColorScheme;
 import demetra.demo.DemoTsBuilder;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.IConfigurable;
+import demetra.ui.Config;
+import demetra.ui.ConfigEditor;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
 import internal.ui.components.InternalTsChartUI;
 import internal.ui.components.InternalTsChartConfig;
 import internal.ui.components.InternalUI;
@@ -47,7 +49,7 @@ import javax.swing.ListSelectionModel;
  */
 public final class JTsChart extends JComponent implements TimeSeriesComponent, PropertyChangeSource,
         HasTsCollection, HasTsAction, HasChart, HasColorScheme, HasObsFormat, HasHoveredObs,
-        PrintableWithPreview, ResetableZoom, IConfigurable {
+        PrintableWithPreview, ResetableZoom, Configurable, Persistable, ConfigEditor {
 
     @lombok.experimental.Delegate
     private final HasTsCollection collection;
@@ -139,6 +141,11 @@ public final class JTsChart extends JComponent implements TimeSeriesComponent, P
     @Override
     public Config editConfig(Config config) {
         return InternalTsChartConfig.CONFIGURATOR.editConfig(config);
+    }
+
+    @Override
+    public void configure() {
+        Configurable.configure(this, this);
     }
 
     private void applyDesignTimeProperties() {

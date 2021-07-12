@@ -16,20 +16,14 @@
  */
 package ec.nbdemetra.ui.sa.diagnostics;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.AdvancedResidualSeasonalityDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.AdvancedResidualSeasonalityDiagnosticsFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.BaseException;
 import java.awt.Image;
 import java.beans.IntrospectionException;
@@ -40,17 +34,27 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.IntProperty;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Laurent Jadoul
  */
 @ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
-public final class AdvancedResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, Resetable {
+public final class AdvancedResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements Configurable, Persistable, demetra.ui.ConfigEditor, Resetable {
 
     private static final String NAME = "AdvancedResidualSeasonalityDiagnostics";
 
-    private final Configurator<AdvancedResidualSeasonalityDiagnosticsFactory> configurator = createConfigurator();
+    private final BeanConfigurator<AdvancedResidualSeasonalityDiagnosticsConfiguration, AdvancedResidualSeasonalityDiagnosticsFactory> configurator = createConfigurator();
 
     @Override
     public String getName() {
@@ -81,6 +85,11 @@ public final class AdvancedResidualSeasonalityDiagnosticsFactoryBuddy extends Sa
     @Override
     public Config editConfig(Config config) throws IllegalArgumentException {
         return configurator.editConfig(config);
+    }
+
+    @Override
+    public void configure() {
+        Configurable.configure(this, this);
     }
 
     @Override
@@ -117,8 +126,7 @@ public final class AdvancedResidualSeasonalityDiagnosticsFactoryBuddy extends Sa
         "advancedResidualSeasonalityDiagnostics.uncertain.description=Uncertain",
         "advancedResidualSeasonalityDiagnostics.test.display=Test",
         "advancedResidualSeasonalityDiagnostics.thresholds.display=Thresholds",
-        "advancedResidualSeasonalityDiagnostics.span.display=Time span",
-    })
+        "advancedResidualSeasonalityDiagnostics.span.display=Time span",})
     private static Sheet createSheet(AdvancedResidualSeasonalityDiagnosticsConfiguration config) {
         Sheet sheet = new Sheet();
         NodePropertySetBuilder b = new NodePropertySetBuilder();
@@ -166,14 +174,14 @@ public final class AdvancedResidualSeasonalityDiagnosticsFactoryBuddy extends Sa
                 .display(Bundle.advancedResidualSeasonalityDiagnostics_bad_display())
                 .description(Bundle.advancedResidualSeasonalityDiagnostics_bad_description())
                 .add();
- 
+
         b.withDouble()
                 .select(config, "severeThreshold")
                 .display(Bundle.advancedResidualSeasonalityDiagnostics_severe_display())
                 .description(Bundle.advancedResidualSeasonalityDiagnostics_severe_description())
                 .add();
         sheet.put(b.build());
-  
+
         return sheet;
     }
 
@@ -181,11 +189,11 @@ public final class AdvancedResidualSeasonalityDiagnosticsFactoryBuddy extends Sa
         return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
     }
 
-    private static Configurator<AdvancedResidualSeasonalityDiagnosticsFactory> createConfigurator() {
-        return new ConfigHandler().toConfigurator(new ConfigConverter(), new ConfigEditor());
+    private static BeanConfigurator<AdvancedResidualSeasonalityDiagnosticsConfiguration, AdvancedResidualSeasonalityDiagnosticsFactory> createConfigurator() {
+        return new BeanConfigurator<>(new ConfigHandler(), new ConfigConverter(), new ConfigEditor());
     }
 
-    private static final class ConfigHandler extends BeanHandler<AdvancedResidualSeasonalityDiagnosticsConfiguration, AdvancedResidualSeasonalityDiagnosticsFactory> {
+    private static final class ConfigHandler implements BeanHandler<AdvancedResidualSeasonalityDiagnosticsConfiguration, AdvancedResidualSeasonalityDiagnosticsFactory> {
 
         @Override
         public AdvancedResidualSeasonalityDiagnosticsConfiguration loadBean(AdvancedResidualSeasonalityDiagnosticsFactory resource) {
@@ -198,47 +206,47 @@ public final class AdvancedResidualSeasonalityDiagnosticsFactoryBuddy extends Sa
         }
     }
 
-    private static final class ConfigConverter extends Converter<AdvancedResidualSeasonalityDiagnosticsConfiguration, Config> {
+    private static final class ConfigConverter implements Converter<AdvancedResidualSeasonalityDiagnosticsConfiguration, Config> {
 
-        private final IParam<Config, Boolean> enabledParam = Params.onBoolean(true, "enabled");
-        private final IParam<Config, Boolean> qsTestParam = Params.onBoolean(true, "QsTest");
-        private final IParam<Config, Boolean> fTestParam = Params.onBoolean(true, "FTest");
-        private final IParam<Config, Integer> qsTestLastYearsParam = Params.onInteger(0, "QsTestLastYears");
-        private final IParam<Config, Integer> fTestLastYearsParam = Params.onInteger(8, "FTestLastYears");
-        private final IParam<Config, Double> severeParam = Params.onDouble(.001, "specSeasSevere");
-        private final IParam<Config, Double> badParam = Params.onDouble(.01, "specSeasBad");
-        private final IParam<Config, Double> uncertainParam = Params.onDouble(.1, "specSeasUncertain");
+        private final BooleanProperty enabledParam = BooleanProperty.of("enabled", true);
+        private final BooleanProperty qsTestParam = BooleanProperty.of("QsTest", true);
+        private final BooleanProperty fTestParam = BooleanProperty.of("FTest", true);
+        private final IntProperty qsTestLastYearsParam = IntProperty.of("QsTestLastYears", 0);
+        private final IntProperty fTestLastYearsParam = IntProperty.of("FTestLastYears", 8);
+        private final Property<Double> severeParam = Property.of("specSeasSevere", .001, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> badParam = Property.of("specSeasBad", .01, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> uncertainParam = Property.of("specSeasUncertain", .1, Parser.onDouble(), Formatter.onDouble());
 
         @Override
-        protected Config doForward(AdvancedResidualSeasonalityDiagnosticsConfiguration a) {
+        public Config doForward(AdvancedResidualSeasonalityDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(NAME, "INSTANCE", "20170209");
-            enabledParam.set(result, a.isEnabled());
-            qsTestParam.set(result, a.isQsTest());
-            fTestParam.set(result, a.isFTest());
-            qsTestLastYearsParam.set(result, a.getQsTestLastYears());
-            fTestLastYearsParam.set(result, a.getFTestLastYears());
-            badParam.set(result, a.getBadThreshold());
-            uncertainParam.set(result, a.getUncertainThreshold());
-            severeParam.set(result, a.getSevereThreshold());
+            enabledParam.set(result::parameter, a.isEnabled());
+            qsTestParam.set(result::parameter, a.isQsTest());
+            fTestParam.set(result::parameter, a.isFTest());
+            qsTestLastYearsParam.set(result::parameter, a.getQsTestLastYears());
+            fTestLastYearsParam.set(result::parameter, a.getFTestLastYears());
+            badParam.set(result::parameter, a.getBadThreshold());
+            uncertainParam.set(result::parameter, a.getUncertainThreshold());
+            severeParam.set(result::parameter, a.getSevereThreshold());
             return result.build();
         }
 
         @Override
-        protected AdvancedResidualSeasonalityDiagnosticsConfiguration doBackward(Config b) {
+        public AdvancedResidualSeasonalityDiagnosticsConfiguration doBackward(Config b) {
             AdvancedResidualSeasonalityDiagnosticsConfiguration result = new AdvancedResidualSeasonalityDiagnosticsConfiguration();
-            result.setEnabled(enabledParam.get(b));
-            result.setFTest(fTestParam.get(b));
-            result.setQsTest(qsTestParam.get(b));
-            result.setFTestLastYears(fTestLastYearsParam.get(b));
-            result.setQsTestLastYears(qsTestLastYearsParam.get(b));
-            result.setSevereThreshold(severeParam.get(b));
-            result.setBadThreshold(badParam.get(b));
-            result.setUncertainThreshold(uncertainParam.get(b));
+            result.setEnabled(enabledParam.get(b::getParameter));
+            result.setFTest(fTestParam.get(b::getParameter));
+            result.setQsTest(qsTestParam.get(b::getParameter));
+            result.setFTestLastYears(fTestLastYearsParam.get(b::getParameter));
+            result.setQsTestLastYears(qsTestLastYearsParam.get(b::getParameter));
+            result.setSevereThreshold(severeParam.get(b::getParameter));
+            result.setBadThreshold(badParam.get(b::getParameter));
+            result.setUncertainThreshold(uncertainParam.get(b::getParameter));
             return result;
         }
     }
 
-    private static final class ConfigEditor implements IBeanEditor {
+    private static final class ConfigEditor implements BeanEditor {
 
         @Messages({"advancedResidualSeasonalityDiagnostics.edit.title=Edit advanced residuals diagnostics",
             "advancedResidualSeasonalityDiagnostics.edit.errorTitle=Invalid Input",

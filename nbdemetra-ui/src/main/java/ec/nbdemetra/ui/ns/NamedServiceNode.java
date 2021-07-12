@@ -18,8 +18,9 @@ package ec.nbdemetra.ui.ns;
 
 import com.google.common.collect.Iterables;
 import demetra.ui.NamedService;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.IConfigurable;
+import demetra.ui.Config;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
 import demetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -48,11 +49,11 @@ public class NamedServiceNode extends AbstractNode {
     private NamedServiceNode(NamedService namedService, InstanceContent abilities) {
         super(Children.LEAF, new AbstractLookup(abilities));
         // order matters !
-        if (namedService instanceof IConfigurable) {
+        if (namedService instanceof Persistable) {
             if (namedService instanceof Resetable) {
-                abilities.add(new LateConfigurableAndResetable((IConfigurable) namedService, (Resetable) namedService));
+                abilities.add(new LateConfigurableAndResetable((Persistable) namedService, (Resetable) namedService));
             } else {
-                abilities.add(new LateConfigurable((IConfigurable) namedService));
+                abilities.add(new LateConfigurable((Persistable) namedService));
             }
         }
         abilities.add(namedService);
@@ -90,11 +91,11 @@ public class NamedServiceNode extends AbstractNode {
 
     @Override
     public Action getPreferredAction() {
-        final IConfigurable configurable = getLookup().lookup(IConfigurable.class);
+        final Configurable configurable = getLookup().lookup(Configurable.class);
         return configurable != null ? new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                configurable.setConfig(configurable.editConfig(configurable.getConfig()));
+                configurable.configure();
             }
         } : super.getPreferredAction();
     }
@@ -118,29 +119,14 @@ public class NamedServiceNode extends AbstractNode {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    private static class LateConfigurable implements IConfigurable {
+    private static class LateConfigurable {
 
-        protected final IConfigurable configurable;
+        protected final Persistable configurable;
         protected Config latestConfig;
 
-        public LateConfigurable(IConfigurable configurable) {
+        public LateConfigurable(Persistable configurable) {
             this.configurable = configurable;
             this.latestConfig = configurable.getConfig();
-        }
-
-        @Override
-        public Config getConfig() {
-            return latestConfig;
-        }
-
-        @Override
-        public void setConfig(Config config) throws IllegalArgumentException {
-            latestConfig = config;
-        }
-
-        @Override
-        public Config editConfig(Config config) throws IllegalArgumentException {
-            return configurable.editConfig(config);
         }
 
         void apply() {
@@ -152,7 +138,7 @@ public class NamedServiceNode extends AbstractNode {
 
         private final Resetable resetable;
 
-        public LateConfigurableAndResetable(IConfigurable configurable, Resetable resetable) {
+        public LateConfigurableAndResetable(Persistable configurable, Resetable resetable) {
             super(configurable);
             this.resetable = resetable;
         }

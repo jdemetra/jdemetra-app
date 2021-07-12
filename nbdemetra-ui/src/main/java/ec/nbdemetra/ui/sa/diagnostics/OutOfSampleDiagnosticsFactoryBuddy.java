@@ -16,20 +16,14 @@
  */
 package ec.nbdemetra.ui.sa.diagnostics;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.OutOfSampleDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.OutOfSampleDiagnosticsFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.BaseException;
 import java.awt.Image;
 import java.beans.IntrospectionException;
@@ -40,17 +34,26 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Laurent Jadoul
  */
 @ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
-public final class OutOfSampleDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, Resetable {
+public final class OutOfSampleDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements Configurable, Persistable, demetra.ui.ConfigEditor, Resetable {
 
     private static final String NAME = "OutOfSampleDiagnostics";
 
-    private final Configurator<OutOfSampleDiagnosticsFactory> configurator = createConfigurator();
+    private final BeanConfigurator<OutOfSampleDiagnosticsConfiguration, OutOfSampleDiagnosticsFactory> configurator = createConfigurator();
 
     @Override
     public String getName() {
@@ -84,10 +87,15 @@ public final class OutOfSampleDiagnosticsFactoryBuddy extends SaDiagnosticsFacto
     }
 
     @Override
+    public void configure() {
+        Configurable.configure(this, this);
+    }
+
+    @Override
     public void reset() {
         lookup().setProperties(new OutOfSampleDiagnosticsConfiguration());
     }
-    
+
     @Override
     public Sheet createSheet() {
         return createSheet(lookup().getConfiguration());
@@ -155,11 +163,11 @@ public final class OutOfSampleDiagnosticsFactoryBuddy extends SaDiagnosticsFacto
         return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
     }
 
-    private static Configurator<OutOfSampleDiagnosticsFactory> createConfigurator() {
-        return new ConfigHandler().toConfigurator(new ConfigConverter(), new ConfigEditor());
+    private static BeanConfigurator<OutOfSampleDiagnosticsConfiguration, OutOfSampleDiagnosticsFactory> createConfigurator() {
+        return new BeanConfigurator<>(new ConfigHandler(), new ConfigConverter(), new ConfigEditor());
     }
 
-    private static final class ConfigHandler extends BeanHandler<OutOfSampleDiagnosticsConfiguration, OutOfSampleDiagnosticsFactory> {
+    private static final class ConfigHandler implements BeanHandler<OutOfSampleDiagnosticsConfiguration, OutOfSampleDiagnosticsFactory> {
 
         @Override
         public OutOfSampleDiagnosticsConfiguration loadBean(OutOfSampleDiagnosticsFactory resource) {
@@ -172,38 +180,38 @@ public final class OutOfSampleDiagnosticsFactoryBuddy extends SaDiagnosticsFacto
         }
     }
 
-    private static final class ConfigConverter extends Converter<OutOfSampleDiagnosticsConfiguration, Config> {
+    private static final class ConfigConverter implements Converter<OutOfSampleDiagnosticsConfiguration, Config> {
 
-        private final IParam<Config, Double> badParam = Params.onDouble(.01, "bad");
-        private final IParam<Config, Double> uncertainParam = Params.onDouble(.1, "uncertain");
-        private final IParam<Config, Double> lengthParam = Params.onDouble(.01, "length");
-        private final IParam<Config, Boolean> menabledParam = Params.onBoolean(false, "menabled");
-        private final IParam<Config, Boolean> venabledParam = Params.onBoolean(false, "venabled");
-        
+        private final Property<Double> badParam = Property.of("bad", .01, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> uncertainParam = Property.of("uncertain", .1, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> lengthParam = Property.of("length", .01, Parser.onDouble(), Formatter.onDouble());
+        private final BooleanProperty menabledParam = BooleanProperty.of("menabled", false);
+        private final BooleanProperty venabledParam = BooleanProperty.of("venabled", false);
+
         @Override
-        protected Config doForward(OutOfSampleDiagnosticsConfiguration a) {
+        public Config doForward(OutOfSampleDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(NAME, "INSTANCE", "20151008");
-            menabledParam.set(result, a.isMeanTestEnabled());
-            venabledParam.set(result, a.isMSETestEnabled());
-            badParam.set(result, a.getBad());
-            uncertainParam.set(result, a.getUncertain());
-            lengthParam.set(result, a.getForecastingLength());
+            menabledParam.set(result::parameter, a.isMeanTestEnabled());
+            venabledParam.set(result::parameter, a.isMSETestEnabled());
+            badParam.set(result::parameter, a.getBad());
+            uncertainParam.set(result::parameter, a.getUncertain());
+            lengthParam.set(result::parameter, a.getForecastingLength());
             return result.build();
         }
 
         @Override
-        protected OutOfSampleDiagnosticsConfiguration doBackward(Config b) {
+        public OutOfSampleDiagnosticsConfiguration doBackward(Config b) {
             OutOfSampleDiagnosticsConfiguration result = new OutOfSampleDiagnosticsConfiguration();
-            result.setMeanTestEnabled(menabledParam.get(b));
-            result.setMSETestEnabled(venabledParam.get(b));
-            result.setBad(badParam.get(b));
-            result.setUncertain(uncertainParam.get(b));
-            result.setForecastingLength(lengthParam.get(b));
+            result.setMeanTestEnabled(menabledParam.get(b::getParameter));
+            result.setMSETestEnabled(venabledParam.get(b::getParameter));
+            result.setBad(badParam.get(b::getParameter));
+            result.setUncertain(uncertainParam.get(b::getParameter));
+            result.setForecastingLength(lengthParam.get(b::getParameter));
             return result;
         }
     }
 
-    private static final class ConfigEditor implements IBeanEditor {
+    private static final class ConfigEditor implements BeanEditor {
 
         @Messages({"outOfSampleDiagnostics.edit.title=Edit Out of Sample",
             "outOfSampleDiagnostics.edit.errorTitle=Invalid Input",
@@ -218,11 +226,11 @@ public final class OutOfSampleDiagnosticsFactoryBuddy extends SaDiagnosticsFacto
                     return false;
                 }
                 try {
-                    ((OutOfSampleDiagnosticsConfiguration)bean).check();
+                    ((OutOfSampleDiagnosticsConfiguration) bean).check();
                     return true;
                 } catch (BaseException ex) {
                     String message = ex.getMessage() + Bundle.outOfSampleDiagnostics_edit_errorMessage();
-                    if(JOptionPane.showConfirmDialog(null, message , Bundle.outOfSampleDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION){
+                    if (JOptionPane.showConfirmDialog(null, message, Bundle.outOfSampleDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
                         return false;
                     }
                 }

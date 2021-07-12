@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.ui.actions;
+package demetra.ui;
 
 import demetra.timeseries.TsCollection;
 import org.checkerframework.checker.nullness.qual.NonNull;

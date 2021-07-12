@@ -16,8 +16,7 @@
  */
 package ec.nbdemetra.ui.variables.actions;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.tss.tsproviders.utils.Formatters;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.IParser;
@@ -26,12 +25,13 @@ import ec.tss.xml.regression.XmlTsVariables;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.utilities.NameManager;
+import demetra.ui.Converter;
 
 /**
  *
  * @author Philippe Charles
  */
-final class VariablesConfig extends Converter<TsVariables, Config> {
+final class VariablesConfig implements Converter<TsVariables, Config> {
 
     static final String DOMAIN = TsVariables.class.getName();
 
@@ -39,18 +39,18 @@ final class VariablesConfig extends Converter<TsVariables, Config> {
     private final IParser<XmlTsVariables> parser = Parsers.onJAXB(XmlTsVariables.class);
 
     @Override
-    protected Config doForward(TsVariables a) {
+    public Config doForward(TsVariables a) {
         NameManager<TsVariables> manager = ProcessingContext.getActiveContext().getTsVariableManagers();
         Config.Builder result = Config.builder(DOMAIN, manager.get(a), "");
         XmlTsVariables xml = new XmlTsVariables();
         xml.copy(a);
-        result.put("xml", formatter.formatAsString(xml));
+        result.parameter("xml", formatter.formatAsString(xml));
         return result.build();
     }
 
     @Override
-    protected TsVariables doBackward(Config b) {
-        String tmp = b.get("xml");
+    public TsVariables doBackward(Config b) {
+        String tmp = b.getParameter("xml");
         if (tmp != null) {
             XmlTsVariables xml = parser.parse(tmp);
             if (xml != null) {

@@ -16,12 +16,10 @@
  */
 package ec.nbdemetra.jdbc;
 
-import com.google.common.base.Preconditions;
 import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import ec.nbdemetra.db.DbIcon;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.IConfigurable;
+import demetra.ui.actions.Configurable;
 import demetra.ui.util.SimpleHtmlListCellRenderer;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
@@ -75,9 +73,8 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = IDataSourceProviderBuddy.class)
-public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implements IConfigurable {
+public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implements Configurable {
 
-    private final static Config EMPTY = Config.builder("", "", "").build();
     private final AutoCompletionSource dbSource;
     private final ListCellRenderer dbRenderer;
     private final Image warningBadge;
@@ -149,26 +146,13 @@ public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implement
         return dbRenderer;
     }
 
-    //<editor-fold defaultstate="collapsed" desc="Config methods">
     @Override
-    public Config getConfig() {
-        return EMPTY;
-    }
-
-    @Override
-    public void setConfig(Config config) throws IllegalArgumentException {
-        Preconditions.checkArgument(config.equals(EMPTY));
-    }
-
-    @Override
-    public Config editConfig(Config config) throws IllegalArgumentException {
+    public void configure() {
         final Action openServicesTab = FileUtil.getConfigObject("Actions/Window/org-netbeans-core-ide-ServicesTabAction.instance", Action.class);
         if (openServicesTab != null) {
             EventQueue.invokeLater(() -> openServicesTab.actionPerformed(null));
         }
-        return EMPTY;
     }
-    //</editor-fold>
 
     private enum DbConnStatus {
 

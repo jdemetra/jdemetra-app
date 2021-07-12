@@ -17,7 +17,7 @@
 package ec.nbdemetra.tramoseats.actions;
 
 import ec.nbdemetra.tramoseats.TramoSpecificationManager;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.interchange.ImportAction;
 import ec.nbdemetra.ui.interchange.Importable;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
@@ -29,6 +29,7 @@ import ec.tstoolkit.algorithm.IProcSpecification;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
@@ -102,7 +103,7 @@ public class ImportTramoSpec extends SingleNodeAction<Node> implements Presenter
             throw new IllegalArgumentException("Invalid config");
         }
 
-        return config.getParam("specification")
+        return Optional.ofNullable(config.getParameter("specification"))
                 .map(Parsers.onJAXB(XmlInformationSet.class)::parse)
                 .map(XmlInformationSet::create)
                 .map(o -> {

@@ -16,12 +16,10 @@
  */
 package ec.nbdemetra.odbc;
 
-import com.google.common.base.Preconditions;
 import demetra.bridge.TsConverter;
 import demetra.ui.TsManager;
 import ec.nbdemetra.jdbc.JdbcProviderBuddy;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.IConfigurable;
+import demetra.ui.actions.Configurable;
 import demetra.ui.util.SimpleHtmlListCellRenderer;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.jdbc.ConnectionSupplier;
@@ -55,9 +53,8 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @ServiceProvider(service = IDataSourceProviderBuddy.class)
-public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IConfigurable {
+public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements Configurable {
 
-    private final static Config DEFAULT = Config.builder("", "", "").build();
     private final AutoCompletionSource dbSource;
     private final ListCellRenderer dbRenderer;
 
@@ -68,19 +65,8 @@ public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements IC
     }
 
     @Override
-    public Config getConfig() {
-        return DEFAULT;
-    }
-
-    @Override
-    public void setConfig(Config config) throws IllegalArgumentException {
-        Preconditions.checkArgument(config.equals(DEFAULT));
-    }
-
-    @Override
-    public Config editConfig(Config config) throws IllegalArgumentException {
+    public void configure() {
         launchOdbcDataSourceAdministrator();
-        return config;
     }
 
     @Override

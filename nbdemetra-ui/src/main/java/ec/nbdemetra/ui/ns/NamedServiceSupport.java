@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.ns;
 
 import com.google.common.base.Preconditions;
 import demetra.ui.NamedService;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 
 /**
  *

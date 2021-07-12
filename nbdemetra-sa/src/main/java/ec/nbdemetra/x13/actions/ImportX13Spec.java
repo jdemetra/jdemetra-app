@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.x13.actions;
 
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.interchange.ImportAction;
 import ec.nbdemetra.ui.interchange.Importable;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
@@ -26,10 +26,10 @@ import ec.nbdemetra.x13.X13SpecificationManager;
 import ec.satoolkit.x13.X13Specification;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.tss.xml.information.XmlInformationSet;
-import ec.tss.xml.x13.XmlX13Specification;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
@@ -103,7 +103,7 @@ public class ImportX13Spec extends SingleNodeAction<Node> implements Presenter.P
             throw new IllegalArgumentException("Invalid config");
         }
 
-        return config.getParam("specification")
+        return Optional.ofNullable(config.getParameter("specification"))
                 .map(Parsers.onJAXB(XmlInformationSet.class)::parse)
                 .map(XmlInformationSet::create)
                 .map(o -> {

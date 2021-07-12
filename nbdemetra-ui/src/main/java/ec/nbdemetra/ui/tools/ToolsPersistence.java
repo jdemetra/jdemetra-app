@@ -9,9 +9,10 @@ import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsCollection;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
+import demetra.ui.Persistable;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.IConfigurable;
+import ec.nbdemetra.ui.XmlConfig;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
 import ec.tss.tsproviders.utils.Formatters;
@@ -70,9 +71,9 @@ public final class ToolsPersistence {
     }
 
     public static void writeTsCollection(HasTsCollection view, Properties p) {
-        if (view instanceof IConfigurable) {
-            Config config = ((IConfigurable) view).getConfig();
-            tryPut(p, "config", Config.xmlFormatter(false), true, config);
+        if (view instanceof Persistable) {
+            Config config = ((Persistable) view).getConfig();
+            tryPut(p, "config", XmlConfig.xmlFormatter(false), true, config);
         }
         if (DemetraUI.getDefault().isPersistToolsContent()) {
             Content content = new Content(
@@ -94,9 +95,9 @@ public final class ToolsPersistence {
                         .forEach(i -> view.getTsSelectionModel().addSelectionInterval(i, i));
             });
         }
-        if (view instanceof IConfigurable) {
-            tryGet(p, "config", Config.xmlParser(), true).ifPresent(o -> {
-                ((IConfigurable) view).setConfig(o);
+        if (view instanceof Persistable) {
+            tryGet(p, "config", XmlConfig.xmlParser(), true).ifPresent(o -> {
+                ((Persistable) view).setConfig(o);
             });
         }
     }

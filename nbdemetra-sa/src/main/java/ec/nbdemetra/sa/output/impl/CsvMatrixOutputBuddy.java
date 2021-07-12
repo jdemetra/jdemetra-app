@@ -16,23 +16,18 @@
  */
 package ec.nbdemetra.sa.output.impl;
 
-import com.google.common.base.Converter;
 import com.google.common.base.Splitter;
 import ec.nbdemetra.sa.output.AbstractOutputNode;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.sa.output.Matrix;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
-import ec.nbdemetra.ui.IConfigurable;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
+import demetra.ui.ConfigEditor;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.output.CsvMatrixOutputConfiguration;
 import ec.tss.sa.output.CsvMatrixOutputFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import java.beans.IntrospectionException;
 import java.io.File;
 import java.util.List;
@@ -40,15 +35,24 @@ import java.util.stream.Collectors;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Mats Maggi
  */
 @ServiceProvider(service = INbOutputFactory.class, position = 1100)
-public class CsvMatrixOutputBuddy implements INbOutputFactory, IConfigurable, Resetable {
+public class CsvMatrixOutputBuddy implements INbOutputFactory, Configurable, Persistable, ConfigEditor, Resetable {
 
-    private final Configurator<CsvMatrixOutputBuddy> configurator = createConfigurator();
+    private final BeanConfigurator<CsvMatrixOutputConfiguration, CsvMatrixOutputBuddy> configurator = createConfigurator();
     private CsvMatrixOutputConfiguration config = new CsvMatrixOutputConfiguration();
 
     @Override
@@ -82,15 +86,20 @@ public class CsvMatrixOutputBuddy implements INbOutputFactory, IConfigurable, Re
     }
 
     @Override
+    public void configure() {
+        Configurable.configure(this, this);
+    }
+
+    @Override
     public void reset() {
         config = new CsvMatrixOutputConfiguration();
     }
 
-    private static Configurator<CsvMatrixOutputBuddy> createConfigurator() {
-        return new CsvMatrixOutputBeanHandler().toConfigurator(new CsvMatrixOutputConverter(), new CsvMatrixOutputBeanEditor());
+    private static BeanConfigurator<CsvMatrixOutputConfiguration, CsvMatrixOutputBuddy> createConfigurator() {
+        return new BeanConfigurator<>(new CsvMatrixOutputBeanHandler(), new CsvMatrixOutputConverter(), new CsvMatrixOutputBeanEditor());
     }
 
-    private static final class CsvMatrixOutputBeanHandler extends BeanHandler<CsvMatrixOutputConfiguration, CsvMatrixOutputBuddy> {
+    private static final class CsvMatrixOutputBeanHandler implements BeanHandler<CsvMatrixOutputConfiguration, CsvMatrixOutputBuddy> {
 
         @Override
         public CsvMatrixOutputConfiguration loadBean(CsvMatrixOutputBuddy resource) {
@@ -103,7 +112,7 @@ public class CsvMatrixOutputBuddy implements INbOutputFactory, IConfigurable, Re
         }
     }
 
-    private static final class CsvMatrixOutputBeanEditor implements IBeanEditor {
+    private static final class CsvMatrixOutputBeanEditor implements BeanEditor {
 
         @Override
         public boolean editBean(Object bean) throws IntrospectionException {
@@ -113,30 +122,30 @@ public class CsvMatrixOutputBuddy implements INbOutputFactory, IConfigurable, Re
         }
     }
 
-    private static final class CsvMatrixOutputConverter extends Converter<CsvMatrixOutputConfiguration, Config> {
+    private static final class CsvMatrixOutputConverter implements Converter<CsvMatrixOutputConfiguration, Config> {
 
-        private final IParam<Config, File> folderParam = Params.onFile(new File(""), "folder");
-        private final IParam<Config, String> fileNameParam = Params.onString("series", "fileName");
-        private final IParam<Config, String> seriesParam = Params.onString("y,t,sa,s,i,ycal", "items");
-        private final IParam<Config, Boolean> fullNameParam = Params.onBoolean(true, "fullName");
+        private final Property<File> folderParam = Property.of("folder", new File(""), Parser.onFile(), Formatter.onFile());
+        private final Property<String> fileNameParam = Property.of("fileName", "series", Parser.onString(), Formatter.onString());
+        private final Property<String> seriesParam = Property.of("items", "y,t,sa,s,i,ycal", Parser.onString(), Formatter.onString());
+        private final BooleanProperty fullNameParam = BooleanProperty.of("fullName", true);
 
         @Override
-        protected Config doForward(CsvMatrixOutputConfiguration a) {
+        public Config doForward(CsvMatrixOutputConfiguration a) {
             Config.Builder result = Config.builder(INbOutputFactory.class.getName(), "Csv_Matrix", "");
-            folderParam.set(result, a.getFolder());
-            fileNameParam.set(result, a.getFileName());
-            seriesParam.set(result, a.getItems().stream().collect(Collectors.joining(",")));
-            fullNameParam.set(result, a.isFullName());
+            folderParam.set(result::parameter, a.getFolder());
+            fileNameParam.set(result::parameter, a.getFileName());
+            seriesParam.set(result::parameter, a.getItems().stream().collect(Collectors.joining(",")));
+            fullNameParam.set(result::parameter, a.isFullName());
             return result.build();
         }
 
         @Override
-        protected CsvMatrixOutputConfiguration doBackward(Config b) {
+        public CsvMatrixOutputConfiguration doBackward(Config b) {
             CsvMatrixOutputConfiguration result = new CsvMatrixOutputConfiguration();
-            result.setFolder(folderParam.get(b));
-            result.setFileName(fileNameParam.get(b));
-            result.setItems(Splitter.on(",").trimResults().splitToList(seriesParam.get(b)));
-            result.setFullName(fullNameParam.get(b));
+            result.setFolder(folderParam.get(b::getParameter));
+            result.setFileName(fileNameParam.get(b::getParameter));
+            result.setItems(Splitter.on(",").trimResults().splitToList(seriesParam.get(b::getParameter)));
+            result.setFullName(fullNameParam.get(b::getParameter));
             return result;
         }
     }

@@ -16,24 +16,19 @@
  */
 package ec.nbdemetra.sa.output.impl;
 
-import com.google.common.base.Converter;
 import com.google.common.base.Splitter;
 import ec.nbdemetra.sa.output.AbstractOutputNode;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.sa.output.Series;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
-import ec.nbdemetra.ui.IConfigurable;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
+import demetra.ui.ConfigEditor;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.output.SpreadsheetOutputConfiguration;
 import ec.tss.sa.output.SpreadsheetOutputConfiguration.SpreadsheetLayout;
 import ec.tss.sa.output.SpreadsheetOutputFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import ec.util.various.swing.FontAwesome;
 import java.awt.Color;
 import java.awt.Image;
@@ -44,15 +39,24 @@ import java.util.stream.Collectors;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Mats Maggi
  */
 @ServiceProvider(service = INbOutputFactory.class, position = 1200)
-public class ExcelOutputBuddy implements INbOutputFactory, IConfigurable, Resetable {
+public class ExcelOutputBuddy implements INbOutputFactory, Configurable, Persistable, ConfigEditor, Resetable {
 
-    private final Configurator<ExcelOutputBuddy> configurator = createConfigurator();
+    private final BeanConfigurator<SpreadsheetOutputConfiguration, ExcelOutputBuddy> configurator = createConfigurator();
     private SpreadsheetOutputConfiguration config = new SpreadsheetOutputConfiguration();
 
     @Override
@@ -86,6 +90,11 @@ public class ExcelOutputBuddy implements INbOutputFactory, IConfigurable, Reseta
     }
 
     @Override
+    public void configure() {
+        Configurable.configure(this, this);
+    }
+
+    @Override
     public void reset() {
         config = new SpreadsheetOutputConfiguration();
     }
@@ -95,11 +104,11 @@ public class ExcelOutputBuddy implements INbOutputFactory, IConfigurable, Reseta
         return FontAwesome.FA_FILE_EXCEL_O.getImage(Color.GREEN.darker(), 16);
     }
 
-    private static Configurator<ExcelOutputBuddy> createConfigurator() {
-        return new ExcelOutputBeanHandler().toConfigurator(new ExcelOutputConverter(), new ExcelOutputBeanEditor());
+    private static BeanConfigurator<SpreadsheetOutputConfiguration, ExcelOutputBuddy> createConfigurator() {
+        return new BeanConfigurator<>(new ExcelOutputBeanHandler(), new ExcelOutputConverter(), new ExcelOutputBeanEditor());
     }
 
-    private static final class ExcelOutputBeanHandler extends BeanHandler<SpreadsheetOutputConfiguration, ExcelOutputBuddy> {
+    private static final class ExcelOutputBeanHandler implements BeanHandler<SpreadsheetOutputConfiguration, ExcelOutputBuddy> {
 
         @Override
         public SpreadsheetOutputConfiguration loadBean(ExcelOutputBuddy resource) {
@@ -112,7 +121,7 @@ public class ExcelOutputBuddy implements INbOutputFactory, IConfigurable, Reseta
         }
     }
 
-    private static final class ExcelOutputBeanEditor implements IBeanEditor {
+    private static final class ExcelOutputBeanEditor implements BeanEditor {
 
         @Override
         public boolean editBean(Object bean) throws IntrospectionException {
@@ -122,39 +131,39 @@ public class ExcelOutputBuddy implements INbOutputFactory, IConfigurable, Reseta
         }
     }
 
-    private static final class ExcelOutputConverter extends Converter<SpreadsheetOutputConfiguration, Config> {
+    private static final class ExcelOutputConverter implements Converter<SpreadsheetOutputConfiguration, Config> {
 
-        private final IParam<Config, Boolean> saveModelParam = Params.onBoolean(false, "saveModel");
-        private final IParam<Config, Boolean> verticalOrientationParam = Params.onBoolean(true, "verticalOrientation");
-        private final IParam<Config, SpreadsheetLayout> layoutParam = Params.onEnum(SpreadsheetLayout.BySeries, "layout");
-        private final IParam<Config, File> folderParam = Params.onFile(new File(""), "folder");
-        private final IParam<Config, String> fileNameParam = Params.onString("series", "fileName");
-        private final IParam<Config, String> seriesParam = Params.onString("y,t,sa,s,i,ycal", "series");
-        private final IParam<Config, Boolean> fullNameParam = Params.onBoolean(true, "fullName");
+        private final BooleanProperty saveModelParam = BooleanProperty.of("saveModel", false);
+        private final BooleanProperty verticalOrientationParam = BooleanProperty.of("verticalOrientation", true);
+        private final Property<SpreadsheetLayout> layoutParam = Property.of("layout", SpreadsheetLayout.BySeries, Parser.onEnum(SpreadsheetLayout.class), Formatter.onEnum());
+        private final Property<File> folderParam = Property.of("folder", new File(""), Parser.onFile(), Formatter.onFile());
+        private final Property<String> fileNameParam = Property.of("fileName", "series", Parser.onString(), Formatter.onString());
+        private final Property<String> seriesParam = Property.of("series", "y,t,sa,s,i,ycal", Parser.onString(), Formatter.onString());
+        private final BooleanProperty fullNameParam = BooleanProperty.of("fullName", true);
 
         @Override
-        protected Config doForward(SpreadsheetOutputConfiguration a) {
+        public Config doForward(SpreadsheetOutputConfiguration a) {
             Config.Builder result = Config.builder(INbOutputFactory.class.getName(), "Excel", "");
-            saveModelParam.set(result, a.isSaveModel());
-            verticalOrientationParam.set(result, a.isVerticalOrientation());
-            layoutParam.set(result, a.getLayout());
-            folderParam.set(result, a.getFolder());
-            fileNameParam.set(result, a.getFileName());
-            seriesParam.set(result, a.getSeries().stream().collect(Collectors.joining(",")));
-            fullNameParam.set(result, a.isFullName());
+            saveModelParam.set(result::parameter, a.isSaveModel());
+            verticalOrientationParam.set(result::parameter, a.isVerticalOrientation());
+            layoutParam.set(result::parameter, a.getLayout());
+            folderParam.set(result::parameter, a.getFolder());
+            fileNameParam.set(result::parameter, a.getFileName());
+            seriesParam.set(result::parameter, a.getSeries().stream().collect(Collectors.joining(",")));
+            fullNameParam.set(result::parameter, a.isFullName());
             return result.build();
         }
 
         @Override
-        protected SpreadsheetOutputConfiguration doBackward(Config b) {
+        public SpreadsheetOutputConfiguration doBackward(Config b) {
             SpreadsheetOutputConfiguration result = new SpreadsheetOutputConfiguration();
-            result.setSaveModel(saveModelParam.get(b));
-            result.setVerticalOrientation(verticalOrientationParam.get(b));
-            result.setLayout(layoutParam.get(b));
-            result.setFolder(folderParam.get(b));
-            result.setFileName(fileNameParam.get(b));
-            result.setSeries(Splitter.on(",").trimResults().splitToList(seriesParam.get(b)));
-            result.setFullName(fullNameParam.get(b));
+            result.setSaveModel(saveModelParam.get(b::getParameter));
+            result.setVerticalOrientation(verticalOrientationParam.get(b::getParameter));
+            result.setLayout(layoutParam.get(b::getParameter));
+            result.setFolder(folderParam.get(b::getParameter));
+            result.setFileName(fileNameParam.get(b::getParameter));
+            result.setSeries(Splitter.on(",").trimResults().splitToList(seriesParam.get(b::getParameter)));
+            result.setFullName(fullNameParam.get(b::getParameter));
             return result;
         }
     }

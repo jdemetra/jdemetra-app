@@ -25,7 +25,7 @@ import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.GlobalService;
-import ec.nbdemetra.ui.IConfigurable;
+import demetra.ui.actions.Configurable;
 import internal.FrozenTsHelper;
 import java.awt.Image;
 import java.io.IOException;
@@ -169,9 +169,9 @@ public class DataSourceProviderBuddySupport {
      * @since 2.2.0
      */
     @NonNull
-    public Optional<IConfigurable> getConfigurable(@NonNull String providerName) {
+    public Optional<Configurable> getConfigurable(@NonNull String providerName) {
         IDataSourceProviderBuddy buddy = get(providerName);
-        return buddy instanceof IConfigurable ? Optional.of((IConfigurable) buddy) : Optional.empty();
+        return buddy instanceof Configurable ? Optional.of((Configurable) buddy) : Optional.empty();
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">

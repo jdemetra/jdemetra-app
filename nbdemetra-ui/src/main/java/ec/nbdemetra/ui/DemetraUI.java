@@ -16,8 +16,11 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.ui.Config;
 import com.google.common.base.Preconditions;
 import demetra.ui.GlobalService;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
 import internal.ui.ChartGridTsAction;
@@ -27,8 +30,6 @@ import ec.satoolkit.x13.X13Specification;
 import ec.tss.sa.EstimationPolicyType;
 import ec.tss.sa.output.BasicConfiguration;
 import ec.tss.tsproviders.utils.DataFormat;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.utilities.Jdk6.Collections;
 import ec.tstoolkit.utilities.ThreadPoolSize;
 import ec.tstoolkit.utilities.ThreadPriority;
@@ -48,6 +49,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.Icon;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.IntProperty;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -59,7 +65,7 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @GlobalService
 @ServiceProvider(service = DemetraUI.class)
-public class DemetraUI implements PropertyChangeSource, IConfigurable {
+public class DemetraUI implements PropertyChangeSource, Configurable, Persistable {
 
     @NonNull
     public static DemetraUI getDefault() {
@@ -88,27 +94,27 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
     public static final String HTML_ZOOM_RATIO_PROPERTY = "htmlZoomRatio";
 
     // DEFAULT PROPERTIES
-    static final IParam<Config, String> COLOR_SCHEME_NAME = Params.onString(SmartColorScheme.NAME, COLOR_SCHEME_NAME_PROPERTY);
-    static final IParam<Config, DataFormat> DATA_FORMAT = Params.onDataFormat(new DataFormat(null, "yyyy-MM", null), "locale", "datePattern", "numberPattern");
-    static final IParam<Config, Boolean> SHOW_UNAVAILABLE = Params.onBoolean(false, SHOW_UNAVAILABLE_TSPROVIDER_PROPERTY);
-    static final IParam<Config, Boolean> SHOW_PROVIDER_NODES = Params.onBoolean(true, SHOW_TSPROVIDER_NODES_PROPERTY);
-    static final IParam<Config, String> TS_ACTION_NAME = Params.onString(ChartGridTsAction.NAME, TS_ACTION_NAME_PROPERTY);
-    static final IParam<Config, Boolean> PERSIST_TOOLS_CONTENT = Params.onBoolean(false, PERSIST_TOOLS_CONTENT_PROPERTY);
-    static final IParam<Config, Boolean> PERSIST_OPENED_DATASOURCES = Params.onBoolean(false, PERSIST_OPENED_DATASOURCES_PROPERTY);
-    static final IParam<Config, ThreadPoolSize> BATCH_POOL_SIZE = Params.onEnum(ThreadPoolSize.ALL_BUT_ONE, BATCH_POOL_SIZE_PROPERTY);
-    static final IParam<Config, ThreadPriority> BATCH_PRIORITY = Params.onEnum(ThreadPriority.NORMAL, BATCH_PRIORITY_PROPERTY);
-    static final IParam<Config, Integer> GROWTH_LAST_YEARS = Params.onInteger(JTsGrowthChart.DEFAULT_LAST_YEARS, GROWTH_CHART_LENGTH_PROPERTY);
-    static final IParam<Config, Integer> SPECTRAL_LAST_YEARS = Params.onInteger(AutoRegressiveSpectrumView.DEFAULT_LAST, SPECTRAL_YEARS_PROPERTY);
-    static final IParam<Config, Integer> STABILITY_LENGTH = Params.onInteger(8, STABILITY_YEARS_PROPERTY);
-    static final IParam<Config, EstimationPolicyType> ESTIMATION_POLICY_TYPE = Params.onEnum(EstimationPolicyType.FreeParameters, ESTIMATION_POLICY_PROPERTY);
-    static final IParam<Config, String> DEFAULT_SA_SPEC = Params.onString("tramoseats." + TramoSeatsSpecification.RSAfull.toString(), DEFAULT_SA_SPEC_PROPERTY);
-    static final IParam<Config, Boolean> POPUP_MENU_ICONS_VISIBLE = Params.onBoolean(false, POPUP_MENU_ICONS_VISIBLE_PROPERTY);
-    static final IParam<Config, PrespecificiedOutliersEditor> PRESPECIFIED_OUTLIERS_EDITOR = Params.onEnum(PrespecificiedOutliersEditor.CALENDAR_GRID, PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY);
-    static final IParam<Config, String[]> SELECTED_DIAG_FIELDS = Params.onStringArray(SELECTED_DIAG_FIELDS_PROPERTY,
-            BasicConfiguration.allSingleSaDetails(false).stream().toArray(String[]::new));
-    static final IParam<Config, String[]> SELECTED_SERIES_FIELDS = Params.onStringArray(SELECTED_SERIES_FIELDS_PROPERTY,
-            BasicConfiguration.allSaSeries(false).stream().toArray(String[]::new));
-    static final IParam<Config, Integer> HTML_ZOOM_RATIO = Params.onInteger(100, HTML_ZOOM_RATIO_PROPERTY);
+    static final Property<String> COLOR_SCHEME_NAME = Property.of(COLOR_SCHEME_NAME_PROPERTY, SmartColorScheme.NAME, Parser.onString(), Formatter.onString());
+    static final DataFormatParam DATA_FORMAT = new DataFormatParam(new DataFormat(null, "yyyy-MM", null), "locale", "datePattern", "numberPattern");
+    static final BooleanProperty SHOW_UNAVAILABLE = BooleanProperty.of(SHOW_UNAVAILABLE_TSPROVIDER_PROPERTY, false);
+    static final BooleanProperty SHOW_PROVIDER_NODES = BooleanProperty.of(SHOW_TSPROVIDER_NODES_PROPERTY, true);
+    static final Property<String> TS_ACTION_NAME = Property.of(TS_ACTION_NAME_PROPERTY, ChartGridTsAction.NAME, Parser.onString(), Formatter.onString());
+    static final BooleanProperty PERSIST_TOOLS_CONTENT = BooleanProperty.of(PERSIST_TOOLS_CONTENT_PROPERTY, false);
+    static final BooleanProperty PERSIST_OPENED_DATASOURCES = BooleanProperty.of(PERSIST_OPENED_DATASOURCES_PROPERTY, false);
+    static final Property<ThreadPoolSize> BATCH_POOL_SIZE = Property.of(BATCH_POOL_SIZE_PROPERTY, ThreadPoolSize.ALL_BUT_ONE, Parser.onEnum(ThreadPoolSize.class), Formatter.onEnum());
+    static final Property<ThreadPriority> BATCH_PRIORITY = Property.of(BATCH_PRIORITY_PROPERTY, ThreadPriority.NORMAL, Parser.onEnum(ThreadPriority.class), Formatter.onEnum());
+    static final IntProperty GROWTH_LAST_YEARS = IntProperty.of(GROWTH_CHART_LENGTH_PROPERTY, JTsGrowthChart.DEFAULT_LAST_YEARS);
+    static final IntProperty SPECTRAL_LAST_YEARS = IntProperty.of(SPECTRAL_YEARS_PROPERTY, AutoRegressiveSpectrumView.DEFAULT_LAST);
+    static final IntProperty STABILITY_LENGTH = IntProperty.of(STABILITY_YEARS_PROPERTY, 8);
+    static final Property<EstimationPolicyType> ESTIMATION_POLICY_TYPE = Property.of(ESTIMATION_POLICY_PROPERTY, EstimationPolicyType.FreeParameters, Parser.onEnum(EstimationPolicyType.class), Formatter.onEnum());
+    static final Property<String> DEFAULT_SA_SPEC = Property.of(DEFAULT_SA_SPEC_PROPERTY, "tramoseats." + TramoSeatsSpecification.RSAfull.toString(), Parser.onString(), Formatter.onString());
+    static final BooleanProperty POPUP_MENU_ICONS_VISIBLE = BooleanProperty.of(POPUP_MENU_ICONS_VISIBLE_PROPERTY, false);
+    static final Property<PrespecificiedOutliersEditor> PRESPECIFIED_OUTLIERS_EDITOR = Property.of(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, PrespecificiedOutliersEditor.CALENDAR_GRID, Parser.onEnum(PrespecificiedOutliersEditor.class), Formatter.onEnum());
+    static final Property<String[]> SELECTED_DIAG_FIELDS = Property.of(SELECTED_DIAG_FIELDS_PROPERTY,
+            BasicConfiguration.allSingleSaDetails(false).stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
+    static final Property<String[]> SELECTED_SERIES_FIELDS = Property.of(SELECTED_SERIES_FIELDS_PROPERTY,
+            BasicConfiguration.allSaSeries(false).stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
+    static final IntProperty HTML_ZOOM_RATIO = IntProperty.of(HTML_ZOOM_RATIO_PROPERTY, 100);
 
     @lombok.experimental.Delegate(types = PropertyChangeSource.class)
     private final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
@@ -127,7 +133,7 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
 
     public void setColorSchemeName(String colorSchemeName) {
         String old = this.properties.colorSchemeName;
-        this.properties.colorSchemeName = colorSchemeName != null ? colorSchemeName : COLOR_SCHEME_NAME.defaultValue();
+        this.properties.colorSchemeName = colorSchemeName != null ? colorSchemeName : COLOR_SCHEME_NAME.getDefaultValue();
         broadcaster.firePropertyChange(COLOR_SCHEME_NAME_PROPERTY, old, this.properties.colorSchemeName);
     }
 
@@ -137,7 +143,7 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
 
     public void setDataFormat(DataFormat dataFormat) {
         DataFormat old = this.properties.dataFormat;
-        this.properties.dataFormat = dataFormat != null ? dataFormat : DATA_FORMAT.defaultValue();
+        this.properties.dataFormat = dataFormat != null ? dataFormat : DATA_FORMAT.getDefaultValue();
         broadcaster.firePropertyChange(DATA_FORMAT_PROPERTY, old, this.properties.dataFormat);
     }
 
@@ -167,7 +173,7 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
 
     public void setTsActionName(String tsActionName) {
         String old = this.properties.tsActionName;
-        this.properties.tsActionName = tsActionName != null ? tsActionName : TS_ACTION_NAME.defaultValue();
+        this.properties.tsActionName = tsActionName != null ? tsActionName : TS_ACTION_NAME.getDefaultValue();
         broadcaster.firePropertyChange(TS_ACTION_NAME_PROPERTY, old, this.properties.tsActionName);
     }
 
@@ -197,7 +203,7 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
 
     public void setBatchPoolSize(ThreadPoolSize batchPoolSize) {
         ThreadPoolSize old = this.properties.batchPoolSize;
-        this.properties.batchPoolSize = batchPoolSize != null ? batchPoolSize : BATCH_POOL_SIZE.defaultValue();
+        this.properties.batchPoolSize = batchPoolSize != null ? batchPoolSize : BATCH_POOL_SIZE.getDefaultValue();
         broadcaster.firePropertyChange(BATCH_POOL_SIZE_PROPERTY, old, this.properties.batchPoolSize);
     }
 
@@ -207,7 +213,7 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
 
     public void setBatchPriority(ThreadPriority batchPriority) {
         ThreadPriority old = this.properties.batchPriority;
-        this.properties.batchPriority = batchPriority != null ? batchPriority : BATCH_PRIORITY.defaultValue();
+        this.properties.batchPriority = batchPriority != null ? batchPriority : BATCH_PRIORITY.getDefaultValue();
         broadcaster.firePropertyChange(BATCH_PRIORITY_PROPERTY, old, this.properties.batchPriority);
     }
 
@@ -217,7 +223,7 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
 
     public void setGrowthLastYears(Integer lastYears) {
         Integer old = this.properties.growthLastYears;
-        properties.growthLastYears = lastYears != null ? lastYears : GROWTH_LAST_YEARS.defaultValue();
+        properties.growthLastYears = lastYears != null ? lastYears : GROWTH_LAST_YEARS.getDefaultValue();
         broadcaster.firePropertyChange(GROWTH_CHART_LENGTH_PROPERTY, old, properties.growthLastYears);
     }
 
@@ -227,7 +233,7 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
 
     public void setSpectralLastYears(Integer lastYears) {
         Integer old = this.properties.spectralLastYears;
-        properties.spectralLastYears = lastYears != null ? lastYears : SPECTRAL_LAST_YEARS.defaultValue();
+        properties.spectralLastYears = lastYears != null ? lastYears : SPECTRAL_LAST_YEARS.getDefaultValue();
         broadcaster.firePropertyChange(SPECTRAL_YEARS_PROPERTY, old, properties.spectralLastYears);
     }
 
@@ -237,7 +243,7 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
 
     public void setStabilityLength(Integer length) {
         Integer old = this.properties.stabilityLength;
-        properties.stabilityLength = length != null ? length : STABILITY_LENGTH.defaultValue();
+        properties.stabilityLength = length != null ? length : STABILITY_LENGTH.getDefaultValue();
         broadcaster.firePropertyChange(STABILITY_YEARS_PROPERTY, old, properties.stabilityLength);
     }
 
@@ -247,7 +253,7 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
 
     public void setEstimationPolicyType(EstimationPolicyType type) {
         EstimationPolicyType old = this.properties.estimationPolicyType;
-        this.properties.estimationPolicyType = type != null ? type : ESTIMATION_POLICY_TYPE.defaultValue();
+        this.properties.estimationPolicyType = type != null ? type : ESTIMATION_POLICY_TYPE.getDefaultValue();
         broadcaster.firePropertyChange(ESTIMATION_POLICY_PROPERTY, old, this.properties.estimationPolicyType);
     }
 
@@ -287,7 +293,7 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
 
     public void setDefaultSASpec(String spec) {
         String old = this.properties.defaultSASpec;
-        this.properties.defaultSASpec = spec != null ? spec : DEFAULT_SA_SPEC.defaultValue();
+        this.properties.defaultSASpec = spec != null ? spec : DEFAULT_SA_SPEC.getDefaultValue();
         broadcaster.firePropertyChange(DEFAULT_SA_SPEC_PROPERTY, old, this.properties.defaultSASpec);
     }
 
@@ -307,7 +313,7 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
 
     public void setPrespecifiedOutliersEditor(PrespecificiedOutliersEditor prespecifiedOutliersEditor) {
         PrespecificiedOutliersEditor old = this.properties.prespecifiedOutliersEditor;
-        this.properties.prespecifiedOutliersEditor = prespecifiedOutliersEditor != null ? prespecifiedOutliersEditor : PRESPECIFIED_OUTLIERS_EDITOR.defaultValue();
+        this.properties.prespecifiedOutliersEditor = prespecifiedOutliersEditor != null ? prespecifiedOutliersEditor : PRESPECIFIED_OUTLIERS_EDITOR.getDefaultValue();
         broadcaster.firePropertyChange(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, old, this.properties.prespecifiedOutliersEditor);
     }
 
@@ -344,7 +350,7 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
 
     //<editor-fold defaultstate="collapsed" desc="Utils">
     public ColorScheme getColorScheme() {
-        return find(ColorScheme.class, ColorScheme::getName, properties.colorSchemeName, COLOR_SCHEME_NAME.defaultValue());
+        return find(ColorScheme.class, ColorScheme::getName, properties.colorSchemeName, COLOR_SCHEME_NAME.getDefaultValue());
     }
 
     public List<? extends ColorScheme> getColorSchemes() {
@@ -402,9 +408,8 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
     }
 
     @Override
-    public Config editConfig(Config config) {
+    public void configure() {
         OptionsDisplayer.getDefault().open(DemetraUIOptionsPanelController.ID);
-        return getConfig();
     }
 
     private static class ConfigBean {
@@ -431,71 +436,71 @@ public class DemetraUI implements PropertyChangeSource, IConfigurable {
         int htmlZoomRatio;
 
         ConfigBean() {
-            colorSchemeName = COLOR_SCHEME_NAME.defaultValue();
-            dataFormat = DATA_FORMAT.defaultValue();
-            showUnavailableTsProviders = SHOW_UNAVAILABLE.defaultValue();
-            showTsProviderNodes = SHOW_PROVIDER_NODES.defaultValue();
-            tsActionName = TS_ACTION_NAME.defaultValue();
-            persistToolsContent = PERSIST_TOOLS_CONTENT.defaultValue();
-            persistOpenedDataSources = PERSIST_OPENED_DATASOURCES.defaultValue();
-            batchPoolSize = BATCH_POOL_SIZE.defaultValue();
-            batchPriority = BATCH_PRIORITY.defaultValue();
-            growthLastYears = GROWTH_LAST_YEARS.defaultValue();
-            spectralLastYears = SPECTRAL_LAST_YEARS.defaultValue();
-            estimationPolicyType = ESTIMATION_POLICY_TYPE.defaultValue();
-            stabilityLength = STABILITY_LENGTH.defaultValue();
-            defaultSASpec = DEFAULT_SA_SPEC.defaultValue();
-            popupMenuIconsVisible = POPUP_MENU_ICONS_VISIBLE.defaultValue();
-            prespecifiedOutliersEditor = PRESPECIFIED_OUTLIERS_EDITOR.defaultValue();
-            selectedDiagFields = Arrays.asList(SELECTED_DIAG_FIELDS.defaultValue());
-            selectedSeriesFields = Arrays.asList(SELECTED_SERIES_FIELDS.defaultValue());
-            htmlZoomRatio = HTML_ZOOM_RATIO.defaultValue();
+            colorSchemeName = COLOR_SCHEME_NAME.getDefaultValue();
+            dataFormat = DATA_FORMAT.getDefaultValue();
+            showUnavailableTsProviders = SHOW_UNAVAILABLE.isDefaultValue();
+            showTsProviderNodes = SHOW_PROVIDER_NODES.isDefaultValue();
+            tsActionName = TS_ACTION_NAME.getDefaultValue();
+            persistToolsContent = PERSIST_TOOLS_CONTENT.isDefaultValue();
+            persistOpenedDataSources = PERSIST_OPENED_DATASOURCES.isDefaultValue();
+            batchPoolSize = BATCH_POOL_SIZE.getDefaultValue();
+            batchPriority = BATCH_PRIORITY.getDefaultValue();
+            growthLastYears = GROWTH_LAST_YEARS.getDefaultValue();
+            spectralLastYears = SPECTRAL_LAST_YEARS.getDefaultValue();
+            estimationPolicyType = ESTIMATION_POLICY_TYPE.getDefaultValue();
+            stabilityLength = STABILITY_LENGTH.getDefaultValue();
+            defaultSASpec = DEFAULT_SA_SPEC.getDefaultValue();
+            popupMenuIconsVisible = POPUP_MENU_ICONS_VISIBLE.isDefaultValue();
+            prespecifiedOutliersEditor = PRESPECIFIED_OUTLIERS_EDITOR.getDefaultValue();
+            selectedDiagFields = Arrays.asList(SELECTED_DIAG_FIELDS.getDefaultValue());
+            selectedSeriesFields = Arrays.asList(SELECTED_SERIES_FIELDS.getDefaultValue());
+            htmlZoomRatio = HTML_ZOOM_RATIO.getDefaultValue();
         }
 
         ConfigBean(Config config) {
             Preconditions.checkArgument(DOMAIN.equals(config.getDomain()), "Not produced here");
-            colorSchemeName = COLOR_SCHEME_NAME.get(config);
+            colorSchemeName = COLOR_SCHEME_NAME.get(config::getParameter);
             dataFormat = DATA_FORMAT.get(config);
-            showUnavailableTsProviders = SHOW_UNAVAILABLE.get(config);
-            showTsProviderNodes = SHOW_PROVIDER_NODES.get(config);
-            tsActionName = TS_ACTION_NAME.get(config);
-            persistToolsContent = PERSIST_TOOLS_CONTENT.get(config);
-            persistOpenedDataSources = PERSIST_OPENED_DATASOURCES.get(config);
-            batchPoolSize = BATCH_POOL_SIZE.get(config);
-            batchPriority = BATCH_PRIORITY.get(config);
-            growthLastYears = GROWTH_LAST_YEARS.get(config);
-            spectralLastYears = SPECTRAL_LAST_YEARS.get(config);
-            estimationPolicyType = ESTIMATION_POLICY_TYPE.get(config);
-            stabilityLength = STABILITY_LENGTH.get(config);
-            defaultSASpec = DEFAULT_SA_SPEC.get(config);
-            popupMenuIconsVisible = POPUP_MENU_ICONS_VISIBLE.get(config);
-            prespecifiedOutliersEditor = PRESPECIFIED_OUTLIERS_EDITOR.get(config);
-            selectedDiagFields = Arrays.asList(SELECTED_DIAG_FIELDS.get(config));
-            selectedSeriesFields = Arrays.asList(SELECTED_SERIES_FIELDS.get(config));
-            htmlZoomRatio = HTML_ZOOM_RATIO.get(config);
+            showUnavailableTsProviders = SHOW_UNAVAILABLE.get(config::getParameter);
+            showTsProviderNodes = SHOW_PROVIDER_NODES.get(config::getParameter);
+            tsActionName = TS_ACTION_NAME.get(config::getParameter);
+            persistToolsContent = PERSIST_TOOLS_CONTENT.get(config::getParameter);
+            persistOpenedDataSources = PERSIST_OPENED_DATASOURCES.get(config::getParameter);
+            batchPoolSize = BATCH_POOL_SIZE.get(config::getParameter);
+            batchPriority = BATCH_PRIORITY.get(config::getParameter);
+            growthLastYears = GROWTH_LAST_YEARS.get(config::getParameter);
+            spectralLastYears = SPECTRAL_LAST_YEARS.get(config::getParameter);
+            estimationPolicyType = ESTIMATION_POLICY_TYPE.get(config::getParameter);
+            stabilityLength = STABILITY_LENGTH.get(config::getParameter);
+            defaultSASpec = DEFAULT_SA_SPEC.get(config::getParameter);
+            popupMenuIconsVisible = POPUP_MENU_ICONS_VISIBLE.get(config::getParameter);
+            prespecifiedOutliersEditor = PRESPECIFIED_OUTLIERS_EDITOR.get(config::getParameter);
+            selectedDiagFields = Arrays.asList(SELECTED_DIAG_FIELDS.get(config::getParameter));
+            selectedSeriesFields = Arrays.asList(SELECTED_SERIES_FIELDS.get(config::getParameter));
+            htmlZoomRatio = HTML_ZOOM_RATIO.get(config::getParameter);
         }
 
         Config toConfig() {
             Config.Builder b = Config.builder(DOMAIN, NAME, VERSION);
-            COLOR_SCHEME_NAME.set(b, colorSchemeName);
+            COLOR_SCHEME_NAME.set(b::parameter, colorSchemeName);
             DATA_FORMAT.set(b, dataFormat);
-            SHOW_UNAVAILABLE.set(b, showUnavailableTsProviders);
-            SHOW_PROVIDER_NODES.set(b, showTsProviderNodes);
-            TS_ACTION_NAME.set(b, tsActionName);
-            PERSIST_TOOLS_CONTENT.set(b, persistToolsContent);
-            PERSIST_OPENED_DATASOURCES.set(b, persistOpenedDataSources);
-            BATCH_POOL_SIZE.set(b, batchPoolSize);
-            BATCH_PRIORITY.set(b, batchPriority);
-            GROWTH_LAST_YEARS.set(b, growthLastYears);
-            SPECTRAL_LAST_YEARS.set(b, spectralLastYears);
-            ESTIMATION_POLICY_TYPE.set(b, estimationPolicyType);
-            STABILITY_LENGTH.set(b, stabilityLength);
-            DEFAULT_SA_SPEC.set(b, defaultSASpec);
-            POPUP_MENU_ICONS_VISIBLE.set(b, popupMenuIconsVisible);
-            PRESPECIFIED_OUTLIERS_EDITOR.set(b, prespecifiedOutliersEditor);
-            SELECTED_DIAG_FIELDS.set(b, Collections.toArray(selectedDiagFields, String.class));
-            SELECTED_SERIES_FIELDS.set(b, Collections.toArray(selectedSeriesFields, String.class));
-            HTML_ZOOM_RATIO.set(b, htmlZoomRatio);
+            SHOW_UNAVAILABLE.set(b::parameter, showUnavailableTsProviders);
+            SHOW_PROVIDER_NODES.set(b::parameter, showTsProviderNodes);
+            TS_ACTION_NAME.set(b::parameter, tsActionName);
+            PERSIST_TOOLS_CONTENT.set(b::parameter, persistToolsContent);
+            PERSIST_OPENED_DATASOURCES.set(b::parameter, persistOpenedDataSources);
+            BATCH_POOL_SIZE.set(b::parameter, batchPoolSize);
+            BATCH_PRIORITY.set(b::parameter, batchPriority);
+            GROWTH_LAST_YEARS.set(b::parameter, growthLastYears);
+            SPECTRAL_LAST_YEARS.set(b::parameter, spectralLastYears);
+            ESTIMATION_POLICY_TYPE.set(b::parameter, estimationPolicyType);
+            STABILITY_LENGTH.set(b::parameter, stabilityLength);
+            DEFAULT_SA_SPEC.set(b::parameter, defaultSASpec);
+            POPUP_MENU_ICONS_VISIBLE.set(b::parameter, popupMenuIconsVisible);
+            PRESPECIFIED_OUTLIERS_EDITOR.set(b::parameter, prespecifiedOutliersEditor);
+            SELECTED_DIAG_FIELDS.set(b::parameter, Collections.toArray(selectedDiagFields, String.class));
+            SELECTED_SERIES_FIELDS.set(b::parameter, Collections.toArray(selectedSeriesFields, String.class));
+            HTML_ZOOM_RATIO.set(b::parameter, htmlZoomRatio);
             return b.build();
         }
     }

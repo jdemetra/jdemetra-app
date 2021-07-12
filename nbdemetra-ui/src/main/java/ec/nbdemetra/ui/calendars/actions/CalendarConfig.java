@@ -16,8 +16,7 @@
  */
 package ec.nbdemetra.ui.calendars.actions;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.tss.tsproviders.utils.Formatters;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.IParser;
@@ -32,12 +31,13 @@ import ec.tstoolkit.timeseries.calendars.CompositeGregorianCalendarProvider;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
 import ec.tstoolkit.timeseries.calendars.IGregorianCalendarProvider;
 import ec.tstoolkit.timeseries.calendars.NationalCalendarProvider;
+import demetra.ui.Converter;
 
 /**
  *
  * @author Philippe Charles
  */
-final class CalendarConfig extends Converter<IGregorianCalendarProvider, Config> {
+final class CalendarConfig implements Converter<IGregorianCalendarProvider, Config> {
 
     public static final String DOMAIN = AbstractXmlCalendar.class.getName();
 
@@ -50,16 +50,16 @@ final class CalendarConfig extends Converter<IGregorianCalendarProvider, Config>
     private final IParser<XmlCompositeCalendar> compositeParser = Parsers.onJAXB(XmlCompositeCalendar.class);
 
     @Override
-    protected Config doForward(IGregorianCalendarProvider cal) {
+    public Config doForward(IGregorianCalendarProvider cal) {
         GregorianCalendarManager manager = ProcessingContext.getActiveContext().getGregorianCalendars();
         Config.Builder result = Config.builder(DOMAIN, manager.get(cal), "");
         String code = manager.get(cal);
-        result.put("type", cal.getClass().getName());
+        result.parameter("type", cal.getClass().getName());
         String xml = format(cal, code, manager);
         if (xml == null) {
             throw new RuntimeException("Cannot format calendar");
         }
-        result.put("xml", xml);
+        result.parameter("xml", xml);
         return result.build();
     }
 
@@ -75,9 +75,9 @@ final class CalendarConfig extends Converter<IGregorianCalendarProvider, Config>
     }
 
     @Override
-    protected IGregorianCalendarProvider doBackward(Config config) {
+    public IGregorianCalendarProvider doBackward(Config config) {
         GregorianCalendarManager manager = ProcessingContext.getActiveContext().getGregorianCalendars();
-        AbstractXmlCalendar xmlCal = parse(config.get("type"), config.get("xml"));
+        AbstractXmlCalendar xmlCal = parse(config.getParameter("type"), config.getParameter("xml"));
         if (xmlCal != null) {
             if (xmlCal.addTo(manager)) {
                 return manager.get(xmlCal.name);

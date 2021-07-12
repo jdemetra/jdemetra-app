@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.ui.actions.Configurable;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import demetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.ns.NamedServiceNode;
@@ -92,7 +93,7 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         getDiagnosticsExplorerManager().addPropertyChangeListener((PropertyChangeEvent evt) -> {
             if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
                 Node[] nodes = (Node[]) evt.getNewValue();
-                editDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IConfigurable.class) != null);
+                editDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(Configurable.class) != null);
                 resetDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(Resetable.class) != null);
             }
         });

@@ -20,10 +20,9 @@ import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractBean;
 import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractBeanEditor;
 import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractConverter;
 import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.Resource;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
-import ec.nbdemetra.ui.IConfigurable;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
+import demetra.ui.ConfigEditor;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.html.HtmlBookFactory;
 import java.awt.datatransfer.DataFlavor;
@@ -34,7 +33,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.OldDataTransferSpi;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
 import demetra.ui.datatransfer.DataTransferSpi;
+import demetra.ui.beans.BeanConfigurator;
 import org.openide.util.lookup.ServiceProviders;
 
 /**
@@ -45,18 +47,18 @@ import org.openide.util.lookup.ServiceProviders;
     @ServiceProvider(service = DataTransferSpi.class, position = 1000)
     ,@ServiceProvider(service = OldDataTransferSpi.class, position = 1500)
 })
-public final class HtmlDataTransfer implements DataTransferSpi, OldDataTransferSpi, IConfigurable {
+public final class HtmlDataTransfer implements DataTransferSpi, OldDataTransferSpi, Configurable, Persistable, ConfigEditor {
 
     private final DataFlavor dataFlavor;
     @lombok.experimental.Delegate
     private final SpreadSheetTssTransferSupport support;
-    private final Configurator<HtmlDataTransfer> configurator;
+    private final BeanConfigurator<HtmlBean, HtmlDataTransfer> configurator;
     private HtmlBean config;
 
     public HtmlDataTransfer() {
         this.dataFlavor = createDataFlavor();
         this.support = new SpreadSheetTssTransferSupport(new ResourceImpl(() -> config));
-        this.configurator = new HtmlBeanHandler().toConfigurator(new HtmlConverter(), new HtmlBeanEditor());
+        this.configurator = new BeanConfigurator<>(new HtmlBeanHandler(), new HtmlConverter(), new HtmlBeanEditor());
         this.config = new HtmlBean();
     }
 
@@ -88,6 +90,11 @@ public final class HtmlDataTransfer implements DataTransferSpi, OldDataTransferS
     @Override
     public Config editConfig(Config config) {
         return configurator.editConfig(config);
+    }
+
+    @Override
+    public void configure() {
+        Configurable.configure(this, this);
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
@@ -138,7 +145,7 @@ public final class HtmlDataTransfer implements DataTransferSpi, OldDataTransferS
     public static final class HtmlBean extends AbstractBean {
     }
 
-    private static final class HtmlBeanHandler extends BeanHandler<HtmlBean, HtmlDataTransfer> {
+    private static final class HtmlBeanHandler implements BeanHandler<HtmlBean, HtmlDataTransfer> {
 
         @Override
         public HtmlBean loadBean(HtmlDataTransfer resource) {

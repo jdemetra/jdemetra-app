@@ -16,9 +16,8 @@
  */
 package ec.nbdemetra.ui.calendars.actions;
 
-import com.google.common.base.Converter;
 import com.google.common.collect.ImmutableList;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
 import ec.nbdemetra.ui.interchange.ImportAction;
 import ec.nbdemetra.ui.interchange.Importable;
@@ -36,6 +35,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
+import demetra.ui.Converter;
 
 /**
  *
@@ -86,7 +86,7 @@ public final class ImportCalendarAction extends SingleNodeAction<ItemWsNode> imp
 
         @Override
         public void importConfig(Config config) throws IllegalArgumentException {
-            IGregorianCalendarProvider cal = CONVERTER.convert(config);
+            IGregorianCalendarProvider cal = CONVERTER.doForward(config);
             Workspace ws = WorkspaceFactory.getInstance().getActiveWorkspace();
             if (ws.searchDocument(cal) == null) {
                 String name = ProcessingContext.getActiveContext().getGregorianCalendars().get(cal);

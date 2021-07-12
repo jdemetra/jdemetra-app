@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui.interchange;
 
 import com.google.common.collect.Iterables;
-import ec.nbdemetra.ui.IConfigurable;
+import demetra.ui.actions.Configurable;
 import demetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.ns.NamedServiceNode;
 import org.openide.explorer.ExplorerManager;
@@ -37,7 +37,7 @@ final class InterchangePanel extends javax.swing.JPanel implements ExplorerManag
         em.addVetoableChangeListener(evt -> {
             if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
                 Node[] nodes = (Node[]) evt.getNewValue();
-                editButton.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IConfigurable.class) != null);
+                editButton.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(Configurable.class) != null);
             }
         });
         outlineView2.getOutline().setRootVisible(false);

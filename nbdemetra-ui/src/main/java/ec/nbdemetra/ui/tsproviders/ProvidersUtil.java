@@ -23,7 +23,7 @@ import demetra.tsprovider.DataSourceLoader;
 import demetra.tsprovider.DataSourceProvider;
 import demetra.tsprovider.FileLoader;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import demetra.ui.properties.ForwardingNodeProperty;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.TsAsyncMode;
@@ -60,14 +60,16 @@ final class ProvidersUtil {
 
     @NonNull
     public static DataSource getDataSource(@NonNull Config config) throws IllegalArgumentException {
-        return config.getParam("uri")
-                .map(DataSource::parse)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid config"));
+        String uri = config.getParameter("uri");
+        if (uri == null) {
+            throw new IllegalArgumentException("Invalid config");
+        }
+        return DataSource.parse(uri);
     }
 
     public static Config getConfig(DataSource dataSource, String displayName) {
         return Config.builder(getDataSourceDomain(), displayName, "")
-                .put("uri", dataSource.toString())
+                .parameter("uri", dataSource.toString())
                 .build();
     }
 

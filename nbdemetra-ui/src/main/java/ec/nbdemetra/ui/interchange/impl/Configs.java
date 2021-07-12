@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.interchange.Exportable;
 import ec.nbdemetra.ui.interchange.Importable;
 import ec.tss.tsproviders.utils.Formatters;

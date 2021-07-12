@@ -41,7 +41,7 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import demetra.ui.actions.TsCollectable;
+import demetra.ui.TsCollectable;
 import java.util.Optional;
 
 /**

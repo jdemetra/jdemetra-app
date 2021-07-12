@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.jdbc;
 
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.interchange.ImportAction;
 import ec.nbdemetra.ui.interchange.Importable;
@@ -86,8 +86,8 @@ public final class ImportJndiJdbcConnection extends SingleNodeAction<Node> imple
         if (!DriverBasedConfig.class.getName().equals(config.getDomain())) {
             throw new IllegalArgumentException("Invalid config");
         }
-        DriverBasedConfig.Builder result = DriverBasedConfig.builder(config.get("driverClass"), config.get("databaseUrl"), config.get("schema"), config.getName());
-        config.stream()
+        DriverBasedConfig.Builder result = DriverBasedConfig.builder(config.getParameter("driverClass"), config.getParameter("databaseUrl"), config.getParameter("schema"), config.getName());
+        config.getParameters().entrySet().stream()
                 .filter(o -> o.getKey().startsWith("prop_"))
                 .forEach(o -> result.put(o.getKey().substring(5), o.getValue()));
         return result.build();

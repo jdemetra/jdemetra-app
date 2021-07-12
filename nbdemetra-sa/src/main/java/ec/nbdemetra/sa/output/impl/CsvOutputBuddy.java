@@ -16,24 +16,19 @@
  */
 package ec.nbdemetra.sa.output.impl;
 
-import com.google.common.base.Converter;
 import com.google.common.base.Splitter;
 import ec.nbdemetra.sa.output.AbstractOutputNode;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.sa.output.Series;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
-import ec.nbdemetra.ui.IConfigurable;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
+import demetra.ui.ConfigEditor;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.output.CsvLayout;
 import ec.tss.sa.output.CsvOutputConfiguration;
 import ec.tss.sa.output.CsvOutputFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import java.beans.IntrospectionException;
 import java.io.File;
 import java.util.List;
@@ -41,15 +36,24 @@ import java.util.stream.Collectors;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Philippe Charles
  */
 @ServiceProvider(service = INbOutputFactory.class, position = 1000)
-public final class CsvOutputBuddy implements INbOutputFactory, IConfigurable, Resetable {
+public final class CsvOutputBuddy implements INbOutputFactory, Configurable, Persistable, ConfigEditor, Resetable {
 
-    private final Configurator<CsvOutputBuddy> configurator = createConfigurator();
+    private final BeanConfigurator<CsvOutputConfiguration, CsvOutputBuddy> configurator = createConfigurator();
     private CsvOutputConfiguration config = new CsvOutputConfiguration();
 
     @Override
@@ -83,16 +87,21 @@ public final class CsvOutputBuddy implements INbOutputFactory, IConfigurable, Re
     }
 
     @Override
+    public void configure() {
+        Configurable.configure(this, this);
+    }
+
+    @Override
     public void reset() {
         config = new CsvOutputConfiguration();
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    private static Configurator<CsvOutputBuddy> createConfigurator() {
-        return new CsvOutputBeanHandler().toConfigurator(new CsvOutputConverter(), new CsvOutputBeanEditor());
+    private static BeanConfigurator<CsvOutputConfiguration, CsvOutputBuddy> createConfigurator() {
+        return new BeanConfigurator<>(new CsvOutputBeanHandler(), new CsvOutputConverter(), new CsvOutputBeanEditor());
     }
 
-    private static final class CsvOutputBeanHandler extends BeanHandler<CsvOutputConfiguration, CsvOutputBuddy> {
+    private static final class CsvOutputBeanHandler implements BeanHandler<CsvOutputConfiguration, CsvOutputBuddy> {
 
         @Override
         public CsvOutputConfiguration loadBean(CsvOutputBuddy resource) {
@@ -105,7 +114,7 @@ public final class CsvOutputBuddy implements INbOutputFactory, IConfigurable, Re
         }
     }
 
-    private static final class CsvOutputBeanEditor implements IBeanEditor {
+    private static final class CsvOutputBeanEditor implements BeanEditor {
 
         @Override
         public boolean editBean(Object bean) throws IntrospectionException {
@@ -115,33 +124,33 @@ public final class CsvOutputBuddy implements INbOutputFactory, IConfigurable, Re
         }
     }
 
-    private static final class CsvOutputConverter extends Converter<CsvOutputConfiguration, Config> {
+    private static final class CsvOutputConverter implements Converter<CsvOutputConfiguration, Config> {
 
-        private final IParam<Config, CsvLayout> presentationParam = Params.onEnum(CsvLayout.List, "presentation");
-        private final IParam<Config, File> folderParam = Params.onFile(new File(""), "folder");
-        private final IParam<Config, String> filePrefixParam = Params.onString("series", "filePrefix");
-        private final IParam<Config, String> seriesParam = Params.onString("y,t,sa,s,i,ycal", "series");
-        private final IParam<Config, Boolean> fullNameParam = Params.onBoolean(true, "fullName");
+        private final Property<CsvLayout> presentationParam = Property.of("presentation", CsvLayout.List, Parser.onEnum(CsvLayout.class), Formatter.onEnum());
+        private final Property<File> folderParam = Property.of("folder", new File(""), Parser.onFile(), Formatter.onFile());
+        private final Property<String> filePrefixParam = Property.of("filePrefix", "series", Parser.onString(), Formatter.onString());
+        private final Property<String> seriesParam = Property.of("series", "y,t,sa,s,i,ycal", Parser.onString(), Formatter.onString());
+        private final BooleanProperty fullNameParam = BooleanProperty.of("fullName", true);
 
         @Override
-        protected Config doForward(CsvOutputConfiguration a) {
+        public Config doForward(CsvOutputConfiguration a) {
             Config.Builder result = Config.builder(INbOutputFactory.class.getName(), "Csv", "");
-            presentationParam.set(result, a.getPresentation());
-            folderParam.set(result, a.getFolder());
-            filePrefixParam.set(result, a.getFilePrefix());
-            seriesParam.set(result, a.getSeries().stream().collect(Collectors.joining(",")));
-            fullNameParam.set(result, a.isFullName());
+            presentationParam.set(result::parameter, a.getPresentation());
+            folderParam.set(result::parameter, a.getFolder());
+            filePrefixParam.set(result::parameter, a.getFilePrefix());
+            seriesParam.set(result::parameter, a.getSeries().stream().collect(Collectors.joining(",")));
+            fullNameParam.set(result::parameter, a.isFullName());
             return result.build();
         }
 
         @Override
-        protected CsvOutputConfiguration doBackward(Config b) {
+        public CsvOutputConfiguration doBackward(Config b) {
             CsvOutputConfiguration result = new CsvOutputConfiguration();
-            result.setPresentation(presentationParam.get(b));
-            result.setFolder(folderParam.get(b));
-            result.setFilePrefix(filePrefixParam.get(b));
-            result.setSeries(Splitter.on(",").trimResults().splitToList(seriesParam.get(b)));
-            result.setFullName(fullNameParam.get(b));
+            result.setPresentation(presentationParam.get(b::getParameter));
+            result.setFolder(folderParam.get(b::getParameter));
+            result.setFilePrefix(filePrefixParam.get(b::getParameter));
+            result.setSeries(Splitter.on(",").trimResults().splitToList(seriesParam.get(b::getParameter)));
+            result.setFullName(fullNameParam.get(b::getParameter));
             return result;
         }
     }

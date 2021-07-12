@@ -16,20 +16,14 @@
  */
 package ec.nbdemetra.ui.sa.diagnostics;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.OutliersDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.OutliersDiagnosticsFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.BaseException;
 import java.awt.Image;
 import java.beans.IntrospectionException;
@@ -40,17 +34,26 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Laurent Jadoul
  */
 @ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
-public final class OutliersDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, Resetable {
+public final class OutliersDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements Configurable, Persistable, demetra.ui.ConfigEditor, Resetable {
 
     private static final String NAME = "OutliersDiagnostics";
 
-    private final Configurator<OutliersDiagnosticsFactory> configurator = createConfigurator();
+    private final BeanConfigurator<OutliersDiagnosticsConfiguration, OutliersDiagnosticsFactory> configurator = createConfigurator();
 
     @Override
     public String getName() {
@@ -81,6 +84,11 @@ public final class OutliersDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryB
     @Override
     public Config editConfig(Config config) throws IllegalArgumentException {
         return configurator.editConfig(config);
+    }
+
+    @Override
+    public void configure() {
+        Configurable.configure(this, this);
     }
 
     @Override
@@ -148,11 +156,11 @@ public final class OutliersDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryB
         return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
     }
 
-    private static Configurator<OutliersDiagnosticsFactory> createConfigurator() {
-        return new ConfigHandler().toConfigurator(new ConfigConverter(), new ConfigEditor());
+    private static BeanConfigurator<OutliersDiagnosticsConfiguration, OutliersDiagnosticsFactory> createConfigurator() {
+        return new BeanConfigurator<>(new ConfigHandler(), new ConfigConverter(), new ConfigEditor());
     }
 
-    private static final class ConfigHandler extends BeanHandler<OutliersDiagnosticsConfiguration, OutliersDiagnosticsFactory> {
+    private static final class ConfigHandler implements BeanHandler<OutliersDiagnosticsConfiguration, OutliersDiagnosticsFactory> {
 
         @Override
         public OutliersDiagnosticsConfiguration loadBean(OutliersDiagnosticsFactory resource) {
@@ -165,35 +173,35 @@ public final class OutliersDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryB
         }
     }
 
-    private static final class ConfigConverter extends Converter<OutliersDiagnosticsConfiguration, Config> {
+    private static final class ConfigConverter implements Converter<OutliersDiagnosticsConfiguration, Config> {
 
-        private final IParam<Config, Boolean> enabledParam = Params.onBoolean(true, "enabled");
-        private final IParam<Config, Double> severeParam = Params.onDouble(.10, "severe");
-        private final IParam<Config, Double> badParam = Params.onDouble(.05, "bad");
-        private final IParam<Config, Double> uncertainParam = Params.onDouble(.03, "uncertain");
+        private final BooleanProperty enabledParam = BooleanProperty.of("enabled", true);
+        private final Property<Double> severeParam = Property.of("severe", .10, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> badParam = Property.of("bad",.05, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> uncertainParam = Property.of("uncertain",.03, Parser.onDouble(), Formatter.onDouble());
 
         @Override
-        protected Config doForward(OutliersDiagnosticsConfiguration a) {
+        public Config doForward(OutliersDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(NAME, "INSTANCE", "20151008");
-            enabledParam.set(result, a.isEnabled());
-            severeParam.set(result, a.getSevere());
-            badParam.set(result, a.getBad());
-            uncertainParam.set(result, a.getUncertain());
+            enabledParam.set(result::parameter, a.isEnabled());
+            severeParam.set(result::parameter, a.getSevere());
+            badParam.set(result::parameter, a.getBad());
+            uncertainParam.set(result::parameter, a.getUncertain());
             return result.build();
         }
 
         @Override
-        protected OutliersDiagnosticsConfiguration doBackward(Config b) {
+        public OutliersDiagnosticsConfiguration doBackward(Config b) {
             OutliersDiagnosticsConfiguration result = new OutliersDiagnosticsConfiguration();
-            result.setEnabled(enabledParam.get(b));
-            result.setSevere(severeParam.get(b));
-            result.setBad(badParam.get(b));
-            result.setUncertain(uncertainParam.get(b));
+            result.setEnabled(enabledParam.get(b::getParameter));
+            result.setSevere(severeParam.get(b::getParameter));
+            result.setBad(badParam.get(b::getParameter));
+            result.setUncertain(uncertainParam.get(b::getParameter));
             return result;
         }
     }
 
-    private static final class ConfigEditor implements IBeanEditor {
+    private static final class ConfigEditor implements BeanEditor {
 
         @Messages({"outliersDiagnostics.edit.title=Edit Outliers",
             "outliersDiagnostics.edit.errorTitle=Invalid Input",

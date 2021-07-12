@@ -16,20 +16,14 @@
  */
 package ec.nbdemetra.ui.sa.diagnostics;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.SpectralDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.SpectralDiagnosticsFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.BaseException;
 import java.awt.Image;
 import java.beans.IntrospectionException;
@@ -40,17 +34,27 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.IntProperty;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Laurent Jadoul
  */
 @ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
-public final class SpectralDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, Resetable {
+public final class SpectralDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements Configurable, Persistable, demetra.ui.ConfigEditor, Resetable {
 
     private static final String NAME = "SpectralDiagnostics";
 
-    private final Configurator<SpectralDiagnosticsFactory> configurator = createConfigurator();
+    private final BeanConfigurator<SpectralDiagnosticsConfiguration, SpectralDiagnosticsFactory> configurator = createConfigurator();
 
     @Override
     public String getName() {
@@ -84,10 +88,15 @@ public final class SpectralDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryB
     }
 
     @Override
+    public void configure() {
+        Configurable.configure(this, this);
+    }
+
+    @Override
     public void reset() {
         lookup().setProperties(new SpectralDiagnosticsConfiguration());
     }
-    
+
     @Override
     public Sheet createSheet() {
         return createSheet(lookup().getConfiguration());
@@ -148,11 +157,11 @@ public final class SpectralDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryB
         return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
     }
 
-    private static Configurator<SpectralDiagnosticsFactory> createConfigurator() {
-        return new ConfigHandler().toConfigurator(new ConfigConverter(), new ConfigEditor());
+    private static BeanConfigurator<SpectralDiagnosticsConfiguration, SpectralDiagnosticsFactory> createConfigurator() {
+        return new BeanConfigurator<>(new ConfigHandler(), new ConfigConverter(), new ConfigEditor());
     }
 
-    private static final class ConfigHandler extends BeanHandler<SpectralDiagnosticsConfiguration, SpectralDiagnosticsFactory> {
+    private static final class ConfigHandler implements BeanHandler<SpectralDiagnosticsConfiguration, SpectralDiagnosticsFactory> {
 
         @Override
         public SpectralDiagnosticsConfiguration loadBean(SpectralDiagnosticsFactory resource) {
@@ -165,35 +174,35 @@ public final class SpectralDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryB
         }
     }
 
-    private static final class ConfigConverter extends Converter<SpectralDiagnosticsConfiguration, Config> {
+    private static final class ConfigConverter implements Converter<SpectralDiagnosticsConfiguration, Config> {
 
-        private final IParam<Config, Boolean> enabledParam = Params.onBoolean(false, "enabled");
-        private final IParam<Config, Boolean> strictParam = Params.onBoolean(true, "strict");
-        private final IParam<Config, Double> sensParam = Params.onDouble(6.0 / 52, "sensitivity");
-        private final IParam<Config, Integer> lengthParam = Params.onInteger(8, "length");
+        private final BooleanProperty enabledParam = BooleanProperty.of("enabled", false);
+        private final BooleanProperty strictParam = BooleanProperty.of("strict", true);
+        private final Property<Double> sensParam = Property.of("sensitivity", 6.0 / 52, Parser.onDouble(), Formatter.onDouble());
+        private final IntProperty lengthParam = IntProperty.of("length", 8);
 
         @Override
-        protected Config doForward(SpectralDiagnosticsConfiguration a) {
+        public Config doForward(SpectralDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(NAME, "INSTANCE", "20151008");
-            enabledParam.set(result, a.isEnabled());
-            strictParam.set(result, a.isStrict());
-            sensParam.set(result, a.getSensitivity());
-            lengthParam.set(result, a.getLength());
+            enabledParam.set(result::parameter, a.isEnabled());
+            strictParam.set(result::parameter, a.isStrict());
+            sensParam.set(result::parameter, a.getSensitivity());
+            lengthParam.set(result::parameter, a.getLength());
             return result.build();
         }
 
         @Override
-        protected SpectralDiagnosticsConfiguration doBackward(Config b) {
+        public SpectralDiagnosticsConfiguration doBackward(Config b) {
             SpectralDiagnosticsConfiguration result = new SpectralDiagnosticsConfiguration();
-            result.setEnabled(enabledParam.get(b));
-            result.setStrict(strictParam.get(b));
-            result.setSensitivity(sensParam.get(b));
-            result.setLength(lengthParam.get(b));
+            result.setEnabled(enabledParam.get(b::getParameter));
+            result.setStrict(strictParam.get(b::getParameter));
+            result.setSensitivity(sensParam.get(b::getParameter));
+            result.setLength(lengthParam.get(b::getParameter));
             return result;
         }
     }
 
-    private static final class ConfigEditor implements IBeanEditor {
+    private static final class ConfigEditor implements BeanEditor {
 
         @Messages({"spectralDiagnostics.edit.title=Edit Visual spectral analysis",
             "spectralDiagnostics.edit.errorTitle=Invalid Input",
@@ -208,11 +217,11 @@ public final class SpectralDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryB
                     return false;
                 }
                 try {
-                    ((SpectralDiagnosticsConfiguration)bean).check();
+                    ((SpectralDiagnosticsConfiguration) bean).check();
                     return true;
                 } catch (BaseException ex) {
                     String message = ex.getMessage() + Bundle.spectralDiagnostics_edit_errorMessage();
-                    if(JOptionPane.showConfirmDialog(null, message , Bundle.spectralDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION){
+                    if (JOptionPane.showConfirmDialog(null, message, Bundle.spectralDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
                         return false;
                     }
                 }

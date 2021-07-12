@@ -16,20 +16,14 @@
  */
 package ec.nbdemetra.ui.sa.diagnostics;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.MDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.MDiagnosticsFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.BaseException;
 import java.awt.Image;
 import java.beans.IntrospectionException;
@@ -40,17 +34,26 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Laurent Jadoul
  */
 @ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
-public final class MDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, Resetable {
+public final class MDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements Configurable, Persistable, demetra.ui.ConfigEditor, Resetable {
 
     private static final String NAME = "MDiagnostics";
 
-    private final Configurator<MDiagnosticsFactory> configurator = createConfigurator();
+    private final BeanConfigurator<MDiagnosticsConfiguration, MDiagnosticsFactory> configurator = createConfigurator();
 
     @Override
     public String getName() {
@@ -84,10 +87,15 @@ public final class MDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy im
     }
 
     @Override
+    public void configure() {
+        Configurable.configure(this, this);
+    }
+
+    @Override
     public void reset() {
         lookup().setProperties(new MDiagnosticsConfiguration());
     }
-    
+
     @Override
     public Sheet createSheet() {
         return createSheet(lookup().getConfiguration());
@@ -147,11 +155,11 @@ public final class MDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy im
         return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
     }
 
-    private static Configurator<MDiagnosticsFactory> createConfigurator() {
-        return new ConfigHandler().toConfigurator(new ConfigConverter(), new ConfigEditor());
+    private static BeanConfigurator<MDiagnosticsConfiguration, MDiagnosticsFactory> createConfigurator() {
+        return new BeanConfigurator<>(new ConfigHandler(), new ConfigConverter(), new ConfigEditor());
     }
 
-    private static final class ConfigHandler extends BeanHandler<MDiagnosticsConfiguration, MDiagnosticsFactory> {
+    private static final class ConfigHandler implements BeanHandler<MDiagnosticsConfiguration, MDiagnosticsFactory> {
 
         @Override
         public MDiagnosticsConfiguration loadBean(MDiagnosticsFactory resource) {
@@ -164,35 +172,35 @@ public final class MDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy im
         }
     }
 
-    private static final class ConfigConverter extends Converter<MDiagnosticsConfiguration, Config> {
+    private static final class ConfigConverter implements Converter<MDiagnosticsConfiguration, Config> {
 
-        private final IParam<Config, Boolean> enabledParam = Params.onBoolean(true, "enabled");
-        private final IParam<Config, Double> severeParam = Params.onDouble(2d, "severe");
-        private final IParam<Config, Double> badParam = Params.onDouble(1d, "bad");
-        private final IParam<Config, Boolean> allParam = Params.onBoolean(true, "all");
+        private final BooleanProperty enabledParam = BooleanProperty.of("enabled", true);
+        private final Property<Double> severeParam = Property.of("severe", 2d, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> badParam = Property.of("bad", 1d, Parser.onDouble(), Formatter.onDouble());
+        private final BooleanProperty allParam = BooleanProperty.of("all", true);
 
         @Override
-        protected Config doForward(MDiagnosticsConfiguration a) {
+        public Config doForward(MDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(NAME, "INSTANCE", "20151008");
-            enabledParam.set(result, a.isEnabled());
-            severeParam.set(result, a.getSevere());
-            badParam.set(result, a.getBad());
-            allParam.set(result, a.isUseAll());
+            enabledParam.set(result::parameter, a.isEnabled());
+            severeParam.set(result::parameter, a.getSevere());
+            badParam.set(result::parameter, a.getBad());
+            allParam.set(result::parameter, a.isUseAll());
             return result.build();
         }
 
         @Override
-        protected MDiagnosticsConfiguration doBackward(Config b) {
+        public MDiagnosticsConfiguration doBackward(Config b) {
             MDiagnosticsConfiguration result = new MDiagnosticsConfiguration();
-            result.setEnabled(enabledParam.get(b));
-            result.setSevere(severeParam.get(b));
-            result.setBad(badParam.get(b));
-            result.setUseAll(allParam.get(b));
+            result.setEnabled(enabledParam.get(b::getParameter));
+            result.setSevere(severeParam.get(b::getParameter));
+            result.setBad(badParam.get(b::getParameter));
+            result.setUseAll(allParam.get(b::getParameter));
             return result;
         }
     }
 
-    private static final class ConfigEditor implements IBeanEditor {
+    private static final class ConfigEditor implements BeanEditor {
 
         @Messages({"mDiagnostics.edit.title=Edit M-Statistics",
             "mDiagnostics.edit.errorTitle=Invalid Input",
@@ -207,11 +215,11 @@ public final class MDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy im
                     return false;
                 }
                 try {
-                    ((MDiagnosticsConfiguration)bean).check();
+                    ((MDiagnosticsConfiguration) bean).check();
                     return true;
                 } catch (BaseException ex) {
                     String message = ex.getMessage() + Bundle.mDiagnostics_edit_errorMessage();
-                    if(JOptionPane.showConfirmDialog(null, message , Bundle.mDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION){
+                    if (JOptionPane.showConfirmDialog(null, message, Bundle.mDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
                         return false;
                     }
                 }

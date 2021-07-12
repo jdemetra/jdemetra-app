@@ -16,8 +16,7 @@
  */
 package ec.nbdemetra.ui.calendars.actions;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
 import ec.nbdemetra.ui.interchange.ExportAction;
 import ec.nbdemetra.ui.interchange.Exportable;
@@ -37,6 +36,7 @@ import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.NodeAction;
 import org.openide.util.actions.Presenter;
+import demetra.ui.Converter;
 
 /**
  *
@@ -105,7 +105,7 @@ public final class ExportCalendarAction extends NodeAction implements Presenter.
         @Override
         public Config exportConfig() {
             IGregorianCalendarProvider cal = AddCalendarAction.getProvider(input);
-            return CONVERTER.convert(cal);
+            return CONVERTER.doForward(cal);
         }
     }
 }

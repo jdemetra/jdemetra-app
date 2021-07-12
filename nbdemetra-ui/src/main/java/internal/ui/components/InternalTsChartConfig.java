@@ -16,23 +16,25 @@
  */
 package internal.ui.components;
 
-import com.google.common.base.Converter;
 import com.google.common.base.Preconditions;
 import demetra.ui.components.parts.HasChart;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUI;
 import demetra.ui.completion.JAutoCompletionService;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import demetra.ui.components.JTsChart;
 import ec.util.chart.ColorScheme;
 import java.beans.IntrospectionException;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
 import org.openide.nodes.Sheet;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
@@ -58,10 +60,9 @@ public final class InternalTsChartConfig {
                 .orElse(null);
     }
 
-    public static final Configurator<JTsChart> CONFIGURATOR = new TsChartConfigHandler()
-            .toConfigurator(new TsChartConfigConverter(), new TsChartConfigEditor());
+    public static final BeanConfigurator<InternalTsChartConfig, JTsChart> CONFIGURATOR = new BeanConfigurator<>(new TsChartConfigHandler(), new TsChartConfigConverter(), new TsChartConfigEditor());
 
-    private static final class TsChartConfigHandler extends BeanHandler<InternalTsChartConfig, JTsChart> {
+    private static final class TsChartConfigHandler implements BeanHandler<InternalTsChartConfig, JTsChart> {
 
         @Override
         public InternalTsChartConfig loadBean(JTsChart r) {
@@ -89,7 +90,7 @@ public final class InternalTsChartConfig {
         }
     }
 
-    private static final class TsChartConfigEditor implements IBeanEditor {
+    private static final class TsChartConfigEditor implements BeanEditor {
 
         @Override
         public boolean editBean(Object bean) throws IntrospectionException {
@@ -111,41 +112,41 @@ public final class InternalTsChartConfig {
         }
     }
 
-    private static final class TsChartConfigConverter extends Converter<InternalTsChartConfig, Config> {
+    private static final class TsChartConfigConverter implements Converter<InternalTsChartConfig, Config> {
 
         private static final String DOMAIN = "ec.ui.chart.JTsChart", NAME = "", VERSION = "";
-        private static final IParam<Config, Boolean> LEGEND_VISIBLE = Params.onBoolean(true, "legendVisible");
-        private static final IParam<Config, Boolean> TITLE_VISIBLE = Params.onBoolean(true, "titleVisible");
-        private static final IParam<Config, Boolean> AXIS_VISIBLE = Params.onBoolean(true, "axisVisible");
-        private static final IParam<Config, String> TITLE = Params.onString("", "title");
-        private static final IParam<Config, HasChart.LinesThickness> LINES_THICKNESS = Params.onEnum(HasChart.LinesThickness.Thin, "linesThickness");
-        private static final IParam<Config, String> COLOR_SCHEME_NAME = Params.onString("", "colorSchemeName");
-        private static final IParam<Config, double[]> ZOOM = Params.onDoubleArray("zoom", new double[0]);
+        private static final BooleanProperty LEGEND_VISIBLE = BooleanProperty.of("legendVisible", true);
+        private static final BooleanProperty TITLE_VISIBLE = BooleanProperty.of("titleVisible", true);
+        private static final BooleanProperty AXIS_VISIBLE = BooleanProperty.of("axisVisible", true);
+        private static final Property<String> TITLE = Property.of("title", "", Parser.onString(), Formatter.onString());
+        private static final Property<HasChart.LinesThickness> LINES_THICKNESS = Property.of("linesThickness", HasChart.LinesThickness.Thin, Parser.onEnum(HasChart.LinesThickness.class), Formatter.onEnum());
+        private static final Property<String> COLOR_SCHEME_NAME = Property.of("colorSchemeName", "", Parser.onString(), Formatter.onString());
+        private static final Property<double[]> ZOOM = Property.of("zoom", new double[0], Parser.onDoubleArray(), Formatter.onDoubleArray());
 
         @Override
-        protected Config doForward(InternalTsChartConfig a) {
+        public Config doForward(InternalTsChartConfig a) {
             Config.Builder b = Config.builder(DOMAIN, NAME, VERSION);
-            LEGEND_VISIBLE.set(b, a.legendVisible);
-            TITLE_VISIBLE.set(b, a.titleVisible);
-            AXIS_VISIBLE.set(b, a.axisVisible);
-            TITLE.set(b, a.title);
-            LINES_THICKNESS.set(b, a.linesThickness);
-            COLOR_SCHEME_NAME.set(b, a.colorSchemeName);
-            ZOOM.set(b, a.zoom);
+            LEGEND_VISIBLE.set(b::parameter, a.legendVisible);
+            TITLE_VISIBLE.set(b::parameter, a.titleVisible);
+            AXIS_VISIBLE.set(b::parameter, a.axisVisible);
+            TITLE.set(b::parameter, a.title);
+            LINES_THICKNESS.set(b::parameter, a.linesThickness);
+            COLOR_SCHEME_NAME.set(b::parameter, a.colorSchemeName);
+            ZOOM.set(b::parameter, a.zoom);
             return b.build();
         }
 
         @Override
-        protected InternalTsChartConfig doBackward(Config config) {
+        public InternalTsChartConfig doBackward(Config config) {
             Preconditions.checkArgument(DOMAIN.equals(config.getDomain()), "Not produced here");
             InternalTsChartConfig result = new InternalTsChartConfig();
-            result.legendVisible = LEGEND_VISIBLE.get(config);
-            result.titleVisible = TITLE_VISIBLE.get(config);
-            result.axisVisible = AXIS_VISIBLE.get(config);
-            result.title = TITLE.get(config);
-            result.linesThickness = LINES_THICKNESS.get(config);
-            result.colorSchemeName = COLOR_SCHEME_NAME.get(config);
-            result.zoom = ZOOM.get(config);
+            result.legendVisible = LEGEND_VISIBLE.get(config::getParameter);
+            result.titleVisible = TITLE_VISIBLE.get(config::getParameter);
+            result.axisVisible = AXIS_VISIBLE.get(config::getParameter);
+            result.title = TITLE.get(config::getParameter);
+            result.linesThickness = LINES_THICKNESS.get(config::getParameter);
+            result.colorSchemeName = COLOR_SCHEME_NAME.get(config::getParameter);
+            result.zoom = ZOOM.get(config::getParameter);
             return result;
         }
     }

@@ -29,7 +29,6 @@ import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import demetra.ui.components.JTsGrid;
 import java.awt.Image;
 import java.beans.BeanInfo;
-import java.io.Serializable;
 import javax.swing.Icon;
 import org.netbeans.core.spi.multiview.*;
 import org.openide.util.HelpCtx;
@@ -87,7 +86,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
     }
 
     @lombok.AllArgsConstructor
-    private static final class ChartTab implements MultiViewDescription, Serializable {
+    private static final class ChartTab implements MultiViewDescription {
 
         private final Ts ts;
 
@@ -132,7 +131,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
     }
 
     @lombok.AllArgsConstructor
-    private static final class GridTab implements MultiViewDescription, Serializable {
+    private static final class GridTab implements MultiViewDescription {
 
         private final Ts ts;
 

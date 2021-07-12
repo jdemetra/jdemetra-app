@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.x13.actions;
 
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.interchange.ExportAction;
 import ec.nbdemetra.ui.interchange.Exportable;
 import ec.nbdemetra.ws.WorkspaceItem;
@@ -119,7 +119,7 @@ public class ExportX13Spec extends NodeAction implements Presenter.Popup {
 
             IFormatter<XmlInformationSet> formatter = Formatters.onJAXB(XmlInformationSet.class, true);
             Config.Builder b = Config.builder(X13Specification.class.getName(), input.getDisplayName(), "1.0.0")
-                    .put("specification", formatter.formatAsString(xmlSet));
+                    .parameter("specification", formatter.formatAsString(xmlSet));
             return b.build();
         }
     }

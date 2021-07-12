@@ -16,20 +16,14 @@
  */
 package ec.nbdemetra.ui.sa.diagnostics;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.CoherenceDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.CoherenceDiagnosticsFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.BaseException;
 import java.awt.Image;
 import java.beans.IntrospectionException;
@@ -40,17 +34,27 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.IntProperty;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Philippe Charles
  */
 @ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
-public final class CoherenceDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, Resetable {
+public final class CoherenceDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements Configurable, Persistable, demetra.ui.ConfigEditor, Resetable {
 
     private static final String NAME = "CoherenceDiagnostics";
 
-    private final Configurator<CoherenceDiagnosticsFactory> configurator = createConfigurator();
+    private final BeanConfigurator<CoherenceDiagnosticsConfiguration, CoherenceDiagnosticsFactory> configurator = createConfigurator();
 
     @Override
     public String getName() {
@@ -81,6 +85,11 @@ public final class CoherenceDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
     @Override
     public Config editConfig(Config config) throws IllegalArgumentException {
         return configurator.editConfig(config);
+    }
+
+    @Override
+    public void configure() {
+        Configurable.configure(this, this);
     }
 
     @Override
@@ -172,11 +181,11 @@ public final class CoherenceDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
         return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
     }
 
-    private static Configurator<CoherenceDiagnosticsFactory> createConfigurator() {
-        return new ConfigHandler().toConfigurator(new ConfigConverter(), new ConfigEditor());
+    private static BeanConfigurator<CoherenceDiagnosticsConfiguration, CoherenceDiagnosticsFactory> createConfigurator() {
+        return new BeanConfigurator<>(new ConfigHandler(), new ConfigConverter(), new ConfigEditor());
     }
 
-    private static final class ConfigHandler extends BeanHandler<CoherenceDiagnosticsConfiguration, CoherenceDiagnosticsFactory> {
+    private static final class ConfigHandler implements BeanHandler<CoherenceDiagnosticsConfiguration, CoherenceDiagnosticsFactory> {
 
         @Override
         public CoherenceDiagnosticsConfiguration loadBean(CoherenceDiagnosticsFactory resource) {
@@ -189,44 +198,44 @@ public final class CoherenceDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
         }
     }
 
-    private static final class ConfigConverter extends Converter<CoherenceDiagnosticsConfiguration, Config> {
+    private static final class ConfigConverter implements Converter<CoherenceDiagnosticsConfiguration, Config> {
 
-        private final IParam<Config, Boolean> enabledParam = Params.onBoolean(true, "enabled");
-        private final IParam<Config, Double> toleranceParam = Params.onDouble(1e-3, "tolerance");
-        private final IParam<Config, Double> errorParam = Params.onDouble(.5, "error");
-        private final IParam<Config, Double> severeParam = Params.onDouble(.1, "severe");
-        private final IParam<Config, Double> badParam = Params.onDouble(.05, "bad");
-        private final IParam<Config, Double> uncertainParam = Params.onDouble(.01, "uncertain");
-        private final IParam<Config, Integer> shortSeriesParam = Params.onInteger(7, "shortSeries");
+        private final BooleanProperty enabledParam = BooleanProperty.of("enabled", true);
+        private final Property<Double> toleranceParam = Property.of("tolerance", 1e-3, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> errorParam = Property.of("error", .5, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> severeParam = Property.of("severe", .1, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> badParam = Property.of("bad", .05, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> uncertainParam = Property.of("uncertain", .01, Parser.onDouble(), Formatter.onDouble());
+        private final IntProperty shortSeriesParam = IntProperty.of("shortSeries", 7);
 
         @Override
-        protected Config doForward(CoherenceDiagnosticsConfiguration a) {
+        public Config doForward(CoherenceDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(NAME, "INSTANCE", "20151008");
-            enabledParam.set(result, a.isEnabled());
-            toleranceParam.set(result, a.getTolerance());
-            errorParam.set(result, a.getError());
-            severeParam.set(result, a.getSevere());
-            badParam.set(result, a.getBad());
-            uncertainParam.set(result, a.getUncertain());
-            shortSeriesParam.set(result, a.getShortSeries());
+            enabledParam.set(result::parameter, a.isEnabled());
+            toleranceParam.set(result::parameter, a.getTolerance());
+            errorParam.set(result::parameter, a.getError());
+            severeParam.set(result::parameter, a.getSevere());
+            badParam.set(result::parameter, a.getBad());
+            uncertainParam.set(result::parameter, a.getUncertain());
+            shortSeriesParam.set(result::parameter, a.getShortSeries());
             return result.build();
         }
 
         @Override
-        protected CoherenceDiagnosticsConfiguration doBackward(Config b) {
+        public CoherenceDiagnosticsConfiguration doBackward(Config b) {
             CoherenceDiagnosticsConfiguration result = new CoherenceDiagnosticsConfiguration();
-            result.setEnabled(enabledParam.get(b));
-            result.setTolerance(toleranceParam.get(b));
-            result.setError(errorParam.get(b));
-            result.setSevere(severeParam.get(b));
-            result.setBad(badParam.get(b));
-            result.setUncertain(uncertainParam.get(b));
-            result.setShortSeries(shortSeriesParam.get(b));
+            result.setEnabled(enabledParam.get(b::getParameter));
+            result.setTolerance(toleranceParam.get(b::getParameter));
+            result.setError(errorParam.get(b::getParameter));
+            result.setSevere(severeParam.get(b::getParameter));
+            result.setBad(badParam.get(b::getParameter));
+            result.setUncertain(uncertainParam.get(b::getParameter));
+            result.setShortSeries(shortSeriesParam.get(b::getParameter));
             return result;
         }
     }
 
-    private static final class ConfigEditor implements IBeanEditor {
+    private static final class ConfigEditor implements BeanEditor {
 
         @Messages({"coherenceDiagnostics.edit.title=Edit basic checks",
             "coherenceDiagnostics.edit.errorTitle=Invalid Input",

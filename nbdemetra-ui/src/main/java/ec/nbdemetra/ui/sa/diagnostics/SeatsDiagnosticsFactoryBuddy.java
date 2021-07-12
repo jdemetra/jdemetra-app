@@ -16,20 +16,14 @@
  */
 package ec.nbdemetra.ui.sa.diagnostics;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.SeatsDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.SeatsDiagnosticsFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.BaseException;
 import java.awt.Image;
 import java.beans.IntrospectionException;
@@ -40,17 +34,26 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Laurent Jadoul
  */
 @ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
-public final class SeatsDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, Resetable {
+public final class SeatsDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements Configurable, Persistable, demetra.ui.ConfigEditor, Resetable {
 
     private static final String NAME = "SeatsDiagnostics";
 
-    private final Configurator<SeatsDiagnosticsFactory> configurator = createConfigurator();
+    private final BeanConfigurator<SeatsDiagnosticsConfiguration, SeatsDiagnosticsFactory> configurator = createConfigurator();
 
     @Override
     public String getName() {
@@ -83,7 +86,12 @@ public final class SeatsDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBudd
         return configurator.editConfig(config);
     }
 
-        @Override
+    @Override
+    public void configure() {
+        Configurable.configure(this, this);
+    }
+
+    @Override
     public void reset() {
         lookup().setProperties(new SeatsDiagnosticsConfiguration());
     }
@@ -140,11 +148,11 @@ public final class SeatsDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBudd
         return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
     }
 
-    private static Configurator<SeatsDiagnosticsFactory> createConfigurator() {
-        return new ConfigHandler().toConfigurator(new ConfigConverter(), new ConfigEditor());
+    private static BeanConfigurator<SeatsDiagnosticsConfiguration, SeatsDiagnosticsFactory> createConfigurator() {
+        return new BeanConfigurator<>(new ConfigHandler(), new ConfigConverter(), new ConfigEditor());
     }
 
-    private static final class ConfigHandler extends BeanHandler<SeatsDiagnosticsConfiguration, SeatsDiagnosticsFactory> {
+    private static final class ConfigHandler implements BeanHandler<SeatsDiagnosticsConfiguration, SeatsDiagnosticsFactory> {
 
         @Override
         public SeatsDiagnosticsConfiguration loadBean(SeatsDiagnosticsFactory resource) {
@@ -157,32 +165,32 @@ public final class SeatsDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBudd
         }
     }
 
-    private static final class ConfigConverter extends Converter<SeatsDiagnosticsConfiguration, Config> {
+    private static final class ConfigConverter implements Converter<SeatsDiagnosticsConfiguration, Config> {
 
-        private final IParam<Config, Boolean> enabledParam = Params.onBoolean(true, "enabled");
-        private final IParam<Config, Double> badParam = Params.onDouble(.005, "bad");
-        private final IParam<Config, Double> uncertainParam = Params.onDouble(.05, "uncertain");
+        private final BooleanProperty enabledParam = BooleanProperty.of("enabled", true);
+        private final Property<Double> badParam = Property.of("bad", .005, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> uncertainParam = Property.of("uncertain", .05, Parser.onDouble(), Formatter.onDouble());
 
         @Override
-        protected Config doForward(SeatsDiagnosticsConfiguration a) {
+        public Config doForward(SeatsDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(NAME, "INSTANCE", "20151008");
-            enabledParam.set(result, a.isEnabled());
-            badParam.set(result, a.getBad());
-            uncertainParam.set(result, a.getUncertain());
+            enabledParam.set(result::parameter, a.isEnabled());
+            badParam.set(result::parameter, a.getBad());
+            uncertainParam.set(result::parameter, a.getUncertain());
             return result.build();
         }
 
         @Override
-        protected SeatsDiagnosticsConfiguration doBackward(Config b) {
+        public SeatsDiagnosticsConfiguration doBackward(Config b) {
             SeatsDiagnosticsConfiguration result = new SeatsDiagnosticsConfiguration();
-            result.setEnabled(enabledParam.get(b));
-            result.setBad(badParam.get(b));
-            result.setUncertain(uncertainParam.get(b));
+            result.setEnabled(enabledParam.get(b::getParameter));
+            result.setBad(badParam.get(b::getParameter));
+            result.setUncertain(uncertainParam.get(b::getParameter));
             return result;
         }
     }
 
-    private static final class ConfigEditor implements IBeanEditor {
+    private static final class ConfigEditor implements BeanEditor {
 
         @Messages({"seatsDiagnostics.edit.title=Edit Seats",
             "seatsDiagnostics.edit.errorTitle=Invalid Input",
@@ -197,11 +205,11 @@ public final class SeatsDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBudd
                     return false;
                 }
                 try {
-                    ((SeatsDiagnosticsConfiguration)bean).check();
+                    ((SeatsDiagnosticsConfiguration) bean).check();
                     return true;
                 } catch (BaseException ex) {
                     String message = ex.getMessage() + Bundle.seatsDiagnostics_edit_errorMessage();
-                    if(JOptionPane.showConfirmDialog(null, message , Bundle.seatsDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION){
+                    if (JOptionPane.showConfirmDialog(null, message, Bundle.seatsDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
                         return false;
                     }
                 }

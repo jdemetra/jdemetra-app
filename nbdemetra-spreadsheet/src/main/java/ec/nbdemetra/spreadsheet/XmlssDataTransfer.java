@@ -20,10 +20,9 @@ import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractBean;
 import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractBeanEditor;
 import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractConverter;
 import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.Resource;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
-import ec.nbdemetra.ui.IConfigurable;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
+import demetra.ui.ConfigEditor;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.xmlss.XmlssBookFactory;
 import java.awt.datatransfer.DataFlavor;
@@ -34,7 +33,10 @@ import java.io.IOException;
 import java.util.function.Supplier;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.OldDataTransferSpi;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
 import demetra.ui.datatransfer.DataTransferSpi;
+import demetra.ui.beans.BeanConfigurator;
 import org.openide.util.lookup.ServiceProviders;
 
 /**
@@ -47,18 +49,18 @@ import org.openide.util.lookup.ServiceProviders;
     @ServiceProvider(service = DataTransferSpi.class, position = 1000)
     ,@ServiceProvider(service = OldDataTransferSpi.class, position = 1000, supersedes = {"ec.tss.datatransfer.impl.XmlssTssTransferHandler"})
 })
-public final class XmlssDataTransfer implements DataTransferSpi, OldDataTransferSpi, IConfigurable {
+public final class XmlssDataTransfer implements DataTransferSpi, OldDataTransferSpi, Configurable, Persistable, ConfigEditor {
 
     private final DataFlavor dataFlavor;
     @lombok.experimental.Delegate
     private final SpreadSheetTssTransferSupport support;
-    private final Configurator<XmlssDataTransfer> configurator;
+    private final BeanConfigurator<XmlssBean, XmlssDataTransfer> configurator;
     private XmlssBean config;
 
     public XmlssDataTransfer() {
         this.dataFlavor = createDataFlavor();
         this.support = new SpreadSheetTssTransferSupport(new ResourceImpl(() -> config));
-        this.configurator = new XmlssBeanHandler().toConfigurator(new XmlssConverter(), new XmlssBeanEditor());
+        this.configurator = new BeanConfigurator<>(new XmlssBeanHandler(), new XmlssConverter(), new XmlssBeanEditor());
         this.config = new XmlssBean();
     }
 
@@ -90,6 +92,11 @@ public final class XmlssDataTransfer implements DataTransferSpi, OldDataTransfer
     @Override
     public Config editConfig(Config config) {
         return configurator.editConfig(config);
+    }
+
+    @Override
+    public void configure() {
+        Configurable.configure(this, this);
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
@@ -149,7 +156,7 @@ public final class XmlssDataTransfer implements DataTransferSpi, OldDataTransfer
     public static final class XmlssBean extends AbstractBean {
     }
 
-    private static final class XmlssBeanHandler extends BeanHandler<XmlssBean, XmlssDataTransfer> {
+    private static final class XmlssBeanHandler implements BeanHandler<XmlssBean, XmlssDataTransfer> {
 
         @Override
         public XmlssBean loadBean(XmlssDataTransfer resource) {

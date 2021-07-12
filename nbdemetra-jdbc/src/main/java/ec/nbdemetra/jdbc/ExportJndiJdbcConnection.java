@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.jdbc;
 
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.interchange.ExportAction;
 import ec.nbdemetra.ui.interchange.Exportable;
 import java.util.ArrayList;
@@ -85,10 +85,10 @@ public final class ExportJndiJdbcConnection extends NodeAction implements Presen
     @NonNull
     private static Config toConfig(DriverBasedConfig conn) {
         Config.Builder result = Config.builder(DriverBasedConfig.class.getName(), conn.getDisplayName(), "")
-                .put("driverClass", conn.getDriverClass())
-                .put("databaseUrl", conn.getDatabaseUrl())
-                .put("schema", conn.getSchema());
-        conn.forEach((k, v) -> result.put("prop_" + k, v));
+                .parameter("driverClass", conn.getDriverClass())
+                .parameter("databaseUrl", conn.getDatabaseUrl())
+                .parameter("schema", conn.getSchema());
+        conn.forEach((k, v) -> result.parameter("prop_" + k, v));
         return result.build();
     }
 }

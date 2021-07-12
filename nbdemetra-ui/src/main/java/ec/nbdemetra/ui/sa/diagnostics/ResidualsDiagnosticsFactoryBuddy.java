@@ -16,20 +16,14 @@
  */
 package ec.nbdemetra.ui.sa.diagnostics;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.ResidualsDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.ResidualsDiagnosticsFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.BaseException;
 import java.awt.Image;
 import java.beans.IntrospectionException;
@@ -40,17 +34,26 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Laurent Jadoul
  */
 @ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
-public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, Resetable {
+public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements Configurable, Persistable, demetra.ui.ConfigEditor, Resetable {
 
     private static final String NAME = "ResidualsDiagnostics";
 
-    private final Configurator<ResidualsDiagnosticsFactory> configurator = createConfigurator();
+    private final BeanConfigurator<ResidualsDiagnosticsConfiguration, ResidualsDiagnosticsFactory> configurator = createConfigurator();
 
     @Override
     public String getName() {
@@ -81,6 +84,11 @@ public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
     @Override
     public Config editConfig(Config config) throws IllegalArgumentException {
         return configurator.editConfig(config);
+    }
+
+    @Override
+    public void configure() {
+        Configurable.configure(this, this);
     }
 
     @Override
@@ -183,11 +191,11 @@ public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
         return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
     }
 
-    private static Configurator<ResidualsDiagnosticsFactory> createConfigurator() {
-        return new ConfigHandler().toConfigurator(new ConfigConverter(), new ConfigEditor());
+    private static BeanConfigurator<ResidualsDiagnosticsConfiguration, ResidualsDiagnosticsFactory> createConfigurator() {
+        return new BeanConfigurator<>(new ConfigHandler(), new ConfigConverter(), new ConfigEditor());
     }
 
-    private static final class ConfigHandler extends BeanHandler<ResidualsDiagnosticsConfiguration, ResidualsDiagnosticsFactory> {
+    private static final class ConfigHandler implements BeanHandler<ResidualsDiagnosticsConfiguration, ResidualsDiagnosticsFactory> {
 
         @Override
         public ResidualsDiagnosticsConfiguration loadBean(ResidualsDiagnosticsFactory resource) {
@@ -200,50 +208,50 @@ public final class ResidualsDiagnosticsFactoryBuddy extends SaDiagnosticsFactory
         }
     }
 
-    private static final class ConfigConverter extends Converter<ResidualsDiagnosticsConfiguration, Config> {
+    private static final class ConfigConverter implements Converter<ResidualsDiagnosticsConfiguration, Config> {
 
-        private final IParam<Config, Boolean> enabledParam = Params.onBoolean(true, "enabled");
-        private final IParam<Config, Double> normalityBadParam = Params.onDouble(.01, "normalityBad");
-        private final IParam<Config, Double> normalityUncertainParam = Params.onDouble(.1, "normalityUncertain");
-        private final IParam<Config, Double> specTDSevereParam = Params.onDouble(.001, "specTDSevereP");
-        private final IParam<Config, Double> specTDBadParam = Params.onDouble(.01, "specTDBad");
-        private final IParam<Config, Double> specTDUncertainParam = Params.onDouble(.1, "specTDUncertain");
-        private final IParam<Config, Double> specSeasSevereParam = Params.onDouble(.001, "specSeasSevere");
-        private final IParam<Config, Double> specSeasBadParam = Params.onDouble(.01, "specSeasBad");
-        private final IParam<Config, Double> specSeasUncertainParam = Params.onDouble(.1, "specSeasUncertain");
+        private final BooleanProperty enabledParam = BooleanProperty.of("enabled", true);
+        private final Property<Double> normalityBadParam = Property.of("normalityBad", .01, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> normalityUncertainParam = Property.of("normalityUncertain", .1, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> specTDSevereParam = Property.of("specTDSevereP", .001, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> specTDBadParam = Property.of("specTDBad", .01, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> specTDUncertainParam = Property.of("specTDUncertain", .1, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> specSeasSevereParam = Property.of("specSeasSevere", .001, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> specSeasBadParam = Property.of("specSeasBad", .01, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> specSeasUncertainParam = Property.of("specSeasUncertain", .1, Parser.onDouble(), Formatter.onDouble());
 
         @Override
-        protected Config doForward(ResidualsDiagnosticsConfiguration a) {
+        public Config doForward(ResidualsDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(NAME, "INSTANCE", "20151008");
-            enabledParam.set(result, a.isEnabled());
-            normalityBadParam.set(result, a.getNIIDBad());
-            normalityUncertainParam.set(result, a.getNIIDUncertain());
-            specTDSevereParam.set(result, a.getSpecTDSevere());
-            specTDBadParam.set(result, a.getSpecTDBad());
-            specTDUncertainParam.set(result, a.getSpecTDUncertain());
-            specSeasSevereParam.set(result, a.getSpecSeasSevere());
-            specSeasBadParam.set(result, a.getSpecSeasBad());
-            specSeasUncertainParam.set(result, a.getSpecSeasUncertain());
+            enabledParam.set(result::parameter, a.isEnabled());
+            normalityBadParam.set(result::parameter, a.getNIIDBad());
+            normalityUncertainParam.set(result::parameter, a.getNIIDUncertain());
+            specTDSevereParam.set(result::parameter, a.getSpecTDSevere());
+            specTDBadParam.set(result::parameter, a.getSpecTDBad());
+            specTDUncertainParam.set(result::parameter, a.getSpecTDUncertain());
+            specSeasSevereParam.set(result::parameter, a.getSpecSeasSevere());
+            specSeasBadParam.set(result::parameter, a.getSpecSeasBad());
+            specSeasUncertainParam.set(result::parameter, a.getSpecSeasUncertain());
             return result.build();
         }
 
         @Override
-        protected ResidualsDiagnosticsConfiguration doBackward(Config b) {
+        public ResidualsDiagnosticsConfiguration doBackward(Config b) {
             ResidualsDiagnosticsConfiguration result = new ResidualsDiagnosticsConfiguration();
-            result.setEnabled(enabledParam.get(b));
-            result.setNIIDBad(normalityBadParam.get(b));
-            result.setNIIDUncertain(normalityUncertainParam.get(b));
-            result.setSpecTDSevere(specTDSevereParam.get(b));
-            result.setSpecTDBad(specTDBadParam.get(b));
-            result.setSpecTDUncertain(specTDUncertainParam.get(b));
-            result.setSpecSeasSevere(specSeasSevereParam.get(b));
-            result.setSpecSeasBad(specSeasBadParam.get(b));
-            result.setSpecSeasUncertain(specSeasUncertainParam.get(b));
+            result.setEnabled(enabledParam.get(b::getParameter));
+            result.setNIIDBad(normalityBadParam.get(b::getParameter));
+            result.setNIIDUncertain(normalityUncertainParam.get(b::getParameter));
+            result.setSpecTDSevere(specTDSevereParam.get(b::getParameter));
+            result.setSpecTDBad(specTDBadParam.get(b::getParameter));
+            result.setSpecTDUncertain(specTDUncertainParam.get(b::getParameter));
+            result.setSpecSeasSevere(specSeasSevereParam.get(b::getParameter));
+            result.setSpecSeasBad(specSeasBadParam.get(b::getParameter));
+            result.setSpecSeasUncertain(specSeasUncertainParam.get(b::getParameter));
             return result;
         }
     }
 
-    private static final class ConfigEditor implements IBeanEditor {
+    private static final class ConfigEditor implements BeanEditor {
 
         @Messages({"residualsDiagnostics.edit.title=Edit Regarima residuals",
             "residualsDiagnostics.edit.errorTitle=Invalid Input",

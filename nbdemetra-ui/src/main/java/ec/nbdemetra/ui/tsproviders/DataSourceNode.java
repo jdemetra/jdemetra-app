@@ -25,7 +25,7 @@ import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.TsManager;
 import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.interchange.Exportable;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.NodeAnnotator;
@@ -66,7 +66,7 @@ import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import demetra.ui.actions.Reloadable;
 import demetra.ui.actions.Renameable;
-import demetra.ui.actions.TsCollectable;
+import demetra.ui.TsCollectable;
 
 /**
  * A node that represents a DataSource.

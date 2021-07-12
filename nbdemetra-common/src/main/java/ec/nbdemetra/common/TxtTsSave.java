@@ -20,7 +20,7 @@ import com.google.common.io.Files;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.properties.PropertySheetDialogBuilder;
 import ec.nbdemetra.ui.SingleFileExporter;
@@ -42,6 +42,7 @@ import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.TsActionsSaveSpi;
+import nbbrd.io.text.Formatter;
 
 /**
  *
@@ -108,10 +109,10 @@ public final class TxtTsSave implements TsActionsSaveSpi {
         ph.progress("Creating content");
         TxtDataTransfer handler = new TxtDataTransfer();
         Config config = handler.getConfig().toBuilder()
-                .put("beginPeriod", options.beginPeriod)
-                .put("showDates", options.showDates)
-                .put("showTitle", options.showTitle)
-                .put("vertical", options.vertical)
+                .parameter("beginPeriod", Formatter.onBoolean().formatAsString(options.beginPeriod))
+                .parameter("showDates", Formatter.onBoolean().formatAsString(options.showDates))
+                .parameter("showTitle", Formatter.onBoolean().formatAsString(options.showTitle))
+                .parameter("vertical", Formatter.onBoolean().formatAsString(options.vertical))
                 .build();
         handler.setConfig(config);
         String stringContent = handler.tsCollectionToString(content);

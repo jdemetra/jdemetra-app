@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.ui.actions.Configurable;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.HasChart;
 import demetra.ui.components.parts.HasColorScheme;
@@ -24,7 +25,6 @@ import demetra.ui.components.parts.HasTsCollection;
 import static demetra.ui.components.PrintableWithPreview.PRINT_ACTION;
 import static demetra.ui.components.ResetableZoom.RESET_ZOOM_ACTION;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.ThemeSupport;
 import demetra.ui.util.ActionMaps;
 import demetra.ui.util.InputMaps;
@@ -385,7 +385,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
         result.add(HasTsCollectionCommands.newClearMenu(am, demetraUI));
 
         result.addSeparator();
-        JMenuItem item = new JMenuItem(am.get(IConfigurable.CONFIGURE_ACTION));
+        JMenuItem item = new JMenuItem(am.get(Configurable.CONFIGURE_ACTION));
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_COGS));
         item.setText("Configure...");
         result.add(item);

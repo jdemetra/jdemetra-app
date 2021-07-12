@@ -23,7 +23,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * @author Philippe Charles
  */
-public interface IBeanEditor {
+public interface BeanEditor {
 
     boolean editBean(@NonNull Object bean) throws IntrospectionException;
 

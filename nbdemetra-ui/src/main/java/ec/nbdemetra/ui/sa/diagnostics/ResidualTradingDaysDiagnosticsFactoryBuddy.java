@@ -16,20 +16,14 @@
  */
 package ec.nbdemetra.ui.sa.diagnostics;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.ResidualTradingDaysDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.ResidualTradingDaysDiagnosticsFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.BaseException;
 import java.awt.Image;
 import java.beans.IntrospectionException;
@@ -40,17 +34,27 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.IntProperty;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Laurent Jadoul
  */
 @ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
-public final class ResidualTradingDaysDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, Resetable {
+public final class ResidualTradingDaysDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements Configurable, Persistable, demetra.ui.ConfigEditor, Resetable {
 
     private static final String NAME = "ResidualTradingDaysDiagnostics";
 
-    private final Configurator<ResidualTradingDaysDiagnosticsFactory> configurator = createConfigurator();
+    private final BeanConfigurator<ResidualTradingDaysDiagnosticsConfiguration, ResidualTradingDaysDiagnosticsFactory> configurator = createConfigurator();
 
     @Override
     public String getName() {
@@ -84,6 +88,11 @@ public final class ResidualTradingDaysDiagnosticsFactoryBuddy extends SaDiagnost
     }
 
     @Override
+    public void configure() {
+        Configurable.configure(this, this);
+    }
+
+    @Override
     public void reset() {
         lookup().setProperties(new ResidualTradingDaysDiagnosticsConfiguration());
     }
@@ -112,8 +121,7 @@ public final class ResidualTradingDaysDiagnosticsFactoryBuddy extends SaDiagnost
         "residualTradingDaysDiagnostics.uncertain.display=Uncertain",
         "residualTradingDaysDiagnostics.uncertain.description=Uncertain",
         "residualTradingDaysDiagnostics.test.display=Test",
-        "residualTradingDaysDiagnostics.thresholds.display=Thresholds",
-    })
+        "residualTradingDaysDiagnostics.thresholds.display=Thresholds",})
     private static Sheet createSheet(ResidualTradingDaysDiagnosticsConfiguration config) {
         Sheet sheet = new Sheet();
         NodePropertySetBuilder b = new NodePropertySetBuilder();
@@ -148,14 +156,14 @@ public final class ResidualTradingDaysDiagnosticsFactoryBuddy extends SaDiagnost
                 .display(Bundle.residualTradingDaysDiagnostics_bad_display())
                 .description(Bundle.residualTradingDaysDiagnostics_bad_description())
                 .add();
- 
+
         b.withDouble()
                 .select(config, "severeThreshold")
                 .display(Bundle.residualTradingDaysDiagnostics_severe_display())
                 .description(Bundle.residualTradingDaysDiagnostics_severe_description())
                 .add();
         sheet.put(b.build());
-  
+
         return sheet;
     }
 
@@ -163,11 +171,11 @@ public final class ResidualTradingDaysDiagnosticsFactoryBuddy extends SaDiagnost
         return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
     }
 
-    private static Configurator<ResidualTradingDaysDiagnosticsFactory> createConfigurator() {
-        return new ConfigHandler().toConfigurator(new ConfigConverter(), new ConfigEditor());
+    private static BeanConfigurator<ResidualTradingDaysDiagnosticsConfiguration, ResidualTradingDaysDiagnosticsFactory> createConfigurator() {
+        return new BeanConfigurator<>(new ConfigHandler(), new ConfigConverter(), new ConfigEditor());
     }
 
-    private static final class ConfigHandler extends BeanHandler<ResidualTradingDaysDiagnosticsConfiguration, ResidualTradingDaysDiagnosticsFactory> {
+    private static final class ConfigHandler implements BeanHandler<ResidualTradingDaysDiagnosticsConfiguration, ResidualTradingDaysDiagnosticsFactory> {
 
         @Override
         public ResidualTradingDaysDiagnosticsConfiguration loadBean(ResidualTradingDaysDiagnosticsFactory resource) {
@@ -180,41 +188,41 @@ public final class ResidualTradingDaysDiagnosticsFactoryBuddy extends SaDiagnost
         }
     }
 
-    private static final class ConfigConverter extends Converter<ResidualTradingDaysDiagnosticsConfiguration, Config> {
+    private static final class ConfigConverter implements Converter<ResidualTradingDaysDiagnosticsConfiguration, Config> {
 
-        private final IParam<Config, Boolean> enabledParam = Params.onBoolean(true, "enabled");
-        private final IParam<Config, Boolean> arParam = Params.onBoolean(true, "ar");
-        private final IParam<Config, Integer> spanParam = Params.onInteger(8, "span");
-        private final IParam<Config, Double> severeParam = Params.onDouble(.001, "severe");
-        private final IParam<Config, Double> badParam = Params.onDouble(.01, "bad");
-        private final IParam<Config, Double> uncertainParam = Params.onDouble(.1, "uncertain");
+        private final BooleanProperty enabledParam = BooleanProperty.of("enabled", true);
+        private final BooleanProperty arParam = BooleanProperty.of("ar", true);
+        private final IntProperty spanParam = IntProperty.of("span", 8);
+        private final Property<Double> severeParam = Property.of("severe", .001, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> badParam = Property.of("bad", .01, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> uncertainParam = Property.of("uncertain", .1, Parser.onDouble(), Formatter.onDouble());
 
         @Override
-        protected Config doForward(ResidualTradingDaysDiagnosticsConfiguration a) {
+        public Config doForward(ResidualTradingDaysDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(NAME, "INSTANCE", "20170209");
-            enabledParam.set(result, a.isEnabled());
-            arParam.set(result, a.isArModelling());
-            spanParam.set(result, a.getSpan());
-            badParam.set(result, a.getBadThreshold());
-            uncertainParam.set(result, a.getUncertainThreshold());
-            severeParam.set(result, a.getSevereThreshold());
+            enabledParam.set(result::parameter, a.isEnabled());
+            arParam.set(result::parameter, a.isArModelling());
+            spanParam.set(result::parameter, a.getSpan());
+            badParam.set(result::parameter, a.getBadThreshold());
+            uncertainParam.set(result::parameter, a.getUncertainThreshold());
+            severeParam.set(result::parameter, a.getSevereThreshold());
             return result.build();
         }
 
         @Override
-        protected ResidualTradingDaysDiagnosticsConfiguration doBackward(Config b) {
+        public ResidualTradingDaysDiagnosticsConfiguration doBackward(Config b) {
             ResidualTradingDaysDiagnosticsConfiguration result = new ResidualTradingDaysDiagnosticsConfiguration();
-            result.setEnabled(enabledParam.get(b));
-            result.setArModelling(arParam.get(b));
-            result.setSpan(spanParam.get(b));
-            result.setSevereThreshold(severeParam.get(b));
-            result.setBadThreshold(badParam.get(b));
-            result.setUncertainThreshold(uncertainParam.get(b));
+            result.setEnabled(enabledParam.get(b::getParameter));
+            result.setArModelling(arParam.get(b::getParameter));
+            result.setSpan(spanParam.get(b::getParameter));
+            result.setSevereThreshold(severeParam.get(b::getParameter));
+            result.setBadThreshold(badParam.get(b::getParameter));
+            result.setUncertainThreshold(uncertainParam.get(b::getParameter));
             return result;
         }
     }
 
-    private static final class ConfigEditor implements IBeanEditor {
+    private static final class ConfigEditor implements BeanEditor {
 
         @Messages({"residualTradingDaysDiagnostics.edit.title=Edit residual trading days diagnostics",
             "residualTradingDaysDiagnostics.edit.errorTitle=Invalid Input",

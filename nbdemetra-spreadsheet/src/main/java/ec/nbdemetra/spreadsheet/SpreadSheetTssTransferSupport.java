@@ -16,14 +16,13 @@
  */
 package ec.nbdemetra.spreadsheet;
 
-import com.google.common.base.Converter;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import ec.nbdemetra.ui.Config;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
+import ec.nbdemetra.ui.DataFormatParam;
 import ec.tss.TsCollectionInformation;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
@@ -31,8 +30,6 @@ import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
 import ec.tss.tsproviders.spreadsheet.engine.TsExportOptions;
 import ec.tss.tsproviders.spreadsheet.engine.TsImportOptions;
 import ec.tss.tsproviders.utils.DataFormat;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.timeseries.TsAggregationType;
@@ -42,9 +39,15 @@ import ec.util.spreadsheet.helpers.ArraySheet;
 import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.io.IOException;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
 
 /**
  *
@@ -159,7 +162,7 @@ final class SpreadSheetTssTransferSupport {
         }
     }
 
-    public abstract static class AbstractBeanEditor implements IBeanEditor {
+    public abstract static class AbstractBeanEditor implements BeanEditor {
 
         abstract protected String getTitle();
 
@@ -234,64 +237,64 @@ final class SpreadSheetTssTransferSupport {
         }
     }
 
-    public abstract static class AbstractConverter<T extends AbstractBean> extends Converter<T, Config> {
+    public abstract static class AbstractConverter<T extends AbstractBean> implements Converter<T, Config> {
 
-        private static final IParam<Config, Boolean> IMPORT_TS = Params.onBoolean(true, "importEnabled");
-        private static final IParam<Config, Boolean> EXPORT_TS = Params.onBoolean(true, "exportEnabled");
-        private static final IParam<Config, DataFormat> DATAFORMAT = Params.onDataFormat(DataFormat.DEFAULT, "locale", "datePattern", "numberPattern");
-        private static final IParam<Config, TsFrequency> FREQUENCY = Params.onEnum(TsFrequency.Undefined, "frequency");
-        private static final IParam<Config, TsAggregationType> AGGREGATION_TYPE = Params.onEnum(TsAggregationType.None, "aggregationType");
-        private static final IParam<Config, Boolean> CLEAN_MISSING = Params.onBoolean(true, "cleanMissing");
-        private static final IParam<Config, Boolean> VERTICAL = Params.onBoolean(true, "vertical");
-        private static final IParam<Config, Boolean> SHOW_DATES = Params.onBoolean(true, "showDates");
-        private static final IParam<Config, Boolean> SHOW_TITLE = Params.onBoolean(true, "showTitle");
-        private static final IParam<Config, Boolean> BEGIN_PERIOD = Params.onBoolean(true, "beginPeriod");
-        private static final IParam<Config, Boolean> IMPORT_MATRIX = Params.onBoolean(true, "importMatrix");
-        private static final IParam<Config, Boolean> EXPORT_MATRIX = Params.onBoolean(true, "exportMatrix");
-        private static final IParam<Config, Boolean> IMPORT_TABLE = Params.onBoolean(true, "importTable");
-        private static final IParam<Config, Boolean> EXPORT_TABLE = Params.onBoolean(true, "exportTable");
+        private static final BooleanProperty IMPORT_TS = BooleanProperty.of( "importEnabled", true);
+        private static final BooleanProperty EXPORT_TS = BooleanProperty.of( "exportEnabled", true);
+        private static final Config.Converter<DataFormat> DATAFORMAT = new DataFormatParam(DataFormat.DEFAULT, "locale", "datePattern", "numberPattern");
+        private static final Property<TsFrequency> FREQUENCY = Property.of("frequency", TsFrequency.Undefined, Parser.onEnum(TsFrequency.class), Formatter.onEnum());
+        private static final Property<TsAggregationType> AGGREGATION_TYPE = Property.of("aggregationType", TsAggregationType.None, Parser.onEnum(TsAggregationType.class), Formatter.onEnum());
+        private static final BooleanProperty CLEAN_MISSING = BooleanProperty.of( "cleanMissing", true);
+        private static final BooleanProperty VERTICAL = BooleanProperty.of( "vertical", true);
+        private static final BooleanProperty SHOW_DATES = BooleanProperty.of( "showDates", true);
+        private static final BooleanProperty SHOW_TITLE = BooleanProperty.of( "showTitle", true);
+        private static final BooleanProperty BEGIN_PERIOD = BooleanProperty.of( "beginPeriod", true);
+        private static final BooleanProperty IMPORT_MATRIX = BooleanProperty.of( "importMatrix", true);
+        private static final BooleanProperty EXPORT_MATRIX = BooleanProperty.of( "exportMatrix", true);
+        private static final BooleanProperty IMPORT_TABLE = BooleanProperty.of( "importTable", true);
+        private static final BooleanProperty EXPORT_TABLE = BooleanProperty.of( "exportTable", true);
 
         abstract protected Config.Builder newBuilder();
 
         abstract protected T newBean();
 
         @Override
-        protected Config doForward(T bean) {
+        public Config doForward(T bean) {
             Config.Builder b = newBuilder();
-            IMPORT_TS.set(b, bean.importTs);
+            IMPORT_TS.set(b::parameter, bean.importTs);
             DATAFORMAT.set(b, bean.dataFormat);
-            FREQUENCY.set(b, bean.frequency);
-            AGGREGATION_TYPE.set(b, bean.aggregationType);
-            CLEAN_MISSING.set(b, bean.cleanMissing);
-            EXPORT_TS.set(b, bean.exportTs);
-            VERTICAL.set(b, bean.vertical);
-            SHOW_DATES.set(b, bean.showDates);
-            SHOW_TITLE.set(b, bean.showTitle);
-            BEGIN_PERIOD.set(b, bean.beginPeriod);
-            IMPORT_MATRIX.set(b, bean.importMatrix);
-            EXPORT_MATRIX.set(b, bean.exportMatrix);
-            IMPORT_TABLE.set(b, bean.importTable);
-            EXPORT_TABLE.set(b, bean.exportTable);
+            FREQUENCY.set(b::parameter, bean.frequency);
+            AGGREGATION_TYPE.set(b::parameter, bean.aggregationType);
+            CLEAN_MISSING.set(b::parameter, bean.cleanMissing);
+            EXPORT_TS.set(b::parameter, bean.exportTs);
+            VERTICAL.set(b::parameter, bean.vertical);
+            SHOW_DATES.set(b::parameter, bean.showDates);
+            SHOW_TITLE.set(b::parameter, bean.showTitle);
+            BEGIN_PERIOD.set(b::parameter, bean.beginPeriod);
+            IMPORT_MATRIX.set(b::parameter, bean.importMatrix);
+            EXPORT_MATRIX.set(b::parameter, bean.exportMatrix);
+            IMPORT_TABLE.set(b::parameter, bean.importTable);
+            EXPORT_TABLE.set(b::parameter, bean.exportTable);
             return b.build();
         }
 
         @Override
-        protected T doBackward(Config config) {
+        public T doBackward(Config config) {
             T result = newBean();
-            result.importTs = IMPORT_TS.get(config);
+            result.importTs = IMPORT_TS.get(config::getParameter);
             result.dataFormat = DATAFORMAT.get(config);
-            result.frequency = FREQUENCY.get(config);
-            result.aggregationType = AGGREGATION_TYPE.get(config);
-            result.cleanMissing = CLEAN_MISSING.get(config);
-            result.exportTs = EXPORT_TS.get(config);
-            result.vertical = VERTICAL.get(config);
-            result.showDates = SHOW_DATES.get(config);
-            result.showTitle = SHOW_TITLE.get(config);
-            result.beginPeriod = BEGIN_PERIOD.get(config);
-            result.importMatrix = IMPORT_MATRIX.get(config);
-            result.exportMatrix = EXPORT_MATRIX.get(config);
-            result.importTable = IMPORT_TABLE.get(config);
-            result.exportTable = EXPORT_TABLE.get(config);
+            result.frequency = FREQUENCY.get(config::getParameter);
+            result.aggregationType = AGGREGATION_TYPE.get(config::getParameter);
+            result.cleanMissing = CLEAN_MISSING.get(config::getParameter);
+            result.exportTs = EXPORT_TS.get(config::getParameter);
+            result.vertical = VERTICAL.get(config::getParameter);
+            result.showDates = SHOW_DATES.get(config::getParameter);
+            result.showTitle = SHOW_TITLE.get(config::getParameter);
+            result.beginPeriod = BEGIN_PERIOD.get(config::getParameter);
+            result.importMatrix = IMPORT_MATRIX.get(config::getParameter);
+            result.exportMatrix = EXPORT_MATRIX.get(config::getParameter);
+            result.importTable = IMPORT_TABLE.get(config::getParameter);
+            result.exportTable = EXPORT_TABLE.get(config::getParameter);
             return result;
         }
     }

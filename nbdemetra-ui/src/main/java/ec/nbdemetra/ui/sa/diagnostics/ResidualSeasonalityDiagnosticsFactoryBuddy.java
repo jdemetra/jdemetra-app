@@ -16,20 +16,14 @@
  */
 package ec.nbdemetra.ui.sa.diagnostics;
 
-import com.google.common.base.Converter;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
+import demetra.ui.beans.BeanHandler;
+import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.ResidualSeasonalityDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.ResidualSeasonalityDiagnosticsFactory;
-import ec.tss.tsproviders.utils.IParam;
-import ec.tss.tsproviders.utils.Params;
 import ec.tstoolkit.BaseException;
 import java.awt.Image;
 import java.beans.IntrospectionException;
@@ -40,17 +34,26 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
+import nbbrd.io.text.BooleanProperty;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+import nbbrd.io.text.Property;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  *
  * @author Laurent Jadoul
  */
 @ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
-public final class ResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements IConfigurable, Resetable {
+public final class ResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements Configurable, Persistable, demetra.ui.ConfigEditor, Resetable {
 
     private static final String NAME = "ResidualSeasonalityDiagnostics";
 
-    private final Configurator<ResidualSeasonalityDiagnosticsFactory> configurator = createConfigurator();
+    private final BeanConfigurator<ResidualSeasonalityDiagnosticsConfiguration, ResidualSeasonalityDiagnosticsFactory> configurator = createConfigurator();
 
     @Override
     public String getName() {
@@ -83,7 +86,12 @@ public final class ResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnost
         return configurator.editConfig(config);
     }
 
-        @Override
+    @Override
+    public void configure() {
+        Configurable.configure(this, this);
+    }
+
+    @Override
     public void reset() {
         lookup().setProperties(new ResidualSeasonalityDiagnosticsConfiguration());
     }
@@ -142,7 +150,7 @@ public final class ResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnost
                 .max(1.0)
                 .add();
         sheet.put(b.build());
-        
+
         b.reset("irrCat").display(Bundle.residualSeasonalityDiagnostics_irrCategory_display());
         b.withDouble()
                 .select(config, "irrSevere")
@@ -161,7 +169,7 @@ public final class ResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnost
                 .max(1.0)
                 .add();
         sheet.put(b.build());
-        
+
         b.reset("sa3Cat").display(Bundle.residualSeasonalityDiagnostics_sa3Category_display());
         b.withDouble()
                 .select(config, "SA3Severe")
@@ -188,12 +196,12 @@ public final class ResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnost
         return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
     }
 
-    private static Configurator<ResidualSeasonalityDiagnosticsFactory> createConfigurator() {
-        return new ConfigHandler().toConfigurator(new ConfigConverter(), new ConfigEditor());
+    private static BeanConfigurator<ResidualSeasonalityDiagnosticsConfiguration, ResidualSeasonalityDiagnosticsFactory> createConfigurator() {
+        return new BeanConfigurator<>(new ConfigHandler(), new ConfigConverter(), new ConfigEditor());
 
     }
 
-    private static final class ConfigHandler extends BeanHandler<ResidualSeasonalityDiagnosticsConfiguration, ResidualSeasonalityDiagnosticsFactory> {
+    private static final class ConfigHandler implements BeanHandler<ResidualSeasonalityDiagnosticsConfiguration, ResidualSeasonalityDiagnosticsFactory> {
 
         @Override
         public ResidualSeasonalityDiagnosticsConfiguration loadBean(ResidualSeasonalityDiagnosticsFactory resource) {
@@ -206,53 +214,53 @@ public final class ResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnost
         }
     }
 
-    private static final class ConfigConverter extends Converter<ResidualSeasonalityDiagnosticsConfiguration, Config> {
+    private static final class ConfigConverter implements Converter<ResidualSeasonalityDiagnosticsConfiguration, Config> {
 
-        private final IParam<Config, Boolean> enabledParam = Params.onBoolean(false, "enabled");
-        private final IParam<Config, Double> saSevereParam = Params.onDouble(.01, "sasevere");
-        private final IParam<Config, Double> saBadParam = Params.onDouble(.05, "saBad");
-        private final IParam<Config, Double> saUncertainParam = Params.onDouble(.1, "saUncertain");
-        private final IParam<Config, Double> irrSevereParam = Params.onDouble(.01, "irrSevere");
-        private final IParam<Config, Double> irrBadParam = Params.onDouble(.05, "irrBad");
-        private final IParam<Config, Double> irrUncertainParam = Params.onDouble(.1, "irrUncertain");
-        private final IParam<Config, Double> sa3SevereParam = Params.onDouble(.01, "sa3Severe");
-        private final IParam<Config, Double> sa3BadParam = Params.onDouble(.05, "sa3Bad");
-        private final IParam<Config, Double> sa3UncertainParam = Params.onDouble(.1, "sa3Uncertain");
+        private final BooleanProperty enabledParam = BooleanProperty.of("enabled", false);
+        private final Property<Double> saSevereParam = Property.of("sasevere", .01, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> saBadParam = Property.of("saBad", .05, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> saUncertainParam = Property.of("saUncertain", .1, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> irrSevereParam = Property.of("irrSevere", .01, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> irrBadParam = Property.of("irrBad", .05, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> irrUncertainParam = Property.of("irrUncertain", .1, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> sa3SevereParam = Property.of("sa3Severe", .01, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> sa3BadParam = Property.of("sa3Bad", .05, Parser.onDouble(), Formatter.onDouble());
+        private final Property<Double> sa3UncertainParam = Property.of("sa3Uncertain", .1, Parser.onDouble(), Formatter.onDouble());
 
         @Override
-        protected Config doForward(ResidualSeasonalityDiagnosticsConfiguration a) {
+        public Config doForward(ResidualSeasonalityDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(NAME, "INSTANCE", "20151008");
-            enabledParam.set(result, a.isEnabled());
-            saSevereParam.set(result, a.getSASevere());
-            saBadParam.set(result, a.getSABad());
-            saUncertainParam.set(result, a.getSAUncertain());
-            irrSevereParam.set(result, a.getIrrSevere());
-            irrBadParam.set(result, a.getIrrBad());
-            irrUncertainParam.set(result, a.getIrrUncertain());
-            sa3SevereParam.set(result, a.getSA3Severe());
-            sa3BadParam.set(result, a.getSA3Bad());
-            sa3UncertainParam.set(result, a.getSA3Uncertain());
+            enabledParam.set(result::parameter, a.isEnabled());
+            saSevereParam.set(result::parameter, a.getSASevere());
+            saBadParam.set(result::parameter, a.getSABad());
+            saUncertainParam.set(result::parameter, a.getSAUncertain());
+            irrSevereParam.set(result::parameter, a.getIrrSevere());
+            irrBadParam.set(result::parameter, a.getIrrBad());
+            irrUncertainParam.set(result::parameter, a.getIrrUncertain());
+            sa3SevereParam.set(result::parameter, a.getSA3Severe());
+            sa3BadParam.set(result::parameter, a.getSA3Bad());
+            sa3UncertainParam.set(result::parameter, a.getSA3Uncertain());
             return result.build();
         }
 
         @Override
-        protected ResidualSeasonalityDiagnosticsConfiguration doBackward(Config b) {
+        public ResidualSeasonalityDiagnosticsConfiguration doBackward(Config b) {
             ResidualSeasonalityDiagnosticsConfiguration result = new ResidualSeasonalityDiagnosticsConfiguration();
-            result.setEnabled(enabledParam.get(b));
-            result.setSASevere(saSevereParam.get(b));
-            result.setSABad(saBadParam.get(b));
-            result.setSAUncertain(saUncertainParam.get(b));
-            result.setIrrSevere(irrSevereParam.get(b));
-            result.setIrrBad(irrBadParam.get(b));
-            result.setIrrUncertain(irrUncertainParam.get(b));
-            result.setSA3Severe(sa3SevereParam.get(b));
-            result.setSA3Bad(sa3BadParam.get(b));
-            result.setSA3Uncertain(sa3UncertainParam.get(b));
+            result.setEnabled(enabledParam.get(b::getParameter));
+            result.setSASevere(saSevereParam.get(b::getParameter));
+            result.setSABad(saBadParam.get(b::getParameter));
+            result.setSAUncertain(saUncertainParam.get(b::getParameter));
+            result.setIrrSevere(irrSevereParam.get(b::getParameter));
+            result.setIrrBad(irrBadParam.get(b::getParameter));
+            result.setIrrUncertain(irrUncertainParam.get(b::getParameter));
+            result.setSA3Severe(sa3SevereParam.get(b::getParameter));
+            result.setSA3Bad(sa3BadParam.get(b::getParameter));
+            result.setSA3Uncertain(sa3UncertainParam.get(b::getParameter));
             return result;
         }
     }
 
-    private static final class ConfigEditor implements IBeanEditor {
+    private static final class ConfigEditor implements BeanEditor {
 
         @Messages({"residualSeasonalityDiagnostics.edit.title=Edit Residual seasonality",
             "residualSeasonalityDiagnostics.edit.errorTitle=Invalid Input",
@@ -267,11 +275,11 @@ public final class ResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnost
                     return false;
                 }
                 try {
-                    ((ResidualSeasonalityDiagnosticsConfiguration)bean).check();
+                    ((ResidualSeasonalityDiagnosticsConfiguration) bean).check();
                     return true;
                 } catch (BaseException ex) {
                     String message = ex.getMessage() + Bundle.residualSeasonalityDiagnostics_edit_errorMessage();
-                    if(JOptionPane.showConfirmDialog(null, message , Bundle.residualSeasonalityDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION){
+                    if (JOptionPane.showConfirmDialog(null, message, Bundle.residualSeasonalityDiagnostics_edit_errorTitle(), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
                         return false;
                     }
                 }

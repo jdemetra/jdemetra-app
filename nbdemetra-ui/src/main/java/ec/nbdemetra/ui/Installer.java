@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.ui.Config;
 import com.google.common.collect.Iterables;
 import demetra.bridge.TsConverter;
 import demetra.tsprovider.DataSourceLoader;
@@ -52,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import demetra.ui.OldDataTransfer;
 import demetra.ui.OldDataTransferSpi;
+import demetra.ui.Persistable;
 import demetra.ui.TsManager;
 import java.util.stream.Collectors;
 import nbbrd.io.text.Formatter;
@@ -249,8 +251,8 @@ public final class Installer extends ModuleInstall {
     //</editor-fold>
 
     public static void loadConfig(Collection<?> list, Preferences root) {
-        Parser<Config> parser = Config.xmlParser()::parse;
-        for (IConfigurable o : Iterables.filter(list, IConfigurable.class)) {
+        Parser<Config> parser = XmlConfig.xmlParser()::parse;
+        for (Persistable o : Iterables.filter(list, Persistable.class)) {
             Config current = o.getConfig();
             try {
                 if (root.nodeExists(current.getDomain())) {
@@ -271,11 +273,11 @@ public final class Installer extends ModuleInstall {
     }
 
     private static void storeConfig(Stream<?> stream, Preferences root) {
-        Formatter<Config> formatter = Config.xmlFormatter(false)::format;
+        Formatter<Config> formatter = XmlConfig.xmlFormatter(false)::format;
         stream
-                .filter(IConfigurable.class::isInstance)
+                .filter(Persistable.class::isInstance)
                 .forEach(o -> {
-                    Config current = ((IConfigurable) o).getConfig();
+                    Config current = ((Persistable) o).getConfig();
                     Preferences domain = root.node(current.getDomain());
                     InstallerStep.tryPut(domain, current.getName(), formatter, current);
                 });

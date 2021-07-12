@@ -16,28 +16,23 @@
  */
 package ec.tss.datatransfer.impl;
 
-import com.google.common.base.Converter;
 import com.google.common.base.Preconditions;
 import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.ImmutableList;
 import demetra.bridge.TsConverter;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
-import ec.nbdemetra.ui.BeanHandler;
+import demetra.ui.Config;
+import demetra.ui.ConfigEditor;
+import demetra.ui.beans.BeanHandler;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.nbdemetra.ui.IConfigurable;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.IBeanEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
 import ec.tss.tsproviders.utils.DataFormat;
-import ec.tss.tsproviders.utils.IParam;
 import ec.tss.tsproviders.utils.IParser;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
-import ec.tss.tsproviders.utils.Params;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
@@ -53,7 +48,13 @@ import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.OldDataTransferSpi;
 import demetra.ui.datatransfer.DataTransferSpi;
+import nbbrd.io.text.BooleanProperty;
 import org.openide.util.lookup.ServiceProviders;
+import demetra.ui.properties.BeanEditor;
+import demetra.ui.Converter;
+import demetra.ui.Persistable;
+import demetra.ui.actions.Configurable;
+import demetra.ui.beans.BeanConfigurator;
 
 /**
  * @author Jean Palate
@@ -62,7 +63,7 @@ import org.openide.util.lookup.ServiceProviders;
     @ServiceProvider(service = DataTransferSpi.class, position = 1000),
     @ServiceProvider(service = OldDataTransferSpi.class, position = 2000)
 })
-public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSpi, IConfigurable {
+public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSpi, Configurable, Persistable, ConfigEditor {
 
     private static final char DELIMITOR = '\t';
     private static final String NEWLINE = StandardSystemProperty.LINE_SEPARATOR.value();
@@ -70,13 +71,13 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
     // PROPERTIES
     private final NumberFormat numberFormat;
     private final DateFormat dateFormat;
-    private final Configurator<TxtDataTransfer> configurator;
+    private final BeanConfigurator<InternalConfig, TxtDataTransfer> configurator;
     private InternalConfig config;
 
     public TxtDataTransfer() {
         this.numberFormat = NumberFormat.getNumberInstance();
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        this.configurator = new InternalConfigHandler().toConfigurator(new InternalConfigConverter(), new InternalConfigEditor());
+        this.configurator = new BeanConfigurator<>(new InternalConfigHandler(), new InternalConfigConverter(), new InternalConfigEditor());
         this.config = new InternalConfig();
     }
 
@@ -175,6 +176,11 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
     @Override
     public Config editConfig(Config config) {
         return configurator.editConfig(config);
+    }
+
+    @Override
+    public void configure() {
+        Configurable.configure(this, this);
     }
     //</editor-fold>
 
@@ -431,7 +437,7 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
 
     }
 
-    private static final class InternalConfigHandler extends BeanHandler<InternalConfig, TxtDataTransfer> {
+    private static final class InternalConfigHandler implements BeanHandler<InternalConfig, TxtDataTransfer> {
 
         @Override
         public InternalConfig loadBean(TxtDataTransfer resource) {
@@ -444,7 +450,7 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
         }
     }
 
-    private static final class InternalConfigEditor implements IBeanEditor {
+    private static final class InternalConfigEditor implements BeanEditor {
 
         @Override
         public boolean editBean(Object bean) throws IntrospectionException {
@@ -476,48 +482,48 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
         }
     }
 
-    private static final class InternalConfigConverter extends Converter<InternalConfig, Config> {
+    private static final class InternalConfigConverter implements Converter<InternalConfig, Config> {
 
         private static final String DOMAIN = "ec.tss.datatransfer.TssTransferHandler", NAME = "TXT", VERSION = "";
-        private static final IParam<Config, Boolean> VERTICAL = Params.onBoolean(true, "vertical");
-        private static final IParam<Config, Boolean> SHOW_DATES = Params.onBoolean(true, "showDates");
-        private static final IParam<Config, Boolean> SHOW_TITLE = Params.onBoolean(true, "showTitle");
-        private static final IParam<Config, Boolean> BEGIN_PERIOD = Params.onBoolean(true, "beginPeriod");
-        private static final IParam<Config, Boolean> IMPORT_TS = Params.onBoolean(true, "importEnabled");
-        private static final IParam<Config, Boolean> EXPORT_TS = Params.onBoolean(true, "exportEnabled");
-        private static final IParam<Config, Boolean> IMPORT_MATRIX = Params.onBoolean(true, "importMatrix");
-        private static final IParam<Config, Boolean> EXPORT_MATRIX = Params.onBoolean(true, "exportMatrix");
-        private static final IParam<Config, Boolean> EXPORT_TABLE = Params.onBoolean(true, "exportTable");
+        private static final BooleanProperty VERTICAL = BooleanProperty.of("vertical", true);
+        private static final BooleanProperty SHOW_DATES = BooleanProperty.of("showDates", true);
+        private static final BooleanProperty SHOW_TITLE = BooleanProperty.of("showTitle", true);
+        private static final BooleanProperty BEGIN_PERIOD = BooleanProperty.of("beginPeriod", true);
+        private static final BooleanProperty IMPORT_TS = BooleanProperty.of("importEnabled", true);
+        private static final BooleanProperty EXPORT_TS = BooleanProperty.of("exportEnabled", true);
+        private static final BooleanProperty IMPORT_MATRIX = BooleanProperty.of("importMatrix", true);
+        private static final BooleanProperty EXPORT_MATRIX = BooleanProperty.of("exportMatrix", true);
+        private static final BooleanProperty EXPORT_TABLE = BooleanProperty.of("exportTable", true);
 
         @Override
-        protected Config doForward(InternalConfig a) {
+        public Config doForward(InternalConfig a) {
             Config.Builder b = Config.builder(DOMAIN, NAME, VERSION);
-            VERTICAL.set(b, a.vertical);
-            SHOW_DATES.set(b, a.showDates);
-            SHOW_TITLE.set(b, a.showTitle);
-            BEGIN_PERIOD.set(b, a.beginPeriod);
-            IMPORT_TS.set(b, a.importTimeSeries);
-            EXPORT_TS.set(b, a.exportTimeSeries);
-            IMPORT_MATRIX.set(b, a.importMatrix);
-            EXPORT_MATRIX.set(b, a.exportMatrix);
-            EXPORT_TABLE.set(b, a.exportTable);
+            VERTICAL.set(b::parameter, a.vertical);
+            SHOW_DATES.set(b::parameter, a.showDates);
+            SHOW_TITLE.set(b::parameter, a.showTitle);
+            BEGIN_PERIOD.set(b::parameter, a.beginPeriod);
+            IMPORT_TS.set(b::parameter, a.importTimeSeries);
+            EXPORT_TS.set(b::parameter, a.exportTimeSeries);
+            IMPORT_MATRIX.set(b::parameter, a.importMatrix);
+            EXPORT_MATRIX.set(b::parameter, a.exportMatrix);
+            EXPORT_TABLE.set(b::parameter, a.exportTable);
             return b.build();
         }
 
         @Override
-        protected InternalConfig doBackward(Config config) {
+        public InternalConfig doBackward(Config config) {
             Preconditions.checkArgument(DOMAIN.equals(config.getDomain()));
             Preconditions.checkArgument(NAME.equals(config.getName()));
             InternalConfig result = new InternalConfig();
-            result.vertical = VERTICAL.get(config);
-            result.showDates = SHOW_DATES.get(config);
-            result.showTitle = SHOW_TITLE.get(config);
-            result.beginPeriod = BEGIN_PERIOD.get(config);
-            result.importTimeSeries = IMPORT_TS.get(config);
-            result.exportTimeSeries = EXPORT_TS.get(config);
-            result.importMatrix = IMPORT_MATRIX.get(config);
-            result.exportMatrix = EXPORT_MATRIX.get(config);
-            result.exportTable = EXPORT_TABLE.get(config);
+            result.vertical = VERTICAL.get(config::getParameter);
+            result.showDates = SHOW_DATES.get(config::getParameter);
+            result.showTitle = SHOW_TITLE.get(config::getParameter);
+            result.beginPeriod = BEGIN_PERIOD.get(config::getParameter);
+            result.importTimeSeries = IMPORT_TS.get(config::getParameter);
+            result.exportTimeSeries = EXPORT_TS.get(config::getParameter);
+            result.importMatrix = IMPORT_MATRIX.get(config::getParameter);
+            result.exportMatrix = EXPORT_MATRIX.get(config::getParameter);
+            result.exportTable = EXPORT_TABLE.get(config::getParameter);
             return result;
         }
     }

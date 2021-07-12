@@ -17,8 +17,8 @@
 package ec.nbdemetra.ui.actions;
 
 import demetra.ui.actions.AbilityAction;
+import demetra.ui.actions.Configurable;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.tsproviders.ProvidersNode;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,10 +35,10 @@ import org.openide.util.NbBundle;
 @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ConfigureAction")
 @ActionRegistration(displayName = "#ConfigureAction", lazy = false)
 @NbBundle.Messages("ConfigureAction=Configure")
-public class ConfigureAction extends AbilityAction<IConfigurable> {
+public class ConfigureAction extends AbilityAction<Configurable> {
 
     public ConfigureAction() {
-        super(IConfigurable.class);
+        super(Configurable.class);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ConfigureAction extends AbilityAction<IConfigurable> {
     }
 
     @Override
-    protected void performAction(Stream<IConfigurable> items) {
+    protected void performAction(Stream<Configurable> items) {
         configure(items.collect(Collectors.toList()));
     }
 
@@ -56,15 +56,11 @@ public class ConfigureAction extends AbilityAction<IConfigurable> {
         return Bundle.ConfigureAction();
     }
 
-    private void configure(List<IConfigurable> list) {
+    private void configure(List<Configurable> list) {
         if (list.isEmpty()) {
-            configure(DemetraUI.getDefault());
+            DemetraUI.getDefault().configure();
         } else {
-            list.forEach(this::configure);
+            list.forEach(Configurable::configure);
         }
-    }
-
-    private void configure(IConfigurable o) {
-        o.setConfig(o.editConfig(o.getConfig()));
     }
 }
