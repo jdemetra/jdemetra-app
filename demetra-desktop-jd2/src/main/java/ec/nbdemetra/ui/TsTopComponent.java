@@ -5,6 +5,9 @@
 package ec.nbdemetra.ui;
 
 import demetra.bridge.TsConverter;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsInformationType;
+import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTs;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
@@ -66,7 +69,8 @@ public abstract class TsTopComponent extends TopComponent implements ExplorerMan
 
     @Override
     public void setTs(demetra.timeseries.Ts ts) {
-        panel.getDocument().setTs(TsConverter.fromTs(ts));
+        Ts loadedTs = ts.load(TsInformationType.All, TsManager.getDefault());
+        panel.getDocument().setTs(TsConverter.fromTs(loadedTs));
         panel.refreshAll();
     }
 
