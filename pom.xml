@@ -145,57 +145,7 @@
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-modules-javahelp</artifactId>
-                <version>RELEASE80</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-netbeans-api-progress</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-netbeans-api-progress-nb</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-netbeans-spi-quicksearch</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-awt</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-filesystems</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-loaders</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-modules</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-nodes</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-util-ui</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-util</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-util-lookup</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-windows</artifactId>
-                    </exclusion>
-                </exclusions>
+                <version>${netbeans.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.netbeans.api</groupId>
@@ -520,13 +470,6 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>netbeans-releases-mirror</id>
-            <url>https://raw.githubusercontent.com/nbbrd/netbeans-maven-mirror/main</url>
-            <snapshots>
-                <enabled>false</enabled>
             </snapshots>
         </repository>
     </repositories>
