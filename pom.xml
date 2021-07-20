@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.europa.ec.joinup.sat</groupId>
-    <artifactId>nbdemetra-parent</artifactId>
+    <artifactId>demetra-desktop-parent</artifactId>
     <version>3.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>JD3 - NbDemetra - Parent</name>
+    <name>JD3 - Desktop</name>
 
     <url>https://github.com/jdemetra/jdemetra-app</url>
     <licenses>
@@ -28,15 +28,13 @@
     </properties>
 
     <modules>
-        <module>nbdemetra-branding</module>
-        <module>nbdemetra-app</module>
-        <module>nbdemetra-ui</module>
-        <module>nbdemetra-jdbc</module>
-        <module>nbdemetra-common</module>
-        <module>nbdemetra-spreadsheet</module>
-        <module>nbdemetra-sa</module>
-        <module>nbdemetra-anomalydetection</module>
-        <module>demetra-base-desktop</module>
+        <module>demetra-desktop-api</module>
+        <module>demetra-desktop-spreadsheet</module>
+        <module>demetra-desktop-sql</module>
+        <module>demetra-desktop-text</module>
+        <module>demetra-desktop-branding</module>
+        <module>demetra-desktop-app</module>
+        <module>demetra-desktop-jd2</module>
     </modules>
 
     <dependencyManagement>
@@ -256,47 +254,37 @@
             <!-- nbdemetra modules > -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-branding</artifactId>
+                <artifactId>demetra-desktop-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-app</artifactId>
+                <artifactId>demetra-desktop-branding</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-ui</artifactId>
+                <artifactId>demetra-desktop-app</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-jdbc</artifactId>
+                <artifactId>demetra-desktop-jd2</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-common</artifactId>
+                <artifactId>demetra-desktop-sql</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-spreadsheet</artifactId>
+                <artifactId>demetra-desktop-text</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-sa</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>nbdemetra-anomalydetection</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-base-desktop</artifactId>
+                <artifactId>demetra-desktop-spreadsheet</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- < nbdemetra modules -->

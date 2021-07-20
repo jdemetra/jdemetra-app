@@ -1,9 +1,1 @@
-/nbdemetra-branding/target/
-/nbdemetra-ui/target/
-/nbdemetra-jdbc/target/
-/nbdemetra-common/target/
-/nbdemetra-spreadsheet/target/
-/nbdemetra-sa/target/
-/nbdemetra-anomalydetection/target/
-/nbdemetra-app/target/
-/demetra-base-desktop/target/
+target/

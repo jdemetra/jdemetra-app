@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>eu.europa.ec.joinup.sat</groupId>
+        <artifactId>demetra-desktop-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>demetra-desktop-app</artifactId>
+    <packaging>nbm-application</packaging>
+
+    <name>JD3 - Desktop - Application</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <netbeans.run.params.ide/>
+        <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
+        <project.x.binaries>${project.build.directory}/binaries</project.x.binaries>
+        <project.x.zipname>jdemetra-${project.version}-bin</project.x.zipname>
+    </properties>
+
+    <dependencies>
+        <!-- NB platform -->
+        <dependency>
+            <groupId>org.netbeans.cluster</groupId>
+            <artifactId>platform</artifactId>
+            <type>pom</type>
+            <exclusions>
+                <exclusion> 
+                    <groupId>org.netbeans.api</groupId> 
+                    <artifactId>org-netbeans-libs-testng</artifactId> 
+                </exclusion> 
+                <exclusion> 
+                    <groupId>org.netbeans.modules</groupId> 
+                    <artifactId>org-netbeans-modules-junitlib</artifactId> 
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-modules-javahelp</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- NB additional modules -->
+        <dependency>
+            <groupId>org.netbeans.modules</groupId>
+            <artifactId>org-netbeans-modules-dbapi</artifactId>
+            <version>${netbeans.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-modules-javahelp</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.modules</groupId>
+            <artifactId>org-netbeans-modules-projectapi-nb</artifactId>
+            <version>${netbeans.version}</version> 
+        </dependency>
+        
+        <!-- JD+ modules -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-branding</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-jd2</artifactId>   
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-sql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-text</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-spreadsheet</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Generates standalone application -->
+            <plugin>
+                <groupId>org.apache.netbeans.utilities</groupId>
+                <artifactId>nbm-maven-plugin</artifactId>
+                <configuration>
+                    <finalName>jdemetra-${project.version}-bin</finalName>
+                    <installersFilePrefix>jdemetra-${project.version}-setup</installersFilePrefix>
+                    <!--<installerPack200Enable>false</installerPack200Enable>-->
+                    <etcConfFile>src/main/resources/nbdemetra.conf</etcConfFile>
+                </configuration>
+            </plugin>
+
+            <!-- Generates binaries folder -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <configuration>
+                            <target>
+                                <copy file="${project.build.directory}/${project.x.zipname}.zip" 
+                                      tofile="${project.x.binaries}/${project.x.zipname}.zip"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <!-- Generates SHA256 on binaries -->
+            <plugin>
+                <groupId>net.nicoulaj.maven.plugins</groupId>
+                <artifactId>checksum-maven-plugin</artifactId>
+                <version>1.9</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>files</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <algorithms>
+                        <algorithm>SHA-256</algorithm>
+                    </algorithms>
+                    <fileSets>
+                        <fileSet>
+                            <directory>${project.x.binaries}</directory>
+                            <excludes>
+                                <exclude>*.sha256</exclude>
+                            </excludes>
+                        </fileSet>
+                    </fileSets>
+                    <csvSummary>false</csvSummary>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
