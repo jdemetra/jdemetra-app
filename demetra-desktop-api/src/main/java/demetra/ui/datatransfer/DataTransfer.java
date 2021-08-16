@@ -88,9 +88,9 @@ public class DataTransfer implements PropertyChangeSource {
     private final Providers<DataTransferSpi> providers;
     private final Logger logger;
     private boolean validClipboard;
-
+    
     public DataTransfer() {
-        this(Providers.ofLookup(DataTransferSpi.class), log, false);
+        this(new DataTransferSpiLoader()::get, log, false);
         clipboardValidator.register(Toolkit.getDefaultToolkit().getSystemClipboard());
     }
 

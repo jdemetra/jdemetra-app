@@ -134,6 +134,11 @@ public class DataTransferTest {
         }
 
         @Override
+        public int getPosition() {
+            return 0;
+        }
+
+        @Override
         public DataFlavor getDataFlavor() {
             return df;
         }

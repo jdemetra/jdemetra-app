@@ -17,30 +17,26 @@
 package demetra.ui.completion;
 
 import ec.util.completion.swing.JAutoCompletion;
+import internal.ui.NetBeansLookup;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.text.JTextComponent;
-import org.openide.util.lookup.Lookups;
-import internal.ui.ServiceDefinition;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
 
 /**
  *
  * @author Philippe Charles
  * @since 1.3.2
  */
-@ServiceDefinition
-public interface JAutoCompletionService {
+@ServiceDefinition(
+        backend = NetBeansLookup.class,
+        quantifier = Quantifier.MULTIPLE
+)
+public interface AutoCompletionSpi {
+    
+    @NonNull
+    String getPath();
 
     @NonNull
     JAutoCompletion bind(@NonNull JTextComponent textComponent);
-
-    public static final String LOCALE_PATH = "JAutoCompletionService/Locale";
-    public static final String DATE_PATTERN_PATH = "JAutoCompletionService/DatePattern";
-    public static final String COLOR_SCHEME_PATH = "JAutoCompletionService/ColorScheme";
-    public static final String CHARSET_PATH = "JAutoCompletionService/Charset";
-
-    @NonNull
-    static JAutoCompletion forPathBind(@NonNull String path, @NonNull JTextComponent textComponent) {
-        JAutoCompletionService o = Lookups.forPath(path).lookup(JAutoCompletionService.class);
-        return o != null ? o.bind(textComponent) : new JAutoCompletion(textComponent);
-    }
 }

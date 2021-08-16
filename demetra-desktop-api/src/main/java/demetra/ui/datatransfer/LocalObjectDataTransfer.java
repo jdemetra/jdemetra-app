@@ -27,6 +27,11 @@ public final class LocalObjectDataTransfer implements DataTransferSpi {
     }
 
     @Override
+    public int getPosition() {
+        return 0;
+    }
+
+    @Override
     public String getName() {
         return "LocalObject";
     }

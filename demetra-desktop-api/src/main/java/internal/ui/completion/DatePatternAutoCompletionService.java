@@ -16,7 +16,6 @@
  */
 package internal.ui.completion;
 
-import demetra.ui.completion.JAutoCompletionService;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
@@ -29,17 +28,24 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.text.JTextComponent;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.completion.AutoCompletionSpi;
+import java.time.LocalDate;
 
 /**
  *
  * @author Philippe Charles
  * @since 1.3.2
  */
-@ServiceProvider(service = JAutoCompletionService.class, path = JAutoCompletionService.DATE_PATTERN_PATH)
-public final class DatePatternAutoCompletionService implements JAutoCompletionService {
+@ServiceProvider(service = AutoCompletionSpi.class)
+public final class DatePatternAutoCompletionService implements AutoCompletionSpi {
 
     private final AutoCompletionSource source = datePatternLetterSource();
     private final ListCellRenderer renderer = new DatePatternLetterRenderer();
+
+    @Override
+    public String getPath() {
+        return LocalDate.class.getName();
+    }
 
     @Override
     public JAutoCompletion bind(JTextComponent textComponent) {

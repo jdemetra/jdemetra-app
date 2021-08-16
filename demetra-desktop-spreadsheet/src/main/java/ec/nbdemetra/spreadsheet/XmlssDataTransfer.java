@@ -65,6 +65,11 @@ public final class XmlssDataTransfer implements DataTransferSpi, OldDataTransfer
     }
 
     @Override
+    public int getPosition() {
+        return 1000;
+    }
+    
+    @Override
     public String getName() {
         return "XMLSS";
     }

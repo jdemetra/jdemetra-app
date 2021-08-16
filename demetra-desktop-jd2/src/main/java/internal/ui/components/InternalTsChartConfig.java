@@ -21,7 +21,6 @@ import demetra.ui.components.parts.HasChart;
 import demetra.ui.beans.BeanHandler;
 import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUI;
-import demetra.ui.completion.JAutoCompletionService;
 import demetra.ui.properties.NodePropertySetBuilder;
 import demetra.ui.properties.PropertySheetDialogBuilder;
 import demetra.ui.components.JTsChart;
@@ -105,7 +104,7 @@ public final class InternalTsChartConfig {
             sheet.put(b.build());
             b.reset("Series display");
             b.withEnum(HasChart.LinesThickness.class).selectField(bean, "linesThickness").display("Line thickness").description("Thickness of the line representing the series").add();
-            b.withAutoCompletion().selectField(bean, "colorSchemeName").servicePath(JAutoCompletionService.COLOR_SCHEME_PATH).promptText(DemetraUI.getDefault().getColorSchemeName()).display("Color scheme").add();
+            b.withAutoCompletion().selectField(bean, "colorSchemeName").servicePath(ColorScheme.class.getName()).promptText(DemetraUI.getDefault().getColorSchemeName()).display("Color scheme").add();
 
             sheet.put(b.build());
             return new PropertySheetDialogBuilder().title("Configure chart").editSheet(sheet);

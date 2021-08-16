@@ -16,7 +16,6 @@
  */
 package internal.ui.completion;
 
-import demetra.ui.completion.JAutoCompletionService;
 import demetra.util.List2;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
@@ -29,18 +28,24 @@ import java.util.stream.Collectors;
 import javax.swing.ListCellRenderer;
 import javax.swing.text.JTextComponent;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.completion.AutoCompletionSpi;
 
 /**
  *
  * @author Philippe Charles
  * @since 1.3.2
  */
-@ServiceProvider(service = JAutoCompletionService.class, path = JAutoCompletionService.CHARSET_PATH)
-public final class CharsetAutoCompletionService implements JAutoCompletionService {
+@ServiceProvider(service = AutoCompletionSpi.class)
+public final class CharsetAutoCompletionService implements AutoCompletionSpi {
 
     private final AutoCompletionSource source = charsetSource();
     private final ListCellRenderer renderer = new CharsetRenderer();
 
+    @Override
+    public String getPath() {
+        return Charset.class.getName();
+    }
+    
     @Override
     public JAutoCompletion bind(JTextComponent textComponent) {
         JAutoCompletion result = new JAutoCompletion(textComponent);

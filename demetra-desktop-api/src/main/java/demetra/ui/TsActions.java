@@ -47,8 +47,8 @@ public class TsActions {
 
     public static final String NO_ACTION = "";
 
-    private final Providers<TsActionsOpenSpi> openActions = Providers.ofLookup(TsActionsOpenSpi.class);
-    private final Providers<TsActionsSaveSpi> saveActions = Providers.ofLookup(TsActionsSaveSpi.class);
+    private final Providers<TsActionsOpenSpi> openActions = new TsActionsOpenSpiLoader()::get;
+    private final Providers<TsActionsSaveSpi> saveActions = new TsActionsSaveSpiLoader()::get;
 
     @NonNull
     public Collection<? extends NamedService> getOpenActions() {

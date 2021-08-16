@@ -81,6 +81,11 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
         this.config = new InternalConfig();
     }
 
+    @Override
+    public int getPosition() {
+        return 1000;
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="INamedService">
     @Override
     public String getName() {

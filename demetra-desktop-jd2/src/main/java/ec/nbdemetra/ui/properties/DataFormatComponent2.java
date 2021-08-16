@@ -16,13 +16,15 @@
  */
 package ec.nbdemetra.ui.properties;
 
-import demetra.ui.completion.JAutoCompletionService;
+import demetra.ui.completion.AutoCompletion;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.util.completion.swing.XPopup;
 import ec.util.various.swing.TextPrompt;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.Locale;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
@@ -78,8 +80,8 @@ public final class DataFormatComponent2 extends JComponent {
 
     //<editor-fold defaultstate="collapsed" desc="Initialization">
     private void initComponents() {
-        JAutoCompletionService.forPathBind(JAutoCompletionService.LOCALE_PATH, locale);
-        JAutoCompletionService.forPathBind(JAutoCompletionService.DATE_PATTERN_PATH, datePattern);
+        AutoCompletion.getDefault().bind(Locale.class, locale);
+        AutoCompletion.getDefault().bind(LocalDate.class, datePattern);
 
         new TextPrompt("locale", locale).setEnabled(false);
         new TextPrompt("date pattern", datePattern).setEnabled(false);

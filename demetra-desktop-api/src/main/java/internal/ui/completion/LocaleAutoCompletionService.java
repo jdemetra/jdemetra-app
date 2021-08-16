@@ -16,7 +16,6 @@
  */
 package internal.ui.completion;
 
-import demetra.ui.completion.JAutoCompletionService;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
@@ -30,18 +29,24 @@ import java.util.stream.Collectors;
 import javax.swing.ListCellRenderer;
 import javax.swing.text.JTextComponent;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.completion.AutoCompletionSpi;
 
 /**
  *
  * @author Philippe Charles
  * @since 1.3.2
  */
-@ServiceProvider(service = JAutoCompletionService.class, path = JAutoCompletionService.LOCALE_PATH)
-public final class LocaleAutoCompletionService implements JAutoCompletionService {
+@ServiceProvider(service = AutoCompletionSpi.class)
+public final class LocaleAutoCompletionService implements AutoCompletionSpi {
 
     private final AutoCompletionSource source = localeSource();
     private final ListCellRenderer renderer = new LocaleRenderer();
 
+    @Override
+    public String getPath() {
+        return Locale.class.getName();
+    }
+    
     @Override
     public JAutoCompletion bind(JTextComponent textComponent) {
         JAutoCompletion result = new JAutoCompletion(textComponent);

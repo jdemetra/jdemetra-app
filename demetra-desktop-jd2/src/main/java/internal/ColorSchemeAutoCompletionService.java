@@ -16,7 +16,6 @@
  */
 package internal;
 
-import demetra.ui.completion.JAutoCompletionService;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.util.chart.ColorScheme;
 import ec.util.completion.AutoCompletionSource;
@@ -33,18 +32,24 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.text.JTextComponent;
 import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.completion.AutoCompletionSpi;
 
 /**
  *
  * @author Philippe Charles
  * @since 1.3.2
  */
-@ServiceProvider(service = JAutoCompletionService.class, path = JAutoCompletionService.COLOR_SCHEME_PATH)
-public final class ColorSchemeAutoCompletionService implements JAutoCompletionService {
+@ServiceProvider(service = AutoCompletionSpi.class)
+public final class ColorSchemeAutoCompletionService implements AutoCompletionSpi {
 
     private final AutoCompletionSource source = colorSchemeSource();
     private final ListCellRenderer renderer = new ColorSchemeRenderer();
 
+    @Override
+    public String getPath() {
+        return ColorScheme.class.getName();
+    }
+    
     @Override
     public JAutoCompletion bind(JTextComponent textComponent) {
         JAutoCompletion result = new JAutoCompletion(textComponent);

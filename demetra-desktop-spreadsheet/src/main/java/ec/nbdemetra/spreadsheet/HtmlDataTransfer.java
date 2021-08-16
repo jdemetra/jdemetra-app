@@ -63,6 +63,11 @@ public final class HtmlDataTransfer implements DataTransferSpi, OldDataTransferS
     }
 
     @Override
+    public int getPosition() {
+        return 1000;
+    }
+    
+    @Override
     public String getName() {
         return "HTML";
     }

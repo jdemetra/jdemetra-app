@@ -16,7 +16,6 @@
  */
 package demetra.ui.datatransfer;
 
-import internal.ui.ServiceDefinition;
 import demetra.timeseries.TsCollection;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
@@ -24,6 +23,10 @@ import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import demetra.ui.NamedService;
+import internal.ui.NetBeansLookup;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
+import nbbrd.service.ServiceSorter;
 
 /**
  * SPI that allows to import/export specific data structures from/to the
@@ -32,9 +35,15 @@ import demetra.ui.NamedService;
  * @author Philippe Charles
  * @since 1.3.0
  */
-@ServiceDefinition(hasPosition = true)
+@ServiceDefinition(
+        backend = NetBeansLookup.class,
+        quantifier = Quantifier.MULTIPLE
+)
 public interface DataTransferSpi extends NamedService {
 
+    @ServiceSorter
+    int getPosition();
+    
     @NonNull
     DataFlavor getDataFlavor();
 

@@ -18,7 +18,9 @@ package demetra.ui;
 
 import demetra.timeseries.Ts;
 import ec.util.various.swing.OnEDT;
-import internal.ui.ServiceDefinition;
+import internal.ui.NetBeansLookup;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -26,7 +28,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * @author Philippe Charles
  * @since 1.0.0
  */
-@ServiceDefinition
+@ServiceDefinition(
+        backend = NetBeansLookup.class,
+        quantifier = Quantifier.MULTIPLE
+)
 public interface TsActionsOpenSpi extends NamedService {
 
     @OnEDT
