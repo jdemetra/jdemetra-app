@@ -255,7 +255,7 @@
                         <publicPackage>ec.demetra.workspace.file</publicPackage>
                         <publicPackage>ec.demetra.workspace.file.spi</publicPackage>
                         <publicPackage>ec.demetra.workspace.file.util</publicPackage>
-                        <publicPackage>nbbrd.io.*</publicPackage>
+                        <publicPackage>nbbrd.io.xml.*</publicPackage>
                         <publicPackage>javax.annotation.*</publicPackage>
                         <publicPackage>javax.xml.bind.*</publicPackage>
                         
