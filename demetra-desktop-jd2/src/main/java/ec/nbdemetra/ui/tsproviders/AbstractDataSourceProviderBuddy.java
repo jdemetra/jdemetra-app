@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.bridge.ToFileBean;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
 import demetra.ui.properties.PropertySheetDialogBuilder;
@@ -82,6 +83,9 @@ public abstract class AbstractDataSourceProviderBuddy implements IDataSourceProv
 
     @Override
     public boolean editBean(String title, Object bean) throws IntrospectionException {
+        if (bean instanceof ToFileBean) {
+            bean = ((ToFileBean) bean).getDelegate();
+        }
         Sheet sheet = createSheet(createSheetSets(bean));
         Image image = getIcon(BeanInfo.ICON_COLOR_16x16, false);
         return new PropertySheetDialogBuilder().title(title).icon(image).editSheet(sheet);
