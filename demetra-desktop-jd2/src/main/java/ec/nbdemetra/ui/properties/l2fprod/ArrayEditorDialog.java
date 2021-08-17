@@ -1,6 +1,5 @@
 package ec.nbdemetra.ui.properties.l2fprod;
 
-import com.google.common.collect.Lists;
 import com.l2fprod.common.propertysheet.*;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.util.NbComponents;
@@ -15,6 +14,7 @@ import java.awt.event.WindowEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.*;
 
@@ -41,7 +41,7 @@ public class ArrayEditorDialog<T> extends JDialog {
     public ArrayEditorDialog(final Window owner, T[] elements, Class<T> c) {
         super(owner);
         c_ = c;
-        elementsList_ = Lists.newArrayList(elements);
+        elementsList_ = new ArrayList<>(Arrays.asList(elements));
 
         final JPanel pane = new JPanel(new BorderLayout());
         pane.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
@@ -189,7 +189,7 @@ public class ArrayEditorDialog<T> extends JDialog {
             @Override
             public void windowClosing(WindowEvent we) {
                 super.windowClosing(we);
-                elementsList_ = Lists.newArrayList(elements);
+                elementsList_ = new ArrayList<>(Arrays.asList(elements));
             }
         });
 

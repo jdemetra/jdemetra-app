@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.sa;
 
-import com.google.common.collect.Maps;
 import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.tss.html.HtmlUtil;
@@ -132,7 +131,7 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
         DefaultComboBoxModel<Map.Entry<Integer, AlgorithmDescriptor>> result = new DefaultComboBoxModel<>();
         for (Map.Entry<Integer, Map<AlgorithmDescriptor, RegArimaReport>> item : reports.entrySet()) {
             for (AlgorithmDescriptor ritem : item.getValue().keySet()) {
-                result.addElement(Maps.immutableEntry(item.getKey(), ritem));
+                result.addElement(new HashMap.SimpleImmutableEntry<>(item.getKey(), ritem));
             }
         }
         return result;

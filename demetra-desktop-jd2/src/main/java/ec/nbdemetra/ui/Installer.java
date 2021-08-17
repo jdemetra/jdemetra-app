@@ -17,7 +17,6 @@
 package ec.nbdemetra.ui;
 
 import demetra.ui.Config;
-import com.google.common.collect.Iterables;
 import demetra.bridge.TsConverter;
 import demetra.tsprovider.DataSourceLoader;
 import ec.nbdemetra.core.InstallerStep;
@@ -251,21 +250,28 @@ public final class Installer extends ModuleInstall {
     //</editor-fold>
 
     public static void loadConfig(Collection<?> list, Preferences root) {
+        loadConfig(list.stream(), root);
+    }
+
+    public static void loadConfig(Stream<?> stream, Preferences root) {
         Parser<Config> parser = XmlConfig.xmlParser()::parse;
-        for (Persistable o : Iterables.filter(list, Persistable.class)) {
-            Config current = o.getConfig();
-            try {
-                if (root.nodeExists(current.getDomain())) {
-                    Preferences domain = root.node(current.getDomain());
-                    Optional<Config> config = InstallerStep.tryGet(domain, current.getName(), parser);
-                    if (config.isPresent()) {
-                        o.setConfig(config.get());
+        stream
+                .filter(Persistable.class::isInstance)
+                .map(Persistable.class::cast)
+                .forEach(o -> {
+                    Config current = o.getConfig();
+                    try {
+                        if (root.nodeExists(current.getDomain())) {
+                            Preferences domain = root.node(current.getDomain());
+                            Optional<Config> config = InstallerStep.tryGet(domain, current.getName(), parser);
+                            if (config.isPresent()) {
+                                o.setConfig(config.get());
+                            }
+                        }
+                    } catch (BackingStoreException ex) {
+                        // do nothing?
                     }
-                }
-            } catch (BackingStoreException ex) {
-                // do nothing?
-            }
-        }
+                });
     }
 
     public static void storeConfig(Collection<?> list, Preferences root) {
@@ -276,8 +282,9 @@ public final class Installer extends ModuleInstall {
         Formatter<Config> formatter = XmlConfig.xmlFormatter(false)::format;
         stream
                 .filter(Persistable.class::isInstance)
+                .map(Persistable.class::cast)
                 .forEach(o -> {
-                    Config current = ((Persistable) o).getConfig();
+                    Config current = o.getConfig();
                     Preferences domain = root.node(current.getDomain());
                     InstallerStep.tryPut(domain, current.getName(), formatter, current);
                 });

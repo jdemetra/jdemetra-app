@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.sa;
 
-import com.google.common.collect.Maps;
 import ec.nbdemetra.ui.DemetraUI;
 import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ws.WorkspaceItem;
@@ -32,6 +31,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -180,7 +180,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         DefaultComboBoxModel<Entry<Integer, AlgorithmDescriptor>> result = new DefaultComboBoxModel<>();
         for (Map.Entry<Integer, List<AlgorithmDescriptor>> item : m.entrySet()) {
             for (AlgorithmDescriptor ritem : item.getValue()) {
-                result.addElement(Maps.immutableEntry(item.getKey(), ritem));
+                result.addElement(new HashMap.SimpleImmutableEntry<>(item.getKey(), ritem));
             }
         }
         return result;

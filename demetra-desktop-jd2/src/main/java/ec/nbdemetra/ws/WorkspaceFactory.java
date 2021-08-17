@@ -4,10 +4,10 @@
  */
 package ec.nbdemetra.ws;
 
-import com.google.common.collect.Lists;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.utilities.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.openide.DialogDisplayer;
@@ -34,7 +34,7 @@ public class WorkspaceFactory implements LookupListener {
     }
 
     public void notifyEvents(Event[] ev) {
-        content.set(Lists.newArrayList(ev), null);
+        content.set(Arrays.asList(ev), null);
     }
 
     public static final class Event {

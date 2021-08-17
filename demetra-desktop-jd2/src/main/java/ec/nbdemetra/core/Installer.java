@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.core;
 
-import com.google.common.collect.Lists;
 import demetra.bridge.TsConverter;
 import demetra.demo.PocProvider;
 import demetra.timeseries.TsProvider;
@@ -126,7 +125,7 @@ public final class Installer {
         @Override
         protected void onResultChanged(Lookup.Result<TsProvider> lookup) {
             List<TsProvider> old = TsManager.getDefault().getProviders().collect(Collectors.toList());
-            List<TsProvider> current = Lists.newArrayList(lookup.allInstances());
+            List<TsProvider> current = new ArrayList<>(lookup.allInstances());
 
             unregister(except(old, current));
             register(except(current, old));
@@ -210,7 +209,7 @@ public final class Installer {
         @Override
         protected void onResultChanged(Lookup.Result<ITsProvider> lookup) {
             List<ITsProvider> old = TsManager.getDefault().getProviders().map(TsConverter::fromTsProvider).collect(Collectors.toList());
-            List<ITsProvider> current = Lists.newArrayList(lookup.allInstances());
+            List<ITsProvider> current = new ArrayList<>(lookup.allInstances());
 
             unregister(except(old, current));
             register(except(current, old));

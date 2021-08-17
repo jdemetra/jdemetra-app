@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.ui.tools;
 
-import com.google.common.collect.Iterables;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
@@ -129,7 +128,7 @@ public final class ToolsPersistence {
                 }
             }
             ContentBean result = new ContentBean();
-            result.items = Iterables.toArray(items, ContentItemBean.class);
+            result.items = items.stream().toArray(ContentItemBean[]::new);
             return result;
         }
 

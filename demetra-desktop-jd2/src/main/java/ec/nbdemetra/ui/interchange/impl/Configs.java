@@ -20,7 +20,6 @@ import com.google.common.base.StandardSystemProperty;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import demetra.ui.Config;
 import ec.nbdemetra.ui.interchange.Exportable;
 import ec.nbdemetra.ui.interchange.Importable;
@@ -76,7 +75,7 @@ public final class Configs {
         ConfigsBean result = new ConfigsBean();
         result.author = author;
         result.creationTime = creationTime;
-        result.items = Iterables.toArray(items, Config.class);
+        result.items = items.stream().toArray(Config[]::new);
         return result;
     }
 

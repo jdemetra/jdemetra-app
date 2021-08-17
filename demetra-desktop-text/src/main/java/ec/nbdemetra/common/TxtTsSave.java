@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.common;
 
-import com.google.common.io.Files;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
 import demetra.ui.TsManager;
@@ -42,6 +41,8 @@ import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.TsActionsSaveSpi;
+import java.nio.file.Files;
+import java.util.Collections;
 import nbbrd.io.text.Formatter;
 
 /**
@@ -118,7 +119,7 @@ public final class TxtTsSave implements TsActionsSaveSpi {
         String stringContent = handler.tsCollectionToString(content);
 
         ph.progress("Writing file");
-        Files.write(stringContent, file, StandardCharsets.UTF_8);
+        Files.write(file.toPath(), Collections.singleton(stringContent), StandardCharsets.UTF_8);
     }
 
     private static final class SaveFileFilter extends FileFilter {

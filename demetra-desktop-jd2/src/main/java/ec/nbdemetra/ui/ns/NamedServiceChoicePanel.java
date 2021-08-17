@@ -16,11 +16,12 @@
  */
 package ec.nbdemetra.ui.ns;
 
-import com.google.common.collect.Iterables;
 import demetra.ui.NamedService;
 import demetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Dimension;
 import java.beans.PropertyVetoException;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.swing.JComboBox;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.ChoiceView;
@@ -46,7 +47,7 @@ public class NamedServiceChoicePanel extends javax.swing.JPanel implements Explo
     }
 
     public void setContent(Iterable<? extends NamedService> namedServices) {
-        Iterable<NamedServiceNode> nodes = Iterables.transform(namedServices, o -> new NamedServiceNode(o));
+        Stream<NamedServiceNode> nodes = StreamSupport.stream(namedServices.spliterator(), false).map(o -> new NamedServiceNode(o));
         em.setRootContext(new AbstractNodeBuilder().add(nodes).orderable(false).build());
     }
 

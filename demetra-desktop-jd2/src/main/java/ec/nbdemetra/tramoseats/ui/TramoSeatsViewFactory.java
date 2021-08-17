@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.tramoseats.ui;
 
-import com.google.common.collect.Iterables;
 import ec.nbdemetra.sa.DiagnosticsMatrixView;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
@@ -838,7 +837,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
                 return null;
             }
             WkInformation information = new WkInformation();
-            information.descriptors = Iterables.toArray(SeatsResults.descriptors, ComponentDescriptor.class);
+            information.descriptors = SeatsResults.descriptors.toArray(new ComponentDescriptor[0]);
             information.estimators = seats.getWienerKolmogorovEstimators();
             information.frequency = source.getSeries().getFrequency();
             return information;

@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.ns;
 
-import com.google.common.collect.Iterables;
 import demetra.ui.NamedService;
 import demetra.ui.Config;
 import demetra.ui.Persistable;
@@ -35,6 +34,8 @@ import org.openide.nodes.Sheet;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import demetra.ui.actions.Resetable;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  *
@@ -101,7 +102,7 @@ public class NamedServiceNode extends AbstractNode {
     }
 
     public static void loadAll(ExplorerManager em, Iterable<? extends NamedService> items) {
-        Iterable<NamedServiceNode> nodes = Iterables.transform(items, o -> new NamedServiceNode(o));
+        Stream<NamedServiceNode> nodes = StreamSupport.stream(items.spliterator(), false).map(o -> new NamedServiceNode(o));
         em.setRootContext(new AbstractNodeBuilder().add(nodes).build());
     }
 

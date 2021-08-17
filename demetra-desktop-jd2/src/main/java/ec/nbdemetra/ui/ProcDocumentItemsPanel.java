@@ -5,7 +5,6 @@
 package ec.nbdemetra.ui;
 
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimaps;
 import demetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.nodes.IdNodes;
@@ -13,6 +12,8 @@ import demetra.ui.properties.NodePropertySetBuilder;
 import ec.ui.view.tsprocessing.ProcDocumentItemFactory;
 import java.awt.Image;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import org.openide.explorer.ExplorerManager;
@@ -99,7 +100,7 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
             public Node getRoot(Iterable<? extends ProcDocumentItemFactory> factories) {
                 return new AbstractNodeBuilder()
                         .name("Items")
-                        .add(Iterables.transform(factories, o -> new ProcDocumentItemFactoryNode(o)))
+                        .add(StreamSupport.stream(factories.spliterator(), false).map(o -> new ProcDocumentItemFactoryNode(o)))
                         .build();
             }
 
@@ -115,7 +116,7 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
 
                 AbstractNodeBuilder result = new AbstractNodeBuilder().name("Items");
                 for (Class<?> o : index.keySet()) {
-                    Iterable<Node> children = Iterables.transform(index.get(o), x -> new ProcDocumentItemFactoryNode(x));
+                    Stream<Node> children = StreamSupport.stream(index.get(o).spliterator(), false).map(x -> new ProcDocumentItemFactoryNode(x));
                     result.add(new AbstractNodeBuilder().name(o.getName()).add(children).build());
                 }
                 return result.build();

@@ -4,10 +4,10 @@
  */
 package ec.ui.view.tsprocessing;
 
-import com.google.common.collect.Lists;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.DefaultInformationExtractor;
 import ec.tstoolkit.utilities.Id;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -123,7 +123,7 @@ public abstract class ProcDocumentViewFactory<D extends IProcDocument> implement
 
     @NonNull
     public List<Id> getItems() {
-        return Lists.newArrayList(itemFactories.keySet());
+        return new ArrayList<>(itemFactories.keySet());
     }
 
     @Override

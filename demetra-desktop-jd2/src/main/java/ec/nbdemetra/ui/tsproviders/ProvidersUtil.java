@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import com.google.common.collect.Lists;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceLoader;
@@ -191,7 +190,7 @@ final class ProvidersUtil {
     static List<Sheet.Set> sheetSetsOfDataSet(@NonNull DataSet dataSet,
             @NonNull Function<DataSource, List<Sheet.Set>> sourceFunc,
             @NonNull BiConsumer<NodePropertySetBuilder, DataSet> paramFiller) {
-        List<Sheet.Set> result = Lists.newArrayList(sourceFunc.apply(dataSet.getDataSource()));
+        List<Sheet.Set> result = new ArrayList<>(sourceFunc.apply(dataSet.getDataSource()));
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("DataSet");
         b.withEnum(DataSet.Kind.class).select(dataSet, "getKind", null).display("Kind").add();
         paramFiller.accept(b, dataSet);

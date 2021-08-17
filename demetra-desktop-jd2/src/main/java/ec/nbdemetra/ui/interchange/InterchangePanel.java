@@ -16,10 +16,10 @@
  */
 package ec.nbdemetra.ui.interchange;
 
-import com.google.common.collect.Iterables;
 import demetra.ui.actions.Configurable;
 import demetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.ns.NamedServiceNode;
+import java.util.stream.Stream;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -92,7 +92,7 @@ final class InterchangePanel extends javax.swing.JPanel implements ExplorerManag
     }//GEN-LAST:event_editButtonActionPerformed
 
     void load() {
-        Iterable<NamedServiceNode> nodes = Iterables.transform(Lookup.getDefault().lookupAll(InterchangeBroker.class), o -> new NamedServiceNode(o));
+        Stream<NamedServiceNode> nodes = Lookup.getDefault().lookupAll(InterchangeBroker.class).stream().map(o -> new NamedServiceNode(o));
         em.setRootContext(new AbstractNodeBuilder().add(nodes).name("Interchange broker").build());
     }
 

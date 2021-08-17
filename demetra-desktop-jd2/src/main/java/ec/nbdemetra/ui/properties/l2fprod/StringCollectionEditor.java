@@ -5,7 +5,6 @@
 
 package ec.nbdemetra.ui.properties.l2fprod;
 
-import com.google.common.collect.Iterables;
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
@@ -27,7 +26,7 @@ public class StringCollectionEditor extends AbstractPropertyEditor {
                 ArrayEditorDialog<String> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
                     null != strings_ ? strings_ : new String[]{}, String.class);
                 dialog.setVisible(true);
-                setValue(Iterables.toArray(dialog.getElements(), String.class));
+                setValue(dialog.getElements().toArray(new String[0]));
             }
         });
     }

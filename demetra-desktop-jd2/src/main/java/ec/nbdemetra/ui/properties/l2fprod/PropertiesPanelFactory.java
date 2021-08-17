@@ -1,6 +1,5 @@
 package ec.nbdemetra.ui.properties.l2fprod;
 
-import com.google.common.collect.Iterables;
 import com.l2fprod.common.propertysheet.DefaultProperty;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
@@ -123,7 +122,7 @@ public enum PropertiesPanelFactory {
                 LOGGER.error("", ex);
             }
         }
-        return Iterables.toArray(result, Property.class);
+        return result.toArray(new Property[0]);
     }
 
     private void createRoots(final IPropertyDescriptors iprops, List<Property> props) {

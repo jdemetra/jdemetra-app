@@ -18,7 +18,6 @@ package ec.nbdemetra.jdbc;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSortedMap;
 import ec.tss.tsproviders.utils.AbstractConfigBuilder;
 import ec.tss.tsproviders.utils.Formatters;
@@ -203,7 +202,7 @@ public final class DriverBasedConfig implements IConfig {
             try {
                 BEAN_CONTEXT = JAXBContext.newInstance(ConnectionBean.class);
             } catch (JAXBException ex) {
-                throw Throwables.propagate(ex);
+                throw new RuntimeException(ex);
             }
         }
 

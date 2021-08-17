@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.demo;
 
-import com.google.common.collect.Lists;
 import demetra.demo.PocProvider;
 import demetra.ui.TsActions;
 import demetra.ui.TsManager;
@@ -31,6 +30,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.SortedMap;
@@ -81,7 +81,7 @@ public final class ComponentsDemo {
         tree.setRootVisible(false);
         tree.setCellRenderer(new IdRenderer(demoData));
 
-        IdsTree.fill(tree, Lists.newArrayList(demoData.keySet()));
+        IdsTree.fill(tree, new ArrayList<>(demoData.keySet()));
         expandAll(tree);
 
         tree.getSelectionModel().addTreeSelectionListener(event -> {

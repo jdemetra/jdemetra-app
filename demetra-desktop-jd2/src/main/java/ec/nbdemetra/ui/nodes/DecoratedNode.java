@@ -17,10 +17,7 @@
 package ec.nbdemetra.ui.nodes;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.swing.AbstractAction;
@@ -98,13 +95,9 @@ public class DecoratedNode extends FilterNode {
 
         @Override
         protected Node[] createNodes(Node key) {
-            List<Node> result = new ArrayList<>();
-            for (Node o : super.createNodes(key)) {
-                if (filter.test(((DecoratedNode) o).getOriginal())) {
-                    result.add(o);
-                }
-            }
-            return Iterables.toArray(result, Node.class);
+            return Stream.of(super.createNodes(key))
+                    .filter(node -> filter.test(((DecoratedNode) node).getOriginal()))
+                    .toArray(Node[]::new);
         }
     }
 

@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.ui.calendars;
 
-import com.google.common.collect.Lists;
 import demetra.ui.util.IDialogDescriptorProvider;
 import demetra.ui.util.ListenerState;
 import demetra.ui.properties.ComboBoxPropertyEditor;
@@ -16,6 +15,8 @@ import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
 import ec.tstoolkit.utilities.Arrays2;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
@@ -214,7 +215,7 @@ public class ChainedGregorianCalendarPanel extends JPanel implements ExplorerMan
         protected Sheet createSheet() {
             ChainedGregorianCalendarPanel bean = getLookup().lookup(ChainedGregorianCalendarPanel.class);
 
-            List<String> tmp = Lists.newArrayList(ProcessingContext.getActiveContext().getGregorianCalendars().getNames());
+            List<String> tmp = new ArrayList<>(Arrays.asList(ProcessingContext.getActiveContext().getGregorianCalendars().getNames()));
             tmp.remove(bean.getCalendarName());
             Object[] names = tmp.toArray();
 
