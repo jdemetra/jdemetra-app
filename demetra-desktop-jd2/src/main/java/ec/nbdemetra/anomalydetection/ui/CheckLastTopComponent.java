@@ -89,25 +89,22 @@ import org.slf4j.LoggerFactory;
  */
 @ConvertAsProperties(dtd = "-//ec.nbdemetra.ui.tools//CheckLastList//EN",
         autostore = false)
-@TopComponent.Description(preferredID = "CheckLastBatchComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE", 
+@TopComponent.Description(preferredID = "CheckLastTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Window", id = "ec.nbdemetra.anomalydetection.ui.CheckLastBatchUI")
+@ActionID(category = "Window", id = "ec.nbdemetra.anomalydetection.ui.CheckLastTopComponent")
 @ActionReference(path = "Menu/Statistical methods/Anomaly Detection")
-@TopComponent.OpenActionRegistration(displayName = "#CTL_CheckLastAction")
+@TopComponent.OpenActionRegistration(displayName = "#CTL_CheckLastTopComponentAction")
 @NbBundle.Messages({
-    "CTL_CheckLastAction=Check Last",
-    "CTL_CheckLastBatchComponent=Check Last Batch Window",
-    "HINT_CheckLastBatchComponent=This is a Check Last Batch Window"
+    "CTL_CheckLastTopComponentAction=Check Last",
+    "CTL_CheckLastTopComponent=Check Last Batch Window",
+    "HINT_CheckLastTopComponent=This is a Check Last Batch Window"
 })
-public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Provider, MultiViewElement, IActiveView {
+public final class CheckLastTopComponent extends TopComponent implements ExplorerManager.Provider, MultiViewElement, IActiveView {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CheckLastBatchUI.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CheckLastTopComponent.class);
     public static final String DEFAULT_SPECIFICATION_PROPERTY = "specificationProperty";
-    public static final String COLLECTION_CHANGE = "collectionChange";
     public static final String STATE_PROPERTY = "state";
-    public static final String SELECTION_PROPERTY = "itemSelection";
     // Main Components
     private final JSplitPane visualRepresentation;
     private final JSplitPane tsInformation;
@@ -130,7 +127,7 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
     private Node n;
     private final ExplorerManager mgr = new ExplorerManager();
 
-    public CheckLastBatchUI() {
+    public CheckLastTopComponent() {
         setName("Check Last Batch");
         list = new JTsCheckLastList();
         summary = new CheckLastSummary();
@@ -141,10 +138,10 @@ public class CheckLastBatchUI extends TopComponent implements ExplorerManager.Pr
                 case JTsCheckLastList.COLOR_VALUES_PROPERTY:
                     refreshNode();
                     break;
-                case COLLECTION_CHANGE:
+                case JTsCheckLastList.COLLECTION_CHANGE:
                     onCollectionChange();
                     break;
-                case SELECTION_PROPERTY:
+                case JTsCheckLastList.SELECTION_PROPERTY:
                     onSelectionChange();
                     break;
                 case JTsCheckLastList.LAST_CHECKS_PROPERTY:

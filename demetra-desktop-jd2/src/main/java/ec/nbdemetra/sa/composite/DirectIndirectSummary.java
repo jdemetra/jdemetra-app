@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.sa.composite;
 
-import ec.tss.TsCollection;
 import ec.tss.html.*;
 import ec.tss.sa.composite.MultiSaSpecification;
 import ec.tstoolkit.data.DescriptiveStatistics;
@@ -17,10 +16,10 @@ import java.io.IOException;
  */
 public class DirectIndirectSummary extends AbstractHtmlElement {
 
-    private final TsCollection input, sa, bsa;
+    private final ec.tss.TsCollection input, sa, bsa;
     private final MultiSaSpecification spec;
 
-    public DirectIndirectSummary(TsCollection input, TsCollection sa, TsCollection bsa, MultiSaSpecification spec) {
+    public DirectIndirectSummary(ec.tss.TsCollection input, ec.tss.TsCollection sa, ec.tss.TsCollection bsa, MultiSaSpecification spec) {
         this.input = input;
         this.sa = sa;
         this.bsa = bsa;

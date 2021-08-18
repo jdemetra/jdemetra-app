@@ -4,10 +4,8 @@
  */
 package ec.ui.view.tsprocessing.sa;
 
-import ec.tss.TsCollection;
 import ec.tss.documents.DocumentManager;
 import ec.tss.documents.TsDocument;
-import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.IProcResults;
 import ec.tstoolkit.modelling.SeriesInfo;
 import ec.ui.view.tsprocessing.DefaultItemUI;
@@ -42,7 +40,7 @@ public class SaTableUI <D extends TsDocument<?,?> >extends DefaultItemUI<IProcDo
     @Override
     public JComponent getView(IProcDocumentView<D> host, IProcResults document) {
 
-        TsCollection items;
+        ec.tss.TsCollection items;
         if (items_ != null) {
             items = DocumentManager.create(items_, host.getDocument(), prefix_, false);
         } else {

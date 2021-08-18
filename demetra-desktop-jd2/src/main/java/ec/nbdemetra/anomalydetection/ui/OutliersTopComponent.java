@@ -78,7 +78,7 @@ import org.openide.windows.TopComponent;
     "CTL_OutliersTopComponent=Outliers Detection Window",
     "HINT_OutliersTopComponent=This is an Outlier Detection Window"
 })
-public class OutliersTopComponent extends TopComponent implements ExplorerManager.Provider, MultiViewElement, IActiveView {
+public final class OutliersTopComponent extends TopComponent implements ExplorerManager.Provider, MultiViewElement, IActiveView {
 
     public static final String STATE_CHANGED = "Processing state changed";
     private final JTsAnomalyGrid grid;

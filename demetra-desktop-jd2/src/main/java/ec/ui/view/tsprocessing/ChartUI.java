@@ -4,7 +4,6 @@
  */
 package ec.ui.view.tsprocessing;
 
-import ec.tss.TsCollection;
 import ec.tss.documents.DocumentManager;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.algorithm.IProcResults;
@@ -47,7 +46,7 @@ public class ChartUI<D extends IProcDocument<?, ?, ?>> extends DefaultItemUI<IPr
     @Override
     public JComponent getView(IProcDocumentView<D> host, IProcResults document) {
 
-        TsCollection items;
+        ec.tss.TsCollection items;
         if (items_ != null) {
             items = DocumentManager.create(items_, host.getDocument(), prefix_, false);
         } else {

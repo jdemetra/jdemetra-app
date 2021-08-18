@@ -17,11 +17,11 @@
 package ec.nbdemetra.anomalydetection.ui;
 
 import demetra.bridge.TsConverter;
+import demetra.timeseries.TsCollection;
 import demetra.ui.components.parts.HasHoveredObs;
 import demetra.ui.components.parts.HasTsCollection;
 import ec.nbdemetra.ui.properties.l2fprod.ColorChooser;
 import ec.tss.Ts;
-import ec.tss.TsCollection;
 import ec.tstoolkit.modelling.DefaultTransformationType;
 import ec.tstoolkit.modelling.arima.IPreprocessor;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
@@ -248,7 +248,7 @@ public class JTsAnomalyGrid extends JComponent {
         return worker != null ? worker.getState() : SwingWorker.StateValue.PENDING;
     }
 
-    public TsCollection getTsCollection() {
+    public ec.tss.TsCollection getTsCollection() {
         return TsConverter.fromTsCollection(grid.getTsCollection());
     }
 
@@ -288,13 +288,10 @@ public class JTsAnomalyGrid extends JComponent {
 
     private void onCollectionChange(TsCollection col) {
         TsCollection old = tsCollection;
-        tsCollection = col;
 
-        for (int i = 0; i < col.getCount(); i++) {
-            if (col.get(i) == null || col.get(i).getTsData() == null) {
-                tsCollection.remove(col.get(i));
-            }
-        }
+        tsCollection = col.stream()
+                .filter(ts -> ts != null && !ts.getData().isEmpty())
+                .collect(TsCollection.toTsCollection());
 
         refreshOutliersDisplayed();
         firePropertyChange(COLLECTION_PROPERTY, old, tsCollection);
@@ -340,16 +337,16 @@ public class JTsAnomalyGrid extends JComponent {
             grid.repaint();
             outliers = new ArrayList<>();
 
-            for (int i = 0; i < tsCollection.getCount(); i++) {
+            for (int i = 0; i < tsCollection.length(); i++) {
                 if (isCancelled()) {
                     progressHandle.finish();
                     return null;
                 }
-                if (tsCollection.get(i).getTsData().getLength() == 0) {
+                if (tsCollection.get(i).getData().isEmpty()) {
                     outliers.add(i, null);
                 } else {
                     OutlierEstimation[] o;
-                    model = preprocessor.process(tsCollection.get(i).getTsData(), null);
+                    model = preprocessor.process(TsConverter.fromTsData(tsCollection.get(i).getData()).get(), null);
                     if (model != null) {
                         o = model.outliersEstimation(true, false);
                     } else {
@@ -362,7 +359,7 @@ public class JTsAnomalyGrid extends JComponent {
                         outliers.add(i, null);
                     }
                 }
-                publish(tsCollection.get(i));
+                publish(TsConverter.fromTs(tsCollection.get(i)));
 
             }
             return null;
@@ -374,7 +371,7 @@ public class JTsAnomalyGrid extends JComponent {
 //            grid.fireTableDataChanged();
             progressCount += chunks.size();
             if (progressHandle != null && !chunks.isEmpty()) {
-                progressHandle.progress(100 * progressCount / tsCollection.getCount());
+                progressHandle.progress(100 * progressCount / tsCollection.length());
             }
         }
     }

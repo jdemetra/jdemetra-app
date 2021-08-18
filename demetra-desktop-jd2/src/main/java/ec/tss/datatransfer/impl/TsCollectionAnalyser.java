@@ -6,7 +6,6 @@ package ec.tss.datatransfer.impl;
 
 import demetra.ui.OldTsUtil;
 import ec.tss.Ts;
-import ec.tss.TsCollection;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.timeseries.TsAggregationType;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -48,7 +47,7 @@ class TsCollectionAnalyser {
         return demetra.timeseries.TsCollection.of(coll);
     }
 
-    void set(TsCollection col, boolean begin) {
+    void set(ec.tss.TsCollection col, boolean begin) {
         dates = null;
         data = null;
         titles = new String[col.getCount()];

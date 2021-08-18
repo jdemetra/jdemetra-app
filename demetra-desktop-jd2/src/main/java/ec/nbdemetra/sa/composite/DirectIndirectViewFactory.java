@@ -9,7 +9,6 @@ import demetra.ui.OldTsUtil;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.diagnostics.IBTest;
 import ec.tss.Ts;
-import ec.tss.TsCollection;
 import ec.tss.html.IHtmlElement;
 import ec.tss.html.implementation.HtmlAnova;
 import ec.tss.html.implementation.HtmlDescriptiveStatistics;
@@ -72,7 +71,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
         protected demetra.timeseries.TsCollection buildInfo(MultiSaDocument source) {
             List<demetra.timeseries.Ts> result = new ArrayList<>();
             IProcResults results = source.getResults();
-            TsCollection input = source.getInput();
+            ec.tss.TsCollection input = source.getInput();
             int icmp = 0;
             for (Ts s : input) {
                 String name = s.getName() + " (sa)";
@@ -92,7 +91,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
         protected demetra.timeseries.TsCollection buildInfo(MultiSaDocument source) {
             List<demetra.timeseries.Ts> result = new ArrayList<>();
             IProcResults results = source.getResults().get(MultiSaProcessingFactory.BENCHMARKING);
-            TsCollection input = source.getInput();
+            ec.tss.TsCollection input = source.getInput();
             int icmp = 0;
             for (Ts s : input) {
                 String name = s.getName() + " (benchmarked sa)";
@@ -191,7 +190,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
             super(IB_TEST, ResultExtractor.INSTANCE, new HtmlItemUI<IProcDocumentView<MultiSaDocument>, IProcResults>() {
                 @Override
                 protected IHtmlElement getHtmlElement(IProcDocumentView<MultiSaDocument> host, IProcResults information) {
-                    TsCollection input = host.getDocument().getInput();
+                    ec.tss.TsCollection input = host.getDocument().getInput();
                     IBTest ibtest = new IBTest();
                     if (!ibtest.process(input.getAllData())) {
                         return null;
@@ -276,9 +275,9 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
             super(MAIN_DETAILS, ResultExtractor.INSTANCE, new HtmlItemUI<IProcDocumentView<MultiSaDocument>, IProcResults>() {
                 @Override
                 protected IHtmlElement getHtmlElement(IProcDocumentView<MultiSaDocument> host, IProcResults information) {
-                    TsCollection input = host.getDocument().getInput();
-                    TsCollection sa = TsConverter.fromTsCollection(AllSaExtractor.INSTANCE.retrieve(host.getDocument()));
-                    TsCollection bsa = TsConverter.fromTsCollection(AllBenchSaExtractor.INSTANCE.retrieve(host.getDocument()));
+                    ec.tss.TsCollection input = host.getDocument().getInput();
+                    ec.tss.TsCollection sa = TsConverter.fromTsCollection(AllSaExtractor.INSTANCE.retrieve(host.getDocument()));
+                    ec.tss.TsCollection bsa = TsConverter.fromTsCollection(AllBenchSaExtractor.INSTANCE.retrieve(host.getDocument()));
                     return new DirectIndirectSummary(input, sa, bsa, host.getDocument().getSpecification());
                 }
             });

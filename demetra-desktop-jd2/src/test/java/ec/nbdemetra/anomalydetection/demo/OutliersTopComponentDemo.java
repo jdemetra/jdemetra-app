@@ -4,18 +4,18 @@
  */
 package ec.nbdemetra.anomalydetection.demo;
 
-import ec.nbdemetra.anomalydetection.ui.CheckLastBatchUI;
+import ec.nbdemetra.anomalydetection.ui.OutliersTopComponent;
 import ec.util.various.swing.BasicSwingLauncher;
 
 /**
  *
  * @author maggima
  */
-public final class CheckLastTest {
+public final class OutliersTopComponentDemo {
 
     public static void main(String[] args) {
         new BasicSwingLauncher()
-                .content(CheckLastBatchUI::new)
+                .content(OutliersTopComponent.class)
                 .launch();
     }
 }

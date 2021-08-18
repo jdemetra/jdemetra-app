@@ -27,7 +27,6 @@ import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.properties.PropertySheetDialogBuilder;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.Ts;
-import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
 import ec.tss.tsproviders.utils.DataFormat;
@@ -111,7 +110,7 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
 
     @Override
     public Object exportTsCollection(demetra.timeseries.TsCollection col) throws IOException {
-        TsCollection tmp = TsConverter.fromTsCollection(col);
+        ec.tss.TsCollection tmp = TsConverter.fromTsCollection(col);
         tmp.load(TsInformationType.Data);
         return tsCollectionToString(tmp);
     }
@@ -123,7 +122,7 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
 
     @Override
     public demetra.timeseries.TsCollection importTsCollection(Object obj) throws IOException {
-        TsCollection result = tsCollectionFromString((String) obj);
+        ec.tss.TsCollection result = tsCollectionFromString((String) obj);
         if (result != null) {
             return TsConverter.toTsCollection(result);
         }
@@ -207,7 +206,7 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
     }
 
     //writes the collection of ts in a tab delimited txt format into a string
-    public String tsCollectionToString(TsCollection col) throws IOException {
+    public String tsCollectionToString(ec.tss.TsCollection col) throws IOException {
         if (col.isEmpty()) {
             return "";
         }
@@ -287,11 +286,11 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
         return result.toString();
     }
 
-    public TsCollection tsCollectionFromString(String text) throws IOException {
+    public ec.tss.TsCollection tsCollectionFromString(String text) throws IOException {
         IParser<Date> periodParser = FALLBACK_PARSER.get();
         IParser<Number> valueParser = Parsers.onNumberFormat(numberFormat);
 
-        TsCollection result = null;
+        ec.tss.TsCollection result = null;
         try {
             int rows = 0;
             int cols = 0;

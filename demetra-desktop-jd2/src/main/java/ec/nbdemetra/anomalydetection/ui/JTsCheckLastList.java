@@ -80,6 +80,8 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     public static final String COLOR_VALUES_PROPERTY = "colorValues";
     public static final String LAST_CHECKS_PROPERTY = "lastChecks";
     public static final String SPEC_PROPERTY = "spec";
+    public static final String COLLECTION_CHANGE = "collectionChange";
+    public static final String SELECTION_PROPERTY = "itemSelection";
 
     @lombok.experimental.Delegate(types = HasTsCollection.class)
     private final JTsTable table;
@@ -260,7 +262,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         JMenu sub = new JMenu("Export results to");
         sub.add(new CopyToClipoard().toAction(this)).setText("Clipboard");
-        result.add(sub, index++);
+        result.insert(sub, index++);
 
         item = new JMenuItem(new AbstractAction("Original Order") {
             @Override
@@ -269,7 +271,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
             }
         });
         item.setEnabled(true);
-        result.add(item, index++);
+        result.insert(item, index++);
 
         return result;
     }
@@ -337,7 +339,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         fireTableDataChanged();
 
-        firePropertyChange(CheckLastBatchUI.COLLECTION_CHANGE, null, collection);
+        firePropertyChange(COLLECTION_CHANGE, null, collection);
         onSelectionChange();
     }
 
@@ -354,7 +356,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
                 table.repaint();
             }
         }
-        firePropertyChange(CheckLastBatchUI.SELECTION_PROPERTY, null, selected);
+        firePropertyChange(SELECTION_PROPERTY, null, selected);
     }
 
     public AnomalyItem put(String key, AnomalyItem value) {
@@ -460,7 +462,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         @Override
         public JCommand.ActionAdapter toAction(JTsCheckLastList list) {
-            return super.toAction(list).withWeakPropertyChangeListener(list, CheckLastBatchUI.COLLECTION_CHANGE);
+            return super.toAction(list).withWeakPropertyChangeListener(list, COLLECTION_CHANGE);
         }
     }
 

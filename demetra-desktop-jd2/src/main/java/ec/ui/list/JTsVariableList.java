@@ -27,7 +27,6 @@ import demetra.ui.util.InputMaps;
 import demetra.ui.util.KeyStrokes;
 import ec.tss.DynamicTsVariable;
 import ec.tss.Ts;
-import ec.tss.TsCollection;
 import ec.tss.TsInformationType;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.data.DataBlock;
@@ -206,7 +205,7 @@ public class JTsVariableList extends JComponent implements HasTsAction {
         }
     }
 
-    public void appendTsVariables(TsCollection coll) {
+    public void appendTsVariables(ec.tss.TsCollection coll) {
         for (Ts s : coll) {
             String name = variables.nextName();
             TsVariable var;
