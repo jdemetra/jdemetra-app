@@ -17,7 +17,7 @@
 package ec.ui.view;
 
 import demetra.timeseries.TsCollection;
-import demetra.ui.OldTsUtil;
+import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.components.parts.HasColorScheme;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsData;

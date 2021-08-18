@@ -5,7 +5,7 @@
 package ec.nbdemetra.sa.composite;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.OldTsUtil;
+import ec.nbdemetra.ui.OldTsUtil;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.diagnostics.IBTest;
 import ec.tss.Ts;

@@ -17,6 +17,7 @@
 package ec.nbdemetra.spreadsheet;
 
 import demetra.bridge.TsConverter;
+import demetra.math.matrices.MatrixType;
 import demetra.timeseries.TsCollection;
 import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
@@ -30,8 +31,6 @@ import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
 import ec.tss.tsproviders.spreadsheet.engine.TsExportOptions;
 import ec.tss.tsproviders.spreadsheet.engine.TsImportOptions;
 import ec.tss.tsproviders.utils.DataFormat;
-import ec.tstoolkit.data.Table;
-import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.timeseries.TsAggregationType;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.util.spreadsheet.Book;
@@ -105,32 +104,40 @@ final class SpreadSheetTssTransferSupport {
         }
     }
 
-    public boolean canExportMatrix(Matrix matrix) {
+    public boolean canImportMatrix(Object obj) {
+        return false;
+    }
+
+    public MatrixType importMatrix(Object obj) throws IOException, ClassCastException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean canExportMatrix(MatrixType matrix) {
         return resource.getInternalConfig().exportMatrix && !matrix.isEmpty();
     }
 
-    public Object exportMatrix(Matrix matrix) throws IOException {
-        return resource.fromBook(resource.getFactory().fromMatrix(matrix).toBook());
+    public Object exportMatrix(MatrixType matrix) throws IOException {
+        return resource.fromBook(resource.getFactory().fromMatrix(TsConverter.fromMatrix(matrix)).toBook());
     }
 
     public boolean canImportTable(Object obj) {
         return resource.getInternalConfig().importTable && resource.isInstance(obj);
     }
 
-    public Table<?> importTable(Object obj) throws IOException, ClassCastException {
+    public demetra.util.Table<?> importTable(Object obj) throws IOException, ClassCastException {
         try (Book book = resource.toBook(obj)) {
             return book.getSheetCount() > 0
-                    ? resource.getFactory().toTable(book.getSheet(0))
-                    : new Table<>(0, 0);
+                    ? TsConverter.toTable(resource.getFactory().toTable(book.getSheet(0)))
+                    : new demetra.util.Table<>(0, 0);
         }
     }
 
-    public boolean canExportTable(Table<?> table) {
+    public boolean canExportTable(demetra.util.Table<?> table) {
         return resource.getInternalConfig().exportTable;
     }
 
-    public Object exportTable(Table<?> table) throws IOException {
-        return resource.fromBook(resource.getFactory().fromTable(table).toBook());
+    public Object exportTable(demetra.util.Table<?> table) throws IOException {
+        return resource.fromBook(resource.getFactory().fromTable(TsConverter.fromTable(table)).toBook());
     }
 
     public abstract static class AbstractBean {
@@ -239,20 +246,20 @@ final class SpreadSheetTssTransferSupport {
 
     public abstract static class AbstractConverter<T extends AbstractBean> implements Converter<T, Config> {
 
-        private static final BooleanProperty IMPORT_TS = BooleanProperty.of( "importEnabled", true);
-        private static final BooleanProperty EXPORT_TS = BooleanProperty.of( "exportEnabled", true);
+        private static final BooleanProperty IMPORT_TS = BooleanProperty.of("importEnabled", true);
+        private static final BooleanProperty EXPORT_TS = BooleanProperty.of("exportEnabled", true);
         private static final Config.Converter<DataFormat> DATAFORMAT = new DataFormatParam(DataFormat.DEFAULT, "locale", "datePattern", "numberPattern");
         private static final Property<TsFrequency> FREQUENCY = Property.of("frequency", TsFrequency.Undefined, Parser.onEnum(TsFrequency.class), Formatter.onEnum());
         private static final Property<TsAggregationType> AGGREGATION_TYPE = Property.of("aggregationType", TsAggregationType.None, Parser.onEnum(TsAggregationType.class), Formatter.onEnum());
-        private static final BooleanProperty CLEAN_MISSING = BooleanProperty.of( "cleanMissing", true);
-        private static final BooleanProperty VERTICAL = BooleanProperty.of( "vertical", true);
-        private static final BooleanProperty SHOW_DATES = BooleanProperty.of( "showDates", true);
-        private static final BooleanProperty SHOW_TITLE = BooleanProperty.of( "showTitle", true);
-        private static final BooleanProperty BEGIN_PERIOD = BooleanProperty.of( "beginPeriod", true);
-        private static final BooleanProperty IMPORT_MATRIX = BooleanProperty.of( "importMatrix", true);
-        private static final BooleanProperty EXPORT_MATRIX = BooleanProperty.of( "exportMatrix", true);
-        private static final BooleanProperty IMPORT_TABLE = BooleanProperty.of( "importTable", true);
-        private static final BooleanProperty EXPORT_TABLE = BooleanProperty.of( "exportTable", true);
+        private static final BooleanProperty CLEAN_MISSING = BooleanProperty.of("cleanMissing", true);
+        private static final BooleanProperty VERTICAL = BooleanProperty.of("vertical", true);
+        private static final BooleanProperty SHOW_DATES = BooleanProperty.of("showDates", true);
+        private static final BooleanProperty SHOW_TITLE = BooleanProperty.of("showTitle", true);
+        private static final BooleanProperty BEGIN_PERIOD = BooleanProperty.of("beginPeriod", true);
+        private static final BooleanProperty IMPORT_MATRIX = BooleanProperty.of("importMatrix", true);
+        private static final BooleanProperty EXPORT_MATRIX = BooleanProperty.of("exportMatrix", true);
+        private static final BooleanProperty IMPORT_TABLE = BooleanProperty.of("importTable", true);
+        private static final BooleanProperty EXPORT_TABLE = BooleanProperty.of("exportTable", true);
 
         abstract protected Config.Builder newBuilder();
 

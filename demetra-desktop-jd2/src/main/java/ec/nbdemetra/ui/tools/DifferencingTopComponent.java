@@ -6,7 +6,7 @@ package ec.nbdemetra.ui.tools;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.ui.OldTsUtil;
+import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;

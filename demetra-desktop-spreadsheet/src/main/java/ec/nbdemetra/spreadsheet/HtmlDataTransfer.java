@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.OldDataTransferSpi;
 import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
 import demetra.ui.datatransfer.DataTransferSpi;
@@ -45,9 +44,8 @@ import org.openide.util.lookup.ServiceProviders;
  */
 @ServiceProviders({
     @ServiceProvider(service = DataTransferSpi.class, position = 1000)
-    ,@ServiceProvider(service = OldDataTransferSpi.class, position = 1500)
 })
-public final class HtmlDataTransfer implements DataTransferSpi, OldDataTransferSpi, Configurable, Persistable, ConfigEditor {
+public final class HtmlDataTransfer implements DataTransferSpi, Configurable, Persistable, ConfigEditor {
 
     private final DataFlavor dataFlavor;
     @lombok.experimental.Delegate

@@ -4,7 +4,9 @@
  */
 package demetra.ui.datatransfer;
 
+import demetra.math.matrices.MatrixType;
 import demetra.timeseries.TsCollection;
+import demetra.util.Table;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -79,5 +81,45 @@ public final class LocalObjectDataTransfer implements DataTransferSpi {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean canExportMatrix(MatrixType matrix) {
+        return true;
+    }
+
+    @Override
+    public Object exportMatrix(MatrixType matrix) throws IOException {
+        return matrix;
+    }
+
+    @Override
+    public boolean canImportMatrix(Object obj) {
+        return obj instanceof MatrixType;
+    }
+
+    @Override
+    public MatrixType importMatrix(Object obj) throws IOException, ClassCastException {
+        return (MatrixType) obj;
+    }
+
+    @Override
+    public boolean canExportTable(Table<?> table) {
+        return true;
+    }
+
+    @Override
+    public Object exportTable(Table<?> table) throws IOException {
+        return table;
+    }
+
+    @Override
+    public boolean canImportTable(Object obj) {
+        return obj instanceof Table;
+    }
+
+    @Override
+    public Table<?> importTable(Object obj) throws IOException, ClassCastException {
+        return (Table<?>) obj;
     }
 }

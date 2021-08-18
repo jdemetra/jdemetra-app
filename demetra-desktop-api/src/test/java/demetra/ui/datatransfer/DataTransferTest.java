@@ -16,9 +16,11 @@
  */
 package demetra.ui.datatransfer;
 
+import demetra.math.matrices.MatrixType;
 import demetra.timeseries.TsUnit;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
+import demetra.util.Table;
 import internal.ui.Providers;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -45,10 +47,16 @@ public class DataTransferTest {
         assertThatThrownBy(() -> empty.fromTs(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.fromTsCollection(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.fromTsData(null)).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> empty.fromMatrix(null)).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> empty.fromTable(null)).isInstanceOf(NullPointerException.class);
+
         assertThatThrownBy(() -> empty.toTs(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.toTsCollection(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.toTsCollectionStream(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.toTsData(null)).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> empty.toMatrix(null)).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> empty.toTable(null)).isInstanceOf(NullPointerException.class);
+
         assertThatThrownBy(() -> empty.isTssTransferable(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.canImport((Transferable) null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.canImport((DataFlavor[]) null)).isInstanceOf(NullPointerException.class);
@@ -56,6 +64,8 @@ public class DataTransferTest {
         assertThat(empty.fromTs(Ts.builder().build()).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTsCollection(demetra.timeseries.TsCollection.EMPTY).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTsData(demetra.timeseries.TsData.random(TsUnit.YEAR, 0)).getTransferDataFlavors()).isEmpty();
+        assertThat(empty.fromMatrix(MatrixType.of(new double[]{3.14}, 1, 1)).getTransferDataFlavors()).isEmpty();
+        assertThat(empty.fromTable(new Table<>(1, 1)).getTransferDataFlavors()).isEmpty();
     }
 
     @Test
@@ -119,6 +129,32 @@ public class DataTransferTest {
                 throw new RuntimeException();
             }
         }).toTsCollection(t)).isEmpty();
+
+        assertThat(of(new CustomHandler(DataFlavor.stringFlavor) {
+            @Override
+            public boolean canExportMatrix(MatrixType matrix) {
+                return true;
+            }
+        }).toMatrix(t)).isEmpty();
+
+        assertThat(of(new CustomHandler(DataFlavor.stringFlavor) {
+            @Override
+            public boolean canExportMatrix(MatrixType matrix) {
+                return true;
+            }
+
+            @Override
+            public String getName() {
+                throw new RuntimeException();
+            }
+        }).toMatrix(t)).isEmpty();
+
+        assertThat(of(new CustomHandler(DataFlavor.stringFlavor) {
+            @Override
+            public DataFlavor getDataFlavor() {
+                throw new RuntimeException();
+            }
+        }).toMatrix(t)).isEmpty();
     }
 
     private static DataTransfer of(DataTransferSpi... handlers) {
@@ -165,6 +201,46 @@ public class DataTransferTest {
 
         @Override
         public TsCollection importTsCollection(Object obj) throws IOException, ClassCastException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public boolean canExportMatrix(MatrixType matrix) {
+            return false;
+        }
+
+        @Override
+        public Object exportMatrix(MatrixType matrix) throws IOException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public boolean canImportMatrix(Object obj) {
+            return false;
+        }
+
+        @Override
+        public MatrixType importMatrix(Object obj) throws IOException, ClassCastException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public boolean canExportTable(Table<?> table) {
+            return false;
+        }
+
+        @Override
+        public Object exportTable(Table<?> table) throws IOException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public boolean canImportTable(Object obj) {
+            return false;
+        }
+
+        @Override
+        public Table<?> importTable(Object obj) throws IOException, ClassCastException {
             throw new UnsupportedOperationException("Not supported yet.");
         }
     }

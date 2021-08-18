@@ -17,7 +17,7 @@
 package ec.ui.chart;
 
 import demetra.timeseries.TsCollection;
-import demetra.ui.OldTsUtil;
+import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
 import demetra.ui.util.KeyStrokes;

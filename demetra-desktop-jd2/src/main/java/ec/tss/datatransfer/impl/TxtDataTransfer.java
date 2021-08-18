@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.ImmutableList;
 import demetra.bridge.TsConverter;
+import demetra.math.matrices.MatrixType;
 import demetra.ui.Config;
 import demetra.ui.ConfigEditor;
 import demetra.ui.beans.BeanHandler;
@@ -33,7 +34,6 @@ import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IParser;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tss.tsproviders.utils.Parsers;
-import ec.tstoolkit.data.Table;
 import ec.tstoolkit.maths.matrices.Matrix;
 import java.awt.datatransfer.DataFlavor;
 import java.beans.IntrospectionException;
@@ -45,7 +45,6 @@ import java.util.Date;
 import java.util.Locale;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.OldDataTransferSpi;
 import demetra.ui.datatransfer.DataTransferSpi;
 import nbbrd.io.text.BooleanProperty;
 import org.openide.util.lookup.ServiceProviders;
@@ -59,10 +58,9 @@ import demetra.ui.beans.BeanConfigurator;
  * @author Jean Palate
  */
 @ServiceProviders({
-    @ServiceProvider(service = DataTransferSpi.class, position = 1000),
-    @ServiceProvider(service = OldDataTransferSpi.class, position = 2000)
+    @ServiceProvider(service = DataTransferSpi.class, position = 1000)
 })
-public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSpi, Configurable, Persistable, ConfigEditor {
+public final class TxtDataTransfer implements DataTransferSpi, Configurable, Persistable, ConfigEditor {
 
     private static final char DELIMITOR = '\t';
     private static final String NEWLINE = StandardSystemProperty.LINE_SEPARATOR.value();
@@ -84,7 +82,7 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
     public int getPosition() {
         return 1000;
     }
-    
+
     //<editor-fold defaultstate="collapsed" desc="INamedService">
     @Override
     public String getName() {
@@ -130,12 +128,12 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
     }
 
     @Override
-    public boolean canExportMatrix(Matrix matrix) {
+    public boolean canExportMatrix(MatrixType matrix) {
         return config.exportMatrix && !matrix.isEmpty();
     }
 
     @Override
-    public Object exportMatrix(Matrix matrix) throws IOException {
+    public Object exportMatrix(MatrixType matrix) throws IOException {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < matrix.getRowsCount(); i++) {
             result.append(numberFormat.format(matrix.get(i, 0)));
@@ -148,12 +146,22 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
     }
 
     @Override
-    public boolean canExportTable(Table<?> table) {
+    public boolean canImportMatrix(Object obj) {
+        return false;
+    }
+
+    @Override
+    public MatrixType importMatrix(Object obj) throws IOException, ClassCastException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean canExportTable(demetra.util.Table<?> table) {
         return config.exportTable && !table.isEmpty();
     }
 
     @Override
-    public Object exportTable(Table<?> table) throws IOException {
+    public Object exportTable(demetra.util.Table<?> table) throws IOException {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < table.getRowsCount(); i++) {
             result.append(valueToString(table.get(i, 0)));
@@ -163,6 +171,16 @@ public final class TxtDataTransfer implements DataTransferSpi, OldDataTransferSp
             result.append(NEWLINE);
         }
         return result.toString();
+    }
+
+    @Override
+    public boolean canImportTable(Object obj) {
+        return false;
+    }
+
+    @Override
+    public demetra.util.Table<?> importTable(Object obj) throws IOException, ClassCastException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     //</editor-fold>
 

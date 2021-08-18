@@ -16,6 +16,7 @@
  */
 package demetra.ui.datatransfer;
 
+import demetra.math.matrices.MatrixType;
 import nbbrd.design.VisibleForTesting;
 import demetra.timeseries.TsData;
 import demetra.timeseries.Ts;
@@ -23,6 +24,7 @@ import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
 import demetra.ui.GlobalService;
 import demetra.ui.beans.PropertyChangeSource;
+import demetra.util.Table;
 import ec.util.various.swing.OnEDT;
 import internal.ui.Providers;
 import internal.ui.datatransfer.Magic;
@@ -36,6 +38,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -88,7 +91,7 @@ public class DataTransfer implements PropertyChangeSource {
     private final Providers<DataTransferSpi> providers;
     private final Logger logger;
     private boolean validClipboard;
-    
+
     public DataTransfer() {
         this(new DataTransferSpiLoader()::get, log, false);
         clipboardValidator.register(Toolkit.getDefaultToolkit().getSystemClipboard());
@@ -106,6 +109,11 @@ public class DataTransfer implements PropertyChangeSource {
         boolean old = this.validClipboard;
         this.validClipboard = validClipboard;
         broadcaster.firePropertyChange(VALID_CLIPBOARD_PROPERTY, old, this.validClipboard);
+    }
+    
+    @NonNull
+    public Collection<? extends DataTransferSpi> getProviders() {
+        return providers.get();
     }
 
     @OnEDT
@@ -157,6 +165,32 @@ public class DataTransfer implements PropertyChangeSource {
     public Transferable fromTsData(@NonNull TsData data) {
         requireNonNull(data);
         return fromTs(Ts.builder().data(data).build());
+    }
+
+    /**
+     * Creates a Transferable from a matrix.
+     *
+     * @param data a non-null {@link MatrixType}
+     * @return a never-null {@link Transferable}
+     */
+    @OnEDT
+    @NonNull
+    public Transferable fromMatrix(@NonNull MatrixType data) {
+        requireNonNull(data);
+        return asTransferable(data, providers.stream(), MatrixHelper.INSTANCE);
+    }
+
+    /**
+     * Creates a Transferable from a Table.
+     *
+     * @param data a non-null {@link Table}
+     * @return a never-null {@link Transferable}
+     */
+    @OnEDT
+    @NonNull
+    public Transferable fromTable(@NonNull Table<?> data) {
+        requireNonNull(data);
+        return asTransferable(data, providers.stream(), TableHelper.INSTANCE);
     }
 
     /**
@@ -243,6 +277,38 @@ public class DataTransfer implements PropertyChangeSource {
                 .map(ts -> Magic.load(ts, TsInformationType.Data).getData());
     }
 
+    /**
+     * Retrieves a matrix from a transferable.
+     *
+     * @param transferable a non-null object
+     * @return an optional {@link MatrixType}
+     */
+    @OnEDT
+    @NonNull
+    public Optional<MatrixType> toMatrix(@NonNull Transferable transferable) {
+        return providers.stream()
+                .filter(onDataFlavors(transferable.getTransferDataFlavors()))
+                .map(o -> toMatrix(o, transferable, logger))
+                .filter(Objects::nonNull)
+                .findFirst();
+    }
+
+    /**
+     * Retrieves a Table from a transferable.
+     *
+     * @param transferable a non-null object
+     * @return an optional {@link Table}
+     */
+    @OnEDT
+    @NonNull
+    public Optional<Table<?>> toTable(@NonNull Transferable transferable) {
+        return (Optional<Table<?>>) providers.stream()
+                .filter(onDataFlavors(transferable.getTransferDataFlavors()))
+                .map(o -> toTable(o, transferable, logger))
+                .filter(Objects::nonNull)
+                .findFirst();
+    }
+
     private final class ClipboardValidator implements FlavorListener {
 
         private boolean isValid(Clipboard clipboard) {
@@ -303,6 +369,34 @@ public class DataTransfer implements PropertyChangeSource {
         return null;
     }
 
+    private static MatrixType toMatrix(DataTransferSpi o, Transferable t, Logger logger) {
+        try {
+            Object data = t.getTransferData(requireNonNull(o.getDataFlavor()));
+            if (o.canImportMatrix(data)) {
+                return requireNonNull(o.importMatrix(data));
+            }
+        } catch (UnsupportedFlavorException | IOException ex) {
+            logExpected(logger, o, ex, "getting matrix");
+        } catch (RuntimeException ex) {
+            logUnexpected(logger, o, ex, "getting matrix");
+        }
+        return null;
+    }
+
+    private static Table<?> toTable(DataTransferSpi o, Transferable t, Logger logger) {
+        try {
+            Object data = t.getTransferData(requireNonNull(o.getDataFlavor()));
+            if (o.canImportTable(data)) {
+                return requireNonNull(o.importTable(data));
+            }
+        } catch (UnsupportedFlavorException | IOException ex) {
+            logExpected(logger, o, ex, "getting table");
+        } catch (RuntimeException ex) {
+            logUnexpected(logger, o, ex, "getting table");
+        }
+        return null;
+    }
+
     @OnEDT
     private static <T> Transferable asTransferable(T data, Stream<? extends DataTransferSpi> allHandlers, TypeHelper<T> helper) {
         return new MultiTransferable<>(
@@ -339,6 +433,36 @@ public class DataTransfer implements PropertyChangeSource {
         @Override
         public Object getTransferData(TsCollection data, DataTransferSpi handler) throws IOException {
             return handler.exportTsCollection(data);
+        }
+    }
+
+    private static final class MatrixHelper implements TypeHelper<MatrixType> {
+
+        private static final MatrixHelper INSTANCE = new MatrixHelper();
+
+        @Override
+        public boolean canTransferData(MatrixType data, DataTransferSpi handler) {
+            return handler.canExportMatrix(data);
+        }
+
+        @Override
+        public Object getTransferData(MatrixType data, DataTransferSpi handler) throws IOException {
+            return handler.exportMatrix(data);
+        }
+    }
+
+    private static final class TableHelper implements TypeHelper<Table<?>> {
+
+        private static final TableHelper INSTANCE = new TableHelper();
+
+        @Override
+        public boolean canTransferData(Table<?> data, DataTransferSpi handler) {
+            return handler.canExportTable(data);
+        }
+
+        @Override
+        public Object getTransferData(Table<?> data, DataTransferSpi handler) throws IOException {
+            return handler.exportTable(data);
         }
     }
 

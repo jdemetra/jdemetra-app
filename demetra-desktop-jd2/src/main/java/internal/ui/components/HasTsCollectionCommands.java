@@ -57,10 +57,8 @@ import org.openide.NotifyDescriptor;
 import org.openide.util.ImageUtilities;
 import org.openide.util.WeakListeners;
 import java.awt.Image;
-import demetra.ui.OldDataTransfer;
 import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
-import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -476,7 +474,7 @@ public class HasTsCollectionCommands {
         @Override
         public boolean isEnabled(HasTsCollection c) {
             return !c.getTsUpdateMode().isReadOnly()
-                    && OldDataTransfer.getDefault().isValidClipboard();
+                    && DataTransfer.getDefault().isValidClipboard();
         }
 
         @Override
@@ -490,10 +488,10 @@ public class HasTsCollectionCommands {
             if (c instanceof Component) {
                 result.withWeakPropertyChangeListener((Component) c, UDPATE_MODE_PROPERTY);
             }
-            OldDataTransfer source = OldDataTransfer.getDefault();
+            DataTransfer source = DataTransfer.getDefault();
             PropertyChangeListener realListener = evt -> result.refreshActionState();
             result.putValue("TssTransferSupport", realListener);
-            source.addPropertyChangeListener(OldDataTransfer.VALID_CLIPBOARD_PROPERTY, WeakListeners.propertyChange(realListener, source));
+            source.addPropertyChangeListener(DataTransfer.VALID_CLIPBOARD_PROPERTY, WeakListeners.propertyChange(realListener, source));
             return result;
         }
     }

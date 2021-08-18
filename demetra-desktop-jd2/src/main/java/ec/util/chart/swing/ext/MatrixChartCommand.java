@@ -5,6 +5,8 @@
 package ec.util.chart.swing.ext;
 
 import com.google.common.base.Preconditions;
+import demetra.bridge.TsConverter;
+import demetra.math.matrices.MatrixType;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.util.chart.swing.ChartCommand;
 import java.awt.Toolkit;
@@ -13,7 +15,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
-import demetra.ui.OldDataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  * A command that extract a matrix from a chart and put it into the system
@@ -25,8 +27,8 @@ public abstract class MatrixChartCommand extends ChartCommand {
 
     @Override
     public void execute(ChartPanel chartPanel) {
-        Matrix matrix = toMatrix(chartPanel);
-        Transferable t = OldDataTransfer.getDefault().fromMatrix(matrix);
+        MatrixType matrix = TsConverter.toMatrix(toMatrix(chartPanel));
+        Transferable t = DataTransfer.getDefault().fromMatrix(matrix);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
     }
 

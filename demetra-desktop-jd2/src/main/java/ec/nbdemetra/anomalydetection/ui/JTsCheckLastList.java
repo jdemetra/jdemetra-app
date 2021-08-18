@@ -64,8 +64,8 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
-import demetra.ui.OldDataTransfer;
 import demetra.ui.components.TmpHasTsCollection;
+import demetra.ui.datatransfer.DataTransfer;
 import java.util.function.Predicate;
 
 /**
@@ -517,7 +517,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         @Override
         public void execute(JTsCheckLastList component) throws Exception {
-            Transferable t = OldDataTransfer.getDefault().fromTable(toTable(component));
+            Transferable t = DataTransfer.getDefault().fromTable(TsConverter.toTable(toTable(component)));
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
     }

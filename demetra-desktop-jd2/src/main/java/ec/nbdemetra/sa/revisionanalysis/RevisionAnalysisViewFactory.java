@@ -18,7 +18,7 @@ package ec.nbdemetra.sa.revisionanalysis;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
-import demetra.ui.OldTsUtil;
+import ec.nbdemetra.ui.OldTsUtil;
 import ec.tss.sa.revisions.RevisionAnalysisDocument;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.CompositeResults.Node;

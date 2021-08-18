@@ -18,7 +18,7 @@ package ec.ui.list;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.NamedService;
-import demetra.ui.OldTsUtil;
+import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.TsActions;
 import demetra.ui.TsManager;
 import demetra.ui.util.NbComponents;

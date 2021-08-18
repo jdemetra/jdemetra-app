@@ -50,10 +50,10 @@ import org.openide.modules.ModuleInstall;
 import org.openide.util.Lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import demetra.ui.OldDataTransfer;
-import demetra.ui.OldDataTransferSpi;
 import demetra.ui.Persistable;
 import demetra.ui.TsManager;
+import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.datatransfer.DataTransferSpi;
 import java.util.stream.Collectors;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.Parser;
@@ -105,25 +105,25 @@ public final class Installer extends ModuleInstall {
         }
     }
 
-    private static final class FormattersStep extends InstallerStep.LookupStep<OldDataTransferSpi> {
+    private static final class FormattersStep extends InstallerStep.LookupStep<DataTransferSpi> {
 
         FormattersStep() {
-            super(OldDataTransferSpi.class);
+            super(DataTransferSpi.class);
         }
 
         @Override
-        protected void onResultChanged(Lookup.Result<OldDataTransferSpi> lookup) {
+        protected void onResultChanged(Lookup.Result<DataTransferSpi> lookup) {
             // TODO: loadConfig
         }
 
         @Override
-        protected void onRestore(Lookup.Result<OldDataTransferSpi> lookup) {
+        protected void onRestore(Lookup.Result<DataTransferSpi> lookup) {
             loadConfig(lookup.allInstances(), prefs());
         }
 
         @Override
-        protected void onClose(Lookup.Result<OldDataTransferSpi> lookup) {
-            storeConfig(OldDataTransfer.getDefault().getProviders(), prefs());
+        protected void onClose(Lookup.Result<DataTransferSpi> lookup) {
+            storeConfig(DataTransfer.getDefault().getProviders(), prefs());
         }
     }
 

@@ -19,7 +19,7 @@ package internal.ui.components;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.OldTsUtil;
+import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.components.TsSelectionBridge;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.tools.ChartTopComponent;

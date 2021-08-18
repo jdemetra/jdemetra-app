@@ -49,7 +49,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
-import demetra.ui.OldDataTransfer;
 import demetra.ui.datatransfer.DataTransfer;
 
 /**
@@ -258,7 +257,7 @@ final class AnomalyDetectionChart extends JComponent {
 
         @Override
         public void execute(AnomalyDetectionChart c) throws Exception {
-            Transferable t = OldDataTransfer.getDefault().fromTable(toTable(c.model.getOutliers()));
+            Transferable t = DataTransfer.getDefault().fromTable(TsConverter.toTable(toTable(c.model.getOutliers())));
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
 

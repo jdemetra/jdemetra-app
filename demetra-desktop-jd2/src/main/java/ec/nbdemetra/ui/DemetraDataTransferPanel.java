@@ -20,8 +20,8 @@ import demetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.ns.NamedServiceNode;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
-import demetra.ui.OldDataTransfer;
 import demetra.ui.actions.Configurable;
+import demetra.ui.datatransfer.DataTransfer;
 
 final class DemetraDataTransferPanel extends javax.swing.JPanel implements ExplorerManager.Provider {
 
@@ -100,7 +100,7 @@ final class DemetraDataTransferPanel extends javax.swing.JPanel implements Explo
 
     void load() {
         em.setRootContext(new AbstractNodeBuilder()
-                .add(OldDataTransfer.getDefault().getProviders().stream().map(NamedServiceNode::new))
+                .add(DataTransfer.getDefault().getProviders().stream().map(NamedServiceNode::new))
                 .name("Data Transfer handler")
                 .build());
     }

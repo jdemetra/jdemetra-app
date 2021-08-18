@@ -18,6 +18,7 @@ package ec.util.grid.swing.ext;
 
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
+import demetra.bridge.TsConverter;
 import ec.tstoolkit.data.Table;
 import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
@@ -26,7 +27,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ListSelectionModel;
-import demetra.ui.OldDataTransfer;
+import demetra.ui.datatransfer.DataTransfer;
 
 /**
  *
@@ -37,7 +38,7 @@ public abstract class TableGridCommand extends JCommand<JGrid> {
     @Override
     public void execute(JGrid grid) {
         Table<?> table = toTable(grid);
-        Transferable t = OldDataTransfer.getDefault().fromTable(table);
+        Transferable t = DataTransfer.getDefault().fromTable(TsConverter.toTable(table));
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
     }
 

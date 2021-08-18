@@ -1,4 +1,4 @@
-package demetra.ui;
+package ec.nbdemetra.ui;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;

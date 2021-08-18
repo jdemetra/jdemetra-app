@@ -16,6 +16,7 @@
  */
 package demetra.ui.datatransfer;
 
+import demetra.math.matrices.MatrixType;
 import demetra.timeseries.TsCollection;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
@@ -23,6 +24,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import demetra.ui.NamedService;
+import demetra.util.Table;
 import internal.ui.NetBeansLookup;
 import nbbrd.service.Quantifier;
 import nbbrd.service.ServiceDefinition;
@@ -43,7 +45,7 @@ public interface DataTransferSpi extends NamedService {
 
     @ServiceSorter
     int getPosition();
-    
+
     @NonNull
     DataFlavor getDataFlavor();
 
@@ -60,4 +62,32 @@ public interface DataTransferSpi extends NamedService {
     @OnEDT
     @NonNull
     TsCollection importTsCollection(@NonNull Object obj) throws IOException, ClassCastException;
+
+    @OnEDT
+    boolean canExportMatrix(@NonNull MatrixType matrix);
+
+    @OnAnyThread
+    @NonNull
+    Object exportMatrix(@NonNull MatrixType matrix) throws IOException;
+
+    @OnEDT
+    boolean canImportMatrix(@NonNull Object obj);
+
+    @OnEDT
+    @NonNull
+    MatrixType importMatrix(@NonNull Object obj) throws IOException, ClassCastException;
+
+    @OnEDT
+    boolean canExportTable(@NonNull Table<?> table);
+
+    @OnAnyThread
+    @NonNull
+    Object exportTable(@NonNull Table<?> table) throws IOException;
+
+    @OnEDT
+    boolean canImportTable(@NonNull Object obj);
+
+    @OnEDT
+    @NonNull
+    Table<?> importTable(@NonNull Object obj) throws IOException, ClassCastException;
 }

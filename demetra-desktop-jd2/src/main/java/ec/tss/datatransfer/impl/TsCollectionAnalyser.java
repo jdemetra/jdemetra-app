@@ -4,7 +4,7 @@
  */
 package ec.tss.datatransfer.impl;
 
-import demetra.ui.OldTsUtil;
+import ec.nbdemetra.ui.OldTsUtil;
 import ec.tss.Ts;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.timeseries.TsAggregationType;
