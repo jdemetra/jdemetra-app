@@ -24,10 +24,10 @@ import ec.ui.list.JTsVariableList;
 import java.awt.Component;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
-@ServiceProvider(service = DemoComponentFactory.class)
-public final class TsVariableListFactory extends DemoComponentFactory {
+@ServiceProvider
+public final class TsVariableListFactory implements DemoComponentFactory {
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {

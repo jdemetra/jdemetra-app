@@ -16,14 +16,12 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import demetra.bridge.TsConverter;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.TsActions;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
-import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import static internal.TsEventHelper.SHOULD_BE_NONE;
@@ -42,6 +40,7 @@ import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import demetra.ui.TsCollectable;
+import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import java.util.Optional;
 
 /**
@@ -88,7 +87,6 @@ abstract public class DataSetNode extends AbstractNode {
                     abilities.add(new OpenableImpl());
                     break;
             }
-            abilities.add(NodeAnnotator.Support.getDefault());
             abilities.add(new TsCollectableImpl());
         }
         // 3. Name and display name
@@ -110,13 +108,13 @@ abstract public class DataSetNode extends AbstractNode {
     @Override
     public Image getIcon(int type) {
         Image image = lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
-        return getLookup().lookup(NodeAnnotator.Support.class).annotateIcon(this, image);
+        return NodeAnnotator.getDefault().annotateIcon(this, image);
     }
 
     @Override
     public Image getOpenedIcon(int type) {
         Image image = lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
-        return getLookup().lookup(NodeAnnotator.Support.class).annotateIcon(this, image);
+        return NodeAnnotator.getDefault().annotateIcon(this, image);
     }
 
     @Override

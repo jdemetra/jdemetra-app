@@ -52,8 +52,8 @@ public final class GlobalServiceProcessor extends AbstractProcessor {
         Messager m = processingEnv.getMessager();
         for (Element e : roundEnv.getElementsAnnotatedWith(GlobalService.class)) {
 
-            if (e.getModifiers().contains(Modifier.FINAL)) {
-                m.printMessage(kind, "Cannot be final", e);
+            if (!e.getModifiers().contains(Modifier.FINAL)) {
+                m.printMessage(kind, "Must be final", e);
                 continue;
             }
 

@@ -25,16 +25,17 @@ import demetra.ui.util.FontAwesomeUtils;
 import static java.beans.BeanInfo.ICON_COLOR_16x16;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
-import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.components.parts.HasTsData;
+import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
 import ec.tss.tsproviders.utils.OptionalTsData;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentHandler.class)
-public final class TsDataAbleHandler extends DemoComponentHandler.InstanceOf<HasTsData> {
+@ServiceProvider(DemoComponentHandler.class)
+public final class TsDataAbleHandler extends TypedDemoComponentHandler<HasTsData> {
 
     private final RandomTsCommand<HasTsData> randomCommand;
     private final JCommand<HasTsData> clearCommand;

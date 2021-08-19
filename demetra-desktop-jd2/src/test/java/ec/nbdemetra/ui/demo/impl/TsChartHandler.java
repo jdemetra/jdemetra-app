@@ -25,15 +25,16 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import org.openide.awt.DropDownButtonFactory;
-import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.components.parts.HasChart;
+import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentHandler.class)
-public final class TsChartHandler extends DemoComponentHandler.InstanceOf<HasChart> {
+@ServiceProvider(DemoComponentHandler.class)
+public final class TsChartHandler extends TypedDemoComponentHandler<HasChart> {
 
     public TsChartHandler() {
         super(HasChart.class);

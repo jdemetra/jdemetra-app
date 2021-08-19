@@ -32,14 +32,17 @@ import java.util.concurrent.Callable;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
-@ServiceProvider(service = DemoComponentFactory.class)
-public final class Grid2Factory extends DemoComponentFactory {
+@ServiceProvider
+public final class Grid2Factory implements DemoComponentFactory {
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
-        return builder().put(OtherFactory.ID.extend("JGrid*"), Grid2Factory::excelGrid).build();
+        return DemoComponentFactory
+                .builder()
+                .put(OtherFactory.ID.extend("JGrid*"), Grid2Factory::excelGrid)
+                .build();
     }
 
     private static Component excelGrid() {

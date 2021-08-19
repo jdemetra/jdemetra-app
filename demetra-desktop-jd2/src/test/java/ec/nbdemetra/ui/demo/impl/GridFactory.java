@@ -38,10 +38,10 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
-@ServiceProvider(service = DemoComponentFactory.class)
-public final class GridFactory extends DemoComponentFactory {
+@ServiceProvider
+public final class GridFactory implements DemoComponentFactory {
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {

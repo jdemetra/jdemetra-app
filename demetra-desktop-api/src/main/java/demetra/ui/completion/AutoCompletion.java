@@ -2,30 +2,30 @@ package demetra.ui.completion;
 
 import demetra.ui.GlobalService;
 import ec.util.completion.swing.JAutoCompletion;
-import internal.ui.Providers;
 import javax.swing.text.JTextComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.util.CollectionSupplier;
 
 /**
  *
  */
 @GlobalService
-@ServiceProvider(service = AutoCompletion.class)
-public class AutoCompletion {
+public final class AutoCompletion {
 
+    private static final AutoCompletion INSTANCE = new AutoCompletion();
+
+    @NonNull
     public static AutoCompletion getDefault() {
-        return Lookup.getDefault().lookup(AutoCompletion.class);
+        return INSTANCE;
     }
-    
-    private final Providers<AutoCompletionSpi> providers = new AutoCompletionSpiLoader()::get;
+
+    private final CollectionSupplier<AutoCompletionSpi> providers = AutoCompletionSpiLoader::get;
 
     @NonNull
     public JAutoCompletion bind(@NonNull Class<?> path, @NonNull JTextComponent textComponent) {
         return bind(path.getName(), textComponent);
     }
-    
+
     @NonNull
     public JAutoCompletion bind(@NonNull String path, @NonNull JTextComponent textComponent) {
         return providers

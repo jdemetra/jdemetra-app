@@ -17,26 +17,32 @@
 package ec.nbdemetra.ui.demo;
 
 import com.google.common.collect.ImmutableMap;
-import ec.tstoolkit.design.ServiceDefinition;
+import demetra.ui.util.NetBeansServiceBackend;
 import ec.tstoolkit.utilities.Id;
 import java.awt.Component;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceDefinition
-public abstract class DemoComponentFactory {
+@ServiceDefinition(
+        quantifier = Quantifier.MULTIPLE,
+        backend = NetBeansServiceBackend.class,
+        singleton = true
+)
+public interface DemoComponentFactory {
 
-    abstract public Map<Id, Callable<Component>> getComponents();
+    Map<Id, Callable<Component>> getComponents();
 
-    protected static ImmutableMap.Builder<Id, Callable<Component>> builder() {
+    static ImmutableMap.Builder<Id, Callable<Component>> builder() {
         return new ImmutableMap.Builder<>();
     }
 
-    public static String idOf(String label, int order, boolean highlight) {
+    static String idOf(String label, int order, boolean highlight) {
         return "<html><span class='" + order + "'>" + (highlight ? "<u>" : "") + label;
     }
 }

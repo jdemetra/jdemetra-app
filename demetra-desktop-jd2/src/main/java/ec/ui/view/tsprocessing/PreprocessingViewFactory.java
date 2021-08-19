@@ -72,7 +72,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
             MODEL_RES_DIST = new LinearId(MODEL, RESIDUALS, DISTRIBUTION),
             MODEL_RES_SPECTRUM = new LinearId(MODEL, RESIDUALS, SPECTRAL),
             MODEL_LIKELIHOOD = new LinearId(MODEL, LIKELIHOOD),
-           PROCESSING_DETAILS = new LinearId(PROCESSING, DETAILS),
+            PROCESSING_DETAILS = new LinearId(PROCESSING, DETAILS),
             PROCESSING_STEPS = new LinearId(PROCESSING, STEPS),
             PREPROCESSING_SUMMARY = new LinearId(PREPROCESSING),
             PREPROCESSING_FCASTS = new LinearId(PREPROCESSING, FCASTS),
@@ -83,8 +83,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
             PREPROCESSING_DET = new LinearId(PREPROCESSING, PREADJUSTMENT),
             PREPROCESSING_RES = new LinearId(PREPROCESSING, RESIDUALS),
             PREPROCESSING_RES_STATS = new LinearId(PREPROCESSING, RESIDUALS, STATS),
-            PREPROCESSING_RES_DIST = new LinearId(PREPROCESSING, RESIDUALS, DISTRIBUTION)
-            ;
+            PREPROCESSING_RES_DIST = new LinearId(PREPROCESSING, RESIDUALS, DISTRIBUTION);
 
     @Override
     public Id getPreferredView() {
@@ -92,7 +91,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
     }
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SUMMARY">
-    protected static class InputFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    protected abstract static class InputFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, D> {
 
         protected InputFactory(Class<D> documentType) {
@@ -105,7 +104,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
         }
     }
 
-    protected static class SpecAllFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    protected abstract static class SpecAllFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, IProcSpecification> {
 
         protected SpecAllFactory(Class<D> documentType) {
@@ -118,7 +117,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
         }
     }
 
-    protected static class LikelihoodFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    protected abstract static class LikelihoodFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, Functions> {
 
         protected LikelihoodFactory(Class<D> documentType) {
@@ -126,7 +125,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
         }
     }
 
-    protected static class SummaryFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    protected abstract static class SummaryFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, PreprocessingModel> {
 
         protected SummaryFactory(Class<D> documentType) {
@@ -140,7 +139,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
 
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="REGISTER FORECASTS">
-    protected static class ModelFCastsFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    protected abstract static class ModelFCastsFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, EstimationUI.Information> {
 
         protected ModelFCastsFactory(Class<D> documentType) {
@@ -160,7 +159,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
         }
     }
 
-    protected static class PreprocessingFCastsTableFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    protected abstract static class PreprocessingFCastsTableFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, PreprocessingModel> {
 
         private static String[] generateItems() {
@@ -172,7 +171,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
         }
     }
 
-    protected static class ModelFCastsOutFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    protected abstract static class ModelFCastsOutFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, IOneStepAheadForecastingTest> {
 
         protected ModelFCastsOutFactory(Class<D> documentType) {
@@ -206,7 +205,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER MODEL">
-    public static class ModelRegsFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    public abstract static class ModelRegsFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, PreprocessingModel> {
 
         protected ModelRegsFactory(Class<D> documentType) {
@@ -214,7 +213,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
         }
     }
 
-    public static class ModelArimaFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    public abstract static class ModelArimaFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, LinkedHashMap<String, IArimaModel>> {
 
         protected ModelArimaFactory(Class<D> documentType) {
@@ -236,7 +235,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER RESIDUALS">
-    protected static class ModelResFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    protected abstract static class ModelResFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, TsData> {
 
         protected ModelResFactory(Class<D> documentType) {
@@ -244,7 +243,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
         }
     }
 
-    protected static class ModelResStatsFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    protected abstract static class ModelResStatsFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, NiidTests> {
 
         protected ModelResStatsFactory(Class<D> documentType) {
@@ -260,7 +259,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
         }
     }
 
-    protected static class ModelResDist<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    protected abstract static class ModelResDist<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, TsData> {
 
         protected ModelResDist(Class<D> documentType) {
@@ -268,7 +267,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
         }
     }
 
-    protected static class ModelResSpectrum<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    protected abstract static class ModelResSpectrum<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, TsData> {
 
         protected ModelResSpectrum(Class<D> documentType) {
@@ -279,8 +278,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER DETAILS">
     //</editor-fold>
-
-    private static class ItemFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>, I> extends ComposedProcDocumentItemFactory<D, I> {
+    private abstract static class ItemFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>, I> extends ComposedProcDocumentItemFactory<D, I> {
 
         public ItemFactory(Class<D> documentType, Id itemId, InformationExtractor<? super D, I> informationExtractor, ItemUI<? extends IProcDocumentView<D>, I> itemUI) {
             super(documentType, itemId, informationExtractor, itemUI);
@@ -307,7 +305,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
         }
     }
 
-    protected static class PreprocessingDetFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
+    protected abstract static class PreprocessingDetFactory<D extends TsDocument<? extends IProcSpecification, PreprocessingModel>>
             extends ItemFactory<D, PreprocessingModel> {
 
         protected PreprocessingDetFactory(Class<D> documentType) {
@@ -339,7 +337,6 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
             }
         }
     };
-
 
     public static InformationExtractor<TsDocument<? extends IProcSpecification, PreprocessingModel>, PreprocessingModel> pmExtractor() {
         return PmExtractor.INSTANCE;

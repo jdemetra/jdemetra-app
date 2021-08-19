@@ -1,51 +1,45 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 package ec.nbdemetra.ui.nodes;
 
 import demetra.ui.GlobalService;
-import ec.tstoolkit.design.ServiceDefinition;
+import demetra.ui.util.CollectionSupplier;
 import java.awt.Image;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.nodes.Node;
-import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author Philippe Charles
+ * @author CHARPHI
  */
-@ServiceDefinition
-public interface NodeAnnotator {
+@GlobalService
+public final class NodeAnnotator {
 
-    Image annotateIcon(Node node, Image image);
+    private static final NodeAnnotator INSTANCE = new NodeAnnotator();
 
-    String annotateName(Node node, String name);
+    @NonNull
+    public static NodeAnnotator getDefault() {
+        return INSTANCE;
+    }
 
-    @GlobalService
-    @ServiceProvider(service = Support.class)
-    public static class Support {
+    private final CollectionSupplier<NodeAnnotatorSpi> providers = NodeAnnotatorSpiLoader::get;
 
-        @NonNull
-        public static Support getDefault() {
-            return Lookup.getDefault().lookup(Support.class);
+    public Image annotateIcon(Node node, Image image) {
+        Image result = image;
+        for (NodeAnnotatorSpi o : providers.get()) {
+            result = o.annotateIcon(node, result);
         }
+        return result;
+    }
 
-        public Image annotateIcon(Node node, Image image) {
-            Image result = image;
-            for (NodeAnnotator o : Lookup.getDefault().lookupAll(NodeAnnotator.class)) {
-                result = o.annotateIcon(node, result);
-            }
-            return result;
+    public String annotateName(Node node, String name) {
+        String result = name;
+        for (NodeAnnotatorSpi o : providers.get()) {
+            result = o.annotateName(node, result);
         }
-
-        public String annotateName(Node node, String name) {
-            String result = name;
-            for (NodeAnnotator o : Lookup.getDefault().lookupAll(NodeAnnotator.class)) {
-                result = o.annotateName(node, result);
-            }
-            return result;
-        }
+        return result;
     }
 }

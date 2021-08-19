@@ -19,7 +19,6 @@ package demetra.ui;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import ec.util.various.swing.OnEDT;
-import internal.ui.Providers;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -29,26 +28,26 @@ import nbbrd.design.MightBePromoted;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
+import demetra.ui.util.CollectionSupplier;
 
 /**
  *
  * @author Philippe Charles
  */
 @GlobalService
-@ServiceProvider(service = TsActions.class)
-public class TsActions {
+public final class TsActions {
+
+    private static final TsActions INSTANCE = new TsActions();
 
     @NonNull
     public static TsActions getDefault() {
-        return Lookup.getDefault().lookup(TsActions.class);
+        return INSTANCE;
     }
 
     public static final String NO_ACTION = "";
 
-    private final Providers<TsActionsOpenSpi> openActions = new TsActionsOpenSpiLoader()::get;
-    private final Providers<TsActionsSaveSpi> saveActions = new TsActionsSaveSpiLoader()::get;
+    private final CollectionSupplier<TsActionsOpenSpi> openActions = TsActionsOpenSpiLoader::get;
+    private final CollectionSupplier<TsActionsSaveSpi> saveActions = TsActionsSaveSpiLoader::get;
 
     @NonNull
     public Collection<? extends NamedService> getOpenActions() {
@@ -100,7 +99,7 @@ public class TsActions {
         }
     }
 
-    private static <X extends NamedService> Optional<X> getByName(Providers<X> list, String name) {
+    private static <X extends NamedService> Optional<X> getByName(CollectionSupplier<X> list, String name) {
         return list.stream()
                 .map(o -> (X) o)
                 .filter(TsActions.byName(name))

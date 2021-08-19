@@ -35,17 +35,17 @@ import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import nbbrd.service.ServiceProvider;
 import org.openide.nodes.Sheet.Set;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = IDataSourceProviderBuddy.class)
-public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
+@ServiceProvider(IDataSourceProviderBuddy.class)
+public final class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
 
     @Override
     public String getProviderName() {

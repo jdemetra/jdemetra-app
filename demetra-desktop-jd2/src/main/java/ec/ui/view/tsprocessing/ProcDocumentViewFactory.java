@@ -15,7 +15,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JComponent;
-import org.openide.util.Lookup;
 
 /**
  *
@@ -93,7 +92,7 @@ public abstract class ProcDocumentViewFactory<D extends IProcDocument> implement
      * @param documentType
      */
     protected void registerFromLookup(Class<D> documentType) {
-        for (ProcDocumentItemFactory o : Lookup.getDefault().lookupAll(ProcDocumentItemFactory.class)) {
+        for (ProcDocumentItemFactory o : ProcDocumentItemFactoryLoader.get()) {
             if (o.getDocumentType().isAssignableFrom(documentType)) {
                 itemFactories.put(o.getItemId(), o);
             }

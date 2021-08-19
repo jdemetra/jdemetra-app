@@ -4,38 +4,48 @@
  */
 package ec.ui.view.tsprocessing;
 
+import demetra.ui.util.NetBeansServiceBackend;
 import ec.tstoolkit.algorithm.IProcDocument;
-import ec.tstoolkit.design.ServiceDefinition;
 import ec.tstoolkit.utilities.Id;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
+import nbbrd.service.ServiceSorter;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceDefinition(hasPosition = true)
-public abstract class ProcDocumentItemFactory {
+@ServiceDefinition(
+        quantifier = Quantifier.MULTIPLE,
+        backend = NetBeansServiceBackend.class,
+        singleton = true
+)
+public interface ProcDocumentItemFactory {
+
+    @ServiceSorter
+    int getPosition();
 
     @NonNull
-    abstract public Class<? extends IProcDocument> getDocumentType();
+    Class<? extends IProcDocument> getDocumentType();
 
     @NonNull
-    abstract public Id getItemId();
+    Id getItemId();
 
     @NonNull
-    abstract public JComponent getView(@NonNull IProcDocumentView<? extends IProcDocument> host, @NonNull IProcDocument doc) throws IllegalArgumentException;
+    JComponent getView(@NonNull IProcDocumentView<? extends IProcDocument> host, @NonNull IProcDocument doc) throws IllegalArgumentException;
 
     @Nullable
-    public Icon getIcon() {
+    default Icon getIcon() {
         return null;
     }
 
     @Nullable
-    public Action[] getActions() {
+    default Action[] getActions() {
         return null;
     }
 }

@@ -20,12 +20,14 @@ import demetra.timeseries.TsMoniker;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import ec.tstoolkit.design.ServiceDefinition;
+import demetra.ui.util.NetBeansServiceBackend;
 import java.awt.Image;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.util.List;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.nodes.Sheet;
@@ -35,7 +37,11 @@ import org.openide.nodes.Sheet;
  * @author Philippe Charles
  * @since 1.0.0
  */
-@ServiceDefinition
+@ServiceDefinition(
+        quantifier = Quantifier.MULTIPLE,
+        backend = NetBeansServiceBackend.class,
+        singleton = true
+)
 public interface IDataSourceProviderBuddy {
 
     @NonNull

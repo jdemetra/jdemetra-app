@@ -23,21 +23,22 @@ import ec.ui.view.res.ResidualsView;
 import java.awt.Component;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.components.parts.HasTsData;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentFactory.class)
-public final class TsDataViewFactory extends DemoComponentFactory {
+@ServiceProvider
+public final class TsDataViewFactory implements DemoComponentFactory {
 
-    public static final Id ID = MainFactory.ID.extend(idOf("TsDataView", 1, true));
+    public static final Id ID = MainFactory.ID.extend(DemoComponentFactory.idOf("TsDataView", 1, true));
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
-        return builder()
+        return DemoComponentFactory
+                .builder()
                 .put(ID, () -> ReflectComponent.of(HasTsData.class))
                 .put(ID.extend("ResidualsView"), ResidualsView::new)
                 .build();

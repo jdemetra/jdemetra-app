@@ -82,6 +82,11 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
 
             });
         }
+
+        @Override
+        public int getPosition() {
+            return 1000;
+        }
     }
     //</editor-fold>
 
@@ -97,6 +102,11 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
 
             });
         }
+
+        @Override
+        public int getPosition() {
+            return 2110;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 2120)
@@ -110,6 +120,11 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
                 }
 
             });
+        }
+
+        @Override
+        public int getPosition() {
+            return 2120;
         }
     }
 
@@ -172,7 +187,7 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
     };
     //</editor-fold>
 
-    private static class ItemFactory<I> extends ComposedProcDocumentItemFactory<RevisionAnalysisDocument, I> {
+    private abstract static class ItemFactory<I> extends ComposedProcDocumentItemFactory<RevisionAnalysisDocument, I> {
 
         public ItemFactory(Id itemId, InformationExtractor<? super RevisionAnalysisDocument, I> informationExtractor, ItemUI<? extends IProcDocumentView<RevisionAnalysisDocument>, I> itemUI) {
             super(RevisionAnalysisDocument.class, itemId, informationExtractor, itemUI);

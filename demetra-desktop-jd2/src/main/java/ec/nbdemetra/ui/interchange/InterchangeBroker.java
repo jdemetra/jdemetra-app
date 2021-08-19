@@ -17,14 +17,14 @@
 package ec.nbdemetra.ui.interchange;
 
 import demetra.ui.NamedService;
-import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.tstoolkit.design.ServiceDefinition;
+import demetra.ui.util.NetBeansServiceBackend;
 import ec.util.various.swing.OnEDT;
-import java.awt.Image;
 import java.io.IOException;
 import java.util.List;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
+import nbbrd.service.ServiceSorter;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.openide.util.ImageUtilities;
 
 /**
  * Service that performs import/export of configs.
@@ -32,31 +32,25 @@ import org.openide.util.ImageUtilities;
  * @author Philippe Charles
  * @since 1.5.1
  */
-@ServiceDefinition(hasPosition = true)
-public abstract class InterchangeBroker implements NamedService {
+@ServiceDefinition(
+        quantifier = Quantifier.MULTIPLE,
+        backend = NetBeansServiceBackend.class,
+        singleton = true
+)
+public interface InterchangeBroker extends NamedService {
 
-    @Override
-    public Image getIcon(int type, boolean opened) {
-        return ImageUtilities.icon2Image(DemetraUiIcon.CLIPBOARD_PASTE_DOCUMENT_TEXT_16);
-    }
-
-    @OnEDT
-    public boolean canImport(@NonNull List<? extends Importable> importables) {
-        return false;
-    }
+    @ServiceSorter
+    int getPosition();
 
     @OnEDT
-    public void performImport(@NonNull List<? extends Importable> importables) throws IOException, IllegalArgumentException {
-        throw new UnsupportedOperationException();
-    }
+    boolean canImport(@NonNull List<? extends Importable> importables);
 
     @OnEDT
-    public boolean canExport(@NonNull List<? extends Exportable> exportables) {
-        return false;
-    }
+    void performImport(@NonNull List<? extends Importable> importables) throws IOException, IllegalArgumentException;
 
     @OnEDT
-    public void performExport(@NonNull List<? extends Exportable> exportables) throws IOException {
-        throw new UnsupportedOperationException();
-    }
+    boolean canExport(@NonNull List<? extends Exportable> exportables);
+
+    @OnEDT
+    void performExport(@NonNull List<? extends Exportable> exportables) throws IOException;
 }

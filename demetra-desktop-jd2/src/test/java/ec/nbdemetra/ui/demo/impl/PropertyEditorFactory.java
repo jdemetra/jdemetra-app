@@ -41,24 +41,27 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker.StateValue;
+import nbbrd.service.ServiceProvider;
 import org.openide.explorer.propertysheet.PropertySheet;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.Lookups;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentFactory.class)
-public final class PropertyEditorFactory extends DemoComponentFactory {
+@ServiceProvider
+public final class PropertyEditorFactory implements DemoComponentFactory {
 
     @Override
     public ImmutableMap<Id, Callable<Component>> getComponents() {
-        return builder().put(OtherFactory.ID.extend("PropertyEditor"), PropertyEditorFactory::propertySheet).build();
+        return DemoComponentFactory
+                .builder()
+                .put(OtherFactory.ID.extend("PropertyEditor"), PropertyEditorFactory::propertySheet)
+                .build();
     }
 
     private static Component propertySheet() {

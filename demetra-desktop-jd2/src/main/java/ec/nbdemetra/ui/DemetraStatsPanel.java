@@ -20,7 +20,6 @@ import demetra.ui.actions.Configurable;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import demetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.ns.NamedServiceNode;
-import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.nbdemetra.ws.ui.SpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
@@ -46,6 +45,7 @@ import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import demetra.ui.actions.Resetable;
+import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddyLoader;
 
 /**
  *
@@ -124,7 +124,7 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
 
         AbstractNodeBuilder root = new AbstractNodeBuilder();
         root.add(new AbstractNodeBuilder().name("Diagnostics")
-                .add(Lookup.getDefault().lookupAll(SaDiagnosticsFactoryBuddy.class).stream().map(NamedServiceNode::new)).build());
+                .add(SaDiagnosticsFactoryBuddyLoader.get().stream().map(NamedServiceNode::new)).build());
         root.add(new AbstractNodeBuilder().name("Outputs")
                 .add(Lookup.getDefault().lookupAll(INbOutputFactory.class).stream().map(NamedServiceNode::new)).build());
 

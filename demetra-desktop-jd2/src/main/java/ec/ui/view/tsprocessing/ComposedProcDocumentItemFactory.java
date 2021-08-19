@@ -38,7 +38,7 @@ import javax.swing.SwingWorker;
  * @param <D> the type of the source of information
  * @param <I> the type of the information
  */
-public class ComposedProcDocumentItemFactory<D extends IProcDocument, I> extends ProcDocumentItemFactory {
+public abstract class ComposedProcDocumentItemFactory<D extends IProcDocument, I> implements ProcDocumentItemFactory {
 
     protected final Class<D> documentType;
     protected final Id itemId;

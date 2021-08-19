@@ -1,4 +1,4 @@
-package internal.ui;
+package demetra.ui.util;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -8,7 +8,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 
-public enum NetBeansLookup implements Function<Class, Iterable> {
+public enum NetBeansServiceBackend implements Function<Class, Iterable> {
 
     INSTANCE;
 

@@ -26,32 +26,34 @@ import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.GlobalService;
 import demetra.ui.actions.Configurable;
+import demetra.ui.util.CollectionSupplier;
 import internal.FrozenTsHelper;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
 @GlobalService
-@ServiceProvider(service = DataSourceProviderBuddySupport.class)
-public class DataSourceProviderBuddySupport {
+public final class DataSourceProviderBuddySupport {
+
+    private static final DataSourceProviderBuddySupport INSTANCE = new DataSourceProviderBuddySupport();
 
     @NonNull
     public static DataSourceProviderBuddySupport getDefault() {
-        return Lookup.getDefault().lookup(DataSourceProviderBuddySupport.class);
+        return INSTANCE;
     }
 
     private final LoadingCache<String, IDataSourceProviderBuddy> fallback;
+    private final CollectionSupplier<IDataSourceProviderBuddy> providers;
 
-    public DataSourceProviderBuddySupport() {
+    private DataSourceProviderBuddySupport() {
         fallback = CacheBuilder.newBuilder().build(new CacheLoaderImpl());
+        this.providers = IDataSourceProviderBuddyLoader::get;
     }
 
     @NonNull
@@ -67,7 +69,7 @@ public class DataSourceProviderBuddySupport {
     @NonNull
     public IDataSourceProviderBuddy get(@Nullable String providerName) {
         String tmp = Strings.nullToEmpty(providerName);
-        return Lookup.getDefault().lookupAll(IDataSourceProviderBuddy.class).stream()
+        return providers.stream()
                 .filter(o -> o.getProviderName().equals(tmp))
                 .map(o -> (IDataSourceProviderBuddy) o)
                 .findFirst()

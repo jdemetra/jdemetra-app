@@ -17,7 +17,7 @@
 package demetra.ui.completion;
 
 import ec.util.completion.swing.JAutoCompletion;
-import internal.ui.NetBeansLookup;
+import demetra.ui.util.NetBeansServiceBackend;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.text.JTextComponent;
 import nbbrd.service.Quantifier;
@@ -29,8 +29,9 @@ import nbbrd.service.ServiceDefinition;
  * @since 1.3.2
  */
 @ServiceDefinition(
-        backend = NetBeansLookup.class,
-        quantifier = Quantifier.MULTIPLE
+        quantifier = Quantifier.MULTIPLE,
+        backend = NetBeansServiceBackend.class,
+        singleton = true
 )
 public interface AutoCompletionSpi {
     

@@ -41,18 +41,18 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.swing.ListCellRenderer;
+import nbbrd.service.ServiceProvider;
 import nbbrd.sql.odbc.OdbcDataSource;
 import nbbrd.sql.odbc.OdbcRegistry;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = IDataSourceProviderBuddy.class)
-public class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements Configurable {
+@ServiceProvider(IDataSourceProviderBuddy.class)
+public final class OdbcProviderBuddy extends JdbcProviderBuddy<OdbcBean> implements Configurable {
 
     private final AutoCompletionSource dbSource;
     private final ListCellRenderer dbRenderer;

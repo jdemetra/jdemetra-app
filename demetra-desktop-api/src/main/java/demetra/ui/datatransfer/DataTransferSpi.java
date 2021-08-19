@@ -25,7 +25,7 @@ import java.io.IOException;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import demetra.ui.NamedService;
 import demetra.util.Table;
-import internal.ui.NetBeansLookup;
+import demetra.ui.util.NetBeansServiceBackend;
 import nbbrd.service.Quantifier;
 import nbbrd.service.ServiceDefinition;
 import nbbrd.service.ServiceSorter;
@@ -38,8 +38,9 @@ import nbbrd.service.ServiceSorter;
  * @since 1.3.0
  */
 @ServiceDefinition(
-        backend = NetBeansLookup.class,
-        quantifier = Quantifier.MULTIPLE
+        quantifier = Quantifier.MULTIPLE,
+        backend = NetBeansServiceBackend.class,
+        singleton = true
 )
 public interface DataTransferSpi extends NamedService {
 

@@ -31,19 +31,18 @@ import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import javax.swing.JTextPane;
+import nbbrd.service.ServiceProvider;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Jean Palate
  */
-@ServiceProvider(service = ISaReportFactory.class,
-        position = 10)
+@ServiceProvider(ISaReportFactory.class)
 public class DefaultSaReportFactory implements ISaReportFactory {
 
     public static final String NAME = "Default Text Report";

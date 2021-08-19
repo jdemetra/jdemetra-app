@@ -37,15 +37,15 @@ import java.util.zip.GZIPOutputStream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import nbbrd.service.ServiceProvider;
 import org.openide.filesystems.FileChooserBuilder;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = InterchangeBroker.class, position = 300)
-public class FileBroker extends InterchangeBroker {
+@ServiceProvider
+public final class FileBroker implements InterchangeBroker {
 
     private final JFileChooser fileChooser;
 
@@ -55,6 +55,11 @@ public class FileBroker extends InterchangeBroker {
                 .setFileFilter(new FileNameExtensionFilter("Configs files", "cfgx"))
                 .setFilesOnly(true)
                 .createFileChooser();
+    }
+
+    @Override
+    public int getPosition() {
+        return 300;
     }
 
     @Override

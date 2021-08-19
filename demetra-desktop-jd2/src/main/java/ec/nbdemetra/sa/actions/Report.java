@@ -38,7 +38,7 @@ public final class Report extends AbstractViewAction<SaBatchUI> {
     protected void refreshAction() {
         SaBatchUI ui = this.context();
         enabled = ui != null && ui.getCurrentProcessing() != null && ui.getCurrentProcessing().isProcessed()
-                && !SaReportManager.getInstance().getFactories().isEmpty()
+                && !SaReportManager.getDefault().getFactories().isEmpty()
                 && !ui.isTableEmpty();
     }
 
@@ -49,7 +49,7 @@ public final class Report extends AbstractViewAction<SaBatchUI> {
             return;
         }
 
-        List<ISaReportFactory> factories = SaReportManager.getInstance().getFactories();
+        List<ISaReportFactory> factories = SaReportManager.getDefault().getFactories();
         if (factories.isEmpty()) {
             return;
         }

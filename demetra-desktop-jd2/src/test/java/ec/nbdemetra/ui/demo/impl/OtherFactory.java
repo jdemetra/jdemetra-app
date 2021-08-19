@@ -24,16 +24,16 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import javax.swing.JPanel;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentFactory.class)
-public final class OtherFactory extends DemoComponentFactory {
+@ServiceProvider
+public final class OtherFactory implements DemoComponentFactory {
 
-    static final Id ID = new LinearId(idOf("Other", 1, false));
+    static final Id ID = new LinearId(DemoComponentFactory.idOf("Other", 1, false));
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {

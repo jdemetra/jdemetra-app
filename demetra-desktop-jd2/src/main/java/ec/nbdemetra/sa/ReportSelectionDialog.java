@@ -27,7 +27,7 @@ public class ReportSelectionDialog extends JDialog {
     private JList<String> list;
 
     private void fillList() {
-        List<ISaReportFactory> factories = SaReportManager.getInstance().getFactories();
+        List<ISaReportFactory> factories = SaReportManager.getDefault().getFactories();
         list.setModel(JLists.modelOf(factories.stream().map(ISaReportFactory::getReportName).toArray(String[]::new)));
     }
 
@@ -76,7 +76,7 @@ public class ReportSelectionDialog extends JDialog {
         if (report == null) {
             return null;
         }
-        List<ISaReportFactory> factories = SaReportManager.getInstance().getFactories();
+        List<ISaReportFactory> factories = SaReportManager.getDefault().getFactories();
         for (ISaReportFactory item : factories) {
             if (item.getReportName().equals(report)) {
                 return item;

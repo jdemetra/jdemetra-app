@@ -41,10 +41,10 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.SwingWorker;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
-@ServiceProvider(service = DemoComponentFactory.class)
-public final class L2fprodFactory extends DemoComponentFactory {
+@ServiceProvider
+public final class L2fprodFactory implements DemoComponentFactory {
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {

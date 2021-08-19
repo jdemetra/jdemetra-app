@@ -17,9 +17,11 @@
 package ec.nbdemetra.ui.sa;
 
 import demetra.ui.NamedService;
+import demetra.ui.util.NetBeansServiceBackend;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.tstoolkit.design.ServiceDefinition;
 import java.awt.Image;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
 import org.openide.util.ImageUtilities;
 
 /**
@@ -27,7 +29,11 @@ import org.openide.util.ImageUtilities;
  * @author Philippe Charles
  * @since 2.1.0
  */
-@ServiceDefinition(hasPosition = true)
+@ServiceDefinition(
+        quantifier = Quantifier.MULTIPLE,
+        backend = NetBeansServiceBackend.class,
+        singleton = true
+)
 public abstract class SaDiagnosticsFactoryBuddy implements NamedService {
 
     @Override

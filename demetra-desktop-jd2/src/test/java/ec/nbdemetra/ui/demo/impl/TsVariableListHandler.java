@@ -17,16 +17,17 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
+import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
 import ec.nbdemetra.ui.demo.DemoTsActions;
 import ec.ui.list.JTsVariableList;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentHandler.class)
-public final class TsVariableListHandler extends DemoComponentHandler.InstanceOf<JTsVariableList> {
+@ServiceProvider(DemoComponentHandler.class)
+public final class TsVariableListHandler extends TypedDemoComponentHandler<JTsVariableList> {
 
     public TsVariableListHandler() {
         super(JTsVariableList.class);

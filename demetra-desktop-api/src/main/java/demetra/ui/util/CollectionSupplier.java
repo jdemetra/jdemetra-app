@@ -1,4 +1,4 @@
-package internal.ui;
+package demetra.ui.util;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -9,7 +9,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.Lookup;
 
 @FunctionalInterface
-public interface Providers<T> extends Supplier<Collection<? extends T>> {
+public interface CollectionSupplier<T> extends Supplier<Collection<? extends T>> {
 
     @NonNull
     default Stream<? extends T> stream() {
@@ -17,20 +17,20 @@ public interface Providers<T> extends Supplier<Collection<? extends T>> {
     }
 
     @NonNull
-    static <X> Providers<X> of(@NonNull Collection<X> items) {
+    static <X> CollectionSupplier<X> of(@NonNull Collection<X> items) {
         Objects.requireNonNull(items);
         Collection<X> result = Collections.unmodifiableCollection(items);
         return () -> result;
     }
 
     @NonNull
-    static <X> Providers<X> ofLookup(@NonNull Class<X> type) {
+    static <X> CollectionSupplier<X> ofLookup(@NonNull Class<X> type) {
         Objects.requireNonNull(type);
         return ofLookup(type, Lookup.getDefault());
     }
 
     @NonNull
-    static <X> Providers<X> ofLookup(@NonNull Class<X> type, @NonNull Lookup lookup) {
+    static <X> CollectionSupplier<X> ofLookup(@NonNull Class<X> type, @NonNull Lookup lookup) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(lookup);
         return () -> lookup.lookupAll(type);

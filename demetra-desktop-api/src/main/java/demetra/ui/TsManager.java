@@ -41,21 +41,20 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.swing.SwingUtilities;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.openide.util.Lookup;
 import org.openide.util.WeakListeners;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
 @GlobalService
-@ServiceProvider(service = TsManager.class)
-public class TsManager implements DataSourceFactory, Closeable {
+public final class TsManager implements DataSourceFactory, Closeable {
+
+    private static final TsManager INSTANCE = new TsManager();
 
     @NonNull
     public static TsManager getDefault() {
-        return Lookup.getDefault().lookup(TsManager.class);
+        return INSTANCE;
     }
 
     private final ConcurrentMap<String, TsProvider> providers;

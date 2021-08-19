@@ -32,7 +32,6 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
 
@@ -80,7 +79,7 @@ public final class ImportAction extends AbilityAction<Importable> implements Pre
     public static JMenuItem getPopupPresenter(@NonNull List<? extends Importable> importables) {
         JMenu result = new JMenu();
         result.setText(Bundle.CTL_ImportAction());
-        for (InterchangeBroker o : Lookup.getDefault().lookupAll(InterchangeBroker.class)) {
+        for (InterchangeBroker o : InterchangeBrokerLoader.get()) {
             JMenuItem item = result.add(new Import(o, importables));
             item.setText(o.getDisplayName());
             item.setEnabled(o.canImport(importables));

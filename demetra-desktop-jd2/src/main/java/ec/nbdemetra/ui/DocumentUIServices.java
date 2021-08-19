@@ -15,20 +15,19 @@ import java.util.HashMap;
 import java.util.Map;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JComponent;
-import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Jean Palate
  */
 @GlobalService
-@ServiceProvider(service = DocumentUIServices.class)
-public class DocumentUIServices {
+public final class DocumentUIServices {
+
+    private static final DocumentUIServices INSTANCE = new DocumentUIServices();
 
     @NonNull
     public static DocumentUIServices getDefault() {
-        return Lookup.getDefault().lookup(DocumentUIServices.class);
+        return INSTANCE;
     }
 
     public static final String SPEC_PROPERTY = "specification";

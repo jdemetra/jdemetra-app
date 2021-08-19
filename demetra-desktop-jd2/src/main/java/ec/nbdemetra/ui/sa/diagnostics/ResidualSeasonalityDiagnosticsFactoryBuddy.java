@@ -32,7 +32,6 @@ import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
 import nbbrd.io.text.BooleanProperty;
 import nbbrd.io.text.Formatter;
@@ -43,12 +42,13 @@ import demetra.ui.Converter;
 import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
 import demetra.ui.beans.BeanConfigurator;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Laurent Jadoul
  */
-@ServiceProvider(service = SaDiagnosticsFactoryBuddy.class)
+@ServiceProvider(SaDiagnosticsFactoryBuddy.class)
 public final class ResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements Configurable, Persistable, demetra.ui.ConfigEditor, Resetable {
 
     private static final String NAME = "ResidualSeasonalityDiagnostics";

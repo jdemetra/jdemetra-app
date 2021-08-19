@@ -10,6 +10,7 @@ import demetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.nodes.IdNodes;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.ui.view.tsprocessing.ProcDocumentItemFactory;
+import ec.ui.view.tsprocessing.ProcDocumentItemFactoryLoader;
 import java.awt.Image;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,7 +23,6 @@ import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
 final class ProcDocumentItemsPanel extends javax.swing.JPanel implements ExplorerManager.Provider {
@@ -76,7 +76,7 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
     }
 
     void load() {
-        Iterable<? extends ProcDocumentItemFactory> all = Lookup.getDefault().lookupAll(ProcDocumentItemFactory.class);
+        Iterable<? extends ProcDocumentItemFactory> all = ProcDocumentItemFactoryLoader.get();
         NodeStrategies strategies = ((NodeStrategies) jComboBox1.getSelectedItem());
         em.setRootContext(strategies.getRoot(all));
         outlineView1.setPropertyColumns(strategies.getPropertyColumns());

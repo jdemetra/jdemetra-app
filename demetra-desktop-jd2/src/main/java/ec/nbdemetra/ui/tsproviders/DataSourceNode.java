@@ -16,7 +16,6 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import demetra.bridge.TsConverter;
 import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
@@ -28,7 +27,6 @@ import demetra.ui.datatransfer.DataTransfers;
 import demetra.ui.Config;
 import ec.nbdemetra.ui.interchange.Exportable;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
-import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.star.StarList;
 import static ec.nbdemetra.ui.tsproviders.DataSourceNode.ACTION_PATH;
@@ -67,6 +65,7 @@ import org.openide.util.lookup.ProxyLookup;
 import demetra.ui.actions.Reloadable;
 import demetra.ui.actions.Renameable;
 import demetra.ui.TsCollectable;
+import ec.nbdemetra.ui.nodes.NodeAnnotator;
 
 /**
  * A node that represents a DataSource.
@@ -99,7 +98,6 @@ public final class DataSourceNode extends AbstractNode {
                 new ProxyLookup(Lookups.singleton(dataSource), new AbstractLookup(abilities)));
         // 2. Abilities
         {
-            abilities.add(NodeAnnotator.Support.getDefault());
             abilities.add(new NameableImpl());
             abilities.add(new TsCollectableImpl());
             abilities.add(new ReloadableImpl());
@@ -128,13 +126,13 @@ public final class DataSourceNode extends AbstractNode {
     @Override
     public Image getIcon(int type) {
         Image image = lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
-        return getLookup().lookup(NodeAnnotator.Support.class).annotateIcon(this, image);
+        return NodeAnnotator.getDefault().annotateIcon(this, image);
     }
 
     @Override
     public Image getOpenedIcon(int type) {
         Image image = lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
-        return getLookup().lookup(NodeAnnotator.Support.class).annotateIcon(this, image);
+        return NodeAnnotator.getDefault().annotateIcon(this, image);
     }
 
     @Override

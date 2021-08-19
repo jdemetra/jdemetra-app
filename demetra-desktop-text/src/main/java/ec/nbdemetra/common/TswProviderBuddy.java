@@ -29,16 +29,16 @@ import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.List;
+import nbbrd.service.ServiceProvider;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = IDataSourceProviderBuddy.class)
-public class TswProviderBuddy extends AbstractDataSourceProviderBuddy {
+@ServiceProvider(IDataSourceProviderBuddy.class)
+public final class TswProviderBuddy extends AbstractDataSourceProviderBuddy {
 
     @Override
     public String getProviderName() {
@@ -79,7 +79,7 @@ public class TswProviderBuddy extends AbstractDataSourceProviderBuddy {
                 .select(bean, "file")
                 .display("Directory")
                 .description("The path to the directory containing TSW files.")
-//                .filterForSwing(new FileLoaderFileFilter(loader))
+                //                .filterForSwing(new FileLoaderFileFilter(loader))
                 .paths(loader.getPaths())
                 .directories(true)
                 .files(false)

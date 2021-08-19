@@ -33,20 +33,21 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import static javax.swing.SwingConstants.TRAILING;
 import javax.swing.table.TableCellRenderer;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentFactory.class)
-public final class TsCollectionFactory extends DemoComponentFactory {
+@ServiceProvider
+public final class TsCollectionFactory implements DemoComponentFactory {
 
-    public static final Id ID = TsControlFactory.ID.extend(idOf("TsCollectionView", 0, true));
+    public static final Id ID = TsControlFactory.ID.extend(DemoComponentFactory.idOf("TsCollectionView", 0, true));
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
-        return builder()
+        return DemoComponentFactory
+                .builder()
                 .put(ID, () -> ReflectComponent.of(HasTsCollection.class))
                 .put(ID.extend("JTsGrid"), JTsGrid::new)
                 .put(ID.extend("JTsChart"), JTsChart::new)

@@ -22,17 +22,18 @@ import ec.ui.interfaces.IReadDataBlockView;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
 import ec.util.various.swing.JCommand;
 import demetra.ui.util.FontAwesomeUtils;
+import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
 import static java.beans.BeanInfo.ICON_COLOR_16x16;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentHandler.class)
-public final class ReadDataBlockViewHandler extends DemoComponentHandler.InstanceOf<IReadDataBlockView> {
+@ServiceProvider(DemoComponentHandler.class)
+public final class ReadDataBlockViewHandler extends TypedDemoComponentHandler<IReadDataBlockView> {
 
     private final RandomTsCommand<IReadDataBlockView> randomCommand;
     private final JCommand<IReadDataBlockView> resetCommand;

@@ -31,7 +31,6 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
 
@@ -73,7 +72,7 @@ public final class ExportAction extends AbilityAction<Exportable> implements Pre
     public static JMenuItem getPopupPresenter(@NonNull List<? extends Exportable> exportables) {
         JMenu result = new JMenu();
         result.setText(Bundle.CTL_ExportAction());
-        for (InterchangeBroker o : Lookup.getDefault().lookupAll(InterchangeBroker.class)) {
+        for (InterchangeBroker o : InterchangeBrokerLoader.get()) {
             JMenuItem item = result.add(new Export(o, exportables));
             item.setText(o.getDisplayName());
             item.setEnabled(o.canExport(exportables));

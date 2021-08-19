@@ -20,6 +20,7 @@ import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.components.parts.HasObsFormat;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
+import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
 import ec.util.various.swing.JCommand;
 import internal.ui.components.HasObsFormatCommands;
 import java.util.Locale;
@@ -27,15 +28,15 @@ import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
+import nbbrd.service.ServiceProvider;
 import org.openide.awt.DropDownButtonFactory;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentHandler.class, position = 100)
-public final class TsControlHandler extends DemoComponentHandler.InstanceOf<HasObsFormat> {
+@ServiceProvider(DemoComponentHandler.class)
+public final class TsControlHandler extends TypedDemoComponentHandler<HasObsFormat> {
 
     private final DataFormatCommand dataFormatCommand;
 

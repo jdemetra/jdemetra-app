@@ -19,6 +19,7 @@ package ec.nbdemetra.ui.demo.impl;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import demetra.ui.components.JTsTable;
+import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
 import static demetra.ui.components.JTsTable.Column.DATA;
 import static demetra.ui.components.JTsTable.Column.FREQ;
 import static demetra.ui.components.JTsTable.Column.LAST;
@@ -31,15 +32,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.*;
+import nbbrd.service.ServiceProvider;
 import org.openide.awt.DropDownButtonFactory;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentHandler.class)
-public final class TsListHandler extends DemoComponentHandler.InstanceOf<JTsTable> {
+@ServiceProvider(DemoComponentHandler.class)
+public final class TsListHandler extends TypedDemoComponentHandler<JTsTable> {
 
     public TsListHandler() {
         super(JTsTable.class);

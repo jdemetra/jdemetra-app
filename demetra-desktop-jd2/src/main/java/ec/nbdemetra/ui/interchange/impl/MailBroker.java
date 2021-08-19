@@ -17,21 +17,27 @@
 package ec.nbdemetra.ui.interchange.impl;
 
 import ec.nbdemetra.ui.interchange.Exportable;
+import ec.nbdemetra.ui.interchange.Importable;
 import ec.nbdemetra.ui.interchange.InterchangeBroker;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
 import ec.util.desktop.MailtoBuilder;
 import java.io.IOException;
 import java.util.List;
+import nbbrd.service.ServiceProvider;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = InterchangeBroker.class, position = 200)
-public class MailBroker extends InterchangeBroker {
+@ServiceProvider
+public final class MailBroker implements InterchangeBroker {
+
+    @Override
+    public int getPosition() {
+        return 200;
+    }
 
     @Override
     public String getName() {
@@ -57,5 +63,15 @@ public class MailBroker extends InterchangeBroker {
         String subject = configs.getItems().size() == 1 ? configs.getItems().get(0).getName() : "Configs";
         String body = Configs.xmlFormatter(true).formatValueAsString(configs).orElseThrow(RuntimeException::new);
         desktop.mail(new MailtoBuilder().subject(subject).body(body).build());
+    }
+
+    @Override
+    public boolean canImport(List<? extends Importable> importables) {
+        return false;
+    }
+
+    @Override
+    public void performImport(List<? extends Importable> importables) throws IOException, IllegalArgumentException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

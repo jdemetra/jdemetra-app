@@ -31,6 +31,7 @@ import ec.util.various.swing.FontAwesome;
 import static ec.util.various.swing.FontAwesome.FA_ERASER;
 import ec.util.various.swing.JCommand;
 import demetra.ui.util.FontAwesomeUtils;
+import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
 import java.awt.Color;
 import static java.beans.BeanInfo.ICON_COLOR_16x16;
 import java.io.IOException;
@@ -41,15 +42,15 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
+import nbbrd.service.ServiceProvider;
 import org.openide.awt.DropDownButtonFactory;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentHandler.class)
-public final class TsAbleHandler extends DemoComponentHandler.InstanceOf<HasTs> {
+@ServiceProvider(DemoComponentHandler.class)
+public final class TsAbleHandler extends TypedDemoComponentHandler<HasTs> {
 
     private final RandomTsCommand<HasTs> randomCommand;
     private final JCommand<HasTs> clearCommand;

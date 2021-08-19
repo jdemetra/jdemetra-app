@@ -42,16 +42,16 @@ import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import nbbrd.service.ServiceProvider;
 import org.openide.util.ImageUtilities;
 import org.openide.util.WeakListeners;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentHandler.class, position = 100)
-public final class ComponentHandler extends DemoComponentHandler {
+@ServiceProvider
+public final class ComponentHandler implements DemoComponentHandler {
 
     private final JCommand<Component> watchCommand;
     private final JCommand<JComponent> popupMenuCommand;
@@ -59,6 +59,15 @@ public final class ComponentHandler extends DemoComponentHandler {
     public ComponentHandler() {
         this.watchCommand = JCommand.of(ComponentHandler::watch);
         this.popupMenuCommand = new PopupMenuCommand();
+    }
+
+    @Override
+    public boolean canHandle(Component c) {
+        return true;
+    }
+
+    @Override
+    public void configure(Component c) {
     }
 
     @Override

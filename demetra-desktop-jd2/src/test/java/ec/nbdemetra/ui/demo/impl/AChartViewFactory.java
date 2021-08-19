@@ -28,20 +28,21 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentFactory.class)
-public final class AChartViewFactory extends DemoComponentFactory {
+@ServiceProvider
+public final class AChartViewFactory implements DemoComponentFactory {
 
-    static final Id ID = MainFactory.ID.extend(idOf("AChartView", 2, true));
+    static final Id ID = MainFactory.ID.extend(DemoComponentFactory.idOf("AChartView", 2, true));
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
-        return builder()
+        return DemoComponentFactory
+                .builder()
                 .put(ID, AChartViewFactory::createRoot)
                 .put(ID.extend("FilterView"), () -> new FilterView(new ModelInformationProvider(new ArrayList<>())))
                 .put(ID.extend("PiView"), () -> new PiView(new ModelInformationProvider(new ArrayList<>())))

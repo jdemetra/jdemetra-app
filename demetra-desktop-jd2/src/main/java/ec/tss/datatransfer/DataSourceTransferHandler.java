@@ -17,9 +17,11 @@
 package ec.tss.datatransfer;
 
 import demetra.tsprovider.DataSource;
-import ec.tstoolkit.design.ServiceDefinition;
+import demetra.ui.util.NetBeansServiceBackend;
 import java.awt.datatransfer.Transferable;
 import java.util.Optional;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -28,8 +30,12 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * @author Philippe Charles
  */
-@ServiceDefinition
-public abstract class DataSourceTransferHandler {
+@ServiceDefinition(
+        quantifier = Quantifier.MULTIPLE,
+        backend = NetBeansServiceBackend.class,
+        singleton = true
+)
+public interface DataSourceTransferHandler {
 
     /**
      * Checks if this class can handle the specified Transferable.
@@ -37,7 +43,7 @@ public abstract class DataSourceTransferHandler {
      * @param t the input data
      * @return
      */
-    abstract public boolean canHandle(@NonNull Transferable t);
+    boolean canHandle(@NonNull Transferable t);
 
     /**
      * Checks if this class can handle the specified Transferable with a
@@ -47,7 +53,7 @@ public abstract class DataSourceTransferHandler {
      * @param providerName a specific provider name
      * @return
      */
-    abstract public boolean canHandle(@NonNull Transferable t, @NonNull String providerName);
+    boolean canHandle(@NonNull Transferable t, @NonNull String providerName);
 
     /**
      * Retrieve a DataSource from a Transferable.
@@ -57,7 +63,7 @@ public abstract class DataSourceTransferHandler {
      * @see #canHandle(java.awt.datatransfer.Transferable)
      */
     @NonNull
-    abstract public Optional<DataSource> getDataSource(@NonNull Transferable t);
+    Optional<DataSource> getDataSource(@NonNull Transferable t);
 
     /**
      * Retrieve a DataSource from a Transferable with a specific provider.
@@ -68,5 +74,5 @@ public abstract class DataSourceTransferHandler {
      * @see #canHandle(java.awt.datatransfer.Transferable, java.lang.String)
      */
     @NonNull
-    abstract public Optional<DataSource> getDataSource(@NonNull Transferable t, @NonNull String providerName);
+    Optional<DataSource> getDataSource(@NonNull Transferable t, @NonNull String providerName);
 }

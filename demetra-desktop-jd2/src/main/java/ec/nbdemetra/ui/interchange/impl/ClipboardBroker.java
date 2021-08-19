@@ -27,15 +27,20 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.List;
+import nbbrd.service.ServiceProvider;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = InterchangeBroker.class, position = 100)
-public class ClipboardBroker extends InterchangeBroker {
+@ServiceProvider
+public final class ClipboardBroker implements InterchangeBroker {
+
+    @Override
+    public int getPosition() {
+        return 100;
+    }
 
     @Override
     public String getName() {

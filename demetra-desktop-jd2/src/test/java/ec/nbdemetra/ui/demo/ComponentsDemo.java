@@ -52,7 +52,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
-import org.openide.util.Lookup;
 
 /**
  *
@@ -128,7 +127,7 @@ public final class ComponentsDemo {
     }
 
     private static SortedMap<Id, Component> lookupComponents() {
-        return Lookup.getDefault().lookupAll(DemoComponentFactory.class).stream()
+        return DemoComponentFactoryLoader.get().stream()
                 .flatMap(o -> o.getComponents().entrySet().stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, o -> configure(create(o.getValue())), (l, r) -> l, TreeMap::new));
     }
@@ -148,7 +147,7 @@ public final class ComponentsDemo {
             return c;
         }
         JToolBar toolBar = NbComponents.newInnerToolbar();
-        Lookup.getDefault().lookupAll(DemoComponentHandler.class).forEach(o -> {
+        DemoComponentHandlerLoader.get().forEach(o -> {
             if (o.canHandle(c)) {
                 o.configure(c);
                 o.fillToolBar(toolBar, c);

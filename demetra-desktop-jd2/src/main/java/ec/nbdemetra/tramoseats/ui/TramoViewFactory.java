@@ -39,6 +39,11 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
         public SpecAllFactory() {
             super(TramoDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 100000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 100010)
@@ -46,6 +51,11 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
 
         public InputFactory() {
             super(TramoDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 100010;
         }
     }
     //</editor-fold>
@@ -57,6 +67,11 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
         public SummaryFactory() {
             super(TramoDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 101000;
+        }
     }
     //</editor-fold>
 
@@ -67,6 +82,11 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
         public ModelFCastsTableFactory() {
             super(TramoDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 200500;
+        }
     }
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER FORECASTS">
@@ -76,6 +96,11 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
         public ModelFCastsFactory() {
             super(TramoDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 201000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000 + 2000)
@@ -83,6 +108,11 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
 
         public ModelFCastsOutFactory() {
             super(TramoDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 202000;
         }
     }
     //</editor-fold>
@@ -94,6 +124,11 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
         public ModelRegsFactory() {
             super(TramoDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 301000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 300000 + 2000)
@@ -101,6 +136,11 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
 
         public ModelArimaFactory() {
             super(TramoDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 302000;
         }
     }
 
@@ -110,8 +150,13 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
         public PreprocessingDetFactory() {
             super(TramoDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 303000;
+        }
     }
-   //</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER RESIDUALS">
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 400000 + 1000)
@@ -119,6 +164,11 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
 
         public ModelResFactory() {
             super(TramoDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 401000;
         }
     }
 
@@ -128,6 +178,11 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
         public ModelResStatsFactory() {
             super(TramoDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 402000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 400000 + 3000)
@@ -135,6 +190,11 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
 
         public ModelResDist() {
             super(TramoDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 403000;
         }
     }
 
@@ -144,17 +204,26 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpecificatio
         public ModelResSpectrum() {
             super(TramoDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 404000;
+        }
     }
 
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="REGISTER DETAILS">
-
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 500000)
     public static class LikelihoodFactory extends PreprocessingViewFactory.LikelihoodFactory<TramoDocument> {
 
         public LikelihoodFactory() {
             super(TramoDocument.class);
             setAsync(true);
+        }
+
+        @Override
+        public int getPosition() {
+            return 500000;
         }
     }
     //</editor-fold>

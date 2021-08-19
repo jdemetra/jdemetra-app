@@ -16,14 +16,14 @@ import java.beans.IntrospectionException;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DataSourceTransferHandler.class)
-public class FileTransferHandler extends DataSourceTransferHandler {
+@ServiceProvider(DataSourceTransferHandler.class)
+public final class FileTransferHandler implements DataSourceTransferHandler {
 
     @Override
     public boolean canHandle(Transferable t) {

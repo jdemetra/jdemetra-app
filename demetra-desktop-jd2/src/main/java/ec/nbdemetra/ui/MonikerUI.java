@@ -24,8 +24,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.Icon;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  * TODO: improve this API
@@ -33,12 +31,13 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @GlobalService
-@ServiceProvider(service = MonikerUI.class)
-public class MonikerUI {
+public final class MonikerUI {
+
+    private static final MonikerUI INSTANCE = new MonikerUI();
 
     @NonNull
     public static MonikerUI getDefault() {
-        return Lookup.getDefault().lookup(MonikerUI.class);
+        return INSTANCE;
     }
 
     @Nullable

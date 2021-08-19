@@ -275,7 +275,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     }
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SPEC">
-    protected static class SpecAllFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class SpecAllFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, ISaSpecification> {
 
         protected SpecAllFactory(Class<D> documentType) {
@@ -291,7 +291,6 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER MAIN VIEWS">
     // provide regitration of main components
-
 //    protected static class MainChartFactory<D extends SaDocument<? extends ISaSpecification>>
 //            extends ItemFactory<D, CompositeResults> {
 //
@@ -299,16 +298,16 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
 //            super(documentType, MAIN_CHART, SaExtractor.INSTANCE, new ChartUI(ModellingDictionary.Y, ModellingDictionary.T, ModellingDictionary.SA));
 //        }
 //    }
-    protected static class MainChartsLowFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class MainChartsLowFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
         private static String[] generateItems(String prefix) {
-            String sy=InformationSet.concatenate(prefix,ModellingDictionary.Y);
-            String st=InformationSet.concatenate(prefix,ModellingDictionary.T);
-            String ssa=InformationSet.concatenate(prefix,ModellingDictionary.SA);
+            String sy = InformationSet.concatenate(prefix, ModellingDictionary.Y);
+            String st = InformationSet.concatenate(prefix, ModellingDictionary.T);
+            String ssa = InformationSet.concatenate(prefix, ModellingDictionary.SA);
             StringBuilder y = new StringBuilder();
             y.append(DocumentManager.COMPOSITE).append("Series=")
-//                    .append(sy).append(SeriesInfo.B_SUFFIX)
+                    //                    .append(sy).append(SeriesInfo.B_SUFFIX)
                     .append(',').append(sy)
                     .append(',').append(sy).append(SeriesInfo.F_SUFFIX);
             StringBuilder t = new StringBuilder();
@@ -321,6 +320,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
                     .append(',').append(ssa).append(SeriesInfo.F_SUFFIX);
             return new String[]{y.toString(), t.toString(), sa.toString()};
         }
+
         protected MainChartsLowFactory(Class<D> documentType) {
             this(documentType, null);
         }
@@ -330,7 +330,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class MainChartsHighFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class MainChartsHighFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
         private static String[] generateItems(String prefix) {
@@ -340,7 +340,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             StringBuilder s = new StringBuilder();
             s.append(DocumentManager.COMPOSITE).append("Seas (component)=,").append(ModellingDictionary.S_CMP)
                     .append(',').append(ModellingDictionary.S_CMP).append(SeriesInfo.F_SUFFIX);
-            String si=InformationSet.concatenate(prefix,ModellingDictionary.I);
+            String si = InformationSet.concatenate(prefix, ModellingDictionary.I);
             StringBuilder i = new StringBuilder();
             i.append(DocumentManager.COMPOSITE).append("Irregular=")
                     .append(',').append(si)
@@ -351,24 +351,24 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         protected MainChartsHighFactory(Class<D> documentType) {
             this(documentType, null);
         }
-        
+
         protected MainChartsHighFactory(Class<D> documentType, String prefix) {
             super(documentType, MAIN_CHARTS_HIGH, saExtractor(), new ChartUI(generateItems(prefix)));
         }
     }
 
-    protected static class MainTableFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class MainTableFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
         private static String[] generateItems(String prefix) {
-            String sy=InformationSet.concatenate(prefix,ModellingDictionary.Y);
-            String st=InformationSet.concatenate(prefix,ModellingDictionary.T);
-            String ssa=InformationSet.concatenate(prefix,ModellingDictionary.SA);
-            String ss=InformationSet.concatenate(prefix,ModellingDictionary.S);
-            String si=InformationSet.concatenate(prefix,ModellingDictionary.I);
+            String sy = InformationSet.concatenate(prefix, ModellingDictionary.Y);
+            String st = InformationSet.concatenate(prefix, ModellingDictionary.T);
+            String ssa = InformationSet.concatenate(prefix, ModellingDictionary.SA);
+            String ss = InformationSet.concatenate(prefix, ModellingDictionary.S);
+            String si = InformationSet.concatenate(prefix, ModellingDictionary.I);
             StringBuilder y = new StringBuilder();
             y.append(DocumentManager.COMPOSITE).append("Series=")
-//                    .append(sy).append(SeriesInfo.B_SUFFIX)
+                    //                    .append(sy).append(SeriesInfo.B_SUFFIX)
                     .append(',').append(sy)
                     .append(',').append(sy).append(SeriesInfo.F_SUFFIX);
             StringBuilder t = new StringBuilder();
@@ -400,7 +400,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class InputFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class InputFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, D> {
 
         protected InputFactory(Class<D> documentType) {
@@ -413,7 +413,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class SeasonalityTestsFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class SeasonalityTestsFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, SeasonalityTestUI2.Information> {
 
         protected SeasonalityTestsFactory(Class<D> documentType, Id id, InformationExtractor<SaDocument<? extends ISaSpecification>, SeasonalityTestUI2.Information> extractor, String header, boolean control) {
@@ -421,7 +421,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class ProcessingLogFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class ProcessingLogFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
         protected ProcessingLogFactory(Class<D> documentType) {
@@ -431,7 +431,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SI VIEW">
-    protected static class MainSiFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class MainSiFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, TsData[]> {
 
         protected MainSiFactory(Class<D> documentType) {
@@ -462,7 +462,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class LogFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class LogFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
         protected LogFactory(Class<D> documentType) {
@@ -472,7 +472,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER ARIMA VIEW">
-    protected static class PreprocessingArimaFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class PreprocessingArimaFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, LinkedHashMap<String, IArimaModel>> {
 
         protected PreprocessingArimaFactory(Class<D> documentType) {
@@ -493,7 +493,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER LIGHT PREPROCESSING VIEWS">
-    protected static class PreprocessingSummaryFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class PreprocessingSummaryFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, PreprocessingModel> {
 
         protected PreprocessingSummaryFactory(Class<D> documentType) {
@@ -501,7 +501,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class PreprocessingRegsFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class PreprocessingRegsFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, PreprocessingModel> {
 
         protected PreprocessingRegsFactory(Class<D> documentType) {
@@ -522,7 +522,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         return Jdk6.Collections.toArray(names, String.class);
     }
 
-    protected static class PreprocessingDetFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class PreprocessingDetFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
         protected PreprocessingDetFactory(Class<D> documentType) {
@@ -534,7 +534,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER PREPROCESSING VIEWS">
-    protected static class PreprocessingFCastsFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class PreprocessingFCastsFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, EstimationUI.Information> {
 
         protected PreprocessingFCastsFactory(Class<D> documentType) {
@@ -557,7 +557,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class PreprocessingFCastsTableFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class PreprocessingFCastsTableFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
         private static String[] generateItems() {
@@ -569,7 +569,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class PreprocessingFCastsOutFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class PreprocessingFCastsOutFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, IOneStepAheadForecastingTest> {
 
         protected PreprocessingFCastsOutFactory(Class<D> documentType) {
@@ -606,7 +606,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class PreprocessingResFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class PreprocessingResFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, TsData> {
 
         protected PreprocessingResFactory(Class<D> documentType) {
@@ -614,7 +614,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class PreprocessingResStatsFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class PreprocessingResStatsFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, NiidTests> {
 
         protected PreprocessingResStatsFactory(Class<D> documentType) {
@@ -633,7 +633,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class PreprocessingResDistFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class PreprocessingResDistFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, TsData> {
 
         protected PreprocessingResDistFactory(Class<D> documentType) {
@@ -643,7 +643,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER BENCHMARKING VIEW">
-    protected static class BenchmarkingFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class BenchmarkingFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, Boolean> {
 
         protected BenchmarkingFactory(Class<D> documentType) {
@@ -661,7 +661,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER DIAGNOSTICS VIEWS">
-    protected static class DiagnosticsSummaryFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class DiagnosticsSummaryFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, CompositeResults> {
 
         protected DiagnosticsSummaryFactory(Class<D> documentType) {
@@ -669,7 +669,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class DiagnosticsSpectrumResFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class DiagnosticsSpectrumResFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, TsData> {
 
         protected DiagnosticsSpectrumResFactory(Class<D> documentType) {
@@ -677,7 +677,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class DiagnosticsSpectrumIFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class DiagnosticsSpectrumIFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, TsData> {
 
         protected DiagnosticsSpectrumIFactory(Class<D> documentType) {
@@ -694,7 +694,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class DiagnosticsSpectrumSaFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class DiagnosticsSpectrumSaFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, TsData> {
 
         protected DiagnosticsSpectrumSaFactory(Class<D> documentType) {
@@ -716,7 +716,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class DiagnosticsRevisionSaFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class DiagnosticsRevisionSaFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, RevisionHistory> {
 
         protected DiagnosticsRevisionSaFactory(Class<D> documentType) {
@@ -724,7 +724,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class DiagnosticsRevisionTrendFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class DiagnosticsRevisionTrendFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, RevisionHistory> {
 
         protected DiagnosticsRevisionTrendFactory(Class<D> documentType) {
@@ -732,7 +732,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class DiagnosticsRevisionSaChangesFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class DiagnosticsRevisionSaChangesFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, RevisionHistory> {
 
         protected DiagnosticsRevisionSaChangesFactory(Class<D> documentType) {
@@ -740,7 +740,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class DiagnosticsRevisionTrendChangesFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class DiagnosticsRevisionTrendChangesFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, RevisionHistory> {
 
         protected DiagnosticsRevisionTrendChangesFactory(Class<D> documentType) {
@@ -748,7 +748,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class StabilityTDFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class StabilityTDFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, MovingProcessing> {
 
         private static final String[] Items = new String[]{
@@ -765,7 +765,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class StabilityEasterFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class StabilityEasterFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, MovingProcessing> {
 
         private static final String[] Items = new String[]{
@@ -777,7 +777,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class StabilityArimaFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class StabilityArimaFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, MovingProcessing> {
 
         private static final String[] Items = new String[]{
@@ -792,7 +792,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER LIKELIHOOD VIEW">
-    protected static class LikelihoodFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class LikelihoodFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, Functions> {
 
         protected LikelihoodFactory(Class<D> documentType) {
@@ -802,7 +802,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SEASONALITY VIEW">
-    protected static class ResidualSeasonalityFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class ResidualSeasonalityFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, TsData> {
 
         protected ResidualSeasonalityFactory(Class<D> documentType) {
@@ -816,7 +816,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class DiagnosticsSeasonalityFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class DiagnosticsSeasonalityFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, SeasonalityTestUI.Information> {
 
         protected DiagnosticsSeasonalityFactory(Class<D> documentType) {
@@ -848,7 +848,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER SLIDING SPANS VIEW">
-    protected static class DiagnosticsSlidingTdFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class DiagnosticsSlidingTdFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, SlidingSpans> {
 
         protected DiagnosticsSlidingTdFactory(Class<D> documentType) {
@@ -856,7 +856,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         }
     }
 
-    protected static class DiagnosticsSlidingSaFactory<D extends SaDocument<? extends ISaSpecification>>
+    protected abstract static class DiagnosticsSlidingSaFactory<D extends SaDocument<? extends ISaSpecification>>
             extends ItemFactory<D, SlidingSpans> {
 
         protected DiagnosticsSlidingSaFactory(Class<D> documentType) {
@@ -865,7 +865,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
     }
     //</editor-fold>
 
-    public static class ItemFactory<D extends SaDocument<? extends ISaSpecification>, I> extends ComposedProcDocumentItemFactory<D, I> {
+    public abstract static class ItemFactory<D extends SaDocument<? extends ISaSpecification>, I> extends ComposedProcDocumentItemFactory<D, I> {
 
         protected ItemFactory(Class<D> documentType, Id itemId, InformationExtractor<? super D, I> informationExtractor, ItemUI<? extends IProcDocumentView<D>, I> itemUI) {
             super(documentType, itemId, informationExtractor, itemUI);

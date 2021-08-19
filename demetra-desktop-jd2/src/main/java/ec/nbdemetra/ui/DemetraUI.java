@@ -56,7 +56,6 @@ import nbbrd.io.text.Parser;
 import nbbrd.io.text.Property;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
@@ -64,12 +63,13 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Mats Maggi
  */
 @GlobalService
-@ServiceProvider(service = DemetraUI.class)
-public class DemetraUI implements PropertyChangeSource, Configurable, Persistable {
+public final class DemetraUI implements PropertyChangeSource, Configurable, Persistable {
+
+    private static final DemetraUI INSTANCE = new DemetraUI();
 
     @NonNull
     public static DemetraUI getDefault() {
-        return Lookup.getDefault().lookup(DemetraUI.class);
+        return INSTANCE;
     }
 
     // PROPERTIES DEFINITION

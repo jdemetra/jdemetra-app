@@ -7,14 +7,14 @@ package ec.nbdemetra.common;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.common.uscb.UscbProvider;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = IDataSourceProviderBuddy.class)
-public class UscbProviderBuddy extends AbstractDataSourceProviderBuddy {
+@ServiceProvider(IDataSourceProviderBuddy.class)
+public final class UscbProviderBuddy extends AbstractDataSourceProviderBuddy {
 
     @Override
     public String getProviderName() {

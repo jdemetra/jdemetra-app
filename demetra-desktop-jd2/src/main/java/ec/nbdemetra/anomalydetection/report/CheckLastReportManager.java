@@ -16,42 +16,31 @@
  */
 package ec.nbdemetra.anomalydetection.report;
 
+import demetra.ui.GlobalService;
+import demetra.ui.util.CollectionSupplier;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 
 /**
  *
  * @author Mats Maggi
  */
-public class CheckLastReportManager implements LookupListener {
+@GlobalService
+public final class CheckLastReportManager {
 
-    private static final CheckLastReportManager instance_ = new CheckLastReportManager();
-    private Lookup.Result<ICheckLastReportFactory> lookup;
-    private final ArrayList<ICheckLastReportFactory> factories = new ArrayList<>();
-
-    public static CheckLastReportManager getInstance() {
-        return instance_;
+    private static final CheckLastReportManager INSTANCE = new CheckLastReportManager();
+ 
+    public static CheckLastReportManager getDefault() {
+        return INSTANCE;
     }
 
+    private final CollectionSupplier<ICheckLastReportFactory> factories;
+
     public CheckLastReportManager() {
-        lookup = Lookup.getDefault().lookupResult(ICheckLastReportFactory.class);
-        factories.addAll(lookup.allInstances());
+        factories = ICheckLastReportFactoryLoader::get;
     }
     
     public List<ICheckLastReportFactory> getFactories(){
-        return Collections.unmodifiableList(factories);
+        return new ArrayList<>(factories.get());
     }
-    
-    @Override
-    public void resultChanged(LookupEvent le) {
-        if (le.getSource().equals(lookup)) {
-            factories.clear();
-            factories.addAll(lookup.allInstances());
-        }
-    }
-
 }

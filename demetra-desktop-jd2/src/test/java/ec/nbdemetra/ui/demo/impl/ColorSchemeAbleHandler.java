@@ -20,6 +20,7 @@ import demetra.ui.components.parts.HasColorScheme;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
+import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
 import internal.ui.components.HasColorSchemeCommands;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -29,15 +30,15 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
+import nbbrd.service.ServiceProvider;
 import org.openide.awt.DropDownButtonFactory;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentHandler.class, position = 200)
-public final class ColorSchemeAbleHandler extends DemoComponentHandler.InstanceOf<HasColorScheme> {
+@ServiceProvider(DemoComponentHandler.class)
+public final class ColorSchemeAbleHandler extends TypedDemoComponentHandler<HasColorScheme> {
 
     public ColorSchemeAbleHandler() {
         super(HasColorScheme.class);

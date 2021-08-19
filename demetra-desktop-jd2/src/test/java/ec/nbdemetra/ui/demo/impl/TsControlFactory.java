@@ -28,20 +28,21 @@ import ec.ui.view.MarginView;
 import java.awt.Component;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentFactory.class)
-public final class TsControlFactory extends DemoComponentFactory {
+@ServiceProvider
+public final class TsControlFactory implements DemoComponentFactory {
 
-    public static final Id ID = MainFactory.ID.extend(idOf("TsControl", 0, true));
+    public static final Id ID = MainFactory.ID.extend(DemoComponentFactory.idOf("TsControl", 0, true));
 
     @Override
     public Map<Id, Callable<Component>> getComponents() {
-        return builder()
+        return DemoComponentFactory
+                .builder()
                 .put(ID, () -> ReflectComponent.of(TimeSeriesComponent.class))
                 .put(ID.extend("MarginView"), TsControlFactory::marginView)
                 .build();

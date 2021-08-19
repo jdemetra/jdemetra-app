@@ -2,27 +2,29 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.sa;
+package ec.nbdemetra.ui.nodes;
 
 import demetra.ui.util.NetBeansServiceBackend;
-import ec.tss.sa.SaProcessing;
+import java.awt.Image;
 import nbbrd.service.Quantifier;
 import nbbrd.service.ServiceDefinition;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.openide.nodes.Node;
 
 /**
  *
- * @author Jean Palate
+ * @author Philippe Charles
  */
 @ServiceDefinition(
         quantifier = Quantifier.MULTIPLE,
         backend = NetBeansServiceBackend.class,
         singleton = true
 )
-public interface ISaReportFactory {
+public interface NodeAnnotatorSpi {
 
-    String getReportName();
+    @NonNull
+    Image annotateIcon(@NonNull Node node, @NonNull Image image);
 
-    String getReportDescription();
-
-    boolean createReport(SaProcessing processing);
+    @NonNull
+    String annotateName(@NonNull Node node, @NonNull String name);
 }

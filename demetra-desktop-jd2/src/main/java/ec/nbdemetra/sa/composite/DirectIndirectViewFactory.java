@@ -179,6 +179,11 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
         public MainChartFactory() {
             super(MAIN_CHART, ResultExtractor.INSTANCE, new GenericChartUI(true, DSA, ISA, BSA));
         }
+
+        @Override
+        public int getPosition() {
+            return 201000;
+        }
     }
     //</editor-fold>
 
@@ -198,6 +203,11 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                     return new HtmlAnova(ibtest.anova(), new String[]{"periods", "years", "series"});
                 }
             });
+        }
+
+        @Override
+        public int getPosition() {
+            return 101000;
         }
     }
     //</editor-fold>
@@ -219,6 +229,11 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 }
             });
         }
+
+        @Override
+        public int getPosition() {
+            return 401000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 400000 + 2000)
@@ -226,6 +241,11 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
 
         public DiffChartFactory() {
             super(DIFF_CHART, ResultExtractor.INSTANCE, new GenericChartUI(true, MultiSaProcessingFactory.DIFFERENCES));
+        }
+
+        @Override
+        public int getPosition() {
+            return 402000;
         }
     }
 
@@ -235,6 +255,11 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
         public DiffTableFactory() {
             super(DIFF_TABLE, ResultExtractor.INSTANCE, new GenericTableUI(true, MultiSaProcessingFactory.DIFFERENCES));
         }
+
+        @Override
+        public int getPosition() {
+            return 403000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 400000 + 4000)
@@ -242,6 +267,11 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
 
         public DiffPeriodogramFactory() {
             super(DIFF_PERIODOGRAM, new TsDataExtractor(MultiSaProcessingFactory.DIFFERENCES), new SpectrumUI(false));
+        }
+
+        @Override
+        public int getPosition() {
+            return 404000;
         }
     }
     //</editor-fold>
@@ -256,6 +286,11 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
         public SeasDirectFactory() {
             super(SEAS_DIRECT, new SeasonalityExtractor(InformationSet.item(MultiSaSpecification.DIRECT, ModellingDictionary.SA)), new SeasonalityTestUI2(HEADER_SEAS_DIRECT, true));
         }
+
+        @Override
+        public int getPosition() {
+            return 301000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 300000 + 2000)
@@ -263,6 +298,11 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
 
         public SeasIndirectFactory() {
             super(SEAS_INDIRECT, new SeasonalityExtractor(InformationSet.item(MultiSaSpecification.INDIRECT, ModellingDictionary.SA)), new SeasonalityTestUI2(HEADER_SEAS_INDIRECT, true));
+        }
+
+        @Override
+        public int getPosition() {
+            return 302000;
         }
     }
     //</editor-fold>
@@ -282,6 +322,11 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
                 }
             });
         }
+
+        @Override
+        public int getPosition() {
+            return 401000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 400000 + 2000)
@@ -289,6 +334,11 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
 
         public AllSaFactory() {
             super(ALL_SA, AllSaExtractor.INSTANCE, new DefaultTableUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 402000;
         }
     }
 
@@ -298,10 +348,15 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
         public AllBenchSaFactory() {
             super(ALL_BENCH_SA, AllBenchSaExtractor.INSTANCE, new DefaultTableUI());
         }
+
+        @Override
+        public int getPosition() {
+            return 403000;
+        }
     }
     //</editor-fold>
 
-    private static class ItemFactory<I> extends ComposedProcDocumentItemFactory<MultiSaDocument, I> {
+    private abstract static class ItemFactory<I> extends ComposedProcDocumentItemFactory<MultiSaDocument, I> {
 
         public ItemFactory(Id itemId, InformationExtractor<? super MultiSaDocument, I> informationExtractor, ItemUI<? extends IProcDocumentView<MultiSaDocument>, I> itemUI) {
             super(MultiSaDocument.class, itemId, informationExtractor, itemUI);

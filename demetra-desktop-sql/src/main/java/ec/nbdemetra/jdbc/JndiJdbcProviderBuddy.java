@@ -55,6 +55,7 @@ import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
+import nbbrd.service.ServiceProvider;
 import org.netbeans.api.db.explorer.ConnectionManager;
 import org.netbeans.api.db.explorer.DatabaseConnection;
 import org.netbeans.api.db.explorer.DatabaseException;
@@ -66,14 +67,13 @@ import org.openide.nodes.Sheet;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = IDataSourceProviderBuddy.class)
-public class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implements Configurable {
+@ServiceProvider(IDataSourceProviderBuddy.class)
+public final class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implements Configurable {
 
     private final AutoCompletionSource dbSource;
     private final ListCellRenderer dbRenderer;

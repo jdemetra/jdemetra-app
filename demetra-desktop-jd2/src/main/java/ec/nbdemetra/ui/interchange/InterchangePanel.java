@@ -22,7 +22,6 @@ import ec.nbdemetra.ui.ns.NamedServiceNode;
 import java.util.stream.Stream;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
-import org.openide.util.Lookup;
 
 final class InterchangePanel extends javax.swing.JPanel implements ExplorerManager.Provider {
 
@@ -92,7 +91,7 @@ final class InterchangePanel extends javax.swing.JPanel implements ExplorerManag
     }//GEN-LAST:event_editButtonActionPerformed
 
     void load() {
-        Stream<NamedServiceNode> nodes = Lookup.getDefault().lookupAll(InterchangeBroker.class).stream().map(o -> new NamedServiceNode(o));
+        Stream<NamedServiceNode> nodes = InterchangeBrokerLoader.get().stream().map(o -> new NamedServiceNode(o));
         em.setRootContext(new AbstractNodeBuilder().add(nodes).name("Interchange broker").build());
     }
 

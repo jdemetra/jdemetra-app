@@ -40,6 +40,7 @@ import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
 import demetra.ui.components.TsSelectionBridge;
+import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,15 +54,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
 import javax.swing.*;
+import nbbrd.service.ServiceProvider;
 import org.openide.awt.DropDownButtonFactory;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentHandler.class)
-public final class TsCollectionHandler extends DemoComponentHandler.InstanceOf<HasTsCollection> {
+@ServiceProvider(DemoComponentHandler.class)
+public final class TsCollectionHandler extends TypedDemoComponentHandler<HasTsCollection> {
 
     private static final DemoTsBuilder BUILDER = new DemoTsBuilder();
 

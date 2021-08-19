@@ -16,54 +16,26 @@
  */
 package ec.nbdemetra.ui.demo;
 
-import ec.tstoolkit.design.ServiceDefinition;
+import demetra.ui.util.NetBeansServiceBackend;
 import java.awt.Component;
 import javax.swing.JToolBar;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceDefinition
-public abstract class DemoComponentHandler {
+@ServiceDefinition(
+        quantifier = Quantifier.MULTIPLE,
+        backend = NetBeansServiceBackend.class,
+        singleton = true
+)
+public interface DemoComponentHandler {
 
-    public boolean canHandle(Component c) {
-        return true;
-    }
+    boolean canHandle(Component c);
 
-    public void configure(Component c) {
-    }
+    void configure(Component c);
 
-    public void fillToolBar(JToolBar toolBar, Component c) {
-    }
-
-    public abstract static class InstanceOf<T> extends DemoComponentHandler {
-
-        private final Class<T> clazz;
-
-        public InstanceOf(Class<T> clazz) {
-            this.clazz = clazz;
-        }
-
-        public void doConfigure(T c) {
-        }
-
-        public void doFillToolBar(JToolBar toolBar, T c) {
-        }
-
-        @Override
-        final public boolean canHandle(Component c) {
-            return clazz.isInstance(c);
-        }
-
-        @Override
-        final public void configure(Component c) {
-            doConfigure(clazz.cast(c));
-        }
-
-        @Override
-        final public void fillToolBar(JToolBar toolBar, Component c) {
-            doFillToolBar(toolBar, clazz.cast(c));
-        }
-    }
+    void fillToolBar(JToolBar toolBar, Component c);
 }

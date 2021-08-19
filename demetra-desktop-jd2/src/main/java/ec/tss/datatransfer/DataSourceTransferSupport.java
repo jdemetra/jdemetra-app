@@ -18,13 +18,11 @@ package ec.tss.datatransfer;
 
 import demetra.tsprovider.DataSource;
 import demetra.ui.GlobalService;
+import demetra.ui.util.CollectionSupplier;
 import java.awt.datatransfer.Transferable;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  * A support class that deals with DataSource in Transferable.
@@ -32,17 +30,20 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Philippe Charles
  */
 @GlobalService
-@ServiceProvider(service = DataSourceTransferSupport.class)
-public class DataSourceTransferSupport {
+public final class DataSourceTransferSupport {
+
+    private static final DataSourceTransferSupport INSTANCE = new DataSourceTransferSupport();
 
     @NonNull
     public static DataSourceTransferSupport getDefault() {
-        return Lookup.getDefault().lookup(DataSourceTransferSupport.class);
+        return INSTANCE;
     }
+    
+    private final CollectionSupplier<DataSourceTransferHandler> providers = DataSourceTransferHandlerLoader::get;
 
     @NonNull
     public Stream<? extends DataSourceTransferHandler> all() {
-        return Lookup.getDefault().lookupAll(DataSourceTransferHandler.class).stream().filter(Objects::nonNull);
+        return providers.stream();
     }
 
     public boolean canHandle(@NonNull Transferable t) {

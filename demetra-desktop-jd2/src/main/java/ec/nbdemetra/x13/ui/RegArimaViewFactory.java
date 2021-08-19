@@ -39,6 +39,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
         public SpecAllFactory() {
             super(RegArimaDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 100000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 100010)
@@ -46,6 +51,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
 
         public InputFactory() {
             super(RegArimaDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 100010;
         }
     }
     //</editor-fold>
@@ -57,6 +67,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
         public SummaryFactory() {
             super(RegArimaDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 101000;
+        }
     }
     //</editor-fold>
 
@@ -67,6 +82,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
         public ModelFCastsFactory() {
             super(RegArimaDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 201000;
+        }
     }
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER FORECASTS">
@@ -76,6 +96,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
         public ModelFCastsTableFactory() {
             super(RegArimaDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 200500;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000 + 2000)
@@ -83,6 +108,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
 
         public ModelFCastsOutFactory() {
             super(RegArimaDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 202000;
         }
     }
     //</editor-fold>
@@ -94,6 +124,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
         public ModelRegsFactory() {
             super(RegArimaDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 301000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 300000 + 2000)
@@ -102,6 +137,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
         public ModelArimaFactory() {
             super(RegArimaDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 302000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 300000 + 3000)
@@ -109,6 +149,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
 
         public PreprocessingDetFactory() {
             super(RegArimaDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 303000;
         }
     }
     //</editor-fold>
@@ -120,6 +165,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
         public ModelResFactory() {
             super(RegArimaDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 401000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 400000 + 2000)
@@ -127,6 +177,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
 
         public ModelResStatsFactory() {
             super(RegArimaDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 402000;
         }
     }
 
@@ -136,6 +191,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
         public ModelResDist() {
             super(RegArimaDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 403000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 400000 + 4000)
@@ -143,6 +203,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
 
         public ModelResSpectrum() {
             super(RegArimaDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 404000;
         }
     }
     //</editor-fold>
@@ -154,6 +219,11 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpecif
         public LikelihoodFactory() {
             super(RegArimaDocument.class);
             setAsync(true);
+        }
+
+        @Override
+        public int getPosition() {
+            return 500000;
         }
     }
     //</editor-fold>

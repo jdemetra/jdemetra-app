@@ -27,19 +27,19 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JTextPane;
+import nbbrd.service.ServiceProvider;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Mats Maggi
  */
-@ServiceProvider(service = ICheckLastReportFactory.class, position = 20)
-public class DefaultCheckLastReport implements ICheckLastReportFactory {
+@ServiceProvider
+public final class DefaultCheckLastReport implements ICheckLastReportFactory {
 
     private final FileChooserBuilder fileChooserBuilder;
     private static final String NL = "\r\n", NL2 = "\r\n\r\n";

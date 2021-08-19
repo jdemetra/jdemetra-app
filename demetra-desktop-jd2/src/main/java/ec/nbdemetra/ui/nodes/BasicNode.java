@@ -4,14 +4,11 @@
  */
 package ec.nbdemetra.ui.nodes;
 
-import ec.tstoolkit.design.ServiceDefinition;
 import java.awt.Image;
 import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
-import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -61,10 +58,7 @@ public abstract class BasicNode<LTYPE> extends AbstractNode {
 
     protected Image annotate(Image image) {
         Image result = image;
-        for (Annotator o : Lookup.getDefault().lookupAll(Annotator.class)) {
-            result = o.annotateIcon(this, result);
-        }
-        return mergeExceptionBadge(result);
+        return NodeAnnotator.getDefault().annotateIcon(this, result);
     }
 
     @Override
@@ -80,22 +74,11 @@ public abstract class BasicNode<LTYPE> extends AbstractNode {
     @Override
     public String getDisplayName() {
         String result = super.getDisplayName();
-        for (Annotator o : Lookup.getDefault().lookupAll(Annotator.class)) {
-            result = o.annotateName(this, result);
-        }
-        return result;
+        return NodeAnnotator.getDefault().annotateName(this, result);
     }
 
     public void refreshAnnotation() {
         fireIconChange();
         fireOpenedIconChange();
-    }
-
-    @ServiceDefinition
-    public interface Annotator {
-
-        Image annotateIcon(Node node, Image image);
-
-        String annotateName(Node node, String name);
     }
 }

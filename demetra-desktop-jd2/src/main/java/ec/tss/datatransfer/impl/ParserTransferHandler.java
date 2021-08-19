@@ -9,16 +9,16 @@ import demetra.tsprovider.DataSource;
 import ec.tss.datatransfer.DataSourceTransferHandler;
 import java.awt.datatransfer.Transferable;
 import java.util.Optional;
-import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
 import nbbrd.io.text.Parser;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-public abstract class ParserTransferHandler extends DataSourceTransferHandler {
+public abstract class ParserTransferHandler implements DataSourceTransferHandler {
 
     abstract protected Parser<DataSource> getParser();
 
@@ -44,8 +44,8 @@ public abstract class ParserTransferHandler extends DataSourceTransferHandler {
         return result.isPresent() && result.get().getProviderName().equals(providerName) ? result : Optional.<DataSource>empty();
     }
 
-    @ServiceProvider(service = DataSourceTransferHandler.class)
-    public static class XmlParserHandler extends ParserTransferHandler {
+    @ServiceProvider(DataSourceTransferHandler.class)
+    public final static class XmlParserHandler extends ParserTransferHandler {
 
         @Override
         protected Parser<DataSource> getParser() {
@@ -53,8 +53,8 @@ public abstract class ParserTransferHandler extends DataSourceTransferHandler {
         }
     }
 
-    @ServiceProvider(service = DataSourceTransferHandler.class)
-    public static class UriParserHandler extends ParserTransferHandler {
+    @ServiceProvider(DataSourceTransferHandler.class)
+    public final static class UriParserHandler extends ParserTransferHandler {
 
         @Override
         protected Parser<DataSource> getParser() {

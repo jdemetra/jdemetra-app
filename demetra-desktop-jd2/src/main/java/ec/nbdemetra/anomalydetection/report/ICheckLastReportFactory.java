@@ -16,14 +16,20 @@
  */
 package ec.nbdemetra.anomalydetection.report;
 
-import ec.tstoolkit.design.ServiceDefinition;
+import demetra.ui.util.NetBeansServiceBackend;
 import java.util.Map;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
 
 /**
  *
  * @author Mats Maggi
  */
-@ServiceDefinition
+@ServiceDefinition(
+        quantifier = Quantifier.MULTIPLE,
+        backend = NetBeansServiceBackend.class,
+        singleton = true
+)
 public interface ICheckLastReportFactory {
 
     String getReportName();

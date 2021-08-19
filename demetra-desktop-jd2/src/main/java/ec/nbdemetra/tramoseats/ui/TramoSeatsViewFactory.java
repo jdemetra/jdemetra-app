@@ -119,6 +119,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public SpecAllFactory() {
             super(TramoSeatsDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 100000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 100010)
@@ -126,6 +131,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public InputFactory() {
             super(TramoSeatsDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 100000;
         }
     }
     //</editor-fold>
@@ -136,17 +146,22 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public MainSummaryFactory() {
             super(MAIN_SUMMARY, new DefaultInformationExtractor<TramoSeatsDocument, TramoSeatsDocument>() {
-              @Override
-              public TramoSeatsDocument retrieve(TramoSeatsDocument source) {
-                  return source;
-              }
-          }, new PooledItemUI<View, TramoSeatsDocument, TramoSeatsSummary>(TramoSeatsSummary.class) {
-              @Override
-              protected void init(TramoSeatsSummary c, View host, TramoSeatsDocument information) {
-                  c.setTsToolkit(host.getToolkit());
-                  c.set(information);
-              }
-          });
+                @Override
+                public TramoSeatsDocument retrieve(TramoSeatsDocument source) {
+                    return source;
+                }
+            }, new PooledItemUI<View, TramoSeatsDocument, TramoSeatsSummary>(TramoSeatsSummary.class) {
+                @Override
+                protected void init(TramoSeatsSummary c, View host, TramoSeatsDocument information) {
+                    c.setTsToolkit(host.getToolkit());
+                    c.set(information);
+                }
+            });
+        }
+
+        @Override
+        public int getPosition() {
+            return 200000;
         }
     }
     //</editor-fold>
@@ -159,6 +174,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public MainChartsLowFactory() {
             super(TramoSeatsDocument.class, GenericSaProcessingFactory.FINAL);
         }
+
+        @Override
+        public int getPosition() {
+            return 201010;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 201020)
@@ -166,6 +186,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public MainChartsHighFactory() {
             super(TramoSeatsDocument.class, GenericSaProcessingFactory.FINAL);
+        }
+
+        @Override
+        public int getPosition() {
+            return 201020;
         }
     }
 
@@ -175,6 +200,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public MainTableFactory() {
             super(TramoSeatsDocument.class, GenericSaProcessingFactory.FINAL);
         }
+
+        @Override
+        public int getPosition() {
+            return 202000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 203000)
@@ -183,6 +213,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public MainSiFactory() {
             super(TramoSeatsDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 203000;
+        }
     }
 
 //    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 204000)
@@ -190,6 +225,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public ProcessingLogFactory() {
             super(TramoSeatsDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 204000;
         }
     }
     //</editor-fold>
@@ -201,6 +241,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public PreprocessingSummaryFactory() {
             super(TramoSeatsDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 300000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 302000)
@@ -208,6 +253,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public PreprocessingRegsFactory() {
             super(TramoSeatsDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 302000;
         }
     }
 
@@ -217,6 +267,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public PreprocessingDetFactory() {
             super(TramoSeatsDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 304000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 301000)
@@ -224,6 +279,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public PreprocessingFCastsFactory() {
             super(TramoSeatsDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 301000;
         }
     }
 
@@ -233,6 +293,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public PreprocessingFCastsTableFactory() {
             super(TramoSeatsDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 301005;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 301010)
@@ -240,6 +305,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public PreprocessingFCastsOutFactory() {
             super(TramoSeatsDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 301010;
         }
     }
 
@@ -249,6 +319,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public PreprocessingResFactory() {
             super(TramoSeatsDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 305000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 305010)
@@ -257,6 +332,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public PreprocessingResStatsFactory() {
             super(TramoSeatsDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 305010;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 305020)
@@ -264,6 +344,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public PreprocessingResDistFactory() {
             super(TramoSeatsDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 305020;
         }
     }
 
@@ -274,6 +359,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             super(TramoSeatsDocument.class);
             setAsync(true);
         }
+
+        @Override
+        public int getPosition() {
+            return 306000;
+        }
     }
     //</editor-fold>
 
@@ -283,25 +373,30 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public PreprocessingArimaFactory() {
             super(PREPROCESSING_ARIMA, new DefaultInformationExtractor<TramoSeatsDocument, LinkedHashMap<String, IArimaModel>>() {
-              @Override
-              public LinkedHashMap<String, IArimaModel> retrieve(TramoSeatsDocument source) {
-                  LinkedHashMap<String, IArimaModel> models = new LinkedHashMap<>();
-                  PreprocessingModel pm = source.getPreprocessingPart();
-                  SarimaModel tmodel = null;
-                  if (pm != null) {
-                      tmodel = pm.estimation.getArima();
-                      models.put("Tramo model", tmodel);
-                  }
-                  SeatsResults seats = source.getDecompositionPart();
-                  if (seats != null) {
-                      IArimaModel smodel = seats.getModel().getArima();
-                      if (tmodel == null || !ArimaModel.same(tmodel, smodel, 1e-4)) {
-                          models.put("Seats model", smodel);
-                      }
-                  }
-                  return models;
-              }
-          }, new ArimaUI());
+                @Override
+                public LinkedHashMap<String, IArimaModel> retrieve(TramoSeatsDocument source) {
+                    LinkedHashMap<String, IArimaModel> models = new LinkedHashMap<>();
+                    PreprocessingModel pm = source.getPreprocessingPart();
+                    SarimaModel tmodel = null;
+                    if (pm != null) {
+                        tmodel = pm.estimation.getArima();
+                        models.put("Tramo model", tmodel);
+                    }
+                    SeatsResults seats = source.getDecompositionPart();
+                    if (seats != null) {
+                        IArimaModel smodel = seats.getModel().getArima();
+                        if (tmodel == null || !ArimaModel.same(tmodel, smodel, 1e-4)) {
+                            models.put("Seats model", smodel);
+                        }
+                    }
+                    return models;
+                }
+            }, new ArimaUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 303000;
         }
     }
     //</editor-fold>
@@ -312,20 +407,25 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DecompositionSummaryFactory() {
             super(DECOMPOSITION_SUMMARY, new DefaultInformationExtractor<TramoSeatsDocument, UcarimaUI.Information>() {
-              @Override
-              public UcarimaUI.Information retrieve(TramoSeatsDocument source) {
-                  SeatsResults seats = source.getDecompositionPart();
-                  if (seats == null) {
-                      return null;
-                  }
-                  UcarimaModel ucm = seats.getUcarimaModel();
-                  UcarimaUI.Information info = new UcarimaUI.Information();
-                  info.model = ucm.getModel();
-                  info.names = SeatsResults.getComponentsName(ucm);
-                  info.cmps = SeatsResults.getComponents(ucm);
-                  return info;
-              }
-          }, new UcarimaUI());
+                @Override
+                public UcarimaUI.Information retrieve(TramoSeatsDocument source) {
+                    SeatsResults seats = source.getDecompositionPart();
+                    if (seats == null) {
+                        return null;
+                    }
+                    UcarimaModel ucm = seats.getUcarimaModel();
+                    UcarimaUI.Information info = new UcarimaUI.Information();
+                    info.model = ucm.getModel();
+                    info.names = SeatsResults.getComponentsName(ucm);
+                    info.cmps = SeatsResults.getComponents(ucm);
+                    return info;
+                }
+            }, new UcarimaUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 400000;
         }
     }
 
@@ -370,6 +470,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public LinearizedSeriesFactory() {
             super(DECOMPOSITION_SERIES, saExtractor(), new GenericTableUI(false, generateItems()));
         }
+
+        @Override
+        public int getPosition() {
+            return 401000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 401010)
@@ -409,6 +514,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public ComponentsSeriesFactory() {
             super(DECOMPOSITION_CMPSERIES, saExtractor(), new GenericTableUI(false, generateItems()));
         }
+
+        @Override
+        public int getPosition() {
+            return 401010;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 402010)
@@ -416,6 +526,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DecompositionWkComponentsFactory() {
             super(DECOMPOSITION_WK_COMPONENTS, wkExtractor(), new WkComponentsUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 402010;
         }
     }
 
@@ -425,6 +540,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public DecompositionStochTrendFactory() {
             super(DECOMPOSITION_STOCH_TREND, cmpExtractor(ComponentType.Trend), new EstimationUI());
         }
+
+        @Override
+        public int getPosition() {
+            return 401010;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 401020)
@@ -432,6 +552,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DecompositionStochSeasFactory() {
             super(DECOMPOSITION_STOCH_SEAS, cmpExtractor(ComponentType.Seasonal), new EstimationUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 401020;
         }
     }
 
@@ -441,6 +566,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public DecompositionWkFinalsFactory() {
             super(DECOMPOSITION_WK_FINALS, wkExtractor(), new WkFinalEstimatorsUI());
         }
+
+        @Override
+        public int getPosition() {
+            return 402020;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 402030)
@@ -449,6 +579,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public DecompositionWkErrorsFactory() {
             super(DECOMPOSITION_ERRORS, wkExtractor(), new WkErrorsUI());
         }
+
+        @Override
+        public int getPosition() {
+            return 402030;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 402050)
@@ -456,16 +591,21 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DecompositionGrowthFactory() {
             super(DECOMPOSITION_RATES, new DefaultInformationExtractor<TramoSeatsDocument, CompositeResults>() {
-              @Override
-              public CompositeResults retrieve(TramoSeatsDocument source) {
-                  CompositeResults results = source.getResults();
-                  if (!results.isSuccessful()) {
-                      return null;
-                  } else {
-                      return results;
-                  }
-              }
-          }, new GrowthRatesUI());
+                @Override
+                public CompositeResults retrieve(TramoSeatsDocument source) {
+                    CompositeResults results = source.getResults();
+                    if (!results.isSuccessful()) {
+                        return null;
+                    } else {
+                        return results;
+                    }
+                }
+            }, new GrowthRatesUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 402050;
         }
     }
 
@@ -474,19 +614,24 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DecompositionTestsFactory() {
             super(DECOMPOSITION_TESTS, new DefaultInformationExtractor<TramoSeatsDocument, ModelBasedUI.Information>() {
-              @Override
-              public ModelBasedUI.Information retrieve(TramoSeatsDocument source) {
-                  SeatsResults rslt = source.getDecompositionPart();
-                  if (rslt == null) {
-                      return null;
-                  }
-                  ModelBasedUI.Information info = new ModelBasedUI.Information();
-                  info.decomposition = rslt.getComponents();
-                  info.ucm = rslt.getUcarimaModel();
-                  info.err = rslt.getModel().getSer();
-                  return info;
-              }
-          }, new ModelBasedUI());
+                @Override
+                public ModelBasedUI.Information retrieve(TramoSeatsDocument source) {
+                    SeatsResults rslt = source.getDecompositionPart();
+                    if (rslt == null) {
+                        return null;
+                    }
+                    ModelBasedUI.Information info = new ModelBasedUI.Information();
+                    info.decomposition = rslt.getComponents();
+                    info.ucm = rslt.getUcarimaModel();
+                    info.err = rslt.getModel().getSer();
+                    return info;
+                }
+            }, new ModelBasedUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 403000;
         }
     }
 
@@ -496,6 +641,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public StationaryVarianceDecompositionFactory() {
             super(DECOMPOSITION_VAR, stvarExtractor(), new StvarUI());
         }
+
+        @Override
+        public int getPosition() {
+            return 403010;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 403005)
@@ -503,6 +653,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public SignificantSeasonalityFactory() {
             super(DECOMPOSITION_SIGSEAS, saExtractor(), new SigSeasUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 403005;
         }
     }
     //</editor-fold>
@@ -513,6 +668,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public BenchmarkingFactory() {
             super(TramoSeatsDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 500000;
         }
     }
     //</editor-fold>
@@ -557,12 +717,17 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DiagnosticsMatrixFactory() {
             super(DIAGNOSTICS_MATRIX, DiagnosticsMatrixExtractor.INSTANCE, new DefaultItemUI<IProcDocumentView<TramoSeatsDocument>, Map<String, CompositeResults>>() {
-              @Override
-              public JComponent getView(IProcDocumentView<TramoSeatsDocument> host, Map<String, CompositeResults> information) {
-                  return new DiagnosticsMatrixView(information);
-              }
+                @Override
+                public JComponent getView(IProcDocumentView<TramoSeatsDocument> host, Map<String, CompositeResults> information) {
+                    return new DiagnosticsMatrixView(information);
+                }
 
-          });
+            });
+        }
+
+        @Override
+        public int getPosition() {
+            return 600001;
         }
     }
 
@@ -572,6 +737,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public DiagnosticsSummaryFactory() {
             super(TramoSeatsDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 600000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 602010)
@@ -579,6 +749,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DiagnosticsSpectrumResFactory() {
             super(TramoSeatsDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 602010;
         }
     }
 
@@ -588,6 +763,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public DiagnosticsSpectrumIFactory() {
             super(TramoSeatsDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 602020;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 602030)
@@ -595,6 +775,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DiagnosticsSpectrumSaFactory() {
             super(TramoSeatsDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 602030;
         }
     }
     //</editor-fold>
@@ -607,6 +792,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             super(TramoSeatsDocument.class);
             setAsync(true);
         }
+
+        @Override
+        public int getPosition() {
+            return 604010;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 604020)
@@ -615,6 +805,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public RevisionHistoryTrendFactory() {
             super(TramoSeatsDocument.class);
             setAsync(true);
+        }
+
+        @Override
+        public int getPosition() {
+            return 604020;
         }
     }
 
@@ -625,6 +820,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             super(TramoSeatsDocument.class);
             setAsync(true);
         }
+
+        @Override
+        public int getPosition() {
+            return 604030;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 604040)
@@ -633,6 +833,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public RevisionHistoryTrendChangesFactory() {
             super(TramoSeatsDocument.class);
             setAsync(true);
+        }
+
+        @Override
+        public int getPosition() {
+            return 604040;
         }
     }
     //</editor-fold>
@@ -644,6 +849,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public StabilityTDFactory() {
             super(TramoSeatsDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 604010;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 605020)
@@ -652,6 +862,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public StabilityEasterFactory() {
             super(TramoSeatsDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 605020;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 605030)
@@ -659,6 +874,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public StabilityArimaFactory() {
             super(TramoSeatsDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 605030;
         }
     }
     //</editor-fold>
@@ -670,6 +890,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public OriginalSeasonalityFactory() {
             super(TramoSeatsDocument.class, DIAGNOSTICS_OSEASONALITY, SaDocumentViewFactory.oseasExtractor(), "Original series", false);
         }
+
+        @Override
+        public int getPosition() {
+            return 600010;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 600020)
@@ -677,6 +902,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public LinearSeasonalityFactory() {
             super(TramoSeatsDocument.class, DIAGNOSTICS_LSEASONALITY, SaDocumentViewFactory.lseasExtractor(), "Linearized series", false);
+        }
+
+        @Override
+        public int getPosition() {
+            return 600020;
         }
     }
 
@@ -686,6 +916,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public ResSeasonalityFactory() {
             super(TramoSeatsDocument.class, DIAGNOSTICS_RSEASONALITY, SaDocumentViewFactory.rseasExtractor(), "Full residuals", true);
         }
+
+        @Override
+        public int getPosition() {
+            return 600030;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 600040)
@@ -693,6 +928,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DiagnosticsSeasonalityFactory() {
             super(TramoSeatsDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 600040;
         }
     }
 
@@ -702,6 +942,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public SaSeasonalityFactory() {
             super(TramoSeatsDocument.class, DIAGNOSTICS_SASEASONALITY, SaDocumentViewFactory.saseasExtractor(), "Seasonally adjusted series (stochastic)", true);
         }
+
+        @Override
+        public int getPosition() {
+            return 600050;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 600060)
@@ -709,6 +954,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public IrrSeasonalityFactory() {
             super(TramoSeatsDocument.class, DIAGNOSTICS_ISEASONALITY, SaDocumentViewFactory.iseasExtractor(), "Irregular series (stochastic)", true);
+        }
+
+        @Override
+        public int getPosition() {
+            return 600060;
         }
     }
 
@@ -718,6 +968,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public LastResSeasonalityFactory() {
             super(TramoSeatsDocument.class, DIAGNOSTICS_LASTRSEASONALITY, SaDocumentViewFactory.lastrseasExtractor(), "Residuals (last periods)", true);
         }
+
+        @Override
+        public int getPosition() {
+            return 600070;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 600080)
@@ -725,6 +980,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public LastSaSeasonalityFactory() {
             super(TramoSeatsDocument.class, DIAGNOSTICS_LASTSASEASONALITY, SaDocumentViewFactory.lastsaseasExtractor(), "Seasonally adjusted series (last periods)", true);
+        }
+
+        @Override
+        public int getPosition() {
+            return 600080;
         }
     }
 
@@ -734,6 +994,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public LastIrrSeasonalityFactory() {
             super(TramoSeatsDocument.class, DIAGNOSTICS_LASTISEASONALITY, SaDocumentViewFactory.lastiseasExtractor(), "Irregular series (last periods)", true);
         }
+
+        @Override
+        public int getPosition() {
+            return 600090;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 600100)
@@ -741,6 +1006,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public ResidualSeasonalityFactory() {
             super(TramoSeatsDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 600100;
         }
     }
     //</editor-fold>
@@ -752,6 +1022,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public DiagnosticsSlidingSummaryFactory() {
             super(DIAGNOSTICS_SLIDING_SUMMARY, ssExtractor(), new SlidingSpansUI(ModellingDictionary.S, ModellingDictionary.SI_CMP));
         }
+
+        @Override
+        public int getPosition() {
+            return 603000;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 603010)
@@ -759,6 +1034,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
         public DiagnosticsSlidingSeasFactory() {
             super(DIAGNOSTICS_SLIDING_SEAS, ssExtractor(), new SlidingSpansDetailUI(ModellingDictionary.S_CMP));
+        }
+
+        @Override
+        public int getPosition() {
+            return 603010;
         }
     }
 
@@ -768,6 +1048,11 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public DiagnosticsSlidingTdFactory() {
             super(TramoSeatsDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 603020;
+        }
     }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 603030)
@@ -776,10 +1061,15 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         public DiagnosticsSlidingSaFactory() {
             super(TramoSeatsDocument.class);
         }
+
+        @Override
+        public int getPosition() {
+            return 603030;
+        }
     }
     //</editor-fold>
 
-    private static class ItemFactory<I> extends ComposedProcDocumentItemFactory<TramoSeatsDocument, I> {
+    private abstract static class ItemFactory<I> extends ComposedProcDocumentItemFactory<TramoSeatsDocument, I> {
 
         public ItemFactory(Id itemId, InformationExtractor<? super TramoSeatsDocument, I> informationExtractor, ItemUI<? extends IProcDocumentView<TramoSeatsDocument>, I> itemUI) {
             super(TramoSeatsDocument.class, itemId, informationExtractor, itemUI);
@@ -850,7 +1140,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
         @Override
         protected IHtmlElement getHtmlElement(V host, WkInformation information) {
             return new HtmlModelBasedRevisionsAnalysis(information.frequency.intValue(), information.estimators,
-                                                       information.descriptors);
+                    information.descriptors);
         }
     }
 

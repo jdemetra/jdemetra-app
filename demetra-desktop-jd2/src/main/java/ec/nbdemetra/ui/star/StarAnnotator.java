@@ -5,18 +5,18 @@
 package ec.nbdemetra.ui.star;
 
 import demetra.tsprovider.DataSource;
-import ec.nbdemetra.ui.nodes.NodeAnnotator;
 import java.awt.Image;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
+import ec.nbdemetra.ui.nodes.NodeAnnotatorSpi;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = NodeAnnotator.class)
-public class StarAnnotator implements NodeAnnotator {
+@ServiceProvider(service = NodeAnnotatorSpi.class)
+public class StarAnnotator implements NodeAnnotatorSpi {
 
     boolean isStarred(Node node) {
         DataSource dataSource = node.getLookup().lookup(DataSource.class);

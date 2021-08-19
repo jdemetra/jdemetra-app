@@ -19,18 +19,19 @@ package ec.nbdemetra.ui.demo.impl;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import demetra.ui.components.JTsGrid;
+import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
 import internal.ui.components.HasGridCommands;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
+import nbbrd.service.ServiceProvider;
 import org.openide.awt.DropDownButtonFactory;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = DemoComponentHandler.class)
-public final class TsGridHandler extends DemoComponentHandler.InstanceOf<JTsGrid> {
+@ServiceProvider(DemoComponentHandler.class)
+public final class TsGridHandler extends TypedDemoComponentHandler<JTsGrid> {
 
     public TsGridHandler() {
         super(JTsGrid.class);

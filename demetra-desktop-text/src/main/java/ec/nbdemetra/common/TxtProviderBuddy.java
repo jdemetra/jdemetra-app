@@ -35,16 +35,16 @@ import java.beans.IntrospectionException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import nbbrd.service.ServiceProvider;
 import org.openide.nodes.Sheet.Set;
 import org.openide.util.ImageUtilities;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = IDataSourceProviderBuddy.class)
-public class TxtProviderBuddy extends AbstractDataSourceProviderBuddy {
+@ServiceProvider(IDataSourceProviderBuddy.class)
+public final class TxtProviderBuddy extends AbstractDataSourceProviderBuddy {
 
     @Override
     public String getProviderName() {
@@ -92,7 +92,7 @@ public class TxtProviderBuddy extends AbstractDataSourceProviderBuddy {
                 .select(bean, "file")
                 .display("Text file")
                 .description("The path to the text file.")
-              //  .filterForSwing(new FileLoaderFileFilter(loader))
+                //  .filterForSwing(new FileLoaderFileFilter(loader))
                 .paths(loader.getPaths())
                 .directories(false)
                 .add();
