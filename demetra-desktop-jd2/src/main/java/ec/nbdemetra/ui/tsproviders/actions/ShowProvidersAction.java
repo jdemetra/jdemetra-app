@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
-import ec.nbdemetra.ui.DemetraUI;
+import demetra.ui.DemetraOptions;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -39,14 +39,14 @@ public final class ShowProvidersAction extends AbstractAction implements Present
     public ShowProvidersAction() {
         this.item = new JCheckBoxMenuItem(this);
         item.setText(Bundle.CTL_ShowProvidersAction());
-        DemetraUI demetraUI = DemetraUI.getDefault();
+        DemetraOptions demetraUI = DemetraOptions.getDefault();
         item.setSelected(demetraUI.isShowTsProviderNodes());
         demetraUI.addPropertyChangeListener(WeakListeners.propertyChange(this, demetraUI));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        DemetraUI demetraUI = DemetraUI.getDefault();
+        DemetraOptions demetraUI = DemetraOptions.getDefault();
         demetraUI.setShowTsProviderNodes(!demetraUI.isShowTsProviderNodes());
     }
 
@@ -58,7 +58,7 @@ public final class ShowProvidersAction extends AbstractAction implements Present
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case DemetraUI.SHOW_TSPROVIDER_NODES_PROPERTY:
+            case DemetraOptions.SHOW_TS_PROVIDER_NODES_PROPERTY:
                 item.setSelected((Boolean) evt.getNewValue());
                 break;
         }

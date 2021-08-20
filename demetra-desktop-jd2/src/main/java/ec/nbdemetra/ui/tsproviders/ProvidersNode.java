@@ -16,14 +16,13 @@
  */
 package ec.nbdemetra.ui.tsproviders;
 
-import demetra.bridge.TsConverter;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceListener;
 import demetra.tsprovider.DataSourceLoader;
 import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.TsManager;
 import demetra.ui.Config;
-import ec.nbdemetra.ui.DemetraUI;
+import demetra.ui.DemetraOptions;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.interchange.Importable;
 import static ec.nbdemetra.ui.tsproviders.ProvidersNode.ACTION_PATH;
@@ -102,11 +101,11 @@ public final class ProvidersNode extends AbstractNode {
 
         // FIXME: use TsManager instead of lookup
         private final Lookup.Result<IDataSourceProvider> lookupResult;
-        private final DemetraUI demetraUI;
+        private final DemetraOptions demetraUI;
 
         public ProvidersChildFactory() {
             this.lookupResult = Lookup.getDefault().lookupResult(IDataSourceProvider.class);
-            this.demetraUI = DemetraUI.getDefault();
+            this.demetraUI = DemetraOptions.getDefault();
         }
 
         @Override
@@ -161,8 +160,8 @@ public final class ProvidersNode extends AbstractNode {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             switch (evt.getPropertyName()) {
-                case DemetraUI.SHOW_UNAVAILABLE_TSPROVIDER_PROPERTY:
-                case DemetraUI.SHOW_TSPROVIDER_NODES_PROPERTY:
+                case DemetraOptions.SHOW_UNAVAILABLE_TS_PROVIDERS_PROPERTY:
+                case DemetraOptions.SHOW_TS_PROVIDER_NODES_PROPERTY:
                     refresh(true);
                     break;
 

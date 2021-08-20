@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.ui.properties;
 
-import ec.nbdemetra.ui.DemetraUI;
-import ec.tss.tsproviders.utils.DataFormat;
+import demetra.tsprovider.util.ObsFormat;
+import demetra.ui.DemetraOptions;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.chart.TsCharts;
 import ec.util.chart.swing.Charts;
@@ -69,8 +69,8 @@ public class TsDataValuesPropertyEditor extends PropertyEditorSupport {
                 singleValuePainter.paint(gfx);
                 break;
             case 1:
-                DataFormat dataFormat = DemetraUI.getDefault().getDataFormat();
-                String str = "Single: " + dataFormat.numberFormatter().formatAsString(data.get(0));
+                ObsFormat obsFormat = DemetraOptions.getDefault().getObsFormat();
+                String str = "Single: " + obsFormat.numberFormatter().formatAsString(data.get(0));
                 singleValuePainter.setText(str);
                 singleValuePainter.setBounds(box);
                 singleValuePainter.paint(gfx);

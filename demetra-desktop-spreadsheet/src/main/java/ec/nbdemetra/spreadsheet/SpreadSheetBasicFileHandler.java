@@ -17,7 +17,7 @@
 package ec.nbdemetra.spreadsheet;
 
 import com.google.common.base.Stopwatch;
-import ec.nbdemetra.ui.DemetraUI;
+import demetra.ui.DemetraOptions;
 import demetra.ui.util.NbComponents;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
@@ -162,7 +162,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
             item.setText("Edit format..");
             item.setEnabled(false);
 
-            result.add(HasColorSchemeCommands.menuOf(view, DemetraUI.getDefault().getColorSchemes()));
+            result.add(HasColorSchemeCommands.menuOf(view, DemetraOptions.getDefault().getColorSchemes()));
 
             item = result.add(new JCheckBoxMenuItem(SpreadSheetView.invertColors().toAction(view)));
             item.setText("Invert colors");

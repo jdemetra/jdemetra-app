@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui.tools;
 
-import ec.nbdemetra.ui.DemetraUI;
+import demetra.ui.DemetraOptions;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.nodes.ControlNode;
@@ -123,7 +123,7 @@ public final class ChartTopComponent extends TopComponent implements ExplorerMan
         copyBtn.setIcon(DemetraUiIcon.EDIT_COPY_16);
         result.add(copyBtn);
 
-        JPopupMenu menuColorScheme = HasColorSchemeCommands.menuOf(getChart(), DemetraUI.getDefault().getColorSchemes()).getPopupMenu();
+        JPopupMenu menuColorScheme = HasColorSchemeCommands.menuOf(getChart(), DemetraOptions.getDefault().getColorSchemes()).getPopupMenu();
         JButton coloSchemeBtn = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.COLOR_SWATCH_16, menuColorScheme);
         coloSchemeBtn.addActionListener(getChart().getActionMap().get(HasColorSchemeCommands.DEFAULT_COLOR_SCHEME_ACTION));
         result.add(coloSchemeBtn);

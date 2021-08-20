@@ -52,7 +52,7 @@ public class RevisionAnalysisDocumentManager extends AbstractWorkspaceItemManage
     protected RevisionAnalysisDocument createNewObject() {
         RevisionAnalysisDocument d = new RevisionAnalysisDocument();
         DemetraUI demetraUI = DemetraUI.getDefault();
-        d.getSpecification().setSaSpecification(demetraUI.getDefaultSASpec());
+        d.getSpecification().setSaSpecification(demetraUI.getDefaultSASpecInstance());
         return d;
     }
 

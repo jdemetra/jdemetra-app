@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.ui.chart3d.functions;
 
+import demetra.ui.DemetraOptions;
 import demetra.ui.concurrent.UIExecutors;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.chart3d.AbstractSurfaceModel;
 import ec.nbdemetra.ui.chart3d.SurfaceModel.PlotType;
 import ec.nbdemetra.ui.chart3d.SurfaceVertex;
@@ -137,7 +137,7 @@ public class FunctionsSurfaceModel extends AbstractSurfaceModel {
                     return null;
                 }
 
-                DemetraUI config = DemetraUI.getDefault();
+                DemetraOptions config = DemetraOptions.getDefault();
 
                 ExecutorService executorService = UIExecutors.newFixedThreadPool(config.getBatchPoolSize(), config.getBatchPriority());
                 try {

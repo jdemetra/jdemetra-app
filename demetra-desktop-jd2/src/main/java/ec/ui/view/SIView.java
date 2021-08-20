@@ -17,8 +17,8 @@
 package ec.ui.view;
 
 import demetra.bridge.TsConverter;
+import demetra.ui.DemetraOptions;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.satoolkit.DecompositionMode;
 import ec.tss.TsInformation;
 import ec.tstoolkit.data.DataBlock;
@@ -49,7 +49,6 @@ import java.awt.Stroke;
 import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +58,7 @@ import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import nbbrd.io.text.Formatter;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.JFreeChart;
@@ -96,7 +96,7 @@ public final class SIView extends JComponent implements TimeSeriesComponent, Has
     private final JFreeChart masterChart;
     private final JFreeChart detailChart;
     private final DecimalFormat format = new DecimalFormat("0");
-    private NumberFormat numberFormat;
+    private Formatter<Number> numberFormat;
 
     @lombok.experimental.Delegate
     private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
@@ -186,7 +186,7 @@ public final class SIView extends JComponent implements TimeSeriesComponent, Has
         this.masterChart = createMasterChart(sRenderer, tRenderer, siMasterRenderer);
         this.detailChart = createDetailChart(sRenderer, tRenderer, siDetailRenderer);
         this.chartPanel = new JChartPanel(null);
-        this.numberFormat = DemetraUI.getDefault().getDataFormat().newNumberFormat();
+        this.numberFormat = DemetraOptions.getDefault().getObsFormat().numberFormatter();
         initComponents();
     }
 
@@ -280,8 +280,9 @@ public final class SIView extends JComponent implements TimeSeriesComponent, Has
         chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildMenu().getPopupMenu());
     }
 
-    private void onDataFormatChange() {
-        numberFormat = DemetraUI.getDefault().getDataFormat().newNumberFormat();
+    private void onObsFormatChange() {
+        // FIXME: never called
+        numberFormat = DemetraOptions.getDefault().getObsFormat().numberFormatter();
     }
 
     private void onTsChange() {

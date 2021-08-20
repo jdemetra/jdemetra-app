@@ -20,7 +20,6 @@ import com.google.common.base.Preconditions;
 import demetra.ui.components.parts.HasChart;
 import demetra.ui.beans.BeanHandler;
 import demetra.ui.Config;
-import ec.nbdemetra.ui.DemetraUI;
 import demetra.ui.properties.NodePropertySetBuilder;
 import demetra.ui.properties.PropertySheetDialogBuilder;
 import demetra.ui.components.JTsChart;
@@ -33,6 +32,7 @@ import nbbrd.io.text.Property;
 import org.openide.nodes.Sheet;
 import demetra.ui.properties.BeanEditor;
 import demetra.ui.Converter;
+import demetra.ui.DemetraOptions;
 import demetra.ui.beans.BeanConfigurator;
 
 /**
@@ -53,7 +53,7 @@ public final class InternalTsChartConfig {
         if (colorSchemeName.isEmpty()) {
             return null;
         }
-        return DemetraUI.getDefault().getColorSchemes().stream()
+        return DemetraOptions.getDefault().getColorSchemes().stream()
                 .filter(o -> colorSchemeName.equals(o.getName()))
                 .findFirst()
                 .orElse(null);
@@ -104,7 +104,7 @@ public final class InternalTsChartConfig {
             sheet.put(b.build());
             b.reset("Series display");
             b.withEnum(HasChart.LinesThickness.class).selectField(bean, "linesThickness").display("Line thickness").description("Thickness of the line representing the series").add();
-            b.withAutoCompletion().selectField(bean, "colorSchemeName").servicePath(ColorScheme.class.getName()).promptText(DemetraUI.getDefault().getColorSchemeName()).display("Color scheme").add();
+            b.withAutoCompletion().selectField(bean, "colorSchemeName").servicePath(ColorScheme.class.getName()).promptText(DemetraOptions.getDefault().getColorSchemeName()).display("Color scheme").add();
 
             sheet.put(b.build());
             return new PropertySheetDialogBuilder().title("Configure chart").editSheet(sheet);

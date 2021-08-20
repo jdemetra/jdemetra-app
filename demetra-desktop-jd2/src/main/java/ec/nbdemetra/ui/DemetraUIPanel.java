@@ -18,6 +18,7 @@ package ec.nbdemetra.ui;
 
 import demetra.bridge.TsConverter;
 import demetra.demo.DemoTsBuilder;
+import demetra.ui.DemetraOptions;
 import demetra.ui.NamedService;
 import demetra.ui.TsActions;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
@@ -25,7 +26,6 @@ import ec.nbdemetra.ui.ns.AbstractNamedService;
 import ec.nbdemetra.ui.properties.DataFormatComponent2;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor;
 import demetra.ui.components.JTsChart;
-import ec.tss.tsproviders.utils.DataFormat;
 import ec.util.chart.ColorScheme;
 import internal.ui.components.HasColorSchemeCommands;
 import java.awt.Image;
@@ -208,26 +208,28 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
     }// </editor-fold>//GEN-END:initComponents
 
     void load() {
-        DemetraUI demetraUI = DemetraUI.getDefault();
-        colorSchemeChoicePanel.setContent(demetraUI.getColorSchemes().stream().map(o -> new ColorSchemeNamedService(o)).collect(Collectors.toList()));
+        DemetraOptions options = DemetraOptions.getDefault();
+        colorSchemeChoicePanel.setContent(options.getColorSchemes().stream().map(o -> new ColorSchemeNamedService(o)).collect(Collectors.toList()));
         colorSchemeChoicePanel.getExplorerManager().addVetoableChangeListener(this);
-        colorSchemeChoicePanel.setSelectedServiceName(demetraUI.getColorSchemeName());
-        dataFormatComponent.setDataFormat(demetraUI.getDataFormat());
+        colorSchemeChoicePanel.setSelectedServiceName(options.getColorSchemeName());
+        dataFormatComponent.setDataFormat(TsConverter.fromObsFormat(options.getObsFormat()));
         dataFormatComponent.addPropertyChangeListener(this);
-        growthLastYears.setValue(demetraUI.getGrowthLastYears());
-        iconsVisibleCB.setSelected(demetraUI.getPopupMenuIconsVisible());
-        outliersEditorCB.setSelectedItem(demetraUI.getPrespecifiedOutliersEditor());
-        jSlider1.setValue(demetraUI.getHtmlZoomRatio());
+        growthLastYears.setValue(options.getGrowthLastYears());
+        iconsVisibleCB.setSelected(options.isPopupMenuIconsVisible());
+        jSlider1.setValue(options.getHtmlZoomRatio());
+
+        outliersEditorCB.setSelectedItem(DemetraUI.getDefault().getPrespecifiedOutliersEditor());
     }
 
     void store() {
-        DemetraUI demetraUI = DemetraUI.getDefault();
-        demetraUI.setColorSchemeName(colorSchemeChoicePanel.getSelectedServiceName());
-        demetraUI.setDataFormat(dataFormatComponent.getDataFormat());
-        demetraUI.setGrowthLastYears((Integer) growthLastYears.getValue());
-        demetraUI.setPopupMenuIconsVisible(iconsVisibleCB.isSelected());
-        demetraUI.setPrespecifiedOutliersEditor((OutlierDefinitionsEditor.PrespecificiedOutliersEditor) outliersEditorCB.getSelectedItem());
-        demetraUI.setHtmlZoomRatio(jSlider1.getValue());
+        DemetraOptions options = DemetraOptions.getDefault();
+        options.setColorSchemeName(colorSchemeChoicePanel.getSelectedServiceName());
+        options.setObsFormat(TsConverter.toObsFormat(dataFormatComponent.getDataFormat()));
+        options.setGrowthLastYears((Integer) growthLastYears.getValue());
+        options.setPopupMenuIconsVisible(iconsVisibleCB.isSelected());
+        options.setHtmlZoomRatio(jSlider1.getValue());
+
+        DemetraUI.getDefault().setPrespecifiedOutliersEditor((OutlierDefinitionsEditor.PrespecificiedOutliersEditor) outliersEditorCB.getSelectedItem());
     }
 
     boolean valid() {

@@ -113,8 +113,8 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
 
         stabilityLength.setValue(demetraUI.getStabilityLength());
 
-        specComponent.setSpecification(demetraUI.getDefaultSASpec());
-        selectedSpecLabel.setText(demetraUI.getDefaultSASpec().toLongString());
+        specComponent.setSpecification(demetraUI.getDefaultSASpecInstance());
+        selectedSpecLabel.setText(demetraUI.getDefaultSASpecInstance().toLongString());
 
         selectedDiagFields = demetraUI.getSelectedDiagFields();
         selectedSeriesFields = demetraUI.getSelectedSeriesFields();

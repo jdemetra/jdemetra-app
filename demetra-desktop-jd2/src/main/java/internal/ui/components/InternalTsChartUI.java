@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.ui.DemetraOptions;
 import demetra.ui.actions.Configurable;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.HasChart;
@@ -24,7 +25,6 @@ import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsCollection;
 import static demetra.ui.components.PrintableWithPreview.PRINT_ACTION;
 import static demetra.ui.components.ResetableZoom.RESET_ZOOM_ACTION;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.ThemeSupport;
 import demetra.ui.util.ActionMaps;
 import demetra.ui.util.InputMaps;
@@ -364,7 +364,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
     }
 
     private JMenu buildChartMenu(ActionMap am) {
-        DemetraUI demetraUI = DemetraUI.getDefault();
+        DemetraOptions demetraUI = DemetraOptions.getDefault();
         JMenu result = new JMenu();
 
         result.add(HasTsCollectionCommands.newOpenMenu(am, demetraUI));
@@ -405,7 +405,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
         return result;
     }
 
-    private JMenu buildExportImageMenu(DemetraUI demetraUI) {
+    private JMenu buildExportImageMenu(DemetraOptions demetraUI) {
         JMenu result = new JMenu("Export image to");
         result.add(InternalComponents.menuItemOf(target));
         result.add(InternalComponents.newCopyImageMenu(chartPanel, demetraUI));

@@ -18,9 +18,9 @@ package ec.nbdemetra.ui.tsproviders;
 
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSourceProvider;
+import demetra.ui.DemetraOptions;
 import demetra.ui.TsActions;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
@@ -169,7 +169,7 @@ abstract public class DataSetNode extends AbstractNode {
             DataSet dataSet = getLookup().lookup(DataSet.class);
             TsManager.getDefault()
                     .getTs(dataSet, demetra.timeseries.TsInformationType.None)
-                    .ifPresent(ts -> TsActions.getDefault().openWith(ts, DemetraUI.getDefault().getTsActionName()));
+                    .ifPresent(ts -> TsActions.getDefault().openWith(ts, DemetraOptions.getDefault().getTsActionName()));
         }
     }
 

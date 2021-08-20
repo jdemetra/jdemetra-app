@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
-import ec.nbdemetra.ui.DemetraUI;
+import demetra.ui.DemetraOptions;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.IProcResults;
 import ec.ui.chart.BasicXYDataset;
@@ -86,7 +86,7 @@ public final class RevisionAnalysisChart extends JComponent implements TimeSerie
     }
 
     private JMenu newExportMenu() {
-        DemetraUI demetraUI = DemetraUI.getDefault();
+        DemetraOptions demetraUI = DemetraOptions.getDefault();
 
         JMenu result = new JMenu("Export image to");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_FLOPPY_O));

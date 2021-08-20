@@ -19,6 +19,7 @@ package ec.nbdemetra.anomalydetection.ui;
 import demetra.bridge.TsConverter;
 import demetra.demo.DemoTsBuilder;
 import demetra.timeseries.TsCollection;
+import demetra.ui.DemetraOptions;
 import demetra.ui.components.parts.HasTsCollection;
 import static demetra.ui.components.parts.HasTsCollection.TS_COLLECTION_PROPERTY;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
@@ -33,7 +34,6 @@ import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import demetra.ui.components.JTsTable;
 import demetra.ui.components.TimeSeriesComponent;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.tss.TsIdentifier;
 import ec.util.table.swing.JTables;
 import ec.util.various.swing.JCommand;
@@ -253,7 +253,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
     private JPopupMenu buildPopupMenu() {
         ActionMap am = getActionMap();
-        JPopupMenu result = TmpHasTsCollection.newDefaultMenu(this, DemetraUI.getDefault()).getPopupMenu();
+        JPopupMenu result = TmpHasTsCollection.newDefaultMenu(this, DemetraOptions.getDefault()).getPopupMenu();
 
         int index = 11;
         JMenuItem item;

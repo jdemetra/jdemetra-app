@@ -18,8 +18,8 @@ package internal.ui.components;
 
 import demetra.bridge.TsConverter;
 import demetra.tsprovider.util.ObsFormat;
+import demetra.ui.DemetraOptions;
 import demetra.ui.components.parts.HasObsFormat;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.properties.DataFormatComponent2;
 import demetra.ui.components.ComponentCommand;
 import ec.util.various.swing.FontAwesome;
@@ -56,7 +56,7 @@ public class HasObsFormatCommands {
         return EditDataFormatCommand.INSTANCE;
     }
 
-    public static JMenuItem newEditFormatMenu(ActionMap am, DemetraUI demetraUI) {
+    public static JMenuItem newEditFormatMenu(ActionMap am, DemetraOptions demetraUI) {
         JMenuItem result = new JMenuItem(am.get(FORMAT_ACTION));
         result.setText("Edit format...");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_GLOBE));

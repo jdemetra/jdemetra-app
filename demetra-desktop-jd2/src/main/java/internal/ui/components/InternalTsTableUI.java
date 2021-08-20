@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.ui.DemetraOptions;
 import demetra.ui.util.ExtLayerUI;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.HasObsFormat;
@@ -26,7 +27,6 @@ import demetra.ui.util.ActionMaps;
 import demetra.ui.util.InputMaps;
 import demetra.ui.util.TableColumnModelAdapter;
 import demetra.ui.components.JTsTable;
-import ec.nbdemetra.ui.DemetraUI;
 import static ec.util.chart.swing.SwingColorSchemeSupport.withAlpha;
 import ec.util.table.swing.JTables;
 import static ec.util.various.swing.ModernUI.createDropBorder;
@@ -62,7 +62,7 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
     private final DropRenderer dropRenderer = new DropRenderer();
     private final ThemeSupport themeSupport = ThemeSupport.registered();
     private final DataTransfer tssTransfer = DataTransfer.getDefault();
-    private final DemetraUI demetraUI = DemetraUI.getDefault();
+    private final DemetraOptions demetraUI = DemetraOptions.getDefault();
 
     private ListTableSelectionListener selectionListener;
 

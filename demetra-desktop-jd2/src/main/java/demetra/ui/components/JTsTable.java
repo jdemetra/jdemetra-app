@@ -21,9 +21,9 @@ import demetra.ui.components.parts.HasTsAction;
 import demetra.ui.components.parts.HasTsCollection;
 import demetra.bridge.TsConverter;
 import demetra.demo.DemoTsBuilder;
+import demetra.ui.DemetraOptions;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.tss.TsIdentifier;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.util.table.swing.JTables;
@@ -96,7 +96,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
                 .type(demetra.timeseries.TsData.class)
                 .mapper(demetra.timeseries.Ts::getData)
                 .comparator((l, r) -> -1)
-                .renderer(o -> new TsDataTableCellRenderer(o, DemetraUI.getDefault()))
+                .renderer(o -> new TsDataTableCellRenderer(o, DemetraOptions.getDefault()))
                 .build();
 
         public static final Column TS_IDENTIFIER = builder()

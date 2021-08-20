@@ -17,19 +17,15 @@
 package internal.ui.components;
 
 import com.google.common.base.Strings;
-import demetra.bridge.TsConverter;
+import demetra.ui.DemetraOptions;
 import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.components.PrintableWithPreview;
 import static demetra.ui.components.ResetableZoom.RESET_ZOOM_ACTION;
-import ec.nbdemetra.ui.DemetraUI;
-import ec.tss.Ts;
-import ec.tss.TsStatus;
 import ec.util.chart.swing.JTimeSeriesChart;
 import ec.util.chart.swing.JTimeSeriesChartCommand;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
-import java.util.Arrays;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ActionMap;
 import javax.swing.JMenuItem;
@@ -41,14 +37,14 @@ import javax.swing.JMenuItem;
 @lombok.experimental.UtilityClass
 public class InternalComponents {
 
-    public static JMenuItem newCopyImageMenu(JTimeSeriesChart chart, DemetraUI demetraUI) {
+    public static JMenuItem newCopyImageMenu(JTimeSeriesChart chart, DemetraOptions demetraUI) {
         JMenuItem result = new JMenuItem(JTimeSeriesChartCommand.copyImage().toAction(chart));
         result.setText("Clipboard");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
         return result;
     }
 
-    public static JMenuItem newSaveImageMenu(JTimeSeriesChart chart, DemetraUI demetraUI) {
+    public static JMenuItem newSaveImageMenu(JTimeSeriesChart chart, DemetraOptions demetraUI) {
         JMenuItem result = new JMenuItem(JTimeSeriesChartCommand.saveImage().toAction(chart));
         result.setText("File...");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_PICTURE_O));
@@ -65,7 +61,7 @@ public class InternalComponents {
         }
     }
 
-    public static JMenuItem newResetZoomMenu(ActionMap am, DemetraUI demetraUI) {
+    public static JMenuItem newResetZoomMenu(ActionMap am, DemetraOptions demetraUI) {
         JMenuItem result = new JMenuItem(am.get(RESET_ZOOM_ACTION));
         result.setText("Show all");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_EYE));
@@ -80,7 +76,7 @@ public class InternalComponents {
     @NonNull
     public static JMenuItem menuItemOf(@NonNull PrintableWithPreview component) {
         JMenuItem result = new JMenuItem(printPreview().toAction(component));
-        result.setIcon(DemetraUI.getDefault().getPopupMenuIcon(FontAwesome.FA_PRINT));
+        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_PRINT));
         result.setText("Printer...");
         return result;
     }

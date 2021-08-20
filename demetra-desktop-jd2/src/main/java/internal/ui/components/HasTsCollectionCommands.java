@@ -18,6 +18,7 @@ package internal.ui.components;
 
 import demetra.timeseries.TsCollection;
 import demetra.tsprovider.DataSourceProvider;
+import demetra.ui.DemetraOptions;
 import demetra.ui.NamedService;
 import demetra.ui.TsActions;
 import demetra.ui.components.TsSelectionBridge;
@@ -26,7 +27,6 @@ import demetra.ui.components.parts.HasTsAction;
 import demetra.ui.components.parts.HasTsCollection;
 import static demetra.ui.components.parts.HasTsCollection.TS_COLLECTION_PROPERTY;
 import static demetra.ui.components.parts.HasTsCollection.UDPATE_MODE_PROPERTY;
-import ec.nbdemetra.ui.DemetraUI;
 import demetra.ui.util.KeyStrokes;
 import demetra.ui.components.ComponentCommand;
 import demetra.ui.actions.Actions;
@@ -68,7 +68,7 @@ import java.util.Collections;
 @lombok.experimental.UtilityClass
 public class HasTsCollectionCommands {
 
-    public static JMenu newDefaultMenu(HasTsCollection col, DemetraUI demetraUI) {
+    public static JMenu newDefaultMenu(HasTsCollection col, DemetraOptions demetraUI) {
         ActionMap am = ((JComponent) col).getActionMap();
 
         JMenu result = new JMenu();
@@ -107,7 +107,7 @@ public class HasTsCollectionCommands {
         return RenameCommand.INSTANCE;
     }
 
-    public static JMenuItem newRenameMenu(ActionMap am, DemetraUI demetraUI) {
+    public static JMenuItem newRenameMenu(ActionMap am, DemetraOptions demetraUI) {
         JMenuItem result = new JMenuItem(am.get(RENAME_ACTION));
         result.setText("Rename");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_PENCIL_SQUARE_O));
@@ -122,7 +122,7 @@ public class HasTsCollectionCommands {
         return OpenCommand.INSTANCE;
     }
 
-    public static JMenuItem newOpenMenu(ActionMap am, DemetraUI demetraUI) {
+    public static JMenuItem newOpenMenu(ActionMap am, DemetraOptions demetraUI) {
         JMenuItem result = new JMenuItem(am.get(OPEN_ACTION));
         result.setText("Open");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_FOLDER_OPEN_O));
@@ -137,7 +137,7 @@ public class HasTsCollectionCommands {
         return new OpenWithCommand(tsAction);
     }
 
-    public static JMenu newOpenWithMenu(HasTsCollection c, DemetraUI demetraUI) {
+    public static JMenu newOpenWithMenu(HasTsCollection c, DemetraOptions demetraUI) {
         JMenu result = new JMenu(new MainOpenWithCommand().toAction(c));
         result.setText("Open with");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_BAR_CHART_O));
@@ -162,7 +162,7 @@ public class HasTsCollectionCommands {
         return new SaveCommand(tsSave);
     }
 
-    public static JMenu newSaveMenu(HasTsCollection c, DemetraUI demetraUI) {
+    public static JMenu newSaveMenu(HasTsCollection c, DemetraOptions demetraUI) {
         JMenu result = new JMenu(new MainSaveCommand().toAction(c));
         result.setText("Save");
         Actions.hideWhenDisabled(result);
@@ -186,7 +186,7 @@ public class HasTsCollectionCommands {
         return CopyCommand.INSTANCE;
     }
 
-    public static JMenuItem newCopyMenu(ActionMap am, DemetraUI demetraUI) {
+    public static JMenuItem newCopyMenu(ActionMap am, DemetraOptions demetraUI) {
         JMenuItem result = new JMenuItem(am.get(COPY_ACTION));
         result.setText("Copy");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_FILES_O));
@@ -202,7 +202,7 @@ public class HasTsCollectionCommands {
         return PasteCommand.INSTANCE;
     }
 
-    public static JMenuItem newPasteMenu(ActionMap am, DemetraUI demetraUI) {
+    public static JMenuItem newPasteMenu(ActionMap am, DemetraOptions demetraUI) {
         JMenuItem result = new JMenuItem(am.get(PASTE_ACTION));
         result.setText("Paste");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
@@ -218,7 +218,7 @@ public class HasTsCollectionCommands {
         return DeleteCommand.INSTANCE;
     }
 
-    public static JMenuItem newDeleteMenu(ActionMap am, DemetraUI demetraUI) {
+    public static JMenuItem newDeleteMenu(ActionMap am, DemetraOptions demetraUI) {
         JMenuItem result = new JMenuItem(am.get(DELETE_ACTION));
         result.setText("Remove");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_TRASH_O));
@@ -234,7 +234,7 @@ public class HasTsCollectionCommands {
         return ClearCommand.INSTANCE;
     }
 
-    public static JMenuItem newClearMenu(ActionMap am, DemetraUI demetraUI) {
+    public static JMenuItem newClearMenu(ActionMap am, DemetraOptions demetraUI) {
         JMenuItem result = new JMenuItem(am.get(CLEAR_ACTION));
         result.setText("Clear");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_ERASER));
@@ -249,7 +249,7 @@ public class HasTsCollectionCommands {
         return SelectAllCommand.INSTANCE;
     }
 
-    public static JMenuItem newSelectAllMenu(ActionMap am, DemetraUI demetraUI) {
+    public static JMenuItem newSelectAllMenu(ActionMap am, DemetraOptions demetraUI) {
         JMenuItem result = new JMenuItem(am.get(SELECT_ALL_ACTION));
         result.setText("Select all");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_ASTERISK));
@@ -264,7 +264,7 @@ public class HasTsCollectionCommands {
         return FreezeCommand.INSTANCE;
     }
 
-    public static JMenuItem newFreezeMenu(ActionMap am, DemetraUI demetraUI) {
+    public static JMenuItem newFreezeMenu(ActionMap am, DemetraOptions demetraUI) {
         JMenuItem result = new JMenuItem(am.get(FREEZE_ACTION));
         result.setText("Freeze");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_LOCK));
@@ -274,7 +274,7 @@ public class HasTsCollectionCommands {
 
     public static final String SPLIT_ACTION = "splitIntoYearlyComponents";
 
-    public static JMenuItem newSplitMenu(ActionMap am, DemetraUI demetraUI) {
+    public static JMenuItem newSplitMenu(ActionMap am, DemetraOptions demetraUI) {
         JMenuItem item = new JMenuItem(am.get(SPLIT_ACTION));
         item.setText("Split into yearly components");
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_CHAIN_BROKEN));
@@ -400,7 +400,7 @@ public class HasTsCollectionCommands {
             if (c instanceof HasTsAction) {
                 String actionName = ((HasTsAction) c).getTsAction();
                 if (actionName == null) {
-                    actionName = DemetraUI.getDefault().getTsActionName();
+                    actionName = DemetraOptions.getDefault().getTsActionName();
                 }
                 TsActions.getDefault().openWith(getSingleTs(c), actionName);
             }

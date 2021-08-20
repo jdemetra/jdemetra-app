@@ -28,9 +28,9 @@ import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsDomain;
+import demetra.ui.DemetraOptions;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
-import ec.nbdemetra.ui.DemetraUI;
 import internal.ui.components.InternalTsGrowthChartUI;
 import internal.ui.components.InternalUI;
 import java.awt.Dimension;
@@ -60,7 +60,6 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
 
     // DEFAULT PROPERTIES
     private static final GrowthKind DEFAULT_GROWTH_KIND = GrowthKind.PreviousPeriod;
-    public static final int DEFAULT_LAST_YEARS = 4;
 
     @lombok.experimental.Delegate
     private final HasTsCollection collection;
@@ -100,7 +99,7 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
         this.printableWithPreview = PrintableWithPreview.of(this::getActionMap);
         this.resetableZoom = ResetableZoom.of(this::getActionMap);
         this.growthKind = DEFAULT_GROWTH_KIND;
-        this.lastYears = DemetraUI.getDefault().getGrowthLastYears();
+        this.lastYears = DemetraOptions.getDefault().getGrowthLastYears();
 
         this.tsSelectionBridge = new TsSelectionBridge(this::firePropertyChange);
         tsSelectionBridge.register(this);

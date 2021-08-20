@@ -19,6 +19,7 @@ package ec.nbdemetra.ui;
 import demetra.ui.Config;
 import demetra.bridge.TsConverter;
 import demetra.tsprovider.DataSourceLoader;
+import demetra.ui.DemetraOptions;
 import ec.nbdemetra.core.InstallerStep;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.ui.interchange.InterchangeBroker;
@@ -146,7 +147,7 @@ public final class Installer extends ModuleInstall {
 
         @Override
         public void restore() {
-            if (DemetraUI.getDefault().isPersistOpenedDataSources()) {
+            if (DemetraOptions.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
                 Parser<DataSourcesBean> parser = Parsers.onJAXB(DataSourcesBean.class)::parse;
                 TsManager.getDefault().getProviders()
@@ -165,7 +166,7 @@ public final class Installer extends ModuleInstall {
 
         @Override
         public void close() {
-            if (DemetraUI.getDefault().isPersistOpenedDataSources()) {
+            if (DemetraOptions.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
                 Formatter<DataSourcesBean> formatter = Formatters.onJAXB(DataSourcesBean.class, false)::format;
                 TsManager.getDefault().getProviders()

@@ -16,7 +16,7 @@
  */
 package ec.ui.html;
 
-import ec.nbdemetra.ui.DemetraUI;
+import demetra.ui.DemetraOptions;
 import demetra.ui.util.NbComponents;
 import ec.ui.AHtmlView;
 import ec.util.various.swing.JCommand;
@@ -42,11 +42,11 @@ public final class JHtmlView extends AHtmlView {
         this.browser = new JHtmlPane();
         browser.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         browser.setComponentPopupMenu(createMenu().getPopupMenu());
-        browser.setZoomRatio(DemetraUI.getDefault().getHtmlZoomRatio());
+        browser.setZoomRatio(DemetraOptions.getDefault().getHtmlZoomRatio());
 
         DEFAULT_STYLE_CMD.executeSafely(browser);
 
-        DemetraUI.getDefault().addPropertyChangeListener(WeakListeners.propertyChange(o -> browser.setZoomRatio(DemetraUI.getDefault().getHtmlZoomRatio()), DemetraUI.HTML_ZOOM_RATIO_PROPERTY, this));
+        DemetraOptions.getDefault().addPropertyChangeListener(WeakListeners.propertyChange(o -> browser.setZoomRatio(DemetraOptions.getDefault().getHtmlZoomRatio()), DemetraOptions.HTML_ZOOM_RATIO_PROPERTY, this));
 
         setLayout(new BorderLayout());
         add(NbComponents.newJScrollPane(browser), BorderLayout.CENTER);

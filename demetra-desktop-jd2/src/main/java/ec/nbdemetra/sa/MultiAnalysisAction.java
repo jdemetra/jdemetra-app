@@ -58,7 +58,7 @@ public final class MultiAnalysisAction implements ActionListener {
 
         DemetraUI demetraUI = DemetraUI.getDefault();
 
-        processingView.setDefaultSpecification(demetraUI.getDefaultSASpec());
+        processingView.setDefaultSpecification(demetraUI.getDefaultSASpecInstance());
 
         controller.addPropertyChangeListener(evt -> {
             switch (controller.getState()) {

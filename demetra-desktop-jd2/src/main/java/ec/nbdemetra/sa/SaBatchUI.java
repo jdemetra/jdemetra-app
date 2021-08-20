@@ -11,6 +11,7 @@ import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
+import demetra.ui.DemetraOptions;
 import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.TsActions;
 import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
@@ -633,7 +634,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 int row = result.getSelectedRow();
                 if (e.getClickCount() > 1 && row != -1) {
                     SaItem item = model.getValues().get(result.getRowSorter().convertRowIndexToModel(row));
-                    TsActions.getDefault().openWith(TsConverter.toTs(item.getTs()), DemetraUI.getDefault().getTsActionName());
+                    TsActions.getDefault().openWith(TsConverter.toTs(item.getTs()), DemetraOptions.getDefault().getTsActionName());
                 }
             }
         });
@@ -1075,7 +1076,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 return null;
             }
 
-            DemetraUI config = DemetraUI.getDefault();
+            DemetraOptions config = DemetraOptions.getDefault();
             int nThread = config.getBatchPoolSize().getSize();
             int priority = config.getBatchPriority().getPriority();
 

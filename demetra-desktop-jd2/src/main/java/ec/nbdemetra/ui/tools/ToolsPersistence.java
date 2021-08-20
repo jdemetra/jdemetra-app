@@ -9,8 +9,8 @@ import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.Config;
+import demetra.ui.DemetraOptions;
 import demetra.ui.Persistable;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.XmlConfig;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
@@ -74,7 +74,7 @@ public final class ToolsPersistence {
             Config config = ((Persistable) view).getConfig();
             tryPut(p, "config", XmlConfig.xmlFormatter(false), true, config);
         }
-        if (DemetraUI.getDefault().isPersistToolsContent()) {
+        if (DemetraOptions.getDefault().isPersistToolsContent()) {
             Content content = new Content(
                     view.getTsCollection().stream().map(TsConverter::fromTs).collect(Collectors.toList()),
                     view.getTsSelectionStream().map(TsConverter::fromTs).collect(Collectors.toList()));
@@ -83,7 +83,7 @@ public final class ToolsPersistence {
     }
 
     public static void readTsCollection(HasTsCollection view, Properties p) {
-        if (DemetraUI.getDefault().isPersistToolsContent()) {
+        if (DemetraOptions.getDefault().isPersistToolsContent()) {
             tryGet(p, "content", CONTENT_PARSER, true).ifPresent(o -> {
                 List<demetra.timeseries.Ts> tmp = o.collection.stream().map(TsConverter::toTs).collect(Collectors.toList());
                 view.setTsCollection(TsCollection.of(tmp));

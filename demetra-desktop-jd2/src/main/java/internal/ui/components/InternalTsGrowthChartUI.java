@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.ui.DemetraOptions;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.HasChart;
 import demetra.ui.components.parts.HasChart.LinesThickness;
@@ -24,7 +25,6 @@ import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsCollection;
 import static demetra.ui.components.PrintableWithPreview.PRINT_ACTION;
 import static demetra.ui.components.ResetableZoom.RESET_ZOOM_ACTION;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.ThemeSupport;
 import demetra.ui.util.ActionMaps;
 import demetra.ui.util.InputMaps;
@@ -304,7 +304,7 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
         return result;
     }
 
-    private JMenu buildExportImageMenu(DemetraUI demetraUI) {
+    private JMenu buildExportImageMenu(DemetraOptions demetraUI) {
         JMenu result = new JMenu("Export image to");
         result.add(InternalComponents.menuItemOf(target));
         result.add(InternalComponents.newCopyImageMenu(chartPanel, demetraUI));
@@ -312,7 +312,7 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
         return result;
     }
 
-    private JMenu buildMenu(DemetraUI demetraUI) {
+    private JMenu buildMenu(DemetraOptions demetraUI) {
         ActionMap am = target.getActionMap();
         JMenu result = new JMenu();
 
@@ -337,7 +337,7 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
     }
 
     private JMenu buildChartMenu() {
-        DemetraUI demetraUI = DemetraUI.getDefault();
+        DemetraOptions demetraUI = DemetraOptions.getDefault();
 
         ActionMap am = target.getActionMap();
         JMenu result = buildMenu(demetraUI);

@@ -16,12 +16,9 @@
  */
 package internal.ui.components;
 
-import demetra.bridge.TsConverter;
 import demetra.tsprovider.util.ObsFormat;
+import demetra.ui.DemetraOptions;
 import demetra.ui.components.parts.HasObsFormat;
-import ec.nbdemetra.ui.DemetraUI;
-import ec.tss.tsproviders.utils.DataFormat;
-import ec.tss.tsproviders.utils.Formatters;
 import ec.ui.chart.TsSparklineCellRenderer;
 import ec.util.various.swing.StandardSwingColor;
 import java.awt.Component;
@@ -30,6 +27,7 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import nbbrd.io.text.Formatter;
 
 /**
  *
@@ -38,14 +36,14 @@ import javax.swing.table.TableCellRenderer;
 public final class TsDataTableCellRenderer implements TableCellRenderer {
 
     private final HasObsFormat target;
-    private final DemetraUI demetraUI;
+    private final DemetraOptions demetraUI;
     private final TsSparklineCellRenderer dataRenderer;
     private final DefaultTableCellRenderer labelRenderer;
 
-    private DataFormat currentFormat;
-    private Formatters.Formatter<Number> currentFormatter;
+    private ObsFormat currentFormat;
+    private Formatter<Number> currentFormatter;
 
-    public TsDataTableCellRenderer(HasObsFormat target, DemetraUI demetraUI) {
+    public TsDataTableCellRenderer(HasObsFormat target, DemetraOptions demetraUI) {
         this.target = target;
         this.demetraUI = demetraUI;
         this.dataRenderer = new TsSparklineCellRenderer();
@@ -57,13 +55,13 @@ public final class TsDataTableCellRenderer implements TableCellRenderer {
         this.currentFormatter = null;
     }
 
-    private DataFormat lookupObsFormat() {
+    private ObsFormat lookupObsFormat() {
         ObsFormat result = target.getObsFormat();
-        return result != null ? TsConverter.fromObsFormat(result) : demetraUI.getDataFormat();
+        return result != null ? result : demetraUI.getObsFormat();
     }
 
     private String formatValue(Number o) {
-        DataFormat x = lookupObsFormat();
+        ObsFormat x = lookupObsFormat();
         if (!Objects.equals(x, currentFormat)) {
             currentFormat = x;
             currentFormatter = x.numberFormatter();

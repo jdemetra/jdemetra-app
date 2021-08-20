@@ -4,8 +4,8 @@
  */
 package internal.ui;
 
+import demetra.ui.DemetraOptions;
 import demetra.ui.TsActions;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.ns.NamedServiceChoicePanel;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -42,7 +42,7 @@ public final class ChooseTsActionAction extends AbstractAction implements Presen
 
     public ChooseTsActionAction() {
         this.choicePanel = new NamedServiceChoicePanel();
-        DemetraUI demetraUI = DemetraUI.getDefault();
+        DemetraOptions demetraUI = DemetraOptions.getDefault();
         choicePanel.setContent(TsActions.getDefault().getOpenActions());
         choicePanel.setSelectedServiceName(demetraUI.getTsActionName());
         choicePanel.getExplorerManager().addVetoableChangeListener(this);
@@ -63,7 +63,7 @@ public final class ChooseTsActionAction extends AbstractAction implements Presen
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(DemetraUI.TS_ACTION_NAME_PROPERTY)) {
+        if (evt.getPropertyName().equals(DemetraOptions.TS_ACTION_NAME_PROPERTY)) {
             Node o = choicePanel.getExplorerManager().getRootContext().getChildren().findChild((String) evt.getNewValue());
             if (o != null) {
                 try {
@@ -80,7 +80,7 @@ public final class ChooseTsActionAction extends AbstractAction implements Presen
         if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
             Node[] nodes = (Node[]) evt.getNewValue();
             if (nodes.length > 0) {
-                DemetraUI.getDefault().setTsActionName(nodes[0].getName());
+                DemetraOptions.getDefault().setTsActionName(nodes[0].getName());
             }
         }
     }

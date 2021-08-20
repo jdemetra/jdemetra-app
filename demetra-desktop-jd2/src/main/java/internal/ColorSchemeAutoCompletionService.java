@@ -16,7 +16,7 @@
  */
 package internal;
 
-import ec.nbdemetra.ui.DemetraUI;
+import demetra.ui.DemetraOptions;
 import ec.util.chart.ColorScheme;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
@@ -70,7 +70,7 @@ public final class ColorSchemeAutoCompletionService implements AutoCompletionSpi
 
     private static List<ColorScheme> getColorSchemes(String term) {
         Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
-        return DemetraUI.getDefault().getColorSchemes().stream()
+        return DemetraOptions.getDefault().getColorSchemes().stream()
                 .filter(o -> filter.test(o.getName()) || filter.test(o.getDisplayName()))
                 .sorted(Comparator.comparing(ColorScheme::getDisplayName))
                 .collect(Collectors.toList());

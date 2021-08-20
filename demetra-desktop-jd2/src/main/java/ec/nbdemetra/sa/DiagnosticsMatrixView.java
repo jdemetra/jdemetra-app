@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.sa;
 
+import demetra.ui.DemetraOptions;
 import demetra.ui.concurrent.UIExecutors;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.satoolkit.algorithm.implementation.X13ProcessingFactory;
@@ -61,14 +62,13 @@ public class DiagnosticsMatrixView extends JPanel {
     private final Map<String, CompositeResults> results;
     private final JTabbedPane tabbedPane;
     private final JGrid resMatrix, calMatrix, armaMatrix, outMatrix, testMatrix, customMatrix;
-    private final DemetraUI demetraUI;
 
     private List<String> selectedDiagnostics;
 
     public DiagnosticsMatrixView(Map<String, CompositeResults> information) {
         setLayout(new BorderLayout());
         this.results = information;
-        this.demetraUI = DemetraUI.getDefault();
+        DemetraUI demetraUI = DemetraUI.getDefault();
         this.selectedDiagnostics = demetraUI.getSelectedDiagFields();
 
         tabbedPane = new JTabbedPane();
@@ -92,7 +92,8 @@ public class DiagnosticsMatrixView extends JPanel {
             @Override
             protected Object doInBackground() throws Exception {
                 List<Callable<Void>> tasks = updateMatrix();
-                ExecutorService executorService = UIExecutors.newFixedThreadPool(demetraUI.getBatchPoolSize(), demetraUI.getBatchPriority());
+                DemetraOptions options = DemetraOptions.getDefault();
+                ExecutorService executorService = UIExecutors.newFixedThreadPool(options.getBatchPoolSize(), options.getBatchPriority());
                 return executorService.invokeAll(tasks);
             }
         };

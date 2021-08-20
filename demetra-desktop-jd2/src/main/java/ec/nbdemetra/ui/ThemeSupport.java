@@ -6,6 +6,7 @@ package ec.nbdemetra.ui;
 
 import demetra.bridge.TsConverter;
 import demetra.tsprovider.util.ObsFormat;
+import demetra.ui.DemetraOptions;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasObsFormat;
 import ec.tss.tsproviders.utils.DataFormat;
@@ -33,7 +34,7 @@ public final class ThemeSupport extends SwingColorSchemeSupport {
         return result;
     }
 
-    private final DemetraUI demetraUI;
+    private final DemetraOptions demetraUI;
     private final PropertyChangeListener listener;
     private final Map<Integer, KnownColor> forcedLineColors;
 
@@ -44,7 +45,7 @@ public final class ThemeSupport extends SwingColorSchemeSupport {
     private Runnable onColorSchemeChange;
 
     public ThemeSupport() {
-        this.demetraUI = DemetraUI.getDefault();
+        this.demetraUI = DemetraOptions.getDefault();
         this.listener = new DemetraUIListener();
         this.forcedLineColors = new HashMap<>();
     }
@@ -68,7 +69,7 @@ public final class ThemeSupport extends SwingColorSchemeSupport {
     @NonNull
     public DataFormat getDataFormat() {
         ObsFormat result = obsFormatProperty != null ? obsFormatProperty.getObsFormat() : null;
-        return result != null ? TsConverter.fromObsFormat(result) : demetraUI.getDataFormat();
+        return TsConverter.fromObsFormat(result != null ? result : demetraUI.getObsFormat());
     }
 
     @Override
@@ -86,12 +87,12 @@ public final class ThemeSupport extends SwingColorSchemeSupport {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             switch (evt.getPropertyName()) {
-                case DemetraUI.COLOR_SCHEME_NAME_PROPERTY:
+                case DemetraOptions.COLOR_SCHEME_NAME_PROPERTY:
                     if (colorSchemeProperty != null && colorSchemeProperty.getColorScheme() == null) {
                         onColorSchemeChange.run();
                     }
                     break;
-                case DemetraUI.DATA_FORMAT_PROPERTY:
+                case DemetraOptions.OBS_FORMAT_PROPERTY:
                     if (obsFormatProperty != null && obsFormatProperty.getObsFormat() == null) {
                         onObsFormatChange.run();
                     }

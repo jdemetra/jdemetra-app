@@ -17,6 +17,7 @@
 package ec.ui.list;
 
 import demetra.bridge.TsConverter;
+import demetra.ui.DemetraOptions;
 import demetra.ui.NamedService;
 import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.TsActions;
@@ -71,7 +72,6 @@ import org.openide.NotifyDescriptor;
 import demetra.ui.components.parts.HasTsAction;
 import ec.util.table.swing.JTables;
 import demetra.ui.datatransfer.DataTransfer;
-import ec.nbdemetra.ui.DemetraUI;
 
 /**
  *
@@ -457,7 +457,7 @@ public class JTsVariableList extends JComponent implements HasTsAction {
         public void execute(JTsVariableList c) throws Exception {
             String actionName = c.getTsAction();
             if (actionName == null) {
-                actionName = DemetraUI.getDefault().getTsActionName();
+                actionName = DemetraOptions.getDefault().getTsActionName();
             }
             TsActions.getDefault().openWith(toTs(getSelectedVariable(c)), actionName);
         }

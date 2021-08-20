@@ -19,12 +19,12 @@ package ec.nbdemetra.anomalydetection.ui;
 import com.google.common.base.Stopwatch;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
+import demetra.ui.DemetraOptions;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.anomalydetection.ControlNode;
 import ec.nbdemetra.anomalydetection.report.CheckLastReportAction;
 import ec.nbdemetra.ui.ActiveViewManager;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IActiveView;
 import demetra.ui.util.NbComponents;
@@ -408,7 +408,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
                 return null;
             }
 
-            DemetraUI config = DemetraUI.getDefault();
+            DemetraOptions config = DemetraOptions.getDefault();
 
             ExecutorService executorService = UIExecutors.newFixedThreadPool(config.getBatchPoolSize(), config.getBatchPriority());
             Stopwatch stopwatch = Stopwatch.createStarted();

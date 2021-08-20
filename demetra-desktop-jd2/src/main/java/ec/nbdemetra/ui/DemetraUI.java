@@ -21,35 +21,23 @@ import demetra.ui.GlobalService;
 import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
 import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.components.JTsGrowthChart;
-import demetra.ui.concurrent.ThreadPoolSize;
-import demetra.ui.concurrent.ThreadPriority;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;
 import ec.tss.sa.EstimationPolicyType;
 import ec.tss.sa.output.BasicConfiguration;
-import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.utilities.Jdk6.Collections;
 import ec.ui.view.AutoRegressiveSpectrumView;
-import ec.util.chart.ColorScheme;
-import ec.util.various.swing.FontAwesome;
-import java.awt.Color;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.swing.Icon;
-import nbbrd.io.text.BooleanProperty;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.IntProperty;
 import nbbrd.io.text.Parser;
 import nbbrd.io.text.Property;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.netbeans.api.options.OptionsDisplayer;
-import org.openide.util.Lookup;
 
 /**
  *
@@ -57,7 +45,7 @@ import org.openide.util.Lookup;
  * @author Mats Maggi
  */
 @GlobalService
-public final class DemetraUI implements PropertyChangeSource, Configurable, Persistable {
+public final class DemetraUI implements PropertyChangeSource, Persistable, Configurable {
 
     private static final DemetraUI INSTANCE = new DemetraUI();
 
@@ -66,193 +54,148 @@ public final class DemetraUI implements PropertyChangeSource, Configurable, Pers
         return INSTANCE;
     }
 
-    // PROPERTIES DEFINITION
-    public static final String COLOR_SCHEME_NAME_PROPERTY = "colorSchemeName";
-    public static final String DATA_FORMAT_PROPERTY = "dataFormat";
-    public static final String SHOW_UNAVAILABLE_TSPROVIDER_PROPERTY = "showUnavailableTsProviders";
-    public static final String SHOW_TSPROVIDER_NODES_PROPERTY = "showTsProviderNodes";
-    public static final String TS_ACTION_NAME_PROPERTY = "tsActionName";
-    public static final String PERSIST_TOOLS_CONTENT_PROPERTY = "persistToolsContent";
-    public static final String PERSIST_OPENED_DATASOURCES_PROPERTY = "persistOpenDataSources";
-    public static final String BATCH_POOL_SIZE_PROPERTY = "batchPoolSize";
-    public static final String BATCH_PRIORITY_PROPERTY = "batchPriority";
-    public static final String GROWTH_CHART_LENGTH_PROPERTY = "growthChartLength";
-    public static final String SPECTRAL_YEARS_PROPERTY = "spectralLastYears";
-    public static final String STABILITY_YEARS_PROPERTY = "stabilityLastYears";
-    public static final String ESTIMATION_POLICY_PROPERTY = "estimationPolicyType";
-    public static final String DEFAULT_SA_SPEC_PROPERTY = "defaultSASpec";
-    public static final String POPUP_MENU_ICONS_VISIBLE_PROPERTY = "menuIconsVisibility";
-    public static final String PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY = "prespecifiedOutliersEditor";
-    public static final String SELECTED_DIAG_FIELDS_PROPERTY = "selectedDiagnosticsFields";
-    public static final String SELECTED_SERIES_FIELDS_PROPERTY = "selectedSeriesFields";
-    public static final String HTML_ZOOM_RATIO_PROPERTY = "htmlZoomRatio";
-
-    // DEFAULT PROPERTIES
-    static final Property<String> COLOR_SCHEME_NAME = Property.of(COLOR_SCHEME_NAME_PROPERTY, "Smart", Parser.onString(), Formatter.onString());
-    static final DataFormatParam DATA_FORMAT = new DataFormatParam(new DataFormat(null, "yyyy-MM", null), "locale", "datePattern", "numberPattern");
-    static final BooleanProperty SHOW_UNAVAILABLE = BooleanProperty.of(SHOW_UNAVAILABLE_TSPROVIDER_PROPERTY, false);
-    static final BooleanProperty SHOW_PROVIDER_NODES = BooleanProperty.of(SHOW_TSPROVIDER_NODES_PROPERTY, true);
-    static final Property<String> TS_ACTION_NAME = Property.of(TS_ACTION_NAME_PROPERTY, "ChartGridTsAction", Parser.onString(), Formatter.onString());
-    static final BooleanProperty PERSIST_TOOLS_CONTENT = BooleanProperty.of(PERSIST_TOOLS_CONTENT_PROPERTY, false);
-    static final BooleanProperty PERSIST_OPENED_DATASOURCES = BooleanProperty.of(PERSIST_OPENED_DATASOURCES_PROPERTY, false);
-    static final Property<ThreadPoolSize> BATCH_POOL_SIZE = Property.of(BATCH_POOL_SIZE_PROPERTY, ThreadPoolSize.ALL_BUT_ONE, Parser.onEnum(ThreadPoolSize.class), Formatter.onEnum());
-    static final Property<ThreadPriority> BATCH_PRIORITY = Property.of(BATCH_PRIORITY_PROPERTY, ThreadPriority.NORMAL, Parser.onEnum(ThreadPriority.class), Formatter.onEnum());
-    static final IntProperty GROWTH_LAST_YEARS = IntProperty.of(GROWTH_CHART_LENGTH_PROPERTY, JTsGrowthChart.DEFAULT_LAST_YEARS);
-    static final IntProperty SPECTRAL_LAST_YEARS = IntProperty.of(SPECTRAL_YEARS_PROPERTY, AutoRegressiveSpectrumView.DEFAULT_LAST);
-    static final IntProperty STABILITY_LENGTH = IntProperty.of(STABILITY_YEARS_PROPERTY, 8);
-    static final Property<EstimationPolicyType> ESTIMATION_POLICY_TYPE = Property.of(ESTIMATION_POLICY_PROPERTY, EstimationPolicyType.FreeParameters, Parser.onEnum(EstimationPolicyType.class), Formatter.onEnum());
-    static final Property<String> DEFAULT_SA_SPEC = Property.of(DEFAULT_SA_SPEC_PROPERTY, "tramoseats." + TramoSeatsSpecification.RSAfull.toString(), Parser.onString(), Formatter.onString());
-    static final BooleanProperty POPUP_MENU_ICONS_VISIBLE = BooleanProperty.of(POPUP_MENU_ICONS_VISIBLE_PROPERTY, false);
-    static final Property<PrespecificiedOutliersEditor> PRESPECIFIED_OUTLIERS_EDITOR = Property.of(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, PrespecificiedOutliersEditor.CALENDAR_GRID, Parser.onEnum(PrespecificiedOutliersEditor.class), Formatter.onEnum());
-    static final Property<String[]> SELECTED_DIAG_FIELDS = Property.of(SELECTED_DIAG_FIELDS_PROPERTY,
-            BasicConfiguration.allSingleSaDetails(false).stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
-    static final Property<String[]> SELECTED_SERIES_FIELDS = Property.of(SELECTED_SERIES_FIELDS_PROPERTY,
-            BasicConfiguration.allSaSeries(false).stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
-    static final IntProperty HTML_ZOOM_RATIO = IntProperty.of(HTML_ZOOM_RATIO_PROPERTY, 100);
-
     @lombok.experimental.Delegate(types = PropertyChangeSource.class)
-    private final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
+    protected final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
 
-    // PROPERTIES
-    private final ConfigBean properties;
-
-    public DemetraUI() {
-        this.properties = new ConfigBean();
-    }
-
-    //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
-    public String getColorSchemeName() {
-        return properties.colorSchemeName;
-    }
-
-    public void setColorSchemeName(String colorSchemeName) {
-        String old = this.properties.colorSchemeName;
-        this.properties.colorSchemeName = colorSchemeName != null ? colorSchemeName : COLOR_SCHEME_NAME.getDefaultValue();
-        broadcaster.firePropertyChange(COLOR_SCHEME_NAME_PROPERTY, old, this.properties.colorSchemeName);
-    }
-
-    public DataFormat getDataFormat() {
-        return properties.dataFormat;
-    }
-
-    public void setDataFormat(DataFormat dataFormat) {
-        DataFormat old = this.properties.dataFormat;
-        this.properties.dataFormat = dataFormat != null ? dataFormat : DATA_FORMAT.getDefaultValue();
-        broadcaster.firePropertyChange(DATA_FORMAT_PROPERTY, old, this.properties.dataFormat);
-    }
-
-    public boolean isShowUnavailableTsProviders() {
-        return properties.showUnavailableTsProviders;
-    }
-
-    public void setShowUnavailableTsProviders(boolean show) {
-        boolean old = this.properties.showUnavailableTsProviders;
-        this.properties.showUnavailableTsProviders = show;
-        broadcaster.firePropertyChange(SHOW_UNAVAILABLE_TSPROVIDER_PROPERTY, old, this.properties.showUnavailableTsProviders.booleanValue());
-    }
-
-    public boolean isShowTsProviderNodes() {
-        return properties.showTsProviderNodes;
-    }
-
-    public void setShowTsProviderNodes(boolean show) {
-        boolean old = this.properties.showTsProviderNodes;
-        this.properties.showTsProviderNodes = show;
-        broadcaster.firePropertyChange(SHOW_TSPROVIDER_NODES_PROPERTY, old, this.properties.showTsProviderNodes.booleanValue());
-    }
-
-    public String getTsActionName() {
-        return properties.tsActionName;
-    }
-
-    public void setTsActionName(String tsActionName) {
-        String old = this.properties.tsActionName;
-        this.properties.tsActionName = tsActionName != null ? tsActionName : TS_ACTION_NAME.getDefaultValue();
-        broadcaster.firePropertyChange(TS_ACTION_NAME_PROPERTY, old, this.properties.tsActionName);
-    }
-
-    public boolean isPersistToolsContent() {
-        return properties.persistToolsContent;
-    }
-
-    public void setPersistToolsContent(boolean persistToolsContent) {
-        boolean old = this.properties.persistToolsContent;
-        this.properties.persistToolsContent = persistToolsContent;
-        broadcaster.firePropertyChange(PERSIST_TOOLS_CONTENT_PROPERTY, old, this.properties.persistToolsContent);
-    }
-
-    public boolean isPersistOpenedDataSources() {
-        return properties.persistOpenedDataSources;
-    }
-
-    public void setPersistOpenedDataSources(boolean persistOpenedDataSources) {
-        boolean old = this.properties.persistOpenedDataSources;
-        this.properties.persistOpenedDataSources = persistOpenedDataSources;
-        broadcaster.firePropertyChange(PERSIST_OPENED_DATASOURCES_PROPERTY, old, this.properties.persistOpenedDataSources);
-    }
-
-    public ThreadPoolSize getBatchPoolSize() {
-        return properties.batchPoolSize;
-    }
-
-    public void setBatchPoolSize(ThreadPoolSize batchPoolSize) {
-        ThreadPoolSize old = this.properties.batchPoolSize;
-        this.properties.batchPoolSize = batchPoolSize != null ? batchPoolSize : BATCH_POOL_SIZE.getDefaultValue();
-        broadcaster.firePropertyChange(BATCH_POOL_SIZE_PROPERTY, old, this.properties.batchPoolSize);
-    }
-
-    public ThreadPriority getBatchPriority() {
-        return properties.batchPriority;
-    }
-
-    public void setBatchPriority(ThreadPriority batchPriority) {
-        ThreadPriority old = this.properties.batchPriority;
-        this.properties.batchPriority = batchPriority != null ? batchPriority : BATCH_PRIORITY.getDefaultValue();
-        broadcaster.firePropertyChange(BATCH_PRIORITY_PROPERTY, old, this.properties.batchPriority);
-    }
-
-    public Integer getGrowthLastYears() {
-        return properties.growthLastYears;
-    }
-
-    public void setGrowthLastYears(Integer lastYears) {
-        Integer old = this.properties.growthLastYears;
-        properties.growthLastYears = lastYears != null ? lastYears : GROWTH_LAST_YEARS.getDefaultValue();
-        broadcaster.firePropertyChange(GROWTH_CHART_LENGTH_PROPERTY, old, properties.growthLastYears);
-    }
+    public static final String SPECTRAL_YEARS_PROPERTY = "spectralLastYears";
+    private static final int DEFAULT_SPECTRAL_LAST_YEARS = AutoRegressiveSpectrumView.DEFAULT_LAST;
+    private static final IntProperty SPECTRAL_LAST_YEARS_CONFIG = IntProperty.of(SPECTRAL_YEARS_PROPERTY, DEFAULT_SPECTRAL_LAST_YEARS);
+    private Integer spectralLastYears = DEFAULT_SPECTRAL_LAST_YEARS;
 
     public Integer getSpectralLastYears() {
-        return properties.spectralLastYears;
+        return spectralLastYears;
     }
 
     public void setSpectralLastYears(Integer lastYears) {
-        Integer old = this.properties.spectralLastYears;
-        properties.spectralLastYears = lastYears != null ? lastYears : SPECTRAL_LAST_YEARS.getDefaultValue();
-        broadcaster.firePropertyChange(SPECTRAL_YEARS_PROPERTY, old, properties.spectralLastYears);
+        Integer old = this.spectralLastYears;
+        spectralLastYears = lastYears != null ? lastYears : DEFAULT_SPECTRAL_LAST_YEARS;
+        broadcaster.firePropertyChange(SPECTRAL_YEARS_PROPERTY, old, spectralLastYears);
     }
 
+    public static final String STABILITY_YEARS_PROPERTY = "stabilityLastYears";
+    private static final int DEFAULT_STABILITY_LENGTH = 8;
+    private static final IntProperty STABILITY_LENGTH_CONFIG = IntProperty.of(STABILITY_YEARS_PROPERTY, DEFAULT_STABILITY_LENGTH);
+    private Integer stabilityLength = DEFAULT_STABILITY_LENGTH;
+
     public Integer getStabilityLength() {
-        return properties.stabilityLength;
+        return stabilityLength;
     }
 
     public void setStabilityLength(Integer length) {
-        Integer old = this.properties.stabilityLength;
-        properties.stabilityLength = length != null ? length : STABILITY_LENGTH.getDefaultValue();
-        broadcaster.firePropertyChange(STABILITY_YEARS_PROPERTY, old, properties.stabilityLength);
+        Integer old = this.stabilityLength;
+        stabilityLength = length != null ? length : DEFAULT_STABILITY_LENGTH;
+        broadcaster.firePropertyChange(STABILITY_YEARS_PROPERTY, old, stabilityLength);
     }
 
+    public static final String ESTIMATION_POLICY_PROPERTY = "estimationPolicyType";
+    private static final EstimationPolicyType DEFAULT_ESTIMATION_POLICY = EstimationPolicyType.FreeParameters;
+    private static final Property<EstimationPolicyType> ESTIMATION_POLICY_TYPE_CONFIG = Property.of(ESTIMATION_POLICY_PROPERTY, DEFAULT_ESTIMATION_POLICY, Parser.onEnum(EstimationPolicyType.class), Formatter.onEnum());
+    private EstimationPolicyType estimationPolicyType = DEFAULT_ESTIMATION_POLICY;
+
     public EstimationPolicyType getEstimationPolicyType() {
-        return properties.estimationPolicyType;
+        return estimationPolicyType;
     }
 
     public void setEstimationPolicyType(EstimationPolicyType type) {
-        EstimationPolicyType old = this.properties.estimationPolicyType;
-        this.properties.estimationPolicyType = type != null ? type : ESTIMATION_POLICY_TYPE.getDefaultValue();
-        broadcaster.firePropertyChange(ESTIMATION_POLICY_PROPERTY, old, this.properties.estimationPolicyType);
+        EstimationPolicyType old = this.estimationPolicyType;
+        this.estimationPolicyType = type != null ? type : DEFAULT_ESTIMATION_POLICY;
+        broadcaster.firePropertyChange(ESTIMATION_POLICY_PROPERTY, old, this.estimationPolicyType);
     }
 
-    public ISaSpecification getDefaultSASpec() {
-        switch (properties.defaultSASpec) {
+    public static final String DEFAULT_SA_SPEC_PROPERTY = "defaultSASpec";
+    private static final String DEFAULT_DETAULT_SA_SPEC = "tramoseats." + TramoSeatsSpecification.RSAfull.toString();
+    private static final Property<String> DEFAULT_SA_SPEC_CONFIG = Property.of(DEFAULT_SA_SPEC_PROPERTY, DEFAULT_DETAULT_SA_SPEC, Parser.onString(), Formatter.onString());
+    private String defaultSASpec = DEFAULT_DETAULT_SA_SPEC;
+
+    public String getDefaultSASpec() {
+        return defaultSASpec;
+    }
+
+    public void setDefaultSASpec(String spec) {
+        String old = this.defaultSASpec;
+        this.defaultSASpec = spec != null ? spec : DEFAULT_DETAULT_SA_SPEC;
+        broadcaster.firePropertyChange(DEFAULT_SA_SPEC_PROPERTY, old, this.defaultSASpec);
+    }
+
+    public static final String PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY = "prespecifiedOutliersEditor";
+    private static final PrespecificiedOutliersEditor DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR = PrespecificiedOutliersEditor.CALENDAR_GRID;
+    private static final Property<PrespecificiedOutliersEditor> PRESPECIFIED_OUTLIERS_EDITOR_CONFIG = Property.of(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR, Parser.onEnum(PrespecificiedOutliersEditor.class), Formatter.onEnum());
+    private PrespecificiedOutliersEditor prespecifiedOutliersEditor = DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR;
+
+    public PrespecificiedOutliersEditor getPrespecifiedOutliersEditor() {
+        return prespecifiedOutliersEditor;
+    }
+
+    public void setPrespecifiedOutliersEditor(PrespecificiedOutliersEditor prespecifiedOutliersEditor) {
+        PrespecificiedOutliersEditor old = this.prespecifiedOutliersEditor;
+        this.prespecifiedOutliersEditor = prespecifiedOutliersEditor != null ? prespecifiedOutliersEditor : DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR;
+        broadcaster.firePropertyChange(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, old, this.prespecifiedOutliersEditor);
+    }
+
+    public static final String SELECTED_DIAG_FIELDS_PROPERTY = "selectedDiagnosticsFields";
+    private static final List<String> DEFAULT_SELECTED_DIAG_FIELDS = BasicConfiguration.allSingleSaDetails(false);
+    private static final Property<String[]> SELECTED_DIAG_FIELDS_CONFIG = Property.of(SELECTED_DIAG_FIELDS_PROPERTY, DEFAULT_SELECTED_DIAG_FIELDS.stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
+    private List<String> selectedDiagFields = DEFAULT_SELECTED_DIAG_FIELDS;
+
+    public List<String> getSelectedDiagFields() {
+        return this.selectedDiagFields;
+    }
+
+    public void setSelectedDiagFields(List<String> fields) {
+        List<String> old = this.selectedDiagFields;
+        this.selectedDiagFields = fields;
+        broadcaster.firePropertyChange(SELECTED_DIAG_FIELDS_PROPERTY, old, this.selectedDiagFields);
+    }
+
+    public static final String SELECTED_SERIES_FIELDS_PROPERTY = "selectedSeriesFields";
+    private static final List<String> DEFAULT_SELECTED_SERIES_FIELDS = BasicConfiguration.allSaSeries(false);
+    private static final Property<String[]> SELECTED_SERIES_FIELDS_CONFIG = Property.of(SELECTED_SERIES_FIELDS_PROPERTY, DEFAULT_SELECTED_SERIES_FIELDS.stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
+    private List<String> selectedSeriesFields = DEFAULT_SELECTED_SERIES_FIELDS;
+
+    public List<String> getSelectedSeriesFields() {
+        return this.selectedSeriesFields;
+    }
+
+    public void setSelectedSeriesFields(List<String> fields) {
+        List<String> old = this.selectedSeriesFields;
+        this.selectedSeriesFields = fields;
+        broadcaster.firePropertyChange(SELECTED_SERIES_FIELDS_PROPERTY, old, this.selectedSeriesFields);
+    }
+
+    @Override
+    public Config getConfig() {
+        Config.Builder b = Config.builder(DOMAIN, NAME, VERSION);
+        SPECTRAL_LAST_YEARS_CONFIG.set(b::parameter, getSpectralLastYears());
+        ESTIMATION_POLICY_TYPE_CONFIG.set(b::parameter, getEstimationPolicyType());
+        STABILITY_LENGTH_CONFIG.set(b::parameter, getStabilityLength());
+        DEFAULT_SA_SPEC_CONFIG.set(b::parameter, getDefaultSASpec());
+        PRESPECIFIED_OUTLIERS_EDITOR_CONFIG.set(b::parameter, getPrespecifiedOutliersEditor());
+        SELECTED_DIAG_FIELDS_CONFIG.set(b::parameter, Collections.toArray(getSelectedDiagFields(), String.class));
+        SELECTED_SERIES_FIELDS_CONFIG.set(b::parameter, Collections.toArray(getSelectedSeriesFields(), String.class));
+        return b.build();
+    }
+
+    @Override
+    public void setConfig(Config config) {
+        if (!DOMAIN.equals(config.getDomain())) {
+            throw new IllegalArgumentException("Not produced here");
+        }
+        setSpectralLastYears(SPECTRAL_LAST_YEARS_CONFIG.get(config::getParameter));
+        setEstimationPolicyType(ESTIMATION_POLICY_TYPE_CONFIG.get(config::getParameter));
+        setStabilityLength(STABILITY_LENGTH_CONFIG.get(config::getParameter));
+        setDefaultSASpec(DEFAULT_SA_SPEC_CONFIG.get(config::getParameter));
+        setPrespecifiedOutliersEditor(PRESPECIFIED_OUTLIERS_EDITOR_CONFIG.get(config::getParameter));
+        setSelectedDiagFields(Arrays.asList(SELECTED_DIAG_FIELDS_CONFIG.get(config::getParameter)));
+        setSelectedSeriesFields(Arrays.asList(SELECTED_SERIES_FIELDS_CONFIG.get(config::getParameter)));
+    }
+
+    @Override
+    public void configure() {
+        OptionsDisplayer.getDefault().open(DemetraUIOptionsPanelController.ID);
+    }
+
+    public ISaSpecification getDefaultSASpecInstance() {
+        switch (defaultSASpec) {
             case "tramoseats.RSA0":
                 return TramoSeatsSpecification.RSA0;
             case "tramoseats.RSA1":
@@ -285,217 +228,5 @@ public final class DemetraUI implements PropertyChangeSource, Configurable, Pers
         return null;
     }
 
-    public void setDefaultSASpec(String spec) {
-        String old = this.properties.defaultSASpec;
-        this.properties.defaultSASpec = spec != null ? spec : DEFAULT_SA_SPEC.getDefaultValue();
-        broadcaster.firePropertyChange(DEFAULT_SA_SPEC_PROPERTY, old, this.properties.defaultSASpec);
-    }
-
-    public boolean getPopupMenuIconsVisible() {
-        return properties.popupMenuIconsVisible;
-    }
-
-    public void setPopupMenuIconsVisible(boolean visible) {
-        boolean old = this.properties.popupMenuIconsVisible;
-        this.properties.popupMenuIconsVisible = visible;
-        broadcaster.firePropertyChange(POPUP_MENU_ICONS_VISIBLE_PROPERTY, old, this.properties.popupMenuIconsVisible);
-    }
-
-    public PrespecificiedOutliersEditor getPrespecifiedOutliersEditor() {
-        return properties.prespecifiedOutliersEditor;
-    }
-
-    public void setPrespecifiedOutliersEditor(PrespecificiedOutliersEditor prespecifiedOutliersEditor) {
-        PrespecificiedOutliersEditor old = this.properties.prespecifiedOutliersEditor;
-        this.properties.prespecifiedOutliersEditor = prespecifiedOutliersEditor != null ? prespecifiedOutliersEditor : PRESPECIFIED_OUTLIERS_EDITOR.getDefaultValue();
-        broadcaster.firePropertyChange(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, old, this.properties.prespecifiedOutliersEditor);
-    }
-
-    public List<String> getSelectedDiagFields() {
-        return this.properties.selectedDiagFields;
-    }
-
-    public void setSelectedDiagFields(List<String> fields) {
-        List<String> old = this.properties.selectedDiagFields;
-        this.properties.selectedDiagFields = fields;
-        broadcaster.firePropertyChange(SELECTED_DIAG_FIELDS_PROPERTY, old, this.properties.selectedDiagFields);
-    }
-
-    public List<String> getSelectedSeriesFields() {
-        return this.properties.selectedSeriesFields;
-    }
-
-    public void setSelectedSeriesFields(List<String> fields) {
-        List<String> old = this.properties.selectedSeriesFields;
-        this.properties.selectedSeriesFields = fields;
-        broadcaster.firePropertyChange(SELECTED_SERIES_FIELDS_PROPERTY, old, this.properties.selectedSeriesFields);
-    }
-
-    public int getHtmlZoomRatio() {
-        return this.properties.htmlZoomRatio;
-    }
-
-    public void setHtmlZoomRatio(int htmlZoomRatio) {
-        int old = this.properties.htmlZoomRatio;
-        this.properties.htmlZoomRatio = htmlZoomRatio >= 10 && htmlZoomRatio <= 200 ? htmlZoomRatio : 100;
-        broadcaster.firePropertyChange(HTML_ZOOM_RATIO_PROPERTY, old, this.properties.htmlZoomRatio);
-    }
-    //</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="Utils">
-    public ColorScheme getColorScheme() {
-        return getColorSchemes()
-                .stream()
-                .filter(colorScheme -> colorScheme.getName().equals(properties.colorSchemeName)
-                || colorScheme.getName().equals(COLOR_SCHEME_NAME.getDefaultValue()))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public List<? extends ColorScheme> getColorSchemes() {
-        return Lookup.getDefault().lookupAll(ColorScheme.class)
-                .stream()
-                .sorted(Comparator.comparing(ColorScheme::getDisplayName))
-                .collect(Collectors.toList());
-    }
-
-    public Icon getPopupMenuIcon(Icon icon) {
-        return properties.popupMenuIconsVisible ? icon : null;
-    }
-
-    public Icon getPopupMenuIcon(FontAwesome icon) {
-        return properties.popupMenuIconsVisible ? icon.getIcon(Color.BLACK, 13f) : null;
-    }
-    //</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="Configurable">
-    @Override
-    public Config getConfig() {
-        return properties.toConfig();
-    }
-
-    @Override
-    public void setConfig(Config config) {
-        ConfigBean bean = new ConfigBean(config);
-        setColorSchemeName(bean.colorSchemeName);
-        setDataFormat(bean.dataFormat);
-        setShowUnavailableTsProviders(bean.showUnavailableTsProviders);
-        setShowTsProviderNodes(bean.showTsProviderNodes);
-        setTsActionName(bean.tsActionName);
-        setPersistToolsContent(bean.persistToolsContent);
-        setPersistOpenedDataSources(bean.persistOpenedDataSources);
-        setBatchPoolSize(bean.batchPoolSize);
-        setBatchPriority(bean.batchPriority);
-        setGrowthLastYears(bean.growthLastYears);
-        setSpectralLastYears(bean.spectralLastYears);
-        setEstimationPolicyType(bean.estimationPolicyType);
-        setStabilityLength(bean.stabilityLength);
-        setDefaultSASpec(bean.defaultSASpec);
-        setPopupMenuIconsVisible(bean.popupMenuIconsVisible);
-        setPrespecifiedOutliersEditor(bean.prespecifiedOutliersEditor);
-        setSelectedDiagFields(bean.selectedDiagFields);
-        setSelectedSeriesFields(bean.selectedSeriesFields);
-        setHtmlZoomRatio(bean.htmlZoomRatio);
-    }
-
-    @Override
-    public void configure() {
-        OptionsDisplayer.getDefault().open(DemetraUIOptionsPanelController.ID);
-    }
-
-    private static class ConfigBean {
-
-        static final String DOMAIN = DemetraUI.class.getName(), NAME = "INSTANCE", VERSION = "";
-        String colorSchemeName;
-        DataFormat dataFormat;
-        Boolean showUnavailableTsProviders;
-        Boolean showTsProviderNodes;
-        String tsActionName;
-        boolean persistToolsContent;
-        boolean persistOpenedDataSources;
-        ThreadPoolSize batchPoolSize;
-        ThreadPriority batchPriority;
-        Integer growthLastYears;
-        Integer spectralLastYears;
-        EstimationPolicyType estimationPolicyType;
-        Integer stabilityLength;
-        String defaultSASpec;
-        boolean popupMenuIconsVisible;
-        PrespecificiedOutliersEditor prespecifiedOutliersEditor;
-        List<String> selectedDiagFields;
-        List<String> selectedSeriesFields;
-        int htmlZoomRatio;
-
-        ConfigBean() {
-            colorSchemeName = COLOR_SCHEME_NAME.getDefaultValue();
-            dataFormat = DATA_FORMAT.getDefaultValue();
-            showUnavailableTsProviders = SHOW_UNAVAILABLE.isDefaultValue();
-            showTsProviderNodes = SHOW_PROVIDER_NODES.isDefaultValue();
-            tsActionName = TS_ACTION_NAME.getDefaultValue();
-            persistToolsContent = PERSIST_TOOLS_CONTENT.isDefaultValue();
-            persistOpenedDataSources = PERSIST_OPENED_DATASOURCES.isDefaultValue();
-            batchPoolSize = BATCH_POOL_SIZE.getDefaultValue();
-            batchPriority = BATCH_PRIORITY.getDefaultValue();
-            growthLastYears = GROWTH_LAST_YEARS.getDefaultValue();
-            spectralLastYears = SPECTRAL_LAST_YEARS.getDefaultValue();
-            estimationPolicyType = ESTIMATION_POLICY_TYPE.getDefaultValue();
-            stabilityLength = STABILITY_LENGTH.getDefaultValue();
-            defaultSASpec = DEFAULT_SA_SPEC.getDefaultValue();
-            popupMenuIconsVisible = POPUP_MENU_ICONS_VISIBLE.isDefaultValue();
-            prespecifiedOutliersEditor = PRESPECIFIED_OUTLIERS_EDITOR.getDefaultValue();
-            selectedDiagFields = Arrays.asList(SELECTED_DIAG_FIELDS.getDefaultValue());
-            selectedSeriesFields = Arrays.asList(SELECTED_SERIES_FIELDS.getDefaultValue());
-            htmlZoomRatio = HTML_ZOOM_RATIO.getDefaultValue();
-        }
-
-        ConfigBean(Config config) {
-            if (!DOMAIN.equals(config.getDomain())) {
-                throw new IllegalArgumentException("Not produced here");
-            }
-            colorSchemeName = COLOR_SCHEME_NAME.get(config::getParameter);
-            dataFormat = DATA_FORMAT.get(config);
-            showUnavailableTsProviders = SHOW_UNAVAILABLE.get(config::getParameter);
-            showTsProviderNodes = SHOW_PROVIDER_NODES.get(config::getParameter);
-            tsActionName = TS_ACTION_NAME.get(config::getParameter);
-            persistToolsContent = PERSIST_TOOLS_CONTENT.get(config::getParameter);
-            persistOpenedDataSources = PERSIST_OPENED_DATASOURCES.get(config::getParameter);
-            batchPoolSize = BATCH_POOL_SIZE.get(config::getParameter);
-            batchPriority = BATCH_PRIORITY.get(config::getParameter);
-            growthLastYears = GROWTH_LAST_YEARS.get(config::getParameter);
-            spectralLastYears = SPECTRAL_LAST_YEARS.get(config::getParameter);
-            estimationPolicyType = ESTIMATION_POLICY_TYPE.get(config::getParameter);
-            stabilityLength = STABILITY_LENGTH.get(config::getParameter);
-            defaultSASpec = DEFAULT_SA_SPEC.get(config::getParameter);
-            popupMenuIconsVisible = POPUP_MENU_ICONS_VISIBLE.get(config::getParameter);
-            prespecifiedOutliersEditor = PRESPECIFIED_OUTLIERS_EDITOR.get(config::getParameter);
-            selectedDiagFields = Arrays.asList(SELECTED_DIAG_FIELDS.get(config::getParameter));
-            selectedSeriesFields = Arrays.asList(SELECTED_SERIES_FIELDS.get(config::getParameter));
-            htmlZoomRatio = HTML_ZOOM_RATIO.get(config::getParameter);
-        }
-
-        Config toConfig() {
-            Config.Builder b = Config.builder(DOMAIN, NAME, VERSION);
-            COLOR_SCHEME_NAME.set(b::parameter, colorSchemeName);
-            DATA_FORMAT.set(b, dataFormat);
-            SHOW_UNAVAILABLE.set(b::parameter, showUnavailableTsProviders);
-            SHOW_PROVIDER_NODES.set(b::parameter, showTsProviderNodes);
-            TS_ACTION_NAME.set(b::parameter, tsActionName);
-            PERSIST_TOOLS_CONTENT.set(b::parameter, persistToolsContent);
-            PERSIST_OPENED_DATASOURCES.set(b::parameter, persistOpenedDataSources);
-            BATCH_POOL_SIZE.set(b::parameter, batchPoolSize);
-            BATCH_PRIORITY.set(b::parameter, batchPriority);
-            GROWTH_LAST_YEARS.set(b::parameter, growthLastYears);
-            SPECTRAL_LAST_YEARS.set(b::parameter, spectralLastYears);
-            ESTIMATION_POLICY_TYPE.set(b::parameter, estimationPolicyType);
-            STABILITY_LENGTH.set(b::parameter, stabilityLength);
-            DEFAULT_SA_SPEC.set(b::parameter, defaultSASpec);
-            POPUP_MENU_ICONS_VISIBLE.set(b::parameter, popupMenuIconsVisible);
-            PRESPECIFIED_OUTLIERS_EDITOR.set(b::parameter, prespecifiedOutliersEditor);
-            SELECTED_DIAG_FIELDS.set(b::parameter, Collections.toArray(selectedDiagFields, String.class));
-            SELECTED_SERIES_FIELDS.set(b::parameter, Collections.toArray(selectedSeriesFields, String.class));
-            HTML_ZOOM_RATIO.set(b::parameter, htmlZoomRatio);
-            return b.build();
-        }
-    }
-    //</editor-fold>
+    private static final String DOMAIN = DemetraUI.class.getName(), NAME = "INSTANCE", VERSION = "";
 }

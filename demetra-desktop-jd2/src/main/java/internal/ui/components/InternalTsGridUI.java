@@ -21,11 +21,11 @@ import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
+import demetra.ui.DemetraOptions;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsCollection;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.MonikerUI;
 import ec.nbdemetra.ui.ThemeSupport;
 import demetra.ui.util.ActionMaps;
@@ -408,7 +408,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         combo.setRenderer(new ComboCellRenderer(target.isUseColorScheme() ? themeSupport : null));
     }
 
-    private JMenu buildMenu(DemetraUI demetraUI) {
+    private JMenu buildMenu(DemetraOptions demetraUI) {
         ActionMap am = target.getActionMap();
         JMenu result = new JMenu();
 
@@ -433,7 +433,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     }
 
     private JMenu buildGridMenu() {
-        DemetraUI demetraUI = DemetraUI.getDefault();
+        DemetraOptions demetraUI = DemetraOptions.getDefault();
 
         ActionMap am = target.getActionMap();
 
@@ -469,7 +469,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         item.setText("Use color scheme");
         result.add(item);
 
-        result.add(HasColorSchemeCommands.menuOf(target, DemetraUI.getDefault().getColorSchemes()));
+        result.add(HasColorSchemeCommands.menuOf(target, DemetraOptions.getDefault().getColorSchemes()));
 
         item = new JCheckBoxMenuItem(JTsGridCommands.toggleShowBars().toAction(target));
         item.setText("Show bars");

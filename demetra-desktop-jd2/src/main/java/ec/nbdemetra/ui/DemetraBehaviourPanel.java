@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.ui.DemetraOptions;
 import demetra.ui.TsActions;
 import demetra.ui.concurrent.ThreadPoolSize;
 import demetra.ui.concurrent.ThreadPriority;
@@ -47,7 +48,7 @@ final class DemetraBehaviourPanel extends javax.swing.JPanel implements ItemList
     }
 
     void load() {
-        DemetraUI demetraUI = DemetraUI.getDefault();
+        DemetraOptions demetraUI = DemetraOptions.getDefault();
         showUnavailableCheckBox.setSelected(demetraUI.isShowUnavailableTsProviders());
         persistToolsContent.setSelected(demetraUI.isPersistToolsContent());
         persistOpenDataSources.setSelected(demetraUI.isPersistOpenedDataSources());
@@ -62,7 +63,7 @@ final class DemetraBehaviourPanel extends javax.swing.JPanel implements ItemList
     }
 
     void store() {
-        DemetraUI demetraUI = DemetraUI.getDefault();
+        DemetraOptions demetraUI = DemetraOptions.getDefault();
         demetraUI.setShowUnavailableTsProviders(showUnavailableCheckBox.isSelected());
         demetraUI.setPersistToolsContent(persistToolsContent.isSelected());
         demetraUI.setPersistOpenedDataSources(persistOpenDataSources.isSelected());

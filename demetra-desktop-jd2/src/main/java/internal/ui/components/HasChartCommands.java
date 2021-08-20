@@ -19,6 +19,7 @@ package internal.ui.components;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.tsprovider.util.ObsFormat;
+import demetra.ui.DemetraOptions;
 import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.components.TsSelectionBridge;
 import ec.nbdemetra.ui.MonikerUI;
@@ -42,7 +43,6 @@ import org.openide.util.NbCollections;
 import demetra.ui.components.parts.HasChart;
 import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
-import ec.nbdemetra.ui.DemetraUI;
 import demetra.ui.components.ComponentCommand;
 import ec.util.list.swing.JLists;
 import ec.util.various.swing.FontAwesome;
@@ -69,7 +69,7 @@ public class HasChartCommands {
         return ToggleTitleVisibilityCommand.INSTANCE;
     }
 
-    public static JMenuItem newToggleTitleVisibilityMenu(ActionMap am, DemetraUI demetraUI) {
+    public static JMenuItem newToggleTitleVisibilityMenu(ActionMap am, DemetraOptions demetraUI) {
         JMenuItem result = new JCheckBoxMenuItem(am.get(TITLE_VISIBLE_ACTION));
         result.setText("Show title");
         result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_FONT));
@@ -83,7 +83,7 @@ public class HasChartCommands {
         return ToggleLegendVisibilityCommand.INSTANCE;
     }
 
-    public static JMenuItem newToggleLegendVisibilityMenu(ActionMap am, DemetraUI demetraUI) {
+    public static JMenuItem newToggleLegendVisibilityMenu(ActionMap am, DemetraOptions demetraUI) {
         JMenuItem result = new JCheckBoxMenuItem(am.get(LEGEND_VISIBLE_ACTION));
         result.setText("Show legend");
         return result;

@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
+import demetra.ui.DemetraOptions;
 import demetra.ui.components.parts.HasColorScheme;
-import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
@@ -51,9 +51,9 @@ public final class ColorSchemeAbleHandler extends TypedDemoComponentHandler<HasC
 
     @Override
     public void doFillToolBar(JToolBar toolBar, HasColorScheme c) {
-        JPopupMenu menu = HasColorSchemeCommands.menuOf(c, DemetraUI.getDefault().getColorSchemes()).getPopupMenu();
+        JPopupMenu menu = HasColorSchemeCommands.menuOf(c, DemetraOptions.getDefault().getColorSchemes()).getPopupMenu();
 
-        List<Action> colorSchemes = DemetraUI.getDefault()
+        List<Action> colorSchemes = DemetraOptions.getDefault()
                 .getColorSchemes()
                 .stream()
                 .map(HasColorSchemeCommands::commandOf)
