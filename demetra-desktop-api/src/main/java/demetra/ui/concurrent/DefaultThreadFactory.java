@@ -14,25 +14,34 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui;
+package demetra.ui.concurrent;
 
-import nbbrd.design.MightBePromoted;
 import java.util.concurrent.ThreadFactory;
+import nbbrd.design.LombokWorkaround;
 
 /**
  *
  * @author Philippe Charles
  */
-@MightBePromoted
-@lombok.Builder(builderClassName = "Builder")
-public final class DefaultThreadFactory implements ThreadFactory {
+@lombok.Value
+@lombok.Builder
+public class DefaultThreadFactory implements ThreadFactory {
 
     private final boolean daemon;
+    private final int priority;
 
     @Override
     public Thread newThread(Runnable r) {
         Thread result = new Thread(r);
         result.setDaemon(daemon);
+        result.setPriority(priority);
         return result;
+    }
+
+    @LombokWorkaround
+    public static Builder builder() {
+        return new Builder()
+                .daemon(false)
+                .priority(Thread.NORM_PRIORITY);
     }
 }

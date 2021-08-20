@@ -17,13 +17,14 @@
 package ec.nbdemetra.ui;
 
 import demetra.ui.Config;
-import com.google.common.base.Preconditions;
 import demetra.ui.GlobalService;
 import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
 import demetra.ui.beans.PropertyChangeSource;
+import demetra.ui.components.JTsGrowthChart;
+import demetra.ui.concurrent.ThreadPoolSize;
+import demetra.ui.concurrent.ThreadPriority;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
-import internal.ui.ChartGridTsAction;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;
@@ -31,29 +32,22 @@ import ec.tss.sa.EstimationPolicyType;
 import ec.tss.sa.output.BasicConfiguration;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.utilities.Jdk6.Collections;
-import ec.tstoolkit.utilities.ThreadPoolSize;
-import ec.tstoolkit.utilities.ThreadPriority;
-import demetra.ui.components.JTsGrowthChart;
 import ec.ui.view.AutoRegressiveSpectrumView;
 import ec.util.chart.ColorScheme;
-import ec.util.chart.impl.SmartColorScheme;
 import ec.util.various.swing.FontAwesome;
 import java.awt.Color;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.Icon;
 import nbbrd.io.text.BooleanProperty;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.IntProperty;
 import nbbrd.io.text.Parser;
 import nbbrd.io.text.Property;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.openide.util.Lookup;
 
@@ -94,11 +88,11 @@ public final class DemetraUI implements PropertyChangeSource, Configurable, Pers
     public static final String HTML_ZOOM_RATIO_PROPERTY = "htmlZoomRatio";
 
     // DEFAULT PROPERTIES
-    static final Property<String> COLOR_SCHEME_NAME = Property.of(COLOR_SCHEME_NAME_PROPERTY, SmartColorScheme.NAME, Parser.onString(), Formatter.onString());
+    static final Property<String> COLOR_SCHEME_NAME = Property.of(COLOR_SCHEME_NAME_PROPERTY, "Smart", Parser.onString(), Formatter.onString());
     static final DataFormatParam DATA_FORMAT = new DataFormatParam(new DataFormat(null, "yyyy-MM", null), "locale", "datePattern", "numberPattern");
     static final BooleanProperty SHOW_UNAVAILABLE = BooleanProperty.of(SHOW_UNAVAILABLE_TSPROVIDER_PROPERTY, false);
     static final BooleanProperty SHOW_PROVIDER_NODES = BooleanProperty.of(SHOW_TSPROVIDER_NODES_PROPERTY, true);
-    static final Property<String> TS_ACTION_NAME = Property.of(TS_ACTION_NAME_PROPERTY, ChartGridTsAction.NAME, Parser.onString(), Formatter.onString());
+    static final Property<String> TS_ACTION_NAME = Property.of(TS_ACTION_NAME_PROPERTY, "ChartGridTsAction", Parser.onString(), Formatter.onString());
     static final BooleanProperty PERSIST_TOOLS_CONTENT = BooleanProperty.of(PERSIST_TOOLS_CONTENT_PROPERTY, false);
     static final BooleanProperty PERSIST_OPENED_DATASOURCES = BooleanProperty.of(PERSIST_OPENED_DATASOURCES_PROPERTY, false);
     static final Property<ThreadPoolSize> BATCH_POOL_SIZE = Property.of(BATCH_POOL_SIZE_PROPERTY, ThreadPoolSize.ALL_BUT_ONE, Parser.onEnum(ThreadPoolSize.class), Formatter.onEnum());
@@ -350,7 +344,12 @@ public final class DemetraUI implements PropertyChangeSource, Configurable, Pers
 
     //<editor-fold defaultstate="collapsed" desc="Utils">
     public ColorScheme getColorScheme() {
-        return find(ColorScheme.class, ColorScheme::getName, properties.colorSchemeName, COLOR_SCHEME_NAME.getDefaultValue());
+        return getColorSchemes()
+                .stream()
+                .filter(colorScheme -> colorScheme.getName().equals(properties.colorSchemeName)
+                || colorScheme.getName().equals(COLOR_SCHEME_NAME.getDefaultValue()))
+                .findFirst()
+                .orElse(null);
     }
 
     public List<? extends ColorScheme> getColorSchemes() {
@@ -366,14 +365,6 @@ public final class DemetraUI implements PropertyChangeSource, Configurable, Pers
 
     public Icon getPopupMenuIcon(FontAwesome icon) {
         return properties.popupMenuIconsVisible ? icon.getIcon(Color.BLACK, 13f) : null;
-    }
-
-    private static <X, Y> X find(Class<X> clazz, Function<? super X, Y> toName, Y... names) {
-        Collection<? extends X> items = Lookup.getDefault().lookupAll(clazz);
-        return Stream.of(names)
-                .flatMap(o -> items.stream().filter(x -> o.equals(toName.apply(x))))
-                .findFirst()
-                .orElse(null);
     }
     //</editor-fold>
 
@@ -458,7 +449,9 @@ public final class DemetraUI implements PropertyChangeSource, Configurable, Pers
         }
 
         ConfigBean(Config config) {
-            Preconditions.checkArgument(DOMAIN.equals(config.getDomain()), "Not produced here");
+            if (!DOMAIN.equals(config.getDomain())) {
+                throw new IllegalArgumentException("Not produced here");
+            }
             colorSchemeName = COLOR_SCHEME_NAME.get(config::getParameter);
             dataFormat = DATA_FORMAT.get(config);
             showUnavailableTsProviders = SHOW_UNAVAILABLE.get(config::getParameter);

@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.sa;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
@@ -29,7 +28,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.ThreadFactory;
 import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -55,8 +53,6 @@ import org.openide.nodes.Sheet.Set;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Top component which displays something.
@@ -76,10 +72,6 @@ import org.slf4j.LoggerFactory;
 })
 public final class DirectIndirectSaTopComponent extends TopComponent implements IActiveView, ExplorerManager.Provider {
 
-    // CONSTANTS
-    private static final Logger LOGGER = LoggerFactory.getLogger(SaBatchUI.class);
-    private static final int NBR_EXECUTORS = Runtime.getRuntime().availableProcessors();
-    private static final ThreadFactory THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).setPriority(Thread.MIN_PRIORITY).build();
     // PROPERTIES DEFINITIONS
     public static final String DEFAULT_SPECIFICATION_PROPERTY = "specificationProperty";
     public static final String PROCESSING_PROPERTY = "processing";

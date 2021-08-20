@@ -17,15 +17,15 @@
 package demetra.ui.properties;
 
 import demetra.ui.completion.DesktopFileAutoCompletionSource;
+import demetra.ui.concurrent.ThreadPriority;
 import static demetra.ui.properties.AbstractExPropertyEditor.attr;
 import ec.util.completion.swing.FileListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
-import internal.ui.DefaultThreadFactory;
+import demetra.ui.concurrent.UIExecutors;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
@@ -67,7 +67,7 @@ public final class DesktopFilePropertyEditor extends ForwardingPropertyEditor im
     //<editor-fold defaultstate="collapsed" desc="Internal implementation">
     private static final class DesktopFileInplaceEditor extends AbstractInplaceEditor {
 
-        private static final ExecutorService ICON_EXECUTOR = Executors.newSingleThreadExecutor(DefaultThreadFactory.builder().daemon(true).build());
+        private static final ExecutorService ICON_EXECUTOR = UIExecutors.newSingleThreadExecutor(ThreadPriority.MIN);
 
         private final JTextField component = new JTextField();
         private final JAutoCompletion autoCompletion = new JAutoCompletion(component);

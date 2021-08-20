@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.chart3d.functions;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import demetra.ui.concurrent.UIExecutors;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.chart3d.AbstractSurfaceModel;
 import ec.nbdemetra.ui.chart3d.SurfaceModel.PlotType;
@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.swing.SwingWorker;
 
 /**
@@ -139,10 +138,8 @@ public class FunctionsSurfaceModel extends AbstractSurfaceModel {
                 }
 
                 DemetraUI config = DemetraUI.getDefault();
-                int nThread = config.getBatchPoolSize().intValue(); // Gets the number of threads
-                int priority = config.getBatchPriority().intValue();    // Gets the priority of the processing
 
-                ExecutorService executorService = Executors.newFixedThreadPool(nThread, new ThreadFactoryBuilder().setDaemon(true).setPriority(priority).build());
+                ExecutorService executorService = UIExecutors.newFixedThreadPool(config.getBatchPoolSize(), config.getBatchPriority());
                 try {
                     executorService.invokeAll(tasks);
                 } catch (InterruptedException ex) {

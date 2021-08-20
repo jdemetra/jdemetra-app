@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.sa;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import demetra.ui.concurrent.UIExecutors;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.satoolkit.algorithm.implementation.X13ProcessingFactory;
 import ec.satoolkit.x11.Mstatistics;
@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
@@ -93,10 +92,7 @@ public class DiagnosticsMatrixView extends JPanel {
             @Override
             protected Object doInBackground() throws Exception {
                 List<Callable<Void>> tasks = updateMatrix();
-                int nThread = demetraUI.getBatchPoolSize().intValue();
-                int priority = demetraUI.getBatchPriority().intValue();
-
-                ExecutorService executorService = Executors.newFixedThreadPool(nThread, new ThreadFactoryBuilder().setDaemon(true).setPriority(priority).build());
+                ExecutorService executorService = UIExecutors.newFixedThreadPool(demetraUI.getBatchPoolSize(), demetraUI.getBatchPriority());
                 return executorService.invokeAll(tasks);
             }
         };

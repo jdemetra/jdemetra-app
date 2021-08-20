@@ -1076,8 +1076,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             }
 
             DemetraUI config = DemetraUI.getDefault();
-            int nThread = config.getBatchPoolSize().intValue();
-            int priority = config.getBatchPriority().intValue();
+            int nThread = config.getBatchPoolSize().getSize();
+            int priority = config.getBatchPriority().getPriority();
 
             ExecutorService executorService = Executors.newFixedThreadPool(nThread, new ThreadFactoryBuilder().setDaemon(true).setPriority(priority).build());
             Stopwatch stopwatch = Stopwatch.createStarted();

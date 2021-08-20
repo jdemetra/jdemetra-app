@@ -17,7 +17,6 @@
 package ec.nbdemetra.anomalydetection.ui;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
@@ -36,6 +35,7 @@ import ec.nbdemetra.ui.tools.ToolsPersistence;
 import ec.tstoolkit.modelling.arima.CheckLast;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import demetra.ui.components.JTsChart;
+import demetra.ui.concurrent.UIExecutors;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.OptionalInt;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.swing.AbstractAction;
 import static javax.swing.Action.NAME;
 import javax.swing.Box;
@@ -410,10 +409,8 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
             }
 
             DemetraUI config = DemetraUI.getDefault();
-            int nThread = config.getBatchPoolSize().intValue();
-            int priority = config.getBatchPriority().intValue();
 
-            ExecutorService executorService = Executors.newFixedThreadPool(nThread, new ThreadFactoryBuilder().setDaemon(true).setPriority(priority).build());
+            ExecutorService executorService = UIExecutors.newFixedThreadPool(config.getBatchPoolSize(), config.getBatchPriority());
             Stopwatch stopwatch = Stopwatch.createStarted();
             try {
                 executorService.invokeAll(tasks);
@@ -428,7 +425,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
                 }
             }
 
-            LOGGER.info("Task: {} items in {} by {} executors with priority {}", new Object[]{tasks.size(), stopwatch.stop().toString(), nThread, priority});
+            LOGGER.info("Task: {} items in {} by {} executors with priority {}", new Object[]{tasks.size(), stopwatch.stop().toString(), config.getBatchPoolSize(), config.getBatchPriority()});
 
             executorService.shutdown();
 

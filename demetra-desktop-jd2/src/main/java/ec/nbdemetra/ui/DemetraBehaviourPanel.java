@@ -17,8 +17,8 @@
 package ec.nbdemetra.ui;
 
 import demetra.ui.TsActions;
-import ec.tstoolkit.utilities.ThreadPoolSize;
-import ec.tstoolkit.utilities.ThreadPriority;
+import demetra.ui.concurrent.ThreadPoolSize;
+import demetra.ui.concurrent.ThreadPriority;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.DefaultComboBoxModel;
