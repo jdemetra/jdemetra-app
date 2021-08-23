@@ -27,9 +27,7 @@ import demetra.ui.beans.PropertyChangeSource;
 import ec.tss.TsIdentifier;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.util.table.swing.JTables;
-import internal.ui.components.InternalTsTableUI;
 import internal.ui.components.TsIdentifierTableCellRenderer;
-import internal.ui.components.InternalUI;
 import internal.ui.components.TsDataTableCellRenderer;
 import java.awt.Dimension;
 import java.beans.Beans;
@@ -151,8 +149,6 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
 
     private final TsSelectionBridge tsSelectionBridge;
 
-    private final InternalUI<JTsTable> internalUI;
-
     public JTsTable() {
         this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
         this.tsAction = HasTsAction.of(this::firePropertyChange);
@@ -164,8 +160,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
         this.tsSelectionBridge = new TsSelectionBridge(this::firePropertyChange);
         tsSelectionBridge.register(this);
 
-        this.internalUI = new InternalTsTableUI();
-        internalUI.install(this);
+        ComponentBackend.getDefault().install(this);
 
         applyDesignTimeProperties();
     }

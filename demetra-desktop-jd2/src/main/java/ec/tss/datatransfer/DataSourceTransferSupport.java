@@ -19,6 +19,7 @@ package ec.tss.datatransfer;
 import demetra.tsprovider.DataSource;
 import demetra.ui.GlobalService;
 import demetra.ui.util.CollectionSupplier;
+import demetra.ui.util.LazyGlobalService;
 import java.awt.datatransfer.Transferable;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -32,13 +33,14 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @GlobalService
 public final class DataSourceTransferSupport {
 
-    private static final DataSourceTransferSupport INSTANCE = new DataSourceTransferSupport();
-
     @NonNull
     public static DataSourceTransferSupport getDefault() {
-        return INSTANCE;
+        return LazyGlobalService.get(DataSourceTransferSupport.class, DataSourceTransferSupport::new);
     }
-    
+
+    private DataSourceTransferSupport() {
+    }
+
     private final CollectionSupplier<DataSourceTransferHandler> providers = DataSourceTransferHandlerLoader::get;
 
     @NonNull

@@ -16,11 +16,10 @@
  */
 package ec.ui.view.res;
 
+import demetra.ui.components.ComponentBackend;
 import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsData;
 import demetra.ui.components.TimeSeriesComponent;
-import internal.InternalResidualsViewUI;
-import internal.ui.components.InternalUI;
 import javax.swing.JComponent;
 
 /**
@@ -35,13 +34,10 @@ public final class ResidualsView extends JComponent implements TimeSeriesCompone
     @lombok.experimental.Delegate
     private final HasObsFormat obsFormat;
 
-    private final InternalUI<ResidualsView> ui;
-
     public ResidualsView() {
         this.tsData = HasTsData.of(this::firePropertyChange);
         this.obsFormat = HasObsFormat.of(this::firePropertyChange);
-        this.ui = new InternalResidualsViewUI();
 
-        ui.install(this);
+        ComponentBackend.getDefault().install(this);
     }
 }

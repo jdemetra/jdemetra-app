@@ -21,6 +21,7 @@ import demetra.ui.GlobalService;
 import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
 import demetra.ui.beans.PropertyChangeSource;
+import demetra.ui.util.LazyGlobalService;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
@@ -47,11 +48,12 @@ import org.netbeans.api.options.OptionsDisplayer;
 @GlobalService
 public final class DemetraUI implements PropertyChangeSource, Persistable, Configurable {
 
-    private static final DemetraUI INSTANCE = new DemetraUI();
-
     @NonNull
     public static DemetraUI getDefault() {
-        return INSTANCE;
+        return LazyGlobalService.get(DemetraUI.class, DemetraUI::new);
+    }
+
+    private DemetraUI() {
     }
 
     @lombok.experimental.Delegate(types = PropertyChangeSource.class)

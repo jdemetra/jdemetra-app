@@ -17,7 +17,7 @@
 package internal;
 
 import demetra.timeseries.TsCollection;
-import internal.ui.components.InternalUI;
+import demetra.ui.components.ComponentBackendSpi;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import static demetra.ui.components.parts.HasTsData.TS_DATA_PROPERTY;
 import demetra.ui.util.NbComponents;
@@ -53,12 +53,29 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.Range;
 import org.jfree.ui.RectangleInsets;
+import javax.swing.JComponent;
+import nbbrd.service.ServiceProvider;
+import internal.ui.components.InternalUI;
 
 /**
  *
  * @author Philippe Charles
  */
 public final class InternalResidualsViewUI implements InternalUI<ResidualsView> {
+
+    @ServiceProvider
+    public static final class Factory implements ComponentBackendSpi {
+
+        @Override
+        public boolean handles(Class<? extends JComponent> type) {
+        return ResidualsView.class.equals(type);
+        }
+
+        @Override
+        public void install(JComponent component) {
+            new InternalResidualsViewUI().install((ResidualsView) component);
+        }
+    }
 
     private static final ColorScheme.KnownColor MAIN_COLOR = ColorScheme.KnownColor.BLUE;
 

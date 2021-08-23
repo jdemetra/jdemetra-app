@@ -76,8 +76,25 @@ import javax.swing.TransferHandler;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import demetra.ui.datatransfer.DataTransfer;
+import javax.swing.JComponent;
+import nbbrd.service.ServiceProvider;
+import demetra.ui.components.ComponentBackendSpi;
 
 public final class InternalTsGridUI implements InternalUI<JTsGrid> {
+
+    @ServiceProvider
+    public static final class Factory implements ComponentBackendSpi {
+
+        @Override
+        public boolean handles(Class<? extends JComponent> type) {
+            return JTsGrid.class.equals(type);
+        }
+
+        @Override
+        public void install(JComponent component) {
+            new InternalTsGridUI().install((JTsGrid) component);
+        }
+    }
 
     private JTsGrid target;
 

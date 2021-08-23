@@ -14,17 +14,26 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.ui.components;
 
+import demetra.ui.util.NetBeansServiceBackend;
 import javax.swing.JComponent;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
  * @author Philippe Charles
- * @param <T>
  */
-public interface InternalUI<T extends JComponent> {
+@ServiceDefinition(
+        quantifier = Quantifier.MULTIPLE,
+        backend = NetBeansServiceBackend.class,
+        singleton = true
+)
+public interface ComponentBackendSpi {
 
-    void install(@NonNull T component);
+    boolean handles(@NonNull Class<? extends JComponent> type);
+
+    void install(@NonNull JComponent component);
 }

@@ -6,6 +6,7 @@ package ec.nbdemetra.ui;
 
 import demetra.ui.GlobalService;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
+import demetra.ui.util.LazyGlobalService;
 import ec.nbdemetra.ui.properties.l2fprod.PropertiesPanelFactory;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
@@ -23,11 +24,9 @@ import javax.swing.JComponent;
 @GlobalService
 public final class DocumentUIServices {
 
-    private static final DocumentUIServices INSTANCE = new DocumentUIServices();
-
     @NonNull
     public static DocumentUIServices getDefault() {
-        return INSTANCE;
+        return LazyGlobalService.get(DocumentUIServices.class, DocumentUIServices::new);
     }
 
     public static final String SPEC_PROPERTY = "specification";
@@ -53,7 +52,7 @@ public final class DocumentUIServices {
 
     protected final Map<Class, UIFactory> map;
 
-    public DocumentUIServices() {
+    private DocumentUIServices() {
         this.map = new HashMap<>();
     }
 

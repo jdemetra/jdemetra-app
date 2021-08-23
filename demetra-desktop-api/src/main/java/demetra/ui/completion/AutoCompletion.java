@@ -5,6 +5,7 @@ import ec.util.completion.swing.JAutoCompletion;
 import javax.swing.text.JTextComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import demetra.ui.util.CollectionSupplier;
+import demetra.ui.util.LazyGlobalService;
 
 /**
  *
@@ -12,11 +13,12 @@ import demetra.ui.util.CollectionSupplier;
 @GlobalService
 public final class AutoCompletion {
 
-    private static final AutoCompletion INSTANCE = new AutoCompletion();
-
     @NonNull
     public static AutoCompletion getDefault() {
-        return INSTANCE;
+        return LazyGlobalService.get(AutoCompletion.class, AutoCompletion::new);
+    }
+
+    private AutoCompletion() {
     }
 
     private final CollectionSupplier<AutoCompletionSpi> providers = AutoCompletionSpiLoader::get;

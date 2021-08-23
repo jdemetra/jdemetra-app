@@ -17,6 +17,8 @@
 package internal.ui;
 
 import demetra.ui.GlobalService;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
@@ -24,11 +26,11 @@ import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -50,23 +52,28 @@ public final class GlobalServiceProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         Messager m = processingEnv.getMessager();
-        for (Element e : roundEnv.getElementsAnnotatedWith(GlobalService.class)) {
+        for (TypeElement e : ElementFilter.typesIn(roundEnv.getElementsAnnotatedWith(GlobalService.class))) {
 
             if (!e.getModifiers().contains(Modifier.FINAL)) {
                 m.printMessage(kind, "Must be final", e);
                 continue;
             }
 
-            Element method = getDefaultMethod((TypeElement) e);
-            if (method == null) {
+            if (hasPublicConstructor(e)) {
+                m.printMessage(kind, "Must not have public constructor", e);
+                continue;
+            }
+
+            Optional<ExecutableElement> method = getDefaultMethod(e);
+            if (!method.isPresent()) {
                 m.printMessage(kind, "Missing method getDefault()", e);
                 continue;
             }
-            if (!(method.getModifiers().contains(Modifier.PUBLIC) && method.getModifiers().contains(Modifier.STATIC))) {
+            if (!method.get().getModifiers().containsAll(Arrays.asList(Modifier.PUBLIC, Modifier.STATIC))) {
                 m.printMessage(kind, "Default method must be public and static", e);
                 continue;
             }
-            ExecutableType t = (ExecutableType) method.asType();
+            ExecutableType t = (ExecutableType) method.get().asType();
             if (!t.getParameterTypes().isEmpty()) {
                 m.printMessage(kind, "Default method requires no parameters", e);
                 continue;
@@ -79,14 +86,19 @@ public final class GlobalServiceProcessor extends AbstractProcessor {
         return true;
     }
 
-    private Element getDefaultMethod(TypeElement typeElement) {
-        for (Element x : typeElement.getEnclosedElements()) {
-            if (x.getKind() == ElementKind.METHOD) {
-                if (x.getSimpleName().toString().equals("getDefault")) {
-                    return x;
-                }
-            }
-        }
-        return null;
+    private Optional<ExecutableElement> getDefaultMethod(TypeElement typeElement) {
+        return ElementFilter
+                .methodsIn(typeElement.getEnclosedElements())
+                .stream()
+                .filter(method -> method.getSimpleName().toString().equals("getDefault"))
+                .findFirst();
+    }
+
+    private boolean hasPublicConstructor(TypeElement typeElement) {
+        return ElementFilter
+                .constructorsIn(typeElement.getEnclosedElements())
+                .stream()
+                .anyMatch(method -> method.getModifiers().contains(Modifier.PUBLIC));
+
     }
 }

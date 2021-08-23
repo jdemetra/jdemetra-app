@@ -254,7 +254,7 @@ public final class Installer extends ModuleInstall {
         loadConfig(list.stream(), root);
     }
 
-    public static void loadConfig(Stream<?> stream, Preferences root) {
+    private static void loadConfig(Stream<?> stream, Preferences root) {
         Parser<Config> parser = XmlConfig.xmlParser()::parse;
         stream
                 .filter(Persistable.class::isInstance)

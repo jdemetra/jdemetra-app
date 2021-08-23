@@ -54,6 +54,7 @@ import java.util.stream.Stream;
 import nbbrd.io.function.IOFunction;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import demetra.ui.util.CollectionSupplier;
+import demetra.ui.util.LazyGlobalService;
 
 /**
  * A support class that deals with the clipboard. It allows the user to get/set
@@ -66,11 +67,9 @@ import demetra.ui.util.CollectionSupplier;
 @GlobalService
 public final class DataTransfer implements PropertyChangeSource {
 
-    private static final DataTransfer INSTANCE = new DataTransfer();
-
     @NonNull
     public static DataTransfer getDefault() {
-        return INSTANCE;
+        return LazyGlobalService.get(DataTransfer.class, DataTransfer::new);
     }
 
     public static final String VALID_CLIPBOARD_PROPERTY = "validClipboard";

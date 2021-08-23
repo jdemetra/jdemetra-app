@@ -31,8 +31,6 @@ import demetra.timeseries.TsDomain;
 import demetra.ui.DemetraOptions;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
-import internal.ui.components.InternalTsGrowthChartUI;
-import internal.ui.components.InternalUI;
 import java.awt.Dimension;
 import java.beans.Beans;
 import java.time.LocalDate;
@@ -88,8 +86,6 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
 
     private final TsSelectionBridge tsSelectionBridge;
 
-    private final InternalUI<JTsGrowthChart> internalUI;
-
     public JTsGrowthChart() {
         this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
         this.tsAction = HasTsAction.of(this::firePropertyChange);
@@ -104,8 +100,7 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
         this.tsSelectionBridge = new TsSelectionBridge(this::firePropertyChange);
         tsSelectionBridge.register(this);
 
-        this.internalUI = new InternalTsGrowthChartUI();
-        internalUI.install(this);
+        ComponentBackend.getDefault().install(this);
 
         applyDesignTimeProperties();
     }

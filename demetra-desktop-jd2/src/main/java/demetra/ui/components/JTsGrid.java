@@ -25,8 +25,6 @@ import demetra.ui.components.parts.HasColorScheme;
 import demetra.demo.DemoTsBuilder;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
-import internal.ui.components.InternalTsGridUI;
-import internal.ui.components.InternalUI;
 import java.awt.Dimension;
 import java.beans.Beans;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -134,8 +132,6 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
 
     private final TsSelectionBridge tsSelectionBridge;
 
-    private final InternalUI<JTsGrid> internalUI;
-
     public JTsGrid() {
         this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
         this.grid = HasGrid.of(this::firePropertyChange);
@@ -154,8 +150,7 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
         this.tsSelectionBridge = new TsSelectionBridge(this::firePropertyChange);
         tsSelectionBridge.register(this);
 
-        this.internalUI = new InternalTsGridUI();
-        internalUI.install(this);
+        ComponentBackend.getDefault().install(this);
 
         applyDesignTimeProperties();
     }

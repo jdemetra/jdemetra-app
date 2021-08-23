@@ -29,9 +29,7 @@ import demetra.ui.Config;
 import demetra.ui.ConfigEditor;
 import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
-import internal.ui.components.InternalTsChartUI;
 import internal.ui.components.InternalTsChartConfig;
-import internal.ui.components.InternalUI;
 import java.awt.Dimension;
 import java.beans.Beans;
 import java.util.Objects;
@@ -84,8 +82,6 @@ public final class JTsChart extends JComponent implements TimeSeriesComponent, P
 
     private final TsSelectionBridge tsSelectionBridge;
 
-    private final InternalUI<JTsChart> internalUI;
-
     public JTsChart() {
         this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
         this.tsAction = HasTsAction.of(this::firePropertyChange);
@@ -101,8 +97,7 @@ public final class JTsChart extends JComponent implements TimeSeriesComponent, P
         this.tsSelectionBridge = new TsSelectionBridge(this::firePropertyChange);
         tsSelectionBridge.register(this);
 
-        this.internalUI = new InternalTsChartUI();
-        internalUI.install(this);
+        ComponentBackend.getDefault().install(this);
 
         applyDesignTimeProperties();
     }

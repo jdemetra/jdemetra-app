@@ -4,6 +4,7 @@ import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.concurrent.ThreadPoolSize;
 import demetra.ui.concurrent.ThreadPriority;
+import demetra.ui.util.LazyGlobalService;
 import ec.util.chart.ColorScheme;
 import ec.util.various.swing.FontAwesome;
 import java.awt.Color;
@@ -23,11 +24,12 @@ import org.openide.util.Lookup;
 @GlobalService
 public final class DemetraOptions implements PropertyChangeSource, Persistable {
 
-    private static final DemetraOptions INSTANCE = new DemetraOptions();
-
     @NonNull
     public static DemetraOptions getDefault() {
-        return INSTANCE;
+        return LazyGlobalService.get(DemetraOptions.class, DemetraOptions::new);
+    }
+
+    private DemetraOptions() {
     }
 
     @lombok.experimental.Delegate(types = PropertyChangeSource.class)

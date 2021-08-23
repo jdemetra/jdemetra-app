@@ -18,6 +18,7 @@ package ec.nbdemetra.ui;
 
 import demetra.timeseries.TsMoniker;
 import demetra.ui.GlobalService;
+import demetra.ui.util.LazyGlobalService;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import java.beans.BeanInfo;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -33,11 +34,12 @@ import org.openide.util.ImageUtilities;
 @GlobalService
 public final class MonikerUI {
 
-    private static final MonikerUI INSTANCE = new MonikerUI();
-
     @NonNull
     public static MonikerUI getDefault() {
-        return INSTANCE;
+        return LazyGlobalService.get(MonikerUI.class, MonikerUI::new);
+    }
+
+    private MonikerUI() {
     }
 
     @Nullable

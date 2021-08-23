@@ -61,8 +61,25 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.jfree.data.xy.IntervalXYDataset;
 import demetra.ui.datatransfer.DataTransfer;
+import javax.swing.JComponent;
+import nbbrd.service.ServiceProvider;
+import demetra.ui.components.ComponentBackendSpi;
 
 public final class InternalTsChartUI implements InternalUI<JTsChart> {
+
+    @ServiceProvider
+    public static final class Factory implements ComponentBackendSpi {
+
+        @Override
+        public boolean handles(Class<? extends JComponent> type) {
+            return JTsChart.class.equals(type);
+        }
+
+        @Override
+        public void install(JComponent component) {
+            new InternalTsChartUI().install((JTsChart) component);
+        }
+    }
 
     private JTsChart target;
 

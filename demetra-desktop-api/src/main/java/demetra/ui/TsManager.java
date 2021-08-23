@@ -25,6 +25,7 @@ import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceFactory;
 import demetra.tsprovider.DataSourceListener;
 import demetra.tsprovider.DataSourceProvider;
+import demetra.ui.util.LazyGlobalService;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
 import java.io.Closeable;
@@ -50,11 +51,9 @@ import org.openide.util.WeakListeners;
 @GlobalService
 public final class TsManager implements DataSourceFactory, Closeable {
 
-    private static final TsManager INSTANCE = new TsManager();
-
     @NonNull
     public static TsManager getDefault() {
-        return INSTANCE;
+        return LazyGlobalService.get(TsManager.class, TsManager::new);
     }
 
     private final ConcurrentMap<String, TsProvider> providers;
@@ -63,7 +62,7 @@ public final class TsManager implements DataSourceFactory, Closeable {
     private final DataSourceListener listener;
     private final ExecutorService executor;
 
-    public TsManager() {
+    private TsManager() {
         this.providers = new ConcurrentHashMap<>();
         this.events = new ConcurrentLinkedQueue<>();
         this.updateListeners = new ArrayList<>();

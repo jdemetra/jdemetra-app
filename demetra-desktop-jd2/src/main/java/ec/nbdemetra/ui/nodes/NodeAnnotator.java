@@ -7,6 +7,7 @@ package ec.nbdemetra.ui.nodes;
 
 import demetra.ui.GlobalService;
 import demetra.ui.util.CollectionSupplier;
+import demetra.ui.util.LazyGlobalService;
 import java.awt.Image;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.nodes.Node;
@@ -18,11 +19,12 @@ import org.openide.nodes.Node;
 @GlobalService
 public final class NodeAnnotator {
 
-    private static final NodeAnnotator INSTANCE = new NodeAnnotator();
-
     @NonNull
     public static NodeAnnotator getDefault() {
-        return INSTANCE;
+        return LazyGlobalService.get(NodeAnnotator.class, NodeAnnotator::new);
+    }
+
+    private NodeAnnotator() {
     }
 
     private final CollectionSupplier<NodeAnnotatorSpi> providers = NodeAnnotatorSpiLoader::get;

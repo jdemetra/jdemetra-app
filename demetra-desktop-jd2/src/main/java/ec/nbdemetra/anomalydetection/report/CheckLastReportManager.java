@@ -18,6 +18,7 @@ package ec.nbdemetra.anomalydetection.report;
 
 import demetra.ui.GlobalService;
 import demetra.ui.util.CollectionSupplier;
+import demetra.ui.util.LazyGlobalService;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,19 +29,17 @@ import java.util.List;
 @GlobalService
 public final class CheckLastReportManager {
 
-    private static final CheckLastReportManager INSTANCE = new CheckLastReportManager();
- 
     public static CheckLastReportManager getDefault() {
-        return INSTANCE;
+        return LazyGlobalService.get(CheckLastReportManager.class, CheckLastReportManager::new);
     }
 
     private final CollectionSupplier<ICheckLastReportFactory> factories;
 
-    public CheckLastReportManager() {
+    private CheckLastReportManager() {
         factories = ICheckLastReportFactoryLoader::get;
     }
-    
-    public List<ICheckLastReportFactory> getFactories(){
+
+    public List<ICheckLastReportFactory> getFactories() {
         return new ArrayList<>(factories.get());
     }
 }

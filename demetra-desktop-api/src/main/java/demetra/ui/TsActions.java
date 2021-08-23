@@ -29,6 +29,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.util.Exceptions;
 import demetra.ui.util.CollectionSupplier;
+import demetra.ui.util.LazyGlobalService;
 
 /**
  *
@@ -37,11 +38,12 @@ import demetra.ui.util.CollectionSupplier;
 @GlobalService
 public final class TsActions {
 
-    private static final TsActions INSTANCE = new TsActions();
-
     @NonNull
     public static TsActions getDefault() {
-        return INSTANCE;
+        return LazyGlobalService.get(TsActions.class, TsActions::new);
+    }
+
+    private TsActions() {
     }
 
     public static final String NO_ACTION = "";

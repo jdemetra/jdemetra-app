@@ -51,12 +51,28 @@ import javax.swing.*;
 import org.jfree.data.xy.IntervalXYDataset;
 import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.jfreechart.TsXYDataset;
+import nbbrd.service.ServiceProvider;
+import demetra.ui.components.ComponentBackendSpi;
 
 /**
  *
  * @author Kristof Bayens
  */
 public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart> {
+
+    @ServiceProvider
+    public static final class Factory implements ComponentBackendSpi {
+
+        @Override
+        public boolean handles(Class<? extends JComponent> type) {
+            return JTsGrowthChart.class.equals(type);
+        }
+
+        @Override
+        public void install(JComponent component) {
+            new InternalTsGrowthChartUI().install((JTsGrowthChart) component);
+        }
+    }
 
     private JTsGrowthChart target;
 
