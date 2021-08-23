@@ -20,7 +20,7 @@ import demetra.ui.DemetraOptions;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.IProcResults;
 import ec.ui.chart.BasicXYDataset;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
 import ec.ui.view.JChartPanel;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.various.swing.FontAwesome;

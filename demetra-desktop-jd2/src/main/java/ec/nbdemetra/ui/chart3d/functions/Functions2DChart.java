@@ -27,7 +27,7 @@ import ec.tstoolkit.maths.realfunctions.IFunction;
 import ec.tstoolkit.maths.realfunctions.IFunctionInstance;
 import ec.tstoolkit.maths.realfunctions.IParametersDomain;
 import ec.ui.chart.BasicXYDataset;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
 import ec.ui.view.JChartPanel;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorScheme.KnownColor;

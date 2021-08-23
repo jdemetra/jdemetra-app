@@ -23,7 +23,7 @@ import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.stats.AutoCorrelations;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.tstoolkit.utilities.Jdk6;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
 import ec.ui.interfaces.IReadDataBlockView;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;

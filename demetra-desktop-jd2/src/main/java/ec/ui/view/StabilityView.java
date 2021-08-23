@@ -23,7 +23,7 @@ import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.ui.chart.BasicXYDataset;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.Charts;
 import java.awt.BasicStroke;

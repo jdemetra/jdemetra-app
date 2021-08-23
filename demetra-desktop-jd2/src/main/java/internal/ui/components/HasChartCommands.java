@@ -22,7 +22,7 @@ import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
 import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.components.TsSelectionBridge;
-import ec.nbdemetra.ui.MonikerUI;
+import demetra.ui.TsMonikerUI;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.tss.Ts;
 import ec.tstoolkit.timeseries.TsAggregationType;
@@ -204,7 +204,7 @@ public class HasChartCommands {
             c.getChart().setObsFormat(ObsFormat.of(null, "MMM", null));
             c.getChart().setTsUpdateMode(TsUpdateMode.None);
             c.getChart().setTsCollection(split(ts));
-            Icon icon = MonikerUI.getDefault().getIcon(TsConverter.toTsMoniker(ts.getMoniker()));
+            Icon icon = TsMonikerUI.getDefault().getIcon(TsConverter.toTsMoniker(ts.getMoniker()));
             c.setIcon(icon != null ? ImageUtilities.icon2Image(icon) : null);
             c.open();
             c.requestActive();

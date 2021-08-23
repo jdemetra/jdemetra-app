@@ -77,4 +77,11 @@ public class Config {
 
         void set(@NonNull Builder builder, @Nullable P value);
     }
+
+    public static @NonNull Config checkDomain(@NonNull Config config, @NonNull String domain) throws IllegalArgumentException {
+        if (!domain.equals(config.getDomain())) {
+            throw new IllegalArgumentException("Not produced here");
+        }
+        return config;
+    }
 }

@@ -22,7 +22,7 @@ import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.dstats.BoundaryType;
 import ec.tstoolkit.dstats.IContinuousDistribution;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
 import ec.ui.interfaces.IReadDataBlockView;
 import demetra.ui.components.parts.HasChart.LinesThickness;
 import demetra.ui.components.TimeSeriesComponent;

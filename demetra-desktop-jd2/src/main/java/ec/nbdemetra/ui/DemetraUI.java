@@ -179,9 +179,7 @@ public final class DemetraUI implements PropertyChangeSource, Persistable, Confi
 
     @Override
     public void setConfig(Config config) {
-        if (!DOMAIN.equals(config.getDomain())) {
-            throw new IllegalArgumentException("Not produced here");
-        }
+        Config.checkDomain(config, DOMAIN);
         setSpectralLastYears(SPECTRAL_LAST_YEARS_CONFIG.get(config::getParameter));
         setEstimationPolicyType(ESTIMATION_POLICY_TYPE_CONFIG.get(config::getParameter));
         setStabilityLength(STABILITY_LENGTH_CONFIG.get(config::getParameter));

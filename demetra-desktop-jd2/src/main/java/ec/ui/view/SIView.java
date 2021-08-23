@@ -28,7 +28,7 @@ import ec.tstoolkit.timeseries.simplets.TsDataBlock;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.chart.BasicXYDataset;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
 import demetra.ui.components.parts.HasChart.LinesThickness;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasTs;

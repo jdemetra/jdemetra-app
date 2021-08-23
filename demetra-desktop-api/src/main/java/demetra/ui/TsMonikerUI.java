@@ -14,17 +14,13 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui;
+package demetra.ui;
 
 import demetra.timeseries.TsMoniker;
-import demetra.ui.GlobalService;
 import demetra.ui.util.LazyGlobalService;
-import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import java.beans.BeanInfo;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.Icon;
-import org.openide.util.ImageUtilities;
 
 /**
  * TODO: improve this API
@@ -32,21 +28,20 @@ import org.openide.util.ImageUtilities;
  * @author Philippe Charles
  */
 @GlobalService
-public final class MonikerUI {
+public final class TsMonikerUI {
 
     @NonNull
-    public static MonikerUI getDefault() {
-        return LazyGlobalService.get(MonikerUI.class, MonikerUI::new);
+    public static TsMonikerUI getDefault() {
+        return LazyGlobalService.get(TsMonikerUI.class, TsMonikerUI::new);
     }
 
-    private MonikerUI() {
+    private TsMonikerUI() {
     }
 
     @Nullable
     public Icon getIcon(@NonNull TsMoniker moniker) {
-        return DataSourceProviderBuddySupport.getDefault()
-                .getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false)
-                .map(ImageUtilities::image2Icon)
+        return TsMonikerUISpiLoader.get()
+                .map(provider -> provider.getIconOrNull(moniker))
                 .orElse(null);
     }
 }

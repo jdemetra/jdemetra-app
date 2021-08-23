@@ -27,7 +27,7 @@ import ec.tstoolkit.data.DescriptiveStatistics;
 import demetra.ui.components.JTsGrid;
 import static demetra.ui.components.parts.HasObsFormat.OBS_FORMAT_PROPERTY;
 import demetra.ui.jfreechart.TsXYDataset;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
 import ec.ui.view.res.ResidualsView;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.ChartCommand;

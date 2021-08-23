@@ -7,7 +7,7 @@ package ec.ui.view;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.uihelper.ContinuousDisplayDomain;
 import ec.tstoolkit.uihelper.IContinuousInformationProvider;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
 import demetra.ui.components.parts.HasChart.LinesThickness;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;

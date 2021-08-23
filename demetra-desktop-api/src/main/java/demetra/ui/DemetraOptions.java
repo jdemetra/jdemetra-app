@@ -235,9 +235,7 @@ public final class DemetraOptions implements PropertyChangeSource, Persistable {
 
     @Override
     public void setConfig(Config config) {
-        if (!DOMAIN.equals(config.getDomain())) {
-            throw new IllegalArgumentException("Not produced here");
-        }
+        Config.checkDomain(config, DOMAIN);
         setColorSchemeName(COLOR_SCHEME_NAME_CONFIG.get(config::getParameter));
         setShowUnavailableTsProviders(SHOW_UNAVAILABLE_TS_PROVIDERS_CONFIG.get(config::getParameter));
         setShowTsProviderNodes(SHOW_TS_PROVIDER_NODES_CONFIG.get(config::getParameter));

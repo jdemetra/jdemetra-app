@@ -16,10 +16,12 @@
  */
 package ec.nbdemetra.ui.properties;
 
+import demetra.bridge.TsConverter;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
+import ec.tss.tsproviders.utils.OptionalTsData;
 import ec.util.chart.swing.Charts;
 import ec.util.various.swing.StandardSwingColor;
 import java.awt.Graphics;
@@ -76,7 +78,7 @@ public class TsDataValuesPropertyEditor extends PropertyEditorSupport {
                 singleValuePainter.paint(gfx);
                 break;
             default:
-                sparkLinePainter.getXYPlot().setDataset(TsCharts.newSparklineDataset(data));
+                sparkLinePainter.getXYPlot().setDataset(TsCharts.newSparklineDataset(TsConverter.toTsData(OptionalTsData.present(data))));
                 sparkLinePainter.draw((Graphics2D) gfx, box);
                 break;
         }

@@ -24,7 +24,7 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.tstoolkit.utilities.Jdk6;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
 import ec.ui.chart.TsXYDatasets;
 import demetra.ui.components.parts.HasChart.LinesThickness;
 import demetra.ui.components.parts.HasObsFormat;

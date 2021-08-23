@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.chart3d.functions;
 
-import demetra.ui.components.ExceptionPanel;
+import demetra.ui.components.JExceptionPanel;
 import ec.nbdemetra.ui.chart3d.JSurfacePanel;
 import ec.nbdemetra.ui.chart3d.SurfaceModel;
 import ec.nbdemetra.ui.chart3d.SurfaceModel.PlotType;
@@ -161,7 +161,7 @@ public class SurfacePlotterView extends JPanel {
                     add(config, BorderLayout.NORTH);
             }
         } catch (IllegalArgumentException e) {
-            add(ExceptionPanel.create(e), BorderLayout.CENTER);
+            add(JExceptionPanel.create(e), BorderLayout.CENTER);
         }
     }
 

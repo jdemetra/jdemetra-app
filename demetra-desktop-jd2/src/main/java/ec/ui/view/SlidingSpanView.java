@@ -16,7 +16,7 @@ import ec.tstoolkit.timeseries.analysis.DiagnosticInfo;
 import ec.tstoolkit.timeseries.analysis.SlidingSpans;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.chart.TsXYDatasets;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
 import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.tsproviders.utils.OptionalTsData;
 import ec.ui.Disposables;

@@ -6,7 +6,7 @@ package ec.ui.view;
 
 import ec.tstoolkit.utilities.Arrays2;
 import demetra.ui.util.NbComponents;
-import demetra.ui.components.ExceptionPanel;
+import demetra.ui.components.JExceptionPanel;
 import ec.nbdemetra.ui.nodes.DecoratedNode;
 import ec.nbdemetra.ui.nodes.IdNodes;
 import ec.ui.interfaces.IDisposable;
@@ -130,7 +130,7 @@ public abstract class AbstractDocumentViewer<D extends IProcDocument> extends JC
         try {
             newView = id != null ? m_procView.getView(id) : emptyView;
         } catch (RuntimeException ex) {
-            newView = ExceptionPanel.create(ex);
+            newView = JExceptionPanel.create(ex);
         }
 
         int sep = splitter.getDividerLocation();

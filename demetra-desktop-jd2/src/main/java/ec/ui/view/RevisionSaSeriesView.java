@@ -33,7 +33,7 @@ import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.AHtmlView;
 import ec.ui.chart.ChartPopup;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
 import ec.ui.html.JHtmlView;
 import ec.util.chart.ColorScheme;
 import java.awt.BorderLayout;

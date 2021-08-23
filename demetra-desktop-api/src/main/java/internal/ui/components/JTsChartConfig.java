@@ -16,7 +16,6 @@
  */
 package internal.ui.components;
 
-import com.google.common.base.Preconditions;
 import demetra.ui.components.parts.HasChart;
 import demetra.ui.beans.BeanHandler;
 import demetra.ui.Config;
@@ -39,7 +38,8 @@ import demetra.ui.beans.BeanConfigurator;
  *
  * @author Philippe Charles
  */
-public final class InternalTsChartConfig {
+@Deprecated
+public final class JTsChartConfig {
 
     public boolean legendVisible = true;
     public boolean titleVisible = true;
@@ -59,14 +59,14 @@ public final class InternalTsChartConfig {
                 .orElse(null);
     }
 
-    public static final BeanConfigurator<InternalTsChartConfig, JTsChart> CONFIGURATOR = new BeanConfigurator<>(new TsChartConfigHandler(), new TsChartConfigConverter(), new TsChartConfigEditor());
+    public static final BeanConfigurator<JTsChartConfig, JTsChart> CONFIGURATOR = new BeanConfigurator<>(new TsChartConfigHandler(), new TsChartConfigConverter(), new TsChartConfigEditor());
 
-    private static final class TsChartConfigHandler implements BeanHandler<InternalTsChartConfig, JTsChart> {
+    private static final class TsChartConfigHandler implements BeanHandler<JTsChartConfig, JTsChart> {
 
         @Override
-        public InternalTsChartConfig loadBean(JTsChart r) {
+        public JTsChartConfig loadBean(JTsChart r) {
             ColorScheme colorScheme = r.getColorScheme();
-            InternalTsChartConfig result = new InternalTsChartConfig();
+            JTsChartConfig result = new JTsChartConfig();
             result.legendVisible = r.isLegendVisible();
             result.titleVisible = r.isTitleVisible();
             result.axisVisible = r.isAxisVisible();
@@ -78,7 +78,7 @@ public final class InternalTsChartConfig {
         }
 
         @Override
-        public void storeBean(JTsChart resource, InternalTsChartConfig bean) {
+        public void storeBean(JTsChart resource, JTsChartConfig bean) {
             resource.setLegendVisible(bean.legendVisible);
             resource.setTitleVisible(bean.titleVisible);
             resource.setAxisVisible(bean.axisVisible);
@@ -111,7 +111,7 @@ public final class InternalTsChartConfig {
         }
     }
 
-    private static final class TsChartConfigConverter implements Converter<InternalTsChartConfig, Config> {
+    private static final class TsChartConfigConverter implements Converter<JTsChartConfig, Config> {
 
         private static final String DOMAIN = "ec.ui.chart.JTsChart", NAME = "", VERSION = "";
         private static final BooleanProperty LEGEND_VISIBLE = BooleanProperty.of("legendVisible", true);
@@ -123,7 +123,7 @@ public final class InternalTsChartConfig {
         private static final Property<double[]> ZOOM = Property.of("zoom", new double[0], Parser.onDoubleArray(), Formatter.onDoubleArray());
 
         @Override
-        public Config doForward(InternalTsChartConfig a) {
+        public Config doForward(JTsChartConfig a) {
             Config.Builder b = Config.builder(DOMAIN, NAME, VERSION);
             LEGEND_VISIBLE.set(b::parameter, a.legendVisible);
             TITLE_VISIBLE.set(b::parameter, a.titleVisible);
@@ -136,9 +136,9 @@ public final class InternalTsChartConfig {
         }
 
         @Override
-        public InternalTsChartConfig doBackward(Config config) {
-            Preconditions.checkArgument(DOMAIN.equals(config.getDomain()), "Not produced here");
-            InternalTsChartConfig result = new InternalTsChartConfig();
+        public JTsChartConfig doBackward(Config config) {
+            Config.checkDomain(config, DOMAIN);
+            JTsChartConfig result = new JTsChartConfig();
             result.legendVisible = LEGEND_VISIBLE.get(config::getParameter);
             result.titleVisible = TITLE_VISIBLE.get(config::getParameter);
             result.axisVisible = AXIS_VISIBLE.get(config::getParameter);

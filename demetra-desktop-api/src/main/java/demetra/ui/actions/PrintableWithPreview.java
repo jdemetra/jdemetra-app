@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.ui.components;
+package demetra.ui.actions;
 
 import java.util.Optional;
 import java.util.function.Supplier;

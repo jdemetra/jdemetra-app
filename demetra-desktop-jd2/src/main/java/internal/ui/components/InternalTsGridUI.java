@@ -26,7 +26,7 @@ import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsCollection;
-import ec.nbdemetra.ui.MonikerUI;
+import demetra.ui.TsMonikerUI;
 import ec.nbdemetra.ui.ThemeSupport;
 import demetra.ui.util.ActionMaps;
 import demetra.ui.util.InputMaps;
@@ -695,11 +695,11 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
     private static final class ComboCellRenderer extends DefaultListCellRenderer {
 
-        private final MonikerUI monikerUI;
+        private final TsMonikerUI monikerUI;
         private final SwingColorSchemeSupport colorSchemeSupport;
 
         public ComboCellRenderer(@Nullable SwingColorSchemeSupport colorSchemeSupport) {
-            this.monikerUI = MonikerUI.getDefault();
+            this.monikerUI = TsMonikerUI.getDefault();
             this.colorSchemeSupport = colorSchemeSupport;
         }
 

@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui.nodes;
 
 import demetra.ui.util.NbComponents;
-import demetra.ui.components.ExceptionPanel;
+import demetra.ui.components.JExceptionPanel;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Image;
@@ -106,14 +106,14 @@ public class ExceptionNode extends AbstractNode {
                 c.setName(name);
                 c.setDisplayName(exception.getClass().getSimpleName());
                 c.setLayout(new BorderLayout());
-                c.add(ExceptionPanel.create(exception), BorderLayout.CENTER);
+                c.add(JExceptionPanel.create(exception), BorderLayout.CENTER);
                 c.open();
             }
             c.requestActive();
         }
 
         private static void showDialog(Exception exception) {
-            ExceptionPanel p = ExceptionPanel.create(exception);
+            JExceptionPanel p = JExceptionPanel.create(exception);
             DialogDisplayer.getDefault().notify(p.createDialogDescriptor(exception.getClass().getSimpleName()));
         }
 

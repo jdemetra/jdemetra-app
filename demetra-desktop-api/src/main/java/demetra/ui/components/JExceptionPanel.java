@@ -45,22 +45,25 @@ import org.openide.util.Utilities;
  *
  * @author Philippe Charles
  */
-public final class ExceptionPanel extends JComponent implements IDialogDescriptorProvider {
+public final class JExceptionPanel extends JComponent implements IDialogDescriptorProvider {
 
     // METHOD FACTORIES
-    public static ExceptionPanel create(Exception ex) {
-        ExceptionPanel result = new ExceptionPanel();
+    public static JExceptionPanel create(Exception ex) {
+        JExceptionPanel result = new JExceptionPanel();
         result.setException(ex);
         return result;
     }
+    
     // PROPERTIES DEFINITIONS
     public static final String EXCEPTION_PROPERTY = "exception";
+    
     // PROPERTIES
     protected Exception exception;
+    
     // VISUAL COMPONENTS
     private final JEditorPane editorPane;
 
-    public ExceptionPanel() {
+    public JExceptionPanel() {
         this.editorPane = new JEditorPane();
         HTMLEditorKit editor = new HTMLEditorKit();
         editor.setStyleSheet(createStyleSheet());

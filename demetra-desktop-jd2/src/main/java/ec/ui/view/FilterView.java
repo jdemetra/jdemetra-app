@@ -7,7 +7,7 @@ package ec.ui.view;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.uihelper.DiscreteDisplayDomain;
 import ec.tstoolkit.uihelper.IDiscreteInformationProvider;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.ext.MatrixChartCommand;
 import java.awt.Color;

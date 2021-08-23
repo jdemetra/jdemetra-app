@@ -34,7 +34,6 @@ import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import demetra.ui.components.JTsTable;
 import demetra.ui.components.TimeSeriesComponent;
-import ec.tss.TsIdentifier;
 import ec.util.table.swing.JTables;
 import ec.util.various.swing.JCommand;
 import demetra.ui.components.TsSelectionBridge;
@@ -65,6 +64,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
 import demetra.ui.components.TmpHasTsCollection;
+import demetra.ui.components.TsIdentifier;
 import demetra.ui.datatransfer.DataTransfer;
 import java.util.function.Predicate;
 
@@ -376,7 +376,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     private final JTsTable.Column seriesColumn = JTsTable.Column.builder()
             .name("<html><center>&nbsp;<br>Series Name<br>&nbsp;")
             .type(Ts.class)
-            .mapper(ts -> getAnomaly(ts).map(AnomalyItem::getTs).map(TsIdentifier::new).orElse(null))
+            .mapper(ts -> getAnomaly(ts).map(AnomalyItem::getTs).map(TsConverter::toTs).map(TsIdentifier::of).orElse(null))
             .comparator(TS_COMP)
             .comparator(JTsTable.Column.TS_IDENTIFIER.getComparator())
             .renderer(o -> new Decorator(JTsTable.Column.TS_IDENTIFIER.getRenderer().apply(o)))

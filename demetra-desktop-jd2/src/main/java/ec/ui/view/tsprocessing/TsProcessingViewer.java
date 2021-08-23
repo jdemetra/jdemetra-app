@@ -6,7 +6,7 @@ package ec.ui.view.tsprocessing;
 
 import com.google.common.base.Strings;
 import demetra.bridge.TsConverter;
-import ec.nbdemetra.ui.MonikerUI;
+import demetra.ui.TsMonikerUI;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
 import ec.tss.documents.TsDocument;
@@ -73,7 +73,7 @@ public class TsProcessingViewer extends DefaultProcessingViewer<TsDocument> {
             tsLabel.setText(MultiLineNameUtil.lastWithMax(displayName, 70));
             tsLabel.setToolTipText(!Strings.isNullOrEmpty(displayName) ? MultiLineNameUtil.toHtml(displayName) : null);
             TsMoniker moniker = doc.getMoniker();
-            tsLabel.setIcon(MonikerUI.getDefault().getIcon(TsConverter.toTsMoniker(moniker)));
+            tsLabel.setIcon(TsMonikerUI.getDefault().getIcon(TsConverter.toTsMoniker(moniker)));
             tsLabel.setVisible(true);
             IProcSpecification spec = doc.getSpecification();
             specLabel.setText("Spec: " + (spec != null ? spec.toString() : ""));

@@ -3,7 +3,7 @@ package ec.ui.view.tsprocessing;
 import ec.nbdemetra.ui.DocumentUIServices;
 import ec.nbdemetra.ui.DocumentUIServices.UIFactory;
 import demetra.ui.util.NbComponents;
-import demetra.ui.components.ExceptionPanel;
+import demetra.ui.components.JExceptionPanel;
 import ec.nbdemetra.ui.nodes.DecoratedNode;
 import ec.nbdemetra.ui.nodes.IdNodes;
 import ec.tstoolkit.algorithm.IActiveProcDocument;
@@ -356,7 +356,7 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
         try {
             newView = id == null ? emptyView : m_procView.getView(id);
         } catch (RuntimeException ex) {
-            newView = ExceptionPanel.create(ex);
+            newView = JExceptionPanel.create(ex);
         }
 
         int sep = splitter.getDividerLocation();

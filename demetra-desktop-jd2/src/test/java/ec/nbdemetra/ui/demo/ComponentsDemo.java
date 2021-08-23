@@ -21,7 +21,7 @@ import demetra.ui.TsActions;
 import demetra.ui.TsManager;
 import demetra.ui.components.JTsTable;
 import demetra.ui.util.NbComponents;
-import demetra.ui.components.ExceptionPanel;
+import demetra.ui.components.JExceptionPanel;
 import ec.tstoolkit.utilities.Id;
 import demetra.ui.components.JTsTable.Column;
 import ec.ui.view.tsprocessing.IdsTree;
@@ -136,14 +136,14 @@ public final class ComponentsDemo {
         try {
             return factory.call();
         } catch (Exception ex) {
-            ExceptionPanel panel = new ExceptionPanel();
+            JExceptionPanel panel = new JExceptionPanel();
             panel.setException(ex);
             return panel;
         }
     }
 
     private static Component configure(Component c) {
-        if (c instanceof ExceptionPanel || c instanceof ReflectComponent) {
+        if (c instanceof JExceptionPanel || c instanceof ReflectComponent) {
             return c;
         }
         JToolBar toolBar = NbComponents.newInnerToolbar();
@@ -179,7 +179,7 @@ public final class ComponentsDemo {
                 if (id != null) {
                     Component c = demoData.get(id);
                     if (c != null) {
-                        result.setText((c instanceof ExceptionPanel ? "[!] " : "") + id.tail());
+                        result.setText((c instanceof JExceptionPanel ? "[!] " : "") + id.tail());
                     } else {
                         result.setText(id.tail());
                     }

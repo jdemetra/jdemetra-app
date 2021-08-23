@@ -38,7 +38,7 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import ec.ui.chart.TsSparklineCellRenderer;
+import demetra.ui.jfreechart.TsSparklineCellRenderer;
 import ec.util.chart.swing.Charts;
 import ec.util.grid.swing.XTable;
 import ec.util.various.swing.JCommand;

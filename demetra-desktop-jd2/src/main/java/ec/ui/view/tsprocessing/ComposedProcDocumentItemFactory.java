@@ -17,7 +17,7 @@
 package ec.ui.view.tsprocessing;
 
 import com.google.common.base.Preconditions;
-import demetra.ui.components.ExceptionPanel;
+import demetra.ui.components.JExceptionPanel;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.InformationExtractor;
@@ -119,7 +119,7 @@ public abstract class ComposedProcDocumentItemFactory<D extends IProcDocument, I
                         switchToComponent(itemUI.getView(host, get()));
                     } catch (InterruptedException | ExecutionException ex) {
                         Thread.currentThread().interrupt();
-                        switchToComponent(ExceptionPanel.create(ex));
+                        switchToComponent(JExceptionPanel.create(ex));
                     }
                 }
             }.execute();

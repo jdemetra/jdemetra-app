@@ -1,9 +1,7 @@
-package ec.ui.chart;
+package demetra.ui.jfreechart;
 
-import demetra.bridge.TsConverter;
-import ec.tstoolkit.timeseries.simplets.TsData;
+import demetra.timeseries.TsData;
 import demetra.ui.components.parts.HasChart.LinesThickness;
-import ec.tss.tsproviders.utils.OptionalTsData;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -46,10 +44,6 @@ public final class TsCharts {
     }
 
     public static XYDataset newSparklineDataset(TsData data) {
-        return new TsDataAsXYDataset(TsConverter.toTsData(OptionalTsData.present(data)));
-    }
-
-    public static XYDataset newSparklineDataset(demetra.timeseries.TsData data) {
         return new TsDataAsXYDataset(data);
     }
 

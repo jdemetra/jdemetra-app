@@ -27,7 +27,7 @@ import ec.tss.TsInformationType;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.data.Periodogram;
 import ec.tstoolkit.data.Values;
-import ec.ui.chart.TsCharts;
+import demetra.ui.jfreechart.TsCharts;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;

@@ -2,11 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.ui.chart;
+package demetra.ui.jfreechart;
 
-import ec.tss.Ts;
-import ec.tss.TsStatus;
-import ec.tstoolkit.timeseries.simplets.TsData;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsData;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.SparklineCellRenderer;
 import org.jfree.data.time.TimeSeries;
@@ -17,7 +16,7 @@ import org.jfree.data.xy.XYDataset;
  * @see Charts#createSparkLineChart(org.jfree.data.xy.XYDataset)
  * @author Philippe Charles
  */
-public class TsSparklineCellRenderer extends SparklineCellRenderer {
+public final class TsSparklineCellRenderer extends SparklineCellRenderer {
 
     @Override
     protected XYDataset getDataset(Object value) {
@@ -28,8 +27,7 @@ public class TsSparklineCellRenderer extends SparklineCellRenderer {
             return TsCharts.newSparklineDataset((TsData) value);
         }
         if (value instanceof Ts) {
-            Ts ts = (Ts) value;
-            return ts.hasData().equals(TsStatus.Valid) ? TsCharts.newSparklineDataset(ts.getTsData()) : null;
+            return TsCharts.newSparklineDataset(((Ts) value).getData());
         }
         if (value instanceof demetra.timeseries.TsData) {
             return TsCharts.newSparklineDataset((demetra.timeseries.TsData) value);

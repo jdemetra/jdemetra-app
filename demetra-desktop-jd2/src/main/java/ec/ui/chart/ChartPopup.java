@@ -16,6 +16,7 @@
  */
 package ec.ui.chart;
 
+import demetra.ui.jfreechart.TsCharts;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import java.awt.BorderLayout;
 import java.awt.Dimension;

@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.sa;
 
+import demetra.ui.TsMonikerUI;
 import demetra.ui.util.NbComponents;
 import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
@@ -849,7 +850,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     static class SeriesRenderer extends SimpleRenderer<SaItem> {
 
-        final MonikerUI monikerUI = MonikerUI.getDefault();
+        final TsMonikerUI monikerUI = TsMonikerUI.getDefault();
 
         @Override
         protected String getText(SaItem item) {

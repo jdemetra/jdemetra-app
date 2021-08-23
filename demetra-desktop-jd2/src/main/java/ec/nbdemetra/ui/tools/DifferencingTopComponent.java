@@ -12,7 +12,7 @@ import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
-import ec.nbdemetra.ui.MonikerUI;
+import demetra.ui.TsMonikerUI;
 import demetra.ui.util.NbComponents;
 import ec.tstoolkit.stats.AutoCorrelations;
 import ec.tstoolkit.timeseries.simplets.TsData;
@@ -133,7 +133,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
             dropDataLabel.setVisible(false);
             tsLabel.setText(ts_.getName());
             demetra.timeseries.TsMoniker moniker = ts_.getMoniker();
-            tsLabel.setIcon(MonikerUI.getDefault().getIcon(moniker));
+            tsLabel.setIcon(TsMonikerUI.getDefault().getIcon(moniker));
             tsLabel.setToolTipText(tsLabel.getText() + (moniker.getSource() != null ? (" (" + moniker.getSource() + ")") : ""));
             tsLabel.setVisible(true);
         }

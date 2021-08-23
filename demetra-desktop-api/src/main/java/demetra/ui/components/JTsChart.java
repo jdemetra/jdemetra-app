@@ -22,14 +22,16 @@ import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.components.parts.HasChart;
 import demetra.ui.components.parts.HasHoveredObs;
 import demetra.ui.components.parts.HasColorScheme;
-import demetra.demo.DemoTsBuilder;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.Config;
 import demetra.ui.ConfigEditor;
 import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
-import internal.ui.components.InternalTsChartConfig;
+import demetra.ui.actions.PrintableWithPreview;
+import demetra.ui.actions.ResetableZoom;
+import internal.ui.components.DemoTsBuilder;
+import internal.ui.components.JTsChartConfig;
 import java.awt.Dimension;
 import java.beans.Beans;
 import java.util.Objects;
@@ -125,17 +127,17 @@ public final class JTsChart extends JComponent implements TimeSeriesComponent, P
 
     @Override
     public Config getConfig() {
-        return InternalTsChartConfig.CONFIGURATOR.getConfig(this);
+        return JTsChartConfig.CONFIGURATOR.getConfig(this);
     }
 
     @Override
     public void setConfig(Config config) {
-        InternalTsChartConfig.CONFIGURATOR.setConfig(this, config);
+        JTsChartConfig.CONFIGURATOR.setConfig(this, config);
     }
 
     @Override
     public Config editConfig(Config config) {
-        return InternalTsChartConfig.CONFIGURATOR.editConfig(config);
+        return JTsChartConfig.CONFIGURATOR.editConfig(config);
     }
 
     @Override

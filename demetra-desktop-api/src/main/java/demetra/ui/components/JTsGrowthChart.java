@@ -16,12 +16,13 @@
  */
 package demetra.ui.components;
 
+import demetra.ui.actions.PrintableWithPreview;
+import demetra.ui.actions.ResetableZoom;
 import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsAction;
 import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.components.parts.HasChart;
 import demetra.ui.components.parts.HasColorScheme;
-import demetra.demo.DemoTsBuilder;
 import demetra.timeseries.TimeSelector;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
@@ -31,6 +32,7 @@ import demetra.timeseries.TsDomain;
 import demetra.ui.DemetraOptions;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
+import internal.ui.components.DemoTsBuilder;
 import java.awt.Dimension;
 import java.beans.Beans;
 import java.time.LocalDate;

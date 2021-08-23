@@ -19,26 +19,33 @@ package demetra.ui.components;
 import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsAction;
 import demetra.ui.components.parts.HasTsCollection;
-import demetra.bridge.TsConverter;
-import demetra.demo.DemoTsBuilder;
+import demetra.timeseries.TsData;
+import demetra.tsprovider.util.MultiLineNameUtil;
+import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
-import ec.tss.TsIdentifier;
-import ec.tstoolkit.utilities.Arrays2;
+import demetra.ui.TsMonikerUI;
+import demetra.ui.jfreechart.TsSparklineCellRenderer;
 import ec.util.table.swing.JTables;
-import internal.ui.components.TsIdentifierTableCellRenderer;
-import internal.ui.components.TsDataTableCellRenderer;
+import ec.util.various.swing.StandardSwingColor;
+import internal.ui.components.DemoTsBuilder;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.beans.Beans;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import nbbrd.io.text.Formatter;
 
 /**
  *
@@ -63,7 +70,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
                 .type(demetra.timeseries.TsUnit.class)
                 .mapper(ts -> ts.getData().getTsUnit())
                 .comparator(Comparator.comparing(demetra.timeseries.TsUnit::toString))
-                .renderer(o -> JTables.cellRendererOf(JTsTable::renderTsUnit))
+                .renderer(table -> JTables.cellRendererOf(JTsTable::renderTsUnit))
                 .build();
 
         public static final Column START = builder()
@@ -71,7 +78,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
                 .type(demetra.timeseries.TsPeriod.class)
                 .mapper(ts -> ts.getData().isEmpty() ? null : ts.getData().getDomain().getStartPeriod())
                 .comparator(Comparator.comparing(demetra.timeseries.TsPeriod::start))
-                .renderer(o -> JTables.cellRendererOf(JTsTable::renderTsPeriod))
+                .renderer(table -> JTables.cellRendererOf(JTsTable::renderTsPeriod))
                 .build();
 
         public static final Column LAST = builder()
@@ -79,14 +86,14 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
                 .type(demetra.timeseries.TsPeriod.class)
                 .mapper(ts -> ts.getData().isEmpty() ? null : ts.getData().getDomain().getLastPeriod())
                 .comparator(Comparator.comparing(demetra.timeseries.TsPeriod::end))
-                .renderer(o -> JTables.cellRendererOf(JTsTable::renderTsPeriod))
+                .renderer(table -> JTables.cellRendererOf(JTsTable::renderTsPeriod))
                 .build();
 
         public static final Column LENGTH = builder()
                 .name("Length")
                 .type(Integer.class)
                 .mapper(ts -> ts.getData().length())
-                .renderer(o -> JTables.cellRendererOf(JTsTable::renderTsLength))
+                .renderer(table -> JTables.cellRendererOf(JTsTable::renderTsLength))
                 .build();
 
         public static final Column DATA = builder()
@@ -94,15 +101,15 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
                 .type(demetra.timeseries.TsData.class)
                 .mapper(demetra.timeseries.Ts::getData)
                 .comparator((l, r) -> -1)
-                .renderer(o -> new TsDataTableCellRenderer(o, DemetraOptions.getDefault()))
+                .renderer(table -> new TsDataTableCellRenderer(table, DemetraOptions.getDefault()))
                 .build();
 
         public static final Column TS_IDENTIFIER = builder()
                 .name("TsIdentifier")
                 .type(TsIdentifier.class)
-                .mapper(ts -> new TsIdentifier(ts.getName(), TsConverter.fromTsMoniker(ts.getMoniker())))
+                .mapper(TsIdentifier::of)
                 .comparator(Comparator.comparing(TsIdentifier::getName))
-                .renderer(o -> new TsIdentifierTableCellRenderer())
+                .renderer(table -> new TsIdentifierTableCellRenderer())
                 .build();
 
         @lombok.NonNull
@@ -131,7 +138,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
 
     // DEFAULT PROPERTIES
     private static final boolean DEFAULT_SHOW_HEADER = true;
-    private static final List<Column> DEFAULT_COLUMNS = Arrays2.unmodifiableList(Column.TS_IDENTIFIER, Column.START, Column.LAST, Column.LENGTH, Column.DATA);
+    private static final List<Column> DEFAULT_COLUMNS = Collections.unmodifiableList(Arrays.asList(Column.TS_IDENTIFIER, Column.START, Column.LAST, Column.LENGTH, Column.DATA));
 
     // PROPERTIES
     private boolean showHeader;
@@ -216,5 +223,95 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
     private static void renderTsLength(JLabel label, Integer value) {
         label.setHorizontalAlignment(JLabel.TRAILING);
         label.setText(value != null ? value.toString() : null);
+    }
+
+    private static final class TsIdentifierTableCellRenderer extends DefaultTableCellRenderer {
+
+        private final TsMonikerUI monikerUI = TsMonikerUI.getDefault();
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (value instanceof TsIdentifier) {
+                TsIdentifier id = (TsIdentifier) value;
+                String text = id.getName();
+                if (text.isEmpty()) {
+                    result.setText(" ");
+                    result.setToolTipText(null);
+                } else if (text.startsWith("<html>")) {
+                    result.setText(text);
+                    result.setToolTipText(text);
+                } else {
+                    result.setText(MultiLineNameUtil.join(text));
+                    result.setToolTipText(MultiLineNameUtil.toHtml(text));
+                }
+                result.setIcon(monikerUI.getIcon(id.getMoniker()));
+            }
+            return result;
+        }
+    }
+
+    private static final class TsDataTableCellRenderer implements TableCellRenderer {
+
+        private final HasObsFormat target;
+        private final DemetraOptions demetraUI;
+        private final TsSparklineCellRenderer dataRenderer;
+        private final DefaultTableCellRenderer labelRenderer;
+
+        private ObsFormat currentFormat;
+        private Formatter<Number> currentFormatter;
+
+        public TsDataTableCellRenderer(HasObsFormat target, DemetraOptions demetraUI) {
+            this.target = target;
+            this.demetraUI = demetraUI;
+            this.dataRenderer = new TsSparklineCellRenderer();
+            this.labelRenderer = new DefaultTableCellRenderer();
+            StandardSwingColor.TEXT_FIELD_INACTIVE_FOREGROUND.lookup().ifPresent(labelRenderer::setForeground);
+            labelRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+            this.currentFormat = null;
+            this.currentFormatter = null;
+        }
+
+        private ObsFormat lookupObsFormat() {
+            ObsFormat result = target.getObsFormat();
+            return result != null ? result : demetraUI.getObsFormat();
+        }
+
+        private String formatValue(Number o) {
+            ObsFormat x = lookupObsFormat();
+            if (!Objects.equals(x, currentFormat)) {
+                currentFormat = x;
+                currentFormatter = x.numberFormatter();
+            }
+            return currentFormatter.formatAsString(o);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            if (value instanceof TsData) {
+                TsData data = (TsData) value;
+                switch (data.length()) {
+                    case 0:
+                        String cause = data.getEmptyCause();
+                        return renderUsingLabel(table, cause.isEmpty() ? "loading? invalid?" : cause, isSelected, hasFocus, row, column);
+                    case 1:
+                        return renderUsingLabel(table, "Single: " + formatValue(data.getValue(0)), isSelected, hasFocus, row, column);
+                    default:
+                        return renderUsingSparkline(table, value, isSelected, hasFocus, row, column);
+                }
+            }
+            return renderUsingLabel(table, value, isSelected, hasFocus, row, column);
+        }
+
+        private Component renderUsingSparkline(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            return dataRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        }
+
+        private Component renderUsingLabel(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            labelRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            labelRenderer.setToolTipText(labelRenderer.getText());
+            return labelRenderer;
+        }
     }
 }
