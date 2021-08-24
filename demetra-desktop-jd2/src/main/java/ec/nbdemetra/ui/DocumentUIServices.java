@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui;
 
-import demetra.ui.GlobalService;
+import demetra.ui.design.GlobalService;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import demetra.ui.util.LazyGlobalService;
 import ec.nbdemetra.ui.properties.l2fprod.PropertiesPanelFactory;

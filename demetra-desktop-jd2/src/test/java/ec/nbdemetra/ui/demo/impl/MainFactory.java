@@ -24,12 +24,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import javax.swing.JPanel;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
+@DirectImpl
 @ServiceProvider
 public final class MainFactory implements DemoComponentFactory {
 

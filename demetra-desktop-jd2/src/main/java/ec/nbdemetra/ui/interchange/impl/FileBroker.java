@@ -37,6 +37,7 @@ import java.util.zip.GZIPOutputStream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.openide.filesystems.FileChooserBuilder;
 
@@ -44,6 +45,7 @@ import org.openide.filesystems.FileChooserBuilder;
  *
  * @author Philippe Charles
  */
+@DirectImpl
 @ServiceProvider
 public final class FileBroker implements InterchangeBroker {
 

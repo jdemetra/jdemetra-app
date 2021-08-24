@@ -38,8 +38,10 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 
+@DirectImpl
 @ServiceProvider
 public final class GridFactory implements DemoComponentFactory {
 

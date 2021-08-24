@@ -42,6 +42,7 @@ import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.openide.util.ImageUtilities;
 import org.openide.util.WeakListeners;
@@ -50,6 +51,7 @@ import org.openide.util.WeakListeners;
  *
  * @author Philippe Charles
  */
+@DirectImpl
 @ServiceProvider
 public final class ComponentHandler implements DemoComponentHandler {
 

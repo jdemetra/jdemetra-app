@@ -24,7 +24,7 @@ import demetra.timeseries.TsMoniker;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceProvider;
-import demetra.ui.GlobalService;
+import demetra.ui.design.GlobalService;
 import demetra.ui.actions.Configurable;
 import demetra.ui.util.CollectionSupplier;
 import internal.FrozenTsHelper;

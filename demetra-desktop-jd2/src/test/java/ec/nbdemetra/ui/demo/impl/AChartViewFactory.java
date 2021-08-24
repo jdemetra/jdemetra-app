@@ -28,12 +28,14 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
+@DirectImpl
 @ServiceProvider
 public final class AChartViewFactory implements DemoComponentFactory {
 

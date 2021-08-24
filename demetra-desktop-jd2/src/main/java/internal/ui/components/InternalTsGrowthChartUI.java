@@ -53,6 +53,7 @@ import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.jfreechart.TsXYDataset;
 import nbbrd.service.ServiceProvider;
 import demetra.ui.components.ComponentBackendSpi;
+import nbbrd.design.DirectImpl;
 
 /**
  *
@@ -60,6 +61,7 @@ import demetra.ui.components.ComponentBackendSpi;
  */
 public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart> {
 
+    @DirectImpl
     @ServiceProvider
     public static final class Factory implements ComponentBackendSpi {
 

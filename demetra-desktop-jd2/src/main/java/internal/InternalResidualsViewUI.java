@@ -56,6 +56,7 @@ import org.jfree.ui.RectangleInsets;
 import javax.swing.JComponent;
 import nbbrd.service.ServiceProvider;
 import internal.ui.components.InternalUI;
+import nbbrd.design.DirectImpl;
 
 /**
  *
@@ -63,12 +64,13 @@ import internal.ui.components.InternalUI;
  */
 public final class InternalResidualsViewUI implements InternalUI<ResidualsView> {
 
+    @DirectImpl
     @ServiceProvider
     public static final class Factory implements ComponentBackendSpi {
 
         @Override
         public boolean handles(Class<? extends JComponent> type) {
-        return ResidualsView.class.equals(type);
+            return ResidualsView.class.equals(type);
         }
 
         @Override

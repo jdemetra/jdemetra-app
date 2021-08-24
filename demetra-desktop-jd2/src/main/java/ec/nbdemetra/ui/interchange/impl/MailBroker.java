@@ -24,6 +24,7 @@ import ec.util.desktop.DesktopManager;
 import ec.util.desktop.MailtoBuilder;
 import java.io.IOException;
 import java.util.List;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -31,6 +32,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * @author Philippe Charles
  */
+@DirectImpl
 @ServiceProvider
 public final class MailBroker implements InterchangeBroker {
 

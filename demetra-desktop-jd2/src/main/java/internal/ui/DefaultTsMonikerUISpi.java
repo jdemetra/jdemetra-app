@@ -5,9 +5,11 @@ import demetra.ui.TsMonikerUISpi;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import java.beans.BeanInfo;
 import javax.swing.Icon;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.openide.util.ImageUtilities;
 
+@DirectImpl
 @ServiceProvider
 public final class DefaultTsMonikerUISpi implements TsMonikerUISpi {
 

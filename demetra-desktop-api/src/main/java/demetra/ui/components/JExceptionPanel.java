@@ -16,6 +16,7 @@
  */
 package demetra.ui.components;
 
+import demetra.ui.design.SwingComponent;
 import demetra.ui.util.IDialogDescriptorProvider;
 import demetra.ui.util.NbComponents;
 import static ec.util.chart.ColorSchemeSupport.toHex;
@@ -45,6 +46,7 @@ import org.openide.util.Utilities;
  *
  * @author Philippe Charles
  */
+@SwingComponent
 public final class JExceptionPanel extends JComponent implements IDialogDescriptorProvider {
 
     // METHOD FACTORIES

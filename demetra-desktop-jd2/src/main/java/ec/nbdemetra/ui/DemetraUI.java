@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui;
 
 import demetra.ui.Config;
-import demetra.ui.GlobalService;
+import demetra.ui.design.GlobalService;
 import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
 import demetra.ui.beans.PropertyChangeSource;

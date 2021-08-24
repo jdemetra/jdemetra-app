@@ -32,6 +32,7 @@ import demetra.timeseries.TsDomain;
 import demetra.ui.DemetraOptions;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
+import demetra.ui.design.SwingComponent;
 import internal.ui.components.DemoTsBuilder;
 import java.awt.Dimension;
 import java.beans.Beans;
@@ -44,6 +45,7 @@ import javax.swing.JComponent;
  *
  * @author Kristof Bayens
  */
+@SwingComponent
 public final class JTsGrowthChart extends JComponent implements TimeSeriesComponent, PropertyChangeSource,
         HasTsCollection, HasTsAction, HasChart, HasColorScheme, HasObsFormat,
         PrintableWithPreview, ResetableZoom {

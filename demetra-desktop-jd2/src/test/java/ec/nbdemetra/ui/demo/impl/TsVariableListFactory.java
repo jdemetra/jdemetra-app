@@ -24,8 +24,10 @@ import ec.ui.list.JTsVariableList;
 import java.awt.Component;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 
+@DirectImpl
 @ServiceProvider
 public final class TsVariableListFactory implements DemoComponentFactory {
 

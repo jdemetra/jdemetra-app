@@ -30,6 +30,7 @@ import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
 import demetra.ui.actions.PrintableWithPreview;
 import demetra.ui.actions.ResetableZoom;
+import demetra.ui.design.SwingComponent;
 import internal.ui.components.DemoTsBuilder;
 import internal.ui.components.JTsChartConfig;
 import java.awt.Dimension;
@@ -47,6 +48,7 @@ import javax.swing.ListSelectionModel;
  * @author Demortier Jeremy
  * @author Philippe Charles
  */
+@SwingComponent
 public final class JTsChart extends JComponent implements TimeSeriesComponent, PropertyChangeSource,
         HasTsCollection, HasTsAction, HasChart, HasColorScheme, HasObsFormat, HasHoveredObs,
         PrintableWithPreview, ResetableZoom, Configurable, Persistable, ConfigEditor {

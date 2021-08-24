@@ -5,7 +5,7 @@
  */
 package ec.nbdemetra.ui.nodes;
 
-import demetra.ui.GlobalService;
+import demetra.ui.design.GlobalService;
 import demetra.ui.util.CollectionSupplier;
 import demetra.ui.util.LazyGlobalService;
 import java.awt.Image;

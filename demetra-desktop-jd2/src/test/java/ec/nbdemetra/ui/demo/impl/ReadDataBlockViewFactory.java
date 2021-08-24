@@ -25,12 +25,14 @@ import ec.ui.view.DistributionView;
 import java.awt.Component;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
+@DirectImpl
 @ServiceProvider
 public final class ReadDataBlockViewFactory implements DemoComponentFactory {
 

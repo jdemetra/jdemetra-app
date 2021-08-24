@@ -16,13 +16,15 @@ import java.beans.IntrospectionException;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(DataSourceTransferHandler.class)
+@DirectImpl
+@ServiceProvider
 public final class FileTransferHandler implements DataSourceTransferHandler {
 
     @Override

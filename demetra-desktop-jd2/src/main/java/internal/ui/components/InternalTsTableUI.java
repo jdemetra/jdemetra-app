@@ -49,6 +49,7 @@ import org.netbeans.swing.etable.ETableColumnModel;
 import demetra.ui.datatransfer.DataTransfer;
 import nbbrd.service.ServiceProvider;
 import demetra.ui.components.ComponentBackendSpi;
+import nbbrd.design.DirectImpl;
 
 /**
  *
@@ -57,6 +58,7 @@ import demetra.ui.components.ComponentBackendSpi;
  */
 public final class InternalTsTableUI implements InternalUI<JTsTable> {
 
+    @DirectImpl
     @ServiceProvider
     public static final class Factory implements ComponentBackendSpi {
 

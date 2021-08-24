@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.sa;
 
-import demetra.ui.GlobalService;
+import demetra.ui.design.GlobalService;
 import demetra.ui.util.CollectionSupplier;
 import demetra.ui.util.LazyGlobalService;
 import java.util.ArrayList;

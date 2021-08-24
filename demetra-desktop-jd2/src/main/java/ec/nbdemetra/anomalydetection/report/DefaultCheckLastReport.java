@@ -27,6 +27,7 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JTextPane;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
@@ -38,6 +39,7 @@ import org.openide.util.Exceptions;
  *
  * @author Mats Maggi
  */
+@DirectImpl
 @ServiceProvider
 public final class DefaultCheckLastReport implements ICheckLastReportFactory {
 

@@ -24,6 +24,7 @@ import demetra.ui.components.parts.HasHoveredObs;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
+import demetra.ui.design.SwingComponent;
 import internal.ui.components.DemoTsBuilder;
 import java.awt.Dimension;
 import java.beans.Beans;
@@ -40,6 +41,7 @@ import javax.swing.table.TableCellRenderer;
  * @author Philippe Charles
  * @author Mats Maggi
  */
+@SwingComponent
 public final class JTsGrid extends JComponent implements TimeSeriesComponent, PropertyChangeSource,
         HasTsCollection, HasTsAction, HasGrid, HasColorScheme, HasObsFormat, HasHoveredObs {
 

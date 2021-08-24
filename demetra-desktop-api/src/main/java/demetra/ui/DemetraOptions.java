@@ -1,5 +1,6 @@
 package demetra.ui;
 
+import demetra.ui.design.GlobalService;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.concurrent.ThreadPoolSize;

@@ -22,7 +22,7 @@ import demetra.timeseries.TsData;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
-import demetra.ui.GlobalService;
+import demetra.ui.design.GlobalService;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.util.Table;
 import ec.util.various.swing.OnEDT;

@@ -32,8 +32,10 @@ import java.util.concurrent.Callable;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 
+@DirectImpl
 @ServiceProvider
 public final class Grid2Factory implements DemoComponentFactory {
 

@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import javax.swing.JTextPane;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
@@ -42,8 +43,9 @@ import org.openide.util.Exceptions;
  *
  * @author Jean Palate
  */
-@ServiceProvider(ISaReportFactory.class)
-public class DefaultSaReportFactory implements ISaReportFactory {
+@DirectImpl
+@ServiceProvider
+public final class DefaultSaReportFactory implements ISaReportFactory {
 
     public static final String NAME = "Default Text Report";
     private static final String NL = "\r\n", NL2 = "\r\n\r\n";

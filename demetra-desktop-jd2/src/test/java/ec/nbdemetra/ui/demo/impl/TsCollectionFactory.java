@@ -33,12 +33,14 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import static javax.swing.SwingConstants.TRAILING;
 import javax.swing.table.TableCellRenderer;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
+@DirectImpl
 @ServiceProvider
 public final class TsCollectionFactory implements DemoComponentFactory {
 

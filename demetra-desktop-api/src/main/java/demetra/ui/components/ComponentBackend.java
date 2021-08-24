@@ -16,7 +16,7 @@
  */
 package demetra.ui.components;
 
-import demetra.ui.GlobalService;
+import demetra.ui.design.GlobalService;
 import demetra.ui.util.CollectionSupplier;
 import demetra.ui.util.LazyGlobalService;
 import java.util.Objects;

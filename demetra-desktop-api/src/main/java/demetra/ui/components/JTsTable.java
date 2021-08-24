@@ -26,6 +26,7 @@ import demetra.ui.DemetraOptions;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.TsMonikerUI;
+import demetra.ui.design.SwingComponent;
 import demetra.ui.jfreechart.TsSparklineCellRenderer;
 import ec.util.table.swing.JTables;
 import ec.util.various.swing.StandardSwingColor;
@@ -52,6 +53,7 @@ import nbbrd.io.text.Formatter;
  * @author Kristof Bayens
  * @author Philippe Charles
  */
+@SwingComponent
 public final class JTsTable extends JComponent implements TimeSeriesComponent, PropertyChangeSource,
         HasTsCollection, HasTsAction, HasObsFormat {
 

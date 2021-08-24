@@ -79,9 +79,11 @@ import demetra.ui.datatransfer.DataTransfer;
 import javax.swing.JComponent;
 import nbbrd.service.ServiceProvider;
 import demetra.ui.components.ComponentBackendSpi;
+import nbbrd.design.DirectImpl;
 
 public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
+    @DirectImpl
     @ServiceProvider
     public static final class Factory implements ComponentBackendSpi {
 

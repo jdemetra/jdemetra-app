@@ -41,8 +41,10 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.SwingWorker;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 
+@DirectImpl
 @ServiceProvider
 public final class L2fprodFactory implements DemoComponentFactory {
 
