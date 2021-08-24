@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.demo.impl;
 
 import com.google.common.collect.ImmutableMap;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
-import internal.ui.properties.CharsetPropertyEditor;
+import demetra.desktop.core.properties.CharsetPropertyEditor;
 import ec.nbdemetra.ui.properties.DataFormatPropertyEditor;
 import ec.nbdemetra.ui.properties.DayPropertyEditor;
 import demetra.ui.properties.DhmsPropertyEditor;

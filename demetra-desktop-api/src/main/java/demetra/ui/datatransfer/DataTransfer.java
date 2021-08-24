@@ -22,11 +22,11 @@ import demetra.timeseries.TsData;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
+import demetra.ui.TsManager;
 import demetra.ui.design.GlobalService;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.util.Table;
 import ec.util.various.swing.OnEDT;
-import internal.ui.datatransfer.Magic;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -264,7 +264,7 @@ public final class DataTransfer implements PropertyChangeSource {
     @NonNull
     public Optional<TsData> toTsData(@NonNull Transferable transferable) {
         return toTs(transferable)
-                .map(ts -> Magic.load(ts, TsInformationType.Data).getData());
+                .map(ts -> ts.load(TsInformationType.Data, TsManager.getDefault()).getData());
     }
 
     /**

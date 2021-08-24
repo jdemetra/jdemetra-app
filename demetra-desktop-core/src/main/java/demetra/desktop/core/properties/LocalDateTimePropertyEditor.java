@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.properties;
+package demetra.desktop.core.properties;
 
 import demetra.ui.properties.AbstractInplaceEditor;
 import demetra.ui.properties.AbstractExPropertyEditor;

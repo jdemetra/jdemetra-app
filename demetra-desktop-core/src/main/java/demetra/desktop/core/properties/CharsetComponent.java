@@ -14,9 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.properties;
+package demetra.desktop.core.properties;
 
 import demetra.ui.completion.AutoCompletion;
+import demetra.ui.design.SwingComponent;
 import ec.util.various.swing.TextPrompt;
 import java.awt.BorderLayout;
 import java.nio.charset.Charset;
@@ -33,7 +34,8 @@ import nbbrd.io.text.Parser;
  * @author Philippe Charles
  * @since 1.3.2
  */
-public final class CharsetComponent extends JComponent {
+@SwingComponent
+final class CharsetComponent extends JComponent {
 
     public static final String CHARSET_PROPERTY = "charset";
 
