@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.ui.ColorSchemeManager;
 import demetra.ui.components.parts.HasChart;
 import demetra.ui.beans.BeanHandler;
 import demetra.ui.Config;
@@ -53,7 +54,7 @@ public final class JTsChartConfig {
         if (colorSchemeName.isEmpty()) {
             return null;
         }
-        return DemetraOptions.getDefault().getColorSchemes().stream()
+        return ColorSchemeManager.getDefault().getColorSchemes().stream()
                 .filter(o -> colorSchemeName.equals(o.getName()))
                 .findFirst()
                 .orElse(null);

@@ -23,13 +23,13 @@ import demetra.ui.NamedService;
 import demetra.ui.TsActions;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.TsManager;
-import demetra.ui.components.parts.HasTsAction;
-import demetra.ui.components.parts.HasTsCollection;
 import static demetra.ui.components.parts.HasTsCollection.TS_COLLECTION_PROPERTY;
 import static demetra.ui.components.parts.HasTsCollection.UDPATE_MODE_PROPERTY;
 import demetra.ui.util.KeyStrokes;
 import demetra.ui.components.ComponentCommand;
 import demetra.ui.actions.Actions;
+import demetra.ui.components.parts.HasTsAction;
+import demetra.ui.components.parts.HasTsCollection;
 import ec.util.list.swing.JLists;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
@@ -55,7 +55,6 @@ import javax.swing.JMenuItem;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.ImageUtilities;
-import org.openide.util.WeakListeners;
 import java.awt.Image;
 import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
@@ -491,7 +490,7 @@ public class HasTsCollectionCommands {
             DataTransfer source = DataTransfer.getDefault();
             PropertyChangeListener realListener = evt -> result.refreshActionState();
             result.putValue("TssTransferSupport", realListener);
-            source.addPropertyChangeListener(DataTransfer.VALID_CLIPBOARD_PROPERTY, WeakListeners.propertyChange(realListener, source));
+            source.addWeakPropertyChangeListener(DataTransfer.VALID_CLIPBOARD_PROPERTY, realListener);
             return result;
         }
     }

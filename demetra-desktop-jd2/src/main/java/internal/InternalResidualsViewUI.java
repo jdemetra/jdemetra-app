@@ -16,26 +16,31 @@
  */
 package internal;
 
+import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.components.ComponentBackendSpi;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import static demetra.ui.components.parts.HasTsData.TS_DATA_PROPERTY;
 import demetra.ui.util.NbComponents;
-import ec.nbdemetra.ui.ThemeSupport;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import demetra.ui.components.JTsGrid;
+import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import static demetra.ui.components.parts.HasObsFormat.OBS_FORMAT_PROPERTY;
+import demetra.ui.components.parts.HasObsFormatResolver;
 import demetra.ui.jfreechart.TsXYDataset;
 import demetra.ui.jfreechart.TsCharts;
+import ec.tss.tsproviders.utils.DataFormat;
 import ec.ui.view.res.ResidualsView;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
-import internal.ui.components.HasObsFormatCommands;
+import ec.util.chart.swing.SwingColorSchemeSupport;
+import demetra.ui.components.parts.HasObsFormatSupport;
 import internal.ui.components.HasTsCollectionCommands;
 import java.awt.BorderLayout;
-import java.text.DateFormat;
 import java.util.Arrays;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
@@ -83,7 +88,8 @@ public final class InternalResidualsViewUI implements InternalUI<ResidualsView> 
 
     private final ChartPanel chartPanel;
     private final JTsGrid grid;
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
+    private HasObsFormatResolver obsFormatResolver;
+    private HasColorSchemeResolver colorSchemeResolver;
 
     public InternalResidualsViewUI() {
         this.chartPanel = Charts.newChartPanel(buildResidualViewChart());
@@ -94,7 +100,11 @@ public final class InternalResidualsViewUI implements InternalUI<ResidualsView> 
 
     @Override
     public void install(ResidualsView view) {
-        themeSupport.setObsFormatListener(view, () -> onDataFormatChange(view));
+        this.obsFormatResolver = new HasObsFormatResolver(view, () -> onDataFormatChange(view));
+        HasColorScheme todo = HasColorSchemeSupport.of((propertyName, oldValue, newValue) -> {
+            //TODO
+        });
+        this.colorSchemeResolver = new HasColorSchemeResolver(todo, this::onColorSchemeChange);
 
         registerActions(view);
 
@@ -112,7 +122,7 @@ public final class InternalResidualsViewUI implements InternalUI<ResidualsView> 
     }
 
     private void registerActions(ResidualsView view) {
-        view.getActionMap().put(HasObsFormatCommands.FORMAT_ACTION, HasObsFormatCommands.editDataFormat().toAction(view));
+        view.getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(view));
     }
 
     private void enableProperties(ResidualsView view) {
@@ -148,14 +158,16 @@ public final class InternalResidualsViewUI implements InternalUI<ResidualsView> 
     private void onDataFormatChange(ResidualsView view) {
         grid.setObsFormat(view.getObsFormat());
         try {
-            DateFormat dateFormat = themeSupport.getDataFormat().newDateFormat();
-            ((DateAxis) chartPanel.getChart().getXYPlot().getDomainAxis()).setDateFormatOverride(dateFormat);
+            DataFormat dataFormat = TsConverter.fromObsFormat(obsFormatResolver.resolve());
+            ((DateAxis) chartPanel.getChart().getXYPlot().getDomainAxis()).setDateFormatOverride(dataFormat.newDateFormat());
         } catch (IllegalArgumentException ex) {
             // do nothing?
         }
     }
 
     private void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         XYPlot plot = chartPanel.getChart().getXYPlot();
         plot.setBackgroundPaint(themeSupport.getPlotColor());
         plot.setDomainGridlinePaint(themeSupport.getGridColor());

@@ -26,6 +26,7 @@ import demetra.ui.DemetraOptions;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.TsMonikerUI;
+import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.ui.design.SwingComponent;
 import demetra.ui.jfreechart.TsSparklineCellRenderer;
 import ec.util.table.swing.JTables;
@@ -54,7 +55,7 @@ import nbbrd.io.text.Formatter;
  * @author Philippe Charles
  */
 @SwingComponent
-public final class JTsTable extends JComponent implements TimeSeriesComponent, PropertyChangeSource,
+public final class JTsTable extends JComponent implements TimeSeriesComponent, PropertyChangeSource.WithWeakListeners,
         HasTsCollection, HasTsAction, HasObsFormat {
 
     @lombok.Value
@@ -161,7 +162,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
     public JTsTable() {
         this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
         this.tsAction = HasTsAction.of(this::firePropertyChange);
-        this.obsFormat = HasObsFormat.of(this::firePropertyChange);
+        this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
         this.showHeader = DEFAULT_SHOW_HEADER;
         this.columns = DEFAULT_COLUMNS;
         this.widthAsPercentages = new double[]{.4, .1, .1, .1, .3};

@@ -20,6 +20,7 @@ import demetra.ui.components.ComponentBackend;
 import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsData;
 import demetra.ui.components.TimeSeriesComponent;
+import demetra.ui.components.parts.HasObsFormatSupport;
 import javax.swing.JComponent;
 
 /**
@@ -36,7 +37,7 @@ public final class ResidualsView extends JComponent implements TimeSeriesCompone
 
     public ResidualsView() {
         this.tsData = HasTsData.of(this::firePropertyChange);
-        this.obsFormat = HasObsFormat.of(this::firePropertyChange);
+        this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
 
         ComponentBackend.getDefault().install(this);
     }

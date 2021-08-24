@@ -203,7 +203,7 @@ public class CompositeGregorianCalendarPanel extends JPanel implements ExplorerM
         return em;
     }
 
-    public static class WeightedItemBean implements PropertyChangeSource {
+    public static class WeightedItemBean implements PropertyChangeSource.WithWeakListeners {
 
         // PROPERTIES DEFINITIONS
         public static final String NAME_PROPERTY = "name";
@@ -266,7 +266,7 @@ public class CompositeGregorianCalendarPanel extends JPanel implements ExplorerM
         public WeightedItemNode(WeightedItemBean bean) {
             super(Children.LEAF, Lookups.singleton(bean));
             setName(bean.getName());
-            bean.addPropertyChangeListener(WeakListeners.propertyChange(this, bean));
+            bean.addWeakPropertyChangeListener(this);
         }
 
         @Override

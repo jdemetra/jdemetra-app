@@ -24,7 +24,7 @@ import java.beans.PropertyChangeSupport;
  *
  * @author Philippe Charles
  */
-public final class MultiProcessingController implements PropertyChangeSource {
+public final class MultiProcessingController implements PropertyChangeSource.WithWeakListeners {
 
     public enum SaProcessingState {
 

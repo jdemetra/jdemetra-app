@@ -16,6 +16,7 @@
  */
 package demetra.desktop.core.properties;
 
+import demetra.ui.components.JCharsetField;
 import demetra.ui.properties.AbstractInplaceEditor;
 import demetra.ui.properties.AbstractExPropertyEditor;
 import java.nio.charset.Charset;
@@ -37,7 +38,7 @@ public final class CharsetPropertyEditor extends AbstractExPropertyEditor {
 
     private static final class CharsetInplaceEditor extends AbstractInplaceEditor {
 
-        final CharsetComponent component = new CharsetComponent();
+        final JCharsetField component = new JCharsetField();
 
         @Override
         public JComponent getComponent() {

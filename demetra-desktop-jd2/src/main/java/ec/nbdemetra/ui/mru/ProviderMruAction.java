@@ -37,7 +37,6 @@ import org.openide.awt.ActionRegistration;
 import org.openide.awt.DynamicMenuContent;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.WeakListeners;
 import org.openide.util.actions.Presenter;
 
 @ActionID(category = "File", id = "ec.nbdemetra.ui.mru.ProviderMruAction")
@@ -67,7 +66,7 @@ public final class ProviderMruAction extends AbstractAction implements Presenter
 
         public MruMenu(String s) {
             super(s);
-            MruList.getProvidersInstance().addPropertyChangeListener(WeakListeners.propertyChange(this, MruList.getProvidersInstance()));
+            MruList.getProvidersInstance().addWeakPropertyChangeListener(this);
             updateMenu();
         }
 

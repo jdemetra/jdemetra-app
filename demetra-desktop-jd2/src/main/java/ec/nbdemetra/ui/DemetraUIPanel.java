@@ -16,18 +16,18 @@
  */
 package ec.nbdemetra.ui;
 
-import demetra.bridge.TsConverter;
 import demetra.demo.DemoTsBuilder;
+import demetra.ui.ColorSchemeManager;
 import demetra.ui.DemetraOptions;
 import demetra.ui.NamedService;
 import demetra.ui.TsActions;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.nbdemetra.ui.ns.AbstractNamedService;
-import ec.nbdemetra.ui.properties.DataFormatComponent2;
+import demetra.ui.components.JObsFormatComponent;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor;
 import demetra.ui.components.JTsChart;
 import ec.util.chart.ColorScheme;
-import internal.ui.components.HasColorSchemeCommands;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -84,7 +84,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         chartPreviewPanel = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         dataFormatLabel = new javax.swing.JLabel();
-        dataFormatComponent = new ec.nbdemetra.ui.properties.DataFormatComponent2();
+        dataFormatComponent = new demetra.ui.components.JObsFormatComponent();
         jPanel4 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         growthChartsPanel = new javax.swing.JPanel();
@@ -209,10 +209,10 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
 
     void load() {
         DemetraOptions options = DemetraOptions.getDefault();
-        colorSchemeChoicePanel.setContent(options.getColorSchemes().stream().map(o -> new ColorSchemeNamedService(o)).collect(Collectors.toList()));
+        colorSchemeChoicePanel.setContent(ColorSchemeManager.getDefault().getColorSchemes().stream().map(o -> new ColorSchemeNamedService(o)).collect(Collectors.toList()));
         colorSchemeChoicePanel.getExplorerManager().addVetoableChangeListener(this);
         colorSchemeChoicePanel.setSelectedServiceName(options.getColorSchemeName());
-        dataFormatComponent.setDataFormat(TsConverter.fromObsFormat(options.getObsFormat()));
+        dataFormatComponent.setObsFormat(options.getObsFormat());
         dataFormatComponent.addPropertyChangeListener(this);
         growthLastYears.setValue(options.getGrowthLastYears());
         iconsVisibleCB.setSelected(options.isPopupMenuIconsVisible());
@@ -224,7 +224,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
     void store() {
         DemetraOptions options = DemetraOptions.getDefault();
         options.setColorSchemeName(colorSchemeChoicePanel.getSelectedServiceName());
-        options.setObsFormat(TsConverter.toObsFormat(dataFormatComponent.getDataFormat()));
+        options.setObsFormat(dataFormatComponent.getObsFormat());
         options.setGrowthLastYears((Integer) growthLastYears.getValue());
         options.setPopupMenuIconsVisible(iconsVisibleCB.isSelected());
         options.setHtmlZoomRatio(jSlider1.getValue());
@@ -251,12 +251,12 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(DataFormatComponent2.DATA_FORMAT_PROPERTY) && evt.getNewValue() != null) {
-            colorSchemePreviewer.setObsFormat(TsConverter.toObsFormat(dataFormatComponent.getDataFormat()));
+        if (evt.getPropertyName().equals(JObsFormatComponent.OBS_FORMAT_PROPERTY) && evt.getNewValue() != null) {
+            colorSchemePreviewer.setObsFormat(dataFormatComponent.getObsFormat());
         }
     }
 
-    DataFormatComponent2 getDataFormatComponent() {
+    JObsFormatComponent getDataFormatComponent() {
         return dataFormatComponent;
     }
 
@@ -276,7 +276,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
 
         @Override
         public Image getIcon(int type, boolean opened) {
-            return ImageUtilities.icon2Image(HasColorSchemeCommands.iconOf(colorScheme));
+            return ImageUtilities.icon2Image(HasColorSchemeSupport.iconOf(colorScheme));
         }
 
         public ColorScheme getColorScheme() {
@@ -289,7 +289,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
     private javax.swing.JPanel chartsPanel;
     private ec.nbdemetra.ui.ns.NamedServiceChoicePanel colorSchemeChoicePanel;
     private javax.swing.JLabel colorSchemeLabel;
-    private ec.nbdemetra.ui.properties.DataFormatComponent2 dataFormatComponent;
+    private demetra.ui.components.JObsFormatComponent dataFormatComponent;
     private javax.swing.JLabel dataFormatLabel;
     private javax.swing.Box.Filler filler2;
     private javax.swing.JPanel growthChartsPanel;

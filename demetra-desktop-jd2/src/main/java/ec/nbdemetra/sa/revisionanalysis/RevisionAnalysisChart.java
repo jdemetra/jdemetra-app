@@ -34,8 +34,11 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.ui.action.ActionMenuItem;
 import demetra.ui.components.parts.HasChart;
 import demetra.ui.components.TimeSeriesComponent;
-import ec.nbdemetra.ui.ThemeSupport;
+import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import ec.tstoolkit.utilities.Arrays2;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import javax.swing.JComponent;
 
 /**
@@ -44,8 +47,9 @@ import javax.swing.JComponent;
  */
 public final class RevisionAnalysisChart extends JComponent implements TimeSeriesComponent {
 
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
-
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
+    private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
+    
     private final CompositeResults results;
     private JChartPanel chartPanel;
     private JFreeChart chart;
@@ -142,6 +146,8 @@ public final class RevisionAnalysisChart extends JComponent implements TimeSerie
     }
 
     private void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+        
         XYPlot plot = chartPanel.getChart().getXYPlot();
         for (int i = 0; i < plot.getDataset().getSeriesCount(); i++) {
             plot.getRenderer().setSeriesPaint(i, themeSupport.getLineColor(i));

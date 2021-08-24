@@ -5,7 +5,9 @@
 package ec.ui.view;
 
 import demetra.ui.components.parts.HasColorScheme;
-import ec.nbdemetra.ui.ThemeSupport;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -41,12 +43,13 @@ public abstract class AChartView extends JComponent implements HasColorScheme {
     protected boolean zoomable_ = true;
     protected Comparable focus = "";
     // OTHER
-    protected final ThemeSupport themeSupport;
     protected final JChartPanel chartPanel;
     protected final XYSeriesCollection seriesCollection;
 
     @lombok.experimental.Delegate
-    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
+
+    protected final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
 
     public AChartView(int points, PlotOrientation orientation, double baseminx, double basemaxx, double baseminy, double basemaxy, NumberTickUnit basetickunitx, NumberTickUnit basetickunity, DecimalFormat baseformat) {
         setLayout(new BorderLayout());
@@ -61,8 +64,8 @@ public abstract class AChartView extends JComponent implements HasColorScheme {
         this.basedecimalformat_ = baseformat;
         this.orientation_ = orientation;
 
-        this.themeSupport = new ThemeSupport();
-        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         this.seriesCollection = new XYSeriesCollection();
         this.chartPanel = new JChartPanel(ChartFactory.createLineChart(null, null, null, null, orientation_, false, false, false)); //, getDefaultMinX(), getDefaultMaxX(), getDefaultMinY(), getDefaultMaxY());
 
@@ -125,7 +128,6 @@ public abstract class AChartView extends JComponent implements HasColorScheme {
 
         restoreBaseValues();
         this.add(chartPanel, BorderLayout.CENTER);
-        themeSupport.register();
     }
 
     // EVENT HANDLERS >

@@ -17,7 +17,6 @@
 package ec.nbdemetra.anomalydetection.ui;
 
 import demetra.bridge.TsConverter;
-import ec.nbdemetra.ui.ThemeSupport;
 import ec.nbdemetra.ui.properties.l2fprod.ColorChooser;
 import ec.tss.Ts;
 import ec.tstoolkit.data.Table;
@@ -62,14 +61,12 @@ final class AnomalyDetectionChart extends JComponent {
 
     private final JTimeSeriesChart chart;
     private final ChartHandler chartHandler;
-    private final ThemeSupport themeSupport;
     private Model model;
     private int hoveredObs;
 
     public AnomalyDetectionChart() {
         this.chart = new JTimeSeriesChart();
         this.chartHandler = new ChartHandler();
-        this.themeSupport = new ThemeSupport();
         this.model = null;
         this.hoveredObs = -1;
 
@@ -131,7 +128,6 @@ final class AnomalyDetectionChart extends JComponent {
             }
         });
         chart.addPropertyChangeListener(chartHandler);
-        themeSupport.register();
     }
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">

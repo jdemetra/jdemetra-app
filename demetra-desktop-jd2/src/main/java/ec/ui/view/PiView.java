@@ -11,6 +11,7 @@ import demetra.ui.jfreechart.TsCharts;
 import demetra.ui.components.parts.HasChart.LinesThickness;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.chart.swing.ext.MatrixChartCommand;
 import java.awt.Stroke;
 import java.text.DecimalFormat;
@@ -82,6 +83,8 @@ public class PiView extends AChartView {
     
     @Override
     protected void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         XYPlot plot = chartPanel.getChart().getXYPlot();
         plot.setBackgroundPaint(themeSupport.getPlotColor());
         plot.setDomainGridlinePaint(themeSupport.getGridColor());

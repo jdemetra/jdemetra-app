@@ -20,12 +20,14 @@ import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
-import ec.nbdemetra.ui.ThemeSupport;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.ui.chart.BasicXYDataset;
 import demetra.ui.jfreechart.TsCharts;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.Charts;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -88,14 +90,14 @@ public final class StabilityView extends JComponent implements TimeSeriesCompone
     private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
 
     @lombok.experimental.Delegate
-    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
+    private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
 
     public StabilityView() {
         super();
 
-        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
 
         setLayout(new BorderLayout());
 
@@ -394,6 +396,8 @@ public final class StabilityView extends JComponent implements TimeSeriesCompone
     }
 
     private void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         pointsRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.BLUE));
         meanRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.RED));
         smoothRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.GREEN));

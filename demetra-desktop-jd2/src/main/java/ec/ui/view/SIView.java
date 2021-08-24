@@ -33,11 +33,13 @@ import demetra.ui.components.parts.HasChart.LinesThickness;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
-import ec.nbdemetra.ui.ThemeSupport;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import ec.tss.TsInformationType;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -102,9 +104,9 @@ public final class SIView extends JComponent implements TimeSeriesComponent, Has
     private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
 
     @lombok.experimental.Delegate
-    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
+    private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
 
     private final RevealObs revealObs;
 
@@ -174,8 +176,6 @@ public final class SIView extends JComponent implements TimeSeriesComponent, Has
     }
 
     public SIView() {
-        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
-        
         this.graphs_ = new HashMap<>();
         highlight = null;
         this.revealObs = new RevealObs();
@@ -291,6 +291,8 @@ public final class SIView extends JComponent implements TimeSeriesComponent, Has
     }
 
     private void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         sRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.BLUE));
         tRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.RED));
         siDetailRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.GRAY));
@@ -594,6 +596,7 @@ public final class SIView extends JComponent implements TimeSeriesComponent, Has
             setBaseShape(ITEM_SHAPE);
             setUseFillPaint(true);
             this.index = index;
+            SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
             switch (index) {
                 case S_INDEX:
                     this.color = themeSupport.getLineColor(KnownColor.BLUE);

@@ -24,7 +24,6 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.WeakListeners;
 import org.openide.util.actions.Presenter;
 
 @ActionID(category = "Edit",
@@ -46,7 +45,7 @@ public final class ChooseTsActionAction extends AbstractAction implements Presen
         choicePanel.setContent(TsActions.getDefault().getOpenActions());
         choicePanel.setSelectedServiceName(demetraUI.getTsActionName());
         choicePanel.getExplorerManager().addVetoableChangeListener(this);
-        demetraUI.addPropertyChangeListener(WeakListeners.propertyChange(this, demetraUI));
+        demetraUI.addWeakPropertyChangeListener(this);
     }
 
     @Override

@@ -22,7 +22,7 @@ import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
 import ec.util.various.swing.JCommand;
-import internal.ui.components.HasObsFormatCommands;
+import demetra.ui.components.parts.HasObsFormatSupport;
 import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -78,10 +78,10 @@ public final class TsControlHandler extends TypedDemoComponentHandler<HasObsForm
 
         public JButton toButton(final HasObsFormat c) {
             JPopupMenu popup = new JPopupMenu();
-            popup.add(new JCheckBoxMenuItem(HasObsFormatCommands.applyDataFormat(null).toAction(c))).setText("Default");
+            popup.add(new JCheckBoxMenuItem(HasObsFormatSupport.applyDataFormat(null).toAction(c))).setText("Default");
             popup.addSeparator();
             for (ObsFormat o : dataFormats) {
-                popup.add(new JCheckBoxMenuItem(HasObsFormatCommands.applyDataFormat(o).toAction(c))).setText(o.toString());
+                popup.add(new JCheckBoxMenuItem(HasObsFormatSupport.applyDataFormat(o).toAction(c))).setText(o.toString());
             }
             JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LOCALE_ALTERNATE_16, popup);
             result.addActionListener(toAction(c));

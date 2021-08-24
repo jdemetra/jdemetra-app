@@ -17,7 +17,6 @@
 package ec.nbdemetra.spreadsheet;
 
 import com.google.common.base.Stopwatch;
-import demetra.ui.DemetraOptions;
 import demetra.ui.util.NbComponents;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
@@ -30,7 +29,7 @@ import static ec.util.various.swing.FontAwesome.FA_INFO;
 import static ec.util.various.swing.FontAwesome.FA_SEARCH;
 import ec.util.various.swing.JCommand;
 import demetra.ui.util.FontAwesomeUtils;
-import internal.ui.components.HasColorSchemeCommands;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -162,7 +161,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
             item.setText("Edit format..");
             item.setEnabled(false);
 
-            result.add(HasColorSchemeCommands.menuOf(view, DemetraOptions.getDefault().getColorSchemes()));
+            result.add(HasColorSchemeSupport.menuOf(view));
 
             item = result.add(new JCheckBoxMenuItem(SpreadSheetView.invertColors().toAction(view)));
             item.setText("Invert colors");

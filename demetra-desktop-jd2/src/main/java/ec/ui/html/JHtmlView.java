@@ -28,7 +28,6 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JSlider;
 import javax.swing.text.html.StyleSheet;
-import org.openide.util.WeakListeners;
 
 /**
  *
@@ -46,7 +45,7 @@ public final class JHtmlView extends AHtmlView {
 
         DEFAULT_STYLE_CMD.executeSafely(browser);
 
-        DemetraOptions.getDefault().addPropertyChangeListener(WeakListeners.propertyChange(o -> browser.setZoomRatio(DemetraOptions.getDefault().getHtmlZoomRatio()), DemetraOptions.HTML_ZOOM_RATIO_PROPERTY, this));
+        DemetraOptions.getDefault().addWeakPropertyChangeListener(DemetraOptions.HTML_ZOOM_RATIO_PROPERTY, o -> browser.setZoomRatio(DemetraOptions.getDefault().getHtmlZoomRatio()));
 
         setLayout(new BorderLayout());
         add(NbComponents.newJScrollPane(browser), BorderLayout.CENTER);

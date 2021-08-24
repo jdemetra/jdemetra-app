@@ -14,10 +14,12 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.ui.components.parts;
 
-import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.ColorSchemeManager;
+import demetra.ui.beans.PropertyChangeBroadcaster;
 import demetra.ui.components.ComponentCommand;
+import static demetra.ui.components.parts.HasColorScheme.COLOR_SCHEME_PROPERTY;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.ColorSchemeIcon;
 import ec.util.various.swing.JCommand;
@@ -34,12 +36,39 @@ import javax.swing.JMenuItem;
  * @author Philippe Charles
  */
 @lombok.experimental.UtilityClass
-public class HasColorSchemeCommands {
-
-    public static final String DEFAULT_COLOR_SCHEME_ACTION = "defaultColorScheme";
+public class HasColorSchemeSupport {
 
     @NonNull
-    public static JCommand<HasColorScheme> commandOf(@Nullable ColorScheme colorScheme) {
+    public static HasColorScheme of(@NonNull PropertyChangeBroadcaster broadcaster) {
+        return new HasColorSchemeImpl(broadcaster);
+    }
+
+    @lombok.RequiredArgsConstructor
+    private static final class HasColorSchemeImpl implements HasColorScheme {
+
+        @lombok.NonNull
+        private final PropertyChangeBroadcaster broadcaster;
+
+        private static final ColorScheme DEFAULT_COLOR_SCHEME = null;
+        private ColorScheme colorScheme = DEFAULT_COLOR_SCHEME;
+
+        @Override
+        public ColorScheme getColorScheme() {
+            return colorScheme;
+        }
+
+        @Override
+        public void setColorScheme(ColorScheme colorScheme) {
+            ColorScheme old = this.colorScheme;
+            this.colorScheme = colorScheme;
+            broadcaster.firePropertyChange(COLOR_SCHEME_PROPERTY, old, this.colorScheme);
+        }
+    }
+
+    public static final String APPLY_MAIN_COLOR_SCHEME_ACTION = "applyMainColorScheme";
+
+    @NonNull
+    public static JCommand<HasColorScheme> getApplyColorSchemeCommand(@Nullable ColorScheme colorScheme) {
         return new ApplyColorSchemeCommand(colorScheme);
     }
 
@@ -49,18 +78,17 @@ public class HasColorSchemeCommands {
     }
 
     @NonNull
-    public static JMenu menuOf(@NonNull HasColorScheme component, @NonNull Iterable<? extends ColorScheme> colorSchemes) {
+    public static JMenu menuOf(@NonNull HasColorScheme component) {
         JMenu result = new JMenu("Color scheme");
         result.add(menuItemOf(component, null));
         result.addSeparator();
-        colorSchemes.forEach(o -> result.add(menuItemOf(component, o)));
+        ColorSchemeManager.getDefault().getColorSchemes().forEach(o -> result.add(menuItemOf(component, o)));
         result.add(result);
         return result;
     }
 
-    @NonNull
-    public static JMenuItem menuItemOf(@NonNull HasColorScheme component, @Nullable ColorScheme colorScheme) {
-        JMenuItem result = new JCheckBoxMenuItem(commandOf(colorScheme).toAction(component));
+    private static JMenuItem menuItemOf(HasColorScheme component, ColorScheme colorScheme) {
+        JMenuItem result = new JCheckBoxMenuItem(getApplyColorSchemeCommand(colorScheme).toAction(component));
         if (colorScheme != null) {
             result.setText(colorScheme.getDisplayName());
             result.setIcon(iconOf(colorScheme));
@@ -69,7 +97,7 @@ public class HasColorSchemeCommands {
         }
         return result;
     }
-    
+
     private static final class ApplyColorSchemeCommand extends ComponentCommand<HasColorScheme> {
 
         private final ColorScheme colorScheme;

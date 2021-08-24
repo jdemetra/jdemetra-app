@@ -20,7 +20,8 @@ import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
-import ec.nbdemetra.ui.ThemeSupport;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.maths.realfunctions.IFunction;
@@ -32,6 +33,7 @@ import ec.ui.view.JChartPanel;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.Charts;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
@@ -66,14 +68,12 @@ public final class Functions2DChart extends JComponent implements TimeSeriesComp
     private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
     
     @lombok.experimental.Delegate
-    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
+    private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
 
     public Functions2DChart(IFunction f, IFunctionInstance maxF, int steps) {
         super();
-
-        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
 
         setLayout(new BorderLayout());
 
@@ -87,6 +87,8 @@ public final class Functions2DChart extends JComponent implements TimeSeriesComp
 
         this.steps = steps;
 
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+        
         functionRenderer = new XYLineAndShapeRenderer(true, false);
         functionRenderer.setAutoPopulateSeriesPaint(false);
         functionRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.BLUE));
@@ -262,6 +264,8 @@ public final class Functions2DChart extends JComponent implements TimeSeriesComp
     }
 
     private void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         functionRenderer.setBasePaint(themeSupport.getLineColor(ColorScheme.KnownColor.BLUE));
         optimumRenderer.setBasePaint(themeSupport.getLineColor(KnownColor.RED));
 

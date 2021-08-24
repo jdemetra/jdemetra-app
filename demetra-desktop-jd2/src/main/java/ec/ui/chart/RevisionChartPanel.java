@@ -19,11 +19,13 @@ package ec.ui.chart;
 import demetra.timeseries.TsCollection;
 import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.components.TimeSeriesComponent;
-import ec.nbdemetra.ui.ThemeSupport;
 import demetra.ui.util.KeyStrokes;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.Arrays2;
 import demetra.ui.actions.Actions;
+import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import ec.ui.view.JChartPanel;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.Charts;
@@ -53,6 +55,7 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import demetra.ui.datatransfer.DataTransfer;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import java.util.ArrayList;
 
 /**
@@ -62,6 +65,9 @@ import java.util.ArrayList;
  */
 public final class RevisionChartPanel extends JComponent implements TimeSeriesComponent {
 
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
+    private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
+    
     private JChartPanel panel;
     private XYLineAndShapeRenderer refRenderer;
     private XYLineAndShapeRenderer seriesRenderer;
@@ -72,8 +78,6 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
     private ActionMap am;
     private InputMap im;
 
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
-
     /**
      * Constructs a new RevisionChartPanel from a given chart
      *
@@ -83,6 +87,8 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
         setLayout(new BorderLayout());
         panel = new JChartPanel(chart);
 
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+        
         refRenderer = new XYLineAndShapeRenderer();
         refRenderer.setBaseShapesVisible(false);
         refRenderer.setBasePaint(themeSupport.getLineColor(ColorScheme.KnownColor.RED));
@@ -123,6 +129,8 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
         TimeSeriesCollection ref = new TimeSeriesCollection();
         addSerie(ref, reference);
 
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+        
         XYPlot plot = panel.getChart().getXYPlot();
         plot.setDataset(REF_INDEX, ref);
         plot.setRenderer(REF_INDEX, refRenderer);
@@ -231,6 +239,8 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
     }
 
     private void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         refRenderer.setBasePaint(themeSupport.getLineColor(ColorScheme.KnownColor.RED));
         seriesRenderer.setBasePaint(themeSupport.getLineColor(ColorScheme.KnownColor.BLUE));
 

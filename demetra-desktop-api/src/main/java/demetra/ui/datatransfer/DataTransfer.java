@@ -34,7 +34,6 @@ import java.awt.datatransfer.FlavorEvent;
 import java.awt.datatransfer.FlavorListener;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,6 +54,7 @@ import nbbrd.io.function.IOFunction;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import demetra.ui.util.CollectionSupplier;
 import demetra.ui.util.LazyGlobalService;
+import java.beans.PropertyChangeSupport;
 
 /**
  * A support class that deals with the clipboard. It allows the user to get/set
@@ -65,7 +65,7 @@ import demetra.ui.util.LazyGlobalService;
  */
 @lombok.extern.java.Log
 @GlobalService
-public final class DataTransfer implements PropertyChangeSource {
+public final class DataTransfer implements PropertyChangeSource.WithWeakListeners {
 
     @NonNull
     public static DataTransfer getDefault() {

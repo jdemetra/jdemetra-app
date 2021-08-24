@@ -148,7 +148,7 @@
                 </Constraint>
               </Constraints>
             </Component>
-            <Component class="ec.nbdemetra.ui.properties.DataFormatComponent2" name="dataFormatComponent">
+            <Component class="demetra.ui.components.JObsFormatComponent" name="dataFormatComponent">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
                   <BorderConstraints direction="Center"/>

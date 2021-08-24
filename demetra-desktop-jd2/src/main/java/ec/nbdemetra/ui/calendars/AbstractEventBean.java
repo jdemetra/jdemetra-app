@@ -16,7 +16,7 @@ import java.beans.PropertyChangeSupport;
  *
  * @author Philippe Charles
  */
-public abstract class AbstractEventBean implements PropertyChangeSource {
+public abstract class AbstractEventBean implements PropertyChangeSource.WithWeakListeners {
 
     // PROPERTIES DEFINITIONS
     public static final String START_PROPERTY = "start";

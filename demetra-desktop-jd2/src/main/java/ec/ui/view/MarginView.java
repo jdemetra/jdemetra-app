@@ -16,6 +16,7 @@
  */
 package ec.ui.view;
 
+import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.components.parts.HasColorScheme;
@@ -29,14 +30,17 @@ import ec.ui.chart.TsXYDatasets;
 import demetra.ui.components.parts.HasChart.LinesThickness;
 import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.TimeSeriesComponent;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.components.parts.HasObsFormatResolver;
 import demetra.ui.datatransfer.DataTransfer;
-import ec.nbdemetra.ui.ThemeSupport;
+import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.SwingColorSchemeSupport;
-import internal.ui.components.HasObsFormatCommands;
+import demetra.ui.components.parts.HasObsFormatSupport;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -109,21 +113,21 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
     private static XYItemEntity highlight;
 
     @lombok.experimental.Delegate
-    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
     @lombok.experimental.Delegate
-    private final HasObsFormat obsFormat = HasObsFormat.of(this::firePropertyChange);
+    private final HasObsFormat obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
 
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
+    private final HasObsFormatResolver obsFormatResolver;
+    private final HasColorSchemeResolver colorSchemeResolver;
 
     public MarginView() {
         this.chartPanel = Charts.newChartPanel(createMarginViewChart());
         this.data = new MarginData(null, null, null, false, null);
         this.precisionMarkersVisible = false;
         this.revealObs = new RevealObs();
-
-        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
-        themeSupport.setObsFormatListener(obsFormat, this::onDataFormatChange);
+        this.obsFormatResolver = new HasObsFormatResolver(obsFormat, this::onDataFormatChange);
+        this.colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
 
         registerActions();
 
@@ -142,7 +146,7 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
     }
 
     private void registerActions() {
-        getActionMap().put(HasObsFormatCommands.FORMAT_ACTION, HasObsFormatCommands.editDataFormat().toAction(this));
+        getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(this));
     }
 
     private void enableProperties() {
@@ -171,13 +175,16 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
     private void onDataFormatChange() {
         DateAxis domainAxis = (DateAxis) chartPanel.getChart().getXYPlot().getDomainAxis();
         try {
-            domainAxis.setDateFormatOverride(themeSupport.getDataFormat().newDateFormat());
+            DataFormat dataFormat = TsConverter.fromObsFormat(obsFormatResolver.resolve());
+            domainAxis.setDateFormatOverride(dataFormat.newDateFormat());
         } catch (IllegalArgumentException ex) {
             // do nothing?
         }
     }
 
     private void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         XYPlot plot = chartPanel.getChart().getXYPlot();
         plot.setBackgroundPaint(themeSupport.getPlotColor());
         plot.setDomainGridlinePaint(themeSupport.getGridColor());
@@ -467,12 +474,12 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
 
         @Override
         public Paint getSeriesPaint(int series) {
-            return themeSupport.getLineColor(MAIN_COLOR);
+            return colorSchemeResolver.resolve().getLineColor(MAIN_COLOR);
         }
 
         @Override
         public Paint getItemPaint(int series, int item) {
-            return themeSupport.getLineColor(MAIN_COLOR);
+            return colorSchemeResolver.resolve().getLineColor(MAIN_COLOR);
         }
 
         @Override
@@ -495,7 +502,7 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
             String label = generateLabel();
             Font font = chartPanel.getFont();
             Paint paint = chartPanel.getChart().getPlot().getBackgroundPaint();
-            Paint fillPaint = themeSupport.getLineColor(MAIN_COLOR);
+            Paint fillPaint = colorSchemeResolver.resolve().getLineColor(MAIN_COLOR);
             Stroke outlineStroke = AbstractRenderer.DEFAULT_STROKE;
             Charts.drawItemLabelAsTooltip(g2, x, y, 3d, label, font, paint, fillPaint, paint, outlineStroke);
         }
@@ -503,7 +510,7 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
         private String generateLabel() {
             TsPeriod p = new TsPeriod(data.series.getFrequency(), new Date(highlight.getDataset().getX(0, highlight.getItem()).longValue()));
             String label = "Period : " + p.toString() + "\nValue : ";
-            label += themeSupport.getDataFormat().numberFormatter().formatAsString(data.series.get(p));
+            label += obsFormatResolver.resolve().numberFormatter().formatAsString(data.series.get(p));
             return label;
         }
     };

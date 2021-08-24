@@ -16,6 +16,9 @@
  */
 package internal.ui.components;
 
+import demetra.ui.components.parts.HasObsFormatSupport;
+import demetra.bridge.TsConverter;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import demetra.ui.DemetraOptions;
 import demetra.ui.actions.Configurable;
 import demetra.ui.components.TsSelectionBridge;
@@ -25,7 +28,6 @@ import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsCollection;
 import static demetra.ui.actions.PrintableWithPreview.PRINT_ACTION;
 import static demetra.ui.actions.ResetableZoom.RESET_ZOOM_ACTION;
-import ec.nbdemetra.ui.ThemeSupport;
 import demetra.ui.util.ActionMaps;
 import demetra.ui.util.InputMaps;
 import ec.tstoolkit.utilities.IntList;
@@ -64,6 +66,9 @@ import demetra.ui.datatransfer.DataTransfer;
 import javax.swing.JComponent;
 import nbbrd.service.ServiceProvider;
 import demetra.ui.components.ComponentBackendSpi;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasObsFormatResolver;
+import ec.tss.tsproviders.utils.DataFormat;
 import nbbrd.design.DirectImpl;
 
 public final class InternalTsChartUI implements InternalUI<JTsChart> {
@@ -89,19 +94,19 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
     private final ChartHandler chartHandler = new ChartHandler();
     private final IntList savedSelection = new IntList();
     private final DualDispatcherListener dualDispatcherListener = new DualDispatcherListener();
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
 
     private TsFeatureHelper tsFeatures = TsFeatureHelper.of(Collections.emptyList());
     private InternalTsSelectionAdapter selectionListener;
+    private HasObsFormatResolver obsFormatResolver;
+    private HasColorSchemeResolver colorSchemeResolver;
 
     @Override
     public void install(JTsChart component) {
         this.target = component;
 
         this.selectionListener = new InternalTsSelectionAdapter(target);
-
-        themeSupport.setColorSchemeListener(target, this::onColorSchemeChange);
-        themeSupport.setObsFormatListener(target, this::onDataFormatChange);
+        this.obsFormatResolver = new HasObsFormatResolver(target, this::onDataFormatChange);
+        this.colorSchemeResolver = new HasColorSchemeResolver(target, this::onColorSchemeChange);
 
         registerActions();
         registerInputs();
@@ -121,7 +126,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
     private void registerActions() {
         HasTsCollectionCommands.registerActions(target, target.getActionMap());
         HasChartCommands.registerActions(target, target.getActionMap());
-        target.getActionMap().put(HasObsFormatCommands.FORMAT_ACTION, HasObsFormatCommands.editDataFormat().toAction(target));
+        target.getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
         target.getActionMap().put(PRINT_ACTION, JCommand.of(JTimeSeriesChartUtil::printWithPreview).toAction(chartPanel));
         target.getActionMap().put(RESET_ZOOM_ACTION, JCommand.of(JTimeSeriesChart::resetZoom).toAction(chartPanel));
         ActionMaps.copyEntries(target.getActionMap(), false, chartPanel.getActionMap());
@@ -254,12 +259,13 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
 
     //<editor-fold defaultstate="collapsed" desc="Event Handlers">
     private void onDataFormatChange() {
-        JTimeSeriesChartUtil.setDataFormat(chartPanel, themeSupport.getDataFormat());
+        DataFormat dataFormat = TsConverter.fromObsFormat(obsFormatResolver.resolve());
+        JTimeSeriesChartUtil.setDataFormat(chartPanel, dataFormat);
     }
 
     private void onColorSchemeChange() {
         chartPanel.setColorSchemeSupport(null);
-        chartPanel.setColorSchemeSupport(themeSupport);
+        chartPanel.setColorSchemeSupport(colorSchemeResolver.resolve());
     }
 
     private void onCollectionChange() {
@@ -413,8 +419,8 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
         result.addSeparator();
         result.add(HasChartCommands.newToggleTitleVisibilityMenu(am, demetraUI));
         result.add(HasChartCommands.newToggleLegendVisibilityMenu(am, demetraUI));
-        result.add(HasObsFormatCommands.newEditFormatMenu(am, demetraUI));
-        result.add(HasColorSchemeCommands.menuOf(target, demetraUI.getColorSchemes()));
+        result.add(HasObsFormatSupport.newEditFormatMenu(am, demetraUI));
+        result.add(HasColorSchemeSupport.menuOf(target));
         result.add(HasChartCommands.newLinesThicknessMenu(am));
         result.addSeparator();
         result.add(InternalComponents.newResetZoomMenu(am, demetraUI));

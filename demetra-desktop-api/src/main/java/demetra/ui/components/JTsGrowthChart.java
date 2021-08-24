@@ -32,6 +32,8 @@ import demetra.timeseries.TsDomain;
 import demetra.ui.DemetraOptions;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
+import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.ui.design.SwingComponent;
 import internal.ui.components.DemoTsBuilder;
 import java.awt.Dimension;
@@ -46,7 +48,7 @@ import javax.swing.JComponent;
  * @author Kristof Bayens
  */
 @SwingComponent
-public final class JTsGrowthChart extends JComponent implements TimeSeriesComponent, PropertyChangeSource,
+public final class JTsGrowthChart extends JComponent implements TimeSeriesComponent, PropertyChangeSource.WithWeakListeners,
         HasTsCollection, HasTsAction, HasChart, HasColorScheme, HasObsFormat,
         PrintableWithPreview, ResetableZoom {
 
@@ -94,8 +96,8 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
         this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
         this.tsAction = HasTsAction.of(this::firePropertyChange);
         this.chart = HasChart.of(this::firePropertyChange);
-        this.colorScheme = HasColorScheme.of(this::firePropertyChange);
-        this.obsFormat = HasObsFormat.of(this::firePropertyChange);
+        this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
+        this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
         this.printableWithPreview = PrintableWithPreview.of(this::getActionMap);
         this.resetableZoom = ResetableZoom.of(this::getActionMap);
         this.growthKind = DEFAULT_GROWTH_KIND;

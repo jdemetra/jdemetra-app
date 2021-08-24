@@ -46,7 +46,7 @@ import org.netbeans.api.options.OptionsDisplayer;
  * @author Mats Maggi
  */
 @GlobalService
-public final class DemetraUI implements PropertyChangeSource, Persistable, Configurable {
+public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, Persistable, Configurable {
 
     @NonNull
     public static DemetraUI getDefault() {

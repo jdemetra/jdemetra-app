@@ -26,7 +26,6 @@ import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.WeakListeners;
 import org.openide.util.actions.Presenter;
 
 @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.ShowProvidersAction")
@@ -41,7 +40,7 @@ public final class ShowProvidersAction extends AbstractAction implements Present
         item.setText(Bundle.CTL_ShowProvidersAction());
         DemetraOptions demetraUI = DemetraOptions.getDefault();
         item.setSelected(demetraUI.isShowTsProviderNodes());
-        demetraUI.addPropertyChangeListener(WeakListeners.propertyChange(this, demetraUI));
+        demetraUI.addWeakPropertyChangeListener(this);
     }
 
     @Override

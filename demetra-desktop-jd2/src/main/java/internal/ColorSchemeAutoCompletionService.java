@@ -16,13 +16,13 @@
  */
 package internal;
 
-import demetra.ui.DemetraOptions;
+import demetra.ui.ColorSchemeManager;
 import ec.util.chart.ColorScheme;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
-import internal.ui.components.HasColorSchemeCommands;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -70,7 +70,7 @@ public final class ColorSchemeAutoCompletionService implements AutoCompletionSpi
 
     private static List<ColorScheme> getColorSchemes(String term) {
         Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
-        return DemetraOptions.getDefault().getColorSchemes().stream()
+        return ColorSchemeManager.getDefault().getColorSchemes().stream()
                 .filter(o -> filter.test(o.getName()) || filter.test(o.getDisplayName()))
                 .sorted(Comparator.comparing(ColorScheme::getDisplayName))
                 .collect(Collectors.toList());
@@ -85,7 +85,7 @@ public final class ColorSchemeAutoCompletionService implements AutoCompletionSpi
 
         @Override
         protected Icon toIcon(String term, JList list, ColorScheme value, int index, boolean isSelected, boolean cellHasFocus) {
-            return HasColorSchemeCommands.iconOf(value);
+            return HasColorSchemeSupport.iconOf(value);
         }
     }
 }

@@ -14,14 +14,14 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.ui.components.parts;
 
-import demetra.bridge.TsConverter;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
-import demetra.ui.components.parts.HasObsFormat;
-import ec.nbdemetra.ui.properties.DataFormatComponent2;
+import demetra.ui.beans.PropertyChangeBroadcaster;
+import demetra.ui.components.JObsFormatComponent;
 import demetra.ui.components.ComponentCommand;
+import static demetra.ui.components.parts.HasObsFormat.OBS_FORMAT_PROPERTY;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import java.awt.Dimension;
@@ -42,7 +42,32 @@ import org.openide.NotifyDescriptor;
  * @author Philippe Charles
  */
 @lombok.experimental.UtilityClass
-public class HasObsFormatCommands {
+public class HasObsFormatSupport {
+
+    @NonNull
+    public static HasObsFormat of(@NonNull PropertyChangeBroadcaster broadcaster) {
+        return new HasObsFormatImpl(broadcaster);
+    }
+
+    @lombok.RequiredArgsConstructor
+    private static final class HasObsFormatImpl implements HasObsFormat {
+
+        @lombok.NonNull
+        private final PropertyChangeBroadcaster broadcaster;
+        private ObsFormat obsFormat = null;
+
+        @Override
+        public ObsFormat getObsFormat() {
+            return obsFormat;
+        }
+
+        @Override
+        public void setObsFormat(ObsFormat obsFormat) {
+            ObsFormat old = this.obsFormat;
+            this.obsFormat = obsFormat;
+            broadcaster.firePropertyChange(OBS_FORMAT_PROPERTY, old, this.obsFormat);
+        }
+    }
 
     public static final String FORMAT_ACTION = "format";
 
@@ -89,7 +114,7 @@ public class HasObsFormatCommands {
 
         @Override
         public void execute(final HasObsFormat component) {
-            final DataFormatComponent2 editor = new DataFormatComponent2();
+            final JObsFormatComponent editor = new JObsFormatComponent();
             Dimension preferedSize = editor.getPreferredSize();
             editor.setPreferredSize(new Dimension(400, preferedSize.height));
             JPanel p = new JPanel(new FlowLayout());
@@ -102,14 +127,14 @@ public class HasObsFormatCommands {
                     editor.setPreviewVisible(false);
                 }
             });
-            editor.setDataFormat(TsConverter.fromObsFormat(component.getObsFormat()));
+            editor.setObsFormat(component.getObsFormat());
             if (component.getObsFormat() != null) {
                 JButton b = new JButton(new ApplyDataFormatCommand(null).toAction(component));
                 b.setText("Restore");
                 descriptor.setAdditionalOptions(new Object[]{b});
             }
-            if (DialogDisplayer.getDefault().notify(descriptor) == NotifyDescriptor.OK_OPTION && !editor.getDataFormat().equals(component.getObsFormat())) {
-                component.setObsFormat(TsConverter.toObsFormat(editor.getDataFormat()));
+            if (DialogDisplayer.getDefault().notify(descriptor) == NotifyDescriptor.OK_OPTION && !editor.getObsFormat().equals(component.getObsFormat())) {
+                component.setObsFormat(editor.getObsFormat());
             }
         }
     }

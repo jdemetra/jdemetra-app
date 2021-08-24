@@ -6,13 +6,9 @@ import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.concurrent.ThreadPoolSize;
 import demetra.ui.concurrent.ThreadPriority;
 import demetra.ui.util.LazyGlobalService;
-import ec.util.chart.ColorScheme;
 import ec.util.various.swing.FontAwesome;
 import java.awt.Color;
 import java.beans.PropertyChangeSupport;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 import javax.swing.Icon;
 import nbbrd.io.text.BooleanProperty;
 import nbbrd.io.text.Formatter;
@@ -20,10 +16,10 @@ import nbbrd.io.text.IntProperty;
 import nbbrd.io.text.Parser;
 import nbbrd.io.text.Property;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.openide.util.Lookup;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 @GlobalService
-public final class DemetraOptions implements PropertyChangeSource, Persistable {
+public final class DemetraOptions implements PropertyChangeSource.WithWeakListeners, Persistable {
 
     @NonNull
     public static DemetraOptions getDefault() {
@@ -41,11 +37,12 @@ public final class DemetraOptions implements PropertyChangeSource, Persistable {
     private static final Property<String> COLOR_SCHEME_NAME_CONFIG = Property.of(COLOR_SCHEME_NAME_PROPERTY, DEFAULT_COLOR_SCHEME_NAME, Parser.onString(), Formatter.onString());
     private String colorSchemeName = DEFAULT_COLOR_SCHEME_NAME;
 
+    @NonNull
     public String getColorSchemeName() {
         return colorSchemeName;
     }
 
-    public void setColorSchemeName(String colorSchemeName) {
+    public void setColorSchemeName(@Nullable String colorSchemeName) {
         String old = this.colorSchemeName;
         this.colorSchemeName = colorSchemeName != null ? colorSchemeName : DEFAULT_COLOR_SCHEME_NAME;
         broadcaster.firePropertyChange(COLOR_SCHEME_NAME_PROPERTY, old, this.colorSchemeName);
@@ -252,24 +249,6 @@ public final class DemetraOptions implements PropertyChangeSource, Persistable {
     }
 
     private static final String DOMAIN = DemetraOptions.class.getName(), NAME = "INSTANCE", VERSION = "";
-
-    @Deprecated
-    public ColorScheme getColorScheme() {
-        return getColorSchemes()
-                .stream()
-                .filter(colorScheme -> colorScheme.getName().equals(getColorSchemeName())
-                || colorScheme.getName().equals(DEFAULT_COLOR_SCHEME_NAME))
-                .findFirst()
-                .orElse(null);
-    }
-
-    @Deprecated
-    public List<? extends ColorScheme> getColorSchemes() {
-        return Lookup.getDefault().lookupAll(ColorScheme.class)
-                .stream()
-                .sorted(Comparator.comparing(ColorScheme::getDisplayName))
-                .collect(Collectors.toList());
-    }
 
     @Deprecated
     public Icon getPopupMenuIcon(Icon icon) {

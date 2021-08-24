@@ -19,7 +19,7 @@ package ec.nbdemetra.ui.demo.impl;
 import com.google.common.collect.ImmutableMap;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import demetra.desktop.core.properties.CharsetPropertyEditor;
-import ec.nbdemetra.ui.properties.DataFormatPropertyEditor;
+import demetra.desktop.core.properties.ObsFormatPropertyEditor;
 import ec.nbdemetra.ui.properties.DayPropertyEditor;
 import demetra.ui.properties.DhmsPropertyEditor;
 import demetra.ui.properties.NodePropertySetBuilder;
@@ -117,7 +117,7 @@ public final class PropertyEditorFactory implements DemoComponentFactory {
                 .add();
         b.with(DataFormat.class)
                 .selectField(bean, "dataFormat")
-                .editor(DataFormatPropertyEditor.class)
+                .editor(ObsFormatPropertyEditor.class)
                 .display("DataFormat")
                 .add();
         b.with(Day.class)

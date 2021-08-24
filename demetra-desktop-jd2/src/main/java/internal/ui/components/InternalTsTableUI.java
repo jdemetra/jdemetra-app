@@ -16,13 +16,13 @@
  */
 package internal.ui.components;
 
+import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.ui.DemetraOptions;
 import demetra.ui.util.ExtLayerUI;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.util.NbComponents;
-import ec.nbdemetra.ui.ThemeSupport;
 import demetra.ui.util.ActionMaps;
 import demetra.ui.util.InputMaps;
 import demetra.ui.util.TableColumnModelAdapter;
@@ -49,6 +49,7 @@ import org.netbeans.swing.etable.ETableColumnModel;
 import demetra.ui.datatransfer.DataTransfer;
 import nbbrd.service.ServiceProvider;
 import demetra.ui.components.ComponentBackendSpi;
+import demetra.ui.components.parts.HasObsFormatResolver;
 import nbbrd.design.DirectImpl;
 
 /**
@@ -78,19 +79,18 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
     private final ETable table = new ETable();
     private final JTableHeader tableHeader = table.getTableHeader();
     private final DropRenderer dropRenderer = new DropRenderer();
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
     private final DataTransfer tssTransfer = DataTransfer.getDefault();
     private final DemetraOptions demetraUI = DemetraOptions.getDefault();
 
     private ListTableSelectionListener selectionListener;
+    private HasObsFormatResolver obsFormatResolver;
 
     @Override
     public void install(JTsTable component) {
         this.target = component;
 
         this.selectionListener = new ListTableSelectionListener(target);
-
-        themeSupport.setObsFormatListener(target, this::onDataFormatChange);
+        this.obsFormatResolver = new HasObsFormatResolver(target, this::onDataFormatChange);
 
         registerActions();
         registerInputs();
@@ -107,7 +107,7 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
 
     private void registerActions() {
         HasTsCollectionCommands.registerActions(target, target.getActionMap());
-        target.getActionMap().put(HasObsFormatCommands.FORMAT_ACTION, HasObsFormatCommands.editDataFormat().toAction(target));
+        target.getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
         ActionMaps.copyEntries(target.getActionMap(), false, table.getActionMap());
     }
 

@@ -17,9 +17,6 @@
 package demetra.ui.components.parts;
 
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.beans.PropertyChangeBroadcaster;
-import internal.ui.components.parts.HasObsFormatImpl;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -35,8 +32,7 @@ public interface HasObsFormat {
 
     void setObsFormat(@Nullable ObsFormat obsFormat);
 
-    @NonNull
-    static HasObsFormat of(@NonNull PropertyChangeBroadcaster broadcaster) {
-        return new HasObsFormatImpl(broadcaster);
+    default boolean hasObsFormat() {
+        return getObsFormat() != null;
     }
 }

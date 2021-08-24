@@ -9,6 +9,7 @@ import ec.tstoolkit.uihelper.DiscreteDisplayDomain;
 import ec.tstoolkit.uihelper.IDiscreteInformationProvider;
 import demetra.ui.jfreechart.TsCharts;
 import ec.util.chart.swing.ChartCommand;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.chart.swing.ext.MatrixChartCommand;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
@@ -58,6 +59,8 @@ public class FilterView extends AChartView {
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
     @Override
     protected void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         XYPlot plot = chartPanel.getChart().getXYPlot();
         plot.setBackgroundPaint(themeSupport.getPlotColor());
         plot.setDomainGridlinePaint(themeSupport.getGridColor());

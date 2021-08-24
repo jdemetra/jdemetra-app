@@ -14,16 +14,17 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.ui.components;
 
+import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.completion.AutoCompletion;
-import ec.tss.tsproviders.utils.DataFormat;
+import demetra.ui.design.SwingComponent;
 import ec.util.completion.swing.XPopup;
 import ec.util.various.swing.TextPrompt;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -35,43 +36,45 @@ import javax.swing.event.AncestorListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
+import nbbrd.io.text.Parser;
 
 /**
  *
  * @author Philippe Charles
  * @since 1.3.2
  */
-public final class DataFormatComponent2 extends JComponent {
+@SwingComponent
+public final class JObsFormatComponent extends JComponent {
 
-    public static final String DATA_FORMAT_PROPERTY = "dataFormat";
+    public static final String OBS_FORMAT_PROPERTY = "obsFormat";
     public static final String PREVIEW_VISIBLE_PROPERTY = "previewVisible";
 
-    private static final DataFormat DEFAULT_DATA_FORMAT = DataFormat.DEFAULT;
+    private static final ObsFormat DEFAULT_OBS_FORMAT = ObsFormat.DEFAULT;
     private static final boolean DEFAULT_PREVIEW_VISIBLE = true;
 
     private final JTextComponent locale;
     private final JTextComponent datePattern;
     private final JTextComponent numberPattern;
     private final Listener listener;
-    private final Date dateSample;
+    private final LocalDateTime dateSample;
     private final CustomPreview datePatternPreview;
     private final Number numberSample;
     private final CustomPreview numberPatternPreview;
-    private DataFormat dataFormat;
+    private ObsFormat dataFormat;
     private boolean previewVisible;
 
-    public DataFormatComponent2() {
+    public JObsFormatComponent() {
         this.locale = new JTextField();
         this.datePattern = new JTextField();
         this.numberPattern = new JTextField();
         this.listener = new Listener();
 
-        this.dateSample = new Date();
+        this.dateSample = LocalDateTime.now();
         this.datePatternPreview = new CustomPreview(datePattern);
         this.numberSample = 1234.5;
         this.numberPatternPreview = new CustomPreview(numberPattern);
 
-        this.dataFormat = DEFAULT_DATA_FORMAT;
+        this.dataFormat = DEFAULT_OBS_FORMAT;
         this.previewVisible = DEFAULT_PREVIEW_VISIBLE;
 
         initComponents();
@@ -87,7 +90,7 @@ public final class DataFormatComponent2 extends JComponent {
         new TextPrompt("date pattern", datePattern).setEnabled(false);
         new TextPrompt("number pattern", numberPattern).setEnabled(false);
 
-        onDataFormatChange();
+        onObsFormatChange();
 
         locale.getDocument().addDocumentListener(listener);
         datePattern.getDocument().addDocumentListener(listener);
@@ -104,8 +107,8 @@ public final class DataFormatComponent2 extends JComponent {
     private void enableProperties() {
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
-                case DATA_FORMAT_PROPERTY:
-                    onDataFormatChange();
+                case OBS_FORMAT_PROPERTY:
+                    onObsFormatChange();
                     break;
                 case PREVIEW_VISIBLE_PROPERTY:
                     onPreviewVisibleChange();
@@ -133,15 +136,16 @@ public final class DataFormatComponent2 extends JComponent {
 
     //<editor-fold defaultstate="collapsed" desc="Events handlers">
     private void refreshPreviews() {
-        datePatternPreview.setText(dataFormat.dateFormatter().formatValueAsString(dateSample).orElse("\u203C "));
+        datePatternPreview.setText(dataFormat.dateTimeFormatter().formatValueAsString(dateSample).orElse("\u203C "));
         numberPatternPreview.setText(dataFormat.numberFormatter().formatValueAsString(numberSample).orElse("\u203C "));
     }
 
-    private void onDataFormatChange() {
+    private void onObsFormatChange() {
         if (listener.enabled) {
             listener.enabled = false;
-            locale.setText(dataFormat.getLocaleString());
-            datePattern.setText(dataFormat.getDatePattern());
+            Locale tmp = dataFormat.getLocale();
+            locale.setText(tmp != null ? tmp.toString() : null);
+            datePattern.setText(dataFormat.getDateTimePattern());
             numberPattern.setText(dataFormat.getNumberPattern());
             listener.enabled = true;
         }
@@ -156,14 +160,14 @@ public final class DataFormatComponent2 extends JComponent {
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
     @NonNull
-    public DataFormat getDataFormat() {
+    public ObsFormat getObsFormat() {
         return dataFormat;
     }
 
-    public void setDataFormat(@Nullable DataFormat dataFormat) {
-        DataFormat old = this.dataFormat;
-        this.dataFormat = dataFormat != null ? dataFormat : DEFAULT_DATA_FORMAT;
-        firePropertyChange(DATA_FORMAT_PROPERTY, old, this.dataFormat);
+    public void setObsFormat(@Nullable ObsFormat dataFormat) {
+        ObsFormat old = this.dataFormat;
+        this.dataFormat = dataFormat != null ? dataFormat : DEFAULT_OBS_FORMAT;
+        firePropertyChange(OBS_FORMAT_PROPERTY, old, this.dataFormat);
     }
 
     public boolean isPreviewVisible() {
@@ -196,7 +200,7 @@ public final class DataFormatComponent2 extends JComponent {
         public void changedUpdate(DocumentEvent e) {
             if (enabled) {
                 enabled = false;
-                setDataFormat(DataFormat.create(locale.getText(), datePattern.getText(), numberPattern.getText()));
+                setObsFormat(ObsFormat.of(Parser.onLocale().parse(locale.getText()), datePattern.getText(), numberPattern.getText()));
                 enabled = true;
             }
         }

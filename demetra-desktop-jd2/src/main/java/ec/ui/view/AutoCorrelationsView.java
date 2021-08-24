@@ -18,7 +18,8 @@ package ec.ui.view;
 
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.TimeSeriesComponent;
-import ec.nbdemetra.ui.ThemeSupport;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.stats.AutoCorrelations;
 import ec.tstoolkit.utilities.Arrays2;
@@ -28,6 +29,7 @@ import ec.ui.interfaces.IReadDataBlockView;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.chart.swing.ext.MatrixChartCommand;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -90,13 +92,11 @@ public final class AutoCorrelationsView extends JComponent implements TimeSeries
     private final ChartPanel chartPanel;
 
     @lombok.experimental.Delegate
-    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
-
+    private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
+    
     public AutoCorrelationsView() {
-        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
-
         this.length = DEFAULT_LENGTH;
         this.kind = DEFAULT_KIND;
         this.meanCorrection = DEFAULT_MEAN_CORRECTION;
@@ -136,6 +136,8 @@ public final class AutoCorrelationsView extends JComponent implements TimeSeries
 
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
     private void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         XYPlot plot = chartPanel.getChart().getXYPlot();
         plot.setBackgroundPaint(themeSupport.getPlotColor());
         plot.setDomainGridlinePaint(themeSupport.getGridColor());

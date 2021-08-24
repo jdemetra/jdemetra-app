@@ -13,7 +13,6 @@ import java.beans.PropertyChangeListener;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Sheet;
-import org.openide.util.WeakListeners;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -25,7 +24,7 @@ public class AbstractEventNode extends AbstractNode implements PropertyChangeLis
     public AbstractEventNode(AbstractEventBean bean) {
         super(Children.LEAF, Lookups.singleton(bean));
         setName(bean.getClass().getSimpleName());
-        bean.addPropertyChangeListener(WeakListeners.propertyChange(this, bean));
+        bean.addWeakPropertyChangeListener(this);
     }
 
     @Override

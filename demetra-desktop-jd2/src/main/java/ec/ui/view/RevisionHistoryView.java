@@ -5,6 +5,8 @@
 package ec.ui.view;
 
 import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import demetra.ui.util.NbComponents;
 import ec.tss.html.implementation.HtmlRevisionsDocument;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
@@ -13,7 +15,6 @@ import ec.tstoolkit.timeseries.analysis.DiagnosticTarget;
 import ec.tstoolkit.timeseries.analysis.RevisionHistory;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.html.HtmlUtil;
 import ec.ui.AHtmlView;
 import ec.ui.html.JHtmlView;
@@ -55,16 +56,15 @@ public class RevisionHistoryView extends JComponent implements HasColorScheme {
     private int threshold_ = 2;
     private final JChartPanel chartpanel_;
     private final AHtmlView documentpanel_;
-    protected final ThemeSupport themeSupport;
 
     @lombok.experimental.Delegate
-    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
-    
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
+
+        // TODO: add some code on color scheme change
+    private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::invalidate);
+
     public RevisionHistoryView() {
         setLayout(new BorderLayout());
-
-         // TODO: add some code on color scheme change
-        themeSupport = new ThemeSupport();
 
         chartpanel_ = new JChartPanel(ChartFactory.createLineChart(null, null, null, null, PlotOrientation.VERTICAL, false, false, false));
         documentpanel_ = new JHtmlView();
@@ -75,7 +75,6 @@ public class RevisionHistoryView extends JComponent implements HasColorScheme {
 
         this.add(splitpane, BorderLayout.CENTER);
         splitpane.setResizeWeight(0.5);
-        themeSupport.register();
     }
 
     private void addSeries(TimeSeriesCollection chartSeries, TsData data) {

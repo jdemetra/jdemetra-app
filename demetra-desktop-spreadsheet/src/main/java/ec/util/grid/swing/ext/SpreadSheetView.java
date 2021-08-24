@@ -17,11 +17,13 @@
 package ec.util.grid.swing.ext;
 
 import demetra.ui.components.parts.HasColorScheme;
-import ec.nbdemetra.ui.ThemeSupport;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.utilities.IPool;
 import ec.tstoolkit.utilities.Pools;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.grid.swing.JGrid;
 import ec.util.spreadsheet.Sheet;
 import ec.util.spreadsheet.helpers.ArrayBook;
@@ -46,10 +48,11 @@ public final class SpreadSheetView extends javax.swing.JPanel implements HasColo
     public static final String MODEL_PROPERTY = "model";
 
     @lombok.experimental.Delegate
-    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
+    private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
+    
     private final IPool<JGrid> gridPool;
-    private final ThemeSupport themeSupport;
     private final DataFormat dataFormat;
     private int zoomRatio;
     private boolean invertColors;
@@ -62,8 +65,6 @@ public final class SpreadSheetView extends javax.swing.JPanel implements HasColo
         initComponents();
 
         this.gridPool = Pools.on(new GridPoolFactory(), 100);
-        this.themeSupport = new ThemeSupport();
-        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
         this.dataFormat = new DataFormat(Locale.ROOT, "yyyy-MM-dd", null);
         this.zoomRatio = 100;
         this.invertColors = false;
@@ -107,6 +108,7 @@ public final class SpreadSheetView extends javax.swing.JPanel implements HasColo
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
     private void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
         SheetCellRenderer cellRenderer = new SheetCellRenderer(dataFormat, themeSupport, invertColors);
         gridStream().forEach(o -> {
             o.setGridColor(themeSupport.getGridColor());

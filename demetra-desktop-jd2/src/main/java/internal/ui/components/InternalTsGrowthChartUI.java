@@ -16,6 +16,9 @@
  */
 package internal.ui.components;
 
+import demetra.ui.components.parts.HasObsFormatSupport;
+import demetra.bridge.TsConverter;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import demetra.ui.DemetraOptions;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.HasChart;
@@ -25,7 +28,6 @@ import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsCollection;
 import static demetra.ui.actions.PrintableWithPreview.PRINT_ACTION;
 import static demetra.ui.actions.ResetableZoom.RESET_ZOOM_ACTION;
-import ec.nbdemetra.ui.ThemeSupport;
 import demetra.ui.util.ActionMaps;
 import demetra.ui.util.InputMaps;
 import demetra.ui.components.JTsGrowthChart;
@@ -53,6 +55,9 @@ import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.jfreechart.TsXYDataset;
 import nbbrd.service.ServiceProvider;
 import demetra.ui.components.ComponentBackendSpi;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasObsFormatResolver;
+import ec.tss.tsproviders.utils.DataFormat;
 import nbbrd.design.DirectImpl;
 
 /**
@@ -80,18 +85,18 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
 
     private final JTimeSeriesChart chartPanel = new JTimeSeriesChart();
     private final ListSelectionModel selectionModel = new DefaultListSelectionModel();
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
 
     private InternalTsSelectionAdapter selectionListener;
+    private HasObsFormatResolver obsFormatResolver;
+    private HasColorSchemeResolver colorSchemeResolver;
 
     @Override
     public void install(JTsGrowthChart component) {
         this.target = component;
 
         this.selectionListener = new InternalTsSelectionAdapter(target);
-
-        themeSupport.setColorSchemeListener(target, this::onColorSchemeChange);
-        themeSupport.setObsFormatListener(target, this::onDataFormatChange);
+        this.obsFormatResolver = new HasObsFormatResolver(target, this::onDataFormatChange);
+        this.colorSchemeResolver = new HasColorSchemeResolver(target, this::onColorSchemeChange);
 
         registerActions();
         registerInputs();
@@ -112,10 +117,10 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
         HasChartCommands.registerActions(target, am);
         am.put(PREVIOUS_PERIOD_ACTION, applyGrowthKind(JTsGrowthChart.GrowthKind.PreviousPeriod).toAction(target));
         am.put(PREVIOUS_YEAR_ACTION, applyGrowthKind(JTsGrowthChart.GrowthKind.PreviousYear).toAction(target));
-        am.put(HasObsFormatCommands.FORMAT_ACTION, HasObsFormatCommands.editDataFormat().toAction(target));
+        am.put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
         HasTsCollectionCommands.registerActions(target, target.getActionMap());
         HasChartCommands.registerActions(target, target.getActionMap());
-        target.getActionMap().put(HasObsFormatCommands.FORMAT_ACTION, HasObsFormatCommands.editDataFormat().toAction(target));
+        target.getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
         target.getActionMap().put(PRINT_ACTION, JCommand.of(JTimeSeriesChartUtil::printWithPreview).toAction(chartPanel));
         target.getActionMap().put(RESET_ZOOM_ACTION, JCommand.of(JTimeSeriesChart::resetZoom).toAction(chartPanel));
         ActionMaps.copyEntries(target.getActionMap(), false, chartPanel.getActionMap());
@@ -234,7 +239,8 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
     private void onDataFormatChange() {
         try {
-            chartPanel.setPeriodFormat(themeSupport.getDataFormat().newDateFormat());
+            DataFormat dataFormat = TsConverter.fromObsFormat(obsFormatResolver.resolve());
+            chartPanel.setPeriodFormat(dataFormat.newDateFormat());
         } catch (IllegalArgumentException ex) {
             // do nothing?
         }
@@ -242,7 +248,7 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
 
     private void onColorSchemeChange() {
         chartPanel.setColorSchemeSupport(null);
-        chartPanel.setColorSchemeSupport(themeSupport);
+        chartPanel.setColorSchemeSupport(colorSchemeResolver.resolve());
     }
 
     private void onCollectionChange() {
@@ -366,8 +372,8 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
         result.addSeparator();
         result.add(HasChartCommands.newToggleTitleVisibilityMenu(am, demetraUI));
         result.add(HasChartCommands.newToggleLegendVisibilityMenu(am, demetraUI));
-        result.add(HasObsFormatCommands.newEditFormatMenu(am, demetraUI));
-        result.add(HasColorSchemeCommands.menuOf(target, demetraUI.getColorSchemes()));
+        result.add(HasObsFormatSupport.newEditFormatMenu(am, demetraUI));
+        result.add(HasColorSchemeSupport.menuOf(target));
         result.add(InternalComponents.newResetZoomMenu(am, demetraUI));
 
         result.add(buildExportImageMenu(demetraUI));

@@ -26,11 +26,13 @@ import demetra.ui.jfreechart.TsCharts;
 import ec.ui.interfaces.IReadDataBlockView;
 import demetra.ui.components.parts.HasChart.LinesThickness;
 import demetra.ui.components.TimeSeriesComponent;
-import ec.nbdemetra.ui.ThemeSupport;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.chart.swing.ext.MatrixChartCommand;
 import java.awt.BorderLayout;
 import java.text.DecimalFormat;
@@ -94,9 +96,9 @@ public final class DistributionView extends JComponent implements TimeSeriesComp
     private final ChartPanel chartPanel;
 
     @lombok.experimental.Delegate
-    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
+    private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
 
     public DistributionView() {
         this.lBound = DEFAULT_L_BOUND;
@@ -107,8 +109,6 @@ public final class DistributionView extends JComponent implements TimeSeriesComp
         this.data = DEFAULT_DATA;
 
         this.chartPanel = Charts.newChartPanel(createDistributionViewChart());
-
-        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
         
         onColorSchemeChange();
         onComponentPopupMenuChange();
@@ -148,6 +148,8 @@ public final class DistributionView extends JComponent implements TimeSeriesComp
 
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
     private void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         XYPlot plot = chartPanel.getChart().getXYPlot();
         plot.setBackgroundPaint(themeSupport.getPlotColor());
         plot.setDomainGridlinePaint(themeSupport.getGridColor());

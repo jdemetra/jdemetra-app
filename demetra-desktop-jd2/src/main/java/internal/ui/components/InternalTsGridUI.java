@@ -16,21 +16,22 @@
  */
 package internal.ui.components;
 
+import demetra.ui.components.parts.HasObsFormatSupport;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import com.google.common.base.Suppliers;
 import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
+import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.TsMonikerUI;
-import ec.nbdemetra.ui.ThemeSupport;
 import demetra.ui.util.ActionMaps;
 import demetra.ui.util.InputMaps;
-import ec.tss.tsproviders.utils.DataFormat;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.data.DescriptiveStatistics;
@@ -79,7 +80,10 @@ import demetra.ui.datatransfer.DataTransfer;
 import javax.swing.JComponent;
 import nbbrd.service.ServiceProvider;
 import demetra.ui.components.ComponentBackendSpi;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasObsFormatResolver;
 import nbbrd.design.DirectImpl;
+import nbbrd.io.text.Formatter;
 
 public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
@@ -104,10 +108,11 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     private final JComboBox combo = new JComboBox();
     private final GridHandler gridHandler = new GridHandler();
     private final CustomCellRenderer defaultCellRenderer = new CustomCellRenderer(grid.getDefaultRenderer(Object.class));
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
     private Font originalFont;
 
     private GridSelectionListener selectionListener;
+    private HasObsFormatResolver obsFormatResolver;
+    private HasColorSchemeResolver colorSchemeResolver;
 
     @Override
     public void install(JTsGrid component) {
@@ -117,8 +122,8 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
         target.setCellRenderer(defaultCellRenderer);
 
-        themeSupport.setColorSchemeListener(target, this::onColorSchemeChange);
-        themeSupport.setObsFormatListener(target, this::onDataFormatChange);
+        this.obsFormatResolver = new HasObsFormatResolver(target, this::onDataFormatChange);
+        this.colorSchemeResolver = new HasColorSchemeResolver(target, this::onColorSchemeChange);
 
         registerActions();
         registerInputs();
@@ -142,9 +147,9 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         am.put(SINGLE_TS_ACTION, JTsGridCommands.applyMode(JTsGrid.Mode.SINGLETS).toAction(target));
         am.put(MULTI_TS_ACTION, JTsGridCommands.applyMode(JTsGrid.Mode.MULTIPLETS).toAction(target));
         am.put(TOGGLE_MODE_ACTION, JTsGridCommands.toggleMode().toAction(target));
-        am.put(HasObsFormatCommands.FORMAT_ACTION, HasObsFormatCommands.editDataFormat().toAction(target));
+        am.put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
         HasTsCollectionCommands.registerActions(target, target.getActionMap());
-        target.getActionMap().put(HasObsFormatCommands.FORMAT_ACTION, HasObsFormatCommands.editDataFormat().toAction(target));
+        target.getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
         ActionMaps.copyEntries(target.getActionMap(), false, grid.getActionMap());
     }
 
@@ -418,13 +423,13 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
                     ? new DescriptiveStatistics(data.stream().flatMapToDouble(o -> o.getData().getValues().stream()).toArray())
                     : new DescriptiveStatistics(data.get(target.getSingleTsIndex()).getData().getValues().toArray());
         });
-        defaultCellRenderer.update(themeSupport.getDataFormat(), target.isUseColorScheme() ? themeSupport : null, target.isShowBars(), tsFeatures, stats);
+        defaultCellRenderer.update(obsFormatResolver.resolve(), target.isUseColorScheme() ? colorSchemeResolver.resolve() : null, target.isShowBars(), tsFeatures, stats);
         grid.setDefaultRenderer(TsGridObs.class, target.getCellRenderer());
         grid.repaint();
     }
 
     private void updateComboCellRenderer() {
-        combo.setRenderer(new ComboCellRenderer(target.isUseColorScheme() ? themeSupport : null));
+        combo.setRenderer(new ComboCellRenderer(target.isUseColorScheme() ? colorSchemeResolver.resolve() : null));
     }
 
     private JMenu buildMenu(DemetraOptions demetraUI) {
@@ -479,7 +484,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
         result.addSeparator();
 
-        item = new JMenuItem(am.get(HasObsFormatCommands.FORMAT_ACTION));
+        item = new JMenuItem(am.get(HasObsFormatSupport.FORMAT_ACTION));
         item.setText("Edit format...");
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_GLOBE));
         result.add(item);
@@ -488,7 +493,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         item.setText("Use color scheme");
         result.add(item);
 
-        result.add(HasColorSchemeCommands.menuOf(target, DemetraOptions.getDefault().getColorSchemes()));
+        result.add(HasColorSchemeSupport.menuOf(target));
 
         item = new JCheckBoxMenuItem(JTsGridCommands.toggleShowBars().toAction(target));
         item.setText("Show bars");
@@ -598,7 +603,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         private final TableCellRenderer delegate;
         private final IFormatter<? super TsPeriod> periodFormatter;
         private final JToolTip toolTip;
-        private IFormatter<? super Number> valueFormatter;
+        private Formatter<? super Number> valueFormatter;
         private SwingColorSchemeSupport colorSchemeSupport;
         private boolean showBars;
         private Supplier<TsFeatureHelper> tsFeatures;
@@ -611,15 +616,15 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
             this.delegate = delegate;
             this.periodFormatter = TsPeriod::toString;
             this.toolTip = super.createToolTip();
-            this.valueFormatter = DataFormat.DEFAULT.numberFormatter();
+            this.valueFormatter = ObsFormat.DEFAULT.numberFormatter();
             this.colorSchemeSupport = null;
             this.showBars = false;
             this.tsFeatures = () -> TsFeatureHelper.EMPTY;
             this.stats = () -> new DescriptiveStatistics();
         }
 
-        void update(@NonNull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars, Supplier<TsFeatureHelper> tsFeatures, Supplier<DescriptiveStatistics> stats) {
-            this.valueFormatter = dataFormat.numberFormatter();
+        void update(@NonNull ObsFormat obsFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars, Supplier<TsFeatureHelper> tsFeatures, Supplier<DescriptiveStatistics> stats) {
+            this.valueFormatter = obsFormat.numberFormatter();
             this.colorSchemeSupport = colorSchemeSupport;
             this.showBars = showBars;
             this.tsFeatures = tsFeatures;

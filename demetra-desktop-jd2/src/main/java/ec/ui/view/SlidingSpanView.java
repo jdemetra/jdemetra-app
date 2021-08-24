@@ -6,6 +6,8 @@ package ec.ui.view;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import demetra.ui.util.NbComponents;
 import ec.satoolkit.DecompositionMode;
 import ec.tss.html.implementation.HtmlSlidingSpanDocument;
@@ -17,7 +19,6 @@ import ec.tstoolkit.timeseries.analysis.SlidingSpans;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.chart.TsXYDatasets;
 import demetra.ui.jfreechart.TsCharts;
-import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.tsproviders.utils.OptionalTsData;
 import ec.ui.Disposables;
 import ec.ui.view.tsprocessing.ITsViewToolkit;
@@ -50,6 +51,7 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultXYDataset;
 import demetra.ui.datatransfer.DataTransfer;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 
 /**
  *
@@ -72,7 +74,6 @@ public class SlidingSpanView extends JComponent implements HasColorScheme {
     protected String infoName;
     protected double threshold;
     protected DiagnosticInfo info;
-    protected final ThemeSupport themeSupport;
     // OTHER
     private final JChartPanel seriesPanel;
     private final JChartPanel distributionPanel;
@@ -80,15 +81,16 @@ public class SlidingSpanView extends JComponent implements HasColorScheme {
     private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
 
     @lombok.experimental.Delegate
-    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
+    private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
+    
     public SlidingSpanView() {
 
         this.slidingSpans = null;
         this.infoName = null;
         this.threshold = DEFAULT_THRESHOLD;
         this.info = DEFAULT_INFO;
-        this.themeSupport = new ThemeSupport();
 
         this.seriesPanel = new JChartPanel(createSeriesChart());
         this.distributionPanel = new JChartPanel(createDistributionChart());
@@ -104,9 +106,6 @@ public class SlidingSpanView extends JComponent implements HasColorScheme {
 
         setLayout(new BorderLayout());
         add(splitpane2, BorderLayout.CENTER);
-
-        themeSupport.register();
-        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
 
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
@@ -168,6 +167,8 @@ public class SlidingSpanView extends JComponent implements HasColorScheme {
     }
 
     protected void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         for (JChartPanel o : Arrays.asList(seriesPanel, distributionPanel)) {
             XYPlot plot = o.getChart().getXYPlot();
             plot.setBackgroundPaint(themeSupport.getPlotColor());

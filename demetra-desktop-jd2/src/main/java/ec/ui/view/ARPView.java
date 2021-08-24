@@ -21,7 +21,8 @@ import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
-import ec.nbdemetra.ui.ThemeSupport;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import ec.tstoolkit.data.IReadDataBlock;
@@ -57,6 +58,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.Layer;
 import demetra.ui.datatransfer.DataTransfer;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 
 /**
  *
@@ -76,10 +78,10 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
     private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
 
     @lombok.experimental.Delegate
-    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
-    protected final ThemeSupport themeSupport = ThemeSupport.registered();
-
+    private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
+    
     protected ARPView() {
         this.chartPanel = Charts.newChartPanel(createARPChart());
         this.data = null;
@@ -89,8 +91,6 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
     private void initComponents() {
         chartPanel.setDomainZoomable(false);
         chartPanel.setRangeZoomable(false);
-
-        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
 
         setTransferHandler(new HasTsTransferHandler(this, DataTransfer.getDefault()));
 
@@ -142,6 +142,8 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
     }
 
     protected void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         XYPlot plot = getPlot();
         plot.setBackgroundPaint(themeSupport.getPlotColor());
         plot.setDomainGridlinePaint(themeSupport.getGridColor());
@@ -287,7 +289,7 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
             this.color = color;
         }
 
-        void applyColorScheme(ThemeSupport support) {
+        void applyColorScheme(SwingColorSchemeSupport support) {
             setPaint(support.getAreaColor(color));
         }
     }

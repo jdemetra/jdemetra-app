@@ -14,13 +14,12 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.properties;
+package demetra.desktop.core.properties;
 
 import demetra.ui.components.JObsFormatComponent;
-import demetra.bridge.TsConverter;
+import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.properties.AbstractInplaceEditor;
 import demetra.ui.properties.AbstractExPropertyEditor;
-import ec.tss.tsproviders.utils.DataFormat;
 import javax.swing.JComponent;
 import org.openide.explorer.propertysheet.InplaceEditor;
 import org.openide.nodes.PropertyEditorRegistration;
@@ -29,15 +28,15 @@ import org.openide.nodes.PropertyEditorRegistration;
  *
  * @author Philippe Charles
  */
-@PropertyEditorRegistration(targetType = DataFormat.class)
-public final class DataFormatPropertyEditor extends AbstractExPropertyEditor {
+@PropertyEditorRegistration(targetType = ObsFormat.class)
+public final class ObsFormatPropertyEditor extends AbstractExPropertyEditor {
 
     @Override
     public InplaceEditor createInplaceEditor() {
-        return new DataFormatInplaceEditor();
+        return new ObsFormatInplaceEditor();
     }
 
-    private static final class DataFormatInplaceEditor extends AbstractInplaceEditor {
+    private static final class ObsFormatInplaceEditor extends AbstractInplaceEditor {
 
         final JObsFormatComponent component = new JObsFormatComponent();
 
@@ -48,12 +47,12 @@ public final class DataFormatPropertyEditor extends AbstractExPropertyEditor {
 
         @Override
         public Object getValue() {
-            return TsConverter.fromObsFormat(component.getObsFormat());
+            return component.getObsFormat();
         }
 
         @Override
         public void setValue(Object o) {
-            component.setObsFormat(TsConverter.toObsFormat((DataFormat) o));
+            component.setObsFormat((ObsFormat) o);
         }
     }
 }

@@ -24,6 +24,8 @@ import demetra.ui.components.parts.HasHoveredObs;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
+import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.ui.design.SwingComponent;
 import internal.ui.components.DemoTsBuilder;
 import java.awt.Dimension;
@@ -42,7 +44,7 @@ import javax.swing.table.TableCellRenderer;
  * @author Mats Maggi
  */
 @SwingComponent
-public final class JTsGrid extends JComponent implements TimeSeriesComponent, PropertyChangeSource,
+public final class JTsGrid extends JComponent implements TimeSeriesComponent, PropertyChangeSource.WithWeakListeners,
         HasTsCollection, HasTsAction, HasGrid, HasColorScheme, HasObsFormat, HasHoveredObs {
 
     /**
@@ -138,8 +140,8 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
         this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
         this.grid = HasGrid.of(this::firePropertyChange);
         this.tsAction = HasTsAction.of(this::firePropertyChange);
-        this.colorScheme = HasColorScheme.of(this::firePropertyChange);
-        this.obsFormat = HasObsFormat.of(this::firePropertyChange);
+        this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
+        this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
         this.hoveredObs = HasHoveredObs.of(this::firePropertyChange);
         this.orientation = DEFAULT_ORIENTATION;
         this.chronology = DEFAULT_CHRONOLOGY;

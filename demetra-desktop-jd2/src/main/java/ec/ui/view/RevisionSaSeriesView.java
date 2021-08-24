@@ -20,8 +20,9 @@ import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import demetra.ui.util.NbComponents;
-import ec.nbdemetra.ui.ThemeSupport;
 import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlRevisionsDocument;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
@@ -36,6 +37,7 @@ import ec.ui.chart.ChartPopup;
 import demetra.ui.jfreechart.TsCharts;
 import ec.ui.html.JHtmlView;
 import ec.util.chart.ColorScheme;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.geom.Ellipse2D;
@@ -93,18 +95,18 @@ public final class RevisionSaSeriesView extends JComponent implements TimeSeries
     private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
 
     @lombok.experimental.Delegate
-    private final HasColorScheme colorScheme = HasColorScheme.of(this::firePropertyChange);
+    private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
-    private final ThemeSupport themeSupport = ThemeSupport.registered();
+    private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
     
     /**
      * Constructs a new view
      */
     public RevisionSaSeriesView() {
-        themeSupport.setColorSchemeListener(colorScheme, this::onColorSchemeChange);
-
         setLayout(new BorderLayout());
 
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+        
         sRenderer = new XYLineAndShapeRenderer();
         sRenderer.setBaseShapesVisible(false);
         //sRenderer.setSeriesStroke(1, new BasicStroke(0.75f, 1, 1, 1.0f, new float[]{2f, 3f}, 0.0f));
@@ -349,6 +351,7 @@ public final class RevisionSaSeriesView extends JComponent implements TimeSeries
 
         plot.setDataset(REV_INDEX, startSeries);
 
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
         for (int i = 0; i < startSeries.getSeriesCount(); i++) {
             revRenderer.setSeriesShape(i, new Ellipse2D.Double(-3, -3, 6, 6));
             revRenderer.setSeriesShapesFilled(i, false);
@@ -420,6 +423,8 @@ public final class RevisionSaSeriesView extends JComponent implements TimeSeries
     }
 
     private void onColorSchemeChange() {
+        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
+
         sRenderer.setBasePaint(themeSupport.getLineColor(ColorScheme.KnownColor.RED));
         revRenderer.setBasePaint(themeSupport.getLineColor(ColorScheme.KnownColor.BLUE));
 

@@ -18,6 +18,7 @@ package demetra.ui.beans;
 
 import java.beans.PropertyChangeListener;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.openide.util.WeakListeners;
 
 /**
  *
@@ -32,4 +33,15 @@ public interface PropertyChangeSource {
     void removePropertyChangeListener(@NonNull String propertyName, @NonNull PropertyChangeListener listener);
 
     void removePropertyChangeListener(@NonNull PropertyChangeListener listener);
+
+    interface WithWeakListeners extends PropertyChangeSource {
+
+        default void addWeakPropertyChangeListener(@NonNull String propertyName, @NonNull PropertyChangeListener listener) {
+            addPropertyChangeListener(propertyName, WeakListeners.propertyChange(listener, this));
+        }
+
+        default void addWeakPropertyChangeListener(@NonNull PropertyChangeListener listener) {
+            addPropertyChangeListener(WeakListeners.propertyChange(listener, this));
+        }
+    }
 }

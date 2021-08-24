@@ -37,7 +37,6 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.DynamicMenuContent;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.WeakListeners;
 import org.openide.util.actions.Presenter;
 
 @ActionID(category = "File",
@@ -67,7 +66,7 @@ public final class WorkspaceMruAction extends AbstractAction implements Presente
 
         public MruMenu(String s) {
             super(s);
-            MruList.getWorkspacesInstance().addPropertyChangeListener(WeakListeners.propertyChange(this, MruList.getWorkspacesInstance()));
+            MruList.getWorkspacesInstance().addWeakPropertyChangeListener(this);
             updateMenu();
         }
 

@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @author Philippe Charles
  */
-public final class MruList implements PropertyChangeSource, Iterable<SourceId> {
+public final class MruList implements PropertyChangeSource.WithWeakListeners, Iterable<SourceId> {
 
     public static final String CONTENT_PROPERTY = "123";
     private static final MruList PROVIDERS = new MruList();

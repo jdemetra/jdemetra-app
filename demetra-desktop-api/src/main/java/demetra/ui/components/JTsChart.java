@@ -30,6 +30,8 @@ import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
 import demetra.ui.actions.PrintableWithPreview;
 import demetra.ui.actions.ResetableZoom;
+import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.ui.design.SwingComponent;
 import internal.ui.components.DemoTsBuilder;
 import internal.ui.components.JTsChartConfig;
@@ -49,7 +51,7 @@ import javax.swing.ListSelectionModel;
  * @author Philippe Charles
  */
 @SwingComponent
-public final class JTsChart extends JComponent implements TimeSeriesComponent, PropertyChangeSource,
+public final class JTsChart extends JComponent implements TimeSeriesComponent, PropertyChangeSource.WithWeakListeners,
         HasTsCollection, HasTsAction, HasChart, HasColorScheme, HasObsFormat, HasHoveredObs,
         PrintableWithPreview, ResetableZoom, Configurable, Persistable, ConfigEditor {
 
@@ -90,8 +92,8 @@ public final class JTsChart extends JComponent implements TimeSeriesComponent, P
         this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
         this.tsAction = HasTsAction.of(this::firePropertyChange);
         this.chart = HasChart.of(this::firePropertyChange);
-        this.colorScheme = HasColorScheme.of(this::firePropertyChange);
-        this.obsFormat = HasObsFormat.of(this::firePropertyChange);
+        this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
+        this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
         this.hoveredObs = HasHoveredObs.of(this::firePropertyChange);
         this.printable = PrintableWithPreview.of(this::getActionMap);
         this.resetableZoom = ResetableZoom.of(this::getActionMap);
