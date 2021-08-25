@@ -30,8 +30,8 @@ import demetra.timeseries.TsData;
 import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsDomain;
 import demetra.ui.DemetraOptions;
-import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
+import demetra.ui.components.parts.HasChartSupport;
 import demetra.ui.components.parts.HasColorSchemeSupport;
 import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.ui.design.SwingComponent;
@@ -93,9 +93,9 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
     private final TsSelectionBridge tsSelectionBridge;
 
     public JTsGrowthChart() {
-        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
+        this.collection = HasTsCollection.of(this::firePropertyChange);
         this.tsAction = HasTsAction.of(this::firePropertyChange);
-        this.chart = HasChart.of(this::firePropertyChange);
+        this.chart = HasChartSupport.of(this::firePropertyChange);
         this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
         this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
         this.printableWithPreview = PrintableWithPreview.of(this::getActionMap);

@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.ui.components.parts.HasChartSupport;
 import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.bridge.TsConverter;
 import demetra.ui.components.parts.HasColorSchemeSupport;
@@ -125,7 +126,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
 
     private void registerActions() {
         HasTsCollectionCommands.registerActions(target, target.getActionMap());
-        HasChartCommands.registerActions(target, target.getActionMap());
+        HasChartSupport.registerActions(target, target.getActionMap());
         target.getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
         target.getActionMap().put(PRINT_ACTION, JCommand.of(JTimeSeriesChartUtil::printWithPreview).toAction(chartPanel));
         target.getActionMap().put(RESET_ZOOM_ACTION, JCommand.of(JTimeSeriesChart::resetZoom).toAction(chartPanel));
@@ -417,11 +418,11 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
 
         result.add(HasTsCollectionCommands.newSplitMenu(am, demetraUI));
         result.addSeparator();
-        result.add(HasChartCommands.newToggleTitleVisibilityMenu(am, demetraUI));
-        result.add(HasChartCommands.newToggleLegendVisibilityMenu(am, demetraUI));
+        result.add(HasChartSupport.newToggleTitleVisibilityMenu(am, demetraUI));
+        result.add(HasChartSupport.newToggleLegendVisibilityMenu(am, demetraUI));
         result.add(HasObsFormatSupport.newEditFormatMenu(am, demetraUI));
         result.add(HasColorSchemeSupport.menuOf(target));
-        result.add(HasChartCommands.newLinesThicknessMenu(am));
+        result.add(HasChartSupport.newLinesThicknessMenu(am));
         result.addSeparator();
         result.add(InternalComponents.newResetZoomMenu(am, demetraUI));
 

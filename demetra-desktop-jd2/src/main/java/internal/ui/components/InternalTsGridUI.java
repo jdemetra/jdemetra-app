@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.ui.components.parts.HasGridSupport;
 import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.ui.components.parts.HasColorSchemeSupport;
 import com.google.common.base.Suppliers;
@@ -500,12 +501,12 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_TASKS));
         result.add(item);
 
-        item = new JCheckBoxMenuItem(HasGridCommands.toggleCrosshairVisibility().toAction(target));
+        item = new JCheckBoxMenuItem(HasGridSupport.toggleCrosshairVisibility().toAction(target));
         item.setText("Show crosshair");
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_CROSSHAIRS));
         result.add(item);
 
-        result.add(HasGridCommands.newZoomRationMenu(target));
+        result.add(HasGridSupport.newZoomRationMenu(target));
 
         return result;
     }

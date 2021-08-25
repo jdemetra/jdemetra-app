@@ -18,7 +18,6 @@ package ec.ui.view;
 
 import demetra.bridge.TsConverter;
 import demetra.ui.DemetraOptions;
-import demetra.ui.TsManager;
 import ec.satoolkit.DecompositionMode;
 import ec.tss.TsInformation;
 import ec.tstoolkit.data.DataBlock;
@@ -35,6 +34,7 @@ import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.components.parts.HasColorSchemeResolver;
 import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.design.SwingComponent;
 import ec.tss.TsInformationType;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
@@ -79,6 +79,7 @@ import org.jfree.data.xy.XYDataset;
  *
  * @author Kristof Bayens
  */
+@SwingComponent
 public final class SIView extends JComponent implements TimeSeriesComponent, HasTs, HasColorScheme {
 
     // CONSTANTS
@@ -101,7 +102,7 @@ public final class SIView extends JComponent implements TimeSeriesComponent, Has
     private Formatter<Number> numberFormat;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
+    private final HasTs m_ts = HasTs.of(this::firePropertyChange);
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

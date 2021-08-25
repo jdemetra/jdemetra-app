@@ -37,6 +37,7 @@ import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasColorSchemeResolver;
 import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.design.SwingComponent;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import javax.swing.JComponent;
@@ -45,6 +46,7 @@ import javax.swing.JComponent;
  *
  * @author Mats Maggi
  */
+@SwingComponent
 public final class RevisionAnalysisChart extends JComponent implements TimeSeriesComponent {
 
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

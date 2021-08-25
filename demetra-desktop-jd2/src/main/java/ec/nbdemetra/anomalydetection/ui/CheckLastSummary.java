@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.anomalydetection.ui;
 
+import demetra.ui.design.SwingComponent;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.anomalydetection.html.HtmlCheckLast;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
@@ -32,7 +33,8 @@ import javax.swing.JComponent;
  *
  * @author Mats Maggi
  */
-public class CheckLastSummary extends JComponent implements IDisposable {
+@SwingComponent
+public final class CheckLastSummary extends JComponent implements IDisposable {
 
     private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
     private final Box document_;

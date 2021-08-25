@@ -15,6 +15,7 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.Disposables;
 import demetra.ui.components.JTsChart;
 import demetra.ui.components.JTsGrid;
+import demetra.ui.design.SwingComponent;
 import java.awt.BorderLayout;
 import java.util.stream.Stream;
 import javax.swing.Box;
@@ -25,6 +26,7 @@ import javax.swing.JSplitPane;
  *
  * @author Jean Palate
  */
+@SwingComponent
 public final class BenchmarkingView extends JComponent {
 
     private final JTsGrid grid_;

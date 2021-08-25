@@ -49,11 +49,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.design.SwingComponent;
 
 /**
  *
  * @author Philippe Charles
  */
+@SwingComponent
 final class AnomalyDetectionChart extends JComponent {
 
     public static final String MODEL_PROPERTY = "model";

@@ -20,6 +20,7 @@ import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.components.parts.HasColorSchemeResolver;
 import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.design.SwingComponent;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.stats.AutoCorrelations;
 import ec.tstoolkit.utilities.Arrays2;
@@ -56,6 +57,7 @@ import org.jfree.ui.Layer;
  *
  * @author Demortier Jeremy
  */
+@SwingComponent
 public final class AutoCorrelationsView extends JComponent implements TimeSeriesComponent, IReadDataBlockView, HasColorScheme {
 
     public enum ACKind {

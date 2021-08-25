@@ -20,7 +20,7 @@ import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import demetra.ui.components.JTsGrid;
 import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
-import internal.ui.components.HasGridCommands;
+import demetra.ui.components.parts.HasGridSupport;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 import nbbrd.service.ServiceProvider;
@@ -43,6 +43,6 @@ public final class TsGridHandler extends TypedDemoComponentHandler<JTsGrid> {
     }
 
     static JButton createZoomButton(JTsGrid view) {
-        return DropDownButtonFactory.createDropDownButton(DemetraUiIcon.MAGNIFYING_TOOL, HasGridCommands.newZoomRationMenu(view).getPopupMenu());
+        return DropDownButtonFactory.createDropDownButton(DemetraUiIcon.MAGNIFYING_TOOL, HasGridSupport.newZoomRationMenu(view).getPopupMenu());
     }
 }

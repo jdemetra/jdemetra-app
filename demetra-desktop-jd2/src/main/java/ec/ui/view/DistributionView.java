@@ -28,6 +28,7 @@ import demetra.ui.components.parts.HasChart.LinesThickness;
 import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.components.parts.HasColorSchemeResolver;
 import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.design.SwingComponent;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
@@ -60,6 +61,7 @@ import org.jfree.data.xy.XYSeriesCollection;
  *
  * @author Demortier & BAYENSK
  */
+@SwingComponent
 public final class DistributionView extends JComponent implements TimeSeriesComponent, IReadDataBlockView, HasColorScheme {
 
     // CONSTANTS

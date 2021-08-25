@@ -19,13 +19,15 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import org.openide.util.NbCollections;
 import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.design.SwingComponent;
 import ec.tstoolkit.timeseries.simplets.TsData;
 
 /**
  *
  * @author Demortier Jeremy
  */
-public class TsProperties extends JComponent implements IDisposable {
+@SwingComponent
+public final class TsProperties extends JComponent implements IDisposable {
 
     private JTsChart chart_;
     private JTsGrid grid_;

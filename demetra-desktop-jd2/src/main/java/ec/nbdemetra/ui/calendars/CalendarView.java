@@ -23,6 +23,7 @@ import demetra.ui.components.JTsGrid;
 import ec.ui.view.PeriodogramView;
 import ec.util.list.swing.JLists;
 import demetra.ui.components.TsSelectionBridge;
+import demetra.ui.design.SwingComponent;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,8 @@ import org.openide.nodes.Sheet;
  *
  * @author Philippe Charles
  */
-public class CalendarView extends JComponent {
+@SwingComponent
+public final class CalendarView extends JComponent {
 
     private static String[] TD = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Leap Year"};
     private static String[] WD = {"Working days", "Leap Year"};

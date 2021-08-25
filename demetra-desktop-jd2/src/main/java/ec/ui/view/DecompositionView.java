@@ -8,6 +8,7 @@ import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import ec.tss.Ts;
 import demetra.ui.components.JTsChart;
+import demetra.ui.design.SwingComponent;
 import java.awt.BorderLayout;
 import java.util.List;
 import java.util.stream.Stream;
@@ -17,7 +18,8 @@ import javax.swing.JComponent;
  *
  * @author Kristof Bayens
  */
-public class DecompositionView extends JComponent {
+@SwingComponent
+public final class DecompositionView extends JComponent {
 
     private JTsChart dualchart_;
 

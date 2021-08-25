@@ -72,12 +72,14 @@ import org.openide.NotifyDescriptor;
 import demetra.ui.components.parts.HasTsAction;
 import ec.util.table.swing.JTables;
 import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.design.SwingComponent;
 
 /**
  *
  * @author Jean Palate
  */
-public class JTsVariableList extends JComponent implements HasTsAction {
+@SwingComponent
+public final class JTsVariableList extends JComponent implements HasTsAction {
 
     public static final String DELETE_ACTION = "delete";
     public static final String CLEAR_ACTION = "clear";

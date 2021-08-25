@@ -22,7 +22,6 @@ import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.components.parts.HasChart;
 import demetra.ui.components.parts.HasHoveredObs;
 import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.Config;
 import demetra.ui.ConfigEditor;
@@ -30,6 +29,7 @@ import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
 import demetra.ui.actions.PrintableWithPreview;
 import demetra.ui.actions.ResetableZoom;
+import demetra.ui.components.parts.HasChartSupport;
 import demetra.ui.components.parts.HasColorSchemeSupport;
 import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.ui.design.SwingComponent;
@@ -89,9 +89,9 @@ public final class JTsChart extends JComponent implements TimeSeriesComponent, P
     private final TsSelectionBridge tsSelectionBridge;
 
     public JTsChart() {
-        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
+        this.collection = HasTsCollection.of(this::firePropertyChange);
         this.tsAction = HasTsAction.of(this::firePropertyChange);
-        this.chart = HasChart.of(this::firePropertyChange);
+        this.chart = HasChartSupport.of(this::firePropertyChange);
         this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
         this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
         this.hoveredObs = HasHoveredObs.of(this::firePropertyChange);

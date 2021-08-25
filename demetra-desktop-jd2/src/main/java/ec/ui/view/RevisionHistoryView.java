@@ -7,6 +7,7 @@ package ec.ui.view;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasColorSchemeResolver;
 import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.design.SwingComponent;
 import demetra.ui.util.NbComponents;
 import ec.tss.html.implementation.HtmlRevisionsDocument;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
@@ -43,7 +44,8 @@ import org.jfree.data.time.TimeSeriesCollection;
  *
  * @author Kristof Bayens
  */
-public class RevisionHistoryView extends JComponent implements HasColorScheme {
+@SwingComponent
+public final class RevisionHistoryView extends JComponent implements HasColorScheme {
 
     private String info_ = "SA";
     private RevisionHistory history_;

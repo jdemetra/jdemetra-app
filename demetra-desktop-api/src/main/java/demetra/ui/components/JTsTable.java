@@ -23,7 +23,6 @@ import demetra.timeseries.TsData;
 import demetra.tsprovider.util.MultiLineNameUtil;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
-import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.TsMonikerUI;
 import demetra.ui.components.parts.HasObsFormatSupport;
@@ -160,7 +159,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
     private final TsSelectionBridge tsSelectionBridge;
 
     public JTsTable() {
-        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
+        this.collection = HasTsCollection.of(this::firePropertyChange);
         this.tsAction = HasTsAction.of(this::firePropertyChange);
         this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
         this.showHeader = DEFAULT_SHOW_HEADER;

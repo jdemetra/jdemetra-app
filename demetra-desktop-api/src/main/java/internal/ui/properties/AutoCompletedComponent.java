@@ -16,6 +16,7 @@
  */
 package internal.ui.properties;
 
+import demetra.ui.design.SwingComponent;
 import demetra.ui.util.ExtLayerUI;
 import demetra.ui.util.FontAwesomeUtils;
 import ec.util.chart.swing.SwingColorSchemeSupport;
@@ -55,6 +56,7 @@ import org.openide.util.Exceptions;
  * @author Philippe Charles
  * @since 2.2.0
  */
+@SwingComponent
 public final class AutoCompletedComponent extends JComponent {
 
     public static final String VALUE_PROPERTY = "value";

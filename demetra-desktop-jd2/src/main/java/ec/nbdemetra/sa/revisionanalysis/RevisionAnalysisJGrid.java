@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
+import demetra.ui.design.SwingComponent;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.IProcResults;
 import ec.util.grid.swing.AbstractGridModel;
@@ -38,7 +39,8 @@ import javax.swing.table.TableCellRenderer;
  *
  * @author Mats Maggi
  */
-public class RevisionAnalysisJGrid extends JComponent {
+@SwingComponent
+public final class RevisionAnalysisJGrid extends JComponent {
 
     private JGrid grid;
     private final CompositeResults results;

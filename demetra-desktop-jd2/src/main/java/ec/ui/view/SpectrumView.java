@@ -5,6 +5,7 @@
 
 package ec.ui.view;
 
+import demetra.ui.design.SwingComponent;
 import ec.tstoolkit.arima.Spectrum;
 import ec.util.chart.swing.Charts;
 import java.awt.BorderLayout;
@@ -23,7 +24,8 @@ import org.jfree.data.xy.XYSeriesCollection;
  *
  * @author Kristof Bayens
  */
-public class SpectrumView extends JComponent {
+@SwingComponent
+public final class SpectrumView extends JComponent {
     private XYSeriesCollection coll_;
     private ChartPanel panel_;
     private int n_ = 600;

@@ -51,13 +51,15 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultXYDataset;
 import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.design.SwingComponent;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 
 /**
  *
  * @author Kristof Bayens
  */
-public class SlidingSpanView extends JComponent implements HasColorScheme {
+@SwingComponent
+public final class SlidingSpanView extends JComponent implements HasColorScheme {
 
     // CONSTANTS
     protected static final int N = 18;

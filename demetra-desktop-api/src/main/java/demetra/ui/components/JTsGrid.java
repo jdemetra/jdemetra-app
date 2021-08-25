@@ -22,9 +22,9 @@ import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.components.parts.HasGrid;
 import demetra.ui.components.parts.HasHoveredObs;
 import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.components.parts.HasGridSupport;
 import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.ui.design.SwingComponent;
 import internal.ui.components.DemoTsBuilder;
@@ -137,8 +137,8 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
     private final TsSelectionBridge tsSelectionBridge;
 
     public JTsGrid() {
-        this.collection = HasTsCollection.of(this::firePropertyChange, TsManager.getDefault());
-        this.grid = HasGrid.of(this::firePropertyChange);
+        this.collection = HasTsCollection.of(this::firePropertyChange);
+        this.grid = HasGridSupport.of(this::firePropertyChange);
         this.tsAction = HasTsAction.of(this::firePropertyChange);
         this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
         this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);

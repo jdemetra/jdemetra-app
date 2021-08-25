@@ -21,6 +21,7 @@ import ec.tstoolkit.ucarima.UcarimaModel;
 import ec.ui.Disposables;
 import ec.ui.interfaces.IDisposable;
 import demetra.ui.components.JTsChart;
+import demetra.ui.design.SwingComponent;
 import ec.ui.view.SIView;
 import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;
@@ -32,7 +33,8 @@ import javax.swing.*;
  *
  * @author Kristof Bayens
  */
-public class TramoSeatsSummary extends JComponent implements IDisposable {
+@SwingComponent
+public final class TramoSeatsSummary extends JComponent implements IDisposable {
 
     public static final ComponentDescriptor[] components;
 

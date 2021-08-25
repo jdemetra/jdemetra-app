@@ -16,6 +16,7 @@
  */
 package internal.ui.components;
 
+import demetra.ui.components.parts.HasChartSupport;
 import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.bridge.TsConverter;
 import demetra.ui.components.parts.HasColorSchemeSupport;
@@ -114,12 +115,12 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
 
     private void registerActions() {
         ActionMap am = target.getActionMap();
-        HasChartCommands.registerActions(target, am);
+        HasChartSupport.registerActions(target, am);
         am.put(PREVIOUS_PERIOD_ACTION, applyGrowthKind(JTsGrowthChart.GrowthKind.PreviousPeriod).toAction(target));
         am.put(PREVIOUS_YEAR_ACTION, applyGrowthKind(JTsGrowthChart.GrowthKind.PreviousYear).toAction(target));
         am.put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
         HasTsCollectionCommands.registerActions(target, target.getActionMap());
-        HasChartCommands.registerActions(target, target.getActionMap());
+        HasChartSupport.registerActions(target, target.getActionMap());
         target.getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
         target.getActionMap().put(PRINT_ACTION, JCommand.of(JTimeSeriesChartUtil::printWithPreview).toAction(chartPanel));
         target.getActionMap().put(RESET_ZOOM_ACTION, JCommand.of(JTimeSeriesChart::resetZoom).toAction(chartPanel));
@@ -370,8 +371,8 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
 
         result.add(HasTsCollectionCommands.newSplitMenu(am, demetraUI));
         result.addSeparator();
-        result.add(HasChartCommands.newToggleTitleVisibilityMenu(am, demetraUI));
-        result.add(HasChartCommands.newToggleLegendVisibilityMenu(am, demetraUI));
+        result.add(HasChartSupport.newToggleTitleVisibilityMenu(am, demetraUI));
+        result.add(HasChartSupport.newToggleLegendVisibilityMenu(am, demetraUI));
         result.add(HasObsFormatSupport.newEditFormatMenu(am, demetraUI));
         result.add(HasColorSchemeSupport.menuOf(target));
         result.add(InternalComponents.newResetZoomMenu(am, demetraUI));

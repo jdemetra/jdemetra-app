@@ -16,12 +16,12 @@
  */
 package ec.ui.view;
 
-import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.components.parts.HasColorSchemeResolver;
 import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.design.SwingComponent;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.ui.chart.BasicXYDataset;
 import demetra.ui.jfreechart.TsCharts;
@@ -62,6 +62,7 @@ import org.jfree.data.xy.XYDataset;
  *
  * @author Mats Maggi
  */
+@SwingComponent
 public final class StabilityView extends JComponent implements TimeSeriesComponent, HasTs, HasColorScheme {
 
     private static final int POINTS_INDEX = 0;
@@ -87,7 +88,7 @@ public final class StabilityView extends JComponent implements TimeSeriesCompone
     private int indexSelected = -1;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
+    private final HasTs m_ts = HasTs.of(this::firePropertyChange);
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

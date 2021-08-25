@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.anomalydetection.ui;
 
+import demetra.ui.design.SwingComponent;
 import ec.nbdemetra.anomalydetection.html.HtmlAnomalyDetection;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.ui.Disposables;
@@ -30,7 +31,8 @@ import javax.swing.JComponent;
  * Component containing all Html contents regarding an Outlier Detection of a Ts
  * @author Mats Maggi
  */
-public class AnomalyDetectionSummary extends JComponent implements IDisposable {
+@SwingComponent
+public final class AnomalyDetectionSummary extends JComponent implements IDisposable {
 
     private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
     private final Box document_;

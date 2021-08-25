@@ -21,12 +21,14 @@ import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsData;
 import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.components.parts.HasObsFormatSupport;
+import demetra.ui.design.SwingComponent;
 import javax.swing.JComponent;
 
 /**
  *
  * @author Kristof Bayens
  */
+@SwingComponent
 public final class ResidualsView extends JComponent implements TimeSeriesComponent, HasTsData, HasObsFormat {
 
     @lombok.experimental.Delegate

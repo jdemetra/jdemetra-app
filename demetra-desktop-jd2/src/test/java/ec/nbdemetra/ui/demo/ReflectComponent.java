@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.demo;
 
+import demetra.ui.design.SwingComponent;
 import demetra.ui.util.NbComponents;
 import ec.tss.html.AbstractHtmlElement;
 import ec.tss.html.HtmlStream;
@@ -38,6 +39,7 @@ import javax.swing.JComponent;
  *
  * @author Philippe Charles
  */
+@SwingComponent
 public final class ReflectComponent extends JComponent {
 
     public static ReflectComponent of(Class<?> clazz) {

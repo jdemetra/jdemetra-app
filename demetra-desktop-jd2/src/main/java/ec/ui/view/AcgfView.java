@@ -5,6 +5,7 @@
 
 package ec.ui.view;
 
+import demetra.ui.design.SwingComponent;
 import ec.tstoolkit.arima.AutoCovarianceFunction;
 import ec.tstoolkit.arima.LinearModel;
 import ec.util.chart.swing.Charts;
@@ -26,7 +27,8 @@ import org.jfree.data.xy.XYSeriesCollection;
  *
  * @author Kristof Bayens
  */
-public class AcgfView extends JComponent{
+@SwingComponent
+public final class AcgfView extends JComponent{
     private XYSeriesCollection coll_;
     private ChartPanel panel_;
     private int n_ = 36;

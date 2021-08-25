@@ -18,6 +18,7 @@ package ec.ui.view.tsprocessing;
 
 import com.google.common.base.Preconditions;
 import demetra.ui.components.JExceptionPanel;
+import demetra.ui.design.SwingComponent;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.InformationExtractor;
@@ -86,8 +87,9 @@ public abstract class ComposedProcDocumentItemFactory<D extends IProcDocument, I
         Preconditions.checkArgument(getDocumentType().isInstance(document), "Invalid document type");
         D source = getDocumentType().cast(document);
         Object info = informationExtractor.retrieve(source);
-        if (info == null)
+        if (info == null) {
             return host.getToolkit().getMessageViewer("No information for this item");
+        }
         return async ? new AsyncView(host, source) : itemUI.getView(host, info);
     }
 
@@ -101,6 +103,7 @@ public abstract class ComposedProcDocumentItemFactory<D extends IProcDocument, I
         return itemUI;
     }
 
+    @SwingComponent
     private final class AsyncView extends JComponent {
 
         public AsyncView(final IProcDocumentView<? extends IProcDocument> host, final D source) {

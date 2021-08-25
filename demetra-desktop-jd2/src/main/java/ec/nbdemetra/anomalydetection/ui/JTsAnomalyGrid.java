@@ -34,6 +34,7 @@ import demetra.ui.components.TsGridObs;
 import ec.util.chart.ObsIndex;
 import ec.util.list.swing.JLists;
 import demetra.ui.components.TsSelectionBridge;
+import demetra.ui.design.SwingComponent;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.text.DecimalFormat;
@@ -62,7 +63,8 @@ import org.netbeans.api.progress.ProgressHandle;
  *
  * @author Mats Maggi
  */
-public class JTsAnomalyGrid extends JComponent {
+@SwingComponent
+public final class JTsAnomalyGrid extends JComponent {
 
     public static final String SPEC_CHANGE_PROPERTY = "Spec Change";
     public static final String CRITICAL_VALUE_PROPERTY = "Critical Value Change";

@@ -291,7 +291,7 @@ public class HasTsCollectionCommands {
         am.put(OPEN_ACTION, open().toAction(view));
         am.put(SELECT_ALL_ACTION, selectAll().toAction(view));
         am.put(RENAME_ACTION, rename().toAction(view));
-        am.put(SPLIT_ACTION, HasChartCommands.splitIntoYearlyComponents().toAction(view));
+//        am.put(SPLIT_ACTION, HasChartCommands.splitIntoYearlyComponents().toAction(view));
 //        if (this instanceof HasColorScheme) {
 //            am.put(HasColorScheme.DEFAULT_COLOR_SCHEME_ACTION, HasColorScheme.commandOf(null).toAction((HasColorScheme) this));
 //        }

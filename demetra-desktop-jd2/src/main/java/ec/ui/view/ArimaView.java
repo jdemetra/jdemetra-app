@@ -4,6 +4,7 @@
  */
 package ec.ui.view;
 
+import demetra.ui.design.SwingComponent;
 import demetra.ui.util.NbComponents;
 import ec.tss.html.HtmlStream;
 import ec.tss.html.HtmlTag;
@@ -27,7 +28,8 @@ import javax.swing.JSplitPane;
  *
  * @author Kristof Bayens
  */
-public class ArimaView extends JComponent {
+@SwingComponent
+public final class ArimaView extends JComponent {
 
     private final PiView spectrumPanel_;
     private final AHtmlView documentPanel_;

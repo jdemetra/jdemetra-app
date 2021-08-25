@@ -44,7 +44,7 @@ public interface HasTs {
     }
 
     @NonNull
-    static HasTs of(@NonNull PropertyChangeBroadcaster broadcaster, @NonNull TsManager manager) {
-        return new HasTsImpl(broadcaster).register(manager);
+    static HasTs of(@NonNull PropertyChangeBroadcaster broadcaster) {
+        return new HasTsImpl(broadcaster).register(TsManager.getDefault());
     }
 }

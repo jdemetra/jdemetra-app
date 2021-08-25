@@ -4,6 +4,7 @@
  */
 package ec.ui.view;
 
+import demetra.ui.design.SwingComponent;
 import demetra.ui.util.NbComponents;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import java.awt.BorderLayout;
@@ -14,6 +15,7 @@ import javax.swing.JSplitPane;
  *
  * @author Jean Palate
  */
+@SwingComponent
 public final class SpectralView extends JComponent {
 
     private final JSplitPane m_splitter;

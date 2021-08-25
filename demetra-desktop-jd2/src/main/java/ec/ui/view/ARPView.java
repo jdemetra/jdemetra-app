@@ -17,7 +17,6 @@
 package ec.ui.view;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
@@ -75,7 +74,7 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
     protected ARPData data;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
+    private final HasTs m_ts = HasTs.of(this::firePropertyChange);
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

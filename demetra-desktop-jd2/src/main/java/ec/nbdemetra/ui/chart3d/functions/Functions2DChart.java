@@ -16,12 +16,12 @@
  */
 package ec.nbdemetra.ui.chart3d.functions;
 
-import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.components.parts.HasColorSchemeResolver;
 import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.design.SwingComponent;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.maths.realfunctions.IFunction;
@@ -53,6 +53,7 @@ import org.jfree.ui.RectangleInsets;
  *
  * @author Mats Maggi
  */
+@SwingComponent
 public final class Functions2DChart extends JComponent implements TimeSeriesComponent, HasTs, HasColorScheme {
 
     private JChartPanel panel;
@@ -65,7 +66,7 @@ public final class Functions2DChart extends JComponent implements TimeSeriesComp
     private final XYLineAndShapeRenderer optimumRenderer;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
+    private final HasTs m_ts = HasTs.of(this::firePropertyChange);
     
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

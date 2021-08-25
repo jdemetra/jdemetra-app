@@ -41,6 +41,7 @@ import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import demetra.ui.components.parts.HasObsFormatSupport;
+import demetra.ui.design.SwingComponent;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -89,6 +90,7 @@ import org.jfree.ui.Layer;
  *
  * @author Kristof Bayens
  */
+@SwingComponent
 public final class MarginView extends JComponent implements TimeSeriesComponent, HasColorScheme, HasObsFormat {
 
     // PROPERTIES

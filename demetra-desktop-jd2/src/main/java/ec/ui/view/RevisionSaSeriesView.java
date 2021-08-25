@@ -16,12 +16,12 @@
  */
 package ec.ui.view;
 
-import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.components.parts.HasColorSchemeResolver;
 import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.design.SwingComponent;
 import demetra.ui.util.NbComponents;
 import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlRevisionsDocument;
@@ -70,6 +70,7 @@ import org.jfree.data.time.TimeSeriesCollection;
  *
  * @author Mats Maggi
  */
+@SwingComponent
 public final class RevisionSaSeriesView extends JComponent implements TimeSeriesComponent, HasTs, HasColorScheme {
 
     private static final int S_INDEX = 1;
@@ -92,7 +93,7 @@ public final class RevisionSaSeriesView extends JComponent implements TimeSeries
     private Range range;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTs.of(this::firePropertyChange, TsManager.getDefault());
+    private final HasTs m_ts = HasTs.of(this::firePropertyChange);
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

@@ -66,6 +66,7 @@ import javax.swing.table.TableCellRenderer;
 import demetra.ui.components.TmpHasTsCollection;
 import demetra.ui.components.TsIdentifier;
 import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.design.SwingComponent;
 import java.util.function.Predicate;
 
 /**
@@ -74,6 +75,7 @@ import java.util.function.Predicate;
  *
  * @author Mats Maggi
  */
+@SwingComponent
 public final class JTsCheckLastList extends JComponent implements TimeSeriesComponent,
         HasTsCollection {
 

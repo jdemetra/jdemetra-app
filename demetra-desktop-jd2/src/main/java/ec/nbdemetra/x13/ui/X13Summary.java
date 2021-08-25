@@ -20,6 +20,7 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.Disposables;
 import ec.ui.interfaces.IDisposable;
 import demetra.ui.components.JTsChart;
+import demetra.ui.design.SwingComponent;
 import ec.ui.view.SIView;
 import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;
@@ -31,7 +32,8 @@ import javax.swing.*;
  *
  * @author Kristof Bayens
  */
-public class X13Summary extends JComponent implements IDisposable {
+@SwingComponent
+public final class X13Summary extends JComponent implements IDisposable {
 
     private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
     private final Box document_;

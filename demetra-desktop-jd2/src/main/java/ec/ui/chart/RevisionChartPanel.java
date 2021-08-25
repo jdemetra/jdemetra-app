@@ -55,6 +55,7 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.design.SwingComponent;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import java.util.ArrayList;
 
@@ -63,6 +64,7 @@ import java.util.ArrayList;
  *
  * @author Mats Maggi
  */
+@SwingComponent
 public final class RevisionChartPanel extends JComponent implements TimeSeriesComponent {
 
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

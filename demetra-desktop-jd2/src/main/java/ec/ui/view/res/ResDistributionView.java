@@ -4,6 +4,7 @@
  */
 package ec.ui.view.res;
 
+import demetra.ui.design.SwingComponent;
 import demetra.ui.util.NbComponents;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.dstats.Normal;
@@ -18,7 +19,8 @@ import javax.swing.JSplitPane;
  *
  * @author Kristof Bayens
  */
-public class ResDistributionView extends JComponent {
+@SwingComponent
+public final class ResDistributionView extends JComponent {
 
     private AutoCorrelationsView acView_;
     private AutoCorrelationsView pacView_;

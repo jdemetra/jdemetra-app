@@ -101,7 +101,7 @@ public interface HasTsCollection {
     }
 
     @NonNull
-    static HasTsCollection of(@NonNull PropertyChangeBroadcaster broadcaster, @NonNull TsManager manager) {
-        return new HasTsCollectionImpl(broadcaster).register(manager);
+    static HasTsCollection of(@NonNull PropertyChangeBroadcaster broadcaster) {
+        return new HasTsCollectionImpl(broadcaster).register(TsManager.getDefault());
     }
 }

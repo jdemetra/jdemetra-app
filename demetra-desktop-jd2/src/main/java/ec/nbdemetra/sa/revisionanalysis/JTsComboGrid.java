@@ -21,6 +21,7 @@ import demetra.timeseries.TsCollection;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.TsMonikerUI;
 import demetra.ui.components.JTsGrid;
+import demetra.ui.design.SwingComponent;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.event.ItemEvent;
@@ -39,7 +40,8 @@ import javax.swing.JLabel;
  *
  * @author Mats Maggi
  */
-public class JTsComboGrid extends JComponent {
+@SwingComponent
+public final class JTsComboGrid extends JComponent {
 
     private JComboBox series;
     private JTsGrid grid;

@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import internal.ui.components.HasChartCommands;
+import demetra.ui.components.parts.HasChartSupport;
 import ec.util.various.swing.FontAwesome;
 import demetra.ui.util.FontAwesomeUtils;
 import java.beans.BeanInfo;
@@ -49,8 +49,8 @@ public final class TsChartHandler extends TypedDemoComponentHandler<HasChart> {
     public void doFillToolBar(JToolBar toolBar, HasChart c) {
         JPopupMenu menu = new JPopupMenu();
 
-        menu.add(new JCheckBoxMenuItem(HasChartCommands.toggleTitleVisibility().toAction(c))).setText("Show title");
-        menu.add(new JCheckBoxMenuItem(HasChartCommands.toggleLegendVisibility().toAction(c))).setText("Show legend");
+        menu.add(new JCheckBoxMenuItem(HasChartSupport.toggleTitleVisibility().toAction(c))).setText("Show title");
+        menu.add(new JCheckBoxMenuItem(HasChartSupport.toggleLegendVisibility().toAction(c))).setText("Show legend");
 //        menu.add(new JCheckBoxMenuItem(TsChartCommand.showAll().toAction(c))).setText("Show all");
 
         toolBar.add(DropDownButtonFactory.createDropDownButton(FontAwesomeUtils.getIcon(FontAwesome.FA_BAR_CHART_O, BeanInfo.ICON_MONO_16x16), menu));
