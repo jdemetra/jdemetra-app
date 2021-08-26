@@ -566,7 +566,7 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
             });
             return results;
         }
-    };
+    }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 600001)
     public static class DiagnosticsMatrixFactory extends ItemFactory<Map<String, CompositeResults>> {

@@ -380,15 +380,13 @@ public final class JTsAnomalyGrid extends JComponent {
 
     public boolean start(boolean local) {
         worker = new JTsAnomalyGrid.SwingWorkerImpl();
-        worker.addPropertyChangeListener(evt -> {
-            firePropertyChange(STATE_PROPERTY, null, worker.getState());
-        });
+        worker.addPropertyChangeListener(evt -> firePropertyChange(STATE_PROPERTY, null, worker.getState()));
         worker.execute();
         return true;
     }
 
     public boolean stop() {
-        return worker != null ? worker.cancel(true) : false;
+        return worker != null && worker.cancel(true);
     }
     // </editor-fold>
 

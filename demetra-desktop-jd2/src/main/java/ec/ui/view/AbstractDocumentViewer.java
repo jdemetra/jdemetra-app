@@ -4,27 +4,25 @@
  */
 package ec.ui.view;
 
-import ec.tstoolkit.utilities.Arrays2;
-import demetra.ui.util.NbComponents;
 import demetra.ui.components.JExceptionPanel;
+import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.nodes.DecoratedNode;
 import ec.nbdemetra.ui.nodes.IdNodes;
-import ec.ui.interfaces.IDisposable;
 import ec.tstoolkit.algorithm.IProcDocument;
+import ec.tstoolkit.utilities.Arrays2;
 import ec.tstoolkit.utilities.Id;
+import ec.ui.interfaces.IDisposable;
 import ec.ui.view.tsprocessing.IProcDocumentView;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.beans.PropertyVetoException;
-import java.util.UUID;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.tree.TreeSelectionModel;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
+
+import javax.swing.*;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
+import java.beans.PropertyVetoException;
+import java.util.UUID;
 
 /**
  *

@@ -221,9 +221,9 @@ public class X11SpecUI extends BaseX11SpecUI {
 
     public void setCalendarSigma(CalendarSigma calendarsigma) {
         core.setCalendarSigma(calendarsigma);
-        if (calendarsigma.Select == CalendarSigma.Select && core.getSigmavec() == null) {
+        if (CalendarSigma.Select == CalendarSigma.Select && core.getSigmavec() == null) {
             this.setSigmavec(this.getSigmavec());
-        };
+        }
     }
 
     public SigmavecOption[] getSigmavec() {

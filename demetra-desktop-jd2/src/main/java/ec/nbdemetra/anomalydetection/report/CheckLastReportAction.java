@@ -56,8 +56,7 @@ public class CheckLastReportAction {
         List<AnomalyPojo> valid = new ArrayList<>();
         List<AnomalyPojo> invalid = new ArrayList<>();
         List<AnomalyPojo> empty = new ArrayList<>();
-        for (int i = 0; i < items.size(); i++) {
-            AnomalyItem item = items.get(i);
+        for (AnomalyItem item : items) {
             for (int j = 0; j < item.getBackCount(); j++) {
                 if (item.getTsData() != null) {
                     if (item.isNotProcessable()) {
@@ -98,7 +97,7 @@ public class CheckLastReportAction {
         parameters.put("_NB_ANOMALY", valid.size());
 
         if (comparator != null) {
-            Collections.sort(valid, comparator);
+            valid.sort(comparator);
             parameters.put("_SORTING", comparator.toString());
         } else {
             parameters.put("_SORTING", "Original order");

@@ -37,7 +37,7 @@ import javax.swing.JPanel;
  */
 public class SurfacePlotterView extends JPanel {
 
-    private JSurfacePanel panel;
+    private final JSurfacePanel panel;
     private ConfigurationToolBar config;
     private String[] elements;
     private FunctionsSurfaceModel m;

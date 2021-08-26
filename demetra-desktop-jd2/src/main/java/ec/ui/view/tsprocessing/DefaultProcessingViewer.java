@@ -1,9 +1,9 @@
 package ec.ui.view.tsprocessing;
 
+import demetra.ui.components.JExceptionPanel;
+import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.DocumentUIServices;
 import ec.nbdemetra.ui.DocumentUIServices.UIFactory;
-import demetra.ui.util.NbComponents;
-import demetra.ui.components.JExceptionPanel;
 import ec.nbdemetra.ui.nodes.DecoratedNode;
 import ec.nbdemetra.ui.nodes.IdNodes;
 import ec.tstoolkit.algorithm.IActiveProcDocument;
@@ -13,16 +13,17 @@ import ec.tstoolkit.descriptors.IObjectDescriptor;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.tstoolkit.utilities.Id;
 import ec.ui.interfaces.IDisposable;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyVetoException;
-import java.util.UUID;
-import javax.swing.*;
-import javax.swing.tree.TreeSelectionModel;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
+
+import javax.swing.*;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyVetoException;
+import java.util.UUID;
 
 /**
  *
@@ -33,10 +34,11 @@ public class DefaultProcessingViewer<D extends IActiveProcDocument> extends JCom
     public static final String BUTTONS = "Buttons", BUTTON_APPLY = "Apply", BUTTON_RESTORE = "Restore", BUTTON_SAVE = "Save",
             DIRTY_SPEC_PROPERTY = "dirtySpecProperty";
 
-    public static enum Type {
+    public enum Type {
 
         NONE, APPLY, APPLY_RESTORE_SAVE
-    };
+    }
+
     protected final Type type_;
     protected final UUID m_identifier;
     // visual components

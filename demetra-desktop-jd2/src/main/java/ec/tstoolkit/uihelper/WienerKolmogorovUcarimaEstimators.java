@@ -216,8 +216,8 @@ public class WienerKolmogorovUcarimaEstimators
     private String currentInfo_ = GAIN;
     private EstimatorType type_ = EstimatorType.Final;
     private int lag_ = 0;
-    private WienerKolmogorovEstimators wk_;
-    private ComponentDescriptor[] cmpDescs_;
+    private final WienerKolmogorovEstimators wk_;
+    private final ComponentDescriptor[] cmpDescs_;
     private TsFrequency freq_ = TsFrequency.Undefined;
 
     /**

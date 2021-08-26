@@ -5,10 +5,7 @@
 package ec.ui.view.tsprocessing;
 
 import ec.tstoolkit.algorithm.IProcDocument;
-import ec.tstoolkit.utilities.Id;
-import ec.tstoolkit.utilities.InformationExtractor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  *

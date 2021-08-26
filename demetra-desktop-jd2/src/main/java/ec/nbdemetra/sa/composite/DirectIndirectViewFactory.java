@@ -61,7 +61,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
             IProcResults rslts = source.getResults();
             return rslts != null ? rslts.getData(id, TsData.class) : null;
         }
-    };
+    }
 
     public static class AllSaExtractor extends DocumentInformationExtractor<MultiSaDocument, demetra.timeseries.TsCollection> {
 
@@ -131,7 +131,7 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
             }
             return info;
         }
-    };
+    }
 
     private static class ResultExtractor extends DefaultInformationExtractor<MultiSaDocument, IProcResults> {
 
@@ -141,7 +141,8 @@ public class DirectIndirectViewFactory extends ProcDocumentViewFactory<MultiSaDo
         public IProcResults retrieve(MultiSaDocument source) {
             return source.getResults();
         }
-    };
+    }
+
     //</editor-fold>
     // Items 
     public static final String IBTEST = "IB-Test";

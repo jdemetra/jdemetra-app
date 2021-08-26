@@ -22,12 +22,7 @@ public class SaItemChildFactory extends ChildFactory.Detachable<String> {
 
     @Override
     protected void addNotify() {
-        SaItemNotifier.addChangeListener(listener = new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent ev) {
-                refresh(true);
-            }
-        });
+        SaItemNotifier.addChangeListener(listener = ev -> refresh(true));
     }
 
     @Override

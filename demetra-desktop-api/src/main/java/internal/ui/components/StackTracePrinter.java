@@ -45,7 +45,7 @@ public abstract class StackTracePrinter<PRINTER> {
     public void printStackTrace(PRINTER p, Throwable th) {
         // Guard against malicious overrides of Throwable.equals by
         // using a Set with identity equality semantics.
-        Set<Throwable> dejaVu = Collections.newSetFromMap(new IdentityHashMap<Throwable, Boolean>());
+        Set<Throwable> dejaVu = Collections.newSetFromMap(new IdentityHashMap<>());
         dejaVu.add(th);
 
         // Print our stack trace

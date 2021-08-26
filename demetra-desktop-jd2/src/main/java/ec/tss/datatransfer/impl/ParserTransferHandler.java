@@ -41,7 +41,7 @@ public abstract class ParserTransferHandler implements DataSourceTransferHandler
     @Override
     public Optional<DataSource> getDataSource(Transferable t, String providerName) {
         Optional<DataSource> result = getDataSource(t);
-        return result.isPresent() && result.get().getProviderName().equals(providerName) ? result : Optional.<DataSource>empty();
+        return result.isPresent() && result.get().getProviderName().equals(providerName) ? result : Optional.empty();
     }
 
     @ServiceProvider(DataSourceTransferHandler.class)

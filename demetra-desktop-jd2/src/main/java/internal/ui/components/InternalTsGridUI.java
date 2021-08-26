@@ -419,11 +419,9 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     private void updateGridCellRenderer() {
         TsCollection data = target.getTsCollection();
         Supplier<TsFeatureHelper> tsFeatures = Suppliers.memoize(() -> TsFeatureHelper.of(data.getItems()));
-        Supplier<DescriptiveStatistics> stats = Suppliers.memoize(() -> {
-            return target.getSingleTsIndex() != -1
-                    ? new DescriptiveStatistics(data.stream().flatMapToDouble(o -> o.getData().getValues().stream()).toArray())
-                    : new DescriptiveStatistics(data.get(target.getSingleTsIndex()).getData().getValues().toArray());
-        });
+        Supplier<DescriptiveStatistics> stats = Suppliers.memoize(() -> target.getSingleTsIndex() != -1
+                ? new DescriptiveStatistics(data.stream().flatMapToDouble(o -> o.getData().getValues().stream()).toArray())
+                : new DescriptiveStatistics(data.get(target.getSingleTsIndex()).getData().getValues().toArray()));
         defaultCellRenderer.update(obsFormatResolver.resolve(), target.isUseColorScheme() ? colorSchemeResolver.resolve() : null, target.isShowBars(), tsFeatures, stats);
         grid.setDefaultRenderer(TsGridObs.class, target.getCellRenderer());
         grid.repaint();
@@ -621,7 +619,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
             this.colorSchemeSupport = null;
             this.showBars = false;
             this.tsFeatures = () -> TsFeatureHelper.EMPTY;
-            this.stats = () -> new DescriptiveStatistics();
+            this.stats = DescriptiveStatistics::new;
         }
 
         void update(@NonNull ObsFormat obsFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars, Supplier<TsFeatureHelper> tsFeatures, Supplier<DescriptiveStatistics> stats) {

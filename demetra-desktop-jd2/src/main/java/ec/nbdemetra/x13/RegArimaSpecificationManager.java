@@ -87,7 +87,7 @@ public class RegArimaSpecificationManager extends AbstractWorkspaceItemManager<R
 
     public void createDocument(final Workspace ws, final WorkspaceItem<RegArimaSpecification> xdoc) {
         RegArimaDocumentManager dmgr = (RegArimaDocumentManager) WorkspaceFactory.getInstance().getManager(RegArimaDocumentManager.ID);
-        WorkspaceItem<RegArimaDocument> doc = (WorkspaceItem<RegArimaDocument>) dmgr.create(ws);
+        WorkspaceItem<RegArimaDocument> doc = dmgr.create(ws);
         doc.getElement().setSpecification(xdoc.getElement());
         doc.setComments(xdoc.getComments());
         RegArimaTopComponent view = new RegArimaTopComponent(doc);

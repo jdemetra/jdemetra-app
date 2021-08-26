@@ -51,7 +51,7 @@ import demetra.ui.Converter;
 public final class ImportVariablesAction extends SingleNodeAction<ItemWsNode> implements Presenter.Popup {
 
     private static final Converter<Config, TsVariables> CONVERTER = new VariablesConfig().reverse();
-    private static final ImmutableList<Importable> IMPORTABLES = ImmutableList.<Importable>of(new ImportableVariables());
+    private static final ImmutableList<Importable> IMPORTABLES = ImmutableList.of(new ImportableVariables());
 
     public ImportVariablesAction() {
         super(ItemWsNode.class);

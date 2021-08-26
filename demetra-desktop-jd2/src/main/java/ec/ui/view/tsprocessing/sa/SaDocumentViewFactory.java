@@ -20,7 +20,6 @@ import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.chart3d.functions.SurfacePlotterUI;
 import ec.nbdemetra.ui.chart3d.functions.SurfacePlotterUI.Functions;
 import ec.satoolkit.DecompositionMode;
-import ec.satoolkit.GenericSaProcessingFactory;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.ISeriesDecomposition;
 import ec.satoolkit.diagnostics.StationaryVarianceDecomposition;
@@ -881,7 +880,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         public ISaSpecification retrieve(SaDocument<? extends ISaSpecification> source) {
             return source.getSpecification();
         }
-    };
+    }
 
     private static class SaExtractor extends DefaultInformationExtractor<SaDocument<? extends ISaSpecification>, CompositeResults> {
 
@@ -891,7 +890,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         public CompositeResults retrieve(SaDocument<? extends ISaSpecification> source) {
             return source.getResults();
         }
-    };
+    }
 
     private static class PmExtractor extends DefaultInformationExtractor<SaDocument<? extends ISaSpecification>, PreprocessingModel> {
 
@@ -901,7 +900,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
         public PreprocessingModel retrieve(SaDocument<? extends ISaSpecification> source) {
             return source.getPreprocessingPart();
         }
-    };
+    }
 
     private static class ResExtractor extends DefaultInformationExtractor<SaDocument<? extends ISaSpecification>, TsData> {
 
@@ -912,7 +911,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             PreprocessingModel preprocessing = source.getPreprocessingPart();
             return preprocessing == null ? null : preprocessing.getFullResiduals();
         }
-    };
+    }
 
     private static class SsExtractor extends TsDocumentInformationExtractor<SaDocument<? extends ISaSpecification>, SlidingSpans> {
 
@@ -928,7 +927,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             SaDocument<? extends ISaSpecification> cl = SaManager.instance.refreshDocument(source, domain, EstimationPolicyType.FreeParameters, false);
             return new SlidingSpans(new TsDocumentProcessing(cl), domain);
         }
-    };
+    }
 
     private static class RevisionExtractor extends TsDocumentInformationExtractor<SaDocument<? extends ISaSpecification>, RevisionHistory> {
 
@@ -946,7 +945,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             RevisionHistory history = new RevisionHistory(process, d);
             return history;
         }
-    };
+    }
 
     private static class LikelihoodExtractor extends TsDocumentInformationExtractor<SaDocument<? extends ISaSpecification>, Functions> {
 
@@ -961,7 +960,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
                 return Functions.create(preprocessingPart.likelihoodFunction(), source.getPreprocessingPart().maxLikelihoodFunction());
             }
         }
-    };
+    }
 
     private static class StvarExtractor extends DefaultInformationExtractor<SaDocument<? extends ISaSpecification>, StationaryVarianceDecomposition> {
 
@@ -976,7 +975,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
                 return null;
             }
         }
-    };
+    }
 
     private static class MovingProcessingExtractor extends TsDocumentInformationExtractor<SaDocument<? extends ISaSpecification>, MovingProcessing> {
 
@@ -999,7 +998,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
 
             return mm;
         }
-    };
+    }
 
     private static class SeasTestExtractor extends TsDocumentInformationExtractor<SaDocument<? extends ISaSpecification>, SeasonalityTestUI2.Information> {
 
@@ -1063,7 +1062,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
                 }
             } else {
                 info.s = source.getResults().getData(name, TsData.class);
-                info.mul = finals != null ? finals.getMode().isMultiplicative() : false;
+                info.mul = finals != null && finals.getMode().isMultiplicative();
             }
             if (info.s == null) {
                 return null;
@@ -1078,6 +1077,6 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             }
             return info;
         }
-    };
+    }
     //</editor-fold>
 }

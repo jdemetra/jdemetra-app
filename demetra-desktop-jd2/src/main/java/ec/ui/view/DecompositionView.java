@@ -21,7 +21,7 @@ import javax.swing.JComponent;
 @SwingComponent
 public final class DecompositionView extends JComponent {
 
-    private JTsChart dualchart_;
+    private final JTsChart dualchart_;
 
     public DecompositionView() {
         dualchart_ = new JTsChart();

@@ -18,9 +18,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 public enum CustomPropertyRendererFactory {
 
     INSTANCE;
-    private PropertyRendererRegistry registry_;
+    private final PropertyRendererRegistry registry_;
 
-    private CustomPropertyRendererFactory() {
+    CustomPropertyRendererFactory() {
         registry_ = new PropertyRendererRegistry();
         registry_.registerRenderer(Parameter[].class, new ArrayRenderer());
         registry_.registerRenderer(Ramp[].class, new ArrayRenderer());

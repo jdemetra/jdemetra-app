@@ -38,8 +38,8 @@ public class ParameterComboBox extends JPanel {
     private JComboBox combo2;
     private String[] elements;
     public static final String PARAMETERS_CHANGED = "Parameters Changed";
-    private JLabel param1Label = new JLabel("X Parameter : ");
-    private JLabel param2Label = new JLabel("Y Parameter : ");
+    private final JLabel param1Label = new JLabel("X Parameter : ");
+    private final JLabel param2Label = new JLabel("Y Parameter : ");
     private ItemListener l1, l2;
     private JButton button;
 

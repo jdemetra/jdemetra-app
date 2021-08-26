@@ -83,11 +83,11 @@ public final class RevisionSaSeriesView extends JComponent implements TimeSeries
     private String info_ = "sa";
     private RevisionHistory history_;
     private DiagnosticInfo diag_ = DiagnosticInfo.RelativeDifference, activeDiag=diag_;
-    private int years_ = 4;
-    private int minyears_ = 5;
-    private int threshold_ = 2;
+    private final int years_ = 4;
+    private final int minyears_ = 5;
+    private final int threshold_ = 2;
     private int lastIndexSelected = -1;
-    private ChartPopup popup;
+    private final ChartPopup popup;
     private TsPeriod firstPeriod;
     private TsData sRef;
     private Range range;

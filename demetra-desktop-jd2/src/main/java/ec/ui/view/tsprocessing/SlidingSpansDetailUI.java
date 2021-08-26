@@ -20,7 +20,7 @@ import javax.swing.JComponent;
  */
 public class SlidingSpansDetailUI<V extends IProcDocumentView<?>> extends DefaultItemUI<V, SlidingSpans> {
 
-    private String info_;
+    private final String info_;
 
     public SlidingSpansDetailUI(String info){
         info_=info;

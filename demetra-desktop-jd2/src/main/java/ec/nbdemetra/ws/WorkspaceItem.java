@@ -41,7 +41,7 @@ public class WorkspaceItem<T> implements IModifiable, Comparable<WorkspaceItem> 
         return this.name_.compareTo(o.name_);
     }
 
-    public static enum Status {
+    public enum Status {
 
         System, Temporary, New, Undefined, Valid, Invalid;
 

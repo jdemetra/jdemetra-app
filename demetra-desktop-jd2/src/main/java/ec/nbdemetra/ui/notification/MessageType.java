@@ -38,7 +38,7 @@ public enum MessageType {
     private final int notifyDescriptorType;
     private final Icon icon;
 
-    private MessageType(int notifyDescriptorType, Icon icon) {
+    MessageType(int notifyDescriptorType, Icon icon) {
         this.notifyDescriptorType = notifyDescriptorType;
         this.icon = icon;
     }

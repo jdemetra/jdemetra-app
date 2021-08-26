@@ -80,7 +80,7 @@ public class ImportTramoSeatsSpec extends SingleNodeAction<Node> implements Pres
     }
 
     private List<Importable> getImportables() {
-        return Collections.<Importable>singletonList(new Importable() {
+        return Collections.singletonList(new Importable() {
 
             @Override
             public String getDomain() {

@@ -237,7 +237,7 @@ public final class ProviderNode extends AbstractNode {
         @Override
         public Transferable paste() throws IOException {
             DataSourceTransferSupport.getDefault().getDataSource(t, loader.getSource())
-                    .ifPresent(o -> loader.open(o));
+                    .ifPresent(loader::open);
             return null;
         }
     }

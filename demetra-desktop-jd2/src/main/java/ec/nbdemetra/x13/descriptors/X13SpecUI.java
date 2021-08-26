@@ -23,7 +23,7 @@ import org.openide.util.NbBundle.Messages;
 public class X13SpecUI implements IObjectDescriptor<X13Specification> {
 
     final X13Specification core;
-    private TsDomain domain_;
+    private final TsDomain domain_;
     final boolean ro_;
 
     public X13SpecUI(X13Specification spec, TsDomain domain, boolean ro) {

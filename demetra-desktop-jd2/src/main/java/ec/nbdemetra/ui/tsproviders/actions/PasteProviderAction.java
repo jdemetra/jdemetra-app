@@ -4,13 +4,11 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
-import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceLoader;
 import demetra.ui.datatransfer.DataTransfers;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.tsproviders.ProviderNode;
 import ec.tss.datatransfer.DataSourceTransferSupport;
-import java.util.Optional;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
@@ -38,9 +36,8 @@ public final class PasteProviderAction extends SingleNodeAction<ProviderNode> {
     @Override
     protected void performAction(ProviderNode activatedNode) {
         DataSourceLoader loader = activatedNode.getLookup().lookup(DataSourceLoader.class);
-        Optional<DataSource> dataSource = DataSourceTransferSupport.getDefault().getDataSource(DataTransfers.systemClipboardAsTransferable(), loader.getSource());
-        if (dataSource.isPresent()) {
-            activatedNode.paste(dataSource.get());
-        }
+        DataSourceTransferSupport.getDefault()
+                .getDataSource(DataTransfers.systemClipboardAsTransferable(), loader.getSource())
+                .ifPresent(activatedNode::paste);
     }
 }

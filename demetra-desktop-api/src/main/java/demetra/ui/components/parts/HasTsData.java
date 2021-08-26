@@ -28,7 +28,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public interface HasTsData {
 
-    static final String TS_DATA_PROPERTY = "tsData";
+    String TS_DATA_PROPERTY = "tsData";
 
     @Nullable
     TsData getTsData();

@@ -63,7 +63,7 @@ public final class AutoCorrelationsView extends JComponent implements TimeSeries
     public enum ACKind {
 
         Normal, Partial
-    };
+    }
 
     // CONSTANTS
     private static final Stroke MARKER_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.0f, new float[]{6.0f, 6.0f}, 0.0f);

@@ -7,7 +7,6 @@ package ec.ui.view.tsprocessing;
 import demetra.bridge.TsConverter;
 import demetra.ui.TsMonikerUI;
 import ec.tss.Ts;
-import ec.tss.TsMoniker;
 import ec.tss.documents.MultiTsDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
 import java.awt.Font;

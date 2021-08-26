@@ -117,7 +117,7 @@ final class CheckComboBox extends JComboBox {
             }
         });
 
-        return ret.toArray(new OutlierType[ret.size()]);
+        return ret.toArray(new OutlierType[0]);
     }
 
     public void addSelectedItems(OutlierType[] objs) {
@@ -136,9 +136,7 @@ final class CheckComboBox extends JComboBox {
     }
 
     public void uncheckAllItems() {
-        mapObjSelected.keySet().stream().forEach((t) -> {
-            mapObjSelected.put(t, false);
-        });
+        mapObjSelected.keySet().stream().forEach((t) -> mapObjSelected.put(t, false));
 
         reset();
         repaint();
@@ -149,9 +147,7 @@ final class CheckComboBox extends JComboBox {
 
         initCBs();
 
-        cbs.stream().forEach((cb) -> {
-            this.addItem(cb);
-        });
+        cbs.stream().forEach(this::addItem);
 
         setRenderer(new CheckBoxRenderer(cbs));
         addActionListener(this);
@@ -200,9 +196,7 @@ final class CheckComboBox extends JComboBox {
             getUI().setPopupVisible(this, false);
         } else if (sel > 0) {
             checkBoxSelectionChanged(sel);
-            changedListeners.stream().forEach((l) -> {
-                l.selectionChanged(sel);
-            });
+            changedListeners.stream().forEach((l) -> l.selectionChanged(sel));
         }
 
         this.setSelectedIndex(-1); // clear selection
@@ -240,7 +234,7 @@ final class CheckComboBox extends JComboBox {
         }
     }
 
-    class CheckListItem extends JCheckBox {
+    static class CheckListItem extends JCheckBox {
 
         private OutlierType type;
 
@@ -264,5 +258,5 @@ final class CheckComboBox extends JComboBox {
 
 interface CheckComboBoxSelectionChangedListener extends java.util.EventListener {
 
-    public void selectionChanged(int idx);
+    void selectionChanged(int idx);
 }

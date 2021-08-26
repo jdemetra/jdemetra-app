@@ -41,8 +41,8 @@ import org.openide.windows.WindowManager;
 })
 public final class PeriodogramTopComponent extends TopComponent implements HasTs, IActiveView, ExplorerManager.Provider {
 
-    private PeriodogramView view;
-    private Node node;
+    private final PeriodogramView view;
+    private final Node node;
 
     public PeriodogramTopComponent() {
         initComponents();

@@ -48,7 +48,7 @@ public enum DemetraUiIcon implements Icon {
     
     final String path;
 
-    private DemetraUiIcon(String path) {
+    DemetraUiIcon(String path) {
         this.path = "ec/nbdemetra/ui/" + path;
     }
 

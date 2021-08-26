@@ -42,6 +42,7 @@ import demetra.ui.components.parts.HasObsFormatSupport;
 import internal.ui.components.HasTsCollectionCommands;
 import java.awt.BorderLayout;
 import java.util.Arrays;
+import java.util.Collections;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
@@ -143,7 +144,7 @@ public final class InternalResidualsViewUI implements InternalUI<ResidualsView> 
     private void onTsDataChange(ResidualsView view) {
         demetra.timeseries.TsData data = view.getTsData();
         demetra.timeseries.Ts ts = demetra.timeseries.Ts.builder().name("Residuals").data(data).build();
-        chartPanel.getChart().getXYPlot().setDataset(TsXYDataset.of(Arrays.asList(ts)));
+        chartPanel.getChart().getXYPlot().setDataset(TsXYDataset.of(Collections.singletonList(ts)));
         if (!data.isEmpty()) {
             Range rng = calcRange(data.getValues().toArray());
             ((NumberAxis) chartPanel.getChart().getXYPlot().getRangeAxis()).setTickUnit(new NumberTickUnit(calcTick(rng)), true, false);

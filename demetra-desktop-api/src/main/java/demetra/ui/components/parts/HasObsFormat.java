@@ -25,7 +25,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public interface HasObsFormat {
 
-    static final String OBS_FORMAT_PROPERTY = "obsFormat";
+    String OBS_FORMAT_PROPERTY = "obsFormat";
 
     @Nullable
     ObsFormat getObsFormat();

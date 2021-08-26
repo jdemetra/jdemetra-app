@@ -31,8 +31,8 @@ public class ParametersPropertyEditor extends AbstractPropertyEditor {
 
     private Parameter[] parameters_;
     
-    public static enum Type{Undefined, Initial, Fixed};
-    
+    public enum Type{Undefined, Initial, Fixed}
+
     private static ParameterType convert(String val){
         Type t=Type.valueOf(val);
         if (t == Type.Initial)

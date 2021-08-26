@@ -22,7 +22,7 @@ public class RegArimaSpecUI implements IObjectDescriptor<RegArimaSpecification> 
 
     final RegArimaSpecification core;
     final boolean ro_;
-    private TsDomain domain_;
+    private final TsDomain domain_;
 
     public RegArimaSpecUI(RegArimaSpecification spec, TsDomain domain, boolean ro) {
         if (spec == null)

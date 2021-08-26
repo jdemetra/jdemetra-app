@@ -29,7 +29,7 @@ import demetra.ui.TsManager;
  */
 public interface HasTs {
 
-    static final String TS_PROPERTY = "ts";
+    String TS_PROPERTY = "ts";
 
     @Nullable
     Ts getTs();

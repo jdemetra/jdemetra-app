@@ -56,10 +56,10 @@ import org.jfree.ui.RectangleInsets;
 @SwingComponent
 public final class Functions2DChart extends JComponent implements TimeSeriesComponent, HasTs, HasColorScheme {
 
-    private JChartPanel panel;
-    private JFreeChart chart;
-    private IFunction function;
-    private IFunctionInstance maxFunction;
+    private final JChartPanel panel;
+    private final JFreeChart chart;
+    private final IFunction function;
+    private final IFunctionInstance maxFunction;
     private float epsilon = 0.2f;
     private int steps;
     private final XYLineAndShapeRenderer functionRenderer;

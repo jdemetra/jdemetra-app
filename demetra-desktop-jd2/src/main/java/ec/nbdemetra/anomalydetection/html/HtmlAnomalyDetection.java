@@ -30,7 +30,7 @@ import java.io.IOException;
  */
 public class HtmlAnomalyDetection extends AbstractHtmlElement implements IHtmlElement {
 
-    private PreprocessingModel model_;
+    private final PreprocessingModel model_;
 
     public HtmlAnomalyDetection(PreprocessingModel model) {
         this.model_ = model;

@@ -27,9 +27,9 @@ import org.jfree.data.xy.XYSeriesCollection;
 @SwingComponent
 public final class SpectrumView extends JComponent {
     private XYSeriesCollection coll_;
-    private ChartPanel panel_;
-    private int n_ = 600;
-    private double g_max = 1e6;
+    private final ChartPanel panel_;
+    private final int n_ = 600;
+    private final double g_max = 1e6;
 
     public SpectrumView() {
         setLayout(new BorderLayout());

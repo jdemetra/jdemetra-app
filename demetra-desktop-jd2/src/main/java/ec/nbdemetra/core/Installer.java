@@ -94,7 +94,7 @@ public final class Installer {
                 TsManager.getDefault().register(o);
                 if (o instanceof IFileLoader) {
                     tryGet(pathsNode, o.getSource(), pathsParser)
-                            .ifPresent(bean -> ((IFileLoader) o).setPaths(bean));
+                            .ifPresent(((IFileLoader) o)::setPaths);
                 }
             }
             TsManager.getDefault().register(new PocProvider());
@@ -179,7 +179,7 @@ public final class Installer {
                 TsManager.getDefault().register(TsConverter.toTsProvider(o));
                 if (o instanceof IFileLoader) {
                     tryGet(pathsNode, o.getSource(), pathsParser)
-                            .ifPresent(bean -> ((IFileLoader) o).setPaths(bean));
+                            .ifPresent(((IFileLoader) o)::setPaths);
                 }
             }
         }

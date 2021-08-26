@@ -25,7 +25,7 @@ package ec.nbdemetra.ui.chart3d;
  */
 public interface SurfaceModel {
 
-    public enum PlotType {
+    enum PlotType {
 
         SURFACE("3D Surface"),
         WIREFRAME("3D Wireframe"),
@@ -41,9 +41,9 @@ public interface SurfaceModel {
         public String getPropertyName() {
             return att;
         }
-    };
+    }
 
-    public enum PlotColor {
+    enum PlotColor {
 
         OPAQUE("Hidden Surface"),
         SPECTRUM("Color Spectrum"),
@@ -59,49 +59,49 @@ public interface SurfaceModel {
         public String getPropertyName() {
             return att;
         }
-    };
+    }
 
-    public void addPropertyChangeListener(java.beans.PropertyChangeListener listener);
+    void addPropertyChangeListener(java.beans.PropertyChangeListener listener);
 
-    public void addPropertyChangeListener(String propertyName, java.beans.PropertyChangeListener listener);
+    void addPropertyChangeListener(String propertyName, java.beans.PropertyChangeListener listener);
 
-    public void removePropertyChangeListener(java.beans.PropertyChangeListener listener);
+    void removePropertyChangeListener(java.beans.PropertyChangeListener listener);
 
-    public void removePropertyChangeListener(String propertyName, java.beans.PropertyChangeListener listener);
+    void removePropertyChangeListener(String propertyName, java.beans.PropertyChangeListener listener);
 
-    public void addChangeListener(javax.swing.event.ChangeListener listener);
+    void addChangeListener(javax.swing.event.ChangeListener listener);
 
-    public void removeChangeListener(javax.swing.event.ChangeListener listener);
+    void removeChangeListener(javax.swing.event.ChangeListener listener);
 
-    public SurfaceVertex[] getSurfaceVertex();
+    SurfaceVertex[] getSurfaceVertex();
 
-    public Projector getProjector();
+    Projector getProjector();
 
-    public boolean isAutoScaleZ();
+    boolean isAutoScaleZ();
 
-    public PlotType getPlotType();
+    PlotType getPlotType();
 
-    public PlotColor getPlotColor();
+    PlotColor getPlotColor();
 
-    public int getCalcDivisions();
+    int getCalcDivisions();
 
-    public int getContourLines();
+    int getContourLines();
 
-    public int getDispDivisions();
+    int getDispDivisions();
 
-    public float getXMin();
+    float getXMin();
 
-    public float getYMin();
+    float getYMin();
 
-    public float getZMin();
+    float getZMin();
 
-    public float getXMax();
+    float getXMax();
 
-    public float getYMax();
+    float getYMax();
 
-    public float getZMax();
+    float getZMax();
 
-    public SurfaceColor getColorModel(); // not the right place, but JSurface does not work with any colorset, should be removed lately
+    SurfaceColor getColorModel(); // not the right place, but JSurface does not work with any colorset, should be removed lately
 
     /**
      * Determines whether the delay regeneration checkbox is checked.
@@ -109,49 +109,49 @@ public interface SurfaceModel {
      * @return <code>true</code> if the checkbox is checked, <code>false</code>
      * otherwise
      */
-    public boolean isExpectDelay();
+    boolean isExpectDelay();
 
     /**
      * Determines whether to show bounding box.
      *
      * @return <code>true</code> if to show bounding box
      */
-    public boolean isBoxed();
+    boolean isBoxed();
 
     /**
      * Determines whether to show x-y mesh.
      *
      * @return <code>true</code> if to show x-y mesh
      */
-    public boolean isMesh();
+    boolean isMesh();
 
     /**
      * Determines whether to scale axes and bounding box.
      *
      * @return <code>true</code> if to scale bounding box
      */
-    public boolean isScaleBox();
+    boolean isScaleBox();
 
     /**
      * Determines whether to show x-y ticks.
      *
      * @return <code>true</code> if to show x-y ticks
      */
-    public boolean isDisplayXY();
+    boolean isDisplayXY();
 
     /**
      * Determines whether to show z ticks.
      *
      * @return <code>true</code> if to show z ticks
      */
-    public boolean isDisplayZ();
+    boolean isDisplayZ();
 
     /**
      * Determines whether to show face grids.
      *
      * @return <code>true</code> if to show face grids
      */
-    public boolean isDisplayGrids();
+    boolean isDisplayGrids();
 
     /**
      * Determines whether the first function is selected.
@@ -159,7 +159,7 @@ public interface SurfaceModel {
      * @return <code>true</code> if the first function is checked,
      * <code>false</code> otherwise
      */
-    public boolean isPlotFunction1();
+    boolean isPlotFunction1();
 
     /**
      * Determines whether the first function is selected.
@@ -167,14 +167,14 @@ public interface SurfaceModel {
      * @return <code>true</code> if the first function is checked,
      * <code>false</code> otherwise
      */
-    public boolean isPlotFunction2();
+    boolean isPlotFunction2();
 
     /**
      * Sets data availability flag
      */
-    public boolean isDataAvailable();
+    boolean isDataAvailable();
     
-    public int getNbDecimals();
+    int getNbDecimals();
     
-    public void setNbDecimals(int nb);
+    void setNbDecimals(int nb);
 }

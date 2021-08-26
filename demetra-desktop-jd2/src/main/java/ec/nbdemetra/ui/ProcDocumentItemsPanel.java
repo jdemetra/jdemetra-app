@@ -100,7 +100,7 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
             public Node getRoot(Iterable<? extends ProcDocumentItemFactory> factories) {
                 return new AbstractNodeBuilder()
                         .name("Items")
-                        .add(StreamSupport.stream(factories.spliterator(), false).map(o -> new ProcDocumentItemFactoryNode(o)))
+                        .add(StreamSupport.stream(factories.spliterator(), false).map(ProcDocumentItemFactoryNode::new))
                         .build();
             }
 
@@ -112,11 +112,11 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
         GROUP_BY_DOCUMENT_TYPE {
             @Override
             public Node getRoot(Iterable<? extends ProcDocumentItemFactory> factories) {
-                ImmutableMultimap<Class<?>, ? extends ProcDocumentItemFactory> index = Multimaps.index(factories, o -> o.getDocumentType());
+                ImmutableMultimap<Class<?>, ? extends ProcDocumentItemFactory> index = Multimaps.index(factories, ProcDocumentItemFactory::getDocumentType);
 
                 AbstractNodeBuilder result = new AbstractNodeBuilder().name("Items");
                 for (Class<?> o : index.keySet()) {
-                    Stream<Node> children = StreamSupport.stream(index.get(o).spliterator(), false).map(x -> new ProcDocumentItemFactoryNode(x));
+                    Stream<Node> children = StreamSupport.stream(index.get(o).spliterator(), false).map(ProcDocumentItemFactoryNode::new);
                     result.add(new AbstractNodeBuilder().name(o.getName()).add(children).build());
                 }
                 return result.build();
@@ -130,11 +130,11 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
         GROUP_BY_DOCUMENT_TYPE_AND_ID {
             @Override
             public Node getRoot(Iterable<? extends ProcDocumentItemFactory> factories) {
-                ImmutableMultimap<Class<?>, ? extends ProcDocumentItemFactory> index = Multimaps.index(factories, o -> o.getDocumentType());
+                ImmutableMultimap<Class<?>, ? extends ProcDocumentItemFactory> index = Multimaps.index(factories, ProcDocumentItemFactory::getDocumentType);
 
                 AbstractNodeBuilder result = new AbstractNodeBuilder().name("Items");
                 for (Class<?> o : index.keySet()) {
-                    Node tmp = IdNodes.getRootNode(index.get(o).stream().map(x -> x.getItemId()).collect(Collectors.toList()));
+                    Node tmp = IdNodes.getRootNode(index.get(o).stream().map(ProcDocumentItemFactory::getItemId).collect(Collectors.toList()));
                     tmp.setName(o.getName());
                     result.add(tmp);
                 }

@@ -101,14 +101,14 @@ public abstract class ProcDocumentViewFactory<D extends IProcDocument> implement
 
     public Icon getIcon(Id id) {
         ProcDocumentItemFactory o = itemFactories.get(id);
-        return o instanceof ComposedProcDocumentItemFactory ? ((ComposedProcDocumentItemFactory) o).getIcon() : null;
+        return o instanceof ComposedProcDocumentItemFactory ? o.getIcon() : null;
     }
 
     public abstract Id getPreferredView();
 
     public Action[] getActions(Id path) {
         ProcDocumentItemFactory o = itemFactories.get(path);
-        return o instanceof ComposedProcDocumentItemFactory ? ((ComposedProcDocumentItemFactory) o).getActions() : null;
+        return o instanceof ComposedProcDocumentItemFactory ? o.getActions() : null;
     }
 
     public void registerToolkit(@Nullable ITsViewToolkit toolkit) {

@@ -6,7 +6,6 @@ package ec.nbdemetra.ui.properties.l2fprod;
 
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.descriptors.IObjectDescriptor;
-import ec.tstoolkit.modelling.ComponentType;
 import ec.tstoolkit.modelling.TsVariableDescriptor;
 import ec.tstoolkit.modelling.TsVariableDescriptor.UserComponentType;
 import java.beans.IntrospectionException;

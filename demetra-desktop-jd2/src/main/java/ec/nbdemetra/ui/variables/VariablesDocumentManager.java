@@ -13,9 +13,8 @@ import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
-import ec.tstoolkit.utilities.NameManager;
+
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.AbstractAction;

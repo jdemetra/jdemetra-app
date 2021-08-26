@@ -18,7 +18,6 @@ package internal.ui.components.parts;
 
 import demetra.timeseries.TsData;
 import demetra.ui.beans.PropertyChangeBroadcaster;
-import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.components.parts.HasTsData;
 
 /**

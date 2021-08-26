@@ -8,7 +8,6 @@ import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
 import ec.nbdemetra.sa.MultiProcessingManager;
 import ec.nbdemetra.sa.SaBatchUI;
 import ec.nbdemetra.ws.actions.AbstractViewAction;
-import javax.swing.SwingWorker.StateValue;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

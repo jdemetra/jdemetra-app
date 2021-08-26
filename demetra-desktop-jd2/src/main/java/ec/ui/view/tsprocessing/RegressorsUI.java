@@ -38,8 +38,7 @@ public class RegressorsUI<V extends IProcDocumentView<?>> extends DefaultItemUI<
         TsVariableList list = information.description.buildRegressionVariables();
         ITsVariable[] vars = list.items();
         if (vars != null) {
-            for (int i = 0; i < vars.length; ++i) {
-                ITsVariable cur = vars[i];
+            for (ITsVariable cur : vars) {
                 int dim = cur.getDim();
                 ArrayList<DataBlock> tmp = new ArrayList<>();
                 for (int j = 0; j < dim; ++j) {

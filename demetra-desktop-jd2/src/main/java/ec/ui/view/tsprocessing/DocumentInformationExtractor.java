@@ -61,15 +61,7 @@ public abstract class DocumentInformationExtractor<D extends IProcDocument<?,?, 
         @Override
         public int compareTo(Key o) {
             if (id == o.id) {
-                if (doc == o.doc) {
-                    return 0;
-                }
-                else if (doc < o.doc) {
-                    return -1;
-                }
-                else {
-                    return 1;
-                }
+                return Long.compare(doc, o.doc);
             }
             else if (id < o.id) {
                 return -1;

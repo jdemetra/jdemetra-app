@@ -35,7 +35,7 @@ public class Workspace implements IDisposable {
     private final HashMap<Id, Id> defaultSpecs_ = new HashMap<>();
 
     public Workspace(DataSource source) {
-        id = new SourceId(source, "Workspace-" + Long.toString(wsId.incrementAndGet()));
+        id = new SourceId(source, "Workspace-" + wsId.incrementAndGet());
         addDefaultItems();
     }
 
@@ -67,7 +67,7 @@ public class Workspace implements IDisposable {
     }
 
     public void sortFamily(Id family) {
-        Collections.sort(items_, new WorkspaceItem.InnerComparator(family));
+        items_.sort(new WorkspaceItem.InnerComparator(family));
         dirty_ = true;
         WorkspaceFactory.Event ev = new WorkspaceFactory.Event(this, null, WorkspaceFactory.Event.SORT);
         WorkspaceFactory.getInstance().notifyEvent(ev);

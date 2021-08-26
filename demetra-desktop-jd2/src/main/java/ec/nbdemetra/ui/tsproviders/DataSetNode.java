@@ -142,7 +142,6 @@ abstract public class DataSetNode extends AbstractNode {
             if (provider.isPresent()) {
                 provider.get()
                         .children(dataSet)
-                        .stream()
                         .forEach(list::add);
             }
             return true;

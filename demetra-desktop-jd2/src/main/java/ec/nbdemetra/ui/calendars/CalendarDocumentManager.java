@@ -9,7 +9,6 @@ import ec.nbdemetra.ws.AbstractWorkspaceItemManager;
 import ec.nbdemetra.ws.IWorkspaceItemManager;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
-import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
 import ec.tstoolkit.timeseries.calendars.IGregorianCalendarProvider;
 import ec.tstoolkit.timeseries.calendars.NationalCalendarProvider;

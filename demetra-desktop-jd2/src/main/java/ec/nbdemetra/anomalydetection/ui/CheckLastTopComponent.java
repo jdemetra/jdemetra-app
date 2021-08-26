@@ -419,13 +419,13 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
             }
 
             if (tasks.size() > 0) {
-                NotifyUtil.show("Check Last done !", "Processed " + tasks.size() + " items in " + stopwatch.stop().toString(), MessageType.SUCCESS, null, null, null);
+                NotifyUtil.show("Check Last done !", "Processed " + tasks.size() + " items in " + stopwatch.stop(), MessageType.SUCCESS, null, null, null);
                 if (!active) {
                     requestAttention(false);
                 }
             }
 
-            LOGGER.info("Task: {} items in {} by {} executors with priority {}", new Object[]{tasks.size(), stopwatch.stop().toString(), config.getBatchPoolSize(), config.getBatchPriority()});
+            LOGGER.info("Task: {} items in {} by {} executors with priority {}", tasks.size(), stopwatch.stop(), config.getBatchPoolSize(), config.getBatchPriority());
 
             executorService.shutdown();
 
@@ -499,9 +499,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
     public boolean start(boolean local) {
         makeBusy(true);
         worker = new SwingWorkerImpl();
-        worker.addPropertyChangeListener(evt -> {
-            firePropertyChange(STATE_PROPERTY, null, worker.getState());
-        });
+        worker.addPropertyChangeListener(evt -> firePropertyChange(STATE_PROPERTY, null, worker.getState()));
         worker.execute();
         return true;
     }
@@ -511,7 +509,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
     }
 
     public boolean stop() {
-        return worker != null ? worker.cancel(true) : false;
+        return worker != null && worker.cancel(true);
     }
     // </editor-fold>
 

@@ -1,43 +1,33 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.ui.tsproviders;
 
+import demetra.timeseries.TsProvider;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceListener;
 import demetra.tsprovider.DataSourceLoader;
 import demetra.tsprovider.DataSourceProvider;
-import demetra.ui.TsManager;
 import demetra.ui.Config;
 import demetra.ui.DemetraOptions;
-import ec.nbdemetra.ui.nodes.Nodes;
+import demetra.ui.TsManager;
 import ec.nbdemetra.ui.interchange.Importable;
-import static ec.nbdemetra.ui.tsproviders.ProvidersNode.ACTION_PATH;
+import ec.nbdemetra.ui.nodes.Nodes;
 import ec.tss.datatransfer.DataSourceTransferSupport;
 import ec.tss.tsproviders.IDataSourceProvider;
-import java.awt.datatransfer.Transferable;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.swing.Action;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -52,18 +42,31 @@ import org.openide.util.datatransfer.PasteType;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
+import javax.swing.*;
+import java.awt.datatransfer.Transferable;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static ec.nbdemetra.ui.tsproviders.ProvidersNode.ACTION_PATH;
+
 /**
  * A root node that represents the parent of all providers.
  *
  * @author Philippe Charles
  */
 @ActionReferences({
-    @ActionReference(path = ACTION_PATH, position = 1310, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tsproviders.actions.OpenProvidersAction")),
-    @ActionReference(path = ACTION_PATH, position = 1320, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.mru.ProviderMruAction")),
-    @ActionReference(path = ACTION_PATH, position = 1410, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.PasteProvidersAction")),
-    @ActionReference(path = ACTION_PATH, position = 1430, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ImportAction")),
-    @ActionReference(path = ACTION_PATH, position = 1460, separatorBefore = 1450, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.ShowProvidersAction")),
-    @ActionReference(path = ACTION_PATH, position = 1520, separatorBefore = 1500, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ConfigureAction"))
+        @ActionReference(path = ACTION_PATH, position = 1310, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.tsproviders.actions.OpenProvidersAction")),
+        @ActionReference(path = ACTION_PATH, position = 1320, separatorBefore = 1300, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.mru.ProviderMruAction")),
+        @ActionReference(path = ACTION_PATH, position = 1410, separatorBefore = 1400, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.PasteProvidersAction")),
+        @ActionReference(path = ACTION_PATH, position = 1430, separatorBefore = 1400, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ImportAction")),
+        @ActionReference(path = ACTION_PATH, position = 1460, separatorBefore = 1450, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.tsproviders.actions.ShowProvidersAction")),
+        @ActionReference(path = ACTION_PATH, position = 1520, separatorBefore = 1500, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ConfigureAction"))
 })
 public final class ProvidersNode extends AbstractNode {
 
@@ -135,7 +138,7 @@ public final class ProvidersNode extends AbstractNode {
                     : new DataSourceNode((DataSource) key);
         }
 
-        private List<? extends Object> getKeys() {
+        private List<?> getKeys() {
             return demetraUI.isShowTsProviderNodes()
                     ? providerStream().sorted(ON_CLASS_SIMPLENAME).collect(Collectors.toList())
                     : providerStream().flatMap(o -> o.getDataSources().stream()).sorted(ON_TO_STRING).collect(Collectors.toList());
@@ -145,7 +148,7 @@ public final class ProvidersNode extends AbstractNode {
             return TsManager.getDefault().getProviders()
                     .filter(DataSourceProvider.class::isInstance)
                     .map(DataSourceProvider.class::cast)
-                    .filter(demetraUI.isShowUnavailableTsProviders() ? (o -> true) : o -> o.isAvailable());
+                    .filter(demetraUI.isShowUnavailableTsProviders() ? (o -> true) : TsProvider::isAvailable);
         }
 
         //<editor-fold defaultstate="collapsed" desc="LookupListener">
@@ -213,15 +216,13 @@ public final class ProvidersNode extends AbstractNode {
             Optional<DataSourceLoader> loader = TsManager.getDefault().getProvider(DataSourceLoader.class, dataSource);
             if (loader.isPresent()) {
                 loader.get().open(dataSource);
-                Optional<Node> node = ProvidersUtil.findNode(dataSource, ProvidersNode.this);
-                if (node.isPresent()) {
-                    node.get().setDisplayName(config.getName());
-                }
+                ProvidersUtil.findNode(dataSource, ProvidersNode.this)
+                        .ifPresent(value -> value.setDisplayName(config.getName()));
             }
         }
     }
 
-    private final class PasteTypeImpl extends PasteType {
+    private static final class PasteTypeImpl extends PasteType {
 
         private final Transferable t;
 
@@ -231,13 +232,10 @@ public final class ProvidersNode extends AbstractNode {
 
         @Override
         public Transferable paste() throws IOException {
-            Optional<DataSource> dataSource = DataSourceTransferSupport.getDefault().getDataSource(t);
-            if (dataSource.isPresent()) {
-                Optional<DataSourceLoader> loader = TsManager.getDefault().getProvider(DataSourceLoader.class, dataSource.get());
-                if (loader.isPresent()) {
-                    loader.get().open(dataSource.get());
-                }
-            }
+            DataSourceTransferSupport.getDefault()
+                    .getDataSource(t).ifPresent(source -> TsManager.getDefault()
+                            .getProvider(DataSourceLoader.class, source)
+                            .ifPresent(dataSourceLoader -> dataSourceLoader.open(source)));
             return null;
         }
     }

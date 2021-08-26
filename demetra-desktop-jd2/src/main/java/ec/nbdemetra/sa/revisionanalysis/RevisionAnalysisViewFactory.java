@@ -148,14 +148,14 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
                     return null;
                 }
                 Map<String, Class> dictionary = n.results.getDictionary();
-                Integer curIndex = 0;
+                int curIndex = 0;
                 demetra.timeseries.TsCollection.Builder col = demetra.timeseries.TsCollection.builder().name(source.getInput().get(curIndex).getName());
                 for (String s : dictionary.keySet()) {
                     String[] splitted = s.split("\\.");
                     if (s.endsWith(".sa")) {
                         TsData tsData = n.results.getData(s, TsData.class);
                         String name = splitted[0].replaceAll("series", "");
-                        Integer sIndex = Integer.parseInt(name);
+                        int sIndex = Integer.parseInt(name);
                         if (sIndex != curIndex) {
                             all.put(TsConverter.toTs(source.getInput().get(curIndex)), col.build());
                             curIndex = sIndex;
@@ -184,7 +184,7 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
             }
             return source.getResults();
         }
-    };
+    }
     //</editor-fold>
 
     private abstract static class ItemFactory<I> extends ComposedProcDocumentItemFactory<RevisionAnalysisDocument, I> {

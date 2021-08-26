@@ -33,9 +33,9 @@ import java.text.DecimalFormat;
  */
 public class HtmlCheckLast extends AbstractHtmlElement implements IHtmlElement {
 
-    private AnomalyItem anomalyItem;
-    private PreprocessingModel model;
-    private DecimalFormat df = new DecimalFormat("0.000");
+    private final AnomalyItem anomalyItem;
+    private final PreprocessingModel model;
+    private final DecimalFormat df = new DecimalFormat("0.000");
 
     public HtmlCheckLast(AnomalyItem a, PreprocessingModel m) {
         anomalyItem = a;

@@ -34,14 +34,14 @@ import demetra.ui.TsManager;
  */
 public interface HasTsCollection {
 
-    static final String TS_COLLECTION_PROPERTY = "tsCollection";
+    String TS_COLLECTION_PROPERTY = "tsCollection";
 
     @NonNull
     TsCollection getTsCollection();
 
     void setTsCollection(@NonNull TsCollection tsCollection);
 
-    static final String TS_SELECTION_MODEL_PROPERTY = "tsSelectionModel";
+    String TS_SELECTION_MODEL_PROPERTY = "tsSelectionModel";
 
     default void replaceTsCollection(@NonNull TsCollection tsCollection) {
         setTsCollection(getTsCollection().replaceAll(tsCollection));
@@ -52,7 +52,7 @@ public interface HasTsCollection {
 
     void setTsSelectionModel(@Nullable ListSelectionModel selectionModel);
 
-    public enum TsUpdateMode {
+    enum TsUpdateMode {
 
         None, Single, Replace, Append;
 
@@ -61,22 +61,22 @@ public interface HasTsCollection {
         }
     }
 
-    static final String UDPATE_MODE_PROPERTY = "tsUpdateMode";
-    static final TsUpdateMode DEFAULT_UPDATEMODE = TsUpdateMode.Append;
+    String UDPATE_MODE_PROPERTY = "tsUpdateMode";
+    TsUpdateMode DEFAULT_UPDATEMODE = TsUpdateMode.Append;
 
     @NonNull
     TsUpdateMode getTsUpdateMode();
 
     void setTsUpdateMode(@Nullable TsUpdateMode updateMode);
 
-    static final String FREEZE_ON_IMPORT_PROPERTY = "freezeOnImport";
-    static final boolean DEFAULT_FREEZE_ON_IMPORT = false;
+    String FREEZE_ON_IMPORT_PROPERTY = "freezeOnImport";
+    boolean DEFAULT_FREEZE_ON_IMPORT = false;
 
     boolean isFreezeOnImport();
 
     void setFreezeOnImport(boolean freezeOnImport);
 
-    static final String DROP_CONTENT_PROPERTY = "dropContent";
+    String DROP_CONTENT_PROPERTY = "dropContent";
 
     @NonNull
     TsCollection getDropContent();

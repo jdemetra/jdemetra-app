@@ -45,7 +45,7 @@ public final class MruList implements PropertyChangeSource.WithWeakListeners, It
 
     //
     private final List<SourceId> list;
-    private int maxSize;
+    private final int maxSize;
 
     private MruList() {
         maxSize = 9; // default is 9

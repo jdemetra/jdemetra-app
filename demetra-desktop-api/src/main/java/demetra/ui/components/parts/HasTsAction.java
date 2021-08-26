@@ -27,7 +27,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public interface HasTsAction {
 
-    static final String TS_ACTION_PROPERTY = "tsAction";
+    String TS_ACTION_PROPERTY = "tsAction";
 
     void setTsAction(@Nullable String tsAction);
 

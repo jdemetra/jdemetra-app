@@ -13,7 +13,7 @@ import org.jfree.chart.axis.NumberTickUnit;
  * @author Kristof Bayens
  */
 public class StabilityTickUnit extends NumberTickUnit {
-    private List<String> names;
+    private final List<String> names;
     
     public StabilityTickUnit(List<String> names) {
         super(1);

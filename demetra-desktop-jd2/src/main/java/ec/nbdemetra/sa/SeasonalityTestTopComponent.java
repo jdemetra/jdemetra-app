@@ -55,7 +55,7 @@ import org.openide.util.NbBundle.Messages;
 })
 public final class SeasonalityTestTopComponent extends TopComponent implements HasTs, IActiveView, ExplorerManager.Provider {
 
-    private Node node;
+    private final Node node;
     private boolean isLog = false;
     private int diffOrder = 1;
     private int lastYears = 0;

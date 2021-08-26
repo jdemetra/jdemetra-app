@@ -51,7 +51,7 @@ public class ConfigurationToolBar extends JMenuBar {
     public static final String PAINTING_MODE = "Painting Mode";
     public static final String STEPS = "Steps";
     public static final String EPSILON = "Epsilon";
-    private String[] params = {XY_TICKS, Z_TICKS, BOX_GRID, XY_MESH, DRAW_BOX, HIDE_ON_DRAG};
+    private final String[] params = {XY_TICKS, Z_TICKS, BOX_GRID, XY_MESH, DRAW_BOX, HIDE_ON_DRAG};
     // Constants
     public static final int MAX_STEPS = 1000;
     public static final int MIN_STEPS = 20;
@@ -156,9 +156,7 @@ public class ConfigurationToolBar extends JMenuBar {
     private void createParamSelection() {
         add(Box.createHorizontalGlue());
         comboboxes = new ParameterComboBox(fnParams);
-        comboboxes.addPropertyChangeListener(ParameterComboBox.PARAMETERS_CHANGED, evt -> {
-            firePropertyChange(ParameterComboBox.PARAMETERS_CHANGED, null, null);
-        });
+        comboboxes.addPropertyChangeListener(ParameterComboBox.PARAMETERS_CHANGED, evt -> firePropertyChange(ParameterComboBox.PARAMETERS_CHANGED, null, null));
         add(comboboxes);
     }
 
@@ -194,7 +192,7 @@ public class ConfigurationToolBar extends JMenuBar {
         save.addActionListener(event -> {
             parameters.getPopupMenu().setVisible(false);
             parameters.setSelected(false);
-            firePropertyChange(STEPS, null, (Integer) spinner.getValue());
+            firePropertyChange(STEPS, null, spinner.getValue());
         });
 
         comp.add(label);
@@ -228,7 +226,7 @@ public class ConfigurationToolBar extends JMenuBar {
         save.addActionListener(event -> {
             parameters.getPopupMenu().setVisible(false);
             parameters.setSelected(false);
-            firePropertyChange(EPSILON, null, (Double) spinner.getValue());
+            firePropertyChange(EPSILON, null, spinner.getValue());
         });
 
         comp.add(label);

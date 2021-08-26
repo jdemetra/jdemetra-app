@@ -200,10 +200,10 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     //</editor-fold>
 
     private void resetValues() {
-        for (int i = 0; i < items.size(); i++) {
-            items.get(i).setBackCount(lastChecks);
-            items.get(i).clearValues();
-            map.put(items.get(i).getTs().getName(), items.get(i));
+        for (AnomalyItem item : items) {
+            item.setBackCount(lastChecks);
+            item.clearValues();
+            map.put(item.getTs().getName(), item);
             checkLast = new CheckLast(spec.build());
             checkLast.setBackCount(lastChecks);
         }

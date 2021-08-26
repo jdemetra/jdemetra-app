@@ -29,10 +29,11 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 @SwingComponent
 public final class TsProperties extends JComponent implements IDisposable {
 
-    private JTsChart chart_;
-    private JTsGrid grid_;
-    private JLabel labelSeries_, labelSource_;
-    private JTree tree_;
+    private final JTsChart chart_;
+    private final JTsGrid grid_;
+    private final JLabel labelSeries_;
+    private final JLabel labelSource_;
+    private final JTree tree_;
 
     public TsProperties() {
         super();

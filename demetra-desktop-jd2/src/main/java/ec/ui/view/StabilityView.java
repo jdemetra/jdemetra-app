@@ -73,16 +73,16 @@ public final class StabilityView extends JComponent implements TimeSeriesCompone
     private static final float MARKER_ALPHA = 1f;
 
     private final Map<Bornes, Graphs> graphs_;
-    private JFreeChart mainChart;
-    private JFreeChart detailChart;
-    private JChartPanel panel;
+    private final JFreeChart mainChart;
+    private final JFreeChart detailChart;
+    private final JChartPanel panel;
     private final XYLineAndShapeRenderer meanRenderer;
     private final XYLineAndShapeRenderer pointsRenderer;
     private final XYLineAndShapeRenderer smoothRenderer;
-    private List<StabilityViewItem> items = new ArrayList<>();
-    private JPanel cards;
-    private JPanel errorPanel;
-    private JLabel errorLabel;
+    private final List<StabilityViewItem> items = new ArrayList<>();
+    private final JPanel cards;
+    private final JPanel errorPanel;
+    private final JLabel errorLabel;
     private final String MAIN_PANEL = "mainPanel";
     private final String ERROR_PANEL = "errorPanel";
     private int indexSelected = -1;
@@ -167,7 +167,7 @@ public final class StabilityView extends JComponent implements TimeSeriesCompone
                     for (Map.Entry<TsDomain, Double> e : i.data.entrySet()) {
                         if (cpt == item) {
                             TsDomain dom = e.getKey();
-                            return "(" + dom.getStart().toString() + ", " + dom.getEnd().toString() + ") : " + format.format(e.getValue());
+                            return "(" + dom.getStart() + ", " + dom.getEnd() + ") : " + format.format(e.getValue());
                         }
                         cpt++;
                     }
@@ -464,9 +464,9 @@ public final class StabilityView extends JComponent implements TimeSeriesCompone
 
     static class StabilityViewItem {
 
-        private String name;
-        private Map<TsDomain, Double> data;
-        private double[] smoothedData;
+        private final String name;
+        private final Map<TsDomain, Double> data;
+        private final double[] smoothedData;
 
         public StabilityViewItem(String name, Map<TsDomain, Double> data, double[] sdata) {
             this.name = name;

@@ -216,7 +216,7 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
         @Override
         public String getHtmlDisplayName() {
             File file = getLookup().lookup(File.class);
-            return file.exists() ? file.toString() : ("<i>" + file.toString() + "</i>");
+            return file.exists() ? file.toString() : ("<i>" + file + "</i>");
         }
 
         @Override

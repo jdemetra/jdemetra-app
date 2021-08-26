@@ -49,7 +49,7 @@ public final class SimpleChartTsAction implements TsActionsOpenSpi {
 
     @Override
     public void open(Ts ts) {
-        String name = getName() + ts.getMoniker().toString();
+        String name = getName() + ts.getMoniker();
         ChartTopComponent c = NbComponents.findTopComponentByNameAndClass(name, ChartTopComponent.class);
         if (c == null) {
             c = new ChartTopComponent();

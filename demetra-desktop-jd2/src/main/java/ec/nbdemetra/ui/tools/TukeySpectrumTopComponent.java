@@ -45,8 +45,8 @@ persistenceType = TopComponent.PERSISTENCE_NEVER)
 })
 public final class TukeySpectrumTopComponent extends TopComponent implements HasTs, IActiveView, ExplorerManager.Provider {
 
-    private TukeySpectrumView view;
-    private Node node;
+    private final TukeySpectrumView view;
+    private final Node node;
 
     public TukeySpectrumTopComponent() {
         initComponents();

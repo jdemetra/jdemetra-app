@@ -27,7 +27,7 @@ import javax.swing.ActionMap;
  */
 public interface PrintableWithPreview {
 
-    static final String PRINT_ACTION = "print";
+    String PRINT_ACTION = "print";
 
     void printWithPreview();
 

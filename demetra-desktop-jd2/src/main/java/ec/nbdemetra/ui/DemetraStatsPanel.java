@@ -54,10 +54,10 @@ import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddyLoader;
 final class DemetraStatsPanel extends javax.swing.JPanel {
 
     private final DemetraStatsOptionsPanelController controller;
-    private JPopupMenu specPopup = new JPopupMenu();
-    private SpecSelectionComponent specComponent = new SpecSelectionComponent(true);
+    private final JPopupMenu specPopup = new JPopupMenu();
+    private final SpecSelectionComponent specComponent = new SpecSelectionComponent(true);
 
-    private JListSelection<String> fieldSelectionComponent = new JListSelection<>();
+    private final JListSelection<String> fieldSelectionComponent = new JListSelection<>();
 
     private List<String> selectedDiagFields = new ArrayList<>();
     private final List<String> allDiagFields = new ArrayList<>();
@@ -65,7 +65,7 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
     private List<String> selectedSeriesFields = new ArrayList<>();
     private final List<String> allSeriesFields = new ArrayList<>();
 
-    private EstimationPolicyType[] types = {EstimationPolicyType.Complete,
+    private final EstimationPolicyType[] types = {EstimationPolicyType.Complete,
         EstimationPolicyType.FreeParameters,
         EstimationPolicyType.None};
 
@@ -140,7 +140,7 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         demetraUI.setSelectedSeriesFields(selectedSeriesFields);
 
         if (specComponent.getSpecification() instanceof TramoSeatsSpecification) {
-            demetraUI.setDefaultSASpec("tramoseats." + specComponent.getSpecification().toString());
+            demetraUI.setDefaultSASpec("tramoseats." + specComponent.getSpecification());
         } else {
             demetraUI.setDefaultSASpec("x13." + specComponent.getSpecification().toString());
         }

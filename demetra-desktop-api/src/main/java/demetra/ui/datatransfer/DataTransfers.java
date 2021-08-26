@@ -84,8 +84,8 @@ public final class DataTransfers {
     public static <T> Optional<Transferable> tryFormat(T value, Formatter<T> formatter) {
         String text = formatter.formatAsString(value);
         return text != null
-                ? Optional.<Transferable>of(new StringSelection(text))
-                : Optional.<Transferable>empty();
+                ? Optional.of(new StringSelection(text))
+                : Optional.empty();
     }
 
     public static boolean isMultiFlavor(@NonNull DataFlavor[] dataFlavors) {

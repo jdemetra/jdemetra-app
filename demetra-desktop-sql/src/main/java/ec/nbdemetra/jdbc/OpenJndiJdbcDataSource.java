@@ -17,7 +17,6 @@
 package ec.nbdemetra.jdbc;
 
 import static ec.nbdemetra.jdbc.DbExplorerUtil.findConnection;
-import static ec.nbdemetra.jdbc.DbExplorerUtil.isConnected;
 import static ec.nbdemetra.jdbc.DbExplorerUtil.isTableOrView;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.tss.tsproviders.jdbc.JdbcBean;
@@ -67,7 +66,7 @@ public final class OpenJndiJdbcDataSource extends SingleNodeAction<Node> {
     @Override
     protected boolean enable(Node activatedNode) {
         return findConnection(activatedNode)
-                .filter(o -> isConnected(o))
+                .filter(DbExplorerUtil::isConnected)
                 .isPresent();
     }
 

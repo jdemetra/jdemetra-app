@@ -138,7 +138,7 @@ public class OutputPanel extends javax.swing.JPanel implements ExplorerManager.P
 private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
     Node[] nodes = em.getSelectedNodes();
     if (nodes.length > 0) {
-        remove(((AbstractOutputNode) nodes[0]).getDisplayName());
+        remove(nodes[0].getDisplayName());
     }
 }//GEN-LAST:event_removeButtonActionPerformed
 

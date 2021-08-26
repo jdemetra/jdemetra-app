@@ -52,7 +52,7 @@ public class DemetraWsUI extends TopComponent implements ExplorerManager.Provide
 
     private final ExplorerManager mgr = new ExplorerManager();
     private final InstanceContent content = new InstanceContent();
-    private Lookup.Result<WorkspaceFactory.Event> result;
+    private final Lookup.Result<WorkspaceFactory.Event> result;
 
     public DemetraWsUI() {
         initComponents();

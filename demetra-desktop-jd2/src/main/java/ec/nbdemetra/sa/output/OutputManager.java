@@ -37,8 +37,8 @@ public class OutputManager implements LookupListener {
         return instance;
     }
     
-    private Lookup.Result<INbOutputFactory> outputLookup;
-    private List<INbOutputFactory> outputs = new ArrayList<>();
+    private final Lookup.Result<INbOutputFactory> outputLookup;
+    private final List<INbOutputFactory> outputs = new ArrayList<>();
     private static OutputManager instance;
 
     private OutputManager() {

@@ -236,7 +236,7 @@ public final class NodePropertySetBuilder {
         return result;
     }
 
-    public final class SelectStep<T, NEXT_STEP> {
+    public static final class SelectStep<T, NEXT_STEP> {
 
         private final Class<T> valueType;
         private final Function<Node.Property<T>, NEXT_STEP> next;

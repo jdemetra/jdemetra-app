@@ -28,7 +28,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public interface HasHoveredObs {
 
-    static final String HOVERED_OBS_PROPERTY = "hoveredObs";
+    String HOVERED_OBS_PROPERTY = "hoveredObs";
 
     @NonNull
     ObsIndex getHoveredObs();

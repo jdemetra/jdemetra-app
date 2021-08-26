@@ -22,13 +22,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.text.DateFormatSymbols;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractCellEditor;
@@ -214,8 +208,8 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         OutlierDefinition[] list = modelDefs
                 .values()
                 .stream()
-                .flatMap(x -> x.stream())
-                .toArray(size -> new OutlierDefinition[size]);
+                .flatMap(Collection::stream)
+                .toArray(OutlierDefinition[]::new);
         setValue(list);
         OutlierDefinitionsEditor.this.firePropertyChange(old, definitions_);
     }
@@ -223,12 +217,12 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
     private void setDescriptors(List<OutlierDescriptor> elements) {
         Map<Day, List<OutlierDefinition>> old = definitions_;
         definitions_ = new HashMap<>();
-        for (int i = 0; i < elements.size(); ++i) {
-            Day key = elements.get(i).getPosition();
+        for (OutlierDescriptor element : elements) {
+            Day key = element.getPosition();
             if (!definitions_.containsKey(key) || definitions_.get(key) == null) {
                 definitions_.put(key, new ArrayList<>());
             }
-            definitions_.get(key).add(elements.get(i).getCore());
+            definitions_.get(key).add(element.getCore());
         }
         firePropertyChange(old, definitions_);
     }
@@ -236,9 +230,9 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
     private OutlierDescriptor[] getDescriptors() {
         return definitions_
                 .values()
-                .stream().flatMap(x -> x.stream())
-                .map(elem -> new OutlierDescriptor(elem))
-                .toArray(size -> new OutlierDescriptor[size]);
+                .stream().flatMap(Collection::stream)
+                .map(OutlierDescriptor::new)
+                .toArray(OutlierDescriptor[]::new);
     }
 
     @Override
@@ -246,13 +240,13 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         definitions_ = new HashMap<>();
         if (value instanceof OutlierDefinition[]) {
             OutlierDefinition[] outs = ((OutlierDefinition[]) value);
-            for (int i = 0; i < outs.length; ++i) {
-                Day key = outs[i].getPosition();
+            for (OutlierDefinition out : outs) {
+                Day key = out.getPosition();
                 if (!definitions_.containsKey(key) || definitions_.get(key) == null) {
                     definitions_.put(key, new ArrayList<>());
                 }
                 // makes copies
-                definitions_.get(key).add(new OutlierDefinition(key, outs[i].getType()));
+                definitions_.get(key).add(new OutlierDefinition(key, out.getType()));
             }
         }
     }
@@ -261,11 +255,11 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
     public Object getValue() {
         return definitions_
                 .values()
-                .stream().flatMap(x -> x.stream())
-                .toArray(size -> new OutlierDefinition[size]);
+                .stream().flatMap(Collection::stream)
+                .toArray(OutlierDefinition[]::new);
     }
 
-    class OutliersModel extends DefaultTableModel {
+    static class OutliersModel extends DefaultTableModel {
 
         private final int firstYear_;
         private final int lastYear_;
@@ -356,7 +350,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
 
             final Day day = new TsPeriod(TsFrequency.valueOf(freq_), firstYear_ + row, column - 1).firstday();
             if (defs_.containsKey(day)) {
-                return defs_.get(day).stream().map(d -> d.getType()).toArray();
+                return defs_.get(day).stream().map(OutlierDefinition::getType).toArray();
             } else {
                 return null;
             }
@@ -379,7 +373,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         }
     }
 
-    class OutlierTypeRenderer extends DefaultTableCellRenderer {
+    static class OutlierTypeRenderer extends DefaultTableCellRenderer {
 
         private final JPanel panel_;
 
@@ -397,7 +391,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                 Object[] input = (Object[]) value;
                 OutlierType[] oType = Arrays.copyOf(input, input.length, OutlierType[].class);
                 panel_.setLayout(new GridLayout(oType.length > 2 ? 2 : 1, 2));
-                panel_.setToolTipText(Arrays.stream(oType).map(t -> t.toString()).collect(Collectors.joining(", ")));
+                panel_.setToolTipText(Arrays.stream(oType).map(Enum::toString).collect(Collectors.joining(", ")));
 
                 for (OutlierType t : oType) {
                     JLabel label = new JLabel(t.toString());
@@ -417,7 +411,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         }
     }
 
-    class OutlierTypeEditor extends AbstractCellEditor implements TableCellEditor {
+    static class OutlierTypeEditor extends AbstractCellEditor implements TableCellEditor {
 
         private final CheckComboBox box;
 
@@ -441,7 +435,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             box.uncheckAllItems();
             if (value != null) {
-                box.addSelectedItems(Arrays.stream((Object[]) value).map(o -> (OutlierType) o).toArray(s -> new OutlierType[s]));
+                box.addSelectedItems(Arrays.stream((Object[]) value).map(o -> (OutlierType) o).toArray(OutlierType[]::new));
             }
 
             return box;
@@ -464,13 +458,13 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         }
     }
 
-    public static enum PrespecificiedOutliersEditor {
+    public enum PrespecificiedOutliersEditor {
         CALENDAR_GRID("Calendar-like Grid"),
         LIST("List of outliers");
 
         private final String description;
 
-        private PrespecificiedOutliersEditor(String d) {
+        PrespecificiedOutliersEditor(String d) {
             description = d;
         }
 

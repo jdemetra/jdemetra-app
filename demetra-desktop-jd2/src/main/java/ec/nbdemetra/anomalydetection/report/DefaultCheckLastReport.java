@@ -113,14 +113,14 @@ public final class DefaultCheckLastReport implements ICheckLastReportFactory {
     private void writeHeader(Writer out, Map parameters) throws IOException {
         out.write("Software\tJDemetra+" + NL2);
         out.write("Check Last processing" + NL2);
-        out.write("Number of series : " + String.valueOf(parameters.get("_NB_OF_SERIES")) + NL);
-        out.write("Number of anomalies : " + String.valueOf(parameters.get("_NB_ANOMALY")) + NL);
-        out.write("Number of last periods checked : " + String.valueOf(parameters.get("_NB_CHECK_LAST")) + NL);
-        out.write("Specification used : " + String.valueOf(parameters.get("_SPECIFICATION")) + NL2);
+        out.write("Number of series : " + parameters.get("_NB_OF_SERIES") + NL);
+        out.write("Number of anomalies : " + parameters.get("_NB_ANOMALY") + NL);
+        out.write("Number of last periods checked : " + parameters.get("_NB_CHECK_LAST") + NL);
+        out.write("Specification used : " + parameters.get("_SPECIFICATION") + NL2);
         out.write("Sensitivity :" + NL);
-        out.write("Orange cells from : " + String.valueOf(parameters.get("_ORANGE_CELLS")) + NL);
-        out.write("Red cells from : " + String.valueOf(parameters.get("_RED_CELLS")) + NL);
-        out.write("Series sorted by : " + String.valueOf(parameters.get("_SORTING")) + NL);
+        out.write("Orange cells from : " + parameters.get("_ORANGE_CELLS") + NL);
+        out.write("Red cells from : " + parameters.get("_RED_CELLS") + NL);
+        out.write("Series sorted by : " + parameters.get("_SORTING") + NL);
     }
     
     private void writeAnomalies(Writer out, Map parameters) throws IOException {

@@ -74,8 +74,8 @@ public class WorkspaceFactory implements LookupListener {
     }
     
     private static WorkspaceFactory instance_;
-    private Lookup.Result<IWorkspaceItemManager> workspaceManagersLookup;
-    private Lookup.Result<IWorkspaceRepository> repositoryLookup;
+    private final Lookup.Result<IWorkspaceItemManager> workspaceManagersLookup;
+    private final Lookup.Result<IWorkspaceRepository> repositoryLookup;
     private final InstanceContent content = new InstanceContent();
     private final Lookup wsLookup;
 
@@ -152,14 +152,14 @@ public class WorkspaceFactory implements LookupListener {
             if (s != null) {
                 return s + ".item";
             } else {
-                return id.toString() + ".item";
+                return id + ".item";
             }
         }
         return id.toString();
     }
 
     private String getNextWKSName() {
-        return "Workspace_" + Integer.toString(id_++);
+        return "Workspace_" + id_++;
     }
 
     public Workspace getActiveWorkspace() {

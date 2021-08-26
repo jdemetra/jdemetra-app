@@ -30,8 +30,8 @@ import org.jfree.data.xy.XYSeriesCollection;
 @SwingComponent
 public final class AcgfView extends JComponent{
     private XYSeriesCollection coll_;
-    private ChartPanel panel_;
-    private int n_ = 36;
+    private final ChartPanel panel_;
+    private final int n_ = 36;
 
     public AcgfView() {
         setLayout(new BorderLayout());

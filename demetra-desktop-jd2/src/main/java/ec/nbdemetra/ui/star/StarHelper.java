@@ -10,7 +10,7 @@ import demetra.tsprovider.DataSourceLoader;
 import demetra.ui.TsManager;
 import ec.nbdemetra.core.InstallerStep;
 import static ec.nbdemetra.core.InstallerStep.tryGet;
-import java.util.Optional;
+
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import nbbrd.io.text.Formatter;
@@ -36,11 +36,9 @@ public class StarHelper extends InstallerStep {
         Parser<DataSource> parser = ec.tss.tsproviders.DataSource.xmlParser().andThen(TsConverter::toDataSource)::parse;
 
         try {
-            for (String i : prefs.childrenNames()) {
-                Optional<DataSource> dataSource = tryGet(prefs.node(i), DATASOURCE_PROPERTY, parser);
-                if (dataSource.isPresent()) {
-                    StarList.getInstance().toggle(dataSource.get());
-                }
+            for (String name : prefs.childrenNames()) {
+                tryGet(prefs.node(name), DATASOURCE_PROPERTY, parser)
+                        .ifPresent(source -> StarList.getInstance().toggle(source));
             }
         } catch (BackingStoreException ex) {
             LOGGER.warn("Can't get node list", ex);

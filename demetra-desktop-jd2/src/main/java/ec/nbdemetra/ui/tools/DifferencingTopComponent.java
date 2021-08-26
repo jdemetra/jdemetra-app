@@ -76,7 +76,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
     private final AutoCorrelationsView acView;
     private final JTsGrid grid;
     private demetra.timeseries.Ts ts_;
-    private Node node;
+    private final Node node;
     private boolean isLog = false;
     private int diffOrder = 1, seasonalDiffOrder = 1;
 

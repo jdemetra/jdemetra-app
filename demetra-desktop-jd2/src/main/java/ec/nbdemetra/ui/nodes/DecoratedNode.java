@@ -16,14 +16,15 @@
  */
 package ec.nbdemetra.ui.nodes;
 
-import com.google.common.base.Function;
-import java.awt.event.ActionEvent;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * Decorator pattern applied to a node.
@@ -34,8 +35,8 @@ public class DecoratedNode extends FilterNode {
 
     public static final String HTML_DECORATOR_PROPERTY = "htmlDecorator";
     public static final String PREFERRED_ACTION_DECORATOR_PROPERTY = "preferredActionDecorator";
-    protected Function<Node, String> htmlDecorator;
-    protected Function<Node, Action> preferredActionDecorator;
+    protected Function<Node, @Nullable String> htmlDecorator;
+    protected Function<Node, @Nullable Action> preferredActionDecorator;
 
     public DecoratedNode(Node original) {
         this(original, o -> true);
@@ -52,15 +53,15 @@ public class DecoratedNode extends FilterNode {
         return super.getOriginal();
     }
 
-    public void setHtmlDecorator(Function<Node, String> decorator) {
-        Function<Node, String> old = this.htmlDecorator;
+    public void setHtmlDecorator(Function<Node, @Nullable String> decorator) {
+        Function<Node, @Nullable String> old = this.htmlDecorator;
         this.htmlDecorator = decorator != null ? decorator : Html.DEFAULT;
         firePropertyChange(HTML_DECORATOR_PROPERTY, old, this.htmlDecorator);
         fireDisplayNameChange(null, getHtmlDisplayName());
     }
 
-    public void setPreferredActionDecorator(Function<Node, Action> decorator) {
-        Function<Node, Action> old = this.preferredActionDecorator;
+    public void setPreferredActionDecorator(Function<Node, @Nullable Action> decorator) {
+        Function<Node, @Nullable Action> old = this.preferredActionDecorator;
         this.preferredActionDecorator = decorator != null ? decorator : PreferredAction.DEFAULT;
         firePropertyChange(PREFERRED_ACTION_DECORATOR_PROPERTY, old, this.preferredActionDecorator);
     }
@@ -79,7 +80,7 @@ public class DecoratedNode extends FilterNode {
         return Nodes.breadthFirstStream(this).filter(DecoratedNode.class::isInstance).map(DecoratedNode.class::cast);
     }
 
-    private static class DecoratedChildren extends FilterNode.Children {
+    private static class DecoratedChildren extends Children {
 
         private final Predicate<Node> filter;
 
@@ -114,7 +115,7 @@ public class DecoratedNode extends FilterNode {
             public String apply(Node node) {
                 return "<b>" + node.getDisplayName() + "</b>";
             }
-        };
+        }
     }
 
     public enum PreferredAction implements Function<Node, Action> {
@@ -138,5 +139,5 @@ public class DecoratedNode extends FilterNode {
         }
     }
 
-    public static final Function<DecoratedNode, Node> TO_ORIGINAL = o -> o.getOriginal();
+    public static final Function<DecoratedNode, @Nullable Node> TO_ORIGINAL = DecoratedNode::getOriginal;
 }

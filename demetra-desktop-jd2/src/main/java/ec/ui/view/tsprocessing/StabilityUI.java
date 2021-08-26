@@ -16,7 +16,6 @@
  */
 package ec.ui.view.tsprocessing;
 
-import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.analysis.MovingProcessing;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.ui.view.StabilityView;
@@ -29,7 +28,7 @@ import java.util.Map;
  */
 public class StabilityUI<V extends IProcDocumentView<?>> extends PooledItemUI<V, MovingProcessing, StabilityView> {
 
-    private String node;
+    private final String node;
     private final String[] items;
 
     public StabilityUI(String node, String[] items) {

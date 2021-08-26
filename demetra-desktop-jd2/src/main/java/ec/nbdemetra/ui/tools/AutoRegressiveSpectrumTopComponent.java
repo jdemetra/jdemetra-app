@@ -43,8 +43,8 @@ import org.openide.windows.WindowManager;
 })
 public final class AutoRegressiveSpectrumTopComponent extends TopComponent implements HasTs, IActiveView, ExplorerManager.Provider {
 
-    private AutoRegressiveSpectrumView view;
-    private Node node;
+    private final AutoRegressiveSpectrumView view;
+    private final Node node;
 
     public AutoRegressiveSpectrumTopComponent() {
         initComponents();

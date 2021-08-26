@@ -23,7 +23,7 @@ public enum CustomPropertyEditorRegistry {
     INSTANCE;
     private final PropertyEditorRegistry m_registry;
 
-    private CustomPropertyEditorRegistry() {
+    CustomPropertyEditorRegistry() {
         m_registry = PropertyEditorRegistry.INSTANCE;
 
         m_registry.registerEditor(Enum.class, EnumPropertyEditor.class);

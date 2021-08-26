@@ -36,7 +36,7 @@ import org.jfree.chart.plot.XYPlot;
  */
 public class ChartPopup extends JDialog {
 
-    private RevisionChartPanel panel;
+    private final RevisionChartPanel panel;
 
     public ChartPopup(Frame owner, boolean modal) {
         super(owner, modal);

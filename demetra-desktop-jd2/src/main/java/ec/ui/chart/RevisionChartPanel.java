@@ -70,9 +70,9 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
     private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
     
-    private JChartPanel panel;
-    private XYLineAndShapeRenderer refRenderer;
-    private XYLineAndShapeRenderer seriesRenderer;
+    private final JChartPanel panel;
+    private final XYLineAndShapeRenderer refRenderer;
+    private final XYLineAndShapeRenderer seriesRenderer;
     private static final int REF_INDEX = 0;
     private static final int SERIES_INDEX = 1;
     private TsData reference;
@@ -232,8 +232,8 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
         demetra.timeseries.Ts ts = OldTsUtil.toTs("Reference serie", reference);
         col.add(ts);
         if (revs != null) {
-            for (int i = 0; i < revs.size(); i++) {
-                ts = OldTsUtil.toTs("Rev->" + ts.getData().getDomain().getLastPeriod().toString(), revs.get(i));
+            for (TsData rev : revs) {
+                ts = OldTsUtil.toTs("Rev->" + ts.getData().getDomain().getLastPeriod(), rev);
                 col.add(ts);
             }
         }

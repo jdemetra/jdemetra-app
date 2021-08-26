@@ -6,7 +6,6 @@ package ec.nbdemetra.x13.descriptors;
 
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.modelling.RegressionTestSpec;
-import ec.tstoolkit.modelling.arima.tramo.EasterSpec;
 import ec.tstoolkit.modelling.arima.x13.MovingHolidaySpec;
 import ec.tstoolkit.modelling.arima.x13.RegArimaSpecification;
 import ec.tstoolkit.modelling.arima.x13.RegressionSpec;

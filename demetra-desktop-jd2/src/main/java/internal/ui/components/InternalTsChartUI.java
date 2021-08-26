@@ -298,8 +298,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
         demetra.timeseries.TsCollection collection = target.getTsCollection();
         demetra.timeseries.TsCollection dropContent = target.getDropContent();
 
-        List<demetra.timeseries.Ts> tmp = new ArrayList<>();
-        tmp.addAll(dropContent.getItems());
+        List<demetra.timeseries.Ts> tmp = new ArrayList<>(dropContent.getItems());
         tmp.removeAll(collection.getItems());
 
         List<demetra.timeseries.Ts> tss = Stream

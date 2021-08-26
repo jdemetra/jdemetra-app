@@ -84,11 +84,11 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
     private final JTsAnomalyGrid grid;
     private final AnomalyDetectionSummary summary;
     private final ExplorerManager mgr = new ExplorerManager();
-    private Node node;
+    private final Node node;
     private final JSplitPane visualRepresentation;
     private final JSplitPane tsInformation;
     private final AnomalyDetectionChart chart;
-    private JToolBar toolBar;
+    private final JToolBar toolBar;
     private JButton runButton;
     private JLabel itemsLabel;
     private JButton prefButton;

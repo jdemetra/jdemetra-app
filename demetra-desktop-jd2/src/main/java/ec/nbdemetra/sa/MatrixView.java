@@ -28,12 +28,7 @@ import java.awt.event.ItemEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -48,7 +43,7 @@ import org.netbeans.core.spi.multiview.MultiViewElement;
  */
 public class MatrixView extends AbstractSaProcessingTopComponent implements MultiViewElement {
 
-    private static DecimalFormat df3 = new DecimalFormat("0.000");
+    private static final DecimalFormat df3 = new DecimalFormat("0.000");
     private final static int MAXBIAS = 1, SKEWNESS = 2, KURTOSIS = 3, LB = 4, LBS = 5, LB2 = 6, TD_PEAK = 7, S_PEAK = 8, TD_VPEAK = 9, S_VPEAK = 10, S_VAR = 11, I_VAR = 12, SI_CORR = 13, M_START = 11;
 //    private final static String[] TESTS_TS = new String[]{"max bias", "skewness", "kurtosis", "ljung-box", "lb on seas.", "lb on sq.", "td peak", "seas peak", "visual td peak", "visual s. peak", "s_var", "i var", "s-i corr"};
 //    private final static String[] TESTS_X12 = new String[]{"max bias", "skewness", "kurtosis", "ljung-box", "lb on seas.", "lb on sq.", "td peak", "seas peak", "visual td peak", "visual s. peak", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9", "m10", "m11", "q", "q-m2"};
@@ -62,7 +57,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
     // data
     private List<SaItem> saItems;
     private List<String> selectedComponents;
-    private PropertyChangeListener listener;
+    private final PropertyChangeListener listener;
 
     public MatrixView(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
         super(doc, controller);
@@ -104,7 +99,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
             customMatrix_.setModel(new TableModelAdapter(createTableModel(item.getValue(), item.getKey(), selectedComponents, selectedComponents)));
         };
 
-        updateData(Collections.<SaItem>emptyList());
+        updateData(Collections.emptyList());
 
         setLayout(new BorderLayout());
         add(toolBarRepresentation, BorderLayout.NORTH);
@@ -118,7 +113,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         if (getState().isFinished()) {
             updateData(current);
         } else {
-            updateData(Collections.<SaItem>emptyList());
+            updateData(Collections.emptyList());
         }
 
     }
@@ -189,7 +184,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
     private void updateData(List<SaItem> saItems) {
         this.saItems = saItems;
         Map<Integer, List<AlgorithmDescriptor>> methods = getCurrentProcessing().methods();
-        long count = methods.values().stream().flatMap(m -> m.stream()).count();
+        long count = methods.values().stream().mapToLong(Collection::size).sum();
         comboBox.setVisible(count > 1);
         comboBox.setModel(asComboBoxModel(methods));
         comboBox.setSelectedIndex(-1);

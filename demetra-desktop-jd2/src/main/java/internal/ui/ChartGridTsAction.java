@@ -59,7 +59,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
 
     @Override
     public void open(Ts ts) {
-        String name = getName() + ts.getMoniker().toString();
+        String name = getName() + ts.getMoniker();
         TopComponent c = NbComponents.findTopComponentByName(name);
         if (c == null) {
             MultiViewDescription[] descriptions = {new ChartTab(ts), new GridTab(ts)};

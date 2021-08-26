@@ -38,7 +38,7 @@ public final class FileTransferHandler implements DataSourceTransferHandler {
         Optional<File> file = DataTransfers.getSingleFile(t);
         if (file.isPresent()) {
             Optional<FileLoader> loader = TsManager.getDefault().getProvider(FileLoader.class, providerName);
-            return loader.isPresent() ? loader.get().accept(file.get()) : false;
+            return loader.isPresent() && loader.get().accept(file.get());
         }
         return false;
     }

@@ -22,12 +22,7 @@ package ec.nbdemetra.ui.actions;
 
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
 import ec.nbdemetra.ui.variables.VariablesDocumentManager;
-import ec.nbdemetra.ws.IWorkspaceItemManager;
-import ec.nbdemetra.ws.Workspace;
-import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.nodes.WsNode;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

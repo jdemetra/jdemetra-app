@@ -93,7 +93,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
 
     @Override
     public void recycleViewer(Component c) {
-        ((View) uniqueView).setModel(Model.EMPTY);
+        uniqueView.setModel(Model.EMPTY);
     }
 
     @Override

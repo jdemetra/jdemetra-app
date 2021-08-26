@@ -27,7 +27,7 @@ import javax.swing.ActionMap;
  */
 public interface ResetableZoom {
 
-    static final String RESET_ZOOM_ACTION = "resetZoom";
+    String RESET_ZOOM_ACTION = "resetZoom";
 
     void resetZoom();
 

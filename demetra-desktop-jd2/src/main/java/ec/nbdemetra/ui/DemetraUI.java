@@ -105,7 +105,7 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
     }
 
     public static final String DEFAULT_SA_SPEC_PROPERTY = "defaultSASpec";
-    private static final String DEFAULT_DETAULT_SA_SPEC = "tramoseats." + TramoSeatsSpecification.RSAfull.toString();
+    private static final String DEFAULT_DETAULT_SA_SPEC = "tramoseats." + TramoSeatsSpecification.RSAfull;
     private static final Property<String> DEFAULT_SA_SPEC_CONFIG = Property.of(DEFAULT_SA_SPEC_PROPERTY, DEFAULT_DETAULT_SA_SPEC, Parser.onString(), Formatter.onString());
     private String defaultSASpec = DEFAULT_DETAULT_SA_SPEC;
 

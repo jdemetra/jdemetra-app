@@ -33,7 +33,7 @@ public final class MultiProcessingController implements PropertyChangeSource.Wit
         public boolean isFinished() {
             return this == DONE || this == CANCELLED;
         }
-    };
+    }
 
     public static final String SAPROCESSING_STATE_PROPERTY = "SaProcessingState";
 
@@ -43,7 +43,7 @@ public final class MultiProcessingController implements PropertyChangeSource.Wit
     private SaProcessingState state;
 
     public MultiProcessingController() {
-        this.state = state.READY;
+        this.state = SaProcessingState.READY;
     }
 
     public SaProcessingState getState() {
@@ -59,8 +59,8 @@ public final class MultiProcessingController implements PropertyChangeSource.Wit
 
         PropertyChangeListener[] ls = broadcaster.getPropertyChangeListeners();
         if (ls != null) {
-            for (int i = 0; i < ls.length; ++i) {
-                broadcaster.removePropertyChangeListener(ls[i]);
+            for (PropertyChangeListener l : ls) {
+                broadcaster.removePropertyChangeListener(l);
             }
         }
     }

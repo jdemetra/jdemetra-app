@@ -31,7 +31,7 @@ import java.util.Collection;
  */
 public class AnomalyItem {
 
-    public static enum Status {
+    public enum Status {
 
         Unprocessed("Unprocessed"),
         Pending("Pending"),

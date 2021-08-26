@@ -9,7 +9,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public interface HasColorScheme {
 
-    static final String COLOR_SCHEME_PROPERTY = "colorScheme";
+    String COLOR_SCHEME_PROPERTY = "colorScheme";
 
     @Nullable
     ColorScheme getColorScheme();

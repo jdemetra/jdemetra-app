@@ -24,7 +24,7 @@ import org.openide.windows.WindowManager;
 public class ReportSelectionDialog extends JDialog {
 
     private String report;
-    private JList<String> list;
+    private final JList<String> list;
 
     private void fillList() {
         List<ISaReportFactory> factories = SaReportManager.getDefault().getFactories();
@@ -46,7 +46,7 @@ public class ReportSelectionDialog extends JDialog {
                 report = null;
                 btnOK_.setEnabled(false);
             } else {
-                report = list.getModel().getElementAt(event.getLastIndex()).toString();
+                report = list.getModel().getElementAt(event.getLastIndex());
                 btnOK_.setEnabled(true);
             }
         });

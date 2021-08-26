@@ -41,7 +41,7 @@ public class FunctionsSurfaceModel extends AbstractSurfaceModel {
 
     private SurfaceVertex[] surfaceVertex;
     private final IFunction function;
-    private IFunctionInstance maxFunction;
+    private final IFunctionInstance maxFunction;
     private int p1_index;
     private int p2_index;
     private int steps;

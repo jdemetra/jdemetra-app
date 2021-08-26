@@ -363,8 +363,8 @@ public final class Projector {
 
         // elevates and projects
         temp = factor / (y * cos_elevation - z * sz_sin + distance);
-        return new Point((int) (Math.round(x * temp) + trans_x),
-                (int) (Math.round((y * sin_elevation + z * sz_cos) * -temp) + trans_y));
+        return new Point(Math.round(x * temp) + trans_x,
+                Math.round((y * sin_elevation + z * sz_cos) * -temp) + trans_y);
     }
 
     public void setZRange(float zmin, float zmax) {

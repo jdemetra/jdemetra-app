@@ -26,7 +26,7 @@ import java.text.DecimalFormat;
  */
 public class AnomalyPojo {
     
-    private static DecimalFormat df = new DecimalFormat("0.00");
+    private static final DecimalFormat df = new DecimalFormat("0.00");
 //    private static int NAME_LEN=60;
 
     public enum Status {

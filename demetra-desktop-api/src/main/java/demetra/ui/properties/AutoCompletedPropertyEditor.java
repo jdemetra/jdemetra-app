@@ -24,7 +24,6 @@ import ec.util.various.swing.TextPrompt;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.beans.PropertyEditor;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
@@ -81,10 +80,9 @@ public final class AutoCompletedPropertyEditor extends AbstractExPropertyEditor 
 
     @Override
     public String getAsText() {
-        Optional<String> separator = attr(currentEnv, SEPARATOR_ATTRIBUTE, String.class);
-        return separator.isPresent()
-                ? super.getAsText().replace(separator.get(), " \u27A1 ")
-                : super.getAsText();
+        return attr(currentEnv, SEPARATOR_ATTRIBUTE, String.class)
+                .map(s -> super.getAsText().replace(s, " \u27A1 "))
+                .orElseGet(super::getAsText);
     }
 
     @Override
@@ -102,10 +100,9 @@ public final class AutoCompletedPropertyEditor extends AbstractExPropertyEditor 
     }
 
     private static void applyAutoCompletion(PropertyEnv env, JTextField component) {
-        Optional<String> servicePath = attr(env, SERVICE_PATH_ATTRIBUTE, String.class);
-        JAutoCompletion completion = servicePath.isPresent()
-                ? AutoCompletion.getDefault().bind(servicePath.get(), component)
-                : new JAutoCompletion(component);
+        JAutoCompletion completion = attr(env, SERVICE_PATH_ATTRIBUTE, String.class)
+                .map(servicePath -> AutoCompletion.getDefault().bind(servicePath, component))
+                .orElseGet(() -> new JAutoCompletion(component));
         attr(env, AUTO_FOCUS_ATTRIBUTE, Boolean.class).ifPresent(completion::setAutoFocus);
         attr(env, DELAY_ATTRIBUTE, Integer.class).ifPresent(completion::setDelay);
         attr(env, MIN_LENGTH_ATTRIBUTE, Integer.class).ifPresent(completion::setMinLength);

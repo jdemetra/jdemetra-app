@@ -86,9 +86,9 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     // toolBar stuff
     private final JButton runButton;
     private final JLabel defSpecLabel;
-    private Node node;
-    private MultiSaDocumentView diView;
-    private MultiSaSpecification curSpec;
+    private final Node node;
+    private final MultiSaDocumentView diView;
+    private final MultiSaSpecification curSpec;
     private SwingWorker worker;
 
     @Messages({

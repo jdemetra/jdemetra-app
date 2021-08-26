@@ -65,8 +65,8 @@ public class XmlWorkspace {
         if (tramoseatsSpecs != null) {
             IWorkspaceItemManager mgr = WorkspaceFactory.getInstance().getManager(TRAMOSEATSSPEC);
             if (mgr != null) {
-                for (int i = 0; i < tramoseatsSpecs.length; ++i) {
-                    WorkspaceItem<?> item = WorkspaceItem.item(mgr.getId(), tramoseatsSpecs[i].name, tramoseatsSpecs[i].file);
+                for (XmlWksElement tramoseatsSpec : tramoseatsSpecs) {
+                    WorkspaceItem<?> item = WorkspaceItem.item(mgr.getId(), tramoseatsSpec.name, tramoseatsSpec.file);
                     ws.quietAdd(item);
                 }
             }
@@ -74,8 +74,8 @@ public class XmlWorkspace {
         if (x12Specs != null) {
             IWorkspaceItemManager mgr = WorkspaceFactory.getInstance().getManager(X13SPEC);
             if (mgr != null) {
-                for (int i = 0; i < x12Specs.length; ++i) {
-                    WorkspaceItem<?> item = WorkspaceItem.item(mgr.getId(), x12Specs[i].name, x12Specs[i].file);
+                for (XmlWksElement x12Spec : x12Specs) {
+                    WorkspaceItem<?> item = WorkspaceItem.item(mgr.getId(), x12Spec.name, x12Spec.file);
                     ws.quietAdd(item);
                 }
             }
@@ -83,8 +83,8 @@ public class XmlWorkspace {
         if (tramoseatsDocs != null) {
             IWorkspaceItemManager mgr = WorkspaceFactory.getInstance().getManager(TRAMOSEATSDOC);
             if (mgr != null) {
-                for (int i = 0; i < tramoseatsDocs.length; ++i) {
-                    WorkspaceItem<?> item = WorkspaceItem.item(mgr.getId(), tramoseatsDocs[i].name, tramoseatsDocs[i].file);
+                for (XmlWksElement tramoseatsDoc : tramoseatsDocs) {
+                    WorkspaceItem<?> item = WorkspaceItem.item(mgr.getId(), tramoseatsDoc.name, tramoseatsDoc.file);
                     ws.quietAdd(item);
                 }
             }
@@ -92,8 +92,8 @@ public class XmlWorkspace {
         if (x12Docs != null) {
             IWorkspaceItemManager mgr = WorkspaceFactory.getInstance().getManager(X13DOC);
             if (mgr != null) {
-                for (int i = 0; i < x12Docs.length; ++i) {
-                    WorkspaceItem<?> item = WorkspaceItem.item(mgr.getId(), x12Docs[i].name, x12Docs[i].file);
+                for (XmlWksElement x12Doc : x12Docs) {
+                    WorkspaceItem<?> item = WorkspaceItem.item(mgr.getId(), x12Doc.name, x12Doc.file);
                     ws.quietAdd(item);
                 }
             }
@@ -101,8 +101,8 @@ public class XmlWorkspace {
         if (saProcessing != null) {
             IWorkspaceItemManager mgr = WorkspaceFactory.getInstance().getManager(SAPROCESSING);
             if (mgr != null) {
-                for (int i = 0; i < saProcessing.length; ++i) {
-                    WorkspaceItem<?> item = WorkspaceItem.item(mgr.getId(), saProcessing[i].name, saProcessing[i].file);
+                for (XmlWksElement xmlWksElement : saProcessing) {
+                    WorkspaceItem<?> item = WorkspaceItem.item(mgr.getId(), xmlWksElement.name, xmlWksElement.file);
                     ws.quietAdd(item);
                 }
             }

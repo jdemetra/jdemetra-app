@@ -95,9 +95,7 @@ public final class ToolsPersistence {
             });
         }
         if (view instanceof Persistable) {
-            tryGet(p, "config", XmlConfig.xmlParser(), true).ifPresent(o -> {
-                ((Persistable) view).setConfig(o);
-            });
+            tryGet(p, "config", XmlConfig.xmlParser(), true).ifPresent(((Persistable) view)::setConfig);
         }
     }
 

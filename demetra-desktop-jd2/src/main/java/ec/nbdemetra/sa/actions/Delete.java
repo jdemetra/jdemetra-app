@@ -6,10 +6,7 @@ package ec.nbdemetra.sa.actions;
 
 import ec.nbdemetra.sa.MultiProcessingManager;
 import ec.nbdemetra.sa.SaBatchUI;
-import static ec.nbdemetra.sa.actions.DeleteAction.DELETE_MESSAGE;
 import ec.nbdemetra.ws.actions.AbstractViewAction;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

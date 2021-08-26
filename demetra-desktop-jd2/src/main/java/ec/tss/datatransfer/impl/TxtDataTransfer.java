@@ -214,7 +214,7 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
             return dateFormat.format((Date) value);
         }
         if (value instanceof Number) {
-            return numberFormat.format((Number) value);
+            return numberFormat.format(value);
         }
         return value.toString();
     }
@@ -355,8 +355,8 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
                 }
             }
             int ndates = 0;
-            for (int i = 0; i < dates.length; ++i) {
-                if (dates[i] != null) {
+            for (Date date : dates) {
+                if (date != null) {
                     ++ndates;
                 }
             }

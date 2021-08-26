@@ -104,7 +104,7 @@ public class TramoSpecificationManager extends AbstractWorkspaceItemManager<Tram
 
     public void createDocument(final Workspace ws, final WorkspaceItem<TramoSpecification> xdoc) {
         TramoDocumentManager dmgr = (TramoDocumentManager) WorkspaceFactory.getInstance().getManager(TramoDocumentManager.ID);
-        WorkspaceItem<TramoDocument> doc = (WorkspaceItem<TramoDocument>) dmgr.create(ws);
+        WorkspaceItem<TramoDocument> doc = dmgr.create(ws);
         doc.setComments(xdoc.getComments());
         doc.getElement().setSpecification(xdoc.getElement());
         TramoTopComponent view = new TramoTopComponent(doc);

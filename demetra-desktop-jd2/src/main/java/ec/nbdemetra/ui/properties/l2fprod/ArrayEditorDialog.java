@@ -25,7 +25,7 @@ import javax.swing.*;
  */
 public class ArrayEditorDialog<T> extends JDialog {
 
-    private Class<T> c_;
+    private final Class<T> c_;
     private ArrayList<T> elementsList_;
     private T cur_;
     private boolean dirty_;
@@ -100,8 +100,8 @@ public class ArrayEditorDialog<T> extends JDialog {
         addButton.addActionListener(event -> {
             dirty_ = true;
             try {
-                Constructor<T> constructor = c_.getConstructor(new Class[]{});
-                final T o = constructor.newInstance(new Object[]{});
+                Constructor<T> constructor = c_.getConstructor();
+                final T o = constructor.newInstance();
                 elementsList_.add(o);
                 SwingUtilities.invokeLater(() -> {
                     list.setModel(JLists.modelOf(elementsList_));
@@ -161,9 +161,7 @@ public class ArrayEditorDialog<T> extends JDialog {
         final JButton okButton = new JButton("Done");
         okButton.setPreferredSize(new Dimension(60, 27));
         okButton.setFocusPainted(false);
-        okButton.addActionListener(event -> {
-            ArrayEditorDialog.this.setVisible(false);
-        });
+        okButton.addActionListener(event -> ArrayEditorDialog.this.setVisible(false));
         buttonPane.add(okButton);
         buttonPane.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
         pane.add(buttonPane, BorderLayout.SOUTH);
@@ -181,9 +179,7 @@ public class ArrayEditorDialog<T> extends JDialog {
             }
         });
         
-        list.addPropertyChangeListener(evt -> {
-            clearButton.setEnabled(list.getModel() != null && list.getModel().getSize() > 0);
-        });
+        list.addPropertyChangeListener(evt -> clearButton.setEnabled(list.getModel() != null && list.getModel().getSize() > 0));
         
         addWindowListener(new WindowAdapter() {
             @Override

@@ -81,7 +81,7 @@ public class JSurface extends javax.swing.JComponent {
     private static final int COINCIDE = 0;
     private static final int LOWER = -1;
     SurfaceColor colors;
-    private JSurfaceChangesListener surfaceChangesListener;
+    private final JSurfaceChangesListener surfaceChangesListener;
     private static JSurface lastFocused;
     private SurfaceVertex optimum;
 
@@ -653,7 +653,9 @@ public class JSurface extends javax.swing.JComponent {
     private void drawBoxGridsTicksLabels(Graphics g, boolean draw_axes) {
         Point projection, tickpos;
         boolean x_left = false, y_left = false;
-        int x[], y[], i;
+        int[] x;
+        int[] y;
+        int i;
 
         x = new int[5];
         y = new int[5];
@@ -1037,8 +1039,8 @@ public class JSurface extends javax.swing.JComponent {
     private float color_factor;
     private Point projection;
     private Color line_color;
-    private final int poly_x[] = new int[9];
-    private final int poly_y[] = new int[9];
+    private final int[] poly_x = new int[9];
+    private final int[] poly_y = new int[9];
 
     /**
      * Plots a single plane
@@ -1129,8 +1131,8 @@ public class JSurface extends javax.swing.JComponent {
             }
         }
     }
-    private final SurfaceVertex upperpart[] = new SurfaceVertex[8];
-    private final SurfaceVertex lowerpart[] = new SurfaceVertex[8];
+    private final SurfaceVertex[] upperpart = new SurfaceVertex[8];
+    private final SurfaceVertex[] lowerpart = new SurfaceVertex[8];
 
     /**
      * Given two vertices array of plane, intersects and plots them. Splits one
@@ -1354,8 +1356,8 @@ public class JSurface extends javax.swing.JComponent {
     private boolean plotTable(SurfaceVertex[] values) {
         return (!values[0].isInvalid() && !values[1].isInvalid() && !values[2].isInvalid() && !values[3].isInvalid());
     }
-    private final SurfaceVertex values1[] = new SurfaceVertex[4];
-    private final SurfaceVertex values2[] = new SurfaceVertex[4];
+    private final SurfaceVertex[] values1 = new SurfaceVertex[4];
+    private final SurfaceVertex[] values2 = new SurfaceVertex[4];
 
     /**
      * Plots an area of group of planes
@@ -1519,17 +1521,17 @@ public class JSurface extends javax.swing.JComponent {
     private float contour_width_y = 0.0f;
     private Color[] contour_color = null;
     private String[] ylabels = null;
-    private int[] xpoints = new int[8];
-    private int[] ypoints = new int[8];
-    private int[] contour_x = new int[8];
-    private int[] contour_y = new int[8];
+    private final int[] xpoints = new int[8];
+    private final int[] ypoints = new int[8];
+    private final int[] contour_x = new int[8];
+    private final int[] contour_y = new int[8];
     private int contour_n = 0;
     private int contour_lines = 10;
-    private float[] delta = new float[4];
-    private float[] intersection = new float[4];
+    private final float[] delta = new float[4];
+    private final float[] intersection = new float[4];
     private float contour_stepz;
-    private SurfaceVertex[] contour_vertex = new SurfaceVertex[4];
-    private LineAccumulator accumulator = new LineAccumulator();
+    private final SurfaceVertex[] contour_vertex = new SurfaceVertex[4];
+    private final LineAccumulator accumulator = new LineAccumulator();
 
     /**
      * Converts normalized x coordinate (-10..+10) to screen x coordinate
@@ -1538,7 +1540,7 @@ public class JSurface extends javax.swing.JComponent {
      * @param x the normalized x coordinate
      */
     private int contourConvertX(float x) {
-        return (int) Math.round(x * contour_width_x + contour_center_x);
+        return Math.round(x * contour_width_x + contour_center_x);
     }
 
     /**
@@ -1548,7 +1550,7 @@ public class JSurface extends javax.swing.JComponent {
      * @param y the normalized x coordinate
      */
     private int contourConvertY(float y) {
-        return (int) Math.round(-y * contour_width_y + contour_center_y);
+        return Math.round(-y * contour_width_y + contour_center_y);
     }
 
     /**
@@ -1630,7 +1632,7 @@ public class JSurface extends javax.swing.JComponent {
             outString(graphics, x2, y2, legend_label[0], Label.LEFT, CENTER);
 
             for (int i = 1; i <= divisions + 1; i++) {
-                int y = y2 - (int) (i * height / (divisions + 1));
+                int y = y2 - (i * height / (divisions + 1));
                 graphics.setColor(contour_color[i - 1]);
                 graphics.fillRect(x1, y, legend_width, lasty - y);
                 graphics.setColor(colors.getLineColor());

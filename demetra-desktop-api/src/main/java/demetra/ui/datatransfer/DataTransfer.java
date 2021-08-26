@@ -17,11 +17,8 @@
 package demetra.ui.datatransfer;
 
 import demetra.math.matrices.MatrixType;
+import demetra.timeseries.*;
 import nbbrd.design.VisibleForTesting;
-import demetra.timeseries.TsData;
-import demetra.timeseries.Ts;
-import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsInformationType;
 import demetra.ui.TsManager;
 import demetra.ui.design.GlobalService;
 import demetra.ui.beans.PropertyChangeSource;
@@ -58,7 +55,7 @@ import java.beans.PropertyChangeSupport;
 
 /**
  * A support class that deals with the clipboard. It allows the user to get/set
- * time series, collections, matrixes and tables from/to any transferable. The
+ * time series, collections, matrices and tables from/to any transferable. The
  * actual conversion is done by TssTransferHandler.
  *
  * @author Philippe Charles
@@ -184,7 +181,7 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
     }
 
     /**
-     * Checks if a transferable represents time series (to avoid useless loading
+     * Checks if a {@link Transferable} represents time series (to avoid useless loading
      * of Ts).
      *
      * @param transferable
@@ -205,11 +202,10 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
     }
 
     /**
-     * Retrieves a time series from a transferable.
+     * Retrieves a time series from a {@link Transferable}.
      * <p>
      * Note that the content of this {@link Ts} might be asynchronous.
-     * Therefore, you should call {@link Ts#load(ec.tss.TsInformationType)} or
-     * {@link Ts#query(ec.tss.TsInformationType)} after this method.
+     * Therefore, you should call {@link Ts#load(TsInformationType, TsFactory)} after this method.
      *
      * @param transferable a non-null object
      * @return an optional {@link Ts}
@@ -224,12 +220,11 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
     }
 
     /**
-     * Retrieves a collection of time series from a transferable.
+     * Retrieves a collection of time series from a {@link Transferable}.
      * <p>
      * Note that the content of this {@link TsCollection} might be asynchronous.
      * Therefore, you should call
-     * {@link TsCollection#load(ec.tss.TsInformationType)} or
-     * {@link TsCollection#query(ec.tss.TsInformationType)} after this method.
+     * {@link TsCollection#load(TsInformationType, TsFactory)} after this method.
      *
      * @param transferable a non-null object
      * @return an optional {@link TsCollection}
@@ -240,7 +235,7 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
         requireNonNull(transferable);
         return providers.stream()
                 .filter(onDataFlavors(transferable.getTransferDataFlavors()))
-                .map(o -> toTsCollection(o, transferable, logger))
+                .map(o -> getTsCollectionOrNull(o, transferable, logger))
                 .filter(Objects::nonNull)
                 .findFirst();
     }
@@ -278,7 +273,7 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
     public Optional<MatrixType> toMatrix(@NonNull Transferable transferable) {
         return providers.stream()
                 .filter(onDataFlavors(transferable.getTransferDataFlavors()))
-                .map(o -> toMatrix(o, transferable, logger))
+                .map(o -> getMatrixOrNull(o, transferable, logger))
                 .filter(Objects::nonNull)
                 .findFirst();
     }
@@ -292,11 +287,16 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
     @OnEDT
     @NonNull
     public Optional<Table<?>> toTable(@NonNull Transferable transferable) {
-        return (Optional<Table<?>>) providers.stream()
-                .filter(onDataFlavors(transferable.getTransferDataFlavors()))
-                .map(o -> toTable(o, transferable, logger))
-                .filter(Objects::nonNull)
-                .findFirst();
+        Predicate<DataTransferSpi> predicate = onDataFlavors(transferable.getTransferDataFlavors());
+        for (DataTransferSpi o : providers.get()) {
+            if (predicate.test(o)) {
+                Table<?> table = getTableOrNull(o, transferable, logger);
+                if (table != null) {
+                    return Optional.of(table);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     private final class ClipboardValidator implements FlavorListener {
@@ -345,7 +345,7 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
         }
     }
 
-    private static TsCollection toTsCollection(DataTransferSpi o, Transferable t, Logger logger) {
+    private static TsCollection getTsCollectionOrNull(DataTransferSpi o, Transferable t, Logger logger) {
         try {
             Object data = t.getTransferData(requireNonNull(o.getDataFlavor()));
             if (o.canImportTsCollection(data)) {
@@ -359,7 +359,7 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
         return null;
     }
 
-    private static MatrixType toMatrix(DataTransferSpi o, Transferable t, Logger logger) {
+    private static MatrixType getMatrixOrNull(DataTransferSpi o, Transferable t, Logger logger) {
         try {
             Object data = t.getTransferData(requireNonNull(o.getDataFlavor()));
             if (o.canImportMatrix(data)) {
@@ -373,7 +373,7 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
         return null;
     }
 
-    private static Table<?> toTable(DataTransferSpi o, Transferable t, Logger logger) {
+    private static Table<?> getTableOrNull(DataTransferSpi o, Transferable t, Logger logger) {
         try {
             Object data = t.getTransferData(requireNonNull(o.getDataFlavor()));
             if (o.canImportTable(data)) {
@@ -461,6 +461,6 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
     }
 
     private static Predicate<DataTransferSpi> onDataFlavors(Set<DataFlavor> dataFlavors) {
-        return o -> dataFlavors.contains((DataFlavor) (o != null ? getDataFlavorOrNull(o) : null));
+        return o -> dataFlavors.contains(o != null ? getDataFlavorOrNull(o) : null);
     }
 }

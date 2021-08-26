@@ -46,7 +46,7 @@ public final class MultiTransferable<HANDLER> implements Transferable {
 
     @Override
     public DataFlavor[] getTransferDataFlavors() {
-        return roHandlersByFlavor.keySet().toArray(new DataFlavor[roHandlersByFlavor.size()]);
+        return roHandlersByFlavor.keySet().toArray(new DataFlavor[0]);
     }
 
     @Override

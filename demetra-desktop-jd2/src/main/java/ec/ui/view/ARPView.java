@@ -187,8 +187,8 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
 
             double[] tdfreq = Periodogram.getTradingDaysFrequencies(data.freq);
             if (tdfreq != null) {
-                for (int i = 0; i < tdfreq.length; ++i) {
-                    addFreqMarker(tdfreq[i], KnownColor.RED);
+                for (double v : tdfreq) {
+                    addFreqMarker(v, KnownColor.RED);
                 }
             }
             configureChart(series);

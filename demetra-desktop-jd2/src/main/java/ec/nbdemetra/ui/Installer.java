@@ -264,10 +264,7 @@ public final class Installer extends ModuleInstall {
                     try {
                         if (root.nodeExists(current.getDomain())) {
                             Preferences domain = root.node(current.getDomain());
-                            Optional<Config> config = InstallerStep.tryGet(domain, current.getName(), parser);
-                            if (config.isPresent()) {
-                                o.setConfig(config.get());
-                            }
+                            InstallerStep.tryGet(domain, current.getName(), parser).ifPresent(o::setConfig);
                         }
                     } catch (BackingStoreException ex) {
                         // do nothing?

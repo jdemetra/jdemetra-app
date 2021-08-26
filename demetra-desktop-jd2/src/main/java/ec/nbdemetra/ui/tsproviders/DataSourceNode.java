@@ -186,10 +186,8 @@ public final class DataSourceNode extends AbstractNode {
         protected boolean tryCreateKeys(List<Object> list) throws Exception {
             Optional<DataSourceProvider> provider = TsManager.getDefault().getProvider(DataSourceProvider.class, dataSource);
             if (provider.isPresent()) {
-                provider.get()
-                        .children(dataSource)
-                        .stream()
-                        .forEach(list::add);
+                list.addAll(provider.get()
+                        .children(dataSource));
             }
             return true;
         }

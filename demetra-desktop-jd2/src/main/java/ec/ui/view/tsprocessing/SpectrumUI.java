@@ -15,7 +15,7 @@ import javax.swing.JComponent;
  */
 public class SpectrumUI<V extends IProcDocumentView<?>> extends DefaultItemUI<V, TsData>{
 
-    private boolean wn_;
+    private final boolean wn_;
 
     public SpectrumUI(boolean wn){
         wn_=wn;

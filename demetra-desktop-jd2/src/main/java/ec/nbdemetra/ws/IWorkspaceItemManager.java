@@ -18,7 +18,7 @@ import javax.swing.Icon;
 @ServiceDefinition
 public interface IWorkspaceItemManager<D> {
 
-    public static enum ItemType {
+    enum ItemType {
         Undefined,
         Spec,
         Doc,
@@ -26,14 +26,14 @@ public interface IWorkspaceItemManager<D> {
         Tool
     }
 
-    public static enum Status implements IntValue {
+    enum Status implements IntValue {
         Certified(1),
         Acceptable(2),
         Legacy(3),
         Experimental(5),
         User(10);
 
-        private Status(int value) {
+        Status(int value) {
             this.value = value;
         }
 

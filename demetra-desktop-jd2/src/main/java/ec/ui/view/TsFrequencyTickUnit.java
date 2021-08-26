@@ -14,7 +14,7 @@ import org.jfree.chart.axis.NumberTickUnit;
  * @author Kristof Bayens
  */
 public class TsFrequencyTickUnit extends NumberTickUnit {
-    private TsFrequency freq_;
+    private final TsFrequency freq_;
 
     public TsFrequencyTickUnit(TsFrequency freq) {
         super(1);

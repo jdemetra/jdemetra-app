@@ -65,7 +65,7 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
 
         visualRepresentation = reportTB_;
 
-        setData(Collections.<Integer, Map<AlgorithmDescriptor, RegArimaReport>>emptyMap());
+        setData(Collections.emptyMap());
 
         setLayout(new BorderLayout());
         add(toolBarRepresentation, BorderLayout.NORTH);
@@ -78,7 +78,7 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
         if (controller.getState().isFinished()) {
             setData(getCurrentProcessing().createRegArimaReports());
         } else {
-            setData(Collections.<Integer, Map<AlgorithmDescriptor, RegArimaReport>>emptyMap());
+            setData(Collections.emptyMap());
         }
     }
 
@@ -140,7 +140,7 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
     public void setData(Map<Integer, Map<AlgorithmDescriptor, RegArimaReport>> reports) {
         reportTB_.loadContent("");
         this.reports = reports;
-        long count = reports.values().stream().flatMap(r -> r.values().stream()).count();
+        long count = reports.values().stream().mapToLong(r -> r.values().size()).sum();
         comboBox.setVisible(count > 1);
         comboBox.setModel(asComboBoxModel(reports));
         comboBox.setSelectedIndex(-1);

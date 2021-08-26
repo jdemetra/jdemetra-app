@@ -321,7 +321,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
         public IProcSpecification retrieve(TsDocument<? extends IProcSpecification, PreprocessingModel> source) {
             return source.getSpecification();
         }
-    };
+    }
 
     private static class LikelihoodExtractor extends TsDocumentInformationExtractor<TsDocument<? extends IProcSpecification, PreprocessingModel>, Functions> {
 
@@ -336,7 +336,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
                 return Functions.create(model.likelihoodFunction(), model.maxLikelihoodFunction());
             }
         }
-    };
+    }
 
     public static InformationExtractor<TsDocument<? extends IProcSpecification, PreprocessingModel>, PreprocessingModel> pmExtractor() {
         return PmExtractor.INSTANCE;

@@ -693,7 +693,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             List<WorkspaceItem<TramoSeatsSpecification>> allTramoSpecs = WorkspaceFactory.getInstance().getActiveWorkspace().searchDocuments(TramoSeatsSpecification.class);
             String currentSpecName = allTramoSpecs.stream()
                     .filter(item -> item.getElement().equals(currentSpec))
-                    .map(item -> item.getDisplayName())
+                    .map(WorkspaceItem::getDisplayName)
                     .findFirst().orElse(currentSpec.toString());
             results.put("[C] " + currentSpecName, source.getResults());
 
@@ -710,7 +710,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
 
             return results;
         }
-    };
+    }
 
     @ServiceProvider(service = ProcDocumentItemFactory.class, position = 600001)
     public static class DiagnosticsMatrixFactory extends ItemFactory<Map<String, CompositeResults>> {
@@ -1132,7 +1132,7 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             information.frequency = source.getSeries().getFrequency();
             return information;
         }
-    };
+    }
     //</editor-fold>
 
     public static class WkErrorsUI<V extends IProcDocumentView<?>> extends HtmlItemUI<V, WkInformation> {

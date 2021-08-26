@@ -1,17 +1,17 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.ui.tsproviders.actions;
@@ -21,7 +21,6 @@ import demetra.tsprovider.DataSourceLoader;
 import demetra.ui.TsManager;
 import demetra.ui.datatransfer.DataTransfers;
 import ec.tss.datatransfer.DataSourceTransferSupport;
-import java.util.Optional;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
@@ -34,14 +33,17 @@ import org.openide.util.actions.NodeAction;
 @Messages("CTL_PasteProvidersAction=Paste")
 public final class PasteProvidersAction extends NodeAction {
 
+    private static void pasteDataSource(DataSource source) {
+        TsManager.getDefault()
+                .getProvider(DataSourceLoader.class, source)
+                .ifPresent(loader -> loader.open(source));
+    }
+
     @Override
     protected void performAction(Node[] activatedNodes) {
-        Optional<DataSource> dataSource = DataSourceTransferSupport.getDefault().getDataSource(DataTransfers.systemClipboardAsTransferable());
-        if (dataSource.isPresent()) {
-            TsManager.getDefault()
-                    .getProvider(DataSourceLoader.class, dataSource.get())
-                    .ifPresent(loader -> loader.open(dataSource.get()));
-        }
+        DataSourceTransferSupport.getDefault()
+                .getDataSource(DataTransfers.systemClipboardAsTransferable())
+                .ifPresent(PasteProvidersAction::pasteDataSource);
     }
 
     @Override

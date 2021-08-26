@@ -128,7 +128,7 @@ public final class SpreadSheetView extends javax.swing.JPanel implements HasColo
     private void onModelChange() {
         List<JGrid> old = gridStream().collect(Collectors.toList());
         tabbedPane.removeAll();
-        old.stream().forEach(o -> gridPool.recycle(o));
+        old.stream().forEach(gridPool::recycle);
         for (int s = 0; s < model.getSheetCount(); s++) {
             Sheet sheet = model.getSheet(s);
             JGrid grid = gridPool.getOrCreate();

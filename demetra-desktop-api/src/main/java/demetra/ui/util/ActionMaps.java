@@ -50,11 +50,11 @@ public final class ActionMaps {
 
     @NonNull
     public static Map<Object, Action> asMap(@NonNull ActionMap actionMap, boolean includeParentKeys) {
-        return asKeySet(actionMap, includeParentKeys).stream().collect(Collectors.toMap(o -> o, o -> actionMap.get(o)));
+        return asKeySet(actionMap, includeParentKeys).stream().collect(Collectors.toMap(o -> o, actionMap::get));
     }
 
     public static void copyEntries(@NonNull ActionMap source, boolean includeParentKeys, @NonNull ActionMap destination) {
-        asMap(source, includeParentKeys).forEach((k, v) -> destination.put(k, v));
+        asMap(source, includeParentKeys).forEach(destination::put);
     }
 
     public static void performAction(@NonNull ActionMap actionMap, @NonNull String actionName, @NonNull MouseEvent e) {

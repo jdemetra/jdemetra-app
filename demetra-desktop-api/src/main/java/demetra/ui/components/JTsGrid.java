@@ -59,7 +59,7 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
         /**
          * Newest data first
          */
-        DESCENDING;
+        DESCENDING
     }
 
     public enum Mode {
@@ -71,7 +71,7 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
         /**
          * Display 1 to n timeseries in the grid
          */
-        MULTIPLETS;
+        MULTIPLETS
     }
 
     /**
@@ -88,7 +88,7 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
          * Timeline is along horizontal axis (in most cases, table height <
          * table width)
          */
-        REVERSED;
+        REVERSED
     }
 
     public static final String ORIENTATION_PROPERTY = "orientation";

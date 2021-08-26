@@ -52,7 +52,7 @@ public class LoadingPanel extends JPanel {
         cl.show(this, loading ? LOADING : MAIN);
     }
 
-    private class GlassPane extends JPanel {
+    private static class GlassPane extends JPanel {
 
         public GlassPane() {
             setLayout(new BorderLayout());

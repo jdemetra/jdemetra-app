@@ -30,21 +30,20 @@ import ec.tss.tsproviders.utils.IConstraint;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Image;
+import org.openide.DialogDescriptor;
+import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.view.BeanTreeView;
+import org.openide.nodes.Node;
+
+import javax.swing.*;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.util.Optional;
 import java.util.function.Predicate;
-import javax.swing.JComponent;
-import javax.swing.tree.TreeSelectionModel;
-import org.openide.DialogDescriptor;
-import org.openide.explorer.ExplorerManager;
-import org.openide.explorer.view.BeanTreeView;
-import org.openide.nodes.Node;
 
 /**
  *

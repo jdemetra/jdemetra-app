@@ -10,5 +10,5 @@ public interface IDisposable {
   /**
    * Frees resources used by the object implementing the interface.
    */
-  public void dispose();
+  void dispose();
 }

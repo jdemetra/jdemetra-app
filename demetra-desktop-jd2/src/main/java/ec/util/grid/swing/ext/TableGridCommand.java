@@ -125,7 +125,7 @@ public abstract class TableGridCommand extends JCommand<JGrid> {
         @Override
         public Table<?> toTable(JGrid grid) {
             GridModel model = grid.getModel();
-            return copy2(model, Range.<Integer>all(), Range.<Integer>all(), rowHeader, columnHeader);
+            return copy2(model, Range.all(), Range.all(), rowHeader, columnHeader);
         }
     }
 

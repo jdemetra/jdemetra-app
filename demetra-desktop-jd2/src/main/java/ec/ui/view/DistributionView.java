@@ -302,7 +302,7 @@ public final class DistributionView extends JComponent implements TimeSeriesComp
 
     @Override
     public void reset() {
-        setData((double[]) null);
+        setData(null);
         setDistribution(null);
     }
 

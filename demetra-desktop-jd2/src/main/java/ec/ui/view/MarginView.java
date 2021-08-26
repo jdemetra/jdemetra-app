@@ -511,11 +511,11 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
 
         private String generateLabel() {
             TsPeriod p = new TsPeriod(data.series.getFrequency(), new Date(highlight.getDataset().getX(0, highlight.getItem()).longValue()));
-            String label = "Period : " + p.toString() + "\nValue : ";
+            String label = "Period : " + p + "\nValue : ";
             label += obsFormatResolver.resolve().numberFormatter().formatAsString(data.series.get(p));
             return label;
         }
-    };
+    }
 
     @Override
     protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {

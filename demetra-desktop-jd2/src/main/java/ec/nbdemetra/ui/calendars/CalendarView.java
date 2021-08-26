@@ -44,13 +44,13 @@ import org.openide.nodes.Sheet;
 @SwingComponent
 public final class CalendarView extends JComponent {
 
-    private static String[] TD = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Leap Year"};
-    private static String[] WD = {"Working days", "Leap Year"};
+    private static final String[] TD = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Leap Year"};
+    private static final String[] WD = {"Working days", "Leap Year"};
     // data
     private IGregorianCalendarProvider calendarProvider;
     private TsDomain domain;
     private TradingDaysType dtype;
-    private LengthOfPeriodType ltype;
+    private final LengthOfPeriodType ltype;
     // visual controls
     private final PropertySheet propertySheet;
     private final PeriodogramView pView;
@@ -70,9 +70,7 @@ public final class CalendarView extends JComponent {
 
         this.tsGrid = new JTsGrid();
         tsGrid.setTsUpdateMode(TsUpdateMode.None);
-        tsGrid.addPropertyChangeListener(TsSelectionBridge.TS_SELECTION_PROPERTY, evt -> {
-            onTsGridSelectionChange();
-        });
+        tsGrid.addPropertyChangeListener(TsSelectionBridge.TS_SELECTION_PROPERTY, evt -> onTsGridSelectionChange());
 
         JSplitPane sp1 = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, propertySheet, pView);
         sp1.setDividerLocation(.3);
@@ -243,5 +241,5 @@ public final class CalendarView extends JComponent {
         public void setType(TradingDaysType type) {
             setDType(type);
         }
-    };
+    }
 }

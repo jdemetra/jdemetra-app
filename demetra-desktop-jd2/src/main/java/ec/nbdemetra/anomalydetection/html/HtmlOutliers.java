@@ -41,7 +41,7 @@ import static ec.tss.html.Bootstrap4.TEXT_CENTER;
  */
 public class HtmlOutliers extends AbstractHtmlElement implements IHtmlElement {
 
-    private OutlierEstimation[] outliers_;
+    private final OutlierEstimation[] outliers_;
     Map<String, OutlierPojo> map = new HashMap<>();
 
     public HtmlOutliers(OutlierEstimation[] estimations) {
@@ -93,11 +93,11 @@ public class HtmlOutliers extends AbstractHtmlElement implements IHtmlElement {
         // Data
         processOutliers();
         List<String> l = new ArrayList<>(map.keySet());
-        for (int i = 0; i < l.size(); i++) {
+        for (String s : l) {
             stream.open(HtmlTag.TABLEROW);
-            OutlierPojo o = map.get(l.get(i));
+            OutlierPojo o = map.get(s);
 
-            stream.write(new HtmlTableCell(l.get(i)).withWidth(40).withClass(ColorChooser.getCodeClass(l.get(i))));
+            stream.write(new HtmlTableCell(s).withWidth(40).withClass(ColorChooser.getCodeClass(s)));
             stream.write(new HtmlTableCell(String.valueOf(o.getNumberOfValues())).withWidth(80).withClass(TEXT_CENTER));
             stream.write(new HtmlTableCell(df4.format(o.getAverageValue())).withWidth(80));
             stream.close(HtmlTag.TABLEROW);

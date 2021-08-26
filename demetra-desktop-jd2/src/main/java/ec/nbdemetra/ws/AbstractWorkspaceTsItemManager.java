@@ -35,7 +35,7 @@ public abstract class AbstractWorkspaceTsItemManager<S extends IProcSpecificatio
     
     @Override
     public WorkspaceItem<D> create(Workspace ws){
-        return (WorkspaceItem<D>) super.create(ws);
+        return super.create(ws);
     }
     
 }

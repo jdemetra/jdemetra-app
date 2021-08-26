@@ -50,7 +50,7 @@ import demetra.ui.Converter;
 public final class ImportCalendarAction extends SingleNodeAction<ItemWsNode> implements Presenter.Popup {
 
     private static final Converter<Config, IGregorianCalendarProvider> CONVERTER = new CalendarConfig().reverse();
-    private static final ImmutableList<Importable> IMPORTABLES = ImmutableList.<Importable>of(new ImportableCalendar());
+    private static final ImmutableList<Importable> IMPORTABLES = ImmutableList.of(new ImportableCalendar());
 
     public ImportCalendarAction() {
         super(ItemWsNode.class);

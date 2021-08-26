@@ -102,7 +102,7 @@ public class NamedServiceNode extends AbstractNode {
     }
 
     public static void loadAll(ExplorerManager em, Iterable<? extends NamedService> items) {
-        Stream<NamedServiceNode> nodes = StreamSupport.stream(items.spliterator(), false).map(o -> new NamedServiceNode(o));
+        Stream<NamedServiceNode> nodes = StreamSupport.stream(items.spliterator(), false).map(NamedServiceNode::new);
         em.setRootContext(new AbstractNodeBuilder().add(nodes).build());
     }
 

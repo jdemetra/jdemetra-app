@@ -4,7 +4,6 @@
  */
 package ec.nbdemetra.ui.mru;
 
-import demetra.bridge.TsConverter;
 import demetra.tsprovider.DataSourceListener;
 import demetra.tsprovider.DataSourceLoader;
 import demetra.tsprovider.DataSourceProvider;

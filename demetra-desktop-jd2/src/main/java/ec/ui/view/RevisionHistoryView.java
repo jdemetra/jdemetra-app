@@ -54,7 +54,7 @@ public final class RevisionHistoryView extends JComponent implements HasColorSch
     private int revcount_ = 12;
     private int revlag_ = 1;
     private int years_ = 4;
-    private int minyears_ = 5;
+    private final int minyears_ = 5;
     private int threshold_ = 2;
     private final JChartPanel chartpanel_;
     private final AHtmlView documentpanel_;

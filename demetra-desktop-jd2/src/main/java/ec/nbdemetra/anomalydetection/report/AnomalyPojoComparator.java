@@ -79,9 +79,9 @@ public enum AnomalyPojoComparator implements Comparator<AnomalyPojo> {
         }
     };
     
-    private String desc;
+    private final String desc;
 
-    private AnomalyPojoComparator(String desc) {
+    AnomalyPojoComparator(String desc) {
         this.desc = desc;
     }
     

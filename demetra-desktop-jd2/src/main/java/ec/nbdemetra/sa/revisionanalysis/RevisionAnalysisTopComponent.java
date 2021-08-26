@@ -166,11 +166,11 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
         specPopup.addPopupMenuListener(new PopupMenuAdapter() {
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                ((ec.nbdemetra.ws.ui.SpecSelectionComponent) ((JPopupMenu) e.getSource()).getComponent(0)).setSpecification((ISaSpecification) curSpec.getSaSpecification());
+                ((ec.nbdemetra.ws.ui.SpecSelectionComponent) ((JPopupMenu) e.getSource()).getComponent(0)).setSpecification(curSpec.getSaSpecification());
             }
         });
 
-        raView = new RevisionAnalysisTopComponent.RevisionAnalysisDocumentView();
+        raView = new RevisionAnalysisDocumentView();
         raView.setDocument(getDocument().getElement());
 
         loadingPanel = new LoadingPanel(raView);
@@ -178,7 +178,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
         curSpec = getDocument().getElement().getSpecification().clone();
 
         defSpecLabel = (JLabel) toolBarRepresentation.add(new JLabel());
-        defSpecLabel.setText(curSpec.getSaSpecification() == null ? "" : ((ISaSpecification) curSpec.getSaSpecification()).toLongString());
+        defSpecLabel.setText(curSpec.getSaSpecification() == null ? "" : curSpec.getSaSpecification().toLongString());
 
         visualRepresentation = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, inputList, loadingPanel);
         visualRepresentation.setOneTouchExpandable(true);
@@ -292,7 +292,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
             doc.setSpecification(curSpec.clone());
             doc.getResults();
 
-            StatusDisplayer.getDefault().setStatusText("Processed " + inputList.getTsCollection().size() + " items in " + stopwatch.stop().toString());
+            StatusDisplayer.getDefault().setStatusText("Processed " + inputList.getTsCollection().size() + " items in " + stopwatch.stop());
             if (!active) {
                 requestAttention(false);
             }
@@ -343,7 +343,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
     }
 
     public boolean stop() {
-        return worker != null ? worker.cancel(true) : false;
+        return worker != null && worker.cancel(true);
     }
 
     protected void clear() {
@@ -353,7 +353,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
         stop();
     }
 
-    class RevisionAnalysisDocumentView extends AbstractDocumentViewer<RevisionAnalysisDocument> {
+    static class RevisionAnalysisDocumentView extends AbstractDocumentViewer<RevisionAnalysisDocument> {
 
         @Override
         protected IProcDocumentView<RevisionAnalysisDocument> getView(RevisionAnalysisDocument doc) {

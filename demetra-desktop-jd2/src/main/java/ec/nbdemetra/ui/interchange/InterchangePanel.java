@@ -91,7 +91,7 @@ final class InterchangePanel extends javax.swing.JPanel implements ExplorerManag
     }//GEN-LAST:event_editButtonActionPerformed
 
     void load() {
-        Stream<NamedServiceNode> nodes = InterchangeBrokerLoader.get().stream().map(o -> new NamedServiceNode(o));
+        Stream<NamedServiceNode> nodes = InterchangeBrokerLoader.get().stream().map(NamedServiceNode::new);
         em.setRootContext(new AbstractNodeBuilder().add(nodes).name("Interchange broker").build());
     }
 

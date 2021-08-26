@@ -557,8 +557,8 @@ public final class JTsVariableList extends JComponent implements HasTsAction {
             }
 
             String[] n = c.names(sel);
-            for (int i = 0; i < n.length; ++i) {
-                c.variables.remove(n[i]);
+            for (String s : n) {
+                c.variables.remove(s);
             }
             ((CustomTableModel) c.table.getModel()).fireTableStructureChanged();
         }

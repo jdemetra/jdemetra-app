@@ -51,9 +51,8 @@ public final class Accept extends AbstractViewAction<SaBatchUI> {
     protected void process(SaBatchUI cur) {
         SaItem[] selection = cur.getSelection();
         boolean accepted = isAccepted(selection);
-        for (int i = 0; i < selection.length; ++i) {
-            SaItem o = selection[i];
-            int index = cur.getCurrentProcessing().indexOf(selection[i]);
+        for (SaItem o : selection) {
+            int index = cur.getCurrentProcessing().indexOf(o);
             if (accepted) {
                 o.setQuality(ProcQuality.Accepted);
             } else {
@@ -61,15 +60,15 @@ public final class Accept extends AbstractViewAction<SaBatchUI> {
             }
             if (index >= 0) {
                 cur.getCurrentProcessing().get(index).setQuality(o.getQuality());
-            } 
+            }
         }
         
         cur.redrawAll();
     }
 
     public boolean isAccepted(SaItem[] selection) {
-        for (int i = 0; i < selection.length; ++i) {
-            if (selection[i].getQuality() != ProcQuality.Accepted) {
+        for (SaItem saItem : selection) {
+            if (saItem.getQuality() != ProcQuality.Accepted) {
                 return true;
             }
         }

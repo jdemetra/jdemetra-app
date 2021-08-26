@@ -27,8 +27,8 @@ import nbbrd.design.LombokWorkaround;
 @lombok.Builder
 public class DefaultThreadFactory implements ThreadFactory {
 
-    private final boolean daemon;
-    private final int priority;
+    boolean daemon;
+    int priority;
 
     @Override
     public Thread newThread(Runnable r) {

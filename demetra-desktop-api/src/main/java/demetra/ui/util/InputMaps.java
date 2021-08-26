@@ -48,11 +48,11 @@ public final class InputMaps {
 
     @NonNull
     public static Map<KeyStroke, Object> asMap(@NonNull InputMap inputMap, boolean includeParentKeys) {
-        return asKeySet(inputMap, includeParentKeys).stream().collect(Collectors.toMap(o -> o, o -> inputMap.get(o)));
+        return asKeySet(inputMap, includeParentKeys).stream().collect(Collectors.toMap(o -> o, inputMap::get));
     }
 
     public static void copyEntries(@NonNull InputMap source, boolean includeParentKeys, @NonNull InputMap destination) {
-        asMap(source, includeParentKeys).forEach((k, v) -> destination.put(k, v));
+        asMap(source, includeParentKeys).forEach(destination::put);
     }
 
     //<editor-fold defaultstate="collapsed" desc="Internal implementation">

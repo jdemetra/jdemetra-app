@@ -57,7 +57,7 @@ public final class KeyStrokes {
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
     private enum ActionType {
 
-        COPY, PASTE, SELECT_ALL, DELETE, OPEN, CLEAR;
+        COPY, PASTE, SELECT_ALL, DELETE, OPEN, CLEAR
     }
 
     static {
@@ -105,7 +105,7 @@ public final class KeyStrokes {
                         .entrySet()
                         .stream()
                         .filter(x -> Objects.equals(x.getValue(), actionMapKey))
-                        .map(x -> x.getKey())
+                        .map(Map.Entry::getKey)
                         .distinct()
                         .sorted(orderingUsingKeyTextLength())
                         .collect(List2.toUnmodifiableList());
@@ -160,7 +160,7 @@ public final class KeyStrokes {
     }
 
     private static Comparator<KeyStroke> orderingUsingKeyTextLength() {
-        return (l, r) -> Integer.compare(KeyEvent.getKeyText(l.getKeyCode()).length(), KeyEvent.getKeyText(r.getKeyCode()).length());
+        return Comparator.comparingInt(l -> KeyEvent.getKeyText(l.getKeyCode()).length());
     }
     //</editor-fold>
 }

@@ -13,13 +13,13 @@ public interface Configurable {
         persistable.setConfig(editor.editConfig(persistable.getConfig()));
     }
     
-    static final String CONFIGURE_ACTION = "configure";
+    String CONFIGURE_ACTION = "configure";
     
     static void registerActions(Configurable configurable, ActionMap am) {
         am.put(Configurable.CONFIGURE_ACTION, ConfigureCommand.INSTANCE.toAction(configurable));
     }
 
-    static final class ConfigureCommand extends JCommand<Configurable> {
+    final class ConfigureCommand extends JCommand<Configurable> {
 
         public static final ConfigureCommand INSTANCE = new ConfigureCommand();
 

@@ -22,9 +22,9 @@ import javax.swing.JSplitPane;
 @SwingComponent
 public final class ResDistributionView extends JComponent {
 
-    private AutoCorrelationsView acView_;
-    private AutoCorrelationsView pacView_;
-    private DistributionView distView_;
+    private final AutoCorrelationsView acView_;
+    private final AutoCorrelationsView pacView_;
+    private final DistributionView distView_;
 
     public ResDistributionView() {
         acView_ = new AutoCorrelationsView();

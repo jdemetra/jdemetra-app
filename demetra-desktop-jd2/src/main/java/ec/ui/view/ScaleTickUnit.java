@@ -20,9 +20,9 @@ public class ScaleTickUnit extends NumberTickUnit {
         Divide
     }
 
-    private ScalingType type_;
-    private double factor_;
-    private NumberFormat formatter_;
+    private final ScalingType type_;
+    private final double factor_;
+    private final NumberFormat formatter_;
 
     public ScaleTickUnit(double value, ScalingType type, double factor) {
         this(value, type, factor, new DecimalFormat("0.00"));

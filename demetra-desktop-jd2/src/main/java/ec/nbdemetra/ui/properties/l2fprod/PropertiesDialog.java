@@ -20,8 +20,8 @@ public class PropertiesDialog extends JDialog {
 
     private JButton bApply_;
     private JButton bCancel_;
-    private Object clone_;
-    private Action applyAction_;
+    private final Object clone_;
+    private final Action applyAction_;
 
     public PropertiesDialog(Frame owner, boolean modal, Object clone, Action applyAction) {
         super(owner, modal);

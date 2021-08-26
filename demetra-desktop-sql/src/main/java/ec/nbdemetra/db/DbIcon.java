@@ -26,7 +26,7 @@ public enum DbIcon implements Icon {
     DATA_TYPE_STRING("data_type_string.gif");
     final String path;
 
-    private DbIcon(String path) {
+    DbIcon(String path) {
         this.path = "ec/nbdemetra/db/" + path;
     }
 

@@ -406,7 +406,7 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
         }
 
         private JTable getTable(JComponent c) {
-            return (JTable) ((JLayer<JTable>) c).getView();
+            return ((JLayer<JTable>) c).getView();
         }
 
         @Override

@@ -97,7 +97,7 @@ public class X13SpecificationManager extends AbstractWorkspaceItemManager<X13Spe
 
     public void createDocument(final Workspace ws, final WorkspaceItem<X13Specification> xdoc) {
         X13DocumentManager dmgr = (X13DocumentManager) WorkspaceFactory.getInstance().getManager(X13DocumentManager.ID);
-        WorkspaceItem<X13Document> doc = (WorkspaceItem<X13Document>) dmgr.create(ws);
+        WorkspaceItem<X13Document> doc = dmgr.create(ws);
         doc.getElement().setSpecification(xdoc.getElement());
         doc.setComments(xdoc.getComments());
         X13TopComponent view = new X13TopComponent(doc);

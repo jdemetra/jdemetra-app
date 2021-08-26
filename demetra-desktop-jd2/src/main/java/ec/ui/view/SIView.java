@@ -415,7 +415,7 @@ public final class SIView extends JComponent implements TimeSeriesComponent, Has
             int startyear = datablock.start.getYear();
             int endyear = startyear + datablock.data.getLength() - 1;
 
-            String key = "p" + Integer.toString(il);
+            String key = "p" + il;
 
             int n = src.getLength();
             if (n > 0) {

@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.DemetraOptions;
-import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.TsActions;
 import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
 import ec.nbdemetra.ui.Menus.DynamicPopup;
@@ -192,7 +191,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     private final JLabel statusLabel;
     private final JLabel itemsLabel;
     private final JLabel defSpecLabel;
-    private JToggleButton buttonCollapse;
+    private final JToggleButton buttonCollapse;
     // visual stuff
     private final XTable master;
     private final TsProcessingViewer detail;
@@ -262,9 +261,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         master = buildList();
         detail = new TsProcessingViewer(TsProcessingViewer.Type.APPLY_RESTORE_SAVE);
         detail.setHeaderVisible(false);
-        detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_SAVE, evt -> {
-            save((SaDocument) detail.getDocument());
-        });
+        detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_SAVE, evt -> save((SaDocument) detail.getDocument()));
         detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_RESTORE, evt -> {
             if (selection.length > 0) {
                 showDetails(selection[0]);
@@ -421,7 +418,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     public boolean stop() {
-        return worker != null ? worker.cancel(true) : false;
+        return worker != null && worker.cancel(true);
     }
 
     public void setInitialOrder() {
@@ -491,7 +488,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     private boolean pasteSaProcessing(Transferable dataobj) {
         SaProcessing processing = ec.tss.datatransfer.TransferableXml.read(dataobj, SaProcessing.class, XmlSaProcessing.class);
         if (processing != null) {
-            getCurrentProcessing().addAll(processing.stream().map(item -> item.makeCopy()).collect(toList()));
+            getCurrentProcessing().addAll(processing.stream().map(SaItem::makeCopy).collect(toList()));
             controller.setState(SaProcessingState.READY);
             return true;
         } else {
@@ -658,7 +655,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     public void redrawAll() {
         int n = getCurrentProcessing().size();
-        itemsLabel.setText(Integer.toString(n) + (n < 2 ? " item" : " items"));
+        itemsLabel.setText(n + (n < 2 ? " item" : " items"));
         model.fireTableDataChanged();
     }
 
@@ -1092,7 +1089,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
             if (tasks.size() > 0) {
                 if (worker != null && !worker.isCancelled()) {
-                    NotifyUtil.show("SA Processing done !", "Processed " + tasks.size() + " items in " + stopwatch.stop().toString(), MessageType.SUCCESS, null, null, null);
+                    NotifyUtil.show("SA Processing done !", "Processed " + tasks.size() + " items in " + stopwatch.stop(), MessageType.SUCCESS, null, null, null);
                 }
 
                 if (!active) {
@@ -1100,7 +1097,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 }
             }
 
-            LOGGER.info("Task: {} items in {} by {} executors with priority {}", new Object[]{tasks.size(), stopwatch.stop().toString(), nThread, priority});
+            LOGGER.info("Task: {} items in {} by {} executors with priority {}", tasks.size(), stopwatch.stop(), nThread, priority);
             executorService.shutdown();
             return null;
 

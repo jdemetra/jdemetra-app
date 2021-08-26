@@ -181,7 +181,7 @@ public class JTsGridCommands {
         @Override
         public JCommand.ActionAdapter toAction(JTsGrid c) {
             JCommand.ActionAdapter result = super.toAction(c);
-            return c instanceof Component ? result.withWeakPropertyChangeListener((Component) c, USE_COLOR_SCHEME_PROPERTY) : result;
+            return c instanceof Component ? result.withWeakPropertyChangeListener(c, USE_COLOR_SCHEME_PROPERTY) : result;
         }
     }
 
@@ -202,7 +202,7 @@ public class JTsGridCommands {
         @Override
         public JCommand.ActionAdapter toAction(JTsGrid c) {
             JCommand.ActionAdapter result = super.toAction(c);
-            return c instanceof Component ? result.withWeakPropertyChangeListener((Component) c, SHOW_BARS_PROPERTY) : result;
+            return c instanceof Component ? result.withWeakPropertyChangeListener(c, SHOW_BARS_PROPERTY) : result;
         }
     }
     //</editor-fold>

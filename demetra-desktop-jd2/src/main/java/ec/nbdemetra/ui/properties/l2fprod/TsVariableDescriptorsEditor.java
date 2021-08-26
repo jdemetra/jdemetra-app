@@ -48,13 +48,13 @@ public class TsVariableDescriptorsEditor extends AbstractPropertyEditor {
         TsVariableDescriptor[] old = descriptors_;
         // check that the descriptors are well-formed
         List<TsVariableDescriptor> ldesc = new ArrayList<>();
-        for (int i = 0; i < elements.size(); ++i) {
-            TsVariableDescriptor cur = elements.get(i).getCore();
+        for (TsVariableDescriptorUI element : elements) {
+            TsVariableDescriptor cur = element.getCore();
             if (cur.getName() != null) {
                 ldesc.add(cur);
             }
         }
-        descriptors_ = ldesc.toArray(new TsVariableDescriptor[ldesc.size()]);
+        descriptors_ = ldesc.toArray(new TsVariableDescriptor[0]);
         firePropertyChange(old, descriptors_);
     }
 
@@ -70,12 +70,12 @@ public class TsVariableDescriptorsEditor extends AbstractPropertyEditor {
             TsVariableDescriptor[] ndesc = (TsVariableDescriptor[]) value;
             // check that the descriptors are well-formed
             List<TsVariableDescriptor> ldesc = new ArrayList<>();
-            for (int i = 0; i < ndesc.length; ++i) {
-                if (ndesc[i].getName() != null) {
-                    ldesc.add(ndesc[i].clone());
+            for (TsVariableDescriptor tsVariableDescriptor : ndesc) {
+                if (tsVariableDescriptor.getName() != null) {
+                    ldesc.add(tsVariableDescriptor.clone());
                 }
             }
-            descriptors_ = ldesc.toArray(new TsVariableDescriptor[ldesc.size()]);
+            descriptors_ = ldesc.toArray(new TsVariableDescriptor[0]);
             firePropertyChange(old, descriptors_);
         }
     }

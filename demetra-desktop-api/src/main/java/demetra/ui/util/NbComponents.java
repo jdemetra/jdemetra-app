@@ -40,7 +40,7 @@ public final class NbComponents {
 
     public static boolean isXPTheme() {
         Boolean isXP = (Boolean) Toolkit.getDefaultToolkit().getDesktopProperty("win.xpstyle.themeActive"); //NOI18N
-        return isXP == null ? false : isXP;
+        return isXP != null && isXP;
     }
 
     @NonNull

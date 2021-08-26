@@ -18,13 +18,11 @@ package ec.nbdemetra.sa.actions;
 
 import ec.nbdemetra.sa.MultiProcessingManager;
 import ec.nbdemetra.sa.SaBatchUI;
-import ec.nbdemetra.tramoseats.TramoSeatsDocumentManager;
 import ec.nbdemetra.tramoseats.TramoSeatsSpecificationManager;
 import ec.nbdemetra.ws.IWorkspaceItemManager;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.actions.AbstractViewAction;
-import ec.nbdemetra.x13.X13DocumentManager;
 import ec.nbdemetra.x13.X13SpecificationManager;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;

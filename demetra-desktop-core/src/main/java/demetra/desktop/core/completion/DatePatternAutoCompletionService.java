@@ -69,7 +69,7 @@ public final class DatePatternAutoCompletionService implements AutoCompletionSpi
         final String dateComponent;
         final DatePatternPresentation presentation;
 
-        private DatePatternLetter(String dateComponent, DatePatternPresentation presentation) {
+        DatePatternLetter(String dateComponent, DatePatternPresentation presentation) {
             this.dateComponent = dateComponent;
             this.presentation = presentation;
         }
@@ -89,7 +89,7 @@ public final class DatePatternAutoCompletionService implements AutoCompletionSpi
         OTHER("");
         final String description;
 
-        private DatePatternPresentation(String description) {
+        DatePatternPresentation(String description) {
             this.description = description;
         }
     }
@@ -118,7 +118,7 @@ public final class DatePatternAutoCompletionService implements AutoCompletionSpi
 
         @Override
         protected String getValueAsString(DatePatternLetter value) {
-            return "(" + String.valueOf(value.name()) + ") " + value.dateComponent;
+            return "(" + value.name() + ") " + value.dateComponent;
         }
 
         @Override

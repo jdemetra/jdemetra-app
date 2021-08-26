@@ -103,9 +103,7 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements E
         }
         Collection<? extends WorkspaceFactory.Event> all = result.allInstances();
         if (!all.isEmpty()) {
-            Iterator<? extends WorkspaceFactory.Event> iterator = all.iterator();
-            while (iterator.hasNext()) {
-                WorkspaceFactory.Event ev = iterator.next();
+            for (WorkspaceFactory.Event ev : all) {
                 if (ev.info == WorkspaceFactory.Event.REMOVINGITEM) {
                     WorkspaceItem<?> wdoc = ev.workspace.searchDocument(ev.id);
                     if (wdoc == doc) {

@@ -58,5 +58,5 @@ public enum SaItemComparer implements Comparator<SaItem> {
                 public int compare(SaItem o1, SaItem o2) {
                     return o1.getStatus().compareTo(o2.getStatus());
                 }
-            };
+            }
 }

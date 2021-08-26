@@ -22,7 +22,7 @@ import org.openide.util.NbBundle;
  */
 public class TsPeriodSelectorUI implements IPropertyDescriptors {    
 
-    public static enum Type {
+    public enum Type {
 
         All,
         From,

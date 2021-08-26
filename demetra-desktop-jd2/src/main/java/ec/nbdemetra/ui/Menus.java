@@ -57,7 +57,7 @@ public class Menus {
 
         // remove all actions that are already in a submenu 
         actions.removeAll(subActions);
-        return actions.toArray(new Action[actions.size()]);
+        return actions.toArray(new Action[0]);
     }
 
     public static void fillMenu(JMenu menu, String... paths) {
@@ -87,8 +87,8 @@ public class Menus {
                     DynamicMenuContent dmenu = (DynamicMenuContent) action;
                     JComponent[] items = dmenu.getMenuPresenters();
                     if (items != null) {
-                        for (int i = 0; i < items.length; ++i) {
-                            menu.add(items[i]);
+                        for (JComponent item : items) {
+                            menu.add(item);
                         }
                     }
                 }

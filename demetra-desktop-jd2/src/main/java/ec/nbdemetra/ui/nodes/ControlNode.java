@@ -5,7 +5,6 @@
 package ec.nbdemetra.ui.nodes;
 
 import demetra.ui.nodes.AbstractNodeBuilder;
-import demetra.bridge.TsConverter;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;
 import demetra.timeseries.Ts;

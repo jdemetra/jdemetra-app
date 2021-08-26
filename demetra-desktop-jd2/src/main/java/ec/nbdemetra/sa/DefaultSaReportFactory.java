@@ -171,9 +171,9 @@ public final class DefaultSaReportFactory implements ISaReportFactory {
 
         out.write(NL);
         out.write("Number of series\t");
-        out.write(Integer.toString(processing.size()) + NL);
+        out.write(processing.size() + NL);
         out.write("Number of successful estimations\t");
-        out.write(Integer.toString(nseries) + NL2);
+        out.write(nseries + NL2);
         writeMethods(out, processing);
     }
 
@@ -237,12 +237,7 @@ public final class DefaultSaReportFactory implements ISaReportFactory {
             if (n == null) {
                 n = 0;
             }
-            Integer c = ntd.get(n);
-            if (c == null) {
-                ntd.put(n, 1);
-            } else {
-                ntd.put(n, c + 1);
-            }
+            ntd.merge(n, 1, Integer::sum);
         }
         out.write("Trading days" + NL);
         for (Entry<Integer, Integer> entry : ntd.entrySet()) {
@@ -372,12 +367,7 @@ public final class DefaultSaReportFactory implements ISaReportFactory {
             if (m != null) {
                 ++size;
                 String n = m.getSpecification().toString();
-                Integer c = nmodel.get(n);
-                if (c == null) {
-                    nmodel.put(n, 1);
-                } else {
-                    nmodel.put(n, c + 1);
-                }
+                nmodel.merge(n, 1, Integer::sum);
             }
         }
         if (size == 0) {
@@ -406,12 +396,7 @@ public final class DefaultSaReportFactory implements ISaReportFactory {
             ProcQuality q = item.getQuality();
             if (q != null) {
                 ++size;
-                Integer c = qmap.get(q);
-                if (c == null) {
-                    qmap.put(q, 1);
-                } else {
-                    qmap.put(q, c + 1);
-                }
+                qmap.merge(q, 1, Integer::sum);
             }
         }
         if (size == 0) {
@@ -444,12 +429,7 @@ public final class DefaultSaReportFactory implements ISaReportFactory {
 
             DecompositionMode mode = rslt.getData("decomposition.mode", DecompositionMode.class);
             if (mode != null) {
-                Integer c = mmap.get(mode);
-                if (c == null) {
-                    mmap.put(mode, 1);
-                } else {
-                    mmap.put(mode, c + 1);
-                }
+                mmap.merge(mode, 1, Integer::sum);
             }
         }
 
@@ -480,12 +460,7 @@ public final class DefaultSaReportFactory implements ISaReportFactory {
         HashMap<String, Integer> mmap = new HashMap<>();
         for (SaItem item : processing) {
             String m = item.getDomainSpecification().toLongString();
-            Integer c = mmap.get(m);
-            if (c == null) {
-                mmap.put(m, 1);
-            } else {
-                mmap.put(m, c + 1);
-            }
+            mmap.merge(m, 1, Integer::sum);
         }
         double sz = processing.size();
         out.write("Specification" + NL);
@@ -502,12 +477,7 @@ public final class DefaultSaReportFactory implements ISaReportFactory {
         EnumMap<EstimationPolicyType, Integer> mmap = new EnumMap<>(EstimationPolicyType.class);
         for (SaItem item : processing) {
             EstimationPolicyType policy = item.getEstimationPolicy();
-            Integer c = mmap.get(policy);
-            if (c == null) {
-                mmap.put(policy, 1);
-            } else {
-                mmap.put(policy, c + 1);
-            }
+            mmap.merge(policy, 1, Integer::sum);
         }
         double sz = processing.size();
         out.write("Estimation policy" + NL);

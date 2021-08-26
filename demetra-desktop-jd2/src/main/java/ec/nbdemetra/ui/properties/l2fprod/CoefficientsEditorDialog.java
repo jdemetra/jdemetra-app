@@ -59,8 +59,8 @@ public class CoefficientsEditorDialog extends JDialog {
     private boolean dirty;
     private Coefficients coefficients;
     private String current;
-    private List<String> availableNames = new ArrayList<>();
-    private static String AVAILABLE_NAMES = "availableNames";
+    private final List<String> availableNames = new ArrayList<>();
+    private static final String AVAILABLE_NAMES = "availableNames";
 
     public CoefficientsEditorDialog(final Window owner, Coefficients elements) {
         super(owner);
@@ -72,7 +72,7 @@ public class CoefficientsEditorDialog extends JDialog {
 
         Set<String> keys = coefficients.getFixedCoefficients().keySet();
 
-        final JList list = new JList(JLists.modelOf(keys.toArray(new String[keys.size()])));
+        final JList list = new JList(JLists.modelOf(keys.toArray(new String[0])));
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scroll = NbComponents.newJScrollPane(list);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -171,9 +171,7 @@ public class CoefficientsEditorDialog extends JDialog {
         final JButton okButton = new JButton("Done");
         okButton.setPreferredSize(new Dimension(60, 27));
         okButton.setFocusPainted(false);
-        okButton.addActionListener(event -> {
-            CoefficientsEditorDialog.this.setVisible(false);
-        });
+        okButton.addActionListener(event -> CoefficientsEditorDialog.this.setVisible(false));
         buttonPane.add(okButton);
         buttonPane.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
         pane.add(buttonPane, BorderLayout.SOUTH);
@@ -191,13 +189,9 @@ public class CoefficientsEditorDialog extends JDialog {
             }
         });
         
-        list.addPropertyChangeListener(evt -> {
-            clearButton.setEnabled(list.getModel() != null && list.getModel().getSize() > 0);
-        });
+        list.addPropertyChangeListener(evt -> clearButton.setEnabled(list.getModel() != null && list.getModel().getSize() > 0));
 
-        addPropertyChangeListener(AVAILABLE_NAMES, (PropertyChangeEvent pce) -> {
-            addButton.setEnabled(!availableNames.isEmpty());
-        });
+        addPropertyChangeListener(AVAILABLE_NAMES, (PropertyChangeEvent pce) -> addButton.setEnabled(!availableNames.isEmpty()));
         
         addWindowListener(new WindowAdapter() {
             @Override
@@ -258,9 +252,7 @@ public class CoefficientsEditorDialog extends JDialog {
             final JButton okButton = new JButton("Done");
             okButton.setPreferredSize(new Dimension(60, 27));
             okButton.setFocusPainted(false);
-            okButton.addActionListener(event -> {
-                NewCoefficientDialog.this.setVisible(false);
-            });
+            okButton.addActionListener(event -> NewCoefficientDialog.this.setVisible(false));
             buttonPane.add(okButton);
             buttonPane.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
             pane.add(buttonPane, BorderLayout.SOUTH);
@@ -279,7 +271,7 @@ public class CoefficientsEditorDialog extends JDialog {
 
     private class EditorDialog extends JDialog {
 
-        private List<Double> elements_;
+        private final List<Double> elements_;
         private boolean dirty_;
 
         public double[] getElements() {
@@ -392,9 +384,7 @@ public class CoefficientsEditorDialog extends JDialog {
             final JButton okButton = new JButton("Done");
             okButton.setPreferredSize(new Dimension(60, 27));
             okButton.setFocusPainted(false);
-            okButton.addActionListener(event -> {
-                EditorDialog.this.setVisible(false);
-            });
+            okButton.addActionListener(event -> EditorDialog.this.setVisible(false));
             buttonPane.add(okButton);
             buttonPane.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
             pane.add(buttonPane, BorderLayout.SOUTH);

@@ -27,16 +27,16 @@ public class IdsTree {
         for (Id id : items) {
             Id[] path = id.path();
             DefaultMutableTreeNode prev = null;
-            for (int i = 0; i < path.length; ++i) {
-                DefaultMutableTreeNode cur = nodes.get(path[i]);
+            for (Id value : path) {
+                DefaultMutableTreeNode cur = nodes.get(value);
                 if (cur == null) {
-                    cur = new DefaultMutableTreeNode(path[i].tail());
+                    cur = new DefaultMutableTreeNode(value.tail());
                     if (prev == null) {
                         root.add(cur);
                     } else {
                         prev.add(cur);
                     }
-                    nodes.put(path[i], cur);
+                    nodes.put(value, cur);
                 }
                 prev = cur;
             }

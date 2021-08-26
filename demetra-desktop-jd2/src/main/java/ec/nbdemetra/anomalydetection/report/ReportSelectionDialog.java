@@ -36,7 +36,7 @@ import org.openide.windows.WindowManager;
 public class ReportSelectionDialog extends JDialog {
 
     private String report;
-    private JList<ICheckLastReportFactory> list;
+    private final JList<ICheckLastReportFactory> list;
 
     private void fillList() {
         list.setModel(JLists.modelOf(CheckLastReportManager.getDefault().getFactories()));

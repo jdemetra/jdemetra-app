@@ -16,35 +16,18 @@
  */
 package ec.nbdemetra.sa.output.impl;
 
-import com.google.common.base.Splitter;
 import ec.nbdemetra.sa.output.AbstractOutputNode;
 import ec.nbdemetra.sa.output.INbOutputFactory;
-import ec.nbdemetra.sa.output.Series;
-import demetra.ui.beans.BeanHandler;
 import demetra.ui.Config;
 import demetra.ui.ConfigEditor;
-import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.NodePropertySetBuilder;
-import ec.tss.sa.ISaOutputFactory;
 import ec.util.various.swing.FontAwesome;
 import java.awt.Color;
 import java.awt.Image;
-import java.beans.IntrospectionException;
-import java.io.File;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.openide.nodes.Sheet;
+
 import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.actions.Resetable;
-import nbbrd.io.text.BooleanProperty;
-import nbbrd.io.text.Formatter;
-import nbbrd.io.text.Parser;
-import nbbrd.io.text.Property;
-import demetra.ui.properties.BeanEditor;
-import demetra.ui.Converter;
 import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
-import demetra.ui.beans.BeanConfigurator;
 
 /**
  *

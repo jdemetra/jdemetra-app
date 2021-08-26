@@ -47,7 +47,7 @@ public class NamedServiceChoicePanel extends javax.swing.JPanel implements Explo
     }
 
     public void setContent(Iterable<? extends NamedService> namedServices) {
-        Stream<NamedServiceNode> nodes = StreamSupport.stream(namedServices.spliterator(), false).map(o -> new NamedServiceNode(o));
+        Stream<NamedServiceNode> nodes = StreamSupport.stream(namedServices.spliterator(), false).map(NamedServiceNode::new);
         em.setRootContext(new AbstractNodeBuilder().add(nodes).orderable(false).build());
     }
 

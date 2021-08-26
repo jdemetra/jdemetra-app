@@ -209,7 +209,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
 
     void load() {
         DemetraOptions options = DemetraOptions.getDefault();
-        colorSchemeChoicePanel.setContent(ColorSchemeManager.getDefault().getColorSchemes().stream().map(o -> new ColorSchemeNamedService(o)).collect(Collectors.toList()));
+        colorSchemeChoicePanel.setContent(ColorSchemeManager.getDefault().getColorSchemes().stream().map(ColorSchemeNamedService::new).collect(Collectors.toList()));
         colorSchemeChoicePanel.getExplorerManager().addVetoableChangeListener(this);
         colorSchemeChoicePanel.setSelectedServiceName(options.getColorSchemeName());
         dataFormatComponent.setObsFormat(options.getObsFormat());
