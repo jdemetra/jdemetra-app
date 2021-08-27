@@ -1,37 +1,43 @@
 /*
  * Copyright 2018 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.desktop.core.components;
 
-import com.google.common.base.Strings;
+import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
+import demetra.ui.actions.PrintableWithPreview;
 import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
-import demetra.ui.actions.PrintableWithPreview;
-import static demetra.ui.actions.ResetableZoom.RESET_ZOOM_ACTION;
 import ec.util.chart.swing.JTimeSeriesChart;
 import ec.util.chart.swing.JTimeSeriesChartCommand;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
+import nbbrd.io.text.Formatter;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import javax.swing.ActionMap;
-import javax.swing.JMenuItem;
+
+import javax.swing.*;
+import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
+import java.util.Date;
+
+import static demetra.ui.actions.ResetableZoom.RESET_ZOOM_ACTION;
 
 /**
- *
  * @author Philippe Charles
  */
 @lombok.experimental.UtilityClass
@@ -93,7 +99,7 @@ public class InternalComponents {
                 demetra.timeseries.Ts single = input.get(0);
                 if (single.getType().hasData()) {
                     String cause = single.getData().getEmptyCause();
-                    return !Strings.isNullOrEmpty(cause) ? cause : "No obs";
+                    return cause != null && !cause.isEmpty() ? cause : "No obs";
                 } else {
                     return "Loading" + System.lineSeparator() + single.getName();
                 }
@@ -103,6 +109,49 @@ public class InternalComponents {
                     return "Loading " + count + " series";
                 }
                 return "Nothing to display";
+        }
+    }
+
+    static class DateFormatAdapter extends DateFormat {
+
+        final Formatter<Date> dateFormatter;
+
+        public DateFormatAdapter(ObsFormat obsFormat) {
+            dateFormatter = obsFormat.calendarFormatter();
+        }
+
+        @Override
+        public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {
+            return toAppendTo.append(dateFormatter.format(date));
+        }
+
+        @Override
+        public Date parse(String source, ParsePosition pos) {
+            return null;
+        }
+    }
+
+    static class NumberFormatAdapter extends NumberFormat {
+
+        final Formatter<Number> numberFormatter;
+
+        public NumberFormatAdapter(ObsFormat obsFormat) {
+            numberFormatter = obsFormat.numberFormatter();
+        }
+
+        @Override
+        public StringBuffer format(double number, StringBuffer toAppendTo, FieldPosition pos) {
+            return toAppendTo.append(numberFormatter.format(number));
+        }
+
+        @Override
+        public StringBuffer format(long number, StringBuffer toAppendTo, FieldPosition pos) {
+            return toAppendTo.append(numberFormatter.format(number));
+        }
+
+        @Override
+        public Number parse(String source, ParsePosition parsePosition) {
+            return null;
         }
     }
 }

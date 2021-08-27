@@ -1,49 +1,33 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.desktop.core.components;
 
-import demetra.ui.components.parts.HasGridSupport;
-import demetra.ui.components.parts.HasObsFormatSupport;
-import demetra.ui.components.parts.HasColorSchemeSupport;
-import com.google.common.base.Suppliers;
-import demetra.timeseries.TsDataTable;
-import demetra.timeseries.TsPeriod;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsDataTable;
+import demetra.timeseries.TsPeriod;
+import demetra.tsprovider.util.MultiLineNameUtil;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
-import demetra.ui.components.TsSelectionBridge;
-import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.components.parts.HasObsFormat;
-import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.TsMonikerUI;
+import demetra.ui.components.*;
+import demetra.ui.components.parts.*;
 import demetra.ui.util.ActionMaps;
 import demetra.ui.util.InputMaps;
-import ec.tss.tsproviders.utils.IFormatter;
-import ec.tss.tsproviders.utils.MultiLineNameUtil;
-import ec.tstoolkit.data.DescriptiveStatistics;
-import demetra.ui.components.JTsGrid;
-import demetra.ui.components.TsFeatureHelper;
-import demetra.ui.components.TsGridObs;
-import static internal.ui.components.JTsGridCommands.MULTI_TS_ACTION;
-import static internal.ui.components.JTsGridCommands.REVERSE_ACTION;
-import static internal.ui.components.JTsGridCommands.SINGLE_TS_ACTION;
-import static internal.ui.components.JTsGridCommands.TOGGLE_MODE_ACTION;
-import static internal.ui.components.JTsGridCommands.TRANSPOSE_ACTION;
 import ec.util.chart.ObsIndex;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.grid.CellIndex;
@@ -51,40 +35,26 @@ import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
 import ec.util.grid.swing.XTable;
 import ec.util.various.swing.FontAwesome;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.function.IntUnaryOperator;
-import java.util.function.Supplier;
+import nbbrd.design.DirectImpl;
+import nbbrd.design.MightBePromoted;
+import nbbrd.io.text.Formatter;
+import nbbrd.service.ServiceProvider;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import javax.swing.ActionMap;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.JToolTip;
-import javax.swing.ListSelectionModel;
-import javax.swing.TransferHandler;
+
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
-import demetra.ui.datatransfer.DataTransfer;
-import javax.swing.JComponent;
-import nbbrd.service.ServiceProvider;
-import demetra.ui.components.ComponentBackendSpi;
-import demetra.ui.components.parts.HasColorSchemeResolver;
-import demetra.ui.components.parts.HasObsFormatResolver;
-import nbbrd.design.DirectImpl;
-import nbbrd.io.text.Formatter;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.DoubleSummaryStatistics;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.IntUnaryOperator;
+import java.util.function.Supplier;
+
+import static demetra.desktop.core.components.JTsGridCommands.*;
 
 public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
@@ -143,19 +113,19 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
     private void registerActions() {
         ActionMap am = target.getActionMap();
-        am.put(TRANSPOSE_ACTION, JTsGridCommands.transpose().toAction(target));
-        am.put(REVERSE_ACTION, JTsGridCommands.reverseChronology().toAction(target));
-        am.put(SINGLE_TS_ACTION, JTsGridCommands.applyMode(JTsGrid.Mode.SINGLETS).toAction(target));
-        am.put(MULTI_TS_ACTION, JTsGridCommands.applyMode(JTsGrid.Mode.MULTIPLETS).toAction(target));
+        am.put(JTsGrid.TRANSPOSE_ACTION, JTsGridCommands.transpose().toAction(target));
+        am.put(JTsGrid.REVERSE_ACTION, JTsGridCommands.reverseChronology().toAction(target));
+        am.put(JTsGrid.SINGLE_TS_ACTION, JTsGridCommands.applyMode(JTsGrid.Mode.SINGLETS).toAction(target));
+        am.put(JTsGrid.MULTI_TS_ACTION, JTsGridCommands.applyMode(JTsGrid.Mode.MULTIPLETS).toAction(target));
         am.put(TOGGLE_MODE_ACTION, JTsGridCommands.toggleMode().toAction(target));
-        am.put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
-        HasTsCollectionCommands.registerActions(target, target.getActionMap());
-        target.getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
+        HasObsFormatSupport.registerActions(target, am);
+        HasTsCollectionSupport.registerActions(target, target.getActionMap());
+        HasObsFormatSupport.registerActions(target, am);
         ActionMaps.copyEntries(target.getActionMap(), false, grid.getActionMap());
     }
 
     private void registerInputs() {
-        HasTsCollectionCommands.registerInputs(target.getInputMap());
+        HasTsCollectionSupport.registerInputs(target.getInputMap());
         InputMaps.copyEntries(target.getInputMap(), false, grid.getInputMap(JGrid.WHEN_IN_FOCUSED_WINDOW));
     }
 
@@ -197,7 +167,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
                 case TsSelectionBridge.TS_SELECTION_PROPERTY:
                     onSelectionChange();
                     break;
-                case JTsGrid.UDPATE_MODE_PROPERTY:
+                case JTsGrid.TS_UPDATE_MODE_PROPERTY:
                     onUpdateModeChange();
                     break;
                 case HasColorScheme.COLOR_SCHEME_PROPERTY:
@@ -348,7 +318,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
     private void onTransferHandlerChange() {
         TransferHandler th = target.getTransferHandler();
-        grid.setTransferHandler(th != null ? th : new HasTsCollectionTransferHandler(target, DataTransfer.getDefault()));
+        grid.setTransferHandler(th != null ? th : HasTsCollectionSupport.newTransferHandler(target));
     }
 
     private void onComponentPopupMenuChange() {
@@ -418,39 +388,44 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
     private void updateGridCellRenderer() {
         TsCollection data = target.getTsCollection();
-        Supplier<TsFeatureHelper> tsFeatures = Suppliers.memoize(() -> TsFeatureHelper.of(data.getItems()));
-        Supplier<DescriptiveStatistics> stats = Suppliers.memoize(() -> target.getSingleTsIndex() != -1
-                ? new DescriptiveStatistics(data.stream().flatMapToDouble(o -> o.getData().getValues().stream()).toArray())
-                : new DescriptiveStatistics(data.get(target.getSingleTsIndex()).getData().getValues().toArray()));
+        Supplier<TsFeatureHelper> tsFeatures = memoize(() -> TsFeatureHelper.of(data.getItems()));
+        Supplier<DoubleSummaryStatistics> stats = memoize(() -> target.getSingleTsIndex() != -1
+                ? data.stream().flatMapToDouble(o -> o.getData().getValues().stream()).summaryStatistics()
+                : data.get(target.getSingleTsIndex()).getData().getValues().stream().summaryStatistics());
         defaultCellRenderer.update(obsFormatResolver.resolve(), target.isUseColorScheme() ? colorSchemeResolver.resolve() : null, target.isShowBars(), tsFeatures, stats);
         grid.setDefaultRenderer(TsGridObs.class, target.getCellRenderer());
         grid.repaint();
+    }
+
+    @MightBePromoted
+    private static <T> Supplier<T> memoize(Supplier<T> supplier) {
+        ConcurrentMap<String, T> data = new ConcurrentHashMap<>();
+        return () -> data.computeIfAbsent("", key -> supplier.get());
     }
 
     private void updateComboCellRenderer() {
         combo.setRenderer(new ComboCellRenderer(target.isUseColorScheme() ? colorSchemeResolver.resolve() : null));
     }
 
-    private JMenu buildMenu(DemetraOptions demetraUI) {
-        ActionMap am = target.getActionMap();
+    private JMenu buildMenu() {
         JMenu result = new JMenu();
 
-        result.add(HasTsCollectionCommands.newOpenMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newOpenWithMenu(target, demetraUI));
+        result.add(HasTsCollectionSupport.newOpenMenu(target));
+        result.add(HasTsCollectionSupport.newOpenWithMenu(target));
 
-        JMenu menu = HasTsCollectionCommands.newSaveMenu(target, demetraUI);
+        JMenu menu = HasTsCollectionSupport.newSaveMenu(target);
         if (menu.getSubElements().length > 0) {
             result.add(menu);
         }
 
-        result.add(HasTsCollectionCommands.newRenameMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newFreezeMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newCopyMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newPasteMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newDeleteMenu(am, demetraUI));
+        result.add(HasTsCollectionSupport.newRenameMenu(target));
+        result.add(HasTsCollectionSupport.newFreezeMenu(target));
+        result.add(HasTsCollectionSupport.newCopyMenu(target));
+        result.add(HasTsCollectionSupport.newPasteMenu(target));
+        result.add(HasTsCollectionSupport.newDeleteMenu(target));
         result.addSeparator();
-        result.add(HasTsCollectionCommands.newSelectAllMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newClearMenu(am, demetraUI));
+        result.add(HasTsCollectionSupport.newSelectAllMenu(target));
+        result.add(HasTsCollectionSupport.newClearMenu(target));
 
         return result;
     }
@@ -460,7 +435,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
         ActionMap am = target.getActionMap();
 
-        JMenu result = buildMenu(demetraUI);
+        JMenu result = buildMenu();
 
         int index = 0;
         JMenuItem item;
@@ -468,11 +443,11 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         index += 10;
         result.insertSeparator(index++);
 
-        item = new JCheckBoxMenuItem(am.get(TRANSPOSE_ACTION));
+        item = new JCheckBoxMenuItem(am.get(JTsGrid.TRANSPOSE_ACTION));
         item.setText("Transpose");
         result.add(item, index++);
 
-        item = new JCheckBoxMenuItem(am.get(REVERSE_ACTION));
+        item = new JCheckBoxMenuItem(am.get(JTsGrid.REVERSE_ACTION));
         item.setText("Reverse chronology");
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_SORT_NUMERIC_DESC));
         result.add(item, index++);
@@ -483,7 +458,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
         result.addSeparator();
 
-        item = new JMenuItem(am.get(HasObsFormatSupport.FORMAT_ACTION));
+        item = new JMenuItem(am.get(HasObsFormat.EDIT_FORMAT_ACTION));
         item.setText("Edit format...");
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_GLOBE));
         result.add(item);
@@ -499,12 +474,10 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_TASKS));
         result.add(item);
 
-        item = new JCheckBoxMenuItem(HasGridSupport.toggleCrosshairVisibility().toAction(target));
-        item.setText("Show crosshair");
-        item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_CROSSHAIRS));
+        item = HasGridSupport.newToggleCrosshairVisibilityMenu(target);
         result.add(item);
 
-        result.add(HasGridSupport.newZoomRationMenu(target));
+        result.add(HasGridSupport.newZoomRatioMenu(target));
 
         return result;
     }
@@ -600,13 +573,13 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     private static final class CustomCellRenderer extends BarTableCellRenderer {
 
         private final TableCellRenderer delegate;
-        private final IFormatter<? super TsPeriod> periodFormatter;
+        private final Formatter<? super TsPeriod> periodFormatter;
         private final JToolTip toolTip;
         private Formatter<? super Number> valueFormatter;
         private SwingColorSchemeSupport colorSchemeSupport;
         private boolean showBars;
         private Supplier<TsFeatureHelper> tsFeatures;
-        private Supplier<DescriptiveStatistics> stats;
+        private Supplier<DoubleSummaryStatistics> stats;
 
         public CustomCellRenderer(@NonNull TableCellRenderer delegate) {
             super(false);
@@ -619,10 +592,10 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
             this.colorSchemeSupport = null;
             this.showBars = false;
             this.tsFeatures = () -> TsFeatureHelper.EMPTY;
-            this.stats = DescriptiveStatistics::new;
+            this.stats = DoubleSummaryStatistics::new;
         }
 
-        void update(@NonNull ObsFormat obsFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars, Supplier<TsFeatureHelper> tsFeatures, Supplier<DescriptiveStatistics> stats) {
+        void update(@NonNull ObsFormat obsFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars, Supplier<TsFeatureHelper> tsFeatures, Supplier<DoubleSummaryStatistics> stats) {
             this.valueFormatter = obsFormat.numberFormatter();
             this.colorSchemeSupport = colorSchemeSupport;
             this.showBars = showBars;
@@ -686,7 +659,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
                             setToolTipText(periodAsString + ": " + valueAsString);
                         }
                         if (showBars && !isSelected) {
-                            DescriptiveStatistics tmp = stats.get();
+                            DoubleSummaryStatistics tmp = stats.get();
                             setBarValues(tmp.getMin(), tmp.getMax(), obs.getValue());
                         } else {
                             setBarValues(0, 0, 0);

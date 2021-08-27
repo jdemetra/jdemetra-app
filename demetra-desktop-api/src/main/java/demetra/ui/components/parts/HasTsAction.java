@@ -17,6 +17,7 @@
 package demetra.ui.components.parts;
 
 import demetra.ui.beans.PropertyChangeBroadcaster;
+import demetra.ui.design.SwingProperty;
 import internal.ui.components.parts.HasTsActionImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -27,6 +28,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public interface HasTsAction {
 
+    @SwingProperty
     String TS_ACTION_PROPERTY = "tsAction";
 
     void setTsAction(@Nullable String tsAction);

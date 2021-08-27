@@ -21,7 +21,7 @@ import demetra.demo.DemoTsBuilder;
 import demetra.timeseries.TsCollection;
 import demetra.ui.DemetraOptions;
 import demetra.ui.components.parts.HasTsCollection;
-import static demetra.ui.components.parts.HasTsCollection.TS_COLLECTION_PROPERTY;
+import demetra.ui.components.parts.HasTsCollectionSupport;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.util.ActionMaps;
@@ -63,7 +63,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
-import demetra.ui.components.TmpHasTsCollection;
+
 import demetra.ui.components.TsIdentifier;
 import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.design.SwingComponent;
@@ -254,8 +254,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     }
 
     private JPopupMenu buildPopupMenu() {
-        ActionMap am = getActionMap();
-        JPopupMenu result = TmpHasTsCollection.newDefaultMenu(this, DemetraOptions.getDefault()).getPopupMenu();
+        JPopupMenu result = HasTsCollectionSupport.newDefaultMenu(this).getPopupMenu();
 
         int index = 11;
         JMenuItem item;
@@ -290,7 +289,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
                 case HasTsCollection.FREEZE_ON_IMPORT_PROPERTY:
                 case HasTsCollection.TS_COLLECTION_PROPERTY:
                 case HasTsCollection.TS_SELECTION_MODEL_PROPERTY:
-                case HasTsCollection.UDPATE_MODE_PROPERTY:
+                case HasTsCollection.TS_UPDATE_MODE_PROPERTY:
                 case TsSelectionBridge.TS_SELECTION_PROPERTY:
                     firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
                     break;

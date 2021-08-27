@@ -1,38 +1,41 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  *
  * http://ec.europa.eu/idabc/eupl
  *
- * Unless required by applicable law or agreed to in writing, software 
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.desktop.core.components;
 
-import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.ui.DemetraOptions;
-import demetra.ui.util.ExtLayerUI;
-import demetra.ui.components.TsSelectionBridge;
-import demetra.ui.components.parts.HasObsFormat;
-import demetra.ui.components.parts.HasTsCollection;
-import demetra.ui.util.NbComponents;
-import demetra.ui.util.ActionMaps;
-import demetra.ui.util.InputMaps;
-import demetra.ui.util.TableColumnModelAdapter;
+import demetra.ui.components.ComponentBackendSpi;
 import demetra.ui.components.JTsTable;
-import static ec.util.chart.swing.SwingColorSchemeSupport.withAlpha;
+import demetra.ui.components.TsSelectionBridge;
+import demetra.ui.components.parts.*;
+import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.util.*;
 import ec.util.table.swing.JTables;
-import static ec.util.various.swing.ModernUI.createDropBorder;
 import ec.util.various.swing.StandardSwingColor;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import nbbrd.design.DirectImpl;
+import nbbrd.service.ServiceProvider;
+import org.netbeans.swing.etable.ETable;
+import org.netbeans.swing.etable.ETableColumn;
+import org.netbeans.swing.etable.ETableColumnModel;
+
+import javax.swing.*;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.util.Collections;
@@ -40,20 +43,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import javax.swing.*;
-import javax.swing.event.TableColumnModelEvent;
-import javax.swing.table.*;
-import org.netbeans.swing.etable.ETable;
-import org.netbeans.swing.etable.ETableColumn;
-import org.netbeans.swing.etable.ETableColumnModel;
-import demetra.ui.datatransfer.DataTransfer;
-import nbbrd.service.ServiceProvider;
-import demetra.ui.components.ComponentBackendSpi;
-import demetra.ui.components.parts.HasObsFormatResolver;
-import nbbrd.design.DirectImpl;
+
+import static ec.util.chart.swing.SwingColorSchemeSupport.withAlpha;
+import static ec.util.various.swing.ModernUI.createDropBorder;
 
 /**
- *
  * @author Kristof Bayens
  * @author Philippe Charles
  */
@@ -106,13 +100,13 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
     }
 
     private void registerActions() {
-        HasTsCollectionCommands.registerActions(target, target.getActionMap());
-        target.getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
+        HasTsCollectionSupport.registerActions(target, target.getActionMap());
+        HasObsFormatSupport.registerActions(target, target.getActionMap());
         ActionMaps.copyEntries(target.getActionMap(), false, table.getActionMap());
     }
 
     private void registerInputs() {
-        HasTsCollectionCommands.registerInputs(target.getInputMap());
+        HasTsCollectionSupport.registerInputs(target.getInputMap());
         InputMaps.copyEntries(target.getInputMap(), false, table.getInputMap());
     }
 
@@ -176,7 +170,7 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
                 case TsSelectionBridge.TS_SELECTION_PROPERTY:
                     onSelectionChange();
                     break;
-                case HasTsCollection.UDPATE_MODE_PROPERTY:
+                case HasTsCollection.TS_UPDATE_MODE_PROPERTY:
                     onUpdateModeChange();
                     break;
                 case HasObsFormat.OBS_FORMAT_PROPERTY:
@@ -242,23 +236,22 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
     //</editor-fold>
 
     private TransferHandler getDefaultTransferHander() {
-        return new HasTsCollectionTransferHandler(target, tssTransfer);
+        return HasTsCollectionSupport.newTransferHandler(target);
     }
 
     private JPopupMenu getDefaultPopupMenu() {
-        ActionMap am = target.getActionMap();
         JMenu result = new JMenu();
-        result.add(HasTsCollectionCommands.newOpenMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newOpenWithMenu(target, demetraUI));
-        result.add(HasTsCollectionCommands.newSaveMenu(target, demetraUI));
-        result.add(HasTsCollectionCommands.newRenameMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newFreezeMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newCopyMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newPasteMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newDeleteMenu(am, demetraUI));
+        result.add(HasTsCollectionSupport.newOpenMenu(target));
+        result.add(HasTsCollectionSupport.newOpenWithMenu(target));
+        result.add(HasTsCollectionSupport.newSaveMenu(target));
+        result.add(HasTsCollectionSupport.newRenameMenu(target));
+        result.add(HasTsCollectionSupport.newFreezeMenu(target));
+        result.add(HasTsCollectionSupport.newCopyMenu(target));
+        result.add(HasTsCollectionSupport.newPasteMenu(target));
+        result.add(HasTsCollectionSupport.newDeleteMenu(target));
         result.addSeparator();
-        result.add(HasTsCollectionCommands.newSelectAllMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newClearMenu(am, demetraUI));
+        result.add(HasTsCollectionSupport.newSelectAllMenu(target));
+        result.add(HasTsCollectionSupport.newClearMenu(target));
 
         result.add(new AbstractAction("DEBUG") {
             @Override

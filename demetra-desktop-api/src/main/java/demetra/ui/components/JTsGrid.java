@@ -16,17 +16,10 @@
  */
 package demetra.ui.components;
 
-import demetra.ui.components.parts.HasObsFormat;
-import demetra.ui.components.parts.HasTsAction;
-import demetra.ui.components.parts.HasTsCollection;
-import demetra.ui.components.parts.HasGrid;
-import demetra.ui.components.parts.HasHoveredObs;
-import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.*;
 import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.components.parts.HasColorSchemeSupport;
-import demetra.ui.components.parts.HasGridSupport;
-import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.ui.design.SwingComponent;
+import demetra.ui.design.SwingProperty;
 import internal.ui.components.DemoTsBuilder;
 import java.awt.Dimension;
 import java.beans.Beans;
@@ -46,6 +39,11 @@ import javax.swing.table.TableCellRenderer;
 @SwingComponent
 public final class JTsGrid extends JComponent implements TimeSeriesComponent, PropertyChangeSource.WithWeakListeners,
         HasTsCollection, HasTsAction, HasGrid, HasColorScheme, HasObsFormat, HasHoveredObs {
+
+    public static final String TRANSPOSE_ACTION = "transpose";
+    public static final String REVERSE_ACTION = "reverse";
+    public static final String SINGLE_TS_ACTION = "singleTs";
+    public static final String MULTI_TS_ACTION = "multiTs";
 
     /**
      * Defines the order the data are displayed
@@ -91,12 +89,25 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
         REVERSED
     }
 
+    @SwingProperty
     public static final String ORIENTATION_PROPERTY = "orientation";
+
+    @SwingProperty
     public static final String CHRONOLOGY_PROPERTY = "chronology";
+
+    @SwingProperty
     public static final String MODE_PROPERTY = "mode";
+
+    @SwingProperty
     public static final String SINGLE_TS_INDEX_PROPERTY = "singleTsIndex";
+
+    @SwingProperty
     public static final String USE_COLOR_SCHEME_PROPERTY = "useColorScheme";
+
+    @SwingProperty
     public static final String SHOW_BARS_PROPERTY = "showBars";
+
+    @SwingProperty
     public static final String CELL_RENDERER_PROPERTY = "cellRenderer";
 
     // DEFAULT PROPERTIES
@@ -137,7 +148,7 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
     private final TsSelectionBridge tsSelectionBridge;
 
     public JTsGrid() {
-        this.collection = HasTsCollection.of(this::firePropertyChange);
+        this.collection = HasTsCollectionSupport.of(this::firePropertyChange);
         this.grid = HasGridSupport.of(this::firePropertyChange);
         this.tsAction = HasTsAction.of(this::firePropertyChange);
         this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

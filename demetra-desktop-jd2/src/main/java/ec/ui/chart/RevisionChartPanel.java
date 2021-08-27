@@ -17,19 +17,17 @@
 package ec.ui.chart;
 
 import demetra.timeseries.TsCollection;
+import demetra.ui.components.parts.*;
 import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.util.KeyStrokes;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.Arrays2;
 import demetra.ui.actions.Actions;
-import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.components.parts.HasColorSchemeResolver;
-import demetra.ui.components.parts.HasColorSchemeSupport;
 import ec.ui.view.JChartPanel;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.Charts;
-import internal.ui.components.HasTsCollectionCommands;
+
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
@@ -164,16 +162,16 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
 
     private JMenu buildMenu() {
         am = new ActionMap();
-        am.put(HasTsCollectionCommands.COPY_ACTION, new CopyAction());
+        am.put(HasTsCollection.COPY_ACTION, new CopyAction());
 
         im = new InputMap();
-        KeyStrokes.putAll(im, KeyStrokes.COPY, HasTsCollectionCommands.COPY_ACTION);
+        KeyStrokes.putAll(im, KeyStrokes.COPY, HasTsCollection.COPY_ACTION);
 
         JMenu result = new JMenu();
 
         JMenuItem item;
 
-        item = new JMenuItem(am.get(HasTsCollectionCommands.COPY_ACTION));
+        item = new JMenuItem(am.get(HasTsCollection.COPY_ACTION));
         item.setText("Copy All");
         item.setAccelerator(KeyStrokes.COPY.get(0));
         Actions.hideWhenDisabled(item);
@@ -260,7 +258,7 @@ public final class RevisionChartPanel extends JComponent implements TimeSeriesCo
     private class CopyAction extends AbstractAction {
 
         public CopyAction() {
-            super(HasTsCollectionCommands.COPY_ACTION);
+            super(HasTsCollection.COPY_ACTION);
         }
 
         @Override

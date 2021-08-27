@@ -4,12 +4,14 @@
  */
 package ec.nbdemetra.ui.tools;
 
+import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.HasTsCollection;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.nodes.ControlNode;
 import demetra.ui.components.JTsChart;
 import demetra.ui.components.parts.HasColorSchemeSupport;
-import internal.ui.components.HasTsCollectionCommands;
+
 import java.awt.BorderLayout;
 import javax.swing.*;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -116,7 +118,7 @@ public final class ChartTopComponent extends TopComponent implements ExplorerMan
 
         result.addSeparator();
 
-        JButton copyBtn = new JButton(getChart().getActionMap().get(HasTsCollectionCommands.COPY_ALL_ACTION));
+        JButton copyBtn = new JButton(getChart().getActionMap().get(HasTsCollection.COPY_ALL_ACTION));
         copyBtn.setText("");
         copyBtn.setToolTipText("Copy");
         copyBtn.setIcon(DemetraUiIcon.EDIT_COPY_16);
@@ -124,7 +126,7 @@ public final class ChartTopComponent extends TopComponent implements ExplorerMan
 
         JPopupMenu menuColorScheme = HasColorSchemeSupport.menuOf(getChart()).getPopupMenu();
         JButton coloSchemeBtn = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.COLOR_SWATCH_16, menuColorScheme);
-        coloSchemeBtn.addActionListener(getChart().getActionMap().get(HasColorSchemeSupport.APPLY_MAIN_COLOR_SCHEME_ACTION));
+        coloSchemeBtn.addActionListener(getChart().getActionMap().get(HasColorScheme.APPLY_MAIN_COLOR_SCHEME_ACTION));
         result.add(coloSchemeBtn);
 
         return result;

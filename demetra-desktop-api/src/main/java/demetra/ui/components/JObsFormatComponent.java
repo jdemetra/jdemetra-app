@@ -19,6 +19,7 @@ package demetra.ui.components;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.completion.AutoCompletion;
 import demetra.ui.design.SwingComponent;
+import demetra.ui.design.SwingProperty;
 import ec.util.completion.swing.XPopup;
 import ec.util.various.swing.TextPrompt;
 import java.awt.Dimension;
@@ -46,7 +47,10 @@ import nbbrd.io.text.Parser;
 @SwingComponent
 public final class JObsFormatComponent extends JComponent {
 
+    @SwingProperty
     public static final String OBS_FORMAT_PROPERTY = "obsFormat";
+
+    @SwingProperty
     public static final String PREVIEW_VISIBLE_PROPERTY = "previewVisible";
 
     private static final ObsFormat DEFAULT_OBS_FORMAT = ObsFormat.DEFAULT;

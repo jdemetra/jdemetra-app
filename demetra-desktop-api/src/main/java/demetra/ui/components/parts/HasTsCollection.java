@@ -18,22 +18,21 @@ package demetra.ui.components.parts;
 
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
-import demetra.ui.beans.PropertyChangeBroadcaster;
+import demetra.ui.design.SwingProperty;
 import ec.util.list.swing.JLists;
-import internal.ui.components.parts.HasTsCollectionImpl;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import javax.swing.ListSelectionModel;
-import demetra.ui.TsManager;
+
+import javax.swing.*;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
- *
  * @author Philippe Charles
  */
 public interface HasTsCollection {
 
+    @SwingProperty
     String TS_COLLECTION_PROPERTY = "tsCollection";
 
     @NonNull
@@ -41,41 +40,30 @@ public interface HasTsCollection {
 
     void setTsCollection(@NonNull TsCollection tsCollection);
 
+    @SwingProperty
     String TS_SELECTION_MODEL_PROPERTY = "tsSelectionModel";
 
-    default void replaceTsCollection(@NonNull TsCollection tsCollection) {
-        setTsCollection(getTsCollection().replaceAll(tsCollection));
-    }
-    
     @NonNull
     ListSelectionModel getTsSelectionModel();
 
     void setTsSelectionModel(@Nullable ListSelectionModel selectionModel);
 
-    enum TsUpdateMode {
-
-        None, Single, Replace, Append;
-
-        public boolean isReadOnly() {
-            return this == None;
-        }
-    }
-
-    String UDPATE_MODE_PROPERTY = "tsUpdateMode";
-    TsUpdateMode DEFAULT_UPDATEMODE = TsUpdateMode.Append;
+    @SwingProperty
+    String TS_UPDATE_MODE_PROPERTY = "tsUpdateMode";
 
     @NonNull
     TsUpdateMode getTsUpdateMode();
 
     void setTsUpdateMode(@Nullable TsUpdateMode updateMode);
 
+    @SwingProperty
     String FREEZE_ON_IMPORT_PROPERTY = "freezeOnImport";
-    boolean DEFAULT_FREEZE_ON_IMPORT = false;
 
     boolean isFreezeOnImport();
 
     void setFreezeOnImport(boolean freezeOnImport);
 
+    @SwingProperty
     String DROP_CONTENT_PROPERTY = "dropContent";
 
     @NonNull
@@ -100,8 +88,27 @@ public interface HasTsCollection {
                 .mapToObj(col::get);
     }
 
-    @NonNull
-    static HasTsCollection of(@NonNull PropertyChangeBroadcaster broadcaster) {
-        return new HasTsCollectionImpl(broadcaster).register(TsManager.getDefault());
+    default void replaceTsCollection(@NonNull TsCollection tsCollection) {
+        setTsCollection(getTsCollection().replaceAll(tsCollection));
     }
+
+    enum TsUpdateMode {
+
+        None, Single, Replace, Append;
+
+        public boolean isReadOnly() {
+            return this == None;
+        }
+    }
+
+    String COPY_ALL_ACTION = "copyAll";
+    String RENAME_ACTION = "rename";
+    String OPEN_ACTION = "open";
+    String COPY_ACTION = "copy";
+    String PASTE_ACTION = "paste";
+    String DELETE_ACTION = "delete";
+    String CLEAR_ACTION = "clear";
+    String SELECT_ALL_ACTION = "selectAll";
+    String FREEZE_ACTION = "freeze";
+    String SPLIT_ACTION = "splitIntoYearlyComponents";
 }

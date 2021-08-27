@@ -50,6 +50,14 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-explorer</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-dialogs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-swing-outline</artifactId>
+        </dependency>
     </dependencies>
     
     <build>

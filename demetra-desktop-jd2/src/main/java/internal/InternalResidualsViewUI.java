@@ -1,17 +1,17 @@
 /*
  * Copyright 2018 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package internal;
@@ -19,33 +19,22 @@ package internal;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.components.ComponentBackendSpi;
+import demetra.ui.components.JTsGrid;
+import demetra.ui.components.parts.*;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
-import static demetra.ui.components.parts.HasTsData.TS_DATA_PROPERTY;
+import demetra.ui.jfreechart.TsCharts;
+import demetra.ui.jfreechart.TsXYDataset;
 import demetra.ui.util.NbComponents;
+import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.DescriptiveStatistics;
-import demetra.ui.components.JTsGrid;
-import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.components.parts.HasColorSchemeResolver;
-import demetra.ui.components.parts.HasColorSchemeSupport;
-import static demetra.ui.components.parts.HasObsFormat.OBS_FORMAT_PROPERTY;
-import demetra.ui.components.parts.HasObsFormatResolver;
-import demetra.ui.jfreechart.TsXYDataset;
-import demetra.ui.jfreechart.TsCharts;
-import ec.tss.tsproviders.utils.DataFormat;
 import ec.ui.view.res.ResidualsView;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.SwingColorSchemeSupport;
-import demetra.ui.components.parts.HasObsFormatSupport;
-import internal.ui.components.HasTsCollectionCommands;
-import java.awt.BorderLayout;
-import java.util.Arrays;
-import java.util.Collections;
-import javax.swing.JMenu;
-import javax.swing.JPopupMenu;
-import javax.swing.JSplitPane;
+import nbbrd.design.DirectImpl;
+import nbbrd.service.ServiceProvider;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -59,16 +48,18 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.Range;
 import org.jfree.ui.RectangleInsets;
-import javax.swing.JComponent;
-import nbbrd.service.ServiceProvider;
-import internal.ui.components.InternalUI;
-import nbbrd.design.DirectImpl;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Collections;
+
+import static demetra.ui.components.parts.HasObsFormat.OBS_FORMAT_PROPERTY;
+import static demetra.ui.components.parts.HasTsData.TS_DATA_PROPERTY;
 
 /**
- *
  * @author Philippe Charles
  */
-public final class InternalResidualsViewUI implements InternalUI<ResidualsView> {
+public final class InternalResidualsViewUI {
 
     @DirectImpl
     @ServiceProvider
@@ -99,7 +90,6 @@ public final class InternalResidualsViewUI implements InternalUI<ResidualsView> 
         this.grid.setMode(JTsGrid.Mode.SINGLETS);
     }
 
-    @Override
     public void install(ResidualsView view) {
         this.obsFormatResolver = new HasObsFormatResolver(view, () -> onDataFormatChange(view));
         HasColorScheme todo = HasColorSchemeSupport.of((propertyName, oldValue, newValue) -> {
@@ -123,7 +113,7 @@ public final class InternalResidualsViewUI implements InternalUI<ResidualsView> 
     }
 
     private void registerActions(ResidualsView view) {
-        view.getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(view));
+        HasObsFormatSupport.registerActions(view, view.getActionMap());
     }
 
     private void enableProperties(ResidualsView view) {
@@ -219,7 +209,7 @@ public final class InternalResidualsViewUI implements InternalUI<ResidualsView> 
     private JMenu buildMenu() {
         JMenu result = new JMenu();
 
-        result.add(grid.getActionMap().get(HasTsCollectionCommands.COPY_ALL_ACTION)).setText("Copy series");
+        result.add(grid.getActionMap().get(HasTsCollection.COPY_ALL_ACTION)).setText("Copy series");
 
         JMenu export = new JMenu("Export image to");
         export.add(ChartCommand.printImage().toAction(chartPanel)).setText("Printer...");

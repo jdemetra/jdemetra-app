@@ -4,13 +4,14 @@
  */
 package ec.nbdemetra.ui.tools;
 
+import demetra.ui.components.parts.HasTsCollection;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.nodes.ControlNode;
 import demetra.ui.components.JTsGrid;
-import internal.ui.components.HasTsCollectionCommands;
-import static internal.ui.components.JTsGridCommands.REVERSE_ACTION;
-import static internal.ui.components.JTsGridCommands.TRANSPOSE_ACTION;
+
+import static demetra.ui.components.JTsGrid.REVERSE_ACTION;
+import static demetra.ui.components.JTsGrid.TRANSPOSE_ACTION;
 import java.awt.BorderLayout;
 import javax.swing.*;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -101,7 +102,7 @@ public final class GridTopComponent extends TopComponent implements ExplorerMana
 
         result.addSeparator();
 
-        JButton copy = new JButton(getGrid().getActionMap().get(HasTsCollectionCommands.COPY_ALL_ACTION));
+        JButton copy = new JButton(getGrid().getActionMap().get(HasTsCollection.COPY_ALL_ACTION));
         copy.setText("");
         copy.setToolTipText("Copy");
         copy.setIcon(DemetraUiIcon.EDIT_COPY_16);

@@ -21,7 +21,6 @@ import demetra.ui.DemetraOptions;
 import demetra.ui.beans.PropertyChangeBroadcaster;
 import demetra.ui.components.JObsFormatComponent;
 import demetra.ui.components.ComponentCommand;
-import static demetra.ui.components.parts.HasObsFormat.OBS_FORMAT_PROPERTY;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import java.awt.Dimension;
@@ -29,11 +28,9 @@ import java.awt.FlowLayout;
 import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
+
+import javax.swing.*;
+
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 
@@ -49,42 +46,21 @@ public class HasObsFormatSupport {
         return new HasObsFormatImpl(broadcaster);
     }
 
-    @lombok.RequiredArgsConstructor
-    private static final class HasObsFormatImpl implements HasObsFormat {
-
-        @lombok.NonNull
-        private final PropertyChangeBroadcaster broadcaster;
-        private ObsFormat obsFormat = null;
-
-        @Override
-        public ObsFormat getObsFormat() {
-            return obsFormat;
-        }
-
-        @Override
-        public void setObsFormat(ObsFormat obsFormat) {
-            ObsFormat old = this.obsFormat;
-            this.obsFormat = obsFormat;
-            broadcaster.firePropertyChange(OBS_FORMAT_PROPERTY, old, this.obsFormat);
-        }
-    }
-
-    public static final String FORMAT_ACTION = "format";
-
-    @NonNull
-    public static JCommand<HasObsFormat> applyDataFormat(@Nullable ObsFormat dataFormat) {
-        return new ApplyDataFormatCommand(dataFormat);
+    public static void registerActions(HasObsFormat component, ActionMap am) {
+        am.put(HasObsFormat.EDIT_FORMAT_ACTION, EditDataFormatCommand.INSTANCE.toAction(component));
     }
 
     @NonNull
-    public static JCommand<HasObsFormat> editDataFormat() {
-        return EditDataFormatCommand.INSTANCE;
+    public static <C extends JComponent & HasObsFormat> JMenuItem newApplyFormatMenu(@NonNull C component, @Nullable ObsFormat format) {
+        JCheckBoxMenuItem result = new JCheckBoxMenuItem(new ApplyDataFormatCommand(format).toAction(component));
+        result.setText(format != null ? format.toString() : "Default");
+        return result;
     }
 
-    public static JMenuItem newEditFormatMenu(ActionMap am, DemetraOptions demetraUI) {
-        JMenuItem result = new JMenuItem(am.get(FORMAT_ACTION));
+    public static <C extends JComponent & HasObsFormat> JMenuItem newEditFormatMenu(C component) {
+        JMenuItem result = new JMenuItem(component.getActionMap().get(HasObsFormat.EDIT_FORMAT_ACTION));
         result.setText("Edit format...");
-        result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_GLOBE));
+        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_GLOBE));
         return result;
     }
 
@@ -115,8 +91,8 @@ public class HasObsFormatSupport {
         @Override
         public void execute(final HasObsFormat component) {
             final JObsFormatComponent editor = new JObsFormatComponent();
-            Dimension preferedSize = editor.getPreferredSize();
-            editor.setPreferredSize(new Dimension(400, preferedSize.height));
+            Dimension preferredSize = editor.getPreferredSize();
+            editor.setPreferredSize(new Dimension(400, preferredSize.height));
             JPanel p = new JPanel(new FlowLayout());
             p.setBorder(BorderFactory.createEmptyBorder(25, 10, 10, 10));
             p.add(editor);
@@ -136,6 +112,26 @@ public class HasObsFormatSupport {
             if (DialogDisplayer.getDefault().notify(descriptor) == NotifyDescriptor.OK_OPTION && !editor.getObsFormat().equals(component.getObsFormat())) {
                 component.setObsFormat(editor.getObsFormat());
             }
+        }
+    }
+
+    @lombok.RequiredArgsConstructor
+    private static final class HasObsFormatImpl implements HasObsFormat {
+
+        @lombok.NonNull
+        private final PropertyChangeBroadcaster broadcaster;
+        private ObsFormat obsFormat = null;
+
+        @Override
+        public ObsFormat getObsFormat() {
+            return obsFormat;
+        }
+
+        @Override
+        public void setObsFormat(ObsFormat obsFormat) {
+            ObsFormat old = this.obsFormat;
+            this.obsFormat = obsFormat;
+            broadcaster.firePropertyChange(OBS_FORMAT_PROPERTY, old, this.obsFormat);
         }
     }
 }

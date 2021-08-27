@@ -1,49 +1,38 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  *
  * http://ec.europa.eu/idabc/eupl
  *
- * Unless required by applicable law or agreed to in writing, software 
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.ui.view;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.components.parts.HasColorSchemeResolver;
-import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.components.parts.*;
+import demetra.ui.jfreechart.TsCharts;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.data.Periodogram;
 import ec.tstoolkit.data.Values;
-import demetra.ui.jfreechart.TsCharts;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.chart.swing.ext.MatrixChartCommand;
-import internal.ui.components.HasTsTransferHandler;
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Stroke;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -56,11 +45,14 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.Layer;
-import demetra.ui.datatransfer.DataTransfer;
-import ec.util.chart.swing.SwingColorSchemeSupport;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
- *
  * @author Jeremy Demortier
  */
 public abstract class ARPView extends JComponent implements TimeSeriesComponent, HasTs, HasColorScheme {
@@ -74,13 +66,13 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
     protected ARPData data;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTs.of(this::firePropertyChange);
+    private final HasTs m_ts = HasTsSupport.of(this::firePropertyChange);
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
     private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
-    
+
     protected ARPView() {
         this.chartPanel = Charts.newChartPanel(createARPChart());
         this.data = null;
@@ -91,7 +83,7 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
         chartPanel.setDomainZoomable(false);
         chartPanel.setRangeZoomable(false);
 
-        setTransferHandler(new HasTsTransferHandler(this, DataTransfer.getDefault()));
+        setTransferHandler(HasTsSupport.newTransferHandler(this));
 
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {

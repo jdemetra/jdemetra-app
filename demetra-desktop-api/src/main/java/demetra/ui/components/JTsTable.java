@@ -16,17 +16,15 @@
  */
 package demetra.ui.components;
 
-import demetra.ui.components.parts.HasObsFormat;
-import demetra.ui.components.parts.HasTsAction;
-import demetra.ui.components.parts.HasTsCollection;
+import demetra.ui.components.parts.*;
 import demetra.timeseries.TsData;
 import demetra.tsprovider.util.MultiLineNameUtil;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.TsMonikerUI;
-import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.ui.design.SwingComponent;
+import demetra.ui.design.SwingProperty;
 import demetra.ui.jfreechart.TsSparklineCellRenderer;
 import ec.util.table.swing.JTables;
 import ec.util.various.swing.StandardSwingColor;
@@ -134,8 +132,13 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
         private Function<JTsTable, TableCellRenderer> renderer = o -> new DefaultTableCellRenderer();
     }
 
+    @SwingProperty
     public static final String SHOW_HEADER_PROPERTY = "showHeader";
+
+    @SwingProperty
     public static final String COLUMNS_PROPERTY = "columns";
+
+    @SwingProperty
     public static final String WIDTH_AS_PERCENTAGES_PROPERTY = "widthAsPercentages";
 
     // DEFAULT PROPERTIES
@@ -159,7 +162,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
     private final TsSelectionBridge tsSelectionBridge;
 
     public JTsTable() {
-        this.collection = HasTsCollection.of(this::firePropertyChange);
+        this.collection = HasTsCollectionSupport.of(this::firePropertyChange);
         this.tsAction = HasTsAction.of(this::firePropertyChange);
         this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
         this.showHeader = DEFAULT_SHOW_HEADER;

@@ -1,39 +1,32 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package demetra.ui.components.parts;
 
 import demetra.ui.DemetraOptions;
 import demetra.ui.beans.PropertyChangeBroadcaster;
-import ec.util.various.swing.JCommand;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import demetra.ui.components.ComponentCommand;
-import static demetra.ui.components.parts.HasChart.AXIS_VISIBLE_PROPERTY;
-import static demetra.ui.components.parts.HasChart.LEGEND_VISIBLE_PROPERTY;
-import static demetra.ui.components.parts.HasChart.LINES_THICKNESS_PROPERTY;
-import static demetra.ui.components.parts.HasChart.TITLE_PROPERTY;
-import static demetra.ui.components.parts.HasChart.TITLE_VISIBLE_PROPERTY;
 import ec.util.various.swing.FontAwesome;
-import javax.swing.ActionMap;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import javax.swing.*;
+
+import static demetra.ui.components.parts.HasChart.*;
 
 /**
- *
  * @author Philippe Charles
  */
 @lombok.experimental.UtilityClass
@@ -42,6 +35,94 @@ public class HasChartSupport {
     @NonNull
     public static HasChart of(@NonNull PropertyChangeBroadcaster broadcaster) {
         return new HasChartImpl(broadcaster);
+    }
+
+    public static void registerActions(HasChart chart, ActionMap am) {
+        am.put(HasChart.TOGGLE_TITLE_VISIBILITY_ACTION, ToggleTitleVisibilityCommand.INSTANCE.toAction(chart));
+        am.put(HasChart.TOGGLE_LEGEND_VISIBILITY_ACTION, ToggleLegendVisibilityCommand.INSTANCE.toAction(chart));
+        am.put(HasChart.APPLY_THIN_LINE_ACTION, ApplyLineThickNessCommand.THIN.toAction(chart));
+        am.put(HasChart.APPLY_THICK_LINE_ACTION, ApplyLineThickNessCommand.THICK.toAction(chart));
+    }
+
+    public static <C extends JComponent & HasChart> JMenuItem newToggleTitleVisibilityMenu(C component) {
+        JMenuItem result = new JCheckBoxMenuItem(component.getActionMap().get(HasChart.TOGGLE_TITLE_VISIBILITY_ACTION));
+        result.setText("Show title");
+        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_FONT));
+        return result;
+    }
+
+    public static <C extends JComponent & HasChart> JMenuItem newToggleLegendVisibilityMenu(C component) {
+        JMenuItem result = new JCheckBoxMenuItem(component.getActionMap().get(HasChart.TOGGLE_LEGEND_VISIBILITY_ACTION));
+        result.setText("Show legend");
+        return result;
+    }
+
+    public static <C extends JComponent & HasChart> JMenu newLinesThicknessMenu(C component) {
+        JMenu result = new JMenu("Lines thickness");
+        result.add(new JCheckBoxMenuItem(component.getActionMap().get(HasChart.APPLY_THIN_LINE_ACTION))).setText("Thin");
+        result.add(new JCheckBoxMenuItem(component.getActionMap().get(HasChart.APPLY_THICK_LINE_ACTION))).setText("Thick");
+        return result;
+    }
+
+    private static final class ToggleTitleVisibilityCommand extends ComponentCommand<HasChart> {
+
+        public static final ToggleTitleVisibilityCommand INSTANCE = new ToggleTitleVisibilityCommand();
+
+        public ToggleTitleVisibilityCommand() {
+            super(TITLE_VISIBLE_PROPERTY);
+        }
+
+        @Override
+        public boolean isSelected(HasChart component) {
+            return component.isTitleVisible();
+        }
+
+        @Override
+        public void execute(HasChart component) throws Exception {
+            component.setTitleVisible(!component.isTitleVisible());
+        }
+    }
+
+    private static final class ToggleLegendVisibilityCommand extends ComponentCommand<HasChart> {
+
+        public static final ToggleLegendVisibilityCommand INSTANCE = new ToggleLegendVisibilityCommand();
+
+        public ToggleLegendVisibilityCommand() {
+            super(LEGEND_VISIBLE_PROPERTY);
+        }
+
+        @Override
+        public boolean isSelected(HasChart component) {
+            return component.isLegendVisible();
+        }
+
+        @Override
+        public void execute(HasChart component) throws Exception {
+            component.setLegendVisible(!component.isLegendVisible());
+        }
+    }
+
+    private static final class ApplyLineThickNessCommand extends ComponentCommand<HasChart> {
+
+        public static final ApplyLineThickNessCommand THICK = new ApplyLineThickNessCommand(HasChart.LinesThickness.Thick);
+        public static final ApplyLineThickNessCommand THIN = new ApplyLineThickNessCommand(HasChart.LinesThickness.Thin);
+        //
+        private final HasChart.LinesThickness value;
+
+        public ApplyLineThickNessCommand(HasChart.LinesThickness value) {
+            super(LINES_THICKNESS_PROPERTY);
+            this.value = value;
+        }
+
+        @Override
+        public boolean isSelected(HasChart component) {
+            return component.getLinesThickness() == value;
+        }
+
+        @Override
+        public void execute(HasChart component) throws Exception {
+            component.setLinesThickness(value);
+        }
     }
 
     @lombok.RequiredArgsConstructor
@@ -120,116 +201,6 @@ public class HasChartSupport {
             HasChart.LinesThickness old = this.linesThickness;
             this.linesThickness = linesThickness != null ? linesThickness : DEFAULT_LINES_THICKNESS;
             broadcaster.firePropertyChange(LINES_THICKNESS_PROPERTY, old, this.linesThickness);
-        }
-    }
-
-    public static final String TITLE_VISIBLE_ACTION = "titleVisible";
-
-    @NonNull
-    public static JCommand<HasChart> toggleTitleVisibility() {
-        return ToggleTitleVisibilityCommand.INSTANCE;
-    }
-
-    public static JMenuItem newToggleTitleVisibilityMenu(ActionMap am, DemetraOptions demetraUI) {
-        JMenuItem result = new JCheckBoxMenuItem(am.get(TITLE_VISIBLE_ACTION));
-        result.setText("Show title");
-        result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_FONT));
-        return result;
-    }
-
-    public static final String LEGEND_VISIBLE_ACTION = "legendVisible";
-
-    @NonNull
-    public static JCommand<HasChart> toggleLegendVisibility() {
-        return ToggleLegendVisibilityCommand.INSTANCE;
-    }
-
-    public static JMenuItem newToggleLegendVisibilityMenu(ActionMap am, DemetraOptions demetraUI) {
-        JMenuItem result = new JCheckBoxMenuItem(am.get(LEGEND_VISIBLE_ACTION));
-        result.setText("Show legend");
-        return result;
-    }
-
-    public static final String THIN_LINE_ACTION = "thinLine";
-    public static final String THICK_LINE_ACTION = "thickLine";
-
-    @NonNull
-    public static JCommand<HasChart> applyLineThickNess(HasChart.@NonNull LinesThickness thickness) {
-        return HasChart.LinesThickness.Thick.equals(thickness) ? ApplyLineThickNessCommand.THICK : ApplyLineThickNessCommand.THIN;
-    }
-
-    public static JMenu newLinesThicknessMenu(ActionMap am) {
-        JMenu result = new JMenu("Lines thickness");
-        result.add(new JCheckBoxMenuItem(am.get(THIN_LINE_ACTION))).setText("Thin");
-        result.add(new JCheckBoxMenuItem(am.get(THICK_LINE_ACTION))).setText("Thick");
-        return result;
-    }
-
-    public static void registerActions(HasChart chart, ActionMap am) {
-        am.put(TITLE_VISIBLE_ACTION, toggleTitleVisibility().toAction(chart));
-        am.put(LEGEND_VISIBLE_ACTION, toggleLegendVisibility().toAction(chart));
-        am.put(THIN_LINE_ACTION, applyLineThickNess(HasChart.LinesThickness.Thin).toAction(chart));
-        am.put(THICK_LINE_ACTION, applyLineThickNess(HasChart.LinesThickness.Thick).toAction(chart));
-    }
-
-    private static final class ToggleTitleVisibilityCommand extends ComponentCommand<HasChart> {
-
-        public static final ToggleTitleVisibilityCommand INSTANCE = new ToggleTitleVisibilityCommand();
-
-        public ToggleTitleVisibilityCommand() {
-            super(TITLE_VISIBLE_PROPERTY);
-        }
-
-        @Override
-        public boolean isSelected(HasChart component) {
-            return component.isTitleVisible();
-        }
-
-        @Override
-        public void execute(HasChart component) throws Exception {
-            component.setTitleVisible(!component.isTitleVisible());
-        }
-    }
-
-    private static final class ToggleLegendVisibilityCommand extends ComponentCommand<HasChart> {
-
-        public static final ToggleLegendVisibilityCommand INSTANCE = new ToggleLegendVisibilityCommand();
-
-        public ToggleLegendVisibilityCommand() {
-            super(LEGEND_VISIBLE_PROPERTY);
-        }
-
-        @Override
-        public boolean isSelected(HasChart component) {
-            return component.isLegendVisible();
-        }
-
-        @Override
-        public void execute(HasChart component) throws Exception {
-            component.setLegendVisible(!component.isLegendVisible());
-        }
-    }
-
-    private static final class ApplyLineThickNessCommand extends ComponentCommand<HasChart> {
-
-        public static final ApplyLineThickNessCommand THICK = new ApplyLineThickNessCommand(HasChart.LinesThickness.Thick);
-        public static final ApplyLineThickNessCommand THIN = new ApplyLineThickNessCommand(HasChart.LinesThickness.Thin);
-        //
-        private final HasChart.LinesThickness value;
-
-        public ApplyLineThickNessCommand(HasChart.LinesThickness value) {
-            super(LINES_THICKNESS_PROPERTY);
-            this.value = value;
-        }
-
-        @Override
-        public boolean isSelected(HasChart component) {
-            return component.getLinesThickness() == value;
-        }
-
-        @Override
-        public void execute(HasChart component) throws Exception {
-            component.setLinesThickness(value);
         }
     }
 }

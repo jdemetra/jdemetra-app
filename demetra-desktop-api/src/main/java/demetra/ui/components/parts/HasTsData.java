@@ -18,6 +18,7 @@ package demetra.ui.components.parts;
 
 import demetra.timeseries.TsData;
 import demetra.ui.beans.PropertyChangeBroadcaster;
+import demetra.ui.design.SwingProperty;
 import internal.ui.components.parts.HasTsDataImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -28,6 +29,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public interface HasTsData {
 
+    @SwingProperty
     String TS_DATA_PROPERTY = "tsData";
 
     @Nullable

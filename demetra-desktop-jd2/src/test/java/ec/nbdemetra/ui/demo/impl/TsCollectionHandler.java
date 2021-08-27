@@ -1,64 +1,56 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.ui.demo.impl;
 
 import demetra.bridge.TsConverter;
+import demetra.demo.DemoTsBuilder;
+import demetra.demo.PocProvider;
+import demetra.timeseries.*;
+import demetra.tsprovider.DataSet;
+import demetra.tsprovider.DataSource;
 import demetra.ui.TsManager;
+import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.HasTsAction;
 import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.ui.util.FontAwesomeUtils;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.DemoTsActions;
+import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
-import internal.ui.components.HasTsCollectionCommands;
 import ec.util.list.swing.JLists;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
-import demetra.ui.util.FontAwesomeUtils;
-import demetra.demo.DemoTsBuilder;
-import demetra.demo.PocProvider;
-import demetra.timeseries.Ts;
-import demetra.timeseries.TsPeriod;
-import demetra.timeseries.TsUnit;
-import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsInformationType;
-import demetra.tsprovider.DataSet;
-import demetra.tsprovider.DataSource;
-import demetra.ui.components.TsSelectionBridge;
-import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
-import java.awt.Component;
+import nbbrd.service.ServiceProvider;
+import org.openide.awt.DropDownButtonFactory;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.BeanInfo;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
-import javax.swing.*;
-import nbbrd.service.ServiceProvider;
-import org.openide.awt.DropDownButtonFactory;
 
 /**
- *
  * @author Philippe Charles
  */
 @ServiceProvider(DemoComponentHandler.class)
@@ -167,7 +159,7 @@ public final class TsCollectionHandler extends TypedDemoComponentHandler<HasTsCo
 
     static JButton createRemoveButton(HasTsCollection view) {
         JMenu menu = new JMenu();
-        menu.add(HasTsCollectionCommands.clear().toAction(view)).setText("Clear");
+        menu.add(((JComponent) view).getActionMap().get(HasTsCollection.CLEAR_ACTION)).setText("Clear");
         JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LIST_REMOVE_16, menu.getPopupMenu());
         result.addActionListener(RemoveLastCommand.INSTANCE.toAction(view));
         return result;
@@ -222,7 +214,7 @@ public final class TsCollectionHandler extends TypedDemoComponentHandler<HasTsCo
 
         @Override
         public ActionAdapter toAction(HasTsCollection component) {
-            return super.toAction(component).withWeakPropertyChangeListener((Component) component, HasTsCollection.UDPATE_MODE_PROPERTY);
+            return super.toAction(component).withWeakPropertyChangeListener((Component) component, HasTsCollection.TS_UPDATE_MODE_PROPERTY);
         }
 
         @Override
@@ -238,38 +230,38 @@ public final class TsCollectionHandler extends TypedDemoComponentHandler<HasTsCo
 
     static JButton createSelectionButton(final HasTsCollection view) {
         final Action[] selectionActions = {
-            new AbstractAction("All") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    view.getTsSelectionModel().setSelectionInterval(0, view.getTsCollection().size());
-                }
-            },
-            new AbstractAction("None") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    view.getTsSelectionModel().clearSelection();
-                }
-            },
-            new AbstractAction("Alternate") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    view.getTsSelectionModel().clearSelection();
-                    for (int i = 0; i < view.getTsCollection().size(); i += 2) {
-                        view.getTsSelectionModel().addSelectionInterval(i, i);
+                new AbstractAction("All") {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        view.getTsSelectionModel().setSelectionInterval(0, view.getTsCollection().size());
+                    }
+                },
+                new AbstractAction("None") {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        view.getTsSelectionModel().clearSelection();
+                    }
+                },
+                new AbstractAction("Alternate") {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        view.getTsSelectionModel().clearSelection();
+                        for (int i = 0; i < view.getTsCollection().size(); i += 2) {
+                            view.getTsSelectionModel().addSelectionInterval(i, i);
+                        }
+                    }
+                },
+                new AbstractAction("Inverse") {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        int[] selection = IntStream
+                                .range(0, view.getTsCollection().size())
+                                .filter(i -> !view.getTsSelectionModel().isSelectedIndex(i))
+                                .toArray();
+                        view.getTsSelectionModel().clearSelection();
+                        IntStream.of(selection).forEach(i -> view.getTsSelectionModel().addSelectionInterval(i, i));
                     }
                 }
-            },
-            new AbstractAction("Inverse") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    int[] selection = IntStream
-                            .range(0, view.getTsCollection().size())
-                            .filter(i -> !view.getTsSelectionModel().isSelectedIndex(i))
-                            .toArray();
-                    view.getTsSelectionModel().clearSelection();
-                    IntStream.of(selection).forEach(i -> view.getTsSelectionModel().addSelectionInterval(i, i));
-                }
-            }
         };
         JPopupMenu menu = new JPopupMenu();
         for (Action o : selectionActions) {

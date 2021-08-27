@@ -148,7 +148,7 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
     }
 
     private void registerActions() {
-        getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(this));
+        HasObsFormatSupport.registerActions(this, getActionMap());
     }
 
     private void enableProperties() {

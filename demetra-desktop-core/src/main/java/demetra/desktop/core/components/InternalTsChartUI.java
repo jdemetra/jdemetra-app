@@ -1,51 +1,46 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  *
  * http://ec.europa.eu/idabc/eupl
  *
- * Unless required by applicable law or agreed to in writing, software 
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.desktop.core.components;
 
-import demetra.ui.components.parts.HasChartSupport;
-import demetra.ui.components.parts.HasObsFormatSupport;
-import demetra.bridge.TsConverter;
-import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
 import demetra.ui.actions.Configurable;
-import demetra.ui.components.TsSelectionBridge;
-import demetra.ui.components.parts.HasChart;
-import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.components.parts.HasObsFormat;
-import demetra.ui.components.parts.HasTsCollection;
-import static demetra.ui.actions.PrintableWithPreview.PRINT_ACTION;
-import static demetra.ui.actions.ResetableZoom.RESET_ZOOM_ACTION;
-import demetra.ui.util.ActionMaps;
-import demetra.ui.util.InputMaps;
-import ec.tstoolkit.utilities.IntList;
+import demetra.ui.components.ComponentBackendSpi;
 import demetra.ui.components.JTsChart;
 import demetra.ui.components.TsFeatureHelper;
+import demetra.ui.components.TsSelectionBridge;
+import demetra.ui.components.parts.*;
 import demetra.ui.jfreechart.TsXYDataset;
-import ec.ui.chart.JTimeSeriesChartUtil;
-import ec.util.chart.ObsFunction;
-import ec.util.chart.ObsIndex;
-import ec.util.chart.ObsPredicate;
-import ec.util.chart.SeriesFunction;
-import ec.util.chart.SeriesPredicate;
+import demetra.ui.util.ActionMaps;
+import demetra.ui.util.InputMaps;
+import demetra.util.IntList;
+import ec.util.chart.*;
 import ec.util.chart.TimeSeriesChart.Element;
 import ec.util.chart.swing.JTimeSeriesChart;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
-import java.awt.BorderLayout;
+import nbbrd.design.DirectImpl;
+import nbbrd.service.ServiceProvider;
+import org.jfree.data.xy.IntervalXYDataset;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -54,23 +49,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.swing.ActionMap;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.ListSelectionModel;
-import javax.swing.TransferHandler;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import org.jfree.data.xy.IntervalXYDataset;
-import demetra.ui.datatransfer.DataTransfer;
-import javax.swing.JComponent;
-import nbbrd.service.ServiceProvider;
-import demetra.ui.components.ComponentBackendSpi;
-import demetra.ui.components.parts.HasColorSchemeResolver;
-import demetra.ui.components.parts.HasObsFormatResolver;
-import ec.tss.tsproviders.utils.DataFormat;
-import nbbrd.design.DirectImpl;
+
+import static demetra.ui.actions.PrintableWithPreview.PRINT_ACTION;
+import static demetra.ui.actions.ResetableZoom.RESET_ZOOM_ACTION;
 
 public final class InternalTsChartUI implements InternalUI<JTsChart> {
 
@@ -125,16 +106,16 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
     }
 
     private void registerActions() {
-        HasTsCollectionCommands.registerActions(target, target.getActionMap());
+        HasTsCollectionSupport.registerActions(target, target.getActionMap());
         HasChartSupport.registerActions(target, target.getActionMap());
-        target.getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
-        target.getActionMap().put(PRINT_ACTION, JCommand.of(JTimeSeriesChartUtil::printWithPreview).toAction(chartPanel));
+        HasObsFormatSupport.registerActions(target, target.getActionMap());
+        target.getActionMap().put(PRINT_ACTION, JCommand.of(JTimeSeriesChart::printImage).toAction(chartPanel));
         target.getActionMap().put(RESET_ZOOM_ACTION, JCommand.of(JTimeSeriesChart::resetZoom).toAction(chartPanel));
         ActionMaps.copyEntries(target.getActionMap(), false, chartPanel.getActionMap());
     }
 
     private void registerInputs() {
-        HasTsCollectionCommands.registerInputs(target.getInputMap());
+        HasTsCollectionSupport.registerInputs(target.getInputMap());
         InputMaps.copyEntries(target.getInputMap(), false, chartPanel.getInputMap());
     }
 
@@ -189,8 +170,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
     }
 
     private void enableDropPreview() {
-        new HasTsCollectionDropTargetListener(target, DataTransfer.getDefault())
-                .register(chartPanel.getDropTarget());
+        HasTsCollectionSupport.newDropTargetListener(target, chartPanel.getDropTarget());
     }
 
     private void enableOpenOnDoubleClick() {
@@ -210,7 +190,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
                 case TsSelectionBridge.TS_SELECTION_PROPERTY:
                     onSelectionChange();
                     break;
-                case HasTsCollection.UDPATE_MODE_PROPERTY:
+                case HasTsCollection.TS_UPDATE_MODE_PROPERTY:
                     onUpdateModeChange();
                     break;
                 case HasTsCollection.DROP_CONTENT_PROPERTY:
@@ -260,8 +240,9 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
 
     //<editor-fold defaultstate="collapsed" desc="Event Handlers">
     private void onDataFormatChange() {
-        DataFormat dataFormat = TsConverter.fromObsFormat(obsFormatResolver.resolve());
-        JTimeSeriesChartUtil.setDataFormat(chartPanel, dataFormat);
+        ObsFormat obsFormat = obsFormatResolver.resolve();
+        chartPanel.setPeriodFormat(new InternalComponents.DateFormatAdapter(obsFormat));
+        chartPanel.setValueFormat(new InternalComponents.NumberFormatAdapter(obsFormat));
     }
 
     private void onColorSchemeChange() {
@@ -348,7 +329,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
 
     private void onTransferHandlerChange() {
         TransferHandler th = target.getTransferHandler();
-        chartPanel.setTransferHandler(th != null ? th : new HasTsCollectionTransferHandler(target, DataTransfer.getDefault()));
+        chartPanel.setTransferHandler(th != null ? th : HasTsCollectionSupport.newTransferHandler(target));
     }
 
     private void onComponentPopupMenuChange() {
@@ -392,22 +373,22 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
         DemetraOptions demetraUI = DemetraOptions.getDefault();
         JMenu result = new JMenu();
 
-        result.add(HasTsCollectionCommands.newOpenMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newOpenWithMenu(target, demetraUI));
+        result.add(HasTsCollectionSupport.newOpenMenu(target));
+        result.add(HasTsCollectionSupport.newOpenWithMenu(target));
 
-        JMenu menu = HasTsCollectionCommands.newSaveMenu(target, demetraUI);
+        JMenu menu = HasTsCollectionSupport.newSaveMenu(target);
         if (menu.getSubElements().length > 0) {
             result.add(menu);
         }
 
-        result.add(HasTsCollectionCommands.newRenameMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newFreezeMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newCopyMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newPasteMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newDeleteMenu(am, demetraUI));
+        result.add(HasTsCollectionSupport.newRenameMenu(target));
+        result.add(HasTsCollectionSupport.newFreezeMenu(target));
+        result.add(HasTsCollectionSupport.newCopyMenu(target));
+        result.add(HasTsCollectionSupport.newPasteMenu(target));
+        result.add(HasTsCollectionSupport.newDeleteMenu(target));
         result.addSeparator();
-        result.add(HasTsCollectionCommands.newSelectAllMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newClearMenu(am, demetraUI));
+        result.add(HasTsCollectionSupport.newSelectAllMenu(target));
+        result.add(HasTsCollectionSupport.newClearMenu(target));
 
         result.addSeparator();
         JMenuItem item = new JMenuItem(am.get(Configurable.CONFIGURE_ACTION));
@@ -415,13 +396,13 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
         item.setText("Configure...");
         result.add(item);
 
-        result.add(HasTsCollectionCommands.newSplitMenu(am, demetraUI));
+        result.add(HasTsCollectionSupport.newSplitMenu(target));
         result.addSeparator();
-        result.add(HasChartSupport.newToggleTitleVisibilityMenu(am, demetraUI));
-        result.add(HasChartSupport.newToggleLegendVisibilityMenu(am, demetraUI));
-        result.add(HasObsFormatSupport.newEditFormatMenu(am, demetraUI));
+        result.add(HasChartSupport.newToggleTitleVisibilityMenu(target));
+        result.add(HasChartSupport.newToggleLegendVisibilityMenu(target));
+        result.add(HasObsFormatSupport.newEditFormatMenu(target));
         result.add(HasColorSchemeSupport.menuOf(target));
-        result.add(HasChartSupport.newLinesThicknessMenu(am));
+        result.add(HasChartSupport.newLinesThicknessMenu(target));
         result.addSeparator();
         result.add(InternalComponents.newResetZoomMenu(am, demetraUI));
 

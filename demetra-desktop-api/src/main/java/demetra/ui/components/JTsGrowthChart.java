@@ -18,11 +18,7 @@ package demetra.ui.components;
 
 import demetra.ui.actions.PrintableWithPreview;
 import demetra.ui.actions.ResetableZoom;
-import demetra.ui.components.parts.HasObsFormat;
-import demetra.ui.components.parts.HasTsAction;
-import demetra.ui.components.parts.HasTsCollection;
-import demetra.ui.components.parts.HasChart;
-import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.*;
 import demetra.timeseries.TimeSelector;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
@@ -31,10 +27,8 @@ import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsDomain;
 import demetra.ui.DemetraOptions;
 import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.components.parts.HasChartSupport;
-import demetra.ui.components.parts.HasColorSchemeSupport;
-import demetra.ui.components.parts.HasObsFormatSupport;
 import demetra.ui.design.SwingComponent;
+import demetra.ui.design.SwingProperty;
 import internal.ui.components.DemoTsBuilder;
 import java.awt.Dimension;
 import java.beans.Beans;
@@ -52,14 +46,22 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
         HasTsCollection, HasTsAction, HasChart, HasColorScheme, HasObsFormat,
         PrintableWithPreview, ResetableZoom {
 
+    public static final String PREVIOUS_PERIOD_ACTION = "previousPeriod";
+    public static final String PREVIOUS_YEAR_ACTION = "previousYear";
+
     public enum GrowthKind {
 
         PreviousPeriod,
         PreviousYear
     }
 
+    @SwingProperty
     public static final String GROWTH_KIND_PROPERTY = "growthKind";
+
+    @SwingProperty
     public static final String LAST_YEARS_PROPERTY = "lastYears";
+
+    @SwingProperty
     public static final String USE_TOOL_LAYOUT_PROPERTY = "useToolLayout";
 
     // DEFAULT PROPERTIES
@@ -93,7 +95,7 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
     private final TsSelectionBridge tsSelectionBridge;
 
     public JTsGrowthChart() {
-        this.collection = HasTsCollection.of(this::firePropertyChange);
+        this.collection = HasTsCollectionSupport.of(this::firePropertyChange);
         this.tsAction = HasTsAction.of(this::firePropertyChange);
         this.chart = HasChartSupport.of(this::firePropertyChange);
         this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

@@ -1,75 +1,62 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  *
  * http://ec.europa.eu/idabc/eupl
  *
- * Unless required by applicable law or agreed to in writing, software 
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import demetra.ui.ColorSchemeManager;
 import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.HasColorSchemeSupport;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
-import demetra.ui.components.parts.HasColorSchemeSupport;
-import java.awt.event.ActionEvent;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JPopupMenu;
-import javax.swing.JToolBar;
 import nbbrd.service.ServiceProvider;
 import org.openide.awt.DropDownButtonFactory;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+
 /**
- *
  * @author Philippe Charles
  */
-@ServiceProvider(DemoComponentHandler.class)
-public final class ColorSchemeAbleHandler extends TypedDemoComponentHandler<HasColorScheme> {
+@ServiceProvider
+public final class ColorSchemeAbleHandler implements DemoComponentHandler {
 
-    public ColorSchemeAbleHandler() {
-        super(HasColorScheme.class);
+    @Override
+    public boolean canHandle(Component c) {
+        return c instanceof JComponent && c instanceof HasColorScheme;
     }
 
     @Override
-    public void doConfigure(HasColorScheme c) {
-        c.setColorScheme(null);
+    public void configure(Component c) {
+        ((HasColorScheme) c).setColorScheme(null);
     }
 
     @Override
-    public void doFillToolBar(JToolBar toolBar, HasColorScheme c) {
-        JPopupMenu menu = HasColorSchemeSupport.menuOf(c).getPopupMenu();
+    public void fillToolBar(JToolBar toolBar, Component c) {
+        JMenu menu = HasColorSchemeSupport.menuOf((JComponent & HasColorScheme) c);
 
-        List<Action> colorSchemes = ColorSchemeManager.getDefault()
-                .getColorSchemes()
-                .stream()
-                .map(HasColorSchemeSupport::getApplyColorSchemeCommand)
-                .map(o -> o.toAction(c))
-                .collect(Collectors.toList());
-
-        JButton coloSchemeBtn = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.COLOR_SWATCH_16, menu);
-        coloSchemeBtn.addActionListener(new AbstractAction() {
+        JButton colorSchemeBtn = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.COLOR_SWATCH_16, menu.getPopupMenu());
+        colorSchemeBtn.addActionListener(new AbstractAction() {
             int i = 0;
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                colorSchemes.get(i++ % colorSchemes.size()).actionPerformed(e);
+                menu.getItem(i++ % menu.getItemCount()).getAction().actionPerformed(e);
             }
         });
-        toolBar.add(coloSchemeBtn);
+        toolBar.add(colorSchemeBtn);
         toolBar.addSeparator();
     }
 }

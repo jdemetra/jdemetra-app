@@ -1,57 +1,62 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  *
  * http://ec.europa.eu/idabc/eupl
  *
- * Unless required by applicable law or agreed to in writing, software 
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.ui.demo.impl;
 
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.components.parts.HasObsFormat;
+import demetra.ui.components.parts.HasObsFormatSupport;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
-import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
 import ec.util.various.swing.JCommand;
-import demetra.ui.components.parts.HasObsFormatSupport;
-import java.util.Locale;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JToolBar;
 import nbbrd.service.ServiceProvider;
 import org.openide.awt.DropDownButtonFactory;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.Locale;
+
 /**
- *
  * @author Philippe Charles
  */
-@ServiceProvider(DemoComponentHandler.class)
-public final class TsControlHandler extends TypedDemoComponentHandler<HasObsFormat> {
+@ServiceProvider
+public final class TsControlHandler implements DemoComponentHandler {
 
     private final DataFormatCommand dataFormatCommand;
 
     public TsControlHandler() {
-        super(HasObsFormat.class);
         ObsFormat[] dataFormats = {
-            ObsFormat.of(Locale.FRENCH, "YYYY-MM", null),
-            ObsFormat.of(Locale.US, "MM/YY", "0 $"),
-            ObsFormat.of(Locale.GERMAN, "(yyyy)MMM", "0.00 €"),};
+                ObsFormat.of(Locale.FRENCH, "YYYY-MM", null),
+                ObsFormat.of(Locale.US, "MM/YY", "0 $"),
+                ObsFormat.of(Locale.GERMAN, "(yyyy)MMM", "0.00 €"),};
         this.dataFormatCommand = new DataFormatCommand(dataFormats);
     }
 
     @Override
-    public void doFillToolBar(JToolBar toolBar, final HasObsFormat c) {
-        toolBar.add(dataFormatCommand.toButton(c));
+    public boolean canHandle(Component c) {
+        return c instanceof JComponent && c instanceof HasObsFormat;
+    }
+
+    @Override
+    public void configure(Component c) {
+    }
+
+    @Override
+    public void fillToolBar(JToolBar toolBar, Component c) {
+        toolBar.add(dataFormatCommand.toButton((JComponent & HasObsFormat) c));
         toolBar.addSeparator();
     }
 
@@ -66,7 +71,7 @@ public final class TsControlHandler extends TypedDemoComponentHandler<HasObsForm
         }
 
         @Override
-        public void execute(HasObsFormat component) throws Exception {
+        public void execute(HasObsFormat component) {
             component.setObsFormat(dataFormats[position]);
             position = (position + 1) % dataFormats.length;
         }
@@ -76,17 +81,16 @@ public final class TsControlHandler extends TypedDemoComponentHandler<HasObsForm
             return dataFormats.length > 0;
         }
 
-        public JButton toButton(final HasObsFormat c) {
+        public <C extends JComponent & HasObsFormat> JButton toButton(C c) {
             JPopupMenu popup = new JPopupMenu();
-            popup.add(new JCheckBoxMenuItem(HasObsFormatSupport.applyDataFormat(null).toAction(c))).setText("Default");
+            popup.add(HasObsFormatSupport.newApplyFormatMenu(c, null));
             popup.addSeparator();
             for (ObsFormat o : dataFormats) {
-                popup.add(new JCheckBoxMenuItem(HasObsFormatSupport.applyDataFormat(o).toAction(c))).setText(o.toString());
+                popup.add(HasObsFormatSupport.newApplyFormatMenu(c, o));
             }
             JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LOCALE_ALTERNATE_16, popup);
             result.addActionListener(toAction(c));
             return result;
         }
     }
-
 }

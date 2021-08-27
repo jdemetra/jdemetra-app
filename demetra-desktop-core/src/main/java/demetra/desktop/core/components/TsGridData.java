@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.desktop.core.components;
 
 import demetra.timeseries.Ts;
 import demetra.ui.components.TsGridObs;

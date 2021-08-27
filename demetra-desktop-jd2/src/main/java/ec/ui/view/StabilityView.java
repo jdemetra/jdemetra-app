@@ -16,11 +16,8 @@
  */
 package ec.ui.view;
 
-import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.components.parts.HasTs;
+import demetra.ui.components.parts.*;
 import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.components.parts.HasColorSchemeResolver;
-import demetra.ui.components.parts.HasColorSchemeSupport;
 import demetra.ui.design.SwingComponent;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.ui.chart.BasicXYDataset;
@@ -88,7 +85,7 @@ public final class StabilityView extends JComponent implements TimeSeriesCompone
     private int indexSelected = -1;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTs.of(this::firePropertyChange);
+    private final HasTs m_ts = HasTsSupport.of(this::firePropertyChange);
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

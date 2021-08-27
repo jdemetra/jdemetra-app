@@ -1,39 +1,32 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  *
  * http://ec.europa.eu/idabc/eupl
  *
- * Unless required by applicable law or agreed to in writing, software 
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.desktop.core.components;
 
-import demetra.ui.components.parts.HasChartSupport;
-import demetra.ui.components.parts.HasObsFormatSupport;
-import demetra.bridge.TsConverter;
-import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
+import demetra.ui.actions.Actions;
+import demetra.ui.components.ComponentBackendSpi;
+import demetra.ui.components.JTsGrowthChart;
 import demetra.ui.components.TsSelectionBridge;
-import demetra.ui.components.parts.HasChart;
+import demetra.ui.components.parts.*;
 import demetra.ui.components.parts.HasChart.LinesThickness;
-import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.components.parts.HasObsFormat;
-import demetra.ui.components.parts.HasTsCollection;
-import static demetra.ui.actions.PrintableWithPreview.PRINT_ACTION;
-import static demetra.ui.actions.ResetableZoom.RESET_ZOOM_ACTION;
+import demetra.ui.jfreechart.TsXYDataset;
 import demetra.ui.util.ActionMaps;
 import demetra.ui.util.InputMaps;
-import demetra.ui.components.JTsGrowthChart;
-import demetra.ui.actions.Actions;
-import ec.ui.chart.JTimeSeriesChartUtil;
 import ec.util.chart.ObsFunction;
 import ec.util.chart.SeriesFunction;
 import ec.util.chart.SeriesPredicate;
@@ -42,27 +35,20 @@ import ec.util.chart.swing.JTimeSeriesChart;
 import ec.util.chart.swing.SelectionMouseListener;
 import ec.util.list.swing.JLists;
 import ec.util.various.swing.JCommand;
-import static internal.ui.components.JTsGrowthChartCommands.PREVIOUS_PERIOD_ACTION;
-import static internal.ui.components.JTsGrowthChartCommands.PREVIOUS_YEAR_ACTION;
-import static internal.ui.components.JTsGrowthChartCommands.applyGrowthKind;
-import static internal.ui.components.JTsGrowthChartCommands.copyGrowthData;
-import static internal.ui.components.JTsGrowthChartCommands.editLastYears;
-import java.awt.BorderLayout;
+import nbbrd.design.DirectImpl;
+import nbbrd.service.ServiceProvider;
+import org.jfree.data.xy.IntervalXYDataset;
+
+import javax.swing.*;
+import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Date;
-import javax.swing.*;
-import org.jfree.data.xy.IntervalXYDataset;
-import demetra.ui.datatransfer.DataTransfer;
-import demetra.ui.jfreechart.TsXYDataset;
-import nbbrd.service.ServiceProvider;
-import demetra.ui.components.ComponentBackendSpi;
-import demetra.ui.components.parts.HasColorSchemeResolver;
-import demetra.ui.components.parts.HasObsFormatResolver;
-import ec.tss.tsproviders.utils.DataFormat;
-import nbbrd.design.DirectImpl;
+
+import static demetra.ui.actions.PrintableWithPreview.PRINT_ACTION;
+import static demetra.ui.actions.ResetableZoom.RESET_ZOOM_ACTION;
+import static demetra.desktop.core.components.JTsGrowthChartCommands.*;
 
 /**
- *
  * @author Kristof Bayens
  */
 public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart> {
@@ -116,19 +102,19 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
     private void registerActions() {
         ActionMap am = target.getActionMap();
         HasChartSupport.registerActions(target, am);
-        am.put(PREVIOUS_PERIOD_ACTION, applyGrowthKind(JTsGrowthChart.GrowthKind.PreviousPeriod).toAction(target));
-        am.put(PREVIOUS_YEAR_ACTION, applyGrowthKind(JTsGrowthChart.GrowthKind.PreviousYear).toAction(target));
-        am.put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
-        HasTsCollectionCommands.registerActions(target, target.getActionMap());
+        am.put(JTsGrowthChart.PREVIOUS_PERIOD_ACTION, applyGrowthKind(JTsGrowthChart.GrowthKind.PreviousPeriod).toAction(target));
+        am.put(JTsGrowthChart.PREVIOUS_YEAR_ACTION, applyGrowthKind(JTsGrowthChart.GrowthKind.PreviousYear).toAction(target));
+        HasObsFormatSupport.registerActions(target, am);
+        HasTsCollectionSupport.registerActions(target, target.getActionMap());
         HasChartSupport.registerActions(target, target.getActionMap());
-        target.getActionMap().put(HasObsFormatSupport.FORMAT_ACTION, HasObsFormatSupport.editDataFormat().toAction(target));
-        target.getActionMap().put(PRINT_ACTION, JCommand.of(JTimeSeriesChartUtil::printWithPreview).toAction(chartPanel));
+        HasObsFormatSupport.registerActions(target, target.getActionMap());
+        target.getActionMap().put(PRINT_ACTION, JCommand.of(JTimeSeriesChart::printImage).toAction(chartPanel));
         target.getActionMap().put(RESET_ZOOM_ACTION, JCommand.of(JTimeSeriesChart::resetZoom).toAction(chartPanel));
         ActionMaps.copyEntries(target.getActionMap(), false, chartPanel.getActionMap());
     }
 
     private void registerInputs() {
-        HasTsCollectionCommands.registerInputs(target.getInputMap());
+        HasTsCollectionSupport.registerInputs(target.getInputMap());
         InputMaps.copyEntries(target.getInputMap(), false, chartPanel.getInputMap());
     }
 
@@ -179,8 +165,7 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
     }
 
     private void enableDropPreview() {
-        new HasTsCollectionDropTargetListener(target, DataTransfer.getDefault())
-                .register(chartPanel.getDropTarget());
+        HasTsCollectionSupport.newDropTargetListener(target, chartPanel.getDropTarget());
     }
 
     private void enableOpenOnDoubleClick() {
@@ -196,7 +181,7 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
                 case TsSelectionBridge.TS_SELECTION_PROPERTY:
                     onSelectionChange();
                     break;
-                case HasTsCollection.UDPATE_MODE_PROPERTY:
+                case HasTsCollection.TS_UPDATE_MODE_PROPERTY:
                     onUpdateModeChange();
                     break;
                 case HasColorScheme.COLOR_SCHEME_PROPERTY:
@@ -239,12 +224,8 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
 
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
     private void onDataFormatChange() {
-        try {
-            DataFormat dataFormat = TsConverter.fromObsFormat(obsFormatResolver.resolve());
-            chartPanel.setPeriodFormat(dataFormat.newDateFormat());
-        } catch (IllegalArgumentException ex) {
-            // do nothing?
-        }
+        ObsFormat obsFormat = obsFormatResolver.resolve();
+        chartPanel.setPeriodFormat(new InternalComponents.DateFormatAdapter(obsFormat));
     }
 
     private void onColorSchemeChange() {
@@ -303,7 +284,7 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
 
     private void onTransferHandlerChange() {
         TransferHandler th = target.getTransferHandler();
-        chartPanel.setTransferHandler(th != null ? th : new HasTsCollectionTransferHandler(target, DataTransfer.getDefault()));
+        chartPanel.setTransferHandler(th != null ? th : HasTsCollectionSupport.newTransferHandler(target));
     }
 
     private void onComponentPopupMenuChange() {
@@ -318,11 +299,11 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
 
         JMenuItem item;
 
-        item = new JCheckBoxMenuItem(am.get(PREVIOUS_PERIOD_ACTION));
+        item = new JCheckBoxMenuItem(am.get(JTsGrowthChart.PREVIOUS_PERIOD_ACTION));
         item.setText("Previous Period");
         result.add(item);
 
-        item = new JCheckBoxMenuItem(am.get(PREVIOUS_YEAR_ACTION));
+        item = new JCheckBoxMenuItem(am.get(JTsGrowthChart.PREVIOUS_YEAR_ACTION));
         item.setText("Previous Year");
         result.add(item);
 
@@ -337,26 +318,25 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
         return result;
     }
 
-    private JMenu buildMenu(DemetraOptions demetraUI) {
-        ActionMap am = target.getActionMap();
+    private JMenu buildMenu() {
         JMenu result = new JMenu();
 
-        result.add(HasTsCollectionCommands.newOpenMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newOpenWithMenu(target, demetraUI));
+        result.add(HasTsCollectionSupport.newOpenMenu(target));
+        result.add(HasTsCollectionSupport.newOpenWithMenu(target));
 
-        JMenu menu = HasTsCollectionCommands.newSaveMenu(target, demetraUI);
+        JMenu menu = HasTsCollectionSupport.newSaveMenu(target);
         if (menu.getSubElements().length > 0) {
             result.add(menu);
         }
 
-        result.add(HasTsCollectionCommands.newRenameMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newFreezeMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newCopyMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newPasteMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newDeleteMenu(am, demetraUI));
+        result.add(HasTsCollectionSupport.newRenameMenu(target));
+        result.add(HasTsCollectionSupport.newFreezeMenu(target));
+        result.add(HasTsCollectionSupport.newCopyMenu(target));
+        result.add(HasTsCollectionSupport.newPasteMenu(target));
+        result.add(HasTsCollectionSupport.newDeleteMenu(target));
         result.addSeparator();
-        result.add(HasTsCollectionCommands.newSelectAllMenu(am, demetraUI));
-        result.add(HasTsCollectionCommands.newClearMenu(am, demetraUI));
+        result.add(HasTsCollectionSupport.newSelectAllMenu(target));
+        result.add(HasTsCollectionSupport.newClearMenu(target));
 
         return result;
     }
@@ -365,15 +345,15 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
         DemetraOptions demetraUI = DemetraOptions.getDefault();
 
         ActionMap am = target.getActionMap();
-        JMenu result = buildMenu(demetraUI);
+        JMenu result = buildMenu();
 
         JMenuItem item;
 
-        result.add(HasTsCollectionCommands.newSplitMenu(am, demetraUI));
+        result.add(HasTsCollectionSupport.newSplitMenu(target));
         result.addSeparator();
-        result.add(HasChartSupport.newToggleTitleVisibilityMenu(am, demetraUI));
-        result.add(HasChartSupport.newToggleLegendVisibilityMenu(am, demetraUI));
-        result.add(HasObsFormatSupport.newEditFormatMenu(am, demetraUI));
+        result.add(HasChartSupport.newToggleTitleVisibilityMenu(target));
+        result.add(HasChartSupport.newToggleLegendVisibilityMenu(target));
+        result.add(HasObsFormatSupport.newEditFormatMenu(target));
         result.add(HasColorSchemeSupport.menuOf(target));
         result.add(InternalComponents.newResetZoomMenu(am, demetraUI));
 

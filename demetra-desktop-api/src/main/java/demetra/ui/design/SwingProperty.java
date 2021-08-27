@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 National Bank of Belgium
+ * Copyright 2021 National Bank of Belgium
  * 
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,29 +14,15 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.ui.components.parts;
+package demetra.ui.design;
 
-import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.design.SwingProperty;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import java.lang.annotation.*;
 
 /**
- *
- * @author Philippe Charles
  */
-public interface HasObsFormat {
+@Target({ElementType.FIELD})
+@Retention(RetentionPolicy.SOURCE)
+@Documented
+public @interface SwingProperty {
 
-    @SwingProperty
-    String OBS_FORMAT_PROPERTY = "obsFormat";
-
-    @Nullable
-    ObsFormat getObsFormat();
-
-    void setObsFormat(@Nullable ObsFormat obsFormat);
-
-    default boolean hasObsFormat() {
-        return getObsFormat() != null;
-    }
-
-    String EDIT_FORMAT_ACTION = "editFormat";
 }

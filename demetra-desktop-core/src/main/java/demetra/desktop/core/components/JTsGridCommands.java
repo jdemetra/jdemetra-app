@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.desktop.core.components;
 
 import demetra.ui.components.JTsGrid;
 import demetra.ui.components.ComponentCommand;
@@ -41,10 +41,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @lombok.experimental.UtilityClass
 public class JTsGridCommands {
 
-    public static final String TRANSPOSE_ACTION = "transpose";
-    public static final String REVERSE_ACTION = "reverse";
-    public static final String SINGLE_TS_ACTION = "singleTs";
-    public static final String MULTI_TS_ACTION = "multiTs";
     public static final String TOGGLE_MODE_ACTION = "toggleMode";
 
     @NonNull

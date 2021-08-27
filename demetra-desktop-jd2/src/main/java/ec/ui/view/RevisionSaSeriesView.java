@@ -16,11 +16,8 @@
  */
 package ec.ui.view;
 
-import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.components.parts.HasTs;
+import demetra.ui.components.parts.*;
 import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.components.parts.HasColorSchemeResolver;
-import demetra.ui.components.parts.HasColorSchemeSupport;
 import demetra.ui.design.SwingComponent;
 import demetra.ui.util.NbComponents;
 import ec.tss.html.HtmlUtil;
@@ -93,7 +90,7 @@ public final class RevisionSaSeriesView extends JComponent implements TimeSeries
     private Range range;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTs.of(this::firePropertyChange);
+    private final HasTs m_ts = HasTsSupport.of(this::firePropertyChange);
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

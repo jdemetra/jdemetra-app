@@ -17,34 +17,27 @@
 package demetra.ui.components.parts;
 
 import demetra.timeseries.Ts;
-import demetra.ui.beans.PropertyChangeBroadcaster;
-import internal.ui.components.parts.HasTsImpl;
+import demetra.ui.design.SwingProperty;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import demetra.ui.TsManager;
 
 /**
- *
  * @author Philippe Charles
  */
 public interface HasTs {
 
+    @SwingProperty
     String TS_PROPERTY = "ts";
 
     @Nullable
     Ts getTs();
 
     void setTs(@Nullable Ts ts);
-    
+
     default void replaceTs(@NonNull Ts ts) {
         Ts current = getTs();
         if (current != null && current.getMoniker().equals(ts.getMoniker())) {
             setTs(ts);
         }
-    }
-
-    @NonNull
-    static HasTs of(@NonNull PropertyChangeBroadcaster broadcaster) {
-        return new HasTsImpl(broadcaster).register(TsManager.getDefault());
     }
 }

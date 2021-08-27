@@ -18,6 +18,7 @@ package demetra.ui.components;
 
 import demetra.ui.completion.AutoCompletion;
 import demetra.ui.design.SwingComponent;
+import demetra.ui.design.SwingProperty;
 import ec.util.various.swing.TextPrompt;
 import java.awt.BorderLayout;
 import java.nio.charset.Charset;
@@ -37,6 +38,7 @@ import nbbrd.io.text.Parser;
 @SwingComponent
 public final class JCharsetField extends JComponent {
 
+    @SwingProperty
     public static final String CHARSET_PROPERTY = "charset";
 
     private final JTextField textField;

@@ -43,6 +43,6 @@ public final class TsGridHandler extends TypedDemoComponentHandler<JTsGrid> {
     }
 
     static JButton createZoomButton(JTsGrid view) {
-        return DropDownButtonFactory.createDropDownButton(DemetraUiIcon.MAGNIFYING_TOOL, HasGridSupport.newZoomRationMenu(view).getPopupMenu());
+        return DropDownButtonFactory.createDropDownButton(DemetraUiIcon.MAGNIFYING_TOOL, HasGridSupport.newZoomRatioMenu(view).getPopupMenu());
     }
 }

@@ -38,23 +38,6 @@ public final class JTimeSeriesChartUtil {
         // static class
     }
 
-    public static void setColorScheme(@NonNull JTimeSeriesChart chart, @NonNull ColorScheme colorScheme) {
-        chart.setColorSchemeSupport(SwingColorSchemeSupport.from(colorScheme));
-    }
-
-    public static void setDataFormat(@NonNull JTimeSeriesChart chart, @NonNull DataFormat dataFormat) {
-        try {
-            chart.setPeriodFormat(dataFormat.newDateFormat());
-        } catch (IllegalArgumentException ex) {
-            // do nothing?
-        }
-        try {
-            chart.setValueFormat(dataFormat.newNumberFormat());
-        } catch (IllegalArgumentException ex) {
-            // do nothing?
-        }
-    }
-
     public static void setSeriesColorist(final @NonNull JTimeSeriesChart chart, final @NonNull SeriesFunction<ColorScheme.KnownColor> colorist) {
         chart.setSeriesColorist(new SeriesFunction<Color>() {
             @Override
@@ -72,9 +55,5 @@ public final class JTimeSeriesChartUtil {
         result.add(copyImage().toAction(chart)).setText("Clipboard");
         result.add(saveImage().toAction(chart)).setText("File...");
         return result;
-    }
-
-    public static void printWithPreview(@NonNull JTimeSeriesChart chart) {
-        chart.printImage();
     }
 }

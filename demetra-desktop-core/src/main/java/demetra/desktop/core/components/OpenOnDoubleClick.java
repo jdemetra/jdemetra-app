@@ -14,8 +14,9 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.desktop.core.components;
 
+import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.util.ActionMaps;
 import ec.util.chart.swing.Charts;
 import java.awt.event.MouseAdapter;
@@ -37,7 +38,7 @@ public final class OpenOnDoubleClick extends MouseAdapter {
     @Override
     public void mouseClicked(MouseEvent e) {
         if (!Charts.isPopup(e) && Charts.isDoubleClick(e)) {
-            ActionMaps.performAction(am, HasTsCollectionCommands.OPEN_ACTION, e);
+            ActionMaps.performAction(am, HasTsCollection.OPEN_ACTION, e);
         }
     }
 }

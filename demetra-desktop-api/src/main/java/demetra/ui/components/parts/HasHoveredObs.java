@@ -17,6 +17,7 @@
 package demetra.ui.components.parts;
 
 import demetra.ui.beans.PropertyChangeBroadcaster;
+import demetra.ui.design.SwingProperty;
 import ec.util.chart.ObsIndex;
 import internal.ui.components.parts.HasHoveredObsImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -28,6 +29,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public interface HasHoveredObs {
 
+    @SwingProperty
     String HOVERED_OBS_PROPERTY = "hoveredObs";
 
     @NonNull

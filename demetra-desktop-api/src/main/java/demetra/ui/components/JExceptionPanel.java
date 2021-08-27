@@ -17,6 +17,7 @@
 package demetra.ui.components;
 
 import demetra.ui.design.SwingComponent;
+import demetra.ui.design.SwingProperty;
 import demetra.ui.util.IDialogDescriptorProvider;
 import demetra.ui.util.NbComponents;
 import static ec.util.chart.ColorSchemeSupport.toHex;
@@ -57,10 +58,11 @@ public final class JExceptionPanel extends JComponent implements IDialogDescript
     }
     
     // PROPERTIES DEFINITIONS
+    @SwingProperty
     public static final String EXCEPTION_PROPERTY = "exception";
     
     // PROPERTIES
-    protected Exception exception;
+    private Exception exception;
     
     // VISUAL COMPONENTS
     private final JEditorPane editorPane;

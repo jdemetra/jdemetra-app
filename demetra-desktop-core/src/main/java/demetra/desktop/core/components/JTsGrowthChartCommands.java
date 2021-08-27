@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components;
+package demetra.desktop.core.components;
 
 import demetra.ui.components.TsSelectionBridge;
 import com.toedter.components.JSpinField;
@@ -41,9 +41,6 @@ import demetra.ui.datatransfer.DataTransfer;
  */
 @lombok.experimental.UtilityClass
 public class JTsGrowthChartCommands {
-
-    public static final String PREVIOUS_PERIOD_ACTION = "previousPeriod";
-    public static final String PREVIOUS_YEAR_ACTION = "previousYear";
 
     @NonNull
     public static JCommand<JTsGrowthChart> copyGrowthData() {
