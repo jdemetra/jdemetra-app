@@ -14,9 +14,9 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.design;
+package internal.desktop.design;
 
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.annotation.processing.Processor;
@@ -27,14 +27,14 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 import javax.swing.JComponent;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = Processor.class)
-@SupportedAnnotationTypes("demetra.ui.design.SwingComponent")
+@ServiceProvider(Processor.class)
+@SupportedAnnotationTypes("demetra.desktop.design.SwingComponent")
 public final class SwingComponentProcessor extends CustomProcessor {
 
     @Override

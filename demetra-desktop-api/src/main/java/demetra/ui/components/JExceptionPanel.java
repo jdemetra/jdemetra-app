@@ -16,8 +16,8 @@
  */
 package demetra.ui.components;
 
-import demetra.ui.design.SwingComponent;
-import demetra.ui.design.SwingProperty;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import demetra.ui.util.IDialogDescriptorProvider;
 import demetra.ui.util.NbComponents;
 import static ec.util.chart.ColorSchemeSupport.toHex;

@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ui.calendars;
 
+import demetra.desktop.design.SwingProperty;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.ValidityPeriod;
 import ec.tstoolkit.timeseries.calendars.DayEvent;
@@ -17,11 +18,14 @@ import ec.tstoolkit.timeseries.calendars.SpecialCalendarDay;
 public class SpecialEventBean extends AbstractEventBean {
 
     // PROPERTIES DEFINITIONS
+    @SwingProperty
     public static final String DAY_EVENT_PROPERTY = "dayEvent";
+
+    @SwingProperty
     public static final String OFFSET_PROPERTY = "offset";
     // PROPERTIES 
-    protected DayEvent dayEvent;
-    protected int offset;
+    private DayEvent dayEvent;
+    private int offset;
 
     public SpecialEventBean() {
         this(DayEvent.Christmas, 0, null, null, 1);
@@ -59,6 +63,6 @@ public class SpecialEventBean extends AbstractEventBean {
 
     @Override
     protected SpecialCalendarDay toSpecialDay(Context context) {
-        return new SpecialCalendarDay(dayEvent, offset, weight, context.isJulianEaster());
+        return new SpecialCalendarDay(dayEvent, offset, getWeight(), context.isJulianEaster());
     }
 }

@@ -23,7 +23,7 @@ import demetra.ui.components.JTsGrid;
 import ec.ui.view.PeriodogramView;
 import ec.util.list.swing.JLists;
 import demetra.ui.components.TsSelectionBridge;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;

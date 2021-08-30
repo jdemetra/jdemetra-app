@@ -137,10 +137,10 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
                 case JTsCheckLastList.COLOR_VALUES_PROPERTY:
                     refreshNode();
                     break;
-                case JTsCheckLastList.COLLECTION_CHANGE:
+                case JTsCheckLastList.COLLECTION_CHANGE_PROPERTY:
                     onCollectionChange();
                     break;
-                case JTsCheckLastList.SELECTION_PROPERTY:
+                case JTsCheckLastList.ITEM_SELECTION_PROPERTY:
                     onSelectionChange();
                     break;
                 case JTsCheckLastList.LAST_CHECKS_PROPERTY:

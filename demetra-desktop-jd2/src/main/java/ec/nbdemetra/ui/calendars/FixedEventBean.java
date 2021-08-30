@@ -5,6 +5,7 @@
 package ec.nbdemetra.ui.calendars;
 
 import com.google.common.base.MoreObjects;
+import demetra.desktop.design.SwingProperty;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.Month;
 import ec.tstoolkit.timeseries.ValidityPeriod;
@@ -19,11 +20,14 @@ import ec.tstoolkit.timeseries.calendars.ISpecialDay.Context;
 public class FixedEventBean extends AbstractEventBean {
 
     // PROPERTIES DEFINITIONS
+    @SwingProperty
     public static final String DAY_PROPERTY = "day";
+
+    @SwingProperty
     public static final String MONTH_PROPERTY = "month";
     // PROPERTIES 
-    protected int day;
-    protected Month month;
+    private int day;
+    private Month month;
 
     public FixedEventBean() {
         this(1, Month.January, null, null, 1);
@@ -61,11 +65,11 @@ public class FixedEventBean extends AbstractEventBean {
 
     @Override
     protected ISpecialDay toSpecialDay(Context context) {
-        return new FixedDay(day-1, month, weight);
+        return new FixedDay(day-1, month, getWeight());
     }
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("day", day).add("month", month).add("start", start).add("end", end).add("weigth", weight).toString();
+        return MoreObjects.toStringHelper(this).add("day", day).add("month", month).add("start", getStart()).add("end", getEnd()).add("weigth", getWeight()).toString();
     }
 }

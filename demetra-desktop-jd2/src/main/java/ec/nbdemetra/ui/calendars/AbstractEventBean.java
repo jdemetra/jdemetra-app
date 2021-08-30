@@ -4,6 +4,7 @@
  */
 package ec.nbdemetra.ui.calendars;
 
+import demetra.desktop.design.SwingProperty;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.ValidityPeriod;
@@ -19,17 +20,22 @@ import java.beans.PropertyChangeSupport;
 public abstract class AbstractEventBean implements PropertyChangeSource.WithWeakListeners {
 
     // PROPERTIES DEFINITIONS
+    @SwingProperty
     public static final String START_PROPERTY = "start";
+
+    @SwingProperty
     public static final String END_PROPERTY = "end";
+
+    @SwingProperty
     public static final String WEIGHT_PROPERTY = "weight";
 
     @lombok.experimental.Delegate(types = PropertyChangeSource.class)
     protected final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
 
     // PROPERTIES
-    protected Day start;
-    protected Day end;
-    protected double weight;
+    private Day start;
+    private Day end;
+    private double weight;
 
     public AbstractEventBean(Day start, Day end, double weight) {
         this.start = start;

@@ -5,6 +5,7 @@
 package ec.nbdemetra.ui.calendars;
 
 import com.google.common.collect.ImmutableList;
+import demetra.desktop.design.SwingProperty;
 import demetra.ui.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.util.IDialogDescriptorProvider;
@@ -206,8 +207,13 @@ public class CompositeGregorianCalendarPanel extends JPanel implements ExplorerM
     public static class WeightedItemBean implements PropertyChangeSource.WithWeakListeners {
 
         // PROPERTIES DEFINITIONS
+        @SwingProperty
         public static final String NAME_PROPERTY = "name";
+
+        @SwingProperty
         public static final String USED_PROPERTY = "used";
+
+        @SwingProperty
         public static final String WEIGHT_PROPERTY = "weight";
 
         @lombok.experimental.Delegate(types = PropertyChangeSource.class)

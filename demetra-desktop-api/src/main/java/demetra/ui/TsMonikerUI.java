@@ -16,7 +16,7 @@
  */
 package demetra.ui;
 
-import demetra.ui.design.GlobalService;
+import demetra.desktop.design.GlobalService;
 import demetra.timeseries.TsMoniker;
 import demetra.ui.util.LazyGlobalService;
 import org.checkerframework.checker.nullness.qual.NonNull;

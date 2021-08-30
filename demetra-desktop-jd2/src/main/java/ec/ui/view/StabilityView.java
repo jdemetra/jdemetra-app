@@ -18,7 +18,7 @@ package ec.ui.view;
 
 import demetra.ui.components.parts.*;
 import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.ui.chart.BasicXYDataset;
 import demetra.ui.jfreechart.TsCharts;

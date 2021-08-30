@@ -140,9 +140,9 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         demetraUI.setSelectedSeriesFields(selectedSeriesFields);
 
         if (specComponent.getSpecification() instanceof TramoSeatsSpecification) {
-            demetraUI.setDefaultSASpec("tramoseats." + specComponent.getSpecification());
+            demetraUI.setDefaultSaSpec("tramoseats." + specComponent.getSpecification());
         } else {
-            demetraUI.setDefaultSASpec("x13." + specComponent.getSpecification().toString());
+            demetraUI.setDefaultSaSpec("x13." + specComponent.getSpecification().toString());
         }
 
         NamedServiceNode.storeAll(getDiagnosticsExplorerManager());

@@ -17,7 +17,7 @@
 package demetra.ui.components.parts;
 
 import demetra.ui.beans.PropertyChangeBroadcaster;
-import demetra.ui.design.SwingProperty;
+import demetra.desktop.design.SwingProperty;
 import ec.util.chart.ObsIndex;
 import internal.ui.components.parts.HasHoveredObsImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;

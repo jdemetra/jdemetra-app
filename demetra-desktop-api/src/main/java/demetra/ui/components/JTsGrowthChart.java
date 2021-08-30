@@ -27,8 +27,8 @@ import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsDomain;
 import demetra.ui.DemetraOptions;
 import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.design.SwingComponent;
-import demetra.ui.design.SwingProperty;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import internal.ui.components.DemoTsBuilder;
 import java.awt.Dimension;
 import java.beans.Beans;
@@ -60,9 +60,6 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
 
     @SwingProperty
     public static final String LAST_YEARS_PROPERTY = "lastYears";
-
-    @SwingProperty
-    public static final String USE_TOOL_LAYOUT_PROPERTY = "useToolLayout";
 
     // DEFAULT PROPERTIES
     private static final GrowthKind DEFAULT_GROWTH_KIND = GrowthKind.PreviousPeriod;

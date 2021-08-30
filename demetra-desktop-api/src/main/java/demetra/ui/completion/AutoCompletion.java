@@ -1,6 +1,6 @@
 package demetra.ui.completion;
 
-import demetra.ui.design.GlobalService;
+import demetra.desktop.design.GlobalService;
 import ec.util.completion.swing.JAutoCompletion;
 import javax.swing.text.JTextComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;

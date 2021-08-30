@@ -51,7 +51,8 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultXYDataset;
 import demetra.ui.datatransfer.DataTransfer;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 
 /**
@@ -63,19 +64,28 @@ public final class SlidingSpanView extends JComponent implements HasColorScheme 
 
     // CONSTANTS
     protected static final int N = 18;
+    
     // PROPERTIES DEFINITION
+    @SwingProperty
     public static final String SLIDING_SPANS_PROPERTY = "slidingSpans";
+
+    @SwingProperty
     public static final String INFO_NAME_PROPERTY = "infoName";
+
+    @SwingProperty
     public static final String THRESHOLD_PROPERTY = "threshold";
+
+    @SwingProperty
     public static final String INFO_PROPERTY = "info";
+    
     // DEFAULT PROPERTIES
     protected static final double DEFAULT_THRESHOLD = 3;
     protected static final DiagnosticInfo DEFAULT_INFO = DiagnosticInfo.RelativeDifference;
     // PROPERTIES
-    protected SlidingSpans<?> slidingSpans;
-    protected String infoName;
-    protected double threshold;
-    protected DiagnosticInfo info;
+    private SlidingSpans<?> slidingSpans;
+    private String infoName;
+    private double threshold;
+    private DiagnosticInfo info;
     // OTHER
     private final JChartPanel seriesPanel;
     private final JChartPanel distributionPanel;

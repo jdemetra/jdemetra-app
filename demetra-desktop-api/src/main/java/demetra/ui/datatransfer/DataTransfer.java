@@ -20,7 +20,8 @@ import demetra.math.matrices.MatrixType;
 import demetra.timeseries.*;
 import nbbrd.design.VisibleForTesting;
 import demetra.ui.TsManager;
-import demetra.ui.design.GlobalService;
+import demetra.desktop.design.GlobalService;
+import demetra.desktop.design.SwingProperty;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.util.Table;
 import ec.util.various.swing.OnEDT;
@@ -69,6 +70,7 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
         return LazyGlobalService.get(DataTransfer.class, DataTransfer::new);
     }
 
+    @SwingProperty
     public static final String VALID_CLIPBOARD_PROPERTY = "validClipboard";
 
     @lombok.experimental.Delegate(types = PropertyChangeSource.class)

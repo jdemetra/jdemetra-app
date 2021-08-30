@@ -4,7 +4,7 @@
  */
 package ec.ui.view.res;
 
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import demetra.ui.util.NbComponents;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.dstats.Normal;

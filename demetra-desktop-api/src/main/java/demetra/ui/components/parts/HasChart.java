@@ -1,6 +1,6 @@
 package demetra.ui.components.parts;
 
-import demetra.ui.design.SwingProperty;
+import demetra.desktop.design.SwingProperty;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 

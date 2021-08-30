@@ -122,7 +122,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
                         calculateNbItems();
                         runButton.setEnabled(nbElements != 0);
                         break;
-                    case JTsAnomalyGrid.SPEC_CHANGE_PROPERTY:
+                    case JTsAnomalyGrid.DEFAULT_SPEC_PROPERTY:
                     case JTsAnomalyGrid.CRITICAL_VALUE_PROPERTY:
                     case TsSelectionBridge.TS_SELECTION_PROPERTY:
                     case JTsAnomalyGrid.TRANSFORMATION_PROPERTY:
@@ -279,7 +279,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
             menuItem.setEnabled(i != 1);
             addPopup.add(menuItem);
         }
-        grid.addPropertyChangeListener(JTsGrid.ZOOM_PROPERTY, evt -> {
+        grid.addPropertyChangeListener(JTsGrid.ZOOM_RATIO_PROPERTY, evt -> {
             for (Component o : addPopup.getComponents()) {
                 JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
                 item.setState(grid.getZoomPercentage() == Integer.parseInt(o.getName()));

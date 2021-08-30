@@ -17,8 +17,8 @@
 package demetra.ui.components;
 
 import demetra.ui.completion.AutoCompletion;
-import demetra.ui.design.SwingComponent;
-import demetra.ui.design.SwingProperty;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import ec.util.various.swing.TextPrompt;
 import java.awt.BorderLayout;
 import java.nio.charset.Charset;

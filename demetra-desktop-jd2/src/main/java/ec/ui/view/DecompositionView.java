@@ -8,7 +8,7 @@ import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import ec.tss.Ts;
 import demetra.ui.components.JTsChart;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import java.awt.BorderLayout;
 import java.util.List;
 import java.util.stream.Stream;

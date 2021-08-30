@@ -21,7 +21,7 @@ import demetra.ui.components.parts.HasObsFormat;
 import demetra.ui.components.parts.HasTsData;
 import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.components.parts.HasObsFormatSupport;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import javax.swing.JComponent;
 
 /**

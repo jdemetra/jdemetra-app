@@ -325,7 +325,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     @Override
     protected void onSaProcessingStateChange() {
         super.onSaProcessingStateChange();
-        switch (controller.getState()) {
+        switch (controller.getSaProcessingState()) {
             case DONE:
                 runButton.setEnabled(true);
                 makeBusy(false);
@@ -402,14 +402,14 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                         progressHandle.finish();
                     }
                     if (controller != null) {
-                        controller.setState(SaProcessingState.DONE);
+                        controller.setSaProcessingState(SaProcessingState.DONE);
                     }
                     break;
                 case PENDING:
-                    controller.setState(SaProcessingState.PENDING);
+                    controller.setSaProcessingState(SaProcessingState.PENDING);
                     break;
                 case STARTED:
-                    controller.setState(SaProcessingState.STARTED);
+                    controller.setSaProcessingState(SaProcessingState.STARTED);
                     break;
             }
         });
@@ -478,7 +478,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 .peek(o -> getCurrentProcessing().addRange(defaultSpecification, o))
                 .count();
         if (count > 0) {
-            controller.setState(SaProcessingState.READY);
+            controller.setSaProcessingState(SaProcessingState.READY);
             return true;
         } else {
             return false;
@@ -489,7 +489,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         SaProcessing processing = ec.tss.datatransfer.TransferableXml.read(dataobj, SaProcessing.class, XmlSaProcessing.class);
         if (processing != null) {
             getCurrentProcessing().addAll(processing.stream().map(SaItem::makeCopy).collect(toList()));
-            controller.setState(SaProcessingState.READY);
+            controller.setSaProcessingState(SaProcessingState.READY);
             return true;
         } else {
             return false;
@@ -523,7 +523,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         getCurrentProcessing().removeAll(itemsToDelete);
 
         redrawAll();
-        controller.setState(SaProcessingState.READY);
+        controller.setSaProcessingState(SaProcessingState.READY);
     }
 
     public void copy() {
@@ -591,7 +591,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
         getCurrentProcessing().removeAll(litems);
         redrawAll();
-        controller.setState(SaProcessingState.READY);
+        controller.setSaProcessingState(SaProcessingState.READY);
     }
 
     private XTable buildList() {

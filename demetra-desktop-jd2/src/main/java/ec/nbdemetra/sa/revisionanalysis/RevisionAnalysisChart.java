@@ -37,7 +37,7 @@ import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasColorSchemeResolver;
 import demetra.ui.components.parts.HasColorSchemeSupport;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import javax.swing.JComponent;

@@ -17,7 +17,7 @@
 package ec.tss.datatransfer;
 
 import demetra.tsprovider.DataSource;
-import demetra.ui.design.GlobalService;
+import demetra.desktop.design.GlobalService;
 import demetra.ui.util.CollectionSupplier;
 import demetra.ui.util.LazyGlobalService;
 import java.awt.datatransfer.Transferable;

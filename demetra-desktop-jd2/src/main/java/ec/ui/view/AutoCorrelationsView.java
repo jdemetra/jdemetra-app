@@ -20,7 +20,8 @@ import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.components.parts.HasColorSchemeResolver;
 import demetra.ui.components.parts.HasColorSchemeSupport;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.stats.AutoCorrelations;
 import ec.tstoolkit.utilities.Arrays2;
@@ -73,9 +74,16 @@ public final class AutoCorrelationsView extends JComponent implements TimeSeries
     private static final KnownColor MARKER_COLOR = KnownColor.GREEN;
 
     // PROPERTIES DEFINITIONS
+    @SwingProperty
     public static final String LENGTH_PROPERTY = "length";
+
+    @SwingProperty
     public static final String KIND_PROPERTY = "kind";
+
+    @SwingProperty
     public static final String MEAN_CORRECTION_PROPERTY = "meanCorrection";
+
+    @SwingProperty
     public static final String AUTO_CORRELATIONS_PROPERTY = "autoCorrelations";
 
     // DEFAULT PROPERTIES

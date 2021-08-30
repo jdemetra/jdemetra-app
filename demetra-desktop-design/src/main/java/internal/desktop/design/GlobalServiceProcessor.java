@@ -14,9 +14,9 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.design;
+package internal.desktop.design;
 
-import demetra.ui.design.GlobalService;
+import demetra.desktop.design.GlobalService;
 import static java.util.Arrays.asList;
 import java.util.Optional;
 import java.util.Set;
@@ -27,14 +27,14 @@ import javax.lang.model.element.ExecutableElement;
 import static javax.lang.model.element.Modifier.*;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
-import org.openide.util.lookup.ServiceProvider;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  */
-@ServiceProvider(service = Processor.class)
-@SupportedAnnotationTypes("demetra.ui.design.GlobalService")
+@ServiceProvider(Processor.class)
+@SupportedAnnotationTypes("demetra.desktop.design.GlobalService")
 public final class GlobalServiceProcessor extends CustomProcessor {
 
     @Override

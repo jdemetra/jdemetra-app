@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.sa;
 
+import demetra.desktop.design.SwingProperty;
 import demetra.ui.beans.PropertyChangeSource;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -35,24 +36,25 @@ public final class MultiProcessingController implements PropertyChangeSource.Wit
         }
     }
 
-    public static final String SAPROCESSING_STATE_PROPERTY = "SaProcessingState";
+    @SwingProperty
+    public static final String SA_PROCESSING_STATE_PROPERTY = "saProcessingState";
 
     @lombok.experimental.Delegate(types = PropertyChangeSource.class)
     private final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
 
-    private SaProcessingState state;
+    private SaProcessingState saProcessingState;
 
     public MultiProcessingController() {
-        this.state = SaProcessingState.READY;
+        this.saProcessingState = SaProcessingState.READY;
     }
 
-    public SaProcessingState getState() {
-        return state;
+    public SaProcessingState getSaProcessingState() {
+        return saProcessingState;
     }
 
-    public void setState(SaProcessingState state) {
-        this.state = state;
-        broadcaster.firePropertyChange(SAPROCESSING_STATE_PROPERTY, null, this.state); // force refreshing in all cases
+    public void setSaProcessingState(SaProcessingState state) {
+        this.saProcessingState = state;
+        broadcaster.firePropertyChange(SA_PROCESSING_STATE_PROPERTY, null, this.saProcessingState); // force refreshing in all cases
     }
 
     public void dispose() {

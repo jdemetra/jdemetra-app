@@ -24,7 +24,7 @@ public class FixedWeekEventNode extends AbstractEventNode {
         FixedWeekEventBean bean = getLookup().lookup(FixedWeekEventBean.class);
         StringBuilder sb = new StringBuilder();
         sb.append("<b>Fixed Week</b> ");
-        sb.append(bean.dayOfWeek).append(", ").append(bean.month).append(", ").append(bean.week);
+        sb.append(bean.getDayOfWeek()).append(", ").append(bean.getMonth()).append(", ").append(bean.getWeek());
         return sb.toString();
     }
 

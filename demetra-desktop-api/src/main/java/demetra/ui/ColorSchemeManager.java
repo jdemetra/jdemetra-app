@@ -1,6 +1,6 @@
 package demetra.ui;
 
-import demetra.ui.design.GlobalService;
+import demetra.desktop.design.GlobalService;
 import demetra.ui.util.CollectionSupplier;
 import demetra.ui.util.LazyGlobalService;
 import ec.util.chart.ColorScheme;

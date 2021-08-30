@@ -23,7 +23,7 @@ public class SpecialEventNode extends AbstractEventNode {
         SpecialEventBean bean = getLookup().lookup(SpecialEventBean.class);
         StringBuilder sb = new StringBuilder();
         sb.append("<b>Special Day</b> ");
-        sb.append(bean.dayEvent).append(", ").append(bean.offset);
+        sb.append(bean.getDayEvent()).append(", ").append(bean.getOffset());
         return sb.toString();
     }
 

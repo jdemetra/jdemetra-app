@@ -23,7 +23,7 @@ public class FixedEventNode extends AbstractEventNode {
         FixedEventBean bean = getLookup().lookup(FixedEventBean.class);
         StringBuilder sb = new StringBuilder();
         sb.append("<b>Fixed</b> ");
-        sb.append(bean.month).append(", ").append(bean.day);
+        sb.append(bean.getMonth()).append(", ").append(bean.getDay());
         return sb.toString();
     }
 

@@ -188,7 +188,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
                 case JTsGrid.SINGLE_TS_INDEX_PROPERTY:
                     onSingleTsIndexChange();
                     break;
-                case JTsGrid.ZOOM_PROPERTY:
+                case JTsGrid.ZOOM_RATIO_PROPERTY:
                     onZoomChange();
                     break;
                 case JTsGrid.USE_COLOR_SCHEME_PROPERTY:

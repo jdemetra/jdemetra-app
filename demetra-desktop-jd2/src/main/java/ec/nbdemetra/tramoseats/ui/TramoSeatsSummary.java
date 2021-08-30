@@ -21,7 +21,7 @@ import ec.tstoolkit.ucarima.UcarimaModel;
 import ec.ui.Disposables;
 import ec.ui.interfaces.IDisposable;
 import demetra.ui.components.JTsChart;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import ec.ui.view.SIView;
 import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;

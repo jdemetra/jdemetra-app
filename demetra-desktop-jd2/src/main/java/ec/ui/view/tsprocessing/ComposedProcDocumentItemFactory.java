@@ -18,7 +18,7 @@ package ec.ui.view.tsprocessing;
 
 import com.google.common.base.Preconditions;
 import demetra.ui.components.JExceptionPanel;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.InformationExtractor;

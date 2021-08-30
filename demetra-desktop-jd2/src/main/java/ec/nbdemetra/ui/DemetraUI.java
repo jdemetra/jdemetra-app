@@ -17,7 +17,8 @@
 package ec.nbdemetra.ui;
 
 import demetra.ui.Config;
-import demetra.ui.design.GlobalService;
+import demetra.desktop.design.GlobalService;
+import demetra.desktop.design.SwingProperty;
 import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
 import demetra.ui.beans.PropertyChangeSource;
@@ -59,9 +60,9 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
     @lombok.experimental.Delegate(types = PropertyChangeSource.class)
     protected final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
 
-    public static final String SPECTRAL_YEARS_PROPERTY = "spectralLastYears";
+    @SwingProperty
+    public static final String SPECTRAL_LAST_YEARS_PROPERTY = "spectralLastYears";
     private static final int DEFAULT_SPECTRAL_LAST_YEARS = AutoRegressiveSpectrumView.DEFAULT_LAST;
-    private static final IntProperty SPECTRAL_LAST_YEARS_CONFIG = IntProperty.of(SPECTRAL_YEARS_PROPERTY, DEFAULT_SPECTRAL_LAST_YEARS);
     private Integer spectralLastYears = DEFAULT_SPECTRAL_LAST_YEARS;
 
     public Integer getSpectralLastYears() {
@@ -71,12 +72,12 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
     public void setSpectralLastYears(Integer lastYears) {
         Integer old = this.spectralLastYears;
         spectralLastYears = lastYears != null ? lastYears : DEFAULT_SPECTRAL_LAST_YEARS;
-        broadcaster.firePropertyChange(SPECTRAL_YEARS_PROPERTY, old, spectralLastYears);
+        broadcaster.firePropertyChange(SPECTRAL_LAST_YEARS_PROPERTY, old, spectralLastYears);
     }
 
-    public static final String STABILITY_YEARS_PROPERTY = "stabilityLastYears";
+    @SwingProperty
+    public static final String STABILITY_LENGTH_PROPERTY = "stabilityLength";
     private static final int DEFAULT_STABILITY_LENGTH = 8;
-    private static final IntProperty STABILITY_LENGTH_CONFIG = IntProperty.of(STABILITY_YEARS_PROPERTY, DEFAULT_STABILITY_LENGTH);
     private Integer stabilityLength = DEFAULT_STABILITY_LENGTH;
 
     public Integer getStabilityLength() {
@@ -86,12 +87,12 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
     public void setStabilityLength(Integer length) {
         Integer old = this.stabilityLength;
         stabilityLength = length != null ? length : DEFAULT_STABILITY_LENGTH;
-        broadcaster.firePropertyChange(STABILITY_YEARS_PROPERTY, old, stabilityLength);
+        broadcaster.firePropertyChange(STABILITY_LENGTH_PROPERTY, old, stabilityLength);
     }
 
-    public static final String ESTIMATION_POLICY_PROPERTY = "estimationPolicyType";
+    @SwingProperty
+    public static final String ESTIMATION_POLICY_TYPE_PROPERTY = "estimationPolicyType";
     private static final EstimationPolicyType DEFAULT_ESTIMATION_POLICY = EstimationPolicyType.FreeParameters;
-    private static final Property<EstimationPolicyType> ESTIMATION_POLICY_TYPE_CONFIG = Property.of(ESTIMATION_POLICY_PROPERTY, DEFAULT_ESTIMATION_POLICY, Parser.onEnum(EstimationPolicyType.class), Formatter.onEnum());
     private EstimationPolicyType estimationPolicyType = DEFAULT_ESTIMATION_POLICY;
 
     public EstimationPolicyType getEstimationPolicyType() {
@@ -101,27 +102,27 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
     public void setEstimationPolicyType(EstimationPolicyType type) {
         EstimationPolicyType old = this.estimationPolicyType;
         this.estimationPolicyType = type != null ? type : DEFAULT_ESTIMATION_POLICY;
-        broadcaster.firePropertyChange(ESTIMATION_POLICY_PROPERTY, old, this.estimationPolicyType);
+        broadcaster.firePropertyChange(ESTIMATION_POLICY_TYPE_PROPERTY, old, this.estimationPolicyType);
     }
 
-    public static final String DEFAULT_SA_SPEC_PROPERTY = "defaultSASpec";
+    @SwingProperty
+    public static final String DEFAULT_SA_SPEC_PROPERTY = "defaultSaSpec";
     private static final String DEFAULT_DETAULT_SA_SPEC = "tramoseats." + TramoSeatsSpecification.RSAfull;
-    private static final Property<String> DEFAULT_SA_SPEC_CONFIG = Property.of(DEFAULT_SA_SPEC_PROPERTY, DEFAULT_DETAULT_SA_SPEC, Parser.onString(), Formatter.onString());
-    private String defaultSASpec = DEFAULT_DETAULT_SA_SPEC;
+    private String defaultSaSpec = DEFAULT_DETAULT_SA_SPEC;
 
-    public String getDefaultSASpec() {
-        return defaultSASpec;
+    public String getDefaultSaSpec() {
+        return defaultSaSpec;
     }
 
-    public void setDefaultSASpec(String spec) {
-        String old = this.defaultSASpec;
-        this.defaultSASpec = spec != null ? spec : DEFAULT_DETAULT_SA_SPEC;
-        broadcaster.firePropertyChange(DEFAULT_SA_SPEC_PROPERTY, old, this.defaultSASpec);
+    public void setDefaultSaSpec(String spec) {
+        String old = this.defaultSaSpec;
+        this.defaultSaSpec = spec != null ? spec : DEFAULT_DETAULT_SA_SPEC;
+        broadcaster.firePropertyChange(DEFAULT_SA_SPEC_PROPERTY, old, this.defaultSaSpec);
     }
 
+    @SwingProperty
     public static final String PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY = "prespecifiedOutliersEditor";
     private static final PrespecificiedOutliersEditor DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR = PrespecificiedOutliersEditor.CALENDAR_GRID;
-    private static final Property<PrespecificiedOutliersEditor> PRESPECIFIED_OUTLIERS_EDITOR_CONFIG = Property.of(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR, Parser.onEnum(PrespecificiedOutliersEditor.class), Formatter.onEnum());
     private PrespecificiedOutliersEditor prespecifiedOutliersEditor = DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR;
 
     public PrespecificiedOutliersEditor getPrespecifiedOutliersEditor() {
@@ -134,9 +135,9 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
         broadcaster.firePropertyChange(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, old, this.prespecifiedOutliersEditor);
     }
 
-    public static final String SELECTED_DIAG_FIELDS_PROPERTY = "selectedDiagnosticsFields";
+    @SwingProperty
+    public static final String SELECTED_DIAG_FIELDS_PROPERTY = "selectedDiagFields";
     private static final List<String> DEFAULT_SELECTED_DIAG_FIELDS = BasicConfiguration.allSingleSaDetails(false);
-    private static final Property<String[]> SELECTED_DIAG_FIELDS_CONFIG = Property.of(SELECTED_DIAG_FIELDS_PROPERTY, DEFAULT_SELECTED_DIAG_FIELDS.stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
     private List<String> selectedDiagFields = DEFAULT_SELECTED_DIAG_FIELDS;
 
     public List<String> getSelectedDiagFields() {
@@ -149,9 +150,9 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
         broadcaster.firePropertyChange(SELECTED_DIAG_FIELDS_PROPERTY, old, this.selectedDiagFields);
     }
 
+    @SwingProperty
     public static final String SELECTED_SERIES_FIELDS_PROPERTY = "selectedSeriesFields";
     private static final List<String> DEFAULT_SELECTED_SERIES_FIELDS = BasicConfiguration.allSaSeries(false);
-    private static final Property<String[]> SELECTED_SERIES_FIELDS_CONFIG = Property.of(SELECTED_SERIES_FIELDS_PROPERTY, DEFAULT_SELECTED_SERIES_FIELDS.stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
     private List<String> selectedSeriesFields = DEFAULT_SELECTED_SERIES_FIELDS;
 
     public List<String> getSelectedSeriesFields() {
@@ -164,13 +165,21 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
         broadcaster.firePropertyChange(SELECTED_SERIES_FIELDS_PROPERTY, old, this.selectedSeriesFields);
     }
 
+    private static final IntProperty SPECTRAL_LAST_YEARS_CONFIG = IntProperty.of(SPECTRAL_LAST_YEARS_PROPERTY, DEFAULT_SPECTRAL_LAST_YEARS);
+    private static final IntProperty STABILITY_LENGTH_CONFIG = IntProperty.of(STABILITY_LENGTH_PROPERTY, DEFAULT_STABILITY_LENGTH);
+    private static final Property<EstimationPolicyType> ESTIMATION_POLICY_TYPE_CONFIG = Property.of(ESTIMATION_POLICY_TYPE_PROPERTY, DEFAULT_ESTIMATION_POLICY, Parser.onEnum(EstimationPolicyType.class), Formatter.onEnum());
+    private static final Property<String> DEFAULT_SA_SPEC_CONFIG = Property.of(DEFAULT_SA_SPEC_PROPERTY, DEFAULT_DETAULT_SA_SPEC, Parser.onString(), Formatter.onString());
+    private static final Property<PrespecificiedOutliersEditor> PRESPECIFIED_OUTLIERS_EDITOR_CONFIG = Property.of(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR, Parser.onEnum(PrespecificiedOutliersEditor.class), Formatter.onEnum());
+    private static final Property<String[]> SELECTED_DIAG_FIELDS_CONFIG = Property.of(SELECTED_DIAG_FIELDS_PROPERTY, DEFAULT_SELECTED_DIAG_FIELDS.stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
+    private static final Property<String[]> SELECTED_SERIES_FIELDS_CONFIG = Property.of(SELECTED_SERIES_FIELDS_PROPERTY, DEFAULT_SELECTED_SERIES_FIELDS.stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
+
     @Override
     public Config getConfig() {
         Config.Builder b = Config.builder(DOMAIN, NAME, VERSION);
         SPECTRAL_LAST_YEARS_CONFIG.set(b::parameter, getSpectralLastYears());
         ESTIMATION_POLICY_TYPE_CONFIG.set(b::parameter, getEstimationPolicyType());
         STABILITY_LENGTH_CONFIG.set(b::parameter, getStabilityLength());
-        DEFAULT_SA_SPEC_CONFIG.set(b::parameter, getDefaultSASpec());
+        DEFAULT_SA_SPEC_CONFIG.set(b::parameter, getDefaultSaSpec());
         PRESPECIFIED_OUTLIERS_EDITOR_CONFIG.set(b::parameter, getPrespecifiedOutliersEditor());
         SELECTED_DIAG_FIELDS_CONFIG.set(b::parameter, Collections.toArray(getSelectedDiagFields(), String.class));
         SELECTED_SERIES_FIELDS_CONFIG.set(b::parameter, Collections.toArray(getSelectedSeriesFields(), String.class));
@@ -183,7 +192,7 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
         setSpectralLastYears(SPECTRAL_LAST_YEARS_CONFIG.get(config::getParameter));
         setEstimationPolicyType(ESTIMATION_POLICY_TYPE_CONFIG.get(config::getParameter));
         setStabilityLength(STABILITY_LENGTH_CONFIG.get(config::getParameter));
-        setDefaultSASpec(DEFAULT_SA_SPEC_CONFIG.get(config::getParameter));
+        setDefaultSaSpec(DEFAULT_SA_SPEC_CONFIG.get(config::getParameter));
         setPrespecifiedOutliersEditor(PRESPECIFIED_OUTLIERS_EDITOR_CONFIG.get(config::getParameter));
         setSelectedDiagFields(Arrays.asList(SELECTED_DIAG_FIELDS_CONFIG.get(config::getParameter)));
         setSelectedSeriesFields(Arrays.asList(SELECTED_SERIES_FIELDS_CONFIG.get(config::getParameter)));
@@ -195,7 +204,7 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
     }
 
     public ISaSpecification getDefaultSASpecInstance() {
-        switch (defaultSASpec) {
+        switch (defaultSaSpec) {
             case "tramoseats.RSA0":
                 return TramoSeatsSpecification.RSA0;
             case "tramoseats.RSA1":

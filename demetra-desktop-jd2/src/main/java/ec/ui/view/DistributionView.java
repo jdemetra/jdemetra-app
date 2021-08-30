@@ -28,7 +28,8 @@ import demetra.ui.components.parts.HasChart.LinesThickness;
 import demetra.ui.components.TimeSeriesComponent;
 import demetra.ui.components.parts.HasColorSchemeResolver;
 import demetra.ui.components.parts.HasColorSchemeSupport;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
@@ -71,11 +72,22 @@ public final class DistributionView extends JComponent implements TimeSeriesComp
     private static final KnownColor DISTRIBUTION_COLOR = KnownColor.RED;
 
     // PROPERTIES DEFINITION
+    @SwingProperty
     public static final String L_BOUND_PROPERTY = "lBound";
+
+    @SwingProperty
     public static final String R_BOUND_PROPERTY = "rBound";
+
+    @SwingProperty
     public static final String DISTRIBUTION_PROPERTY = "distribution";
+
+    @SwingProperty
     public static final String ADJUST_DISTRIBUTION_PROPERTY = "adjustDistribution";
+
+    @SwingProperty
     public static final String H_COUNT_PROPERTY = "hCount";
+
+    @SwingProperty
     public static final String DATA_PROPERTY = "data";
 
     // DEFAULT PROPERTIES
@@ -111,11 +123,11 @@ public final class DistributionView extends JComponent implements TimeSeriesComp
         this.data = DEFAULT_DATA;
 
         this.chartPanel = Charts.newChartPanel(createDistributionViewChart());
-        
+
         onColorSchemeChange();
         onComponentPopupMenuChange();
         enableProperties();
-        
+
         setLayout(new BorderLayout());
         add(chartPanel, BorderLayout.CENTER);
     }

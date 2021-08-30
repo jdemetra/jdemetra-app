@@ -5,6 +5,7 @@
 package ec.nbdemetra.ui.calendars;
 
 import com.google.common.base.MoreObjects;
+import demetra.desktop.design.SwingProperty;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.DayOfWeek;
 import ec.tstoolkit.timeseries.Month;
@@ -20,13 +21,18 @@ import ec.tstoolkit.timeseries.calendars.ISpecialDay.Context;
 public class FixedWeekEventBean extends AbstractEventBean {
 
     // PROPERTIES DEFINITIONS
+    @SwingProperty
     public static final String DAY_OF_WEEK_PROPERTY = "dayOfWeek";
+
+    @SwingProperty
     public static final String WEEK_PROPERTY = "week";
+
+    @SwingProperty
     public static final String MONTH_PROPERTY = "month";
     // PROPERTIES 
-    protected DayOfWeek dayOfWeek;
-    protected int week;
-    protected Month month;
+    private DayOfWeek dayOfWeek;
+    private int week;
+    private Month month;
 
     public FixedWeekEventBean() {
         this(DayOfWeek.Monday, 1, Month.January, null, null, 1);
@@ -75,11 +81,11 @@ public class FixedWeekEventBean extends AbstractEventBean {
 
     @Override
     protected ISpecialDay toSpecialDay(Context context) {
-        return new FixedWeekDay(week, dayOfWeek, month, weight);
+        return new FixedWeekDay(week, dayOfWeek, month, getWeight());
     }
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("dayOfWeek", dayOfWeek).add("week", week).add("month", month).add("start", start).add("end", end).add("weigth", weight).toString();
+        return MoreObjects.toStringHelper(this).add("dayOfWeek", dayOfWeek).add("week", week).add("month", month).add("start", getStart()).add("end", getEnd()).add("weigth", getWeight()).toString();
     }
 }

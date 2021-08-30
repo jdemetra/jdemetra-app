@@ -16,7 +16,8 @@
  */
 package ec.nbdemetra.ui.demo;
 
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import demetra.ui.util.NbComponents;
 import ec.tss.html.AbstractHtmlElement;
 import ec.tss.html.HtmlStream;
@@ -48,7 +49,10 @@ public final class ReflectComponent extends JComponent {
         return result;
     }
 
+    @SwingProperty
     public static final String CLAZZ_PROPERTY = "clazz";
+
+    @SwingProperty
     public static final String EXTRACTOR_PROPERTY = "extractor";
 
     private final AHtmlView htmlView;

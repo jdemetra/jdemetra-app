@@ -53,7 +53,7 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import demetra.ui.datatransfer.DataTransfer;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import java.util.ArrayList;
 

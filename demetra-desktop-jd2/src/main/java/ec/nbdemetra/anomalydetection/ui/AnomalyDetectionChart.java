@@ -49,7 +49,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import demetra.ui.datatransfer.DataTransfer;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 
 /**
  *
@@ -58,7 +59,10 @@ import demetra.ui.design.SwingComponent;
 @SwingComponent
 final class AnomalyDetectionChart extends JComponent {
 
+    @SwingProperty
     public static final String MODEL_PROPERTY = "model";
+
+    @SwingProperty
     public static final String HOVERED_OBS_PROPERTY = "hoveredObs";
 
     private final JTimeSeriesChart chart;

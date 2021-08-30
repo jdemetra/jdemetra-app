@@ -5,7 +5,7 @@
 
 package ec.ui.view;
 
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import ec.tstoolkit.arima.Spectrum;
 import ec.util.chart.swing.Charts;
 import java.awt.BorderLayout;

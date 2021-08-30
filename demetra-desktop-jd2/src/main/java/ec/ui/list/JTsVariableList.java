@@ -72,7 +72,7 @@ import org.openide.NotifyDescriptor;
 import demetra.ui.components.parts.HasTsAction;
 import ec.util.table.swing.JTables;
 import demetra.ui.datatransfer.DataTransfer;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 
 /**
  *

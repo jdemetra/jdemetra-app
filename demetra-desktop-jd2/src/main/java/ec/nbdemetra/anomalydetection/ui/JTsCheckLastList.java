@@ -19,7 +19,6 @@ package ec.nbdemetra.anomalydetection.ui;
 import demetra.bridge.TsConverter;
 import demetra.demo.DemoTsBuilder;
 import demetra.timeseries.TsCollection;
-import demetra.ui.DemetraOptions;
 import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.components.parts.HasTsCollectionSupport;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
@@ -53,7 +52,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -66,8 +64,10 @@ import javax.swing.table.TableCellRenderer;
 
 import demetra.ui.components.TsIdentifier;
 import demetra.ui.datatransfer.DataTransfer;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import java.util.function.Predicate;
+import nbbrd.design.SkipProcessing;
 
 /**
  * List component containing input and output results of a Check Last batch
@@ -79,11 +79,23 @@ import java.util.function.Predicate;
 public final class JTsCheckLastList extends JComponent implements TimeSeriesComponent,
         HasTsCollection {
 
+    @SkipProcessing(target = SwingProperty.class, reason = "to be refactored")
+    @SwingProperty
     public static final String COLOR_VALUES_PROPERTY = "colorValues";
+
+    @SwingProperty
     public static final String LAST_CHECKS_PROPERTY = "lastChecks";
+
+    @SwingProperty
     public static final String SPEC_PROPERTY = "spec";
-    public static final String COLLECTION_CHANGE = "collectionChange";
-    public static final String SELECTION_PROPERTY = "itemSelection";
+
+    @SkipProcessing(target = SwingProperty.class, reason = "to be refactored")
+    @SwingProperty
+    public static final String COLLECTION_CHANGE_PROPERTY = "collectionChange";
+
+    @SkipProcessing(target = SwingProperty.class, reason = "to be refactored")
+    @SwingProperty
+    public static final String ITEM_SELECTION_PROPERTY = "itemSelection";
 
     @lombok.experimental.Delegate(types = HasTsCollection.class)
     private final JTsTable table;
@@ -340,7 +352,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         fireTableDataChanged();
 
-        firePropertyChange(COLLECTION_CHANGE, null, collection);
+        firePropertyChange(COLLECTION_CHANGE_PROPERTY, null, collection);
         onSelectionChange();
     }
 
@@ -357,7 +369,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
                 table.repaint();
             }
         }
-        firePropertyChange(SELECTION_PROPERTY, null, selected);
+        firePropertyChange(ITEM_SELECTION_PROPERTY, null, selected);
     }
 
     public AnomalyItem put(String key, AnomalyItem value) {
@@ -463,7 +475,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         @Override
         public JCommand.ActionAdapter toAction(JTsCheckLastList list) {
-            return super.toAction(list).withWeakPropertyChangeListener(list, COLLECTION_CHANGE);
+            return super.toAction(list).withWeakPropertyChangeListener(list, COLLECTION_CHANGE_PROPERTY);
         }
     }
 

@@ -41,7 +41,8 @@ import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import demetra.ui.components.parts.HasObsFormatSupport;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -64,6 +65,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
+import nbbrd.design.SkipProcessing;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -94,7 +96,12 @@ import org.jfree.ui.Layer;
 public final class MarginView extends JComponent implements TimeSeriesComponent, HasColorScheme, HasObsFormat {
 
     // PROPERTIES
+    @SkipProcessing(target = SwingProperty.class, reason = "to be refactored")
+    @SwingProperty
     private static final String DATA_PROPERTY = "data";
+
+    @SkipProcessing(target = SwingProperty.class, reason = "to be refactored")
+    @SwingProperty
     private static final String PRECISION_MARKERS_VISIBLE_PROPERTY = "precisionMarkersVisible";
 
     // CONSTANTS

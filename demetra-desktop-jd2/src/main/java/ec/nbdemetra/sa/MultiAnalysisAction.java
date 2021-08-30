@@ -61,7 +61,7 @@ public final class MultiAnalysisAction implements ActionListener {
         processingView.setDefaultSpecification(demetraUI.getDefaultSASpecInstance());
 
         controller.addPropertyChangeListener(evt -> {
-            switch (controller.getState()) {
+            switch (controller.getSaProcessingState()) {
                 case DONE:
                     result.makeBusy(false);
                     result.setAttentionHighlight(true);

@@ -16,7 +16,8 @@
  */
 package internal.ui.properties;
 
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import demetra.ui.util.ExtLayerUI;
 import demetra.ui.util.FontAwesomeUtils;
 import ec.util.chart.swing.SwingColorSchemeSupport;
@@ -59,10 +60,19 @@ import org.openide.util.Exceptions;
 @SwingComponent
 public final class AutoCompletedComponent extends JComponent {
 
+    @SwingProperty
     public static final String VALUE_PROPERTY = "value";
+
+    @SwingProperty
     public static final String AUTO_COMPLETION_PROPERTY = "autoCompletion";
+
+    @SwingProperty
     public static final String DEFAULT_VALUE_SUPPLIER_PROPERTY = "defaultValueSupplier";
+
+    @SwingProperty
     public static final String SEPARATOR_PROPERTY = "separator";
+
+    @SwingProperty
     public static final String RUNNING_PROPERTY = "running";
 
     private final DefaultListModel<String> model;

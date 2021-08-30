@@ -19,7 +19,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import org.openide.util.NbCollections;
 import demetra.ui.datatransfer.DataTransfer;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import ec.tstoolkit.timeseries.simplets.TsData;
 
 /**

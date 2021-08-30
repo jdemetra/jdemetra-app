@@ -4,7 +4,7 @@
  */
 package ec.ui.view;
 
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import demetra.ui.util.NbComponents;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import java.awt.BorderLayout;

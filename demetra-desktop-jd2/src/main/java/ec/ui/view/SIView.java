@@ -31,7 +31,7 @@ import ec.ui.chart.BasicXYDataset;
 import demetra.ui.jfreechart.TsCharts;
 import demetra.ui.components.parts.HasChart.LinesThickness;
 import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import ec.tss.TsInformationType;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;

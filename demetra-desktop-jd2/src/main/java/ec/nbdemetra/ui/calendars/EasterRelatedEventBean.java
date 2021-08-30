@@ -5,6 +5,7 @@
 package ec.nbdemetra.ui.calendars;
 
 import com.google.common.base.MoreObjects;
+import demetra.desktop.design.SwingProperty;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.ValidityPeriod;
 import ec.tstoolkit.timeseries.calendars.EasterRelatedDay;
@@ -18,9 +19,10 @@ import ec.tstoolkit.timeseries.calendars.ISpecialDay.Context;
 public class EasterRelatedEventBean extends AbstractEventBean {
 
     // PROPERTIES DEFINITIONS
+    @SwingProperty
     public static final String OFFSET_PROPERTY = "offset";
     // PROPERTIES 
-    protected int offset;
+    private int offset;
 
     public EasterRelatedEventBean() {
         this(1, null, null, 1);
@@ -47,11 +49,11 @@ public class EasterRelatedEventBean extends AbstractEventBean {
     
     @Override
     protected ISpecialDay toSpecialDay(Context context) {
-        return new EasterRelatedDay(offset, weight, context.isJulianEaster());
+        return new EasterRelatedDay(offset, getWeight(), context.isJulianEaster());
     }
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("offset", offset).add("start", start).add("end", end).add("weigth", weight).toString();
+        return MoreObjects.toStringHelper(this).add("offset", offset).add("start", getStart()).add("end", getEnd()).add("weigth", getWeight()).toString();
     }
 }

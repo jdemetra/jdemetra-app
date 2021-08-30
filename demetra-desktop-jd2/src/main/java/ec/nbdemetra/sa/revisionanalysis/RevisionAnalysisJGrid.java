@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.IProcResults;
 import ec.util.grid.swing.AbstractGridModel;

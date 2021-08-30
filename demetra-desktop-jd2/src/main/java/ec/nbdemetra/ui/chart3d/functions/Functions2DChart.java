@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.chart3d.functions;
 
 import demetra.ui.components.parts.*;
 import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.maths.realfunctions.IFunction;

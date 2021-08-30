@@ -43,7 +43,7 @@ public abstract class AbstractSaProcessingTopComponent extends WorkspaceTopCompo
         setName(txt);
         setToolTipText(txt + " view");
         this.controller = controller;
-        controller.addPropertyChangeListener(MultiProcessingController.SAPROCESSING_STATE_PROPERTY, evt -> {
+        controller.addPropertyChangeListener(MultiProcessingController.SA_PROCESSING_STATE_PROPERTY, evt -> {
             // forward event
             firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
             onSaProcessingStateChange();
@@ -63,7 +63,7 @@ public abstract class AbstractSaProcessingTopComponent extends WorkspaceTopCompo
     }
 
     public MultiProcessingController.SaProcessingState getState() {
-        return controller != null ? controller.getState() : MultiProcessingController.SaProcessingState.DONE;
+        return controller != null ? controller.getSaProcessingState(): MultiProcessingController.SaProcessingState.DONE;
     }
 
     protected void onSaProcessingStateChange() {

@@ -1,6 +1,6 @@
 package demetra.ui.components.parts;
 
-import demetra.ui.design.SwingProperty;
+import demetra.desktop.design.SwingProperty;
 
 /**
  *
@@ -9,7 +9,7 @@ import demetra.ui.design.SwingProperty;
 public interface HasGrid {
 
     @SwingProperty
-    String ZOOM_PROPERTY = "zoom";
+    String ZOOM_RATIO_PROPERTY = "zoomRatio";
 
     int getZoomRatio();
 

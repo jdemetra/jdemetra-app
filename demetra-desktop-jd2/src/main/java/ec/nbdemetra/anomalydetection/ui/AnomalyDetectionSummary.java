@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.anomalydetection.ui;
 
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import ec.nbdemetra.anomalydetection.html.HtmlAnomalyDetection;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.ui.Disposables;

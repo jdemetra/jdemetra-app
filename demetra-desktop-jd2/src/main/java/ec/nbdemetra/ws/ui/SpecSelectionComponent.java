@@ -16,7 +16,8 @@
  */
 package ec.nbdemetra.ws.ui;
 
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import demetra.ui.util.IDialogDescriptorProvider;
 import ec.nbdemetra.ui.calendars.CustomDialogDescriptor;
 import ec.nbdemetra.ui.nodes.DecoratedNode;
@@ -53,7 +54,11 @@ import java.util.function.Predicate;
 public final class SpecSelectionComponent extends JComponent implements ExplorerManager.Provider, IDialogDescriptorProvider {
 
     public static final Id SPECS_ID = new LinearId(GenericSaProcessingFactory.FAMILY, WorkspaceFactory.SPECIFICATIONS);
+
+    @SwingProperty
     public static final String SPECIFICATION_PROPERTY = "specification";
+
+    @SwingProperty
     public static final String ICON_PROPERTY = "icon";
 
     private final BeanTreeView tree;

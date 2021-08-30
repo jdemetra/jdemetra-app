@@ -18,7 +18,7 @@ package ec.ui.view;
 
 import demetra.ui.components.parts.*;
 import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import demetra.ui.util.NbComponents;
 import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlRevisionsDocument;

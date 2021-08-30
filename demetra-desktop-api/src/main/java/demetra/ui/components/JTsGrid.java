@@ -18,8 +18,8 @@ package demetra.ui.components;
 
 import demetra.ui.components.parts.*;
 import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.design.SwingComponent;
-import demetra.ui.design.SwingProperty;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import internal.ui.components.DemoTsBuilder;
 import java.awt.Dimension;
 import java.beans.Beans;

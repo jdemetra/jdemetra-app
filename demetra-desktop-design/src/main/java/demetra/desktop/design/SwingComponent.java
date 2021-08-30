@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.ui.design;
+package demetra.desktop.design;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

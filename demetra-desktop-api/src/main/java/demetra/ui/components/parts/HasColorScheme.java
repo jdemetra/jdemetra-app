@@ -1,6 +1,6 @@
 package demetra.ui.components.parts;
 
-import demetra.ui.design.SwingProperty;
+import demetra.desktop.design.SwingProperty;
 import ec.util.chart.ColorScheme;
 import org.checkerframework.checker.nullness.qual.Nullable;
 

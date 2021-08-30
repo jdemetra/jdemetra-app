@@ -34,7 +34,8 @@ import demetra.ui.components.TsGridObs;
 import ec.util.chart.ObsIndex;
 import ec.util.list.swing.JLists;
 import demetra.ui.components.TsSelectionBridge;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.text.DecimalFormat;
@@ -55,6 +56,7 @@ import static javax.swing.SwingWorker.StateValue.PENDING;
 import static javax.swing.SwingWorker.StateValue.STARTED;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import nbbrd.design.SkipProcessing;
 import org.netbeans.api.progress.ProgressHandle;
 
 /**
@@ -66,12 +68,28 @@ import org.netbeans.api.progress.ProgressHandle;
 @SwingComponent
 public final class JTsAnomalyGrid extends JComponent {
 
-    public static final String SPEC_CHANGE_PROPERTY = "Spec Change";
-    public static final String CRITICAL_VALUE_PROPERTY = "Critical Value Change";
-    public static final String COLLECTION_PROPERTY = "Collection Change";
-    public static final String STATE_PROPERTY = "State Property";
-    public static final String TYPES_PROPERTY = "Types Displayed";
-    public static final String TRANSFORMATION_PROPERTY = "Transformation Change";
+    @SwingProperty
+    public static final String DEFAULT_SPEC_PROPERTY = "defaultSpec";
+
+    @SwingProperty
+    public static final String CRITICAL_VALUE_PROPERTY = "criticalValue";
+
+    @SkipProcessing(target = SwingProperty.class, reason = "to be refactored")
+    @SwingProperty
+    public static final String COLLECTION_PROPERTY = "collection";
+
+    @SkipProcessing(target = SwingProperty.class, reason = "to be refactored")
+    @SwingProperty
+    public static final String STATE_PROPERTY = "state";
+
+    @SkipProcessing(target = SwingProperty.class, reason = "to be refactored")
+    @SwingProperty
+    public static final String TYPES_PROPERTY = "types";
+
+    @SwingProperty
+    public static final String TRANSFORMATION_PROPERTY = "transformation";
+
+    @SwingProperty
     public static final String HOVERED_OBS_PROPERTY = HasHoveredObs.HOVERED_OBS_PROPERTY;
 
     private final JTsGrid grid;
@@ -109,7 +127,7 @@ public final class JTsAnomalyGrid extends JComponent {
                 case HasTsCollection.TS_COLLECTION_PROPERTY:
                     onCollectionChange((TsCollection) evt.getNewValue());
                     break;
-                case JTsGrid.ZOOM_PROPERTY:
+                case JTsGrid.ZOOM_RATIO_PROPERTY:
                     firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
                     break;
                 case TsSelectionBridge.TS_SELECTION_PROPERTY:
@@ -215,7 +233,7 @@ public final class JTsAnomalyGrid extends JComponent {
         TramoSpecification old = this.spec;
         this.defaultSpec = spec.clone();
         this.spec = spec.clone();
-        firePropertyChange(SPEC_CHANGE_PROPERTY, old, this.spec);
+        firePropertyChange(DEFAULT_SPEC_PROPERTY, old, this.spec);
     }
 
     public TramoSpecification getDefaultSpec() {

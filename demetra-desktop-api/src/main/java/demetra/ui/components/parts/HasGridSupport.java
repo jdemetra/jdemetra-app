@@ -11,7 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import static demetra.ui.components.parts.HasGrid.CROSSHAIR_VISIBLE_PROPERTY;
-import static demetra.ui.components.parts.HasGrid.ZOOM_PROPERTY;
+import static demetra.ui.components.parts.HasGrid.ZOOM_RATIO_PROPERTY;
 
 /**
  *
@@ -30,7 +30,7 @@ public class HasGridSupport {
         {
             slider.setPreferredSize(new Dimension(50, slider.getPreferredSize().height));
             slider.addChangeListener(event -> component.setZoomRatio(slider.getValue()));
-            component.addPropertyChangeListener(HasGrid.ZOOM_PROPERTY, evt -> slider.setValue(component.getZoomRatio()));
+            component.addPropertyChangeListener(HasGrid.ZOOM_RATIO_PROPERTY, evt -> slider.setValue(component.getZoomRatio()));
         }
         zoom.add(slider);
         for (int o : new int[]{200, 100, 75, 50, 25}) {
@@ -52,7 +52,7 @@ public class HasGridSupport {
         private final int zoomRatio;
 
         public ZoomRatioCommand(int zoomRatio) {
-            super(ZOOM_PROPERTY);
+            super(ZOOM_RATIO_PROPERTY);
             this.zoomRatio = zoomRatio;
         }
 
@@ -108,7 +108,7 @@ public class HasGridSupport {
         public void setZoomRatio(int zoomRatio) {
             int old = this.zoomRatio;
             this.zoomRatio = zoomRatio >= 10 && zoomRatio <= 200 ? zoomRatio : DEFAULT_ZOOM_RATIO;
-            broadcaster.firePropertyChange(ZOOM_PROPERTY, old, this.zoomRatio);
+            broadcaster.firePropertyChange(ZOOM_RATIO_PROPERTY, old, this.zoomRatio);
         }
 
         @Override

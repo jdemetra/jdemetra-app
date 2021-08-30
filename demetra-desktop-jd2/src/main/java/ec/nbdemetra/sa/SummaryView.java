@@ -75,7 +75,7 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
     @Override
     protected void onSaProcessingStateChange() {
         super.onSaProcessingStateChange();
-        if (controller.getState().isFinished()) {
+        if (controller.getSaProcessingState().isFinished()) {
             setData(getCurrentProcessing().createRegArimaReports());
         } else {
             setData(Collections.emptyMap());

@@ -16,7 +16,7 @@
  */
 package demetra.ui;
 
-import demetra.ui.design.GlobalService;
+import demetra.desktop.design.GlobalService;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;

@@ -21,7 +21,7 @@ import demetra.timeseries.TsCollection;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.TsMonikerUI;
 import demetra.ui.components.JTsGrid;
-import demetra.ui.design.SwingComponent;
+import demetra.desktop.design.SwingComponent;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.event.ItemEvent;
