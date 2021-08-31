@@ -1,5 +1,6 @@
 package demetra.ui.components.parts;
 
+import demetra.desktop.design.SwingAction;
 import demetra.desktop.design.SwingProperty;
 import ec.util.chart.ColorScheme;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -22,5 +23,6 @@ public interface HasColorScheme {
         return getColorScheme() != null;
     }
 
+    @SwingAction
     String APPLY_MAIN_COLOR_SCHEME_ACTION = "applyMainColorScheme";
 }

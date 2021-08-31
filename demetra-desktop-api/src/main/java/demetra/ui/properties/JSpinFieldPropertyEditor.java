@@ -23,6 +23,8 @@ import java.beans.PropertyEditor;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
+
+import demetra.desktop.design.SwingEditorAttribute;
 import org.openide.explorer.propertysheet.InplaceEditor;
 import org.openide.explorer.propertysheet.PropertyEnv;
 
@@ -32,7 +34,10 @@ import org.openide.explorer.propertysheet.PropertyEnv;
  */
 public final class JSpinFieldPropertyEditor extends AbstractExPropertyEditor {
 
+    @SwingEditorAttribute
     public static final String MAX_ATTRIBUTE = "max";
+
+    @SwingEditorAttribute
     public static final String MIN_ATTRIBUTE = "min";
 
     @Override

@@ -16,6 +16,7 @@
  */
 package demetra.ui.components.parts;
 
+import demetra.desktop.design.SwingAction;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.desktop.design.SwingProperty;
@@ -101,14 +102,33 @@ public interface HasTsCollection {
         }
     }
 
+    @SwingAction
     String COPY_ALL_ACTION = "copyAll";
+
+    @SwingAction
     String RENAME_ACTION = "rename";
+
+    @SwingAction
     String OPEN_ACTION = "open";
+
+    @SwingAction
     String COPY_ACTION = "copy";
+
+    @SwingAction
     String PASTE_ACTION = "paste";
+
+    @SwingAction
     String DELETE_ACTION = "delete";
+
+    @SwingAction
     String CLEAR_ACTION = "clear";
+
+    @SwingAction
     String SELECT_ALL_ACTION = "selectAll";
+
+    @SwingAction
     String FREEZE_ACTION = "freeze";
-    String SPLIT_ACTION = "splitIntoYearlyComponents";
+
+    @SwingAction
+    String SPLIT_ACTION = "split";
 }

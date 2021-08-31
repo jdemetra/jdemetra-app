@@ -16,6 +16,7 @@
  */
 package demetra.ui.properties;
 
+import demetra.desktop.design.SwingEditorAttribute;
 import demetra.ui.completion.DesktopFileAutoCompletionSource;
 import demetra.ui.concurrent.ThreadPriority;
 import demetra.ui.concurrent.UIExecutors;
@@ -40,7 +41,10 @@ import static demetra.ui.properties.AbstractExPropertyEditor.attr;
  */
 public final class DesktopFilePropertyEditor extends ForwardingPropertyEditor implements ExPropertyEditor, InplaceEditor.Factory {
 
+    @SwingEditorAttribute
     public static final String FILTER_ATTRIBUTE = "filter";
+
+    @SwingEditorAttribute
     public static final String PATHS_ATTRIBUTE = "paths";
 
     private final Supplier<InplaceEditor> inplaceEditor;

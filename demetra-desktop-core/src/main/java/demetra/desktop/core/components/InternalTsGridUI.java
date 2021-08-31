@@ -22,7 +22,6 @@ import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsPeriod;
 import demetra.tsprovider.util.MultiLineNameUtil;
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.DemetraOptions;
 import demetra.ui.IconManager;
 import demetra.ui.components.*;
 import demetra.ui.components.parts.*;
@@ -52,7 +51,7 @@ import java.util.DoubleSummaryStatistics;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 
-import static demetra.desktop.core.components.JTsGridCommands.TOGGLE_MODE_ACTION;
+import static demetra.ui.components.JTsGrid.TOGGLE_MODE_ACTION;
 
 public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
@@ -115,7 +114,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         am.put(JTsGrid.REVERSE_ACTION, JTsGridCommands.reverseChronology().toAction(target));
         am.put(JTsGrid.SINGLE_TS_ACTION, JTsGridCommands.applyMode(JTsGrid.Mode.SINGLETS).toAction(target));
         am.put(JTsGrid.MULTI_TS_ACTION, JTsGridCommands.applyMode(JTsGrid.Mode.MULTIPLETS).toAction(target));
-        am.put(TOGGLE_MODE_ACTION, JTsGridCommands.toggleMode().toAction(target));
+        am.put(JTsGrid.TOGGLE_MODE_ACTION, JTsGridCommands.toggleMode().toAction(target));
         HasObsFormatSupport.registerActions(target, am);
         HasTsCollectionSupport.registerActions(target, target.getActionMap());
         HasObsFormatSupport.registerActions(target, am);

@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.chart3d;
 
+import demetra.desktop.design.SwingAction;
 import demetra.ui.actions.Actions;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -34,8 +35,10 @@ import javax.swing.JPanel;
  */
 public class JSurfacePanel extends JPanel {
 
+    @SwingAction
+    public static final String EXPORT_ACTION = "export";
+
     private JSurface surface;
-    public static final String EXPORT_ACTION = "export_image";
 
     public JSurfacePanel() {
         initComponents();

@@ -28,6 +28,8 @@ import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.KeyStroke;
 import javax.swing.text.DefaultFormatterFactory;
+
+import demetra.desktop.design.SwingEditorAttribute;
 import org.openide.explorer.propertysheet.InplaceEditor;
 import org.openide.explorer.propertysheet.PropertyEnv;
 
@@ -37,6 +39,7 @@ import org.openide.explorer.propertysheet.PropertyEnv;
  */
 public final class FormattedPropertyEditor extends AbstractExPropertyEditor {
 
+    @SwingEditorAttribute
     public static final String FORMATTER_ATTRIBUTE = "formatter";
 
     private PropertyEnv currentEnv = null;

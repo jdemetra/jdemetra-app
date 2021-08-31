@@ -16,6 +16,7 @@
  */
 package demetra.ui.properties;
 
+import demetra.desktop.design.SwingEditorAttribute;
 import demetra.ui.properties.AbstractInplaceEditor;
 import demetra.ui.properties.AbstractExPropertyEditor;
 import java.awt.event.KeyEvent;
@@ -33,6 +34,7 @@ import org.openide.explorer.propertysheet.PropertyEnv;
  */
 public class ComboBoxPropertyEditor extends AbstractExPropertyEditor {
 
+    @SwingEditorAttribute
     public static final String VALUES_ATTRIBUTE = "values";
 
     @Override

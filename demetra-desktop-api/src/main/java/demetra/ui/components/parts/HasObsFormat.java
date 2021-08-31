@@ -16,6 +16,7 @@
  */
 package demetra.ui.components.parts;
 
+import demetra.desktop.design.SwingAction;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.desktop.design.SwingProperty;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -38,5 +39,6 @@ public interface HasObsFormat {
         return getObsFormat() != null;
     }
 
+    @SwingAction
     String EDIT_FORMAT_ACTION = "editFormat";
 }

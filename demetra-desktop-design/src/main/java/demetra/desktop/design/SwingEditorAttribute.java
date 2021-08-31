@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 National Bank of Belgium
+ * Copyright 2013 National Bank of Belgium
  * 
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,28 +14,13 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.ui.actions;
+package demetra.desktop.design;
 
-import java.util.Optional;
-import java.util.function.Supplier;
+import java.lang.annotation.*;
 
-import demetra.desktop.design.SwingAction;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import javax.swing.ActionMap;
+@Target({ElementType.FIELD})
+@Retention(RetentionPolicy.SOURCE)
+@Documented
+public @interface SwingEditorAttribute {
 
-/**
- *
- * @author Philippe Charles
- */
-public interface ResetableZoom {
-
-    @SwingAction
-    String RESET_ZOOM_ACTION = "resetZoom";
-
-    void resetZoom();
-
-    @NonNull
-    static ResetableZoom of(@NonNull Supplier<? extends ActionMap> actionMap) {
-        return () -> Optional.ofNullable(actionMap.get().get(RESET_ZOOM_ACTION)).ifPresent(o -> o.actionPerformed(null));
-    }
 }

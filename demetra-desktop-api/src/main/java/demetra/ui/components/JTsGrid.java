@@ -1,33 +1,35 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package demetra.ui.components;
 
-import demetra.ui.components.parts.*;
-import demetra.ui.beans.PropertyChangeSource;
+import demetra.desktop.design.SwingAction;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
+import demetra.ui.beans.PropertyChangeSource;
+import demetra.ui.components.parts.*;
 import internal.ui.components.DemoTsBuilder;
-import java.awt.Dimension;
-import java.beans.Beans;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import javax.swing.JComponent;
+
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.beans.Beans;
 
 /**
  * UI component allowing view of TSCollection in a grid.
@@ -40,10 +42,20 @@ import javax.swing.table.TableCellRenderer;
 public final class JTsGrid extends JComponent implements TimeSeriesComponent, PropertyChangeSource.WithWeakListeners,
         HasTsCollection, HasTsAction, HasGrid, HasColorScheme, HasObsFormat, HasHoveredObs {
 
+    @SwingAction
     public static final String TRANSPOSE_ACTION = "transpose";
+
+    @SwingAction
     public static final String REVERSE_ACTION = "reverse";
+
+    @SwingAction
     public static final String SINGLE_TS_ACTION = "singleTs";
+
+    @SwingAction
     public static final String MULTI_TS_ACTION = "multiTs";
+
+    @SwingAction
+    public static final String TOGGLE_MODE_ACTION = "toggleMode";
 
     /**
      * Defines the order the data are displayed

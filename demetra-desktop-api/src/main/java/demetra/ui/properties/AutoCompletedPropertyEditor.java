@@ -16,6 +16,7 @@
  */
 package demetra.ui.properties;
 
+import demetra.desktop.design.SwingEditorAttribute;
 import demetra.ui.completion.AutoCompletion;
 import internal.ui.properties.AutoCompletedComponent;
 import ec.util.completion.AutoCompletionSource;
@@ -37,14 +38,31 @@ import org.openide.explorer.propertysheet.PropertyEnv;
  */
 public final class AutoCompletedPropertyEditor extends AbstractExPropertyEditor {
 
+    @SwingEditorAttribute
     public static final String SERVICE_PATH_ATTRIBUTE = "servicePath";
+
+    @SwingEditorAttribute
     public static final String AUTO_FOCUS_ATTRIBUTE = "autoFocus";
+
+    @SwingEditorAttribute
     public static final String DELAY_ATTRIBUTE = "delay";
+
+    @SwingEditorAttribute
     public static final String MIN_LENGTH_ATTRIBUTE = "minLength";
+
+    @SwingEditorAttribute
     public static final String SEPARATOR_ATTRIBUTE = "separator";
+
+    @SwingEditorAttribute
     public static final String SOURCE_ATTRIBUTE = "source";
+
+    @SwingEditorAttribute
     public static final String CELL_RENDERER_ATTRIBUTE = "cellRenderer";
+
+    @SwingEditorAttribute
     public static final String PROMPT_TEXT_ATTRIBUTE = "promptText";
+
+    @SwingEditorAttribute
     public static final String DEFAULT_VALUE_SUPPLIER_ATTRIBUTE = "defaultValueSupplier";
 
     private final AutoCompletedComponent customEditor;

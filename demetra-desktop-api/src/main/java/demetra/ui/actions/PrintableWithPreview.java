@@ -18,6 +18,8 @@ package demetra.ui.actions;
 
 import java.util.Optional;
 import java.util.function.Supplier;
+
+import demetra.desktop.design.SwingAction;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ActionMap;
 
@@ -27,6 +29,7 @@ import javax.swing.ActionMap;
  */
 public interface PrintableWithPreview {
 
+    @SwingAction
     String PRINT_ACTION = "print";
 
     void printWithPreview();

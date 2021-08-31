@@ -17,6 +17,7 @@
 package ec.ui.list;
 
 import demetra.bridge.TsConverter;
+import demetra.desktop.design.SwingAction;
 import demetra.ui.DemetraOptions;
 import demetra.ui.NamedService;
 import demetra.ui.components.parts.HasTsActionSupport;
@@ -82,11 +83,20 @@ import demetra.desktop.design.SwingComponent;
 @SwingComponent
 public final class JTsVariableList extends JComponent implements HasTsAction {
 
+    @SwingAction
     public static final String DELETE_ACTION = "delete";
+
+    @SwingAction
     public static final String CLEAR_ACTION = "clear";
+
+    @SwingAction
     public static final String SELECT_ALL_ACTION = "selectAll";
+
+    @SwingAction
     public static final String RENAME_ACTION = "rename";
-    private static final String OPEN_ACTION = "open";
+
+    @SwingAction
+    public static final String OPEN_ACTION = "open";
 
     private final XTable table;
     private final TsVariables variables;

@@ -1,47 +1,42 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package demetra.desktop.core.components;
 
-import demetra.ui.components.JTsGrid;
 import demetra.ui.components.ComponentCommand;
-import static demetra.ui.components.JTsGrid.CHRONOLOGY_PROPERTY;
-import static demetra.ui.components.JTsGrid.Chronology.ASCENDING;
-import static demetra.ui.components.JTsGrid.Chronology.DESCENDING;
-import static demetra.ui.components.JTsGrid.MODE_PROPERTY;
-import static demetra.ui.components.JTsGrid.Mode.MULTIPLETS;
-import static demetra.ui.components.JTsGrid.Mode.SINGLETS;
-import static demetra.ui.components.JTsGrid.ORIENTATION_PROPERTY;
-import static demetra.ui.components.JTsGrid.Orientation.NORMAL;
-import static demetra.ui.components.JTsGrid.Orientation.REVERSED;
-import static demetra.ui.components.JTsGrid.SHOW_BARS_PROPERTY;
-import static demetra.ui.components.JTsGrid.USE_COLOR_SCHEME_PROPERTY;
+import demetra.ui.components.JTsGrid;
 import ec.util.various.swing.JCommand;
-import java.awt.Component;
-import java.util.EnumMap;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.awt.*;
+import java.util.EnumMap;
+
+import static demetra.ui.components.JTsGrid.*;
+import static demetra.ui.components.JTsGrid.Chronology.ASCENDING;
+import static demetra.ui.components.JTsGrid.Chronology.DESCENDING;
+import static demetra.ui.components.JTsGrid.Mode.MULTIPLETS;
+import static demetra.ui.components.JTsGrid.Mode.SINGLETS;
+import static demetra.ui.components.JTsGrid.Orientation.NORMAL;
+import static demetra.ui.components.JTsGrid.Orientation.REVERSED;
+
 /**
- *
  * @author Philippe Charles
  */
 @lombok.experimental.UtilityClass
 public class JTsGridCommands {
-
-    public static final String TOGGLE_MODE_ACTION = "toggleMode";
 
     @NonNull
     public static JCommand<JTsGrid> transpose() {
@@ -141,6 +136,7 @@ public class JTsGridCommands {
                 VALUES.put(o, new ApplyModeCommand(o));
             }
         }
+
         //
         private final JTsGrid.Mode value;
 

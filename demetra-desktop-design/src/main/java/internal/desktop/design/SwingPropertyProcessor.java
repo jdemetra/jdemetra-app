@@ -1,43 +1,40 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package internal.desktop.design;
 
 import demetra.desktop.design.SwingProperty;
-import java.util.Locale;
-import java.util.Optional;
+import nbbrd.service.ServiceProvider;
 
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.util.ElementFilter;
-import java.util.Set;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-
-import static javax.lang.model.element.Modifier.*;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import nbbrd.service.ServiceProvider;
+import javax.lang.model.util.ElementFilter;
+import java.util.Optional;
+import java.util.Set;
+
+import static javax.lang.model.element.Modifier.*;
 
 /**
- *
  * @author Philippe Charles
  */
 @ServiceProvider(Processor.class)
@@ -67,14 +64,14 @@ public final class SwingPropertyProcessor extends CustomProcessor {
 
         String propertyID = getName(property);
 
-        if (!isValidPropertyID(propertyID)) {
+        if (!isValidID(propertyID, "_PROPERTY")) {
             error("Property constant must be all uppercase and named *_PROPERTY", property);
             return;
         }
 
         String fieldName = (String) property.getConstantValue();
 
-        if (!isValidFieldName(propertyID, fieldName)) {
+        if (!isValidFieldName(propertyID, fieldName, "_PROPERTY")) {
             error("Property must have a coherent field name", property);
             return;
         }
@@ -113,26 +110,11 @@ public final class SwingPropertyProcessor extends CustomProcessor {
         return setter.get().getParameters().get(0).asType();
     }
 
-    private String getName(Element property) {
-        return property.getSimpleName().toString();
-    }
-
     private static boolean isPrivateNotFinalNotStatic(VariableElement field) {
         Set<Modifier> modifiers = field.getModifiers();
         return modifiers.contains(PRIVATE)
                 && !modifiers.contains(FINAL)
                 && !modifiers.contains(STATIC);
-    }
-
-    private static boolean isPublicStaticFinal(VariableElement property) {
-        Set<Modifier> modifiers = property.getModifiers();
-        return modifiers.contains(PUBLIC)
-                && modifiers.contains(STATIC)
-                && modifiers.contains(FINAL);
-    }
-
-    private boolean isStringType(VariableElement property) {
-        return types().isSameType(property.asType(), getTypeElement(String.class).asType());
     }
 
     private Optional<VariableElement> findField(VariableElement property, String fieldName) {
@@ -163,33 +145,6 @@ public final class SwingPropertyProcessor extends CustomProcessor {
                 .filter(method -> !method.getReturnType().getKind().equals(TypeKind.VOID))
                 .filter(method -> method.getParameters().isEmpty())
                 .findFirst();
-    }
-
-    private static boolean isValidPropertyID(String propertyID) {
-        return propertyID.endsWith("_PROPERTY")
-                && propertyID.toUpperCase(Locale.ROOT).equals(propertyID);
-    }
-
-    private static boolean isValidFieldName(String propertyID, String fieldName) {
-        return getFieldNameFromPropertyID(propertyID).equals(fieldName);
-    }
-
-    private static String getFieldNameFromPropertyID(String propertyID) {
-        StringBuilder result = new StringBuilder();
-        boolean uppercase = false;
-        for (char c : propertyID.replace("_PROPERTY", "").toCharArray()) {
-            if (c == '_') {
-                uppercase = true;
-                continue;
-            }
-            if (uppercase) {
-                uppercase = false;
-                result.append(Character.toUpperCase(c));
-            } else {
-                result.append(Character.toLowerCase(c));
-            }
-        }
-        return result.toString();
     }
 
     private static String toGetter(String fieldName, boolean booleanType) {

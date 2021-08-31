@@ -16,6 +16,7 @@
  */
 package demetra.ui.components;
 
+import demetra.desktop.design.SwingAction;
 import demetra.ui.actions.PrintableWithPreview;
 import demetra.ui.actions.ResetableZoom;
 import demetra.ui.components.parts.*;
@@ -46,7 +47,10 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
         HasTsCollection, HasTsAction, HasChart, HasColorScheme, HasObsFormat,
         PrintableWithPreview, ResetableZoom {
 
+    @SwingAction
     public static final String PREVIOUS_PERIOD_ACTION = "previousPeriod";
+
+    @SwingAction
     public static final String PREVIOUS_YEAR_ACTION = "previousYear";
 
     public enum GrowthKind {

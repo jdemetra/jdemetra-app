@@ -1,5 +1,6 @@
 package demetra.ui.components.parts;
 
+import demetra.desktop.design.SwingAction;
 import demetra.desktop.design.SwingProperty;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -48,8 +49,15 @@ public interface HasChart {
     @SwingProperty
     String LEGEND_VISIBLE_PROPERTY = "legendVisible";
 
+    @SwingAction
     String TOGGLE_TITLE_VISIBILITY_ACTION = "toggleTitleVisibility";
-    String TOGGLE_LEGEND_VISIBILITY_ACTION = "legendVisible";
-    String APPLY_THIN_LINE_ACTION = "thinLine";
-    String APPLY_THICK_LINE_ACTION = "thickLine";
+
+    @SwingAction
+    String TOGGLE_LEGEND_VISIBILITY_ACTION = "toggleLegendVisibility";
+
+    @SwingAction
+    String APPLY_THIN_LINE_ACTION = "applyThinLine";
+
+    @SwingAction
+    String APPLY_THICK_LINE_ACTION = "applyThickLine";
 }
