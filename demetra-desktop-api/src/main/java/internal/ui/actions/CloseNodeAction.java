@@ -4,7 +4,7 @@
  */
 package internal.ui.actions;
 
-import demetra.ui.actions.AbilityAction;
+import demetra.ui.actions.AbilityNodeAction;
 import java.util.stream.Stream;
 import org.netbeans.api.actions.Closable;
 import org.openide.awt.ActionID;
@@ -14,9 +14,9 @@ import org.openide.util.NbBundle.Messages;
 @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.CloseAction")
 @ActionRegistration(displayName = "#CloseAction", lazy = false)
 @Messages("CloseAction=Close")
-public final class CloseAction extends AbilityAction<Closable> {
+public final class CloseNodeAction extends AbilityNodeAction<Closable> {
 
-    public CloseAction() {
+    public CloseNodeAction() {
         super(Closable.class);
     }
 

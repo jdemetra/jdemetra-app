@@ -41,11 +41,11 @@ public final class ChooseTsActionAction extends AbstractAction implements Presen
 
     public ChooseTsActionAction() {
         this.choicePanel = new NamedServiceChoicePanel();
-        DemetraOptions demetraUI = DemetraOptions.getDefault();
+        DemetraOptions options = DemetraOptions.getDefault();
         choicePanel.setContent(TsActions.getDefault().getOpenActions());
-        choicePanel.setSelectedServiceName(demetraUI.getTsActionName());
+        choicePanel.setSelectedServiceName(options.getTsActionName());
         choicePanel.getExplorerManager().addVetoableChangeListener(this);
-        demetraUI.addWeakPropertyChangeListener(this);
+        options.addWeakPropertyChangeListener(this);
     }
 
     @Override

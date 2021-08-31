@@ -1,49 +1,47 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
-import demetra.ui.DemetraOptions;
+import demetra.desktop.design.SwingComponent;
+import demetra.ui.IconManager;
+import demetra.ui.components.TimeSeriesComponent;
+import demetra.ui.components.parts.HasChart;
+import demetra.ui.components.parts.HasColorScheme;
+import demetra.ui.components.parts.HasColorSchemeResolver;
+import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.jfreechart.TsCharts;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.IProcResults;
+import ec.tstoolkit.utilities.Arrays2;
 import ec.ui.chart.BasicXYDataset;
-import demetra.ui.jfreechart.TsCharts;
 import ec.ui.view.JChartPanel;
 import ec.util.chart.swing.ChartCommand;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.various.swing.FontAwesome;
-import java.awt.BorderLayout;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.ui.action.ActionMenuItem;
-import demetra.ui.components.parts.HasChart;
-import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.components.parts.HasColorSchemeResolver;
-import demetra.ui.components.parts.HasColorSchemeSupport;
-import demetra.desktop.design.SwingComponent;
-import ec.tstoolkit.utilities.Arrays2;
-import ec.util.chart.swing.SwingColorSchemeSupport;
-import javax.swing.JComponent;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
- *
  * @author Mats Maggi
  */
 @SwingComponent
@@ -51,7 +49,7 @@ public final class RevisionAnalysisChart extends JComponent implements TimeSerie
 
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
     private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
-    
+
     private final CompositeResults results;
     private JChartPanel chartPanel;
     private JFreeChart chart;
@@ -92,17 +90,15 @@ public final class RevisionAnalysisChart extends JComponent implements TimeSerie
     }
 
     private JMenu newExportMenu() {
-        DemetraOptions demetraUI = DemetraOptions.getDefault();
-
         JMenu result = new JMenu("Export image to");
-        result.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_FLOPPY_O));
+        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_FLOPPY_O));
 
         JMenuItem copy = new ActionMenuItem(ChartCommand.copyImage().toAction(chartPanel));
-        copy.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
+        copy.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
         copy.setText("Clipboard");
 
         JMenuItem file = new ActionMenuItem(ChartCommand.saveImage().toAction(chartPanel));
-        file.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_PICTURE_O));
+        file.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_PICTURE_O));
         file.setText("File...");
 
         result.add(copy);
@@ -149,7 +145,7 @@ public final class RevisionAnalysisChart extends JComponent implements TimeSerie
 
     private void onColorSchemeChange() {
         SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
-        
+
         XYPlot plot = chartPanel.getChart().getXYPlot();
         for (int i = 0; i < plot.getDataset().getSeriesCount(); i++) {
             plot.getRenderer().setSeriesPaint(i, themeSupport.getLineColor(i));

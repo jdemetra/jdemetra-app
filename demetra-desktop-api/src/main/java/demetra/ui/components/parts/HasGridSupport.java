@@ -1,6 +1,7 @@
 package demetra.ui.components.parts;
 
 import demetra.ui.DemetraOptions;
+import demetra.ui.IconManager;
 import demetra.ui.beans.PropertyChangeBroadcaster;
 import demetra.ui.components.ComponentCommand;
 import ec.util.various.swing.FontAwesome;
@@ -43,7 +44,7 @@ public class HasGridSupport {
         JCommand<HasGrid>.ActionAdapter action = ToggleCrosshairVisibilityCommand.INSTANCE.toAction(component);
         JCheckBoxMenuItem result = new JCheckBoxMenuItem(action);
         result.setText("Show crosshair");
-        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_CROSSHAIRS));
+        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_CROSSHAIRS));
         return result;
     }
 
@@ -91,13 +92,11 @@ public class HasGridSupport {
     @lombok.RequiredArgsConstructor
     private static final class HasGridImpl implements HasGrid {
 
-        private static final int DEFAULT_ZOOM_RATIO = 100;
-        private static final boolean DEFAULT_CROSSHAIR_VISIBLE = false;
-
         @lombok.NonNull
         private final PropertyChangeBroadcaster broadcaster;
+
+        private static final int DEFAULT_ZOOM_RATIO = 100;
         private int zoomRatio = DEFAULT_ZOOM_RATIO;
-        private boolean crosshairVisible = DEFAULT_CROSSHAIR_VISIBLE;
 
         @Override
         public int getZoomRatio() {
@@ -110,6 +109,9 @@ public class HasGridSupport {
             this.zoomRatio = zoomRatio >= 10 && zoomRatio <= 200 ? zoomRatio : DEFAULT_ZOOM_RATIO;
             broadcaster.firePropertyChange(ZOOM_RATIO_PROPERTY, old, this.zoomRatio);
         }
+
+        private static final boolean DEFAULT_CROSSHAIR_VISIBLE = false;
+        private boolean crosshairVisible = DEFAULT_CROSSHAIR_VISIBLE;
 
         @Override
         public boolean isCrosshairVisible() {

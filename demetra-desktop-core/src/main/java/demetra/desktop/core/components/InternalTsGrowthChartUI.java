@@ -17,7 +17,6 @@
 package demetra.desktop.core.components;
 
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.DemetraOptions;
 import demetra.ui.actions.Actions;
 import demetra.ui.components.ComponentBackendSpi;
 import demetra.ui.components.JTsGrowthChart;
@@ -44,9 +43,9 @@ import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Date;
 
+import static demetra.desktop.core.components.JTsGrowthChartCommands.*;
 import static demetra.ui.actions.PrintableWithPreview.PRINT_ACTION;
 import static demetra.ui.actions.ResetableZoom.RESET_ZOOM_ACTION;
-import static demetra.desktop.core.components.JTsGrowthChartCommands.*;
 
 /**
  * @author Kristof Bayens
@@ -310,11 +309,11 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
         return result;
     }
 
-    private JMenu buildExportImageMenu(DemetraOptions demetraUI) {
+    private JMenu buildExportImageMenu() {
         JMenu result = new JMenu("Export image to");
         result.add(InternalComponents.menuItemOf(target));
-        result.add(InternalComponents.newCopyImageMenu(chartPanel, demetraUI));
-        result.add(InternalComponents.newSaveImageMenu(chartPanel, demetraUI));
+        result.add(InternalComponents.newCopyImageMenu(chartPanel));
+        result.add(InternalComponents.newSaveImageMenu(chartPanel));
         return result;
     }
 
@@ -342,8 +341,6 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
     }
 
     private JMenu buildChartMenu() {
-        DemetraOptions demetraUI = DemetraOptions.getDefault();
-
         ActionMap am = target.getActionMap();
         JMenu result = buildMenu();
 
@@ -355,9 +352,9 @@ public final class InternalTsGrowthChartUI implements InternalUI<JTsGrowthChart>
         result.add(HasChartSupport.newToggleLegendVisibilityMenu(target));
         result.add(HasObsFormatSupport.newEditFormatMenu(target));
         result.add(HasColorSchemeSupport.menuOf(target));
-        result.add(InternalComponents.newResetZoomMenu(am, demetraUI));
+        result.add(InternalComponents.newResetZoomMenu(am));
 
-        result.add(buildExportImageMenu(demetraUI));
+        result.add(buildExportImageMenu());
 
         // NEXT
         item = new JMenuItem(copyGrowthData().toAction(target));

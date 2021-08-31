@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.calendars.actions;
 
 import demetra.ui.Config;
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
-import ec.nbdemetra.ui.interchange.ExportAction;
+import ec.nbdemetra.ui.interchange.ExportNodeAction;
 import ec.nbdemetra.ui.interchange.Exportable;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
@@ -54,7 +54,7 @@ public final class ExportCalendarAction extends NodeAction implements Presenter.
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = ExportAction.getPopupPresenter(getExportables(getActivatedNodes()));
+        JMenuItem result = ExportNodeAction.getPopupPresenter(getExportables(getActivatedNodes()));
         result.setText(Bundle.CTL_ExportCalendarAction());
         return result;
     }

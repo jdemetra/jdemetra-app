@@ -150,10 +150,10 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
     public JTsGrid() {
         this.collection = HasTsCollectionSupport.of(this::firePropertyChange);
         this.grid = HasGridSupport.of(this::firePropertyChange);
-        this.tsAction = HasTsAction.of(this::firePropertyChange);
+        this.tsAction = HasTsActionSupport.of(this::firePropertyChange);
         this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
         this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
-        this.hoveredObs = HasHoveredObs.of(this::firePropertyChange);
+        this.hoveredObs = HasHoveredObsSupport.of(this::firePropertyChange);
         this.orientation = DEFAULT_ORIENTATION;
         this.chronology = DEFAULT_CHRONOLOGY;
         this.mode = DEFAULT_MODE;

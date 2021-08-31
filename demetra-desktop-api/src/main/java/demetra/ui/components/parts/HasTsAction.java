@@ -16,14 +16,10 @@
  */
 package demetra.ui.components.parts;
 
-import demetra.ui.beans.PropertyChangeBroadcaster;
 import demetra.desktop.design.SwingProperty;
-import internal.ui.components.parts.HasTsActionImpl;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- *
  * @author Philippe Charles
  */
 public interface HasTsAction {
@@ -35,9 +31,4 @@ public interface HasTsAction {
 
     @Nullable
     String getTsAction();
-
-    @NonNull
-    static HasTsAction of(@NonNull PropertyChangeBroadcaster broadcaster) {
-        return new HasTsActionImpl(broadcaster);
-    }
 }

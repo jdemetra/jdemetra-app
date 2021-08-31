@@ -20,7 +20,7 @@ import nbbrd.design.BuilderPattern;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.AutoCompletionSources;
 import static demetra.ui.util.JTextComponents.fixMaxDecimals;
-import internal.ui.Collections2;
+import demetra.ui.util.Collections2;
 import internal.util.Strings;
 import java.beans.FeatureDescriptor;
 import java.beans.PropertyEditor;

@@ -29,6 +29,7 @@ import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
 import demetra.ui.datatransfer.LocalObjectDataTransfer;
+import demetra.ui.util.Collections2;
 import demetra.ui.util.KeyStrokes;
 import ec.util.list.swing.JLists;
 import ec.util.various.swing.FontAwesome;
@@ -130,7 +131,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newRenameMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.RENAME_ACTION));
         result.setText("Rename");
-        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_PENCIL_SQUARE_O));
+        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_PENCIL_SQUARE_O));
         Actions.hideWhenDisabled(result);
         return result;
     }
@@ -138,7 +139,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newOpenMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.OPEN_ACTION));
         result.setText("Open");
-        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_FOLDER_OPEN_O));
+        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_FOLDER_OPEN_O));
         Actions.hideWhenDisabled(result);
         result.setAccelerator(KeyStrokes.OPEN.get(0));
         result.setFont(result.getFont().deriveFont(Font.BOLD));
@@ -148,7 +149,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenu newOpenWithMenu(C component) {
         JMenu result = new JMenu(new MainOpenWithCommand().toAction(component));
         result.setText("Open with");
-        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_BAR_CHART_O));
+        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_BAR_CHART_O));
         Actions.hideWhenDisabled(result);
 
         for (NamedService o : TsActions.getDefault().getOpenActions()) {
@@ -157,7 +158,7 @@ public class HasTsCollectionSupport {
             item.setText(o.getDisplayName());
             Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
             if (image != null) {
-                item.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(ImageUtilities.image2Icon(image)));
+                item.setIcon(IconManager.getDefault().getPopupMenuIcon(ImageUtilities.image2Icon(image)));
             }
             result.add(item);
         }
@@ -175,7 +176,7 @@ public class HasTsCollectionSupport {
             item.setText(o.getDisplayName());
             Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
             if (image != null) {
-                item.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(ImageUtilities.image2Icon(image)));
+                item.setIcon(IconManager.getDefault().getPopupMenuIcon(ImageUtilities.image2Icon(image)));
             }
             result.add(item);
         }
@@ -185,7 +186,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newCopyMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.COPY_ACTION));
         result.setText("Copy");
-        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_FILES_O));
+        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_FILES_O));
         result.setAccelerator(KeyStrokes.COPY.get(0));
         Actions.hideWhenDisabled(result);
         return result;
@@ -194,7 +195,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newPasteMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.PASTE_ACTION));
         result.setText("Paste");
-        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
+        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
         result.setAccelerator(KeyStrokes.PASTE.get(0));
 //        ExtAction.hideWhenDisabled(item);
         return result;
@@ -203,7 +204,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newDeleteMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.DELETE_ACTION));
         result.setText("Remove");
-        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_TRASH_O));
+        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_TRASH_O));
         result.setAccelerator(KeyStrokes.DELETE.get(0));
         Actions.hideWhenDisabled(result);
         return result;
@@ -212,7 +213,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newClearMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.CLEAR_ACTION));
         result.setText("Clear");
-        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_ERASER));
+        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_ERASER));
         result.setAccelerator(KeyStrokes.CLEAR.get(0));
         return result;
     }
@@ -220,7 +221,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newSelectAllMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.SELECT_ALL_ACTION));
         result.setText("Select all");
-        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_ASTERISK));
+        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_ASTERISK));
         result.setAccelerator(KeyStrokes.SELECT_ALL.get(0));
         return result;
     }
@@ -228,7 +229,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newFreezeMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.FREEZE_ACTION));
         result.setText("Freeze");
-        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_LOCK));
+        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_LOCK));
         Actions.hideWhenDisabled(result);
         return result;
     }
@@ -236,7 +237,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newSplitMenu(C component) {
         JMenuItem item = new JMenuItem(component.getActionMap().get(HasTsCollection.SPLIT_ACTION));
         item.setText("Split into yearly components");
-        item.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_CHAIN_BROKEN));
+        item.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_CHAIN_BROKEN));
         Actions.hideWhenDisabled(item);
         return item;
     }
@@ -597,7 +598,7 @@ public class HasTsCollectionSupport {
         private static void importData(HasTsCollection view, TsCollection data) {
             if (view.isFreezeOnImport()) {
                 TsCollection latest = TsManager.getDefault().makeTsCollection(data.getMoniker(), TsInformationType.All);
-                view.setTsCollection(update(view.getTsUpdateMode(), view.getTsCollection(), freezedCopyOf(latest)));
+                view.setTsCollection(update(view.getTsUpdateMode(), view.getTsCollection(), frozenCopyOf(latest)));
             } else {
                 if (TransferChange.isNotYetLoaded(data)) {
                     // TODO: put load in a separate thread
@@ -621,12 +622,12 @@ public class HasTsCollectionSupport {
                 case Append:
                     Set<TsMoniker> firstMonikers = first.stream().map(Ts::getMoniker).collect(Collectors.toSet());
                     Predicate<TsMoniker> filter = moniker -> !moniker.isProvided() || !firstMonikers.contains(moniker);
-                    return Stream.concat(first.stream(), second.stream().filter(internal.ui.Collections2.compose(filter, Ts::getMoniker))).collect(TsCollection.toTsCollection());
+                    return Stream.concat(first.stream(), second.stream().filter(Collections2.compose(filter, Ts::getMoniker))).collect(TsCollection.toTsCollection());
             }
             return first;
         }
 
-        private static TsCollection freezedCopyOf(TsCollection input) {
+        private static TsCollection frozenCopyOf(TsCollection input) {
             return input.stream().map(Ts::freeze).collect(TsCollection.toTsCollection());
         }
 
@@ -733,18 +734,8 @@ public class HasTsCollectionSupport {
         @lombok.NonNull
         private final PropertyChangeBroadcaster broadcaster;
 
-        private TsCollection tsCollection = TsCollection.EMPTY;
-        private ListSelectionModel selectionModel = new DefaultListSelectionModel();
-        private static final TsUpdateMode DEFAULT_TS_UPDATE_MODE = TsUpdateMode.Append;
-        private TsUpdateMode updateMode = DEFAULT_TS_UPDATE_MODE;
-        private static final boolean DEFAULT_FREEZE_ON_IMPORT = false;
-        private boolean freezeOnImport = DEFAULT_FREEZE_ON_IMPORT;
-        private TsCollection dropContent = TsCollection.EMPTY;
-
-        public HasTsCollectionImpl watch(TsManager manager) {
-            manager.addWeakListener(this);
-            return this;
-        }
+        private static final TsCollection DEFAULT_TS_COLLECTION = TsCollection.EMPTY;
+        private TsCollection tsCollection = DEFAULT_TS_COLLECTION;
 
         @Override
         public TsCollection getTsCollection() {
@@ -753,23 +744,28 @@ public class HasTsCollectionSupport {
 
         @Override
         public void setTsCollection(TsCollection tsCollection) {
-            Objects.requireNonNull(tsCollection);
             TsCollection old = this.tsCollection;
-            this.tsCollection = tsCollection;
+            this.tsCollection = tsCollection != null ? tsCollection : DEFAULT_TS_COLLECTION;
             broadcaster.firePropertyChange(TS_COLLECTION_PROPERTY, old, this.tsCollection);
         }
 
+        private static final Supplier<ListSelectionModel> DEFAULT_TS_SELECTION_MODEL = DefaultListSelectionModel::new;
+        private ListSelectionModel tsSelectionModel = DEFAULT_TS_SELECTION_MODEL.get();
+
         @Override
         public ListSelectionModel getTsSelectionModel() {
-            return selectionModel;
+            return tsSelectionModel;
         }
 
         @Override
         public void setTsSelectionModel(ListSelectionModel selectionModel) {
-            ListSelectionModel old = this.selectionModel;
-            this.selectionModel = selectionModel != null ? selectionModel : new DefaultListSelectionModel();
-            broadcaster.firePropertyChange(TS_SELECTION_MODEL_PROPERTY, old, this.selectionModel);
+            ListSelectionModel old = this.tsSelectionModel;
+            this.tsSelectionModel = selectionModel != null ? selectionModel : DEFAULT_TS_SELECTION_MODEL.get();
+            broadcaster.firePropertyChange(TS_SELECTION_MODEL_PROPERTY, old, this.tsSelectionModel);
         }
+
+        private static final TsUpdateMode DEFAULT_TS_UPDATE_MODE = TsUpdateMode.Append;
+        private TsUpdateMode updateMode = DEFAULT_TS_UPDATE_MODE;
 
         @Override
         public TsUpdateMode getTsUpdateMode() {
@@ -783,6 +779,9 @@ public class HasTsCollectionSupport {
             broadcaster.firePropertyChange(TS_UPDATE_MODE_PROPERTY, old, this.updateMode);
         }
 
+        private static final boolean DEFAULT_FREEZE_ON_IMPORT = false;
+        private boolean freezeOnImport = DEFAULT_FREEZE_ON_IMPORT;
+
         @Override
         public boolean isFreezeOnImport() {
             return freezeOnImport;
@@ -795,6 +794,9 @@ public class HasTsCollectionSupport {
             broadcaster.firePropertyChange(FREEZE_ON_IMPORT_PROPERTY, old, this.freezeOnImport);
         }
 
+        private static final TsCollection DEFAULT_DROP_CONTENT = TsCollection.EMPTY;
+        private TsCollection dropContent = DEFAULT_DROP_CONTENT;
+
         @Override
         public TsCollection getDropContent() {
             return dropContent;
@@ -802,10 +804,14 @@ public class HasTsCollectionSupport {
 
         @Override
         public void setDropContent(TsCollection dropContent) {
-            Objects.requireNonNull(dropContent);
             TsCollection old = this.dropContent;
-            this.dropContent = dropContent;
+            this.dropContent = dropContent != null ? dropContent : DEFAULT_DROP_CONTENT;
             broadcaster.firePropertyChange(DROP_CONTENT_PROPERTY, old, this.dropContent);
+        }
+
+        public HasTsCollectionImpl watch(TsManager manager) {
+            manager.addWeakListener(this);
+            return this;
         }
 
         @Override

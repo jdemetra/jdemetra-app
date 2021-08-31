@@ -18,6 +18,7 @@ package demetra.desktop.core.components;
 
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
+import demetra.ui.IconManager;
 import demetra.ui.actions.Configurable;
 import demetra.ui.components.ComponentBackendSpi;
 import demetra.ui.components.JTsChart;
@@ -370,7 +371,6 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
     }
 
     private JMenu buildChartMenu(ActionMap am) {
-        DemetraOptions demetraUI = DemetraOptions.getDefault();
         JMenu result = new JMenu();
 
         result.add(HasTsCollectionSupport.newOpenMenu(target));
@@ -392,7 +392,7 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
 
         result.addSeparator();
         JMenuItem item = new JMenuItem(am.get(Configurable.CONFIGURE_ACTION));
-        item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_COGS));
+        item.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_COGS));
         item.setText("Configure...");
         result.add(item);
 
@@ -404,18 +404,18 @@ public final class InternalTsChartUI implements InternalUI<JTsChart> {
         result.add(HasColorSchemeSupport.menuOf(target));
         result.add(HasChartSupport.newLinesThicknessMenu(target));
         result.addSeparator();
-        result.add(InternalComponents.newResetZoomMenu(am, demetraUI));
+        result.add(InternalComponents.newResetZoomMenu(am));
 
-        result.add(buildExportImageMenu(demetraUI));
+        result.add(buildExportImageMenu());
 
         return result;
     }
 
-    private JMenu buildExportImageMenu(DemetraOptions demetraUI) {
+    private JMenu buildExportImageMenu() {
         JMenu result = new JMenu("Export image to");
         result.add(InternalComponents.menuItemOf(target));
-        result.add(InternalComponents.newCopyImageMenu(chartPanel, demetraUI));
-        result.add(InternalComponents.newSaveImageMenu(chartPanel, demetraUI));
+        result.add(InternalComponents.newCopyImageMenu(chartPanel));
+        result.add(InternalComponents.newSaveImageMenu(chartPanel));
         return result;
     }
 

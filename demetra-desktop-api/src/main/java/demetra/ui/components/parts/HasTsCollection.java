@@ -38,7 +38,7 @@ public interface HasTsCollection {
     @NonNull
     TsCollection getTsCollection();
 
-    void setTsCollection(@NonNull TsCollection tsCollection);
+    void setTsCollection(@Nullable TsCollection tsCollection);
 
     @SwingProperty
     String TS_SELECTION_MODEL_PROPERTY = "tsSelectionModel";
@@ -69,7 +69,7 @@ public interface HasTsCollection {
     @NonNull
     TsCollection getDropContent();
 
-    void setDropContent(@NonNull TsCollection dropContent);
+    void setDropContent(@Nullable TsCollection dropContent);
 
     @NonNull
     default IntStream getTsSelectionIndexStream() {

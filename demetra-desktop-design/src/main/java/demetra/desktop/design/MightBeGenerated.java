@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 National Bank of Belgium
+ * Copyright 2021 National Bank of Belgium
  * 
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,31 +14,16 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.components.parts;
+package demetra.desktop.design;
 
-import demetra.ui.beans.PropertyChangeBroadcaster;
-import demetra.ui.components.parts.HasTsAction;
+import java.lang.annotation.*;
 
 /**
  *
  * @author Philippe Charles
  */
-@lombok.RequiredArgsConstructor
-public final class HasTsActionImpl implements HasTsAction {
+@Retention(RetentionPolicy.SOURCE)
+@Documented
+public @interface MightBeGenerated {
 
-    @lombok.NonNull
-    private final PropertyChangeBroadcaster broadcaster;
-    private String tsAction = null;
-
-    @Override
-    public void setTsAction(String tsAction) {
-        String old = this.tsAction;
-        this.tsAction = tsAction;
-        broadcaster.firePropertyChange(TS_ACTION_PROPERTY, old, this.tsAction);
-    }
-
-    @Override
-    public String getTsAction() {
-        return tsAction;
-    }
 }

@@ -1,53 +1,46 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package demetra.ui.components;
 
-import demetra.ui.components.parts.*;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import demetra.timeseries.TsData;
 import demetra.tsprovider.util.MultiLineNameUtil;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
+import demetra.ui.IconManager;
 import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.TsMonikerUI;
-import demetra.desktop.design.SwingComponent;
-import demetra.desktop.design.SwingProperty;
+import demetra.ui.components.parts.*;
 import demetra.ui.jfreechart.TsSparklineCellRenderer;
 import ec.util.table.swing.JTables;
 import ec.util.various.swing.StandardSwingColor;
 import internal.ui.components.DemoTsBuilder;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.beans.Beans;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
 import nbbrd.io.text.Formatter;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.beans.Beans;
+import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+
 /**
- *
  * @author Kristof Bayens
  * @author Philippe Charles
  */
@@ -101,7 +94,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
                 .type(demetra.timeseries.TsData.class)
                 .mapper(demetra.timeseries.Ts::getData)
                 .comparator((l, r) -> -1)
-                .renderer(table -> new TsDataTableCellRenderer(table, DemetraOptions.getDefault()))
+                .renderer(TsDataTableCellRenderer::new)
                 .build();
 
         public static final Column TS_IDENTIFIER = builder()
@@ -163,7 +156,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
 
     public JTsTable() {
         this.collection = HasTsCollectionSupport.of(this::firePropertyChange);
-        this.tsAction = HasTsAction.of(this::firePropertyChange);
+        this.tsAction = HasTsActionSupport.of(this::firePropertyChange);
         this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
         this.showHeader = DEFAULT_SHOW_HEADER;
         this.columns = DEFAULT_COLUMNS;
@@ -232,7 +225,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
 
     private static final class TsIdentifierTableCellRenderer extends DefaultTableCellRenderer {
 
-        private final TsMonikerUI monikerUI = TsMonikerUI.getDefault();
+        private final IconManager monikerUI = IconManager.getDefault();
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -259,16 +252,14 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
     private static final class TsDataTableCellRenderer implements TableCellRenderer {
 
         private final HasObsFormat target;
-        private final DemetraOptions demetraUI;
         private final TsSparklineCellRenderer dataRenderer;
         private final DefaultTableCellRenderer labelRenderer;
 
         private ObsFormat currentFormat;
         private Formatter<Number> currentFormatter;
 
-        public TsDataTableCellRenderer(HasObsFormat target, DemetraOptions demetraUI) {
+        public TsDataTableCellRenderer(HasObsFormat target) {
             this.target = target;
-            this.demetraUI = demetraUI;
             this.dataRenderer = new TsSparklineCellRenderer();
             this.labelRenderer = new DefaultTableCellRenderer();
             StandardSwingColor.TEXT_FIELD_INACTIVE_FOREGROUND.lookup().ifPresent(labelRenderer::setForeground);
@@ -280,7 +271,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
 
         private ObsFormat lookupObsFormat() {
             ObsFormat result = target.getObsFormat();
-            return result != null ? result : demetraUI.getObsFormat();
+            return result != null ? result : DemetraOptions.getDefault().getObsFormat();
         }
 
         private String formatValue(Number o) {

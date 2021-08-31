@@ -20,7 +20,7 @@ import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.ui.components.parts.HasChart.LinesThickness;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
-import demetra.ui.TsMonikerUI;
+import demetra.ui.IconManager;
 import demetra.ui.util.NbComponents;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tools.GridTopComponent;
@@ -102,7 +102,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
 
         @Override
         public Image getIcon() {
-            Icon icon = TsMonikerUI.getDefault().getIcon(ts.getMoniker());
+            Icon icon = IconManager.getDefault().getIcon(ts.getMoniker());
             return icon != null ? ImageUtilities.icon2Image(icon) : null;
         }
 
@@ -147,7 +147,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
 
         @Override
         public Image getIcon() {
-            Icon icon = TsMonikerUI.getDefault().getIcon(ts.getMoniker());
+            Icon icon = IconManager.getDefault().getIcon(ts.getMoniker());
             return icon != null ? ImageUtilities.icon2Image(icon) : null;
         }
 

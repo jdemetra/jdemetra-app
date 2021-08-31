@@ -3,7 +3,7 @@ package internal.ui.components;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.TsMonikerUI;
+import demetra.ui.IconManager;
 import demetra.ui.components.ComponentCommand;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.HasTsCollection;
@@ -52,7 +52,7 @@ public final class SplitIntoYearlyComponentsCommand extends ComponentCommand<Has
         c.getChart().setObsFormat(ObsFormat.of(null, "MMM", null));
         c.getChart().setTsUpdateMode(HasTsCollection.TsUpdateMode.None);
         c.getChart().setTsCollection(split(ts));
-        Icon icon = TsMonikerUI.getDefault().getIcon(TsConverter.toTsMoniker(ts.getMoniker()));
+        Icon icon = IconManager.getDefault().getIcon(TsConverter.toTsMoniker(ts.getMoniker()));
         c.setIcon(icon != null ? ImageUtilities.icon2Image(icon) : null);
         c.open();
         c.requestActive();

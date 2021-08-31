@@ -7,7 +7,7 @@ import ec.util.chart.ColorScheme;
 import ec.util.chart.impl.SmartColorScheme;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.various.swing.OnEDT;
-import internal.ui.Collections2;
+import demetra.ui.util.Collections2;
 import java.util.Comparator;
 import java.util.List;
 import java.util.WeakHashMap;

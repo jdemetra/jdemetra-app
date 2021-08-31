@@ -2,10 +2,11 @@ package demetra.ui.components.parts;
 
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsInformationType;
+import demetra.ui.TsEvent;
+import demetra.ui.TsListener;
 import demetra.ui.TsManager;
 import demetra.ui.beans.PropertyChangeBroadcaster;
 import demetra.ui.datatransfer.DataTransfer;
-import internal.ui.components.parts.HasTsImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.swing.*;
@@ -48,6 +49,46 @@ public class HasTsSupport {
                 return true;
             }
             return false;
+        }
+    }
+
+    /**
+     * @author Philippe Charles
+     */
+    @lombok.RequiredArgsConstructor
+    private static final class HasTsImpl implements HasTs, TsListener {
+
+        @lombok.NonNull
+        private final PropertyChangeBroadcaster broadcaster;
+
+        Ts ts = null;
+
+        public HasTsImpl register(TsManager manager) {
+            manager.addWeakListener(this);
+            return this;
+        }
+
+        @Override
+        public Ts getTs() {
+            return ts;
+        }
+
+        @Override
+        public void setTs(Ts ts) {
+            Ts old = this.ts;
+            this.ts = ts;
+            broadcaster.firePropertyChange(TS_PROPERTY, old, this.ts);
+        }
+
+        @Override
+        public void tsUpdated(TsEvent event) {
+            if (hasTs() && event.getMoniker().equals(ts.getMoniker())) {
+                setTs(event.getSource().makeTs(ts.getMoniker(), ts.getType()));
+            }
+        }
+
+        private boolean hasTs() {
+            return ts != null;
         }
     }
 }

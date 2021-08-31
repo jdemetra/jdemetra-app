@@ -17,7 +17,7 @@
 package ec.nbdemetra.x13.actions;
 
 import demetra.ui.Config;
-import ec.nbdemetra.ui.interchange.ImportAction;
+import ec.nbdemetra.ui.interchange.ImportNodeAction;
 import ec.nbdemetra.ui.interchange.Importable;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.WorkspaceFactory;
@@ -64,7 +64,7 @@ public class ImportRegArimaSpec extends SingleNodeAction<Node> implements Presen
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = ImportAction.getPopupPresenter(getImportables());
+        JMenuItem result = ImportNodeAction.getPopupPresenter(getImportables());
         result.setText(Bundle.CTL_ImportRegArimaSpec());
         return result;
     }

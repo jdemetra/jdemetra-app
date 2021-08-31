@@ -18,7 +18,7 @@ package ec.nbdemetra.tramoseats.actions;
 
 import ec.nbdemetra.tramoseats.TramoSeatsSpecificationManager;
 import demetra.ui.Config;
-import ec.nbdemetra.ui.interchange.ExportAction;
+import ec.nbdemetra.ui.interchange.ExportNodeAction;
 import ec.nbdemetra.ui.interchange.Exportable;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
@@ -60,7 +60,7 @@ public class ExportTramoSeatsSpec extends NodeAction implements Presenter.Popup 
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = ExportAction.getPopupPresenter(getExportables(getActivatedNodes()));
+        JMenuItem result = ExportNodeAction.getPopupPresenter(getExportables(getActivatedNodes()));
         result.setText(Bundle.CTL_ExportTramoSeatsSpec());
         return result;
     }

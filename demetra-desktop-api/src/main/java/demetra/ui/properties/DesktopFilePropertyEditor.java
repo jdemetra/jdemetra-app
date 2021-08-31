@@ -1,40 +1,41 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  *
  * http://ec.europa.eu/idabc/eupl
  *
- * Unless required by applicable law or agreed to in writing, software 
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package demetra.ui.properties;
 
 import demetra.ui.completion.DesktopFileAutoCompletionSource;
 import demetra.ui.concurrent.ThreadPriority;
-import static demetra.ui.properties.AbstractExPropertyEditor.attr;
+import demetra.ui.concurrent.UIExecutors;
+import demetra.ui.util.Collections2;
 import ec.util.completion.swing.FileListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
-import demetra.ui.concurrent.UIExecutors;
+import org.openide.explorer.propertysheet.ExPropertyEditor;
+import org.openide.explorer.propertysheet.InplaceEditor;
+import org.openide.explorer.propertysheet.PropertyEnv;
+
+import javax.swing.*;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
-import org.openide.explorer.propertysheet.ExPropertyEditor;
-import org.openide.explorer.propertysheet.InplaceEditor;
-import org.openide.explorer.propertysheet.PropertyEnv;
+
+import static demetra.ui.properties.AbstractExPropertyEditor.attr;
 
 /**
- *
  * @author Philippe Charles
  */
 public final class DesktopFilePropertyEditor extends ForwardingPropertyEditor implements ExPropertyEditor, InplaceEditor.Factory {
@@ -48,7 +49,7 @@ public final class DesktopFilePropertyEditor extends ForwardingPropertyEditor im
     // => cannot register this editor
     public DesktopFilePropertyEditor() {
         super(PropertyEditorManager.findEditor(File.class));
-        this.inplaceEditor = AbstractExPropertyEditor.memoize(DesktopFileInplaceEditor::new);
+        this.inplaceEditor = Collections2.memoize(DesktopFileInplaceEditor::new);
     }
 
     @Override

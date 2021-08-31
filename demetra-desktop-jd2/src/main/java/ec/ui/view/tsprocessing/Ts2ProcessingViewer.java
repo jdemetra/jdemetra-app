@@ -5,7 +5,7 @@
 package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.TsMonikerUI;
+import demetra.ui.IconManager;
 import ec.tss.Ts;
 import ec.tss.documents.MultiTsDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
@@ -82,7 +82,7 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
         } else {
             dropDataLabely.setVisible(false);
             demetra.timeseries.TsMoniker monikery = TsConverter.toTsMoniker(input[0].getMoniker());
-            tsLabely.setIcon(TsMonikerUI.getDefault().getIcon(monikery));
+            tsLabely.setIcon(IconManager.getDefault().getIcon(monikery));
             tsLabely.setToolTipText(tsLabely.getText() + (monikery.getSource() != null ? (" (" + monikery.getSource() + ")") : ""));
             tsLabely.setVisible(true);
         }
@@ -92,7 +92,7 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
         } else {
             dropDataLabelz.setVisible(false);
             demetra.timeseries.TsMoniker monikerz = TsConverter.toTsMoniker(input[1].getMoniker());
-            tsLabelz.setIcon(TsMonikerUI.getDefault().getIcon(monikerz));
+            tsLabelz.setIcon(IconManager.getDefault().getIcon(monikerz));
             tsLabelz.setToolTipText(tsLabelz.getText() + (monikerz.getSource() != null ? (" (" + monikerz.getSource() + ")") : ""));
             tsLabelz.setVisible(true);
         }

@@ -4,8 +4,6 @@
  */
 package ec.nbdemetra.sa;
 
-import demetra.ui.TsMonikerUI;
-import demetra.ui.util.NbComponents;
 import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
@@ -14,11 +12,15 @@ import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.DemetraOptions;
 import demetra.ui.TsActions;
-import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
-import ec.nbdemetra.ui.Menus.DynamicPopup;
-import ec.nbdemetra.ui.*;
+import demetra.ui.IconManager;
+import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.datatransfer.DataTransfers;
 import demetra.ui.util.ListTableModel;
+import demetra.ui.util.NbComponents;
 import demetra.ui.util.PopupMenuAdapter;
+import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
+import ec.nbdemetra.ui.*;
+import ec.nbdemetra.ui.Menus.DynamicPopup;
 import ec.nbdemetra.ui.notification.MessageType;
 import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ws.WorkspaceFactory;
@@ -43,27 +45,6 @@ import ec.ui.view.tsprocessing.DefaultProcessingViewer;
 import ec.ui.view.tsprocessing.TsProcessingViewer;
 import ec.util.grid.swing.XTable;
 import ec.util.table.swing.JTables;
-import java.awt.*;
-import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeListener;
-import java.util.List;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import static java.util.stream.Collectors.toList;
-import javax.swing.*;
-import javax.swing.TransferHandler.TransferSupport;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
@@ -76,11 +57,30 @@ import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import demetra.ui.datatransfer.DataTransfer;
-import demetra.ui.datatransfer.DataTransfers;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+import java.awt.*;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
- *
  * @author Kristof Bayens
  * @author Philippe Charles
  * @author Mats Maggi
@@ -174,6 +174,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         Log,
         Level
     }
+
     // CONSTANTS
     private static final Logger LOGGER = LoggerFactory.getLogger(SaBatchUI.class);
     // PROPERTIES DEFINITIONS
@@ -847,7 +848,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     static class SeriesRenderer extends SimpleRenderer<SaItem> {
 
-        final TsMonikerUI monikerUI = TsMonikerUI.getDefault();
+        final IconManager monikerUI = IconManager.getDefault();
 
         @Override
         protected String getText(SaItem item) {
@@ -1068,15 +1069,15 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         }
 
         @Override
-        protected Void doInBackground() throws Exception {
+        protected Void doInBackground() {
             List<Callable<CompositeResults>> tasks = createTasks();
             if (tasks == null) {
                 return null;
             }
 
-            DemetraOptions config = DemetraOptions.getDefault();
-            int nThread = config.getBatchPoolSize().getSize();
-            int priority = config.getBatchPriority().getPriority();
+            DemetraOptions options = DemetraOptions.getDefault();
+            int nThread = options.getBatchPoolSize().getSize();
+            int priority = options.getBatchPriority().getPriority();
 
             ExecutorService executorService = Executors.newFixedThreadPool(nThread, new ThreadFactoryBuilder().setDaemon(true).setPriority(priority).build());
             Stopwatch stopwatch = Stopwatch.createStarted();
@@ -1123,6 +1124,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 return null;
             }
         }
+
         int progressCount = 0;
 
         @Override

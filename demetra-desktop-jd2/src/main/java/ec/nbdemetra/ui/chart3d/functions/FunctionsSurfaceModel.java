@@ -137,9 +137,9 @@ public class FunctionsSurfaceModel extends AbstractSurfaceModel {
                     return null;
                 }
 
-                DemetraOptions config = DemetraOptions.getDefault();
+                DemetraOptions options = DemetraOptions.getDefault();
 
-                ExecutorService executorService = UIExecutors.newFixedThreadPool(config.getBatchPoolSize(), config.getBatchPriority());
+                ExecutorService executorService = UIExecutors.newFixedThreadPool(options.getBatchPoolSize(), options.getBatchPriority());
                 try {
                     executorService.invokeAll(tasks);
                 } catch (InterruptedException ex) {

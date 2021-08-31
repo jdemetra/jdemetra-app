@@ -16,12 +16,10 @@
  */
 package demetra.desktop.core.components;
 
-import demetra.ui.DemetraOptions;
 import demetra.ui.components.ComponentBackendSpi;
 import demetra.ui.components.JTsTable;
 import demetra.ui.components.TsSelectionBridge;
 import demetra.ui.components.parts.*;
-import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.util.*;
 import ec.util.table.swing.JTables;
 import ec.util.various.swing.StandardSwingColor;
@@ -73,8 +71,6 @@ public final class InternalTsTableUI implements InternalUI<JTsTable> {
     private final ETable table = new ETable();
     private final JTableHeader tableHeader = table.getTableHeader();
     private final DropRenderer dropRenderer = new DropRenderer();
-    private final DataTransfer tssTransfer = DataTransfer.getDefault();
-    private final DemetraOptions demetraUI = DemetraOptions.getDefault();
 
     private ListTableSelectionListener selectionListener;
     private HasObsFormatResolver obsFormatResolver;

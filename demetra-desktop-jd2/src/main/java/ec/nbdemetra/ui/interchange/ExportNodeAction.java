@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 National Bank of Belgium
+ * Copyright 2013 National Bank of Belgium
  * 
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,17 +14,16 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.tssave;
+package ec.nbdemetra.ui.interchange;
 
-import demetra.timeseries.TsCollection;
-import demetra.ui.NamedService;
-import demetra.ui.TsActions;
-import demetra.ui.actions.AbilityAction;
+import demetra.ui.actions.AbilityNodeAction;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -32,30 +31,30 @@ import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
-import demetra.ui.TsCollectable;
 
 /**
  *
  * @author Philippe Charles
  */
-@ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction")
-@ActionRegistration(displayName = "#CTL_TsSaveAction", lazy = false)
-@Messages("CTL_TsSaveAction=Save to")
-public final class TsSaveAction extends AbilityAction<TsCollectable> implements Presenter.Popup {
+@ActionID(category = "File", id = "ec.nbdemetra.ui.interchange.ExportAction")
+@ActionRegistration(displayName = "#CTL_ExportAction", lazy = false)
+@Messages("CTL_ExportAction=Export to")
+public final class ExportNodeAction extends AbilityNodeAction<Exportable> implements Presenter.Popup {
 
-    public TsSaveAction() {
-        super(TsCollectable.class);
+    public ExportNodeAction() {
+        super(Exportable.class);
     }
 
     @Override
     public JMenuItem getPopupPresenter() {
-        return getPopupPresenter(getAll(getActivatedNodes()));
+        return getPopupPresenter(getExportables(getActivatedNodes()));
     }
 
     @Override
-    protected void performAction(Stream<TsCollectable> items) {
+    protected void performAction(Stream<Exportable> items) {
     }
 
     @Override
@@ -63,39 +62,43 @@ public final class TsSaveAction extends AbilityAction<TsCollectable> implements 
         return null;
     }
 
-    private static List<TsCollectable> getAll(Node[] activatedNodes) {
+    private static List<Exportable> getExportables(Node[] activatedNodes) {
         return Stream.of(activatedNodes)
-                .map(o -> o.getLookup().lookup(TsCollectable.class))
+                .map(o -> o.getLookup().lookup(Exportable.class))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
     @NonNull
-    public static JMenuItem getPopupPresenter(@NonNull List<TsCollectable> data) {
+    public static JMenuItem getPopupPresenter(@NonNull List<? extends Exportable> exportables) {
         JMenu result = new JMenu();
-        result.setText(Bundle.CTL_TsSaveAction());
-        for (NamedService o : TsActions.getDefault().getSaveActions()) {
-            JMenuItem item = result.add(new ItemAction(o, data));
+        result.setText(Bundle.CTL_ExportAction());
+        for (InterchangeBroker o : InterchangeBrokerLoader.get()) {
+            JMenuItem item = result.add(new Export(o, exportables));
             item.setText(o.getDisplayName());
+            item.setEnabled(o.canExport(exportables));
         }
         return result;
     }
 
-    private static final class ItemAction extends AbstractAction {
+    private static final class Export extends AbstractAction {
 
-        private final NamedService o;
-        private final List<TsCollectable> data;
+        private final InterchangeBroker o;
+        private final List<? extends Exportable> exportables;
 
-        private ItemAction(NamedService o, List<TsCollectable> data) {
+        public Export(InterchangeBroker o, List<? extends Exportable> exportables) {
             super(o.getName());
             this.o = o;
-            this.data = data;
+            this.exportables = exportables;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            List<TsCollection> xdata = data.stream().map(TsCollectable::getTsCollection).collect(Collectors.toList());
-            TsActions.getDefault().saveWith(xdata, o.getName());
+            try {
+                o.performExport(exportables);
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         }
     }
 }

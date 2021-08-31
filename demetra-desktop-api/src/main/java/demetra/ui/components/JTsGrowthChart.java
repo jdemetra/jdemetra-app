@@ -93,7 +93,7 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
 
     public JTsGrowthChart() {
         this.collection = HasTsCollectionSupport.of(this::firePropertyChange);
-        this.tsAction = HasTsAction.of(this::firePropertyChange);
+        this.tsAction = HasTsActionSupport.of(this::firePropertyChange);
         this.chart = HasChartSupport.of(this::firePropertyChange);
         this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
         this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);

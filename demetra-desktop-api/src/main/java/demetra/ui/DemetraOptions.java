@@ -1,23 +1,18 @@
 package demetra.ui;
 
 import demetra.desktop.design.GlobalService;
+import demetra.desktop.design.MightBeGenerated;
 import demetra.desktop.design.SwingProperty;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.concurrent.ThreadPoolSize;
 import demetra.ui.concurrent.ThreadPriority;
 import demetra.ui.util.LazyGlobalService;
-import ec.util.various.swing.FontAwesome;
-import java.awt.Color;
-import java.beans.PropertyChangeSupport;
-import javax.swing.Icon;
-import nbbrd.io.text.BooleanProperty;
-import nbbrd.io.text.Formatter;
-import nbbrd.io.text.IntProperty;
-import nbbrd.io.text.Parser;
-import nbbrd.io.text.Property;
+import demetra.ui.util.Persistance;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.beans.PropertyChangeSupport;
 
 @GlobalService
 public final class DemetraOptions implements PropertyChangeSource.WithWeakListeners, Persistable {
@@ -31,7 +26,7 @@ public final class DemetraOptions implements PropertyChangeSource.WithWeakListen
     }
 
     @lombok.experimental.Delegate(types = PropertyChangeSource.class)
-    protected final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
 
     @SwingProperty
     public static final String COLOR_SCHEME_NAME_PROPERTY = "colorSchemeName";
@@ -214,65 +209,93 @@ public final class DemetraOptions implements PropertyChangeSource.WithWeakListen
         broadcaster.firePropertyChange(GROWTH_LAST_YEARS_PROPERTY, old, growthLastYears);
     }
 
-    private static final Property<String> COLOR_SCHEME_NAME_CONFIG = Property.of(COLOR_SCHEME_NAME_PROPERTY, DEFAULT_COLOR_SCHEME_NAME, Parser.onString(), Formatter.onString());
-    private static final BooleanProperty SHOW_UNAVAILABLE_TS_PROVIDERS_CONFIG = BooleanProperty.of(SHOW_UNAVAILABLE_TS_PROVIDERS_PROPERTY, DEFAULT_SHOW_UNAVAILABLE_TS_PROVIDERS);
-    private static final BooleanProperty SHOW_TS_PROVIDER_NODES_CONFIG = BooleanProperty.of(SHOW_TS_PROVIDER_NODES_PROPERTY, DEFAULT_SHOW_TS_PROVIDER_NODES);
-    private static final Property<String> TS_ACTION_NAME_CONFIG = Property.of(TS_ACTION_NAME_PROPERTY, DEFAULT_TS_ACTION_NAME, Parser.onString(), Formatter.onString());
-    private static final BooleanProperty PERSIST_TOOLS_CONTENT_CONFIG = BooleanProperty.of(PERSIST_TOOLS_CONTENT_PROPERTY, DEFAULT_PERSIST_TOOLS_CONTENT);
-    private static final BooleanProperty PERSIST_OPENED_DATA_SOURCES_CONFIG = BooleanProperty.of(PERSIST_OPENED_DATA_SOURCES_PROPERTY, DEFAULT_PERSIST_OPENED_DATA_SOURCES);
-    private static final Property<ThreadPoolSize> BATCH_POOL_SIZE_CONFIG = Property.of(BATCH_POOL_SIZE_PROPERTY, DEFAULT_BATCH_POOL_SIZE, Parser.onEnum(ThreadPoolSize.class), Formatter.onEnum());
-    private static final Property<ThreadPriority> BATCH_PRIORITY_CONFIG = Property.of(BATCH_PRIORITY_PROPERTY, DEFAULT_BATCH_PRIORITY, Parser.onEnum(ThreadPriority.class), Formatter.onEnum());
-    private static final BooleanProperty POPUP_MENU_ICONS_VISIBLE_CONFIG = BooleanProperty.of(POPUP_MENU_ICONS_VISIBLE_PROPERTY, DEFAULT_POPUP_MENU_ICONS_VISIBLE);
-    private static final IntProperty HTML_ZOOM_RATIO_CONFIG = IntProperty.of(HTML_ZOOM_RATIO_PROPERTY, DEFAULT_HTML_ZOOM_RATIO);
-    private static final Config.Converter<ObsFormat> OBS_FORMAT_CONFIG = new ObsFormatConverter(DEFAULT_OBS_FORMAT, "locale", "datePattern", "numberPattern");
-    private static final IntProperty GROWTH_LAST_YEARS_CONFIG = IntProperty.of(GROWTH_LAST_YEARS_PROPERTY, DEFAULT_GROWTH_LAST_YEARS);
-
     @Override
     public Config getConfig() {
-        Config.Builder b = Config.builder(DOMAIN, NAME, VERSION);
-        COLOR_SCHEME_NAME_CONFIG.set(b::parameter, getColorSchemeName());
-        SHOW_UNAVAILABLE_TS_PROVIDERS_CONFIG.set(b::parameter, isShowUnavailableTsProviders());
-        SHOW_TS_PROVIDER_NODES_CONFIG.set(b::parameter, isShowTsProviderNodes());
-        TS_ACTION_NAME_CONFIG.set(b::parameter, getTsActionName());
-        PERSIST_TOOLS_CONTENT_CONFIG.set(b::parameter, isPersistToolsContent());
-        PERSIST_OPENED_DATA_SOURCES_CONFIG.set(b::parameter, isPersistOpenedDataSources());
-        BATCH_POOL_SIZE_CONFIG.set(b::parameter, getBatchPoolSize());
-        BATCH_PRIORITY_CONFIG.set(b::parameter, getBatchPriority());
-        POPUP_MENU_ICONS_VISIBLE_CONFIG.set(b::parameter, isPopupMenuIconsVisible());
-        HTML_ZOOM_RATIO_CONFIG.set(b::parameter, getHtmlZoomRatio());
-        OBS_FORMAT_CONFIG.set(b, getObsFormat());
-        GROWTH_LAST_YEARS_CONFIG.set(b::parameter, getGrowthLastYears());
-        return b.build();
+        return PERSISTANCE.loadConfig(this);
     }
 
     @Override
     public void setConfig(Config config) {
-        Config.checkDomain(config, DOMAIN);
-        setColorSchemeName(COLOR_SCHEME_NAME_CONFIG.get(config::getParameter));
-        setShowUnavailableTsProviders(SHOW_UNAVAILABLE_TS_PROVIDERS_CONFIG.get(config::getParameter));
-        setShowTsProviderNodes(SHOW_TS_PROVIDER_NODES_CONFIG.get(config::getParameter));
-        setTsActionName(TS_ACTION_NAME_CONFIG.get(config::getParameter));
-        setPersistToolsContent(PERSIST_TOOLS_CONTENT_CONFIG.get(config::getParameter));
-        setPersistOpenedDataSources(PERSIST_OPENED_DATA_SOURCES_CONFIG.get(config::getParameter));
-        setBatchPoolSize(BATCH_POOL_SIZE_CONFIG.get(config::getParameter));
-        setBatchPriority(BATCH_PRIORITY_CONFIG.get(config::getParameter));
-        setPopupMenuIconsVisible(POPUP_MENU_ICONS_VISIBLE_CONFIG.get(config::getParameter));
-        setHtmlZoomRatio(HTML_ZOOM_RATIO_CONFIG.get(config::getParameter));
-        setObsFormat(OBS_FORMAT_CONFIG.get(config));
-        setGrowthLastYears(GROWTH_LAST_YEARS_CONFIG.get(config::getParameter));
+        PERSISTANCE.storeConfig(this, config);
     }
 
-    private static final String DOMAIN = DemetraOptions.class.getName(), NAME = "INSTANCE", VERSION = "";
-
-    @Deprecated
-    public Icon getPopupMenuIcon(Icon icon) {
-        return isPopupMenuIconsVisible() ? icon : null;
-    }
-
-    @Deprecated
-    public Icon getPopupMenuIcon(FontAwesome icon) {
-        return isPopupMenuIconsVisible() ? icon.getIcon(Color.BLACK, 13f) : null;
-    }
+    @MightBeGenerated
+    private static final Persistance<DemetraOptions> PERSISTANCE = Persistance
+            .builderOf(DemetraOptions.class)
+            .name("INSTANCE")
+            .version("VERSION")
+            .onString(
+                    COLOR_SCHEME_NAME_PROPERTY,
+                    DEFAULT_COLOR_SCHEME_NAME,
+                    DemetraOptions::getColorSchemeName,
+                    DemetraOptions::setColorSchemeName
+            )
+            .onBoolean(
+                    SHOW_UNAVAILABLE_TS_PROVIDERS_PROPERTY,
+                    DEFAULT_SHOW_UNAVAILABLE_TS_PROVIDERS,
+                    DemetraOptions::isShowUnavailableTsProviders,
+                    DemetraOptions::setShowUnavailableTsProviders
+            )
+            .onBoolean(
+                    SHOW_TS_PROVIDER_NODES_PROPERTY,
+                    DEFAULT_SHOW_TS_PROVIDER_NODES,
+                    DemetraOptions::isShowTsProviderNodes,
+                    DemetraOptions::setShowTsProviderNodes
+            )
+            .onString(
+                    TS_ACTION_NAME_PROPERTY,
+                    DEFAULT_TS_ACTION_NAME,
+                    DemetraOptions::getTsActionName,
+                    DemetraOptions::setTsActionName
+            )
+            .onBoolean(
+                    PERSIST_TOOLS_CONTENT_PROPERTY,
+                    DEFAULT_PERSIST_TOOLS_CONTENT,
+                    DemetraOptions::isPersistToolsContent,
+                    DemetraOptions::setPersistToolsContent
+            )
+            .onBoolean(
+                    PERSIST_OPENED_DATA_SOURCES_PROPERTY,
+                    DEFAULT_PERSIST_OPENED_DATA_SOURCES,
+                    DemetraOptions::isPersistOpenedDataSources,
+                    DemetraOptions::setPersistOpenedDataSources
+            )
+            .onEnum(
+                    BATCH_POOL_SIZE_PROPERTY,
+                    DEFAULT_BATCH_POOL_SIZE,
+                    DemetraOptions::getBatchPoolSize,
+                    DemetraOptions::setBatchPoolSize
+            )
+            .onEnum(
+                    BATCH_PRIORITY_PROPERTY,
+                    DEFAULT_BATCH_PRIORITY,
+                    DemetraOptions::getBatchPriority,
+                    DemetraOptions::setBatchPriority
+            )
+            .onBoolean(
+                    POPUP_MENU_ICONS_VISIBLE_PROPERTY,
+                    DEFAULT_POPUP_MENU_ICONS_VISIBLE,
+                    DemetraOptions::isPopupMenuIconsVisible,
+                    DemetraOptions::setPopupMenuIconsVisible
+            )
+            .onInt(
+                    HTML_ZOOM_RATIO_PROPERTY,
+                    DEFAULT_HTML_ZOOM_RATIO,
+                    DemetraOptions::getHtmlZoomRatio,
+                    DemetraOptions::setHtmlZoomRatio
+            )
+            .onConverter(
+                    new ObsFormatConverter(DEFAULT_OBS_FORMAT, "locale", "datePattern", "numberPattern"),
+                    DemetraOptions::getObsFormat,
+                    DemetraOptions::setObsFormat
+            )
+            .onInt(
+                    GROWTH_LAST_YEARS_PROPERTY,
+                    DEFAULT_GROWTH_LAST_YEARS,
+                    DemetraOptions::getGrowthLastYears,
+                    DemetraOptions::setGrowthLastYears
+            )
+            .build();
 
     private static final class ObsFormatConverter implements Config.Converter<ObsFormat> {
 

@@ -23,10 +23,11 @@ import demetra.timeseries.TsPeriod;
 import demetra.tsprovider.util.MultiLineNameUtil;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.ui.DemetraOptions;
-import demetra.ui.TsMonikerUI;
+import demetra.ui.IconManager;
 import demetra.ui.components.*;
 import demetra.ui.components.parts.*;
 import demetra.ui.util.ActionMaps;
+import demetra.ui.util.Collections2;
 import demetra.ui.util.InputMaps;
 import ec.util.chart.ObsIndex;
 import ec.util.chart.swing.SwingColorSchemeSupport;
@@ -36,7 +37,6 @@ import ec.util.grid.swing.JGrid;
 import ec.util.grid.swing.XTable;
 import ec.util.various.swing.FontAwesome;
 import nbbrd.design.DirectImpl;
-import nbbrd.design.MightBePromoted;
 import nbbrd.io.text.Formatter;
 import nbbrd.service.ServiceProvider;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -49,12 +49,10 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.DoubleSummaryStatistics;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 
-import static demetra.desktop.core.components.JTsGridCommands.*;
+import static demetra.desktop.core.components.JTsGridCommands.TOGGLE_MODE_ACTION;
 
 public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
@@ -388,19 +386,13 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
     private void updateGridCellRenderer() {
         TsCollection data = target.getTsCollection();
-        Supplier<TsFeatureHelper> tsFeatures = memoize(() -> TsFeatureHelper.of(data.getItems()));
-        Supplier<DoubleSummaryStatistics> stats = memoize(() -> target.getSingleTsIndex() != -1
+        Supplier<TsFeatureHelper> tsFeatures = Collections2.memoize(() -> TsFeatureHelper.of(data.getItems()));
+        Supplier<DoubleSummaryStatistics> stats = Collections2.memoize(() -> target.getSingleTsIndex() != -1
                 ? data.stream().flatMapToDouble(o -> o.getData().getValues().stream()).summaryStatistics()
                 : data.get(target.getSingleTsIndex()).getData().getValues().stream().summaryStatistics());
         defaultCellRenderer.update(obsFormatResolver.resolve(), target.isUseColorScheme() ? colorSchemeResolver.resolve() : null, target.isShowBars(), tsFeatures, stats);
         grid.setDefaultRenderer(TsGridObs.class, target.getCellRenderer());
         grid.repaint();
-    }
-
-    @MightBePromoted
-    private static <T> Supplier<T> memoize(Supplier<T> supplier) {
-        ConcurrentMap<String, T> data = new ConcurrentHashMap<>();
-        return () -> data.computeIfAbsent("", key -> supplier.get());
     }
 
     private void updateComboCellRenderer() {
@@ -431,8 +423,6 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
     }
 
     private JMenu buildGridMenu() {
-        DemetraOptions demetraUI = DemetraOptions.getDefault();
-
         ActionMap am = target.getActionMap();
 
         JMenu result = buildMenu();
@@ -449,7 +439,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
         item = new JCheckBoxMenuItem(am.get(JTsGrid.REVERSE_ACTION));
         item.setText("Reverse chronology");
-        item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_SORT_NUMERIC_DESC));
+        item.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_SORT_NUMERIC_DESC));
         result.add(item, index++);
 
         item = new JCheckBoxMenuItem(am.get(TOGGLE_MODE_ACTION));
@@ -460,7 +450,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
         item = new JMenuItem(am.get(HasObsFormat.EDIT_FORMAT_ACTION));
         item.setText("Edit format...");
-        item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_GLOBE));
+        item.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_GLOBE));
         result.add(item);
 
         item = new JCheckBoxMenuItem(JTsGridCommands.toggleUseColorScheme().toAction(target));
@@ -471,7 +461,7 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
         item = new JCheckBoxMenuItem(JTsGridCommands.toggleShowBars().toAction(target));
         item.setText("Show bars");
-        item.setIcon(demetraUI.getPopupMenuIcon(FontAwesome.FA_TASKS));
+        item.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_TASKS));
         result.add(item);
 
         item = HasGridSupport.newToggleCrosshairVisibilityMenu(target);
@@ -674,11 +664,11 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
     private static final class ComboCellRenderer extends DefaultListCellRenderer {
 
-        private final TsMonikerUI monikerUI;
+        private final IconManager monikerUI;
         private final SwingColorSchemeSupport colorSchemeSupport;
 
         public ComboCellRenderer(@Nullable SwingColorSchemeSupport colorSchemeSupport) {
-            this.monikerUI = TsMonikerUI.getDefault();
+            this.monikerUI = IconManager.getDefault();
             this.colorSchemeSupport = colorSchemeSupport;
         }
 

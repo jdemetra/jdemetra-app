@@ -402,15 +402,15 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
         private int progressCount = 0;
 
         @Override
-        protected Void doInBackground() throws Exception {
+        protected Void doInBackground() {
             List<Callable<Void>> tasks = createTasks();
             if (tasks == null) {
                 return null;
             }
 
-            DemetraOptions config = DemetraOptions.getDefault();
+            DemetraOptions options = DemetraOptions.getDefault();
 
-            ExecutorService executorService = UIExecutors.newFixedThreadPool(config.getBatchPoolSize(), config.getBatchPriority());
+            ExecutorService executorService = UIExecutors.newFixedThreadPool(options.getBatchPoolSize(), options.getBatchPriority());
             Stopwatch stopwatch = Stopwatch.createStarted();
             try {
                 executorService.invokeAll(tasks);
@@ -425,7 +425,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
                 }
             }
 
-            LOGGER.info("Task: {} items in {} by {} executors with priority {}", tasks.size(), stopwatch.stop(), config.getBatchPoolSize(), config.getBatchPriority());
+            LOGGER.info("Task: {} items in {} by {} executors with priority {}", tasks.size(), stopwatch.stop(), options.getBatchPoolSize(), options.getBatchPriority());
 
             executorService.shutdown();
 

@@ -38,15 +38,15 @@ public final class ShowProvidersAction extends AbstractAction implements Present
     public ShowProvidersAction() {
         this.item = new JCheckBoxMenuItem(this);
         item.setText(Bundle.CTL_ShowProvidersAction());
-        DemetraOptions demetraUI = DemetraOptions.getDefault();
-        item.setSelected(demetraUI.isShowTsProviderNodes());
-        demetraUI.addWeakPropertyChangeListener(this);
+        DemetraOptions options = DemetraOptions.getDefault();
+        item.setSelected(options.isShowTsProviderNodes());
+        options.addWeakPropertyChangeListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        DemetraOptions demetraUI = DemetraOptions.getDefault();
-        demetraUI.setShowTsProviderNodes(!demetraUI.isShowTsProviderNodes());
+        DemetraOptions options = DemetraOptions.getDefault();
+        options.setShowTsProviderNodes(!options.isShowTsProviderNodes());
     }
 
     @Override

@@ -104,24 +104,22 @@ public final class ProvidersNode extends AbstractNode {
 
         // FIXME: use TsManager instead of lookup
         private final Lookup.Result<IDataSourceProvider> lookupResult;
-        private final DemetraOptions demetraUI;
 
         public ProvidersChildFactory() {
             this.lookupResult = Lookup.getDefault().lookupResult(IDataSourceProvider.class);
-            this.demetraUI = DemetraOptions.getDefault();
         }
 
         @Override
         protected void addNotify() {
             lookupResult.addLookupListener(this);
-            demetraUI.addPropertyChangeListener(this);
+            DemetraOptions.getDefault().addPropertyChangeListener(this);
             providerStream().forEach(o -> o.addDataSourceListener(this));
         }
 
         @Override
         protected void removeNotify() {
             providerStream().forEach(o -> o.removeDataSourceListener(this));
-            demetraUI.removePropertyChangeListener(this);
+            DemetraOptions.getDefault().removePropertyChangeListener(this);
             lookupResult.removeLookupListener(this);
         }
 
@@ -133,13 +131,13 @@ public final class ProvidersNode extends AbstractNode {
 
         @Override
         protected Node createNodeForKey(Object key) {
-            return demetraUI.isShowTsProviderNodes()
+            return DemetraOptions.getDefault().isShowTsProviderNodes()
                     ? new ProviderNode((DataSourceProvider) key)
                     : new DataSourceNode((DataSource) key);
         }
 
         private List<?> getKeys() {
-            return demetraUI.isShowTsProviderNodes()
+            return DemetraOptions.getDefault().isShowTsProviderNodes()
                     ? providerStream().sorted(ON_CLASS_SIMPLENAME).collect(Collectors.toList())
                     : providerStream().flatMap(o -> o.getDataSources().stream()).sorted(ON_TO_STRING).collect(Collectors.toList());
         }
@@ -148,7 +146,7 @@ public final class ProvidersNode extends AbstractNode {
             return TsManager.getDefault().getProviders()
                     .filter(DataSourceProvider.class::isInstance)
                     .map(DataSourceProvider.class::cast)
-                    .filter(demetraUI.isShowUnavailableTsProviders() ? (o -> true) : TsProvider::isAvailable);
+                    .filter(DemetraOptions.getDefault().isShowUnavailableTsProviders() ? (o -> true) : TsProvider::isAvailable);
         }
 
         //<editor-fold defaultstate="collapsed" desc="LookupListener">
@@ -175,28 +173,28 @@ public final class ProvidersNode extends AbstractNode {
         //<editor-fold defaultstate="collapsed" desc="DataSourceListener">
         @Override
         public void opened(demetra.tsprovider.DataSource dataSource) {
-            if (!demetraUI.isShowTsProviderNodes()) {
+            if (!DemetraOptions.getDefault().isShowTsProviderNodes()) {
                 refresh(true);
             }
         }
 
         @Override
         public void closed(demetra.tsprovider.DataSource dataSource) {
-            if (!demetraUI.isShowTsProviderNodes()) {
+            if (!DemetraOptions.getDefault().isShowTsProviderNodes()) {
                 refresh(true);
             }
         }
 
         @Override
         public void changed(demetra.tsprovider.DataSource dataSource) {
-            if (!demetraUI.isShowTsProviderNodes()) {
+            if (!DemetraOptions.getDefault().isShowTsProviderNodes()) {
                 refresh(true);
             }
         }
 
         @Override
         public void allClosed(String providerName) {
-            if (!demetraUI.isShowTsProviderNodes()) {
+            if (!DemetraOptions.getDefault().isShowTsProviderNodes()) {
                 refresh(true);
             }
         }

@@ -85,11 +85,11 @@ public final class JTsChart extends JComponent implements TimeSeriesComponent, P
 
     public JTsChart() {
         this.collection = HasTsCollectionSupport.of(this::firePropertyChange);
-        this.tsAction = HasTsAction.of(this::firePropertyChange);
+        this.tsAction = HasTsActionSupport.of(this::firePropertyChange);
         this.chart = HasChartSupport.of(this::firePropertyChange);
         this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
         this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
-        this.hoveredObs = HasHoveredObs.of(this::firePropertyChange);
+        this.hoveredObs = HasHoveredObsSupport.of(this::firePropertyChange);
         this.printable = PrintableWithPreview.of(this::getActionMap);
         this.resetableZoom = ResetableZoom.of(this::getActionMap);
         this.dualChart = DEFAULT_DUAL_CHART;

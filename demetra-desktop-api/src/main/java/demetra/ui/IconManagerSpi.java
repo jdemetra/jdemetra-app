@@ -13,7 +13,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
         backend = NetBeansServiceBackend.class,
         singleton = true
 )
-public interface TsMonikerUISpi {
+public interface IconManagerSpi {
 
     @Nullable
     Icon getIconOrNull(@NonNull TsMoniker moniker);

@@ -19,6 +19,7 @@ package ec.ui.list;
 import demetra.bridge.TsConverter;
 import demetra.ui.DemetraOptions;
 import demetra.ui.NamedService;
+import demetra.ui.components.parts.HasTsActionSupport;
 import ec.nbdemetra.ui.OldTsUtil;
 import demetra.ui.TsActions;
 import demetra.ui.TsManager;
@@ -96,7 +97,7 @@ public final class JTsVariableList extends JComponent implements HasTsAction {
     public JTsVariableList(TsVariables vars) {
         this.variables = vars;
         this.table = buildTable();
-        this.tsAction = HasTsAction.of(this::firePropertyChange);
+        this.tsAction = HasTsActionSupport.of(this::firePropertyChange);
 
         registerActions();
         registerInputs();

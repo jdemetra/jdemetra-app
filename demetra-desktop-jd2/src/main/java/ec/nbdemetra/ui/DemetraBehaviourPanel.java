@@ -48,30 +48,32 @@ final class DemetraBehaviourPanel extends javax.swing.JPanel implements ItemList
     }
 
     void load() {
-        DemetraOptions demetraUI = DemetraOptions.getDefault();
-        showUnavailableCheckBox.setSelected(demetraUI.isShowUnavailableTsProviders());
-        persistToolsContent.setSelected(demetraUI.isPersistToolsContent());
-        persistOpenDataSources.setSelected(demetraUI.isPersistOpenedDataSources());
+        DemetraOptions options = DemetraOptions.getDefault();
+
+        showUnavailableCheckBox.setSelected(options.isShowUnavailableTsProviders());
+        persistToolsContent.setSelected(options.isPersistToolsContent());
+        persistOpenDataSources.setSelected(options.isPersistOpenedDataSources());
 
         tsActionChoicePanel.setContent(TsActions.getDefault().getOpenActions());
-        tsActionChoicePanel.setSelectedServiceName(demetraUI.getTsActionName());
+        tsActionChoicePanel.setSelectedServiceName(options.getTsActionName());
 
         batchPoolSizeCombo.setModel(new DefaultComboBoxModel(ThreadPoolSize.values()));
-        batchPoolSizeCombo.setSelectedItem(demetraUI.getBatchPoolSize());
+        batchPoolSizeCombo.setSelectedItem(options.getBatchPoolSize());
         batchPriorityCombo.setModel(new DefaultComboBoxModel(ThreadPriority.values()));
-        batchPriorityCombo.setSelectedItem(demetraUI.getBatchPriority());
+        batchPriorityCombo.setSelectedItem(options.getBatchPriority());
     }
 
     void store() {
-        DemetraOptions demetraUI = DemetraOptions.getDefault();
-        demetraUI.setShowUnavailableTsProviders(showUnavailableCheckBox.isSelected());
-        demetraUI.setPersistToolsContent(persistToolsContent.isSelected());
-        demetraUI.setPersistOpenedDataSources(persistOpenDataSources.isSelected());
+        DemetraOptions options = DemetraOptions.getDefault();
 
-        demetraUI.setTsActionName(tsActionChoicePanel.getSelectedServiceName());
+        options.setShowUnavailableTsProviders(showUnavailableCheckBox.isSelected());
+        options.setPersistToolsContent(persistToolsContent.isSelected());
+        options.setPersistOpenedDataSources(persistOpenDataSources.isSelected());
 
-        demetraUI.setBatchPriority((ThreadPriority) batchPriorityCombo.getSelectedItem());
-        demetraUI.setBatchPoolSize((ThreadPoolSize) batchPoolSizeCombo.getSelectedItem());
+        options.setTsActionName(tsActionChoicePanel.getSelectedServiceName());
+
+        options.setBatchPriority((ThreadPriority) batchPriorityCombo.getSelectedItem());
+        options.setBatchPoolSize((ThreadPoolSize) batchPoolSizeCombo.getSelectedItem());
     }
 
     boolean valid() {

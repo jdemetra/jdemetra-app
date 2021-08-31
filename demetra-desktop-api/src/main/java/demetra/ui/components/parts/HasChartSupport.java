@@ -17,6 +17,7 @@
 package demetra.ui.components.parts;
 
 import demetra.ui.DemetraOptions;
+import demetra.ui.IconManager;
 import demetra.ui.beans.PropertyChangeBroadcaster;
 import demetra.ui.components.ComponentCommand;
 import ec.util.various.swing.FontAwesome;
@@ -47,7 +48,7 @@ public class HasChartSupport {
     public static <C extends JComponent & HasChart> JMenuItem newToggleTitleVisibilityMenu(C component) {
         JMenuItem result = new JCheckBoxMenuItem(component.getActionMap().get(HasChart.TOGGLE_TITLE_VISIBILITY_ACTION));
         result.setText("Show title");
-        result.setIcon(DemetraOptions.getDefault().getPopupMenuIcon(FontAwesome.FA_FONT));
+        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_FONT));
         return result;
     }
 
@@ -106,7 +107,7 @@ public class HasChartSupport {
 
         public static final ApplyLineThickNessCommand THICK = new ApplyLineThickNessCommand(HasChart.LinesThickness.Thick);
         public static final ApplyLineThickNessCommand THIN = new ApplyLineThickNessCommand(HasChart.LinesThickness.Thin);
-        //
+
         private final HasChart.LinesThickness value;
 
         public ApplyLineThickNessCommand(HasChart.LinesThickness value) {
@@ -128,20 +129,11 @@ public class HasChartSupport {
     @lombok.RequiredArgsConstructor
     private static final class HasChartImpl implements HasChart {
 
-        public static final boolean DEFAULT_LEGENDVISIBLE = true;
-        public static final boolean DEFAULT_TITLEVISIBLE = true;
-        public static final boolean DEFAULT_AXISVISIBLE = true;
-        public static final String DEFAULT_TITLE = "";
-        public static final HasChart.LinesThickness DEFAULT_LINES_THICKNESS = HasChart.LinesThickness.Thin;
-
         @lombok.NonNull
         private final PropertyChangeBroadcaster broadcaster;
 
-        private boolean legendVisible = DEFAULT_LEGENDVISIBLE;
-        private boolean titleVisible = DEFAULT_TITLEVISIBLE;
-        private boolean axisVisible = DEFAULT_AXISVISIBLE;
-        private String title = DEFAULT_TITLE;
-        private HasChart.LinesThickness linesThickness = DEFAULT_LINES_THICKNESS;
+        private static final boolean DEFAULT_LEGEND_VISIBLE = true;
+        private boolean legendVisible = DEFAULT_LEGEND_VISIBLE;
 
         @Override
         public boolean isLegendVisible() {
@@ -155,6 +147,9 @@ public class HasChartSupport {
             broadcaster.firePropertyChange(LEGEND_VISIBLE_PROPERTY, old, this.legendVisible);
         }
 
+        private static final boolean DEFAULT_TITLE_VISIBLE = true;
+        private boolean titleVisible = DEFAULT_TITLE_VISIBLE;
+
         @Override
         public boolean isTitleVisible() {
             return titleVisible;
@@ -166,6 +161,24 @@ public class HasChartSupport {
             this.titleVisible = show;
             broadcaster.firePropertyChange(TITLE_VISIBLE_PROPERTY, old, this.titleVisible);
         }
+
+        private static final boolean DEFAULT_AXIS_VISIBLE = true;
+        private boolean axisVisible = DEFAULT_AXIS_VISIBLE;
+
+        @Override
+        public boolean isAxisVisible() {
+            return axisVisible;
+        }
+
+        @Override
+        public void setAxisVisible(boolean showingAxis) {
+            boolean old = this.axisVisible;
+            this.axisVisible = showingAxis;
+            broadcaster.firePropertyChange(AXIS_VISIBLE_PROPERTY, old, this.axisVisible);
+        }
+
+        private static final String DEFAULT_TITLE = "";
+        private String title = DEFAULT_TITLE;
 
         @Override
         public String getTitle() {
@@ -179,17 +192,8 @@ public class HasChartSupport {
             broadcaster.firePropertyChange(TITLE_PROPERTY, old, this.title);
         }
 
-        @Override
-        public boolean isAxisVisible() {
-            return axisVisible;
-        }
-
-        @Override
-        public void setAxisVisible(boolean showingAxis) {
-            boolean old = this.axisVisible;
-            this.axisVisible = showingAxis;
-            broadcaster.firePropertyChange(AXIS_VISIBLE_PROPERTY, old, this.axisVisible);
-        }
+        private static final HasChart.LinesThickness DEFAULT_LINES_THICKNESS = HasChart.LinesThickness.Thin;
+        private HasChart.LinesThickness linesThickness = DEFAULT_LINES_THICKNESS;
 
         @Override
         public HasChart.LinesThickness getLinesThickness() {

@@ -18,7 +18,7 @@ package ec.nbdemetra.tramoseats.actions;
 
 import ec.nbdemetra.tramoseats.TramoSeatsSpecificationManager;
 import demetra.ui.Config;
-import ec.nbdemetra.ui.interchange.ImportAction;
+import ec.nbdemetra.ui.interchange.ImportNodeAction;
 import ec.nbdemetra.ui.interchange.Importable;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.WorkspaceFactory;
@@ -64,7 +64,7 @@ public class ImportTramoSeatsSpec extends SingleNodeAction<Node> implements Pres
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = ImportAction.getPopupPresenter(getImportables());
+        JMenuItem result = ImportNodeAction.getPopupPresenter(getImportables());
         result.setText(Bundle.CTL_ImportTramoSeatsSpec());
         return result;
     }

@@ -1,7 +1,7 @@
 package internal.ui;
 
 import demetra.timeseries.TsMoniker;
-import demetra.ui.TsMonikerUISpi;
+import demetra.ui.IconManagerSpi;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import java.beans.BeanInfo;
 import javax.swing.Icon;
@@ -11,7 +11,7 @@ import org.openide.util.ImageUtilities;
 
 @DirectImpl
 @ServiceProvider
-public final class DefaultTsMonikerUISpi implements TsMonikerUISpi {
+public final class DefaultIconManagerSpi implements IconManagerSpi {
 
     @Override
     public Icon getIconOrNull(TsMoniker moniker) {
