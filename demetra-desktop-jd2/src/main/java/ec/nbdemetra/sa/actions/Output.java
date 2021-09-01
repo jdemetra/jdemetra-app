@@ -20,7 +20,7 @@ import ec.nbdemetra.sa.MultiProcessingDocument;
 import ec.nbdemetra.sa.MultiProcessingManager;
 import ec.nbdemetra.sa.SaBatchUI;
 import ec.nbdemetra.sa.output.OutputPanel;
-import ec.nbdemetra.ui.SingleFileExporter;
+import demetra.ui.util.SingleFileExporter;
 import demetra.desktop.notification.MessageType;
 import demetra.desktop.notification.NotifyUtil;
 import ec.nbdemetra.ws.WorkspaceItem;
@@ -89,11 +89,13 @@ public final class Output extends AbstractViewAction<SaBatchUI> {
             for (ISaOutputFactory output : outputs) {
                 File target = getExportFolder(output);
                 if (target != null) {
-                    new SingleFileExporter()
+                    SingleFileExporter
+                            .builder()
                             .file(target)
                             .progressLabel("Saving to " + output.getDescription())
                             .onErrorNotify("Saving to " + output.getDescription() + " failed")
-                            .onSussessNotify("Saving to " + output.getDescription() + " done")
+                            .onSuccessNotify("Saving to " + output.getDescription() + " done")
+                            .build()
                             .execAsync((f, ph) -> store(output, id, processing, ph));
                 } else {
                     save(output, id, processing);

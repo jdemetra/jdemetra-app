@@ -20,9 +20,8 @@ import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import ec.nbdemetra.ui.SingleFileExporter;
+import demetra.ui.util.SingleFileExporter;
 import demetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.tssave.TsSaveUtil;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
 import ec.tss.tsproviders.spreadsheet.engine.TsExportOptions;
 import ec.util.spreadsheet.Book;
@@ -55,7 +54,7 @@ public final class SpreadsheetTsSave implements TsActionsSaveSpi {
     private final OptionsBean options;
 
     public SpreadsheetTsSave() {
-        this.fileChooser = TsSaveUtil.fileChooser(SpreadsheetTsSave.class).setFileFilter(new SaveFileFilter());
+        this.fileChooser = SingleFileExporter.newFileChooser(SpreadsheetTsSave.class).setFileFilter(new SaveFileFilter());
         this.options = new OptionsBean();
     }
 
@@ -76,7 +75,7 @@ public final class SpreadsheetTsSave implements TsActionsSaveSpi {
 
     @Override
     public void save(List<TsCollection> input) {
-        TsSaveUtil.saveToFile(fileChooser, o -> editBean(options), o -> store(input, o, options));
+        SingleFileExporter.saveToFile(fileChooser, o -> editBean(options), o -> store(input, o, options));
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
@@ -87,11 +86,13 @@ public final class SpreadsheetTsSave implements TsActionsSaveSpi {
 
     @OnEDT
     private static void store(List<TsCollection> data, File file, OptionsBean opts) {
-        new SingleFileExporter()
+        SingleFileExporter
+                .builder()
                 .file(file)
                 .progressLabel("Saving to spreadsheet")
                 .onErrorNotify("Saving to spreadsheet failed")
-                .onSussessNotify("Spreadsheet saved")
+                .onSuccessNotify("Spreadsheet saved")
+                .build()
                 .execAsync((f, ph) -> store(data, f, opts.getTsExportOptions(), ph));
     }
 

@@ -14,9 +14,8 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui;
+package demetra.ui.util;
 
-import demetra.ui.util.ShowInFolderActionListener;
 import demetra.desktop.notification.MessageType;
 import demetra.desktop.notification.NotifyUtil;
 import java.io.File;
@@ -26,9 +25,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.SwingUtilities;
+import nbbrd.design.LombokWorkaround;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -39,67 +40,26 @@ import org.openide.filesystems.FileChooserBuilder;
  * @author Philippe Charles
  * @since 2.2.0
  */
+@lombok.Builder
 public final class SingleFileExporter {
 
-    private Supplier<File> fileChooser;
-    private Supplier<ProgressHandle> progressHandle;
-    private BiConsumer<File, Throwable> error;
-    private Consumer<File> success;
+    @FunctionalInterface
+    public interface SingleFileTask {
 
-    public SingleFileExporter() {
-        this.fileChooser = () -> new FileChooserBuilder(SingleFileExporter.class).showSaveDialog();
-        this.progressHandle = () -> ProgressHandle.createHandle("Saving");
-        this.error = (f, t) -> notifyError(f, t, "Export failed");
-        this.success = f -> notifySuccess(f, "Export succeeded");
+        void exec(File file, ProgressHandle ph) throws Exception;
     }
 
-    @NonNull
-    public SingleFileExporter fileChooser(@NonNull Supplier<File> fileChooser) {
-        this.fileChooser = Objects.requireNonNull(fileChooser);
-        return this;
-    }
+    @lombok.NonNull
+    private final Supplier<File> fileChooser;
 
-    @NonNull
-    public SingleFileExporter file(@NonNull File file) {
-        Objects.requireNonNull(file);
-        return fileChooser(() -> file);
-    }
+    @lombok.NonNull
+    private final Supplier<ProgressHandle> progressHandle;
 
-    @NonNull
-    public SingleFileExporter progressHandle(@NonNull Supplier<ProgressHandle> progressHandle) {
-        this.progressHandle = Objects.requireNonNull(progressHandle);
-        return this;
-    }
+    @lombok.NonNull
+    private final BiConsumer<File, Throwable> onError;
 
-    @NonNull
-    public SingleFileExporter progressLabel(@NonNull String displayName) {
-        Objects.requireNonNull(displayName);
-        return progressHandle(() -> ProgressHandle.createHandle(displayName));
-    }
-
-    @NonNull
-    public SingleFileExporter onError(@NonNull BiConsumer<File, Throwable> error) {
-        this.error = Objects.requireNonNull(error);
-        return this;
-    }
-
-    @NonNull
-    public SingleFileExporter onErrorNotify(@NonNull String message) {
-        Objects.requireNonNull(message);
-        return onError((f, t) -> notifyError(f, t, message));
-    }
-
-    @NonNull
-    public SingleFileExporter onSussess(@NonNull Consumer<File> success) {
-        this.success = Objects.requireNonNull(success);
-        return this;
-    }
-
-    @NonNull
-    public SingleFileExporter onSussessNotify(@NonNull String message) {
-        Objects.requireNonNull(message);
-        return onSussess(f -> notifySuccess(f, message));
-    }
+    @lombok.NonNull
+    private final Consumer<File> onSuccess;
 
     public void execAsync(@NonNull SingleFileTask task) {
         Objects.requireNonNull(task);
@@ -123,17 +83,12 @@ public final class SingleFileExporter {
         }
     }
 
-    public interface SingleFileTask {
-
-        void exec(File file, ProgressHandle ph) throws Exception;
-    }
-
     private void notify(File file, Throwable ex) {
         if (ex != null) {
             Throwable tmp = unwrapException(ex, CompletionException.class, RuntimeException.class);
-            error.accept(file, tmp);
+            onError.accept(file, tmp);
         } else {
-            success.accept(file);
+            onSuccess.accept(file);
         }
     }
 
@@ -149,11 +104,61 @@ public final class SingleFileExporter {
         return ex.getCause() != null && Arrays.stream(types).anyMatch(o -> o.isInstance(ex)) ? unwrapException(ex.getCause(), types) : ex;
     }
 
-    public static FileChooserBuilder.@NonNull SelectionApprover overwriteApprover() {
-        return new SaveSelectionApprover();
+    @LombokWorkaround
+    public static Builder builder() {
+        return new Builder()
+                .fileChooser(() -> new FileChooserBuilder(SingleFileExporter.class).showSaveDialog())
+                .progressHandle(() -> ProgressHandle.createHandle("Saving"))
+                .onError((f, t) -> notifyError(f, t, "Export failed"))
+                .onSuccess(f -> notifySuccess(f, "Export succeeded"));
     }
 
-    private static final class SaveSelectionApprover implements FileChooserBuilder.SelectionApprover {
+    public static final class Builder {
+
+        @NonNull
+        public Builder file(@NonNull File file) {
+            Objects.requireNonNull(file);
+            return fileChooser(() -> file);
+        }
+
+        @NonNull
+        public Builder progressLabel(@NonNull String displayName) {
+            Objects.requireNonNull(displayName);
+            return progressHandle(() -> ProgressHandle.createHandle(displayName));
+        }
+
+        @NonNull
+        public Builder onErrorNotify(@NonNull String message) {
+            Objects.requireNonNull(message);
+            return onError((f, t) -> notifyError(f, t, message));
+        }
+
+        @NonNull
+        public Builder onSuccessNotify(@NonNull String message) {
+            Objects.requireNonNull(message);
+            return onSuccess(f -> notifySuccess(f, message));
+        }
+    }
+
+    public static void saveToFile(@NonNull FileChooserBuilder fileChooser, @NonNull Predicate<File> predicate, @NonNull Consumer<File> action) {
+        File target = fileChooser.showSaveDialog();
+        if (target != null && predicate.test(target)) {
+            action.accept(target);
+        }
+    }
+
+    @NonNull
+    public static FileChooserBuilder newFileChooser(@NonNull Class type) {
+        return new FileChooserBuilder(type).setSelectionApprover(overwriteApprover());
+    }
+
+    public static FileChooserBuilder.@NonNull SelectionApprover overwriteApprover() {
+        return SaveSelectionApprover.INSTANCE;
+    }
+
+    private enum SaveSelectionApprover implements FileChooserBuilder.SelectionApprover {
+
+        INSTANCE;
 
         @Override
         public boolean approve(File[] selection) {

@@ -22,9 +22,8 @@ import demetra.ui.TsManager;
 import demetra.ui.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import ec.nbdemetra.ui.SingleFileExporter;
+import demetra.ui.util.SingleFileExporter;
 import demetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.tssave.TsSaveUtil;
 import ec.tss.datatransfer.impl.TxtDataTransfer;
 import ec.tss.tsproviders.common.txt.TxtFileFilter;
 import ec.util.various.swing.OnAnyThread;
@@ -57,7 +56,7 @@ public final class TxtTsSave implements TsActionsSaveSpi {
     private final OptionsBean options;
 
     public TxtTsSave() {
-        this.fileChooser = TsSaveUtil.fileChooser(TxtTsSave.class).setFileFilter(new SaveFileFilter());
+        this.fileChooser = SingleFileExporter.newFileChooser(TxtTsSave.class).setFileFilter(new SaveFileFilter());
         this.options = new OptionsBean();
     }
 
@@ -78,7 +77,7 @@ public final class TxtTsSave implements TsActionsSaveSpi {
 
     @Override
     public void save(List<TsCollection> input) {
-        TsSaveUtil.saveToFile(fileChooser, o -> editBean(options), o -> store(input, o, options));
+        SingleFileExporter.saveToFile(fileChooser, o -> editBean(options), o -> store(input, o, options));
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
@@ -89,11 +88,13 @@ public final class TxtTsSave implements TsActionsSaveSpi {
 
     @OnEDT
     private static void store(List<TsCollection> data, File file, OptionsBean opts) {
-        new SingleFileExporter()
+        SingleFileExporter
+                .builder()
                 .file(file)
                 .progressLabel("Saving to text file")
                 .onErrorNotify("Saving to text file failed")
-                .onSussessNotify("Text file saved")
+                .onSuccessNotify("Text file saved")
+                .build()
                 .execAsync((f, ph) -> store(data, f, opts, ph));
     }
 

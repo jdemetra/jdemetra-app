@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.tssave;
+package demetra.desktop.core.actions;
 
 import demetra.timeseries.TsCollection;
 import demetra.ui.NamedService;
@@ -41,9 +41,9 @@ import demetra.ui.TsCollectable;
  *
  * @author Philippe Charles
  */
-@ActionID(category = "File", id = "ec.nbdemetra.ui.tssave.TsSaveAction")
-@ActionRegistration(displayName = "#CTL_TsSaveAction", lazy = false)
-@Messages("CTL_TsSaveAction=Save to")
+@ActionID(category = "File", id = "demetra.desktop.core.actions.TsSaveNodeAction")
+@ActionRegistration(displayName = "#CTL_TsSaveNodeAction", lazy = false)
+@Messages("CTL_TsSaveNodeAction=Save to")
 public final class TsSaveNodeAction extends AbilityNodeAction<TsCollectable> implements Presenter.Popup {
 
     public TsSaveNodeAction() {
@@ -74,7 +74,7 @@ public final class TsSaveNodeAction extends AbilityNodeAction<TsCollectable> imp
     @NonNull
     public static JMenuItem getPopupPresenter(@NonNull List<TsCollectable> data) {
         JMenu result = new JMenu();
-        result.setText(Bundle.CTL_TsSaveAction());
+        result.setText(Bundle.CTL_TsSaveNodeAction());
         for (NamedService o : TsActions.getDefault().getSaveActions()) {
             JMenuItem item = result.add(new ItemAction(o, data));
             item.setText(o.getDisplayName());
