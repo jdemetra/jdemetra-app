@@ -18,8 +18,8 @@ package ec.nbdemetra.ui.variables.actions;
 
 import com.google.common.collect.ImmutableList;
 import demetra.ui.Config;
-import ec.nbdemetra.ui.interchange.ImportNodeAction;
-import ec.nbdemetra.ui.interchange.Importable;
+import demetra.desktop.interchange.Importable;
+import demetra.desktop.interchange.Interchange;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.variables.VariablesDocumentManager;
 import ec.nbdemetra.ws.Workspace;
@@ -59,7 +59,7 @@ public final class ImportVariablesAction extends SingleNodeAction<ItemWsNode> im
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = ImportNodeAction.getPopupPresenter(IMPORTABLES);
+        JMenuItem result = Interchange.getDefault().newImportMenu(IMPORTABLES);
         result.setText(Bundle.CTL_ImportVariablesAction());
         return result;
     }

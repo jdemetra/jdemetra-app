@@ -112,6 +112,10 @@
             <artifactId>java-io-win</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.github.nbbrd.java-io-util</groupId>
+            <artifactId>java-io-xml</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.nbbrd.java-desktop-util</groupId>
             <artifactId>java-desktop-util-swing</artifactId>
             <version>${java-desktop-util.version}</version>

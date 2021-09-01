@@ -14,11 +14,12 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.interchange;
+package demetra.desktop.core.interchange;
 
+import demetra.desktop.interchange.Interchange;
 import demetra.ui.actions.Configurable;
 import demetra.ui.nodes.AbstractNodeBuilder;
-import ec.nbdemetra.ui.ns.NamedServiceNode;
+import demetra.ui.nodes.NamedServiceNode;
 import java.util.stream.Stream;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
@@ -91,7 +92,7 @@ final class InterchangePanel extends javax.swing.JPanel implements ExplorerManag
     }//GEN-LAST:event_editButtonActionPerformed
 
     void load() {
-        Stream<NamedServiceNode> nodes = InterchangeBrokerLoader.get().stream().map(NamedServiceNode::new);
+        Stream<NamedServiceNode> nodes = Interchange.getDefault().all().stream().map(NamedServiceNode::new);
         em.setRootContext(new AbstractNodeBuilder().add(nodes).name("Interchange broker").build());
     }
 

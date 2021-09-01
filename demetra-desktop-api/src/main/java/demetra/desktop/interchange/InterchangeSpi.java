@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.interchange;
+package demetra.desktop.interchange;
 
 import demetra.ui.NamedService;
 import demetra.ui.util.NetBeansServiceBackend;
@@ -37,7 +37,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
         backend = NetBeansServiceBackend.class,
         singleton = true
 )
-public interface InterchangeBroker extends NamedService {
+public interface InterchangeSpi extends NamedService {
 
     @ServiceSorter
     int getPosition();

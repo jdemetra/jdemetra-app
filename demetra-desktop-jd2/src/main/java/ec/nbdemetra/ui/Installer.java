@@ -22,7 +22,6 @@ import demetra.tsprovider.DataSourceLoader;
 import demetra.ui.DemetraOptions;
 import ec.nbdemetra.core.InstallerStep;
 import ec.nbdemetra.sa.output.INbOutputFactory;
-import ec.nbdemetra.ui.interchange.InterchangeBroker;
 import ec.nbdemetra.ui.mru.MruProvidersStep;
 import ec.nbdemetra.ui.mru.MruWorkspacesStep;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
@@ -58,6 +57,7 @@ import demetra.ui.datatransfer.DataTransferSpi;
 import java.util.stream.Collectors;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.Parser;
+import demetra.desktop.interchange.InterchangeSpi;
 
 public final class Installer extends ModuleInstall {
 
@@ -198,10 +198,10 @@ public final class Installer extends ModuleInstall {
         }
     }
 
-    private static final class InterchangeStep extends ConfigStep<InterchangeBroker> {
+    private static final class InterchangeStep extends ConfigStep<InterchangeSpi> {
 
         InterchangeStep() {
-            super(InterchangeBroker.class);
+            super(InterchangeSpi.class);
         }
     }
 

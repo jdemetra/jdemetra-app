@@ -14,35 +14,25 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.interchange;
+package demetra.desktop.interchange;
 
 import demetra.ui.Config;
 import ec.util.various.swing.OnEDT;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
- * Defines the ability of a component to import a previous state/configuration.
+ * Defines the ability of a component to export its state/configuration.
  *
  * @author charphi
  */
-public interface Importable {
+public interface Exportable {
 
     /**
-     * Returns the domain of configs that can be imported.
+     * Exports the current state of a component into a config object.
      *
-     * @return a non-null domain
+     * @return a non-null config
      */
     @OnEDT
     @NonNull
-    String getDomain();
-
-    /**
-     * Imports a previous state of a component from a config object.
-     *
-     * @param config a non-null config
-     * @throws IllegalArgumentException if the config cannot be parsed
-     */
-    @OnEDT
-    void importConfig(@NonNull Config config) throws IllegalArgumentException;
-
+    Config exportConfig();
 }

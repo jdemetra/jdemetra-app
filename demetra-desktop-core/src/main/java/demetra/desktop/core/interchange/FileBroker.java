@@ -14,18 +14,14 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.interchange.impl;
+package demetra.desktop.core.interchange;
 
-import ec.nbdemetra.ui.interchange.Exportable;
-import ec.nbdemetra.ui.interchange.Importable;
-import ec.nbdemetra.ui.interchange.InterchangeBroker;
-import java.io.BufferedReader;
+import demetra.desktop.interchange.Exportable;
+import demetra.desktop.interchange.Importable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,6 +36,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.openide.filesystems.FileChooserBuilder;
+import demetra.desktop.interchange.InterchangeSpi;
 
 /**
  *
@@ -47,7 +44,7 @@ import org.openide.filesystems.FileChooserBuilder;
  */
 @DirectImpl
 @ServiceProvider
-public final class FileBroker implements InterchangeBroker {
+public final class FileBroker implements InterchangeSpi {
 
     private final JFileChooser fileChooser;
 
@@ -107,45 +104,17 @@ public final class FileBroker implements InterchangeBroker {
 
     @NonNull
     public static Configs load(@NonNull Path file) throws IOException {
-        CharSequence xml = readGZIP(file);
-        Configs result = Configs.xmlParser().parse(xml);
-        if (result == null) {
-            throw new IOException("Cannot parse configs");
-        }
-        return result;
-    }
-
-    public static void store(@NonNull Path file, @NonNull Configs configs) throws IOException {
-        CharSequence xml = Configs.xmlFormatter(true).format(configs);
-        if (xml == null) {
-            throw new IOException("Cannot format configs");
-        }
-        writeGZIP(file, xml);
-    }
-
-    private static CharSequence readGZIP(Path file) throws IOException {
         try (InputStream stream = Files.newInputStream(file, StandardOpenOption.READ)) {
             try (GZIPInputStream gz = new GZIPInputStream(stream)) {
-                try (InputStreamReader reader = new InputStreamReader(gz, StandardCharsets.UTF_8)) {
-                    StringBuilder result = new StringBuilder();
-                    try (BufferedReader buff = new BufferedReader(reader)) {
-                        String line;
-                        while ((line = buff.readLine()) != null) {
-                            result.append(line);
-                        }
-                    }
-                    return result;
-                }
+                return Configs.xmlParser().parseStream(gz, StandardCharsets.UTF_8);
             }
         }
     }
 
-    private static void writeGZIP(Path file, CharSequence xml) throws IOException {
+    public static void store(@NonNull Path file, @NonNull Configs configs) throws IOException {
         try (OutputStream stream = Files.newOutputStream(file, StandardOpenOption.CREATE)) {
             try (GZIPOutputStream gz = new GZIPOutputStream(stream)) {
-                try (OutputStreamWriter writer = new OutputStreamWriter(gz, StandardCharsets.UTF_8)) {
-                    writer.append(xml);
-                }
+                Configs.xmlFormatter(true).formatStream(configs, stream, StandardCharsets.UTF_8);
             }
         }
     }

@@ -19,8 +19,8 @@ package ec.nbdemetra.ui.calendars.actions;
 import com.google.common.collect.ImmutableList;
 import demetra.ui.Config;
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
-import ec.nbdemetra.ui.interchange.ImportNodeAction;
-import ec.nbdemetra.ui.interchange.Importable;
+import demetra.desktop.interchange.Importable;
+import demetra.desktop.interchange.Interchange;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.Workspace;
 import ec.nbdemetra.ws.WorkspaceFactory;
@@ -58,7 +58,7 @@ public final class ImportCalendarAction extends SingleNodeAction<ItemWsNode> imp
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = ImportNodeAction.getPopupPresenter(IMPORTABLES);
+        JMenuItem result = Interchange.getDefault().newImportMenu(IMPORTABLES);
         result.setText(Bundle.CTL_ImportCalendarAction());
         return result;
     }

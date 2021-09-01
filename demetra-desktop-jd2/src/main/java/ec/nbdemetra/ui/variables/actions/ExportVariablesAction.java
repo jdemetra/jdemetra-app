@@ -17,8 +17,8 @@
 package ec.nbdemetra.ui.variables.actions;
 
 import demetra.ui.Config;
-import ec.nbdemetra.ui.interchange.ExportNodeAction;
-import ec.nbdemetra.ui.interchange.Exportable;
+import demetra.desktop.interchange.Exportable;
+import demetra.desktop.interchange.Interchange;
 import ec.nbdemetra.ui.variables.VariablesDocumentManager;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.tstoolkit.timeseries.regression.TsVariables;
@@ -53,7 +53,7 @@ public final class ExportVariablesAction extends NodeAction implements Presenter
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = ExportNodeAction.getPopupPresenter(getExportables(getActivatedNodes()));
+        JMenuItem result = Interchange.getDefault().newExportMenu(getExportables(getActivatedNodes()));
         result.setText(Bundle.CTL_ExportVariablesAction());
         return result;
     }

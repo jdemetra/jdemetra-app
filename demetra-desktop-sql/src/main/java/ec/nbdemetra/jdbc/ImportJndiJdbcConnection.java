@@ -17,9 +17,9 @@
 package ec.nbdemetra.jdbc;
 
 import demetra.ui.Config;
-import ec.nbdemetra.ui.interchange.ImportNodeAction;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
-import ec.nbdemetra.ui.interchange.Importable;
+import demetra.desktop.interchange.Importable;
+import demetra.desktop.interchange.Interchange;
 import java.util.Collections;
 import java.util.List;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -46,7 +46,7 @@ public final class ImportJndiJdbcConnection extends SingleNodeAction<Node> imple
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = ImportNodeAction.getPopupPresenter(getImportables());
+        JMenuItem result = Interchange.getDefault().newImportMenu(getImportables());
         result.setText(Bundle.CTL_ImportJndiJdbcConnection());
         return result;
     }

@@ -17,8 +17,8 @@
 package ec.nbdemetra.jdbc;
 
 import demetra.ui.Config;
-import ec.nbdemetra.ui.interchange.ExportNodeAction;
-import ec.nbdemetra.ui.interchange.Exportable;
+import demetra.desktop.interchange.Exportable;
+import demetra.desktop.interchange.Interchange;
 import java.util.ArrayList;
 import java.util.List;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -46,7 +46,7 @@ public final class ExportJndiJdbcConnection extends NodeAction implements Presen
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = ExportNodeAction.getPopupPresenter(getExportables(getActivatedNodes()));
+        JMenuItem result = Interchange.getDefault().newExportMenu(getExportables(getActivatedNodes()));
         result.setText(Bundle.CTL_ExportJndiJdbcConnection());
         return result;
     }

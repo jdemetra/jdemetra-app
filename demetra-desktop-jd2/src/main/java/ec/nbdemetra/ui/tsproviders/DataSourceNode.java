@@ -25,7 +25,7 @@ import demetra.ui.TsManager;
 import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
 import demetra.ui.Config;
-import ec.nbdemetra.ui.interchange.Exportable;
+import demetra.desktop.interchange.Exportable;
 import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
 import ec.nbdemetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.star.StarList;

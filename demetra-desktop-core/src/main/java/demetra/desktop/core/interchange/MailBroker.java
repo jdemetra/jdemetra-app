@@ -14,11 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.interchange.impl;
+package demetra.desktop.core.interchange;
 
-import ec.nbdemetra.ui.interchange.Exportable;
-import ec.nbdemetra.ui.interchange.Importable;
-import ec.nbdemetra.ui.interchange.InterchangeBroker;
+import demetra.desktop.interchange.Exportable;
+import demetra.desktop.interchange.Importable;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
 import ec.util.desktop.MailtoBuilder;
@@ -27,6 +26,7 @@ import java.util.List;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import demetra.desktop.interchange.InterchangeSpi;
 
 /**
  *
@@ -34,7 +34,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  */
 @DirectImpl
 @ServiceProvider
-public final class MailBroker implements InterchangeBroker {
+public final class MailBroker implements InterchangeSpi {
 
     @Override
     public int getPosition() {
@@ -63,7 +63,7 @@ public final class MailBroker implements InterchangeBroker {
 
     private static void store(@NonNull Desktop desktop, @NonNull Configs configs) throws IOException {
         String subject = configs.getItems().size() == 1 ? configs.getItems().get(0).getName() : "Configs";
-        String body = Configs.xmlFormatter(true).formatValueAsString(configs).orElseThrow(RuntimeException::new);
+        String body = Configs.xmlFormatter(true).formatToString(configs);
         desktop.mail(new MailtoBuilder().subject(subject).body(body).build());
     }
 

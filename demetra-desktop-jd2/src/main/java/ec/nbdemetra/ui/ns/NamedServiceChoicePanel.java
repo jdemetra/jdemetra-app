@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui.ns;
 
+import demetra.ui.nodes.NamedServiceNode;
 import demetra.ui.NamedService;
 import demetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Dimension;

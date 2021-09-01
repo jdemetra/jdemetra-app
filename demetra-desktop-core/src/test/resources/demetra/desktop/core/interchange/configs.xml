@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configs author="CHARPHI" creationTime="1630569881523">
+    <config domain="ec.tss.tsproviders.DataSource" name="Insee.xlsx" version="">
+        <param key="uri" value="demetra://tsprovider/XCLPRVDR/20111201?file=Insee.xlsx"/>
+    </config>
+</configs>

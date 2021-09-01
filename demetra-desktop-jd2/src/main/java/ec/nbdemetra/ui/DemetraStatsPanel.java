@@ -19,7 +19,7 @@ package ec.nbdemetra.ui;
 import demetra.ui.actions.Configurable;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import demetra.ui.nodes.AbstractNodeBuilder;
-import ec.nbdemetra.ui.ns.NamedServiceNode;
+import demetra.ui.nodes.NamedServiceNode;
 import ec.nbdemetra.ws.ui.SpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;

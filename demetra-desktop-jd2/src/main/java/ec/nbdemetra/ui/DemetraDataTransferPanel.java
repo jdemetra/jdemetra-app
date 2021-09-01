@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui;
 
 import demetra.ui.nodes.AbstractNodeBuilder;
-import ec.nbdemetra.ui.ns.NamedServiceNode;
+import demetra.ui.nodes.NamedServiceNode;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import demetra.ui.actions.Configurable;

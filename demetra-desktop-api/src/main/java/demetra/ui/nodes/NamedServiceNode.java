@@ -14,13 +14,12 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.ns;
+package demetra.ui.nodes;
 
 import demetra.ui.NamedService;
 import demetra.ui.Config;
 import demetra.ui.Persistable;
 import demetra.ui.actions.Configurable;
-import demetra.ui.nodes.AbstractNodeBuilder;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -41,7 +40,7 @@ import java.util.stream.StreamSupport;
  *
  * @author Philippe Charles
  */
-public class NamedServiceNode extends AbstractNode {
+public final class NamedServiceNode extends AbstractNode {
 
     public NamedServiceNode(@NonNull NamedService namedService) {
         this(namedService, new InstanceContent());

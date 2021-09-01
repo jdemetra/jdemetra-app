@@ -14,12 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.interchange.impl;
+package demetra.desktop.core.interchange;
 
-import com.google.common.base.Throwables;
-import ec.nbdemetra.ui.interchange.Exportable;
-import ec.nbdemetra.ui.interchange.Importable;
-import ec.nbdemetra.ui.interchange.InterchangeBroker;
+import demetra.desktop.interchange.Exportable;
+import demetra.desktop.interchange.Importable;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -30,6 +28,7 @@ import java.util.List;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import demetra.desktop.interchange.InterchangeSpi;
 
 /**
  *
@@ -37,7 +36,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  */
 @DirectImpl
 @ServiceProvider
-public final class ClipboardBroker implements InterchangeBroker {
+public final class ClipboardBroker implements InterchangeSpi {
 
     @Override
     public int getPosition() {
@@ -60,7 +59,7 @@ public final class ClipboardBroker implements InterchangeBroker {
             if (xml == null) {
                 return false;
             }
-            Configs configs = Configs.xmlParser().parse(xml);
+            Configs configs = Configs.xmlParser().parseChars(xml);
             return configs != null && configs.canImport(importables);
         } catch (IOException ex) {
             return false;
@@ -90,7 +89,7 @@ public final class ClipboardBroker implements InterchangeBroker {
         if (xml == null) {
             throw new IOException("Not string input");
         }
-        Configs result = Configs.xmlParser().parse(xml);
+        Configs result = Configs.xmlParser().parseChars(xml);
         if (result == null) {
             throw new IOException("Cannot parse configs");
         }
@@ -98,7 +97,7 @@ public final class ClipboardBroker implements InterchangeBroker {
     }
 
     private static void store(@NonNull Clipboard clipboard, @NonNull Configs configs) throws IOException {
-        String xml = Configs.xmlFormatter(true).formatAsString(configs);
+        String xml = Configs.xmlFormatter(true).formatToString(configs);
         if (xml == null) {
             throw new IOException("Cannot format configs");
         }
@@ -110,7 +109,7 @@ public final class ClipboardBroker implements InterchangeBroker {
             try {
                 return (String) clipboard.getData(DataFlavor.stringFlavor);
             } catch (UnsupportedFlavorException ex) {
-                throw Throwables.propagate(ex);
+                throw new IOException(ex);
             }
         }
         return null;

@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.interchange;
+package demetra.desktop.core.interchange;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -23,6 +23,7 @@ import javax.swing.SwingUtilities;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
+import org.openide.util.NbBundle;
 
 @OptionsPanelController.SubRegistration(
         location = "Demetra",
@@ -30,7 +31,10 @@ import org.openide.util.Lookup;
         keywords = "#AdvancedOption_Keywords_Interchange",
         keywordsCategory = "Demetra/Interchange"
 )
-@org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_Interchange=Interchange", "AdvancedOption_Keywords_Interchange=Import Export"})
+@NbBundle.Messages({
+    "AdvancedOption_DisplayName_Interchange=Interchange", 
+    "AdvancedOption_Keywords_Interchange=Import Export"
+})
 public final class InterchangeOptionsPanelController extends OptionsPanelController {
 
     private InterchangePanel panel;
