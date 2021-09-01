@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal;
+package demetra.desktop.core.completion;
 
 import demetra.ui.ColorSchemeManager;
 import ec.util.chart.ColorScheme;
@@ -31,15 +31,17 @@ import javax.swing.Icon;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.text.JTextComponent;
-import org.openide.util.lookup.ServiceProvider;
 import demetra.ui.completion.AutoCompletionSpi;
+import nbbrd.design.DirectImpl;
+import nbbrd.service.ServiceProvider;
 
 /**
  *
  * @author Philippe Charles
  * @since 1.3.2
  */
-@ServiceProvider(service = AutoCompletionSpi.class)
+@DirectImpl
+@ServiceProvider
 public final class ColorSchemeAutoCompletionService implements AutoCompletionSpi {
 
     private final AutoCompletionSource source = colorSchemeSource();
@@ -49,7 +51,7 @@ public final class ColorSchemeAutoCompletionService implements AutoCompletionSpi
     public String getPath() {
         return ColorScheme.class.getName();
     }
-    
+
     @Override
     public JAutoCompletion bind(JTextComponent textComponent) {
         JAutoCompletion result = new JAutoCompletion(textComponent);

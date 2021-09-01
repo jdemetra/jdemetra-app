@@ -16,11 +16,10 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
-import demetra.bridge.TsConverter;
+import demetra.tsprovider.DataSet;
 import demetra.ui.NamedService;
 import demetra.ui.TsActions;
 import demetra.ui.TsManager;
-import ec.tss.tsproviders.DataSet;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -65,9 +64,8 @@ public final class OpenWithSetAction extends AbstractAction implements Presenter
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            demetra.tsprovider.DataSet tmp = TsConverter.toDataSet(dataSet);
             TsManager.getDefault()
-                    .getTs(tmp, demetra.timeseries.TsInformationType.None)
+                    .getTs(dataSet, demetra.timeseries.TsInformationType.None)
                     .ifPresent(o -> TsActions.getDefault().openWith(o, tsAction.getName()));
         }
     }

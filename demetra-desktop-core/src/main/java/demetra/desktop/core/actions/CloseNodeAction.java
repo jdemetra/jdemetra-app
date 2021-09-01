@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package internal.ui.actions;
+package demetra.desktop.core.actions;
 
 import demetra.ui.actions.AbilityNodeAction;
 import java.util.stream.Stream;
@@ -11,9 +11,9 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
-@ActionID(category = "File", id = "ec.nbdemetra.ui.actions.CloseAction")
-@ActionRegistration(displayName = "#CloseAction", lazy = false)
-@Messages("CloseAction=Close")
+@ActionID(category = "File", id = "demetra.desktop.core.actions.CloseNodeAction")
+@ActionRegistration(displayName = "#CloseNodeAction", lazy = false)
+@Messages("CloseNodeAction=Close")
 public final class CloseNodeAction extends AbilityNodeAction<Closable> {
 
     public CloseNodeAction() {
@@ -27,6 +27,6 @@ public final class CloseNodeAction extends AbilityNodeAction<Closable> {
 
     @Override
     public String getName() {
-        return Bundle.CloseAction();
+        return Bundle.CloseNodeAction();
     }
 }

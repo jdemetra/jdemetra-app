@@ -16,11 +16,10 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
-import demetra.bridge.TsConverter;
+import demetra.tsprovider.DataSource;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.tsproviders.DataSourceNode;
-import ec.tss.tsproviders.DataSource;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
 import java.io.File;
@@ -80,6 +79,6 @@ public final class ShowInFolderAction extends SingleNodeAction<DataSourceNode> {
     }
 
     private static Optional<File> getFile(DataSourceNode activatedNode) {
-        return TsManager.getDefault().getFile(TsConverter.toDataSource(activatedNode.getLookup().lookup(DataSource.class)));
+        return TsManager.getDefault().getFile(activatedNode.getLookup().lookup(DataSource.class));
     }
 }

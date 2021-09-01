@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package internal.ui.actions;
+package demetra.desktop.core.actions;
 
 import demetra.ui.actions.AbilityNodeAction;
 import java.util.stream.Stream;
@@ -16,9 +16,9 @@ import demetra.ui.actions.Reloadable;
  *
  * @author Philippe Charles
  */
-@ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ReloadAction")
-@ActionRegistration(displayName = "#ReloadAction", lazy = false)
-@NbBundle.Messages({"ReloadAction=Reload"})
+@ActionID(category = "File", id = "demetra.desktop.core.actions.ReloadNodeAction")
+@ActionRegistration(displayName = "#ReloadNodeAction", lazy = false)
+@NbBundle.Messages({"ReloadNodeAction=Reload"})
 public final class ReloadNodeAction extends AbilityNodeAction<Reloadable> {
 
     public ReloadNodeAction() {
@@ -32,6 +32,6 @@ public final class ReloadNodeAction extends AbilityNodeAction<Reloadable> {
 
     @Override
     public String getName() {
-        return Bundle.ReloadAction();
+        return Bundle.ReloadNodeAction();
     }
 }

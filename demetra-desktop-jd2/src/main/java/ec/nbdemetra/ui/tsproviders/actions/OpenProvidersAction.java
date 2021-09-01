@@ -20,7 +20,6 @@ import demetra.tsprovider.DataSourceLoader;
 import demetra.tsprovider.FileLoader;
 import demetra.ui.TsManager;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import ec.tss.tsproviders.IDataSourceLoader;
 import ec.util.list.swing.JLists;
 import java.awt.event.ActionEvent;
 import java.beans.BeanInfo;
@@ -93,7 +92,7 @@ public final class OpenProvidersAction extends AbstractAction implements Present
     }
 
     private static void renderLoader(JLabel label, Object value) {
-        IDataSourceLoader loader = (IDataSourceLoader) value;
+        DataSourceLoader loader = (DataSourceLoader) value;
         label.setText(loader.getDisplayName());
         label.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(loader.getSource(), BeanInfo.ICON_COLOR_16x16, false).map(ImageUtilities::image2Icon).orElse(null));
     }

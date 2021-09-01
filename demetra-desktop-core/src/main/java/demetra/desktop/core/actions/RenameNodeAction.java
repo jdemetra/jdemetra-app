@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package internal.ui.actions;
+package demetra.desktop.core.actions;
 
 import demetra.ui.actions.AbilityNodeAction;
 import java.util.stream.Stream;
@@ -15,9 +15,9 @@ import demetra.ui.actions.Renameable;
  *
  * @author Philippe Charles
  */
-@ActionID(category = "File", id = "ec.nbdemetra.ui.actions.RenameAction")
-@ActionRegistration(displayName = "#RenameAction", lazy = false)
-@NbBundle.Messages({"RenameAction=Rename..."})
+@ActionID(category = "File", id = "demetra.desktop.core.actions.RenameNodeAction")
+@ActionRegistration(displayName = "#RenameNodeAction", lazy = false)
+@NbBundle.Messages({"RenameNodeAction=Rename..."})
 public final class RenameNodeAction extends AbilityNodeAction<Renameable> {
 
     public RenameNodeAction() {
@@ -31,6 +31,6 @@ public final class RenameNodeAction extends AbilityNodeAction<Renameable> {
 
     @Override
     public String getName() {
-        return Bundle.RenameAction();
+        return Bundle.RenameNodeAction();
     }
 }

@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.ui.actions;
+package demetra.desktop.core.actions;
 
 import demetra.ui.actions.AbilityNodeAction;
 import java.util.stream.Stream;
@@ -28,9 +28,9 @@ import org.openide.util.NbBundle.Messages;
  *
  * @author Philippe Charles
  */
-@ActionID(category = "File", id = "ec.nbdemetra.ui.actions.OpenAction")
-@ActionRegistration(displayName = "#OpenAction", lazy = false)
-@Messages("OpenAction=Open")
+@ActionID(category = "File", id = "demetra.desktop.core.actions.OpenNodeAction")
+@ActionRegistration(displayName = "#OpenNodeAction", lazy = false)
+@Messages("OpenNodeAction=Open")
 public final class OpenNodeAction extends AbilityNodeAction<Openable> {
 
     public OpenNodeAction() {
@@ -44,6 +44,6 @@ public final class OpenNodeAction extends AbilityNodeAction<Openable> {
 
     @Override
     public String getName() {
-        return Bundle.OpenAction();
+        return Bundle.OpenNodeAction();
     }
 }
