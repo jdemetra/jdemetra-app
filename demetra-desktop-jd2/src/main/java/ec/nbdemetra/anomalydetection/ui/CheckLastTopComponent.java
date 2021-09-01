@@ -18,6 +18,8 @@ package ec.nbdemetra.anomalydetection.ui;
 
 import com.google.common.base.Stopwatch;
 import demetra.bridge.TsConverter;
+import demetra.desktop.notification.MessageType;
+import demetra.desktop.notification.NotifyUtil;
 import demetra.timeseries.TsCollection;
 import demetra.ui.DemetraOptions;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
@@ -29,8 +31,6 @@ import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IActiveView;
 import demetra.ui.util.NbComponents;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import ec.nbdemetra.ui.notification.MessageType;
-import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.nbdemetra.ui.tools.ToolsPersistence;
 import ec.tstoolkit.modelling.arima.CheckLast;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;

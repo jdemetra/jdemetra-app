@@ -17,8 +17,8 @@
 package ec.nbdemetra.ui;
 
 import demetra.ui.util.ShowInFolderActionListener;
-import ec.nbdemetra.ui.notification.MessageType;
-import ec.nbdemetra.ui.notification.NotifyUtil;
+import demetra.desktop.notification.MessageType;
+import demetra.desktop.notification.NotifyUtil;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Objects;

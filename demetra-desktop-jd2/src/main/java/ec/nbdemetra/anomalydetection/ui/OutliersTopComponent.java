@@ -17,14 +17,14 @@
 package ec.nbdemetra.anomalydetection.ui;
 
 import com.google.common.base.Stopwatch;
+import demetra.desktop.notification.MessageType;
+import demetra.desktop.notification.NotifyUtil;
 import ec.nbdemetra.anomalydetection.ControlNode;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IActiveView;
 import demetra.ui.util.NbComponents;
 import demetra.ui.properties.PropertySheetDialogBuilder;
-import ec.nbdemetra.ui.notification.MessageType;
-import ec.nbdemetra.ui.notification.NotifyUtil;
 import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import demetra.ui.components.JTsGrid;
 import ec.util.chart.ObsIndex;
