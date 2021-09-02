@@ -10,21 +10,20 @@ import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlRegArimaReport;
 import ec.tss.sa.RegArimaReport;
 import ec.tstoolkit.algorithm.AlgorithmDescriptor;
-import ec.ui.AHtmlView;
-import ec.ui.html.JHtmlView;
+import demetra.ui.components.JHtmlView;
 import ec.util.list.swing.JLists;
-import java.awt.BorderLayout;
-import java.awt.event.ItemEvent;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import javax.swing.*;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- *
  * @author Philippe Charles
  */
 public class SummaryView extends AbstractSaProcessingTopComponent implements MultiViewElement {
@@ -36,7 +35,7 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
     private Map<Integer, Map<AlgorithmDescriptor, RegArimaReport>> reports;
     // subcomponents
     private final JComboBox<Map.Entry<Integer, AlgorithmDescriptor>> comboBox;
-    private final AHtmlView reportTB_;
+    private final JHtmlView reportTB_;
 
     public SummaryView(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
         super(doc, controller);
@@ -53,9 +52,9 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
             if (event.getStateChange() == ItemEvent.SELECTED && event.getItem() != null) {
                 Map.Entry<Integer, AlgorithmDescriptor> item = (Map.Entry<Integer, AlgorithmDescriptor>) event.getItem();
                 HtmlRegArimaReport report = new HtmlRegArimaReport(item.getValue().name, reports.get(item.getKey()).get(item.getValue()));
-                reportTB_.loadContent(HtmlUtil.toString(report));
+                reportTB_.setHtml(HtmlUtil.toString(report));
             } else {
-                reportTB_.loadContent("");
+                reportTB_.setHtml("");
             }
         });
 
@@ -138,7 +137,7 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
     }
 
     public void setData(Map<Integer, Map<AlgorithmDescriptor, RegArimaReport>> reports) {
-        reportTB_.loadContent("");
+        reportTB_.setHtml("");
         this.reports = reports;
         long count = reports.values().stream().mapToLong(r -> r.values().size()).sum();
         comboBox.setVisible(count > 1);

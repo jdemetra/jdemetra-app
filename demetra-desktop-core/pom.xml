@@ -35,6 +35,11 @@
             <artifactId>java-service-processor</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-design</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- compile & runtime -->
         <dependency>

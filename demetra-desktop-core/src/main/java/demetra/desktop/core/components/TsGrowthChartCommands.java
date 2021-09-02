@@ -40,7 +40,7 @@ import demetra.ui.datatransfer.DataTransfer;
  * @author Philippe Charles
  */
 @lombok.experimental.UtilityClass
-public class JTsGrowthChartCommands {
+public class TsGrowthChartCommands {
 
     @NonNull
     public static JCommand<JTsGrowthChart> copyGrowthData() {

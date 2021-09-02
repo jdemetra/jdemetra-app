@@ -1,17 +1,17 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  *
  * http://ec.europa.eu/idabc/eupl
  *
- * Unless required by applicable law or agreed to in writing, software 
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.ui.demo;
@@ -23,9 +23,10 @@ import ec.tss.html.AbstractHtmlElement;
 import ec.tss.html.HtmlStream;
 import ec.tss.html.HtmlTag;
 import ec.tss.html.HtmlUtil;
-import ec.ui.AHtmlView;
-import ec.ui.html.JHtmlView;
-import java.awt.BorderLayout;
+import demetra.ui.components.JHtmlView;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -34,10 +35,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.swing.JComponent;
 
 /**
- *
  * @author Philippe Charles
  */
 @SwingComponent
@@ -55,7 +54,7 @@ public final class JReflectComponent extends JComponent {
     @SwingProperty
     public static final String EXTRACTOR_PROPERTY = "extractor";
 
-    private final AHtmlView htmlView;
+    private final JHtmlView htmlView;
     private Class<?> clazz;
     private Function<Class<?>, List<Method>> extractor;
 
@@ -81,7 +80,7 @@ public final class JReflectComponent extends JComponent {
     }
 
     private void onChange() {
-        htmlView.loadContent(HtmlUtil.toString(new ClazzReport(clazz, extractor)));
+        htmlView.setHtml(HtmlUtil.toString(new ClazzReport(clazz, extractor)));
     }
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">

@@ -4,11 +4,12 @@
  */
 package ec.ui.view;
 
+import demetra.desktop.design.SwingComponent;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasColorSchemeResolver;
 import demetra.ui.components.parts.HasColorSchemeSupport;
-import demetra.desktop.design.SwingComponent;
 import demetra.ui.util.NbComponents;
+import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlRevisionsDocument;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
 import ec.tstoolkit.timeseries.analysis.DiagnosticInfo;
@@ -16,17 +17,7 @@ import ec.tstoolkit.timeseries.analysis.DiagnosticTarget;
 import ec.tstoolkit.timeseries.analysis.RevisionHistory;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import ec.tss.html.HtmlUtil;
-import ec.ui.AHtmlView;
-import ec.ui.html.JHtmlView;
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.geom.Ellipse2D;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import javax.swing.JComponent;
-import javax.swing.JSplitPane;
+import demetra.ui.components.JHtmlView;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -40,8 +31,13 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+
 /**
- *
  * @author Kristof Bayens
  */
 @SwingComponent
@@ -57,12 +53,12 @@ public final class JRevisionHistoryView extends JComponent implements HasColorSc
     private final int minyears_ = 5;
     private int threshold_ = 2;
     private final JChartPanel chartpanel_;
-    private final AHtmlView documentpanel_;
+    private final JHtmlView documentpanel_;
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
-        // TODO: add some code on color scheme change
+    // TODO: add some code on color scheme change
     private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::invalidate);
 
     public JRevisionHistoryView() {
@@ -215,7 +211,7 @@ public final class JRevisionHistoryView extends JComponent implements HasColorSc
     private void showRevisionsDocument(TsData s) {
         HtmlRevisionsDocument document = new HtmlRevisionsDocument(s, diag_);
         document.setThreshold(threshold_);
-        documentpanel_.loadContent(HtmlUtil.toString(document));
+        documentpanel_.setHtml(HtmlUtil.toString(document));
     }
 
     private TsData revisions() {

@@ -7,6 +7,7 @@ package ec.nbdemetra.sa;
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.ui.TsManager;
+import demetra.ui.components.JTsChart;
 import demetra.ui.components.parts.HasTs;
 import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
@@ -16,13 +17,7 @@ import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlSeasonalityDiagnostics;
 import ec.tstoolkit.modelling.arima.tramo.SeasonalityTests;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.AHtmlView;
-import demetra.ui.components.JTsChart;
-import ec.ui.html.JHtmlView;
-import java.lang.reflect.InvocationTargetException;
-import javax.swing.JMenu;
-import javax.swing.SwingUtilities;
-import org.openide.windows.TopComponent;
+import demetra.ui.components.JHtmlView;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -34,6 +29,10 @@ import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
 import org.openide.nodes.Sheet.Set;
 import org.openide.util.NbBundle.Messages;
+import org.openide.windows.TopComponent;
+
+import javax.swing.*;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Top component which displays something.
@@ -49,9 +48,9 @@ import org.openide.util.NbBundle.Messages;
 @TopComponent.OpenActionRegistration(displayName = "#CTL_SeasonalityTestAction",
         preferredID = "SeasonalityTestTopComponent")
 @Messages({
-    "CTL_SeasonalityTestAction=Seasonality Tests",
-    "CTL_SeasonalityTestTopComponent=Seasonality Tests Window",
-    "HINT_SeasonalityTestTopComponent=This is a Seasonality Tests window"
+        "CTL_SeasonalityTestAction=Seasonality Tests",
+        "CTL_SeasonalityTestTopComponent=Seasonality Tests Window",
+        "HINT_SeasonalityTestTopComponent=This is a Seasonality Tests window"
 })
 public final class SeasonalityTestTopComponent extends TopComponent implements HasTs, IActiveView, ExplorerManager.Provider {
 
@@ -61,7 +60,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
     private int lastYears = 0;
 
     private final JTsChart jTsChart1;
-    private final AHtmlView jEditorPane1;
+    private final JHtmlView jEditorPane1;
 
     public SeasonalityTestTopComponent() {
         initComponents();
@@ -82,7 +81,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
         associateLookup(ExplorerUtils.createLookup(ActiveViewManager.getInstance().getExplorerManager(), getActionMap()));
     }
 
-//    @Override
+    //    @Override
 //    public void open() {
 //        super.open();
 //        Mode mode = WindowManager.getDefault().findMode("properties");
@@ -131,6 +130,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
         jSplitPane1.setResizeWeight(0.5);
         add(jSplitPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSplitPane jSplitPane1;
     // End of variables declaration//GEN-END:variables
@@ -138,7 +138,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
     private void showTests() {
         demetra.timeseries.Ts cur = getTs();
         if (cur == null) {
-            jEditorPane1.loadContent("");
+            jEditorPane1.setHtml("");
         } else {
             test(cur);
         }
@@ -164,7 +164,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
         }
         SeasonalityTests tests = SeasonalityTests.seasonalityTest(s, diffOrder, diffOrder <= 1, true);
         HtmlSeasonalityDiagnostics html = new HtmlSeasonalityDiagnostics(tests);
-        jEditorPane1.loadContent(HtmlUtil.toString(html));
+        jEditorPane1.setHtml(HtmlUtil.toString(html));
     }
 
     void writeProperties(java.util.Properties p) {
@@ -213,7 +213,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
     class InternalNode extends AbstractNode {
 
         @Messages({
-            "seasonalityTestTopComponent.internalNode.displayName=Seasonality tests"
+                "seasonalityTestTopComponent.internalNode.displayName=Seasonality tests"
         })
         InternalNode() {
             super(Children.LEAF);
@@ -222,14 +222,14 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
 
         @Override
         @Messages({
-            "seasonalityTestTopComponent.transform.name=Transform",
-            "seasonalityTestTopComponent.transform.displayName=Transformation",
-            "seasonalityTestTopComponent.log.name=Log",
-            "seasonalityTestTopComponent.log.desc=When marked, logarithmic transformation is used.",
-            "seasonalityTestTopComponent.differencing.name=Differencing",
-            "seasonalityTestTopComponent.differencing.desc=An order of a regular differencing of the series.",
-            "seasonalityTestTopComponent.lastYears.name=Last years",
-            "seasonalityTestTopComponent.lastYears.desc=Number of years at the end of the series taken into account (0 = whole series)."
+                "seasonalityTestTopComponent.transform.name=Transform",
+                "seasonalityTestTopComponent.transform.displayName=Transformation",
+                "seasonalityTestTopComponent.log.name=Log",
+                "seasonalityTestTopComponent.log.desc=When marked, logarithmic transformation is used.",
+                "seasonalityTestTopComponent.differencing.name=Differencing",
+                "seasonalityTestTopComponent.differencing.desc=An order of a regular differencing of the series.",
+                "seasonalityTestTopComponent.lastYears.name=Last years",
+                "seasonalityTestTopComponent.lastYears.desc=Number of years at the end of the series taken into account (0 = whole series)."
         })
         protected Sheet createSheet() {
             Sheet sheet = super.createSheet();

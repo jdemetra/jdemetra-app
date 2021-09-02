@@ -36,7 +36,7 @@ import static demetra.ui.components.JTsGrid.Orientation.REVERSED;
  * @author Philippe Charles
  */
 @lombok.experimental.UtilityClass
-public class JTsGridCommands {
+public class TsGridCommands {
 
     @NonNull
     public static JCommand<JTsGrid> transpose() {

@@ -35,9 +35,7 @@ import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
 import ec.util.grid.swing.XTable;
 import ec.util.various.swing.FontAwesome;
-import nbbrd.design.DirectImpl;
 import nbbrd.io.text.Formatter;
-import nbbrd.service.ServiceProvider;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -53,22 +51,7 @@ import java.util.function.Supplier;
 
 import static demetra.ui.components.JTsGrid.TOGGLE_MODE_ACTION;
 
-public final class InternalTsGridUI implements InternalUI<JTsGrid> {
-
-    @DirectImpl
-    @ServiceProvider
-    public static final class Factory implements ComponentBackendSpi {
-
-        @Override
-        public boolean handles(Class<? extends JComponent> type) {
-            return JTsGrid.class.equals(type);
-        }
-
-        @Override
-        public void install(JComponent component) {
-            new InternalTsGridUI().install((JTsGrid) component);
-        }
-    }
+public final class TsGridUI implements InternalUI<JTsGrid> {
 
     private JTsGrid target;
 
@@ -110,11 +93,11 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
 
     private void registerActions() {
         ActionMap am = target.getActionMap();
-        am.put(JTsGrid.TRANSPOSE_ACTION, JTsGridCommands.transpose().toAction(target));
-        am.put(JTsGrid.REVERSE_ACTION, JTsGridCommands.reverseChronology().toAction(target));
-        am.put(JTsGrid.SINGLE_TS_ACTION, JTsGridCommands.applyMode(JTsGrid.Mode.SINGLETS).toAction(target));
-        am.put(JTsGrid.MULTI_TS_ACTION, JTsGridCommands.applyMode(JTsGrid.Mode.MULTIPLETS).toAction(target));
-        am.put(JTsGrid.TOGGLE_MODE_ACTION, JTsGridCommands.toggleMode().toAction(target));
+        am.put(JTsGrid.TRANSPOSE_ACTION, TsGridCommands.transpose().toAction(target));
+        am.put(JTsGrid.REVERSE_ACTION, TsGridCommands.reverseChronology().toAction(target));
+        am.put(JTsGrid.SINGLE_TS_ACTION, TsGridCommands.applyMode(JTsGrid.Mode.SINGLETS).toAction(target));
+        am.put(JTsGrid.MULTI_TS_ACTION, TsGridCommands.applyMode(JTsGrid.Mode.MULTIPLETS).toAction(target));
+        am.put(JTsGrid.TOGGLE_MODE_ACTION, TsGridCommands.toggleMode().toAction(target));
         HasObsFormatSupport.registerActions(target, am);
         HasTsCollectionSupport.registerActions(target, target.getActionMap());
         HasObsFormatSupport.registerActions(target, am);
@@ -452,21 +435,21 @@ public final class InternalTsGridUI implements InternalUI<JTsGrid> {
         item.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_GLOBE));
         result.add(item);
 
-        item = new JCheckBoxMenuItem(JTsGridCommands.toggleUseColorScheme().toAction(target));
+        item = new JCheckBoxMenuItem(TsGridCommands.toggleUseColorScheme().toAction(target));
         item.setText("Use color scheme");
         result.add(item);
 
         result.add(HasColorSchemeSupport.menuOf(target));
 
-        item = new JCheckBoxMenuItem(JTsGridCommands.toggleShowBars().toAction(target));
+        item = new JCheckBoxMenuItem(TsGridCommands.toggleShowBars().toAction(target));
         item.setText("Show bars");
         item.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_TASKS));
         result.add(item);
 
-        item = HasGridSupport.newToggleCrosshairVisibilityMenu(target);
+        item = HasCrosshairSupport.newToggleCrosshairVisibilityMenu(target);
         result.add(item);
 
-        result.add(HasGridSupport.newZoomRatioMenu(target));
+        result.add(HasZoomRatioSupport.newZoomRatioMenu(target));
 
         return result;
     }

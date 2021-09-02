@@ -40,7 +40,7 @@ import java.beans.Beans;
  */
 @SwingComponent
 public final class JTsGrid extends JComponent implements TimeSeriesComponent, PropertyChangeSource.WithWeakListeners,
-        HasTsCollection, HasTsAction, HasGrid, HasColorScheme, HasObsFormat, HasHoveredObs {
+        HasTsCollection, HasTsAction, HasCrosshair, HasColorScheme, HasObsFormat, HasHoveredObs, HasZoomRatio {
 
     @SwingAction
     public static final String TRANSPOSE_ACTION = "transpose";
@@ -146,7 +146,7 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
     private final HasTsAction tsAction;
 
     @lombok.experimental.Delegate
-    private final HasGrid grid;
+    private final HasCrosshair crosshair;
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme;
@@ -157,15 +157,19 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
     @lombok.experimental.Delegate
     private final HasHoveredObs hoveredObs;
 
+    @lombok.experimental.Delegate
+    private final HasZoomRatio zoomRatio;
+
     private final TsSelectionBridge tsSelectionBridge;
 
     public JTsGrid() {
         this.collection = HasTsCollectionSupport.of(this::firePropertyChange);
-        this.grid = HasGridSupport.of(this::firePropertyChange);
+        this.crosshair = HasCrosshairSupport.of(this::firePropertyChange);
         this.tsAction = HasTsActionSupport.of(this::firePropertyChange);
         this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
         this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
         this.hoveredObs = HasHoveredObsSupport.of(this::firePropertyChange);
+        this.zoomRatio = HasZoomRatioSupport.of(this::firePropertyChange);
         this.orientation = DEFAULT_ORIENTATION;
         this.chronology = DEFAULT_CHRONOLOGY;
         this.mode = DEFAULT_MODE;

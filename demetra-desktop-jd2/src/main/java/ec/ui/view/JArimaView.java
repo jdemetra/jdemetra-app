@@ -15,18 +15,16 @@ import ec.tstoolkit.arima.IArimaModel;
 import ec.tstoolkit.sarima.SarimaModel;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.uihelper.ModelInformationProvider;
-import ec.ui.AHtmlView;
-import ec.ui.html.JHtmlView;
-import java.awt.BorderLayout;
+import demetra.ui.components.JHtmlView;
+import nbbrd.design.SkipProcessing;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.swing.JComponent;
-import javax.swing.JSplitPane;
-import nbbrd.design.SkipProcessing;
 
 /**
- *
  * @author Kristof Bayens
  */
 @SwingComponent
@@ -34,7 +32,7 @@ import nbbrd.design.SkipProcessing;
 public final class JArimaView extends JComponent {
 
     private final PiView spectrumPanel_;
-    private final AHtmlView documentPanel_;
+    private final JHtmlView documentPanel_;
 
     public JArimaView(Map<String, ? extends IArimaModel> models) {
         setLayout(new BorderLayout());
@@ -58,7 +56,7 @@ public final class JArimaView extends JComponent {
     }
 
     private void displayHtml(Map<String, ? extends IArimaModel> models) {
-        documentPanel_.loadContent(HtmlUtil.toString(o -> write(o, models)));
+        documentPanel_.setHtml(HtmlUtil.toString(o -> write(o, models)));
     }
 
     public void write(HtmlStream stream, Map<String, ? extends IArimaModel> models) throws IOException {

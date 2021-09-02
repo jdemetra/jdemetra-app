@@ -1,24 +1,25 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.ui.view;
 
-import demetra.ui.components.parts.*;
-import demetra.ui.components.TimeSeriesComponent;
 import demetra.desktop.design.SwingComponent;
+import demetra.ui.components.TimeSeriesComponent;
+import demetra.ui.components.parts.*;
+import demetra.ui.jfreechart.TsCharts;
 import demetra.ui.util.NbComponents;
 import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlRevisionsDocument;
@@ -29,23 +30,10 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDataFunction;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import ec.ui.AHtmlView;
 import ec.ui.chart.ChartPopup;
-import demetra.ui.jfreechart.TsCharts;
-import ec.ui.html.JHtmlView;
+import demetra.ui.components.JHtmlView;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.SwingColorSchemeSupport;
-import java.awt.BorderLayout;
-import java.awt.Point;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import javax.swing.JComponent;
-import javax.swing.JSplitPane;
-import javax.swing.SwingUtilities;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -62,6 +50,15 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 /**
  * View of the Revision History of a serie.
  *
@@ -73,13 +70,13 @@ public final class JRevisionSaSeriesView extends JComponent implements TimeSerie
     private static final int S_INDEX = 1;
     private static final int REV_INDEX = 0;
     private final JChartPanel chartpanel_;  // Panel displaying chart
-    private final AHtmlView documentpanel_;
+    private final JHtmlView documentpanel_;
     private final XYLineAndShapeRenderer sRenderer;
     private final XYLineAndShapeRenderer revRenderer;
     private final JFreeChart mainChart;
     private String info_ = "sa";
     private RevisionHistory history_;
-    private DiagnosticInfo diag_ = DiagnosticInfo.RelativeDifference, activeDiag=diag_;
+    private DiagnosticInfo diag_ = DiagnosticInfo.RelativeDifference, activeDiag = diag_;
     private final int years_ = 4;
     private final int minyears_ = 5;
     private final int threshold_ = 2;
@@ -96,7 +93,7 @@ public final class JRevisionSaSeriesView extends JComponent implements TimeSerie
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
     private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
-    
+
     /**
      * Constructs a new view
      */
@@ -104,7 +101,7 @@ public final class JRevisionSaSeriesView extends JComponent implements TimeSerie
         setLayout(new BorderLayout());
 
         SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
-        
+
         sRenderer = new XYLineAndShapeRenderer();
         sRenderer.setBaseShapesVisible(false);
         //sRenderer.setSeriesStroke(1, new BasicStroke(0.75f, 1, 1, 1.0f, new float[]{2f, 3f}, 0.0f));
@@ -199,13 +196,13 @@ public final class JRevisionSaSeriesView extends JComponent implements TimeSerie
         popup.setVisible(true);
         chartpanel_.repaint();
     }
-    
-    private static TsData transform(TsData origin, TsPeriodSelector selector, TsDataFunction fn){
-        TsDomain odomain=origin.getDomain();
-        TsDomain domain=odomain.select(selector);
-        TsData s=new TsData(domain);
-        int del=domain.getStart().minus(odomain.getStart());
-        for (int i=0, j=del; i<domain.getLength(); ++i, ++j){
+
+    private static TsData transform(TsData origin, TsPeriodSelector selector, TsDataFunction fn) {
+        TsDomain odomain = origin.getDomain();
+        TsDomain domain = odomain.select(selector);
+        TsData s = new TsData(domain);
+        int del = domain.getStart().minus(odomain.getStart());
+        for (int i = 0, j = del; i < domain.getLength(); ++i, ++j) {
             if (fn == null)
                 s.set(i, origin.get(j));
             else
@@ -217,7 +214,7 @@ public final class JRevisionSaSeriesView extends JComponent implements TimeSerie
     private void showRevisionsDocument(TsData s) {
         HtmlRevisionsDocument document = new HtmlRevisionsDocument(s, activeDiag);
         document.setThreshold(threshold_);
-        documentpanel_.loadContent(HtmlUtil.toString(document));
+        documentpanel_.setHtml(HtmlUtil.toString(document));
     }
 
     private TsData revisions() {
@@ -315,7 +312,7 @@ public final class JRevisionSaSeriesView extends JComponent implements TimeSerie
         final TimeSeriesCollection chartSeries = new TimeSeriesCollection();
         sRef = history_.referenceSeries(info_);
         TsPeriodSelector selector = new TsPeriodSelector();
-        TsDomain refdom=sRef.getDomain();
+        TsDomain refdom = sRef.getDomain();
         int n = refdom.getLength();
         int freq = refdom.getFrequency().intValue();
         int l = years_ * freq + 1;
@@ -406,16 +403,16 @@ public final class JRevisionSaSeriesView extends JComponent implements TimeSerie
     public void setHistory(RevisionHistory history) {
         if (this.history_ == null || !this.history_.equals(history)) {
             this.history_ = history;
-            if (history != null){
+            if (history != null) {
                 TsData data = history_.getReferenceInfo().getData(info_, TsData.class);
-               if (data.check(x->!Double.isFinite(x) || x>0))
-                   activeDiag=diag_;
-               else
-                   activeDiag=diag_.adaptForNegativeValues();
-                   
+                if (data.check(x -> !Double.isFinite(x) || x > 0))
+                    activeDiag = diag_;
+                else
+                    activeDiag = diag_.adaptForNegativeValues();
+
             }
             chartpanel_.setChart(null);
-            
+
             showResults();
         }
     }

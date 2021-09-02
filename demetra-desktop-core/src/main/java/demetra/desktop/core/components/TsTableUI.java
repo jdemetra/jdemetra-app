@@ -49,22 +49,7 @@ import static ec.util.various.swing.ModernUI.createDropBorder;
  * @author Kristof Bayens
  * @author Philippe Charles
  */
-public final class InternalTsTableUI implements InternalUI<JTsTable> {
-
-    @DirectImpl
-    @ServiceProvider
-    public static final class Factory implements ComponentBackendSpi {
-
-        @Override
-        public boolean handles(Class<? extends JComponent> type) {
-            return JTsTable.class.equals(type);
-        }
-
-        @Override
-        public void install(JComponent component) {
-            new InternalTsTableUI().install((JTsTable) component);
-        }
-    }
+public final class TsTableUI implements InternalUI<JTsTable> {
 
     private JTsTable target;
 
