@@ -28,12 +28,12 @@ import org.jfree.data.xy.XYSeriesCollection;
  * @author Kristof Bayens
  */
 @SwingComponent
-public final class AcgfView extends JComponent{
+public final class JAcgfView extends JComponent{
     private XYSeriesCollection coll_;
     private final ChartPanel panel_;
     private final int n_ = 36;
 
-    public AcgfView() {
+    public JAcgfView() {
         setLayout(new BorderLayout());
 
         panel_ = Charts.newChartPanel(null);

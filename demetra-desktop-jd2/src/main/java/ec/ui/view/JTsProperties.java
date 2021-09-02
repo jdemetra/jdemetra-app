@@ -27,7 +27,7 @@ import ec.tstoolkit.timeseries.simplets.TsData;
  * @author Demortier Jeremy
  */
 @SwingComponent
-public final class TsProperties extends JComponent implements IDisposable {
+public final class JTsProperties extends JComponent implements IDisposable {
 
     private final JTsChart chart_;
     private final JTsGrid grid_;
@@ -35,7 +35,7 @@ public final class TsProperties extends JComponent implements IDisposable {
     private final JLabel labelSource_;
     private final JTree tree_;
 
-    public TsProperties() {
+    public JTsProperties() {
         super();
 
         labelSeries_ = new JLabel();
@@ -151,7 +151,7 @@ public final class TsProperties extends JComponent implements IDisposable {
 
         @Override
         public boolean importData(TransferSupport support) {
-            DataTransfer.getDefault().toTs(support.getTransferable()).ifPresent(TsProperties.this::setTs);
+            DataTransfer.getDefault().toTs(support.getTransferable()).ifPresent(JTsProperties.this::setTs);
             return super.importData(support);
         }
     }

@@ -19,7 +19,7 @@ package ec.nbdemetra.sa.actions;
 import ec.nbdemetra.sa.MultiProcessingManager;
 import ec.nbdemetra.sa.SaBatchUI;
 import ec.nbdemetra.ws.actions.AbstractViewAction;
-import ec.nbdemetra.ws.ui.SpecSelectionComponent;
+import ec.nbdemetra.ws.ui.JSpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.tss.sa.SaItem;
 import org.openide.DialogDescriptor;
@@ -67,7 +67,7 @@ public final class ChangeSpecification extends AbstractViewAction<SaBatchUI> {
                 break;
             }
         }
-        SpecSelectionComponent c = new SpecSelectionComponent();
+        JSpecSelectionComponent c = new JSpecSelectionComponent();
         c.setSpecification(spec);
         DialogDescriptor dd = c.createDialogDescriptor("Choose active specification");
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {

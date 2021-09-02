@@ -27,7 +27,7 @@ import javax.swing.JSplitPane;
  * @author Jean Palate
  */
 @SwingComponent
-public final class BenchmarkingView extends JComponent {
+public final class JBenchmarkingView extends JComponent {
 
     private final JTsGrid grid_;
     private final JTsChart chart_;
@@ -35,7 +35,7 @@ public final class BenchmarkingView extends JComponent {
     private final Box documentPanel_;
     private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
 
-    public BenchmarkingView() {
+    public JBenchmarkingView() {
         setLayout(new BorderLayout());
 
         grid_ = new JTsGrid();

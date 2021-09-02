@@ -31,6 +31,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
+import nbbrd.design.SkipProcessing;
 
 /**
  * An implementation of {@link IProcDocumentItemFactory} that combines an
@@ -90,7 +91,7 @@ public abstract class ComposedProcDocumentItemFactory<D extends IProcDocument, I
         if (info == null) {
             return host.getToolkit().getMessageViewer("No information for this item");
         }
-        return async ? new AsyncView(host, source) : itemUI.getView(host, info);
+        return async ? new JAsyncView(host, source) : itemUI.getView(host, info);
     }
 
     @NonNull
@@ -104,9 +105,10 @@ public abstract class ComposedProcDocumentItemFactory<D extends IProcDocument, I
     }
 
     @SwingComponent
-    private final class AsyncView extends JComponent {
+    @SkipProcessing(target = SwingComponent.class, reason = "parameters in constructor")
+    private final class JAsyncView extends JComponent {
 
-        public AsyncView(final IProcDocumentView<? extends IProcDocument> host, final D source) {
+        public JAsyncView(final IProcDocumentView<? extends IProcDocument> host, final D source) {
             setLayout(new BorderLayout());
             add(newLoadingComponent(), BorderLayout.CENTER);
 

@@ -97,7 +97,7 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
             super(DATA_BY_COMPONENT, ResultExtractor.INSTANCE, new DefaultItemUI<IProcDocumentView<RevisionAnalysisDocument>, IProcResults>() {
                 @Override
                 public JComponent getView(IProcDocumentView<RevisionAnalysisDocument> host, IProcResults information) {
-                    return new RevisionAnalysisJGrid(information);
+                    return new JRevisionAnalysisJGrid(information);
                 }
 
             });
@@ -116,7 +116,7 @@ public class RevisionAnalysisViewFactory extends ProcDocumentViewFactory<Revisio
             super(CHART_BY_COMPONENT, ResultExtractor.INSTANCE, new DefaultItemUI<IProcDocumentView<RevisionAnalysisDocument>, IProcResults>() {
                 @Override
                 public JComponent getView(IProcDocumentView<RevisionAnalysisDocument> host, IProcResults information) {
-                    return new RevisionAnalysisChart(information);
+                    return new JRevisionAnalysisChart(information);
                 }
 
             });

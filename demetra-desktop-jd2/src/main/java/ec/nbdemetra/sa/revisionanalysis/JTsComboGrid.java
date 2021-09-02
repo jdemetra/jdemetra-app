@@ -32,6 +32,7 @@ import java.util.Map;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import nbbrd.design.SkipProcessing;
 
 /**
  * Component combining a standard <code>JTsGrid</code> and a
@@ -41,6 +42,7 @@ import javax.swing.JLabel;
  * @author Mats Maggi
  */
 @SwingComponent
+@SkipProcessing(target = SwingComponent.class, reason = "parameters in constructor")
 public final class JTsComboGrid extends JComponent {
 
     private JComboBox series;

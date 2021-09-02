@@ -25,13 +25,13 @@ import org.jfree.data.xy.XYSeriesCollection;
  * @author Kristof Bayens
  */
 @SwingComponent
-public final class SpectrumView extends JComponent {
+public final class JSpectrumView extends JComponent {
     private XYSeriesCollection coll_;
     private final ChartPanel panel_;
     private final int n_ = 600;
     private final double g_max = 1e6;
 
-    public SpectrumView() {
+    public JSpectrumView() {
         setLayout(new BorderLayout());
 
         panel_ = Charts.newChartPanel(null);

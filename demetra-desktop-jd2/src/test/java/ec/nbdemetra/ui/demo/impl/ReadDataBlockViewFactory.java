@@ -17,11 +17,11 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
-import ec.nbdemetra.ui.demo.ReflectComponent;
+import ec.nbdemetra.ui.demo.JReflectComponent;
 import ec.tstoolkit.utilities.Id;
 import ec.ui.interfaces.IReadDataBlockView;
-import ec.ui.view.AutoCorrelationsView;
-import ec.ui.view.DistributionView;
+import ec.ui.view.JAutoCorrelationsView;
+import ec.ui.view.JDistributionView;
 import java.awt.Component;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -42,9 +42,9 @@ public final class ReadDataBlockViewFactory implements DemoComponentFactory {
     public Map<Id, Callable<Component>> getComponents() {
         return DemoComponentFactory
                 .builder()
-                .put(ID, () -> ReflectComponent.of(IReadDataBlockView.class))
-                .put(ID.extend("AutoCorrelationsView"), AutoCorrelationsView::new)
-                .put(ID.extend("DistributionView"), DistributionView::new)
+                .put(ID, () -> JReflectComponent.of(IReadDataBlockView.class))
+                .put(ID.extend("AutoCorrelationsView"), JAutoCorrelationsView::new)
+                .put(ID.extend("DistributionView"), JDistributionView::new)
                 .build();
     }
 }

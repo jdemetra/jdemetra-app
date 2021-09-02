@@ -93,7 +93,7 @@ import org.jfree.ui.Layer;
  * @author Kristof Bayens
  */
 @SwingComponent
-public final class MarginView extends JComponent implements TimeSeriesComponent, HasColorScheme, HasObsFormat {
+public final class JMarginView extends JComponent implements TimeSeriesComponent, HasColorScheme, HasObsFormat {
 
     // PROPERTIES
     @SkipProcessing(target = SwingProperty.class, reason = "to be refactored")
@@ -130,7 +130,7 @@ public final class MarginView extends JComponent implements TimeSeriesComponent,
     private final HasObsFormatResolver obsFormatResolver;
     private final HasColorSchemeResolver colorSchemeResolver;
 
-    public MarginView() {
+    public JMarginView() {
         this.chartPanel = Charts.newChartPanel(createMarginViewChart());
         this.data = new MarginData(null, null, null, false, null);
         this.precisionMarkersVisible = false;

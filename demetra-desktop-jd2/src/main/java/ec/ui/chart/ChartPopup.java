@@ -16,7 +16,6 @@
  */
 package ec.ui.chart;
 
-import demetra.ui.jfreechart.TsCharts;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -27,8 +26,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.util.List;
 import javax.swing.JDialog;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.XYPlot;
 
 /**
  * Utility Popup dialog displaying graphical results of Revision History
@@ -36,7 +33,7 @@ import org.jfree.chart.plot.XYPlot;
  */
 public class ChartPopup extends JDialog {
 
-    private final RevisionChartPanel panel;
+    private final JRevisionChartPanel panel;
 
     public ChartPopup(Frame owner, boolean modal) {
         super(owner, modal);
@@ -56,7 +53,7 @@ public class ChartPopup extends JDialog {
             }
         });
 
-        panel = new RevisionChartPanel(createChart());
+        panel = new JRevisionChartPanel();
         
         add(panel, BorderLayout.CENTER);
         setPreferredSize(new Dimension(350, 200));
@@ -102,11 +99,5 @@ public class ChartPopup extends JDialog {
      */
     public void setTsData(TsData reference, List<TsData> series) {
         panel.setTsData(reference, series);
-    }
-
-    private JFreeChart createChart() {
-        XYPlot plot = new XYPlot();
-        JFreeChart result = new JFreeChart("", TsCharts.CHART_TITLE_FONT, plot, false);
-        return result;
     }
 }

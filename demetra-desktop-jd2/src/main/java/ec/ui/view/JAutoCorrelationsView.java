@@ -59,7 +59,7 @@ import org.jfree.ui.Layer;
  * @author Demortier Jeremy
  */
 @SwingComponent
-public final class AutoCorrelationsView extends JComponent implements TimeSeriesComponent, IReadDataBlockView, HasColorScheme {
+public final class JAutoCorrelationsView extends JComponent implements TimeSeriesComponent, IReadDataBlockView, HasColorScheme {
 
     public enum ACKind {
 
@@ -106,7 +106,7 @@ public final class AutoCorrelationsView extends JComponent implements TimeSeries
 
     private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
     
-    public AutoCorrelationsView() {
+    public JAutoCorrelationsView() {
         this.length = DEFAULT_LENGTH;
         this.kind = DEFAULT_KIND;
         this.meanCorrection = DEFAULT_MEAN_CORRECTION;

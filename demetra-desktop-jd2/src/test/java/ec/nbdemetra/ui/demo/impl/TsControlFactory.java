@@ -20,11 +20,11 @@ import demetra.bridge.TsConverter;
 import demetra.demo.DemoTsBuilder;
 import demetra.ui.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
-import ec.nbdemetra.ui.demo.ReflectComponent;
+import ec.nbdemetra.ui.demo.JReflectComponent;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.Id;
-import ec.ui.view.MarginView;
+import ec.ui.view.JMarginView;
 import java.awt.Component;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -45,13 +45,13 @@ public final class TsControlFactory implements DemoComponentFactory {
     public Map<Id, Callable<Component>> getComponents() {
         return DemoComponentFactory
                 .builder()
-                .put(ID, () -> ReflectComponent.of(TimeSeriesComponent.class))
+                .put(ID, () -> JReflectComponent.of(TimeSeriesComponent.class))
                 .put(ID.extend("MarginView"), TsControlFactory::marginView)
                 .build();
     }
 
     private static Component marginView() {
-        MarginView result = new MarginView();
+        JMarginView result = new JMarginView();
         TsData series = TsConverter.fromTsData(DemoTsBuilder.randomTsCollection(1).get(0).getData()).get();
         DescriptiveStatistics stats = new DescriptiveStatistics(series);
         double val = (stats.getMax() - stats.getMin()) / 2;

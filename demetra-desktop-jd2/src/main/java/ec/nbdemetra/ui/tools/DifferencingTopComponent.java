@@ -18,7 +18,7 @@ import ec.tstoolkit.stats.AutoCorrelations;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import demetra.ui.components.JTsGrid.Mode;
 import demetra.ui.components.JTsGrid;
-import ec.ui.view.AutoCorrelationsView;
+import ec.ui.view.JAutoCorrelationsView;
 import ec.ui.view.PeriodogramView;
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -73,7 +73,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
     private final JSplitPane splitter1;
     private final JSplitPane splitter2;
     private final PeriodogramView periodogramView;
-    private final AutoCorrelationsView acView;
+    private final JAutoCorrelationsView acView;
     private final JTsGrid grid;
     private demetra.timeseries.Ts ts_;
     private final Node node;
@@ -95,8 +95,8 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
         toolBar.add(Box.createHorizontalStrut(3), 0);
         toolBar.add(dropDataLabel, 1);
         toolBar.add(tsLabel, 2);
-        acView = new AutoCorrelationsView();
-        acView.setKind(AutoCorrelationsView.ACKind.Normal);
+        acView = new JAutoCorrelationsView();
+        acView.setKind(JAutoCorrelationsView.ACKind.Normal);
         periodogramView = new PeriodogramView();
         periodogramView.setTransferHandler(null);
         periodogramView.setDifferencingOrder(0);

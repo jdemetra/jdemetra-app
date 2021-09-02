@@ -16,7 +16,7 @@
  */
 package _demo;
 
-import internal.ui.properties.AutoCompletedComponent;
+import internal.ui.properties.JAutoCompletedComponent;
 import static ec.util.completion.AutoCompletionSource.Behavior.SYNC;
 import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
@@ -46,7 +46,7 @@ final class AutoCompletedComponentDemo {
     }
 
     private static Component create() {
-        AutoCompletedComponent result = new AutoCompletedComponent();
+        JAutoCompletedComponent result = new JAutoCompletedComponent();
         result.setAutoCompletion(AutoCompletedComponentDemo::applyAutoCompletion);
         result.setDefaultValueSupplier(AutoCompletedComponentDemo::loadDefaultValue);
         return result;

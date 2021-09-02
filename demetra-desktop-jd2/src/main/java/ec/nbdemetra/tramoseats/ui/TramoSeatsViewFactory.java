@@ -40,8 +40,7 @@ import ec.tstoolkit.utilities.LinearId;
 import ec.ui.view.tsprocessing.*;
 import ec.ui.view.tsprocessing.sa.ModelBasedUI;
 import ec.ui.view.tsprocessing.sa.SaDocumentViewFactory;
-import static ec.ui.view.tsprocessing.sa.SaDocumentViewFactory.saExtractor;
-import static ec.ui.view.tsprocessing.sa.SaDocumentViewFactory.ssExtractor;
+
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -150,9 +149,9 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
                 public TramoSeatsDocument retrieve(TramoSeatsDocument source) {
                     return source;
                 }
-            }, new PooledItemUI<View, TramoSeatsDocument, TramoSeatsSummary>(TramoSeatsSummary.class) {
+            }, new PooledItemUI<View, TramoSeatsDocument, JTramoSeatsSummary>(JTramoSeatsSummary.class) {
                 @Override
-                protected void init(TramoSeatsSummary c, View host, TramoSeatsDocument information) {
+                protected void init(JTramoSeatsSummary c, View host, TramoSeatsDocument information) {
                     c.setTsToolkit(host.getToolkit());
                     c.set(information);
                 }

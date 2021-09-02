@@ -33,7 +33,7 @@ import demetra.ui.components.JTsGrowthChart;
 import demetra.util.Collections2;
 import ec.ui.interfaces.IDisposable;
 import ec.ui.html.JHtmlView;
-import ec.ui.view.SpectralView;
+import ec.ui.view.JSpectralView;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import javax.swing.JComponent;
@@ -142,7 +142,7 @@ public final class TsViewToolkit implements ITsViewToolkit {
         if (s == null) {
             return null;
         }
-        SpectralView spectrum = new SpectralView();
+        JSpectralView spectrum = new JSpectralView();
         spectrum.set(s, wn);
         return spectrum;
     }

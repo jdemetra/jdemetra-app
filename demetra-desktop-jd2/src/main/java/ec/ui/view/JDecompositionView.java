@@ -19,11 +19,11 @@ import javax.swing.JComponent;
  * @author Kristof Bayens
  */
 @SwingComponent
-public final class DecompositionView extends JComponent {
+public final class JDecompositionView extends JComponent {
 
     private final JTsChart dualchart_;
 
-    public DecompositionView() {
+    public JDecompositionView() {
         dualchart_ = new JTsChart();
         dualchart_.setDualChart(true);
     }

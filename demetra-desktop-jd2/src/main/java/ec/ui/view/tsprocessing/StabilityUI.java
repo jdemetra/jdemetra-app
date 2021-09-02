@@ -18,7 +18,7 @@ package ec.ui.view.tsprocessing;
 
 import ec.tstoolkit.timeseries.analysis.MovingProcessing;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
-import ec.ui.view.StabilityView;
+import ec.ui.view.JStabilityView;
 import ec.ui.view.tsprocessing.sa.SaDocumentViewFactory;
 import java.util.Map;
 
@@ -26,19 +26,19 @@ import java.util.Map;
  *
  * @author Mats Maggi
  */
-public class StabilityUI<V extends IProcDocumentView<?>> extends PooledItemUI<V, MovingProcessing, StabilityView> {
+public class StabilityUI<V extends IProcDocumentView<?>> extends PooledItemUI<V, MovingProcessing, JStabilityView> {
 
     private final String node;
     private final String[] items;
 
     public StabilityUI(String node, String[] items) {
-        super(StabilityView.class);
+        super(JStabilityView.class);
         this.node = node;
         this.items = items;
     }
 
     @Override
-    protected void init(StabilityView c, V host, MovingProcessing information) {
+    protected void init(JStabilityView c, V host, MovingProcessing information) {
         c.reset();
         boolean empty = true;
         for (String item : items) {

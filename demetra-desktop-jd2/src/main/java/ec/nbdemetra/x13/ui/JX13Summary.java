@@ -21,7 +21,7 @@ import ec.ui.Disposables;
 import ec.ui.interfaces.IDisposable;
 import demetra.ui.components.JTsChart;
 import demetra.desktop.design.SwingComponent;
-import ec.ui.view.SIView;
+import ec.ui.view.JSIView;
 import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;
 import java.awt.BorderLayout;
@@ -33,20 +33,20 @@ import javax.swing.*;
  * @author Kristof Bayens
  */
 @SwingComponent
-public final class X13Summary extends JComponent implements IDisposable {
+public final class JX13Summary extends JComponent implements IDisposable {
 
     private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
     private final Box document_;
     private final JTsChart chart_;
-    private final SIView siPanel_;
+    private final JSIView siPanel_;
     private X13Document doc_;
 
-    public X13Summary() {
+    public JX13Summary() {
         setLayout(new BorderLayout());
 
         this.chart_ = new JTsChart();
         chart_.setTsUpdateMode(TsUpdateMode.None);
-        this.siPanel_ = new SIView();
+        this.siPanel_ = new JSIView();
 
         JSplitPane split1 = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, chart_, siPanel_);
         split1.setDividerLocation(0.6);

@@ -20,7 +20,7 @@ import demetra.ui.actions.Configurable;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import demetra.ui.nodes.AbstractNodeBuilder;
 import demetra.ui.nodes.NamedServiceNode;
-import ec.nbdemetra.ws.ui.SpecSelectionComponent;
+import ec.nbdemetra.ws.ui.JSpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.tss.sa.EstimationPolicyType;
@@ -55,7 +55,7 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
 
     private final DemetraStatsOptionsPanelController controller;
     private final JPopupMenu specPopup = new JPopupMenu();
-    private final SpecSelectionComponent specComponent = new SpecSelectionComponent(true);
+    private final JSpecSelectionComponent specComponent = new JSpecSelectionComponent(true);
 
     private final JListSelection<String> fieldSelectionComponent = new JListSelection<>();
 
@@ -464,9 +464,9 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         specPopup.add(specComponent);
         specComponent.addPropertyChangeListener((PropertyChangeEvent evt) -> {
             String p = evt.getPropertyName();
-            if (p.equals(SpecSelectionComponent.SPECIFICATION_PROPERTY) && evt.getNewValue() != null) {
+            if (p.equals(JSpecSelectionComponent.SPECIFICATION_PROPERTY) && evt.getNewValue() != null) {
                 selectedSpecLabel.setText(((ISaSpecification) evt.getNewValue()).toLongString());
-            } else if (p.equals(SpecSelectionComponent.ICON_PROPERTY) && evt.getNewValue() != null) {
+            } else if (p.equals(JSpecSelectionComponent.ICON_PROPERTY) && evt.getNewValue() != null) {
                 specButton.setIcon(ImageUtilities.image2Icon((Image) evt.getNewValue()));
             }
         });

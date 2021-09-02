@@ -77,7 +77,7 @@ import org.jfree.data.xy.XYDataset;
  * @author Kristof Bayens
  */
 @SwingComponent
-public final class SIView extends JComponent implements TimeSeriesComponent, HasTs, HasColorScheme {
+public final class JSIView extends JComponent implements TimeSeriesComponent, HasTs, HasColorScheme {
 
     // CONSTANTS
     private static final int S_INDEX = 0;
@@ -173,7 +173,7 @@ public final class SIView extends JComponent implements TimeSeriesComponent, Has
         }
     }
 
-    public SIView() {
+    public JSIView() {
         this.graphs_ = new HashMap<>();
         highlight = null;
         this.revealObs = new RevealObs();

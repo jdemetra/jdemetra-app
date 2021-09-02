@@ -57,7 +57,7 @@ import demetra.desktop.design.SwingProperty;
  * @author Philippe Charles
  */
 @SwingComponent
-final class AnomalyDetectionChart extends JComponent {
+final class JAnomalyDetectionChart extends JComponent {
 
     @SwingProperty
     public static final String MODEL_PROPERTY = "model";
@@ -70,7 +70,7 @@ final class AnomalyDetectionChart extends JComponent {
     private Model model;
     private int hoveredObs;
 
-    public AnomalyDetectionChart() {
+    public JAnomalyDetectionChart() {
         this.chart = new JTimeSeriesChart();
         this.chartHandler = new ChartHandler();
         this.model = null;
@@ -233,15 +233,15 @@ final class AnomalyDetectionChart extends JComponent {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Commands">
-    private static abstract class ModelCommand extends JCommand<AnomalyDetectionChart> {
+    private static abstract class ModelCommand extends JCommand<JAnomalyDetectionChart> {
 
         @Override
-        public boolean isEnabled(AnomalyDetectionChart c) {
+        public boolean isEnabled(JAnomalyDetectionChart c) {
             return c.getModel() != null;
         }
 
         @Override
-        public JCommand.ActionAdapter toAction(AnomalyDetectionChart c) {
+        public JCommand.ActionAdapter toAction(JAnomalyDetectionChart c) {
             return super.toAction(c).withWeakPropertyChangeListener(c, MODEL_PROPERTY);
         }
     }
@@ -249,7 +249,7 @@ final class AnomalyDetectionChart extends JComponent {
     private static final class CopyData extends ModelCommand {
 
         @Override
-        public void execute(AnomalyDetectionChart c) throws Exception {
+        public void execute(JAnomalyDetectionChart c) throws Exception {
             Transferable t = DataTransfer.getDefault().fromTs(TsConverter.toTs(c.model.getTs()));
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
@@ -258,7 +258,7 @@ final class AnomalyDetectionChart extends JComponent {
     private static final class CopyOutliers extends ModelCommand {
 
         @Override
-        public void execute(AnomalyDetectionChart c) throws Exception {
+        public void execute(JAnomalyDetectionChart c) throws Exception {
             Transferable t = DataTransfer.getDefault().fromTable(TsConverter.toTable(toTable(c.model.getOutliers())));
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }

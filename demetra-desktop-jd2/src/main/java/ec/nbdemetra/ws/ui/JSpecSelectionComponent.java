@@ -51,7 +51,7 @@ import java.util.function.Predicate;
  * @author Philippe Charles
  */
 @SwingComponent
-public final class SpecSelectionComponent extends JComponent implements ExplorerManager.Provider, IDialogDescriptorProvider {
+public final class JSpecSelectionComponent extends JComponent implements ExplorerManager.Provider, IDialogDescriptorProvider {
 
     public static final Id SPECS_ID = new LinearId(GenericSaProcessingFactory.FAMILY, WorkspaceFactory.SPECIFICATIONS);
 
@@ -68,11 +68,11 @@ public final class SpecSelectionComponent extends JComponent implements Explorer
     private ISaSpecification specification;
     private Image icon;
 
-    public SpecSelectionComponent() {
+    public JSpecSelectionComponent() {
         this(false);
     }
 
-    public SpecSelectionComponent(boolean showSystemOnly) {
+    public JSpecSelectionComponent(boolean showSystemOnly) {
         this.tree = new BeanTreeView();
         this.em = new ExplorerManager();
         this.selectionListener = new SelectionListener();
@@ -174,9 +174,9 @@ public final class SpecSelectionComponent extends JComponent implements Explorer
         return new SpecSelectionDialogDescriptor(this, title);
     }
 
-    private static class SpecSelectionDialogDescriptor extends CustomDialogDescriptor<SpecSelectionComponent> {
+    private static class SpecSelectionDialogDescriptor extends CustomDialogDescriptor<JSpecSelectionComponent> {
 
-        SpecSelectionDialogDescriptor(SpecSelectionComponent p, String title) {
+        SpecSelectionDialogDescriptor(JSpecSelectionComponent p, String title) {
             super(p, title, p);
             validate(SpecSelectionConstraints.values());
         }
@@ -184,18 +184,18 @@ public final class SpecSelectionComponent extends JComponent implements Explorer
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             String p = evt.getPropertyName();
-            if (p.equals(SpecSelectionComponent.SPECIFICATION_PROPERTY)) {
+            if (p.equals(JSpecSelectionComponent.SPECIFICATION_PROPERTY)) {
                 validate(SpecSelectionConstraints.values());
             }
         }
     }
 
-    private enum SpecSelectionConstraints implements IConstraint<SpecSelectionComponent> {
+    private enum SpecSelectionConstraints implements IConstraint<JSpecSelectionComponent> {
 
         SELECTION;
 
         @Override
-        public String check(SpecSelectionComponent t) {
+        public String check(JSpecSelectionComponent t) {
             return t.getSpecification() == null ? "Specification not selected" : null;
         }
     }

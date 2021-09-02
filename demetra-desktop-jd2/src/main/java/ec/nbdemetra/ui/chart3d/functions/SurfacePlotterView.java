@@ -41,7 +41,7 @@ public class SurfacePlotterView extends JPanel {
     private ConfigurationToolBar config;
     private String[] elements;
     private FunctionsSurfaceModel m;
-    private Functions2DChart chart;
+    private JFunctions2DChart chart;
 
     public SurfacePlotterView() {
         setLayout(new BorderLayout());
@@ -78,7 +78,7 @@ public class SurfacePlotterView extends JPanel {
                     add(msg, BorderLayout.CENTER);
                     break;
                 case 1:
-                    chart = new Functions2DChart(f, maxF, 100);
+                    chart = new JFunctions2DChart(f, maxF, 100);
                     chart.generateData();
                     config = new ConfigurationToolBar(elements, false);
                     config.addPropertyChangeListener(evt -> {

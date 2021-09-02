@@ -46,7 +46,7 @@ public final class CalendarTopComponent extends TopComponent {
         setName(calendar.getId().toString());
         setDisplayName(calendar.getDisplayName());
         setToolTipText(Bundle.HINT_CalendarTopComponent());
-        CalendarView view = new CalendarView();
+        JCalendarView view = new JCalendarView();
         view.setCalendarProvider(calendar.getElement());
         add(view, BorderLayout.CENTER);
     }

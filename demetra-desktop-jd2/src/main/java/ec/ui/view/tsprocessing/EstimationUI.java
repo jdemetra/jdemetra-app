@@ -8,7 +8,7 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.IPool;
 import ec.tstoolkit.utilities.Pools;
 import ec.ui.interfaces.IDisposable;
-import ec.ui.view.MarginView;
+import ec.ui.view.JMarginView;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.Date;
@@ -21,14 +21,14 @@ import javax.swing.JComponent;
  */
 public class EstimationUI<V extends IProcDocumentView<?>> extends DefaultItemUI<V, EstimationUI.Information> {
 
-    private final IPool<MarginView> pool = Pools.on(MarginView.class, 10);
+    private final IPool<JMarginView> pool = Pools.on(JMarginView.class, 10);
 
     @Override
     public JComponent getView(V host, Information information) {
         if (information.original == null) {
             return null;
         }
-        final MarginView view = pool.getOrCreate();
+        final JMarginView view = pool.getOrCreate();
         view.setData(information.original.update(information.fcasts), information.lfcasts, information.ufcasts, information.markers);
         return new JDisposable(view) {
             @Override

@@ -11,7 +11,7 @@ import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.timeseries.analysis.DiagnosticInfo;
 import ec.tstoolkit.timeseries.analysis.SlidingSpans;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.view.SlidingSpanView;
+import ec.ui.view.JSlidingSpanView;
 import javax.swing.JComponent;
 
 /**
@@ -28,7 +28,7 @@ public class SlidingSpansDetailUI<V extends IProcDocumentView<?>> extends Defaul
 
     @Override
     public JComponent getView(V host, SlidingSpans information) {
-        SlidingSpanView view = new SlidingSpanView();
+        JSlidingSpanView view = new JSlidingSpanView();
         view.setTsToolkit(host.getToolkit());
         if (information != null){
             double threshold = 0.03;

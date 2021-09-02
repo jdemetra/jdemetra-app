@@ -37,7 +37,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import javax.swing.AbstractAction;
-import static javax.swing.Action.NAME;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -82,12 +81,12 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
 
     public static final String STATE_CHANGED = "Processing state changed";
     private final JTsAnomalyGrid grid;
-    private final AnomalyDetectionSummary summary;
+    private final JAnomalyDetectionSummary summary;
     private final ExplorerManager mgr = new ExplorerManager();
     private final Node node;
     private final JSplitPane visualRepresentation;
     private final JSplitPane tsInformation;
-    private final AnomalyDetectionChart chart;
+    private final JAnomalyDetectionChart chart;
     private final JToolBar toolBar;
     private JButton runButton;
     private JLabel itemsLabel;
@@ -110,7 +109,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
     public OutliersTopComponent() {
         setName("Outliers Detection");
         grid = new JTsAnomalyGrid();
-        summary = new AnomalyDetectionSummary();
+        summary = new JAnomalyDetectionSummary();
 
         grid.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
@@ -133,7 +132,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
                         break;
                     case JTsAnomalyGrid.HOVERED_OBS_PROPERTY:
                         ObsIndex obs = (ObsIndex) evt.getNewValue();
-                        AnomalyDetectionChart.Model model = chart.getModel();
+                        JAnomalyDetectionChart.Model model = chart.getModel();
                         if (obs.getObs() == -1 || model == null || !grid.getTsCollection().get(obs.getSeries()).equals(model.getTs())) {
                             chart.setHoveredObs(-1);
                         } else {
@@ -144,12 +143,12 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
             }
         });
 
-        chart = new AnomalyDetectionChart();
+        chart = new JAnomalyDetectionChart();
         chart.addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
-                case AnomalyDetectionChart.HOVERED_OBS_PROPERTY:
+                case JAnomalyDetectionChart.HOVERED_OBS_PROPERTY:
                     int obs = (Integer) evt.getNewValue();
-                    AnomalyDetectionChart.Model model = chart.getModel();
+                    JAnomalyDetectionChart.Model model = chart.getModel();
                     if (obs == -1 || model == null) {
                         grid.setHoveredObs(ObsIndex.NULL);
                     } else {
@@ -187,7 +186,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
         PreprocessingModel ppm = grid.getModelOfSelection();
         if (ppm != null) {
             summary.set(ppm);
-            chart.setModel(new AnomalyDetectionChart.Model(grid.getSelectedItem(), ppm));
+            chart.setModel(new JAnomalyDetectionChart.Model(grid.getSelectedItem(), ppm));
         } else {
             summary.set(null);
             chart.setModel(null);

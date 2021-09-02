@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.awt;
 
-import ec.ui.view.RevisionSaSeriesView;
+import ec.ui.view.JRevisionSaSeriesView;
 import ec.util.various.swing.BasicSwingLauncher;
 
 /**
@@ -27,7 +27,7 @@ public final class RevisionHistoryTest {
 
     public static void main(String[] args) {
         new BasicSwingLauncher()
-                .content(RevisionSaSeriesView.class)
+                .content(JRevisionSaSeriesView.class)
                 .launch();
     }
 }

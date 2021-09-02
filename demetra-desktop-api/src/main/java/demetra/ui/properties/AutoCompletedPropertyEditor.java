@@ -18,7 +18,7 @@ package demetra.ui.properties;
 
 import demetra.desktop.design.SwingEditorAttribute;
 import demetra.ui.completion.AutoCompletion;
-import internal.ui.properties.AutoCompletedComponent;
+import internal.ui.properties.JAutoCompletedComponent;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.swing.JAutoCompletion;
 import ec.util.various.swing.TextPrompt;
@@ -65,20 +65,20 @@ public final class AutoCompletedPropertyEditor extends AbstractExPropertyEditor 
     @SwingEditorAttribute
     public static final String DEFAULT_VALUE_SUPPLIER_ATTRIBUTE = "defaultValueSupplier";
 
-    private final AutoCompletedComponent customEditor;
+    private final JAutoCompletedComponent customEditor;
     private PropertyEnv currentEnv;
 
     public AutoCompletedPropertyEditor() {
-        this.customEditor = new AutoCompletedComponent();
+        this.customEditor = new JAutoCompletedComponent();
         this.currentEnv = null;
 
         customEditor.setPreferredSize(new Dimension(300, 180));
         customEditor.addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
-                case AutoCompletedComponent.VALUE_PROPERTY:
+                case JAutoCompletedComponent.VALUE_PROPERTY:
                     setValue(customEditor.getValue());
                     break;
-                case AutoCompletedComponent.RUNNING_PROPERTY:
+                case JAutoCompletedComponent.RUNNING_PROPERTY:
                     currentEnv.setState(customEditor.isRunning() ? PropertyEnv.STATE_INVALID : PropertyEnv.STATE_VALID);
                     break;
             }

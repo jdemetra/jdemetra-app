@@ -17,15 +17,15 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import demetra.ui.components.parts.HasTs;
-import ec.nbdemetra.ui.chart3d.functions.Functions2DChart;
+import ec.nbdemetra.ui.chart3d.functions.JFunctions2DChart;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
-import ec.nbdemetra.ui.demo.ReflectComponent;
+import ec.nbdemetra.ui.demo.JReflectComponent;
 import ec.tstoolkit.utilities.Id;
 import ec.ui.view.AutoRegressiveSpectrumView;
 import ec.ui.view.PeriodogramView;
-import ec.ui.view.RevisionSaSeriesView;
-import ec.ui.view.SIView;
-import ec.ui.view.StabilityView;
+import ec.ui.view.JRevisionSaSeriesView;
+import ec.ui.view.JSIView;
+import ec.ui.view.JStabilityView;
 import ec.ui.view.TukeySpectrumView;
 import java.awt.Component;
 import java.util.Map;
@@ -47,18 +47,18 @@ public final class TsViewFactory implements DemoComponentFactory {
     public Map<Id, Callable<Component>> getComponents() {
         return DemoComponentFactory
                 .builder()
-                .put(ID, () -> ReflectComponent.of(HasTs.class))
+                .put(ID, () -> JReflectComponent.of(HasTs.class))
                 .put(ID.extend("AutoRegressiveSpectrumView"), AutoRegressiveSpectrumView::new)
                 .put(ID.extend("PeriodogramView"), PeriodogramView::new)
                 .put(ID.extend("TukeySpectrumView"), TukeySpectrumView::new)
                 .put(ID.extend("Functions2DChart"), TsViewFactory::newFunctions2DChart)
-                .put(ID.extend("RevisionSaSeriesView"), RevisionSaSeriesView::new)
-                .put(ID.extend("StabilityView"), StabilityView::new)
-                .put(ID.extend("SIView"), SIView::new)
+                .put(ID.extend("RevisionSaSeriesView"), JRevisionSaSeriesView::new)
+                .put(ID.extend("StabilityView"), JStabilityView::new)
+                .put(ID.extend("SIView"), JSIView::new)
                 .build();
     }
 
     private static Component newFunctions2DChart() {
-        return new Functions2DChart(null, null, 100);
+        return new JFunctions2DChart(null, null, 100);
     }
 }

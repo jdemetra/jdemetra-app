@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.demo.impl;
 
 import demetra.ui.components.parts.HasTsCollection;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
-import ec.nbdemetra.ui.demo.ReflectComponent;
+import ec.nbdemetra.ui.demo.JReflectComponent;
 import ec.tstoolkit.utilities.Id;
 import demetra.ui.components.JTsChart;
 import demetra.ui.components.JTsGrowthChart;
@@ -50,7 +50,7 @@ public final class TsCollectionFactory implements DemoComponentFactory {
     public Map<Id, Callable<Component>> getComponents() {
         return DemoComponentFactory
                 .builder()
-                .put(ID, () -> ReflectComponent.of(HasTsCollection.class))
+                .put(ID, () -> JReflectComponent.of(HasTsCollection.class))
                 .put(ID.extend("JTsGrid"), JTsGrid::new)
                 .put(ID.extend("JTsChart"), JTsChart::new)
                 .put(ID.extend("JTsGrowthChart"), JTsGrowthChart::new)

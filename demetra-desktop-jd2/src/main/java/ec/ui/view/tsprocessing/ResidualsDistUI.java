@@ -5,7 +5,7 @@
 package ec.ui.view.tsprocessing;
 
 import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.view.res.ResDistributionView;
+import ec.ui.view.res.JResDistributionView;
 import javax.swing.JComponent;
 
 /**
@@ -16,7 +16,7 @@ public class ResidualsDistUI<V extends IProcDocumentView<?>> extends DefaultItem
 
     @Override
     public JComponent getView(V host, TsData information) {
-        ResDistributionView resdistView = new ResDistributionView();
+        JResDistributionView resdistView = new JResDistributionView();
         if (information != null) {
             int n = information.getFrequency().intValue();
             resdistView.setAutocorrelationsCount(Math.max(8, n * 3));

@@ -25,7 +25,7 @@ import ec.nbdemetra.ui.*;
 import ec.nbdemetra.ui.Menus.DynamicPopup;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
-import ec.nbdemetra.ws.ui.SpecSelectionComponent;
+import ec.nbdemetra.ws.ui.JSpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
 import ec.satoolkit.x13.X13Specification;
@@ -229,18 +229,18 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         JPopupMenu specPopup = new JPopupMenu();
         final JButton specButton = (JButton) toolBarRepresentation.add(DropDownButtonFactory.createDropDownButton(DemetraUiIcon.BLOG_16, specPopup));
-        specPopup.add(new SpecSelectionComponent()).addPropertyChangeListener(evt -> {
+        specPopup.add(new JSpecSelectionComponent()).addPropertyChangeListener(evt -> {
             String p = evt.getPropertyName();
-            if (p.equals(SpecSelectionComponent.SPECIFICATION_PROPERTY) && evt.getNewValue() != null) {
+            if (p.equals(JSpecSelectionComponent.SPECIFICATION_PROPERTY) && evt.getNewValue() != null) {
                 setDefaultSpecification((ISaSpecification) evt.getNewValue());
-            } else if (p.equals(SpecSelectionComponent.ICON_PROPERTY) && evt.getNewValue() != null) {
+            } else if (p.equals(JSpecSelectionComponent.ICON_PROPERTY) && evt.getNewValue() != null) {
                 specButton.setIcon(ImageUtilities.image2Icon((Image) evt.getNewValue()));
             }
         });
         specPopup.addPopupMenuListener(new PopupMenuAdapter() {
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                ((SpecSelectionComponent) ((JPopupMenu) e.getSource()).getComponent(0)).setSpecification(getDefaultSpecification());
+                ((JSpecSelectionComponent) ((JPopupMenu) e.getSource()).getComponent(0)).setSpecification(getDefaultSpecification());
             }
         });
 
@@ -304,7 +304,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     public void editDefaultSpecification() {
-        SpecSelectionComponent c = new SpecSelectionComponent();
+        JSpecSelectionComponent c = new JSpecSelectionComponent();
         c.setSpecification(getDefaultSpecification());
         DialogDescriptor dd = c.createDialogDescriptor("Choose active specification");
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {

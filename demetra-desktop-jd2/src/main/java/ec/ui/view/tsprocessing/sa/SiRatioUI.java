@@ -5,7 +5,7 @@
 package ec.ui.view.tsprocessing.sa;
 
 import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.view.SIView;
+import ec.ui.view.JSIView;
 import ec.ui.view.tsprocessing.IProcDocumentView;
 import ec.ui.view.tsprocessing.PooledItemUI;
 
@@ -13,14 +13,14 @@ import ec.ui.view.tsprocessing.PooledItemUI;
  *
  * @author Jean Palate
  */
-public class SiRatioUI<V extends IProcDocumentView<?>> extends PooledItemUI<V, TsData[], SIView> {
+public class SiRatioUI<V extends IProcDocumentView<?>> extends PooledItemUI<V, TsData[], JSIView> {
 
     public SiRatioUI() {
-        super(SIView.class);
+        super(JSIView.class);
     }
 
     @Override
-    protected void init(SIView c, V host, TsData[] information) {
+    protected void init(JSIView c, V host, TsData[] information) {
         if (information.length == 2) {
             c.setSiData(information[0], information[1]);
         } else if (information.length == 1) {

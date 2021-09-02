@@ -16,13 +16,13 @@ import javax.swing.JSplitPane;
  * @author Jean Palate
  */
 @SwingComponent
-public final class SpectralView extends JComponent {
+public final class JSpectralView extends JComponent {
 
     private final JSplitPane m_splitter;
     AutoRegressiveSpectrumView m_arView;
     PeriodogramView m_pView;
 
-    public SpectralView() {
+    public JSpectralView() {
         m_splitter = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT);
         m_arView = new AutoRegressiveSpectrumView();
         m_pView = new PeriodogramView();

@@ -45,7 +45,7 @@ import org.jfree.data.time.TimeSeriesCollection;
  * @author Kristof Bayens
  */
 @SwingComponent
-public final class RevisionHistoryView extends JComponent implements HasColorScheme {
+public final class JRevisionHistoryView extends JComponent implements HasColorScheme {
 
     private String info_ = "SA";
     private RevisionHistory history_;
@@ -65,7 +65,7 @@ public final class RevisionHistoryView extends JComponent implements HasColorSch
         // TODO: add some code on color scheme change
     private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::invalidate);
 
-    public RevisionHistoryView() {
+    public JRevisionHistoryView() {
         setLayout(new BorderLayout());
 
         chartpanel_ = new JChartPanel(ChartFactory.createLineChart(null, null, null, null, PlotOrientation.VERTICAL, false, false, false));

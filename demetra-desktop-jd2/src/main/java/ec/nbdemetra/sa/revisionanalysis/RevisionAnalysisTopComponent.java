@@ -25,6 +25,7 @@ import demetra.ui.util.NbComponents;
 import demetra.ui.util.PopupMenuAdapter;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
+import ec.nbdemetra.ws.ui.JSpecSelectionComponent;
 import ec.nbdemetra.ws.ui.WorkspaceTopComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.tss.Ts;
@@ -150,15 +151,15 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
         JPopupMenu specPopup = new JPopupMenu();
         final JButton specButton = (JButton) toolBarRepresentation.add(DropDownButtonFactory.createDropDownButton(DemetraUiIcon.BLOG_16, specPopup));
         specButton.setFocusPainted(false);
-        specPopup.add(new ec.nbdemetra.ws.ui.SpecSelectionComponent()).addPropertyChangeListener(new PropertyChangeListener() {
+        specPopup.add(new JSpecSelectionComponent()).addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 String p = evt.getPropertyName();
-                if (p.equals(ec.nbdemetra.ws.ui.SpecSelectionComponent.SPECIFICATION_PROPERTY) && evt.getNewValue() != null) {
+                if (p.equals(JSpecSelectionComponent.SPECIFICATION_PROPERTY) && evt.getNewValue() != null) {
                     ISaSpecification spec = (ISaSpecification) evt.getNewValue();
                     curSpec.setSaSpecification(spec);
                     defSpecLabel.setText(spec == null ? "" : spec.toLongString());
-                } else if (p.equals(ec.nbdemetra.ws.ui.SpecSelectionComponent.ICON_PROPERTY) && evt.getNewValue() != null) {
+                } else if (p.equals(JSpecSelectionComponent.ICON_PROPERTY) && evt.getNewValue() != null) {
                     specButton.setIcon(ImageUtilities.image2Icon((Image) evt.getNewValue()));
                 }
             }
@@ -166,7 +167,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
         specPopup.addPopupMenuListener(new PopupMenuAdapter() {
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                ((ec.nbdemetra.ws.ui.SpecSelectionComponent) ((JPopupMenu) e.getSource()).getComponent(0)).setSpecification(curSpec.getSaSpecification());
+                ((JSpecSelectionComponent) ((JPopupMenu) e.getSource()).getComponent(0)).setSpecification(curSpec.getSaSpecification());
             }
         });
 

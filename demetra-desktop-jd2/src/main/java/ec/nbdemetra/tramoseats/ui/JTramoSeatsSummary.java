@@ -22,7 +22,7 @@ import ec.ui.Disposables;
 import ec.ui.interfaces.IDisposable;
 import demetra.ui.components.JTsChart;
 import demetra.desktop.design.SwingComponent;
-import ec.ui.view.SIView;
+import ec.ui.view.JSIView;
 import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;
 import java.awt.BorderLayout;
@@ -34,7 +34,7 @@ import javax.swing.*;
  * @author Kristof Bayens
  */
 @SwingComponent
-public final class TramoSeatsSummary extends JComponent implements IDisposable {
+public final class JTramoSeatsSummary extends JComponent implements IDisposable {
 
     public static final ComponentDescriptor[] components;
 
@@ -71,15 +71,15 @@ public final class TramoSeatsSummary extends JComponent implements IDisposable {
     private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
     private final Box document_;
     private final JTsChart chart_;
-    private final SIView siPanel_;
+    private final JSIView siPanel_;
     private TramoSeatsDocument doc_;
 
-    public TramoSeatsSummary() {
+    public JTramoSeatsSummary() {
         setLayout(new BorderLayout());
 
         chart_ = new JTsChart();
         chart_.setTsUpdateMode(TsUpdateMode.None);
-        siPanel_ = new SIView();
+        siPanel_ = new JSIView();
 
         JSplitPane split1 = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, chart_, siPanel_);
         split1.setDividerLocation(0.6);

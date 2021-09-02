@@ -75,12 +75,14 @@ import demetra.ui.components.parts.HasTsAction;
 import ec.util.table.swing.JTables;
 import demetra.ui.datatransfer.DataTransfer;
 import demetra.desktop.design.SwingComponent;
+import nbbrd.design.SkipProcessing;
 
 /**
  *
  * @author Jean Palate
  */
 @SwingComponent
+@SkipProcessing(target = SwingComponent.class, reason = "parameters in constructor")
 public final class JTsVariableList extends JComponent implements HasTsAction {
 
     @SwingAction

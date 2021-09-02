@@ -18,29 +18,29 @@ package ec.ui.view.tsprocessing;
 
 import ec.tstoolkit.timeseries.analysis.DiagnosticInfo;
 import ec.tstoolkit.timeseries.analysis.RevisionHistory;
-import ec.ui.view.RevisionSaSeriesView;
+import ec.ui.view.JRevisionSaSeriesView;
 
 /**
  *
  * @author Mats Maggi
  */
-public class RevisionHistoryUI <V extends IProcDocumentView<?>> extends PooledItemUI<V, RevisionHistory, RevisionSaSeriesView>{
+public class RevisionHistoryUI <V extends IProcDocumentView<?>> extends PooledItemUI<V, RevisionHistory, JRevisionSaSeriesView>{
     
     private String info;
     private DiagnosticInfo diag;
     
     public RevisionHistoryUI() {
-        super(RevisionSaSeriesView.class);
+        super(JRevisionSaSeriesView.class);
     }
     
     public RevisionHistoryUI(String info, DiagnosticInfo diag) {
-        super(RevisionSaSeriesView.class);
+        super(JRevisionSaSeriesView.class);
         this.info = info;
         this.diag=diag;
     }
 
     @Override
-    protected void init(RevisionSaSeriesView c, V host, RevisionHistory information) {
+    protected void init(JRevisionSaSeriesView c, V host, RevisionHistory information) {
         c.setInfo(info);
         c.setDiagnosticInfo(diag);
         c.setHistory(information);

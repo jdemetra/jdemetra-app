@@ -12,7 +12,7 @@ import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.IActiveView;
 import demetra.ui.util.NbComponents;
-import ec.nbdemetra.ws.ui.SpecSelectionComponent;
+import ec.nbdemetra.ws.ui.JSpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.benchmarking.MultiSaBenchmarkingSpec;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
@@ -297,7 +297,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     }
 
     private void editDefaultSpecification() {
-        SpecSelectionComponent c = new SpecSelectionComponent();
+        JSpecSelectionComponent c = new JSpecSelectionComponent();
         c.setSpecification(curSpec.getDefaultSpecification());
         DialogDescriptor dd = c.createDialogDescriptor("Choose active specification");
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {

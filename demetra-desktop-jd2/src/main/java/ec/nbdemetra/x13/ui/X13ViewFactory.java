@@ -32,7 +32,6 @@ import ec.tstoolkit.utilities.InformationExtractor;
 import ec.tstoolkit.utilities.LinearId;
 import ec.ui.view.tsprocessing.*;
 import ec.ui.view.tsprocessing.sa.SaDocumentViewFactory;
-import static ec.ui.view.tsprocessing.sa.SaDocumentViewFactory.*;
 import ec.ui.view.tsprocessing.sa.SaTableUI;
 import ec.ui.view.tsprocessing.sa.SeasonalityTestUI;
 import ec.ui.view.tsprocessing.sa.SiRatioUI;
@@ -121,9 +120,9 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
                 public X13Document retrieve(X13Document source) {
                     return source;
                 }
-            }, new PooledItemUI<View, X13Document, X13Summary>(X13Summary.class) {
+            }, new PooledItemUI<View, X13Document, JX13Summary>(JX13Summary.class) {
                 @Override
-                protected void init(X13Summary c, View host, X13Document information) {
+                protected void init(JX13Summary c, View host, X13Document information) {
                     c.setTsToolkit(host.getToolkit());
                     c.set(information);
                 }

@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
-import ec.nbdemetra.ui.demo.ReflectComponent;
+import ec.nbdemetra.ui.demo.JReflectComponent;
 import ec.tstoolkit.uihelper.ModelInformationProvider;
 import ec.tstoolkit.utilities.Id;
 import ec.ui.view.AChartView;
@@ -53,9 +53,9 @@ public final class AChartViewFactory implements DemoComponentFactory {
     }
 
     private static Component createRoot() {
-        ReflectComponent result = new ReflectComponent();
+        JReflectComponent result = new JReflectComponent();
         result.setClazz(AChartView.class);
-        result.setExtractor(o -> ReflectComponent.getPublicMethodsOf(o, false));
+        result.setExtractor(o -> JReflectComponent.getPublicMethodsOf(o, false));
         return result;
     }
 }

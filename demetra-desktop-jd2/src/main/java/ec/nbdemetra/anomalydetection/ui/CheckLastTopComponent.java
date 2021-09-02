@@ -48,7 +48,6 @@ import java.util.OptionalInt;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import javax.swing.AbstractAction;
-import static javax.swing.Action.NAME;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -60,9 +59,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
-import static javax.swing.SwingWorker.StateValue.DONE;
-import static javax.swing.SwingWorker.StateValue.PENDING;
-import static javax.swing.SwingWorker.StateValue.STARTED;
+
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.netbeans.core.spi.multiview.CloseOperationState;
@@ -116,7 +113,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
     private JButton reportButton;
     // Visual Stuff
     private final JTsCheckLastList list;
-    private final CheckLastSummary summary;
+    private final JCheckLastSummary summary;
     private final JTsChart chart;
     // Thread Stuff
     private ProgressHandle progressHandle;
@@ -129,7 +126,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
     public CheckLastTopComponent() {
         setName("Check Last Batch");
         list = new JTsCheckLastList();
-        summary = new CheckLastSummary();
+        summary = new JCheckLastSummary();
         toolBarRepresentation = createToolBar();
 
         list.addPropertyChangeListener(evt -> {

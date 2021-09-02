@@ -4,7 +4,7 @@
  */
 package ec.ui.view.tsprocessing;
 
-import ec.ui.view.ArimaView;
+import ec.ui.view.JArimaView;
 import ec.tstoolkit.arima.IArimaModel;
 import java.util.LinkedHashMap;
 import javax.swing.JComponent;
@@ -17,7 +17,7 @@ public class ArimaUI<V extends IProcDocumentView<?>> extends DefaultItemUI<V, Li
 
     @Override
     public JComponent getView(V host, LinkedHashMap<String, IArimaModel> information) {
-        ArimaView arimaView = new ArimaView(information);
+        JArimaView arimaView = new JArimaView(information);
         return arimaView;
     }
 }

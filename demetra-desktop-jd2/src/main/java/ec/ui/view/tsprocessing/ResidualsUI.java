@@ -8,7 +8,7 @@ package ec.ui.view.tsprocessing;
 import demetra.bridge.TsConverter;
 import ec.tss.tsproviders.utils.OptionalTsData;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.view.res.ResidualsView;
+import ec.ui.view.res.JResidualsView;
 import javax.swing.JComponent;
 
 /**
@@ -19,7 +19,7 @@ public class ResidualsUI<V extends IProcDocumentView<?>> extends DefaultItemUI<V
 
     @Override
     public JComponent getView(V host, TsData information) {
-        ResidualsView resView = new ResidualsView();
+        JResidualsView resView = new JResidualsView();
         resView.setTsData(information != null ? TsConverter.toTsData(OptionalTsData.present(information)) : null);
         return resView;
     }

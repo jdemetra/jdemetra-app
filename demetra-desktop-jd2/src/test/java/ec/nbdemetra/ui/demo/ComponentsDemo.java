@@ -143,7 +143,7 @@ public final class ComponentsDemo {
     }
 
     private static Component configure(Component c) {
-        if (c instanceof JExceptionPanel || c instanceof ReflectComponent) {
+        if (c instanceof JExceptionPanel || c instanceof JReflectComponent) {
             return c;
         }
         JToolBar toolBar = NbComponents.newInnerToolbar();

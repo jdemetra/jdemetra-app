@@ -28,7 +28,7 @@ import demetra.ui.util.NbComponents;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.DescriptiveStatistics;
-import ec.ui.view.res.ResidualsView;
+import ec.ui.view.res.JResidualsView;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
@@ -67,12 +67,12 @@ public final class InternalResidualsViewUI {
 
         @Override
         public boolean handles(Class<? extends JComponent> type) {
-            return ResidualsView.class.equals(type);
+            return JResidualsView.class.equals(type);
         }
 
         @Override
         public void install(JComponent component) {
-            new InternalResidualsViewUI().install((ResidualsView) component);
+            new InternalResidualsViewUI().install((JResidualsView) component);
         }
     }
 
@@ -90,7 +90,7 @@ public final class InternalResidualsViewUI {
         this.grid.setMode(JTsGrid.Mode.SINGLETS);
     }
 
-    public void install(ResidualsView view) {
+    public void install(JResidualsView view) {
         this.obsFormatResolver = new HasObsFormatResolver(view, () -> onDataFormatChange(view));
         HasColorScheme todo = HasColorSchemeSupport.of((propertyName, oldValue, newValue) -> {
             //TODO
@@ -112,11 +112,11 @@ public final class InternalResidualsViewUI {
         view.add(splitPane, BorderLayout.CENTER);
     }
 
-    private void registerActions(ResidualsView view) {
+    private void registerActions(JResidualsView view) {
         HasObsFormatSupport.registerActions(view, view.getActionMap());
     }
 
-    private void enableProperties(ResidualsView view) {
+    private void enableProperties(JResidualsView view) {
         view.addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
                 case OBS_FORMAT_PROPERTY:
@@ -131,7 +131,7 @@ public final class InternalResidualsViewUI {
         });
     }
 
-    private void onTsDataChange(ResidualsView view) {
+    private void onTsDataChange(JResidualsView view) {
         demetra.timeseries.TsData data = view.getTsData();
         demetra.timeseries.Ts ts = demetra.timeseries.Ts.builder().name("Residuals").data(data).build();
         chartPanel.getChart().getXYPlot().setDataset(TsXYDataset.of(Collections.singletonList(ts)));
@@ -146,7 +146,7 @@ public final class InternalResidualsViewUI {
         onColorSchemeChange();
     }
 
-    private void onDataFormatChange(ResidualsView view) {
+    private void onDataFormatChange(JResidualsView view) {
         grid.setObsFormat(view.getObsFormat());
         try {
             DataFormat dataFormat = TsConverter.fromObsFormat(obsFormatResolver.resolve());
@@ -170,7 +170,7 @@ public final class InternalResidualsViewUI {
         renderer.setBaseOutlinePaint(themeSupport.getLineColor(MAIN_COLOR));
     }
 
-    private void onComponentPopupMenuChange(ResidualsView view) {
+    private void onComponentPopupMenuChange(JResidualsView view) {
         JPopupMenu popupMenu = view.getComponentPopupMenu();
         chartPanel.setComponentPopupMenu(popupMenu != null ? popupMenu : buildMenu().getPopupMenu());
     }

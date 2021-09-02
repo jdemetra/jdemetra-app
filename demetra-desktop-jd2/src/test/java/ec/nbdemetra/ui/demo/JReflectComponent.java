@@ -41,10 +41,10 @@ import javax.swing.JComponent;
  * @author Philippe Charles
  */
 @SwingComponent
-public final class ReflectComponent extends JComponent {
+public final class JReflectComponent extends JComponent {
 
-    public static ReflectComponent of(Class<?> clazz) {
-        ReflectComponent result = new ReflectComponent();
+    public static JReflectComponent of(Class<?> clazz) {
+        JReflectComponent result = new JReflectComponent();
         result.setClazz(clazz);
         return result;
     }
@@ -59,7 +59,7 @@ public final class ReflectComponent extends JComponent {
     private Class<?> clazz;
     private Function<Class<?>, List<Method>> extractor;
 
-    public ReflectComponent() {
+    public JReflectComponent() {
         this.htmlView = new JHtmlView();
         this.clazz = null;
         this.extractor = o -> getPublicMethodsOf(o, true);

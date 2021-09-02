@@ -23,18 +23,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
+import nbbrd.design.SkipProcessing;
 
 /**
  *
  * @author Kristof Bayens
  */
 @SwingComponent
-public final class ArimaView extends JComponent {
+@SkipProcessing(target = SwingComponent.class, reason = "parameters in constructor")
+public final class JArimaView extends JComponent {
 
     private final PiView spectrumPanel_;
     private final AHtmlView documentPanel_;
 
-    public ArimaView(Map<String, ? extends IArimaModel> models) {
+    public JArimaView(Map<String, ? extends IArimaModel> models) {
         setLayout(new BorderLayout());
         ModelInformationProvider spectrum = new ModelInformationProvider(models);
         spectrum.setFrequency(TsFrequency.Monthly);

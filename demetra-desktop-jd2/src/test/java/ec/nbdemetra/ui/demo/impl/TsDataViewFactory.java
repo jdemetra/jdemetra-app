@@ -17,9 +17,9 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
-import ec.nbdemetra.ui.demo.ReflectComponent;
+import ec.nbdemetra.ui.demo.JReflectComponent;
 import ec.tstoolkit.utilities.Id;
-import ec.ui.view.res.ResidualsView;
+import ec.ui.view.res.JResidualsView;
 import java.awt.Component;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -41,8 +41,8 @@ public final class TsDataViewFactory implements DemoComponentFactory {
     public Map<Id, Callable<Component>> getComponents() {
         return DemoComponentFactory
                 .builder()
-                .put(ID, () -> ReflectComponent.of(HasTsData.class))
-                .put(ID.extend("ResidualsView"), ResidualsView::new)
+                .put(ID, () -> JReflectComponent.of(HasTsData.class))
+                .put(ID.extend("ResidualsView"), JResidualsView::new)
                 .build();
     }
 }

@@ -9,8 +9,8 @@ import demetra.ui.util.NbComponents;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.dstats.Normal;
 import ec.tstoolkit.stats.AutoCorrelations;
-import ec.ui.view.AutoCorrelationsView;
-import ec.ui.view.DistributionView;
+import ec.ui.view.JAutoCorrelationsView;
+import ec.ui.view.JDistributionView;
 import java.awt.BorderLayout;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
@@ -20,21 +20,21 @@ import javax.swing.JSplitPane;
  * @author Kristof Bayens
  */
 @SwingComponent
-public final class ResDistributionView extends JComponent {
+public final class JResDistributionView extends JComponent {
 
-    private final AutoCorrelationsView acView_;
-    private final AutoCorrelationsView pacView_;
-    private final DistributionView distView_;
+    private final JAutoCorrelationsView acView_;
+    private final JAutoCorrelationsView pacView_;
+    private final JDistributionView distView_;
 
-    public ResDistributionView() {
-        acView_ = new AutoCorrelationsView();
-        acView_.setKind(AutoCorrelationsView.ACKind.Normal);
-        pacView_ = new AutoCorrelationsView();
-        pacView_.setKind(AutoCorrelationsView.ACKind.Partial);
+    public JResDistributionView() {
+        acView_ = new JAutoCorrelationsView();
+        acView_.setKind(JAutoCorrelationsView.ACKind.Normal);
+        pacView_ = new JAutoCorrelationsView();
+        pacView_.setKind(JAutoCorrelationsView.ACKind.Partial);
         JSplitPane acpane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, acView_, pacView_);
         acpane.setDividerLocation(0.5);
         acpane.setResizeWeight(.5);
-        distView_ = new DistributionView();
+        distView_ = new JDistributionView();
         JSplitPane acdpane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, acpane, distView_);
         acdpane.setDividerLocation(0.5);
         acdpane.setResizeWeight(.5);
