@@ -29,7 +29,6 @@ public class SlidingSpansDetailUI<V extends IProcDocumentView<?>> extends Defaul
     @Override
     public JComponent getView(V host, SlidingSpans information) {
         JSlidingSpanView view = new JSlidingSpanView();
-        view.setTsToolkit(host.getToolkit());
         if (information != null){
             double threshold = 0.03;
             DecompositionMode mode = information.getReferenceInfo().getData(ModellingDictionary.MODE, DecompositionMode.class);

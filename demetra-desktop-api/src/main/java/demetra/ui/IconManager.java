@@ -22,8 +22,11 @@ import demetra.ui.util.LazyGlobalService;
 import ec.util.various.swing.FontAwesome;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import javax.swing.Icon;
+
+import javax.swing.*;
 import java.awt.*;
+import java.beans.BeanInfo;
+import java.util.Optional;
 
 /**
  * TODO: improve this API
@@ -48,6 +51,17 @@ public final class IconManager {
                 .orElse(null);
     }
 
+    @Nullable
+    public Image getImage(@NonNull TsMoniker moniker) {
+        return getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false).orElse(null);
+    }
+
+    @NonNull
+    public Optional<Image> getIcon(@NonNull TsMoniker moniker, int type, boolean opened) {
+        return IconManagerSpiLoader.get()
+                .map(provider -> provider.getImageOrNull(moniker, type, opened));
+    }
+    
     @Deprecated
     public @Nullable Icon getPopupMenuIcon(@Nullable Icon icon) {
         return DemetraOptions.getDefault().isPopupMenuIconsVisible() ? icon : null;

@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui.tools;
 
-import ec.nbdemetra.ui.nodes.ControlNode;
+import demetra.ui.nodes.ControlNode;
 import demetra.ui.components.JTsTable;
 import java.awt.BorderLayout;
 import org.netbeans.api.settings.ConvertAsProperties;

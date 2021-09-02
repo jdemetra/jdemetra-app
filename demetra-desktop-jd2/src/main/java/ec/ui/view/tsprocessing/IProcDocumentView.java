@@ -7,24 +7,19 @@ package ec.ui.view.tsprocessing;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.Id;
 import ec.ui.interfaces.IDisposable;
-import java.util.List;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JComponent;
+
+import javax.swing.*;
+import java.util.List;
 
 /**
- *
  * @author Jean Palate
  */
 public interface IProcDocumentView<D extends IProcDocument> extends IDisposable {
 
     @NonNull
     D getDocument();
-
-    @NonNull
-    ITsViewToolkit getToolkit();
 
     @NonNull
     List<Id> getItems();

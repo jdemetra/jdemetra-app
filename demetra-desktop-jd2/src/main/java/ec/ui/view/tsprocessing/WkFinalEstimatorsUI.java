@@ -18,7 +18,7 @@ public class WkFinalEstimatorsUI<V extends IProcDocumentView<?>> extends Default
         try {
             return new FinalEstimatorsView(information.estimators, information.descriptors, information.frequency);
         } catch (Exception err) {
-            return host.getToolkit().getMessageViewer("Unable to compute the final estimators");
+            return TsViewToolkit.getMessageViewer("Unable to compute the final estimators");
         }
     }
 

@@ -55,7 +55,7 @@ public class ChartUI<D extends IProcDocument<?, ?, ?>> extends DefaultItemUI<IPr
         if (clean_) {
             items = items.clean(true);
         }
-        return host.getToolkit().getChart(items);
+        return TsViewToolkit.getChart(items);
     }
 
 }

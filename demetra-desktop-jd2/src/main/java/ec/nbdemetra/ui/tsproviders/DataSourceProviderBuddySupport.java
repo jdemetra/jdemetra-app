@@ -27,7 +27,7 @@ import demetra.tsprovider.DataSourceProvider;
 import demetra.desktop.design.GlobalService;
 import demetra.ui.actions.Configurable;
 import demetra.ui.util.CollectionSupplier;
-import internal.FrozenTsHelper;
+import demetra.ui.util.FrozenTsHelper;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.Optional;

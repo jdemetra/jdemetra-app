@@ -2,11 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package internal.ui;
+package demetra.desktop.core;
 
 import demetra.ui.DemetraOptions;
 import demetra.ui.TsActions;
-import ec.nbdemetra.ui.ns.NamedServiceChoicePanel;
+import demetra.ui.nodes.NamedServiceChoicePanel;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;

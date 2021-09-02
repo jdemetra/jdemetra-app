@@ -21,23 +21,24 @@ import demetra.ui.ColorSchemeManager;
 import demetra.ui.DemetraOptions;
 import demetra.ui.NamedService;
 import demetra.ui.TsActions;
-import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
-import ec.nbdemetra.ui.ns.AbstractNamedService;
 import demetra.ui.components.JObsFormatComponent;
-import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor;
 import demetra.ui.components.JTsChart;
-import ec.util.chart.ColorScheme;
 import demetra.ui.components.parts.HasColorSchemeSupport;
-import java.awt.Image;
+import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.ui.nodes.NamedServiceChoicePanel;
+import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor;
+import ec.util.chart.ColorScheme;
+import org.openide.explorer.ExplorerManager;
+import org.openide.nodes.Node;
+import org.openide.util.ImageUtilities;
+
+import javax.swing.*;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.util.stream.Collectors;
-import javax.swing.DefaultComboBoxModel;
-import org.openide.explorer.ExplorerManager;
-import org.openide.nodes.Node;
-import org.openide.util.ImageUtilities;
 
 final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeListener, PropertyChangeListener {
 
@@ -78,7 +79,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         buttonGroup1 = new javax.swing.ButtonGroup();
         chartsPanel = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        colorSchemeChoicePanel = new ec.nbdemetra.ui.ns.NamedServiceChoicePanel();
+        colorSchemeChoicePanel = new NamedServiceChoicePanel();
         colorSchemeLabel = new javax.swing.JLabel();
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 0), new java.awt.Dimension(40, 32767));
         chartPreviewPanel = new javax.swing.JPanel();
@@ -260,13 +261,15 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         return dataFormatComponent;
     }
 
-    static class ColorSchemeNamedService extends AbstractNamedService {
+    @lombok.AllArgsConstructor
+    static final class ColorSchemeNamedService implements NamedService {
 
+        @lombok.Getter
         private final ColorScheme colorScheme;
 
-        public ColorSchemeNamedService(ColorScheme colorScheme) {
-            super(NamedService.class, colorScheme.getName());
-            this.colorScheme = colorScheme;
+        @Override
+        public String getName() {
+            return colorScheme.getName();
         }
 
         @Override
@@ -278,16 +281,13 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         public Image getIcon(int type, boolean opened) {
             return ImageUtilities.icon2Image(HasColorSchemeSupport.iconOf(colorScheme));
         }
-
-        public ColorScheme getColorScheme() {
-            return colorScheme;
-        }
     }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JPanel chartPreviewPanel;
     private javax.swing.JPanel chartsPanel;
-    private ec.nbdemetra.ui.ns.NamedServiceChoicePanel colorSchemeChoicePanel;
+    private NamedServiceChoicePanel colorSchemeChoicePanel;
     private javax.swing.JLabel colorSchemeLabel;
     private demetra.ui.components.JObsFormatComponent dataFormatComponent;
     private javax.swing.JLabel dataFormatLabel;

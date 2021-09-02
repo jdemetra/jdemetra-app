@@ -27,7 +27,7 @@ public class RegressorsUI<V extends IProcDocumentView<?>> extends DefaultItemUI<
     @Override
     public JComponent getView(V host, PreprocessingModel information) {
         TsCollection items = createRegressors(information);
-        return host.getToolkit().getGrid(TsConverter.fromTsCollection(items));
+        return TsViewToolkit.getGrid(TsConverter.fromTsCollection(items));
     }
 
     private TsCollection createRegressors(PreprocessingModel information) {

@@ -51,39 +51,15 @@ import ec.tstoolkit.timeseries.analysis.SlidingSpans;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
-import static ec.tstoolkit.timeseries.simplets.TsFrequency.BiMonthly;
-import static ec.tstoolkit.timeseries.simplets.TsFrequency.Monthly;
-import static ec.tstoolkit.timeseries.simplets.TsFrequency.Quarterly;
 import ec.tstoolkit.utilities.DefaultInformationExtractor;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.InformationExtractor;
 import ec.tstoolkit.utilities.Jdk6;
 import ec.tstoolkit.utilities.LinearId;
-import ec.ui.view.tsprocessing.ArimaUI;
-import ec.ui.view.tsprocessing.BenchmarkingUI;
-import ec.ui.view.tsprocessing.ChartUI;
-import ec.ui.view.tsprocessing.ComposedProcDocumentItemFactory;
-import ec.ui.view.tsprocessing.DefaultItemUI;
-import ec.ui.view.tsprocessing.DiagnosticsUI;
-import ec.ui.view.tsprocessing.EstimationUI;
-import ec.ui.view.tsprocessing.GenericTableUI;
-import ec.ui.view.tsprocessing.HtmlItemUI;
-import ec.ui.view.tsprocessing.IProcDocumentView;
-import ec.ui.view.tsprocessing.ItemUI;
-import ec.ui.view.tsprocessing.OutOfSampleTestUI;
-import ec.ui.view.tsprocessing.PreprocessingUI;
-import ec.ui.view.tsprocessing.ProcDocumentViewFactory;
-import ec.ui.view.tsprocessing.ProcessingLogUI;
-import ec.ui.view.tsprocessing.RegressorsUI;
-import ec.ui.view.tsprocessing.ResidualsDistUI;
-import ec.ui.view.tsprocessing.ResidualsStatsUI;
-import ec.ui.view.tsprocessing.ResidualsUI;
-import ec.ui.view.tsprocessing.RevisionHistoryUI;
-import ec.ui.view.tsprocessing.SlidingSpansDetailUI;
-import ec.ui.view.tsprocessing.SpectrumUI;
-import ec.ui.view.tsprocessing.StabilityUI;
-import ec.ui.view.tsprocessing.TsDocumentInformationExtractor;
+import ec.ui.view.tsprocessing.*;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import javax.swing.JComponent;
@@ -406,7 +382,7 @@ public abstract class SaDocumentViewFactory<S extends ISaSpecification, D extend
             super(documentType, INPUT_SERIES, new ProcDocumentViewFactory.DoNothingExtractor<>(), new DefaultItemUI<IProcDocumentView<D>, D>() {
                 @Override
                 public JComponent getView(IProcDocumentView<D> host, D information) {
-                    return host.getToolkit().getGrid(information.getInput()); //To change body of generated methods, choose Tools | Templates.
+                    return TsViewToolkit.getGrid(Collections.singleton(information.getInput())); //To change body of generated methods, choose Tools | Templates.
                 }
             });
         }

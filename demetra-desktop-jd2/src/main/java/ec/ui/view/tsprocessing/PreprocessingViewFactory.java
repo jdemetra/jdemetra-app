@@ -26,6 +26,8 @@ import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.InformationExtractor;
 import ec.tstoolkit.utilities.LinearId;
 import ec.ui.view.tsprocessing.sa.SaTableUI;
+
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import javax.swing.JComponent;
 
@@ -98,7 +100,7 @@ public abstract class PreprocessingViewFactory<S extends IProcSpecification, D e
             super(documentType, INPUT_SERIES, new ProcDocumentViewFactory.DoNothingExtractor<>(), new DefaultItemUI<IProcDocumentView<D>, D>() {
                 @Override
                 public JComponent getView(IProcDocumentView<D> host, D information) {
-                    return host.getToolkit().getGrid(information.getInput()); //To change body of generated methods, choose Tools | Templates.
+                    return TsViewToolkit.getGrid(Collections.singleton(information.getInput())); //To change body of generated methods, choose Tools | Templates.
                 }
             });
         }

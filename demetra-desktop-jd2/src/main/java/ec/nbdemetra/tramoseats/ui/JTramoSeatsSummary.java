@@ -5,7 +5,9 @@
 package ec.nbdemetra.tramoseats.ui;
 
 import demetra.bridge.TsConverter;
+import demetra.desktop.design.SwingComponent;
 import demetra.timeseries.TsCollection;
+import demetra.ui.components.JTsChart;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
 import ec.satoolkit.ComponentDescriptor;
@@ -20,17 +22,14 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.ucarima.UcarimaModel;
 import ec.ui.Disposables;
 import ec.ui.interfaces.IDisposable;
-import demetra.ui.components.JTsChart;
-import demetra.desktop.design.SwingComponent;
 import ec.ui.view.JSIView;
-import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;
-import java.awt.BorderLayout;
-import java.util.stream.Stream;
+
 import javax.swing.*;
+import java.awt.*;
+import java.util.stream.Stream;
 
 /**
- *
  * @author Kristof Bayens
  */
 @SwingComponent
@@ -68,7 +67,7 @@ public final class JTramoSeatsSummary extends JComponent implements IDisposable 
 
         return models;
     }
-    private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
+
     private final Box document_;
     private final JTsChart chart_;
     private final JSIView siPanel_;
@@ -94,14 +93,6 @@ public final class JTramoSeatsSummary extends JComponent implements IDisposable 
         add(split2, BorderLayout.CENTER);
     }
 
-    public void setTsToolkit(ITsViewToolkit toolkit) {
-        toolkit_ = toolkit;
-    }
-
-    public ITsViewToolkit getTsToolkit() {
-        return toolkit_;
-    }
-
     public void set(TramoSeatsDocument doc) {
         doc_ = doc;
 
@@ -117,7 +108,7 @@ public final class JTramoSeatsSummary extends JComponent implements IDisposable 
             UcarimaModel ucm = seats.getUcarimaModel();
             document = new HtmlTramoSeatsSummary(MultiLineNameUtil.join(doc_.getInput().getName()), doc_.getResults(), getComponentsName(ucm), getComponents(ucm), null);
         }
-        Disposables.disposeAndRemoveAll(document_).add(toolkit_.getHtmlViewer(document));
+        Disposables.disposeAndRemoveAll(document_).add(TsViewToolkit.getHtmlViewer(document));
 
         chart_.setTsCollection(
                 Stream.of(

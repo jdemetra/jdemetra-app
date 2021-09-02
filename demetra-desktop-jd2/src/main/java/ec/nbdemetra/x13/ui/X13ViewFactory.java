@@ -123,7 +123,6 @@ public class X13ViewFactory extends SaDocumentViewFactory<X13Specification, X13D
             }, new PooledItemUI<View, X13Document, JX13Summary>(JX13Summary.class) {
                 @Override
                 protected void init(JX13Summary c, View host, X13Document information) {
-                    c.setTsToolkit(host.getToolkit());
                     c.set(information);
                 }
             });

@@ -21,7 +21,7 @@ public class DefaultChartUI<D extends IProcDocument<?,?,?> >extends DefaultItemU
     @Override
     public JComponent getView(IProcDocumentView<D> host, ec.tss.TsCollection rslts) {
 
-        return host.getToolkit().getGrid(rslts);
+        return TsViewToolkit.getGrid(rslts);
     }
 
  }

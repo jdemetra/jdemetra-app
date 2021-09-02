@@ -152,7 +152,6 @@ public class TramoSeatsViewFactory extends SaDocumentViewFactory<TramoSeatsSpeci
             }, new PooledItemUI<View, TramoSeatsDocument, JTramoSeatsSummary>(JTramoSeatsSummary.class) {
                 @Override
                 protected void init(JTramoSeatsSummary c, View host, TramoSeatsDocument information) {
-                    c.setTsToolkit(host.getToolkit());
                     c.set(information);
                 }
             });

@@ -6,10 +6,10 @@
 package ec.nbdemetra.sa;
 
 import demetra.bridge.TsConverter;
+import demetra.ui.IconManager;
 import ec.nbdemetra.ui.NbUtilities;
-import ec.nbdemetra.ui.nodes.ControlNode;
+import demetra.ui.nodes.ControlNode;
 import demetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.sa.SaItem;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.MetaData;
@@ -35,7 +35,7 @@ public class SaItemNode extends AbstractNode {
 
     private Optional<Image> lookupIcon(int type, boolean opened) {
         SaItem item = getLookup().lookup(SaItem.class);
-        return DataSourceProviderBuddySupport.getDefault().getIcon(TsConverter.toTsMoniker(item.getMoniker()), type, opened);
+        return IconManager.getDefault().getIcon(TsConverter.toTsMoniker(item.getMoniker()), type, opened);
     }
 
     @Override

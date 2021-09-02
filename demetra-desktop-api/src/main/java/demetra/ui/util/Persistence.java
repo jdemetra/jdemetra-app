@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 @lombok.Value
 @lombok.Builder
-public class Persistance<T> {
+public class Persistence<T> {
 
     @lombok.NonNull
     String domain;

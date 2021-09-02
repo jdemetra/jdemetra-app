@@ -14,15 +14,13 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal;
+package demetra.ui.util;
 
-import demetra.bridge.TsConverter;
+import demetra.timeseries.Ts;
 import demetra.timeseries.TsInformationType;
+import demetra.timeseries.TsMoniker;
 import demetra.tsprovider.TsMeta;
 import demetra.ui.TsManager;
-import ec.tss.Ts;
-import ec.tss.TsMoniker;
-import ec.tstoolkit.MetaData;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
@@ -35,37 +33,39 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * @author Philippe Charles
  */
+@Deprecated
 public final class FrozenTsHelper {
 
     private FrozenTsHelper() {
         // static class
     }
 
-    public static boolean isFrozen(demetra.timeseries.@NonNull Ts ts) {
-        return TsConverter.fromTs(ts).isFrozen();
+    public static boolean isFrozen(@NonNull Ts ts) {
+        return ts.getMeta().keySet().stream().anyMatch(FrozenTsHelper::isFreezeKey);
     }
 
     @Nullable
-    public static LocalDateTime getTimestamp(demetra.timeseries.@NonNull Ts ts) {
-        return getTimestamp(TsConverter.fromTs(ts));
+    public static LocalDateTime getTimestamp(@NonNull Ts ts) {
+        return TsMeta.TIMESTAMP.load(ts.getMeta());
     }
 
-    public static demetra.timeseries.@Nullable TsMoniker getOriginalMoniker(demetra.timeseries.@NonNull TsMoniker moniker) {
-        TsMoniker result = getOriginalMoniker(TsConverter.fromTsMoniker(moniker));
-        return result != null ? TsConverter.toTsMoniker(result) : null;
-    }
-
-    @Nullable
-    public static String getSource(@NonNull Ts ts) {
-        String source = ts.getMoniker().getSource();
-        if (source != null) {
-            return source;
+    public static @Nullable TsMoniker getOriginalMoniker(@NonNull TsMoniker moniker) {
+        if (moniker.isProvided()) {
+            return moniker;
         }
-        MetaData metaData = ts.getMetaData();
-        if (metaData != null) {
-            return getSource(metaData);
+        demetra.timeseries.Ts ts = TsManager.getDefault().makeTs(moniker, TsInformationType.MetaData);
+        if (ts == null) {
+            return null;
         }
-        return null;
+        String source = getSource(ts.getMeta());
+        if (source == null) {
+            return null;
+        }
+        String id = getId(ts.getMeta());
+        if (id == null) {
+            return null;
+        }
+        return TsMoniker.of(source, id);
     }
 
     @Nullable
@@ -78,32 +78,6 @@ public final class FrozenTsHelper {
     private static String getId(@NonNull Map<String, String> md) {
         String result = TsMeta.ID.load(md);
         return result != null ? result : TsMeta.ID_OLD.load(md);
-    }
-
-    @Nullable
-    public static LocalDateTime getTimestamp(@NonNull Ts ts) {
-        MetaData md = ts.getMetaData();
-        return md != null ? TsMeta.TIMESTAMP.load(md) : null;
-    }
-
-    @Nullable
-    public static TsMoniker getOriginalMoniker(@NonNull TsMoniker moniker) {
-        if (!moniker.isAnonymous()) {
-            return moniker;
-        }
-        demetra.timeseries.Ts ts = TsManager.getDefault().makeTs(TsConverter.toTsMoniker(moniker), TsInformationType.MetaData);
-        if (ts == null) {
-            return null;
-        }
-        String source = getSource(ts.getMeta());
-        if (source == null) {
-            return null;
-        }
-        String id = getId(ts.getMeta());
-        if (id == null) {
-            return null;
-        }
-        return new TsMoniker(source, id);
     }
 
     private static final Set<String> FREEZE_KEYS

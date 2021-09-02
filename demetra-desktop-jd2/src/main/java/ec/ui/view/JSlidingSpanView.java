@@ -5,58 +5,49 @@
 package ec.ui.view;
 
 import demetra.bridge.TsConverter;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.design.SwingProperty;
 import demetra.ui.components.parts.HasColorScheme;
 import demetra.ui.components.parts.HasColorSchemeResolver;
 import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.jfreechart.TsCharts;
 import demetra.ui.util.NbComponents;
 import ec.satoolkit.DecompositionMode;
 import ec.tss.html.implementation.HtmlSlidingSpanDocument;
+import ec.tss.tsproviders.utils.OptionalTsData;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.modelling.ModellingDictionary;
 import ec.tstoolkit.timeseries.analysis.DiagnosticInfo;
 import ec.tstoolkit.timeseries.analysis.SlidingSpans;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.chart.TsXYDatasets;
-import demetra.ui.jfreechart.TsCharts;
-import ec.tss.tsproviders.utils.OptionalTsData;
 import ec.ui.Disposables;
-import ec.ui.view.tsprocessing.ITsViewToolkit;
+import ec.ui.chart.TsXYDatasets;
 import ec.ui.view.tsprocessing.TsViewToolkit;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
+import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.chart.swing.ext.MatrixChartCommand;
-import java.awt.BorderLayout;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Transferable;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import javax.swing.Box;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JSplitPane;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.DateTickUnit;
-import org.jfree.chart.axis.DateTickUnitType;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.*;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultXYDataset;
-import demetra.ui.datatransfer.DataTransfer;
-import demetra.desktop.design.SwingComponent;
-import demetra.desktop.design.SwingProperty;
-import ec.util.chart.swing.SwingColorSchemeSupport;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.Transferable;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 
 /**
- *
  * @author Kristof Bayens
  */
 @SwingComponent
@@ -64,7 +55,7 @@ public final class JSlidingSpanView extends JComponent implements HasColorScheme
 
     // CONSTANTS
     protected static final int N = 18;
-    
+
     // PROPERTIES DEFINITION
     @SwingProperty
     public static final String SLIDING_SPANS_PROPERTY = "slidingSpans";
@@ -77,7 +68,7 @@ public final class JSlidingSpanView extends JComponent implements HasColorScheme
 
     @SwingProperty
     public static final String INFO_PROPERTY = "info";
-    
+
     // DEFAULT PROPERTIES
     protected static final double DEFAULT_THRESHOLD = 3;
     protected static final DiagnosticInfo DEFAULT_INFO = DiagnosticInfo.RelativeDifference;
@@ -90,13 +81,12 @@ public final class JSlidingSpanView extends JComponent implements HasColorScheme
     private final JChartPanel seriesPanel;
     private final JChartPanel distributionPanel;
     private final Box documentPanel;
-    private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
 
     private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
-    
+
     public JSlidingSpanView() {
 
         this.slidingSpans = null;
@@ -193,14 +183,6 @@ public final class JSlidingSpanView extends JComponent implements HasColorScheme
     }
     //</editor-fold>
 
-    public void setTsToolkit(ITsViewToolkit toolkit) {
-        toolkit_ = toolkit;
-    }
-
-    public ITsViewToolkit getTsToolkit() {
-        return toolkit_;
-    }
-
     private Range calcRange(double[] values) {
         double min = Double.NEGATIVE_INFINITY, max = -Double.POSITIVE_INFINITY;
 
@@ -277,7 +259,7 @@ public final class JSlidingSpanView extends JComponent implements HasColorScheme
     private void showStatistics() {
         HtmlSlidingSpanDocument document = new HtmlSlidingSpanDocument(slidingSpans, infoName, info);
         document.setThreshold(threshold);
-        Disposables.disposeAndRemoveAll(documentPanel).add(toolkit_.getHtmlViewer(document));
+        Disposables.disposeAndRemoveAll(documentPanel).add(TsViewToolkit.getHtmlViewer(document));
     }
 
     private void showSeries(TsData data, DecompositionMode mode) {

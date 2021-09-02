@@ -8,7 +8,7 @@ import demetra.ui.beans.PropertyChangeSource;
 import demetra.ui.concurrent.ThreadPoolSize;
 import demetra.ui.concurrent.ThreadPriority;
 import demetra.ui.util.LazyGlobalService;
-import demetra.ui.util.Persistance;
+import demetra.ui.util.Persistence;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -211,16 +211,16 @@ public final class DemetraOptions implements PropertyChangeSource.WithWeakListen
 
     @Override
     public Config getConfig() {
-        return PERSISTANCE.loadConfig(this);
+        return PERSISTENCE.loadConfig(this);
     }
 
     @Override
     public void setConfig(Config config) {
-        PERSISTANCE.storeConfig(this, config);
+        PERSISTENCE.storeConfig(this, config);
     }
 
     @MightBeGenerated
-    private static final Persistance<DemetraOptions> PERSISTANCE = Persistance
+    private static final Persistence<DemetraOptions> PERSISTENCE = Persistence
             .builderOf(DemetraOptions.class)
             .name("INSTANCE")
             .version("VERSION")

@@ -10,6 +10,8 @@ import ec.tstoolkit.algorithm.IProcResults;
 import ec.tstoolkit.modelling.SeriesInfo;
 import ec.ui.view.tsprocessing.DefaultItemUI;
 import ec.ui.view.tsprocessing.IProcDocumentView;
+import ec.ui.view.tsprocessing.TsViewToolkit;
+
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.JComponent;
@@ -48,6 +50,6 @@ public class SaTableUI <D extends TsDocument<?,?> >extends DefaultItemUI<IProcDo
         }
 
 
-        return host.getToolkit().getGrid(items.clean(true));
+        return TsViewToolkit.getGrid(items.clean(true));
     }
 }

@@ -1,36 +1,34 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.ns;
+package demetra.ui.nodes;
 
-import demetra.ui.nodes.NamedServiceNode;
 import demetra.ui.NamedService;
-import demetra.ui.nodes.AbstractNodeBuilder;
-import java.awt.Dimension;
-import java.beans.PropertyVetoException;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-import javax.swing.JComboBox;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.ChoiceView;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 
+import javax.swing.*;
+import java.awt.*;
+import java.beans.PropertyVetoException;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 /**
- *
  * @author Philippe Charles
  */
 public class NamedServiceChoicePanel extends javax.swing.JPanel implements ExplorerManager.Provider {
@@ -86,6 +84,7 @@ public class NamedServiceChoicePanel extends javax.swing.JPanel implements Explo
         jComboBox1.setPreferredSize(new java.awt.Dimension(100, 20));
         add(jComboBox1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox jComboBox1;
     // End of variables declaration//GEN-END:variables
@@ -98,5 +97,5 @@ public class NamedServiceChoicePanel extends javax.swing.JPanel implements Explo
     public JComboBox getComboBox() {
         return jComboBox1;
     }
-    
+
 }

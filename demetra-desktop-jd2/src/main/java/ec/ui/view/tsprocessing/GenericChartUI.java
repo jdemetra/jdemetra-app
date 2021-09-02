@@ -38,7 +38,7 @@ public class GenericChartUI<D extends IProcDocument<?,?,?> >extends DefaultItemU
             if (x != null && x.getTsData() != null)
                 items.add(x);
         }
-        return host.getToolkit().getChart(items);
+        return TsViewToolkit.getChart(items);
     }
 
  }

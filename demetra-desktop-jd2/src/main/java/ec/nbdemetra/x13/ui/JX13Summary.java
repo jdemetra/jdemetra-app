@@ -5,37 +5,35 @@
 package ec.nbdemetra.x13.ui;
 
 import demetra.bridge.TsConverter;
+import demetra.desktop.design.SwingComponent;
 import demetra.timeseries.TsCollection;
+import demetra.ui.components.JTsChart;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
 import ec.satoolkit.DecompositionMode;
 import ec.satoolkit.x11.X11Results;
-import ec.tstoolkit.modelling.ModellingDictionary;
 import ec.tss.documents.DocumentManager;
 import ec.tss.html.implementation.HtmlX13Summary;
 import ec.tss.sa.documents.X13Document;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.algorithm.CompositeResults;
+import ec.tstoolkit.modelling.ModellingDictionary;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.Disposables;
 import ec.ui.interfaces.IDisposable;
-import demetra.ui.components.JTsChart;
-import demetra.desktop.design.SwingComponent;
 import ec.ui.view.JSIView;
-import ec.ui.view.tsprocessing.ITsViewToolkit;
 import ec.ui.view.tsprocessing.TsViewToolkit;
-import java.awt.BorderLayout;
-import java.util.stream.Stream;
+
 import javax.swing.*;
+import java.awt.*;
+import java.util.stream.Stream;
 
 /**
- *
  * @author Kristof Bayens
  */
 @SwingComponent
 public final class JX13Summary extends JComponent implements IDisposable {
 
-    private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
     private final Box document_;
     private final JTsChart chart_;
     private final JSIView siPanel_;
@@ -61,14 +59,6 @@ public final class JX13Summary extends JComponent implements IDisposable {
         add(split2, BorderLayout.CENTER);
     }
 
-    public void setTsToolkit(ITsViewToolkit toolkit) {
-        toolkit_ = toolkit;
-    }
-
-    public ITsViewToolkit getTsToolkit() {
-        return toolkit_;
-    }
-
     public void set(X13Document doc) {
         this.doc_ = doc;
         if (doc == null) {
@@ -80,7 +70,7 @@ public final class JX13Summary extends JComponent implements IDisposable {
         }
 
         HtmlX13Summary summary = new HtmlX13Summary(MultiLineNameUtil.join(doc.getInput().getName()), results, null);
-        Disposables.disposeAndRemoveAll(document_).add(toolkit_.getHtmlViewer(summary));
+        Disposables.disposeAndRemoveAll(document_).add(TsViewToolkit.getHtmlViewer(summary));
 
         chart_.setTsCollection(
                 Stream.of(

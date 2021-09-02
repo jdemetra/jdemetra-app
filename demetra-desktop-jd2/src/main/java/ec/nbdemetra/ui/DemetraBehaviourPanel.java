@@ -20,6 +20,8 @@ import demetra.ui.DemetraOptions;
 import demetra.ui.TsActions;
 import demetra.ui.concurrent.ThreadPoolSize;
 import demetra.ui.concurrent.ThreadPriority;
+import demetra.ui.nodes.NamedServiceChoicePanel;
+
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.DefaultComboBoxModel;
@@ -102,7 +104,7 @@ final class DemetraBehaviourPanel extends javax.swing.JPanel implements ItemList
         showUnavailableCheckBox = new javax.swing.JCheckBox();
         tsPanel = new javax.swing.JPanel();
         doubleClickLabel = new javax.swing.JLabel();
-        tsActionChoicePanel = new ec.nbdemetra.ui.ns.NamedServiceChoicePanel();
+        tsActionChoicePanel = new NamedServiceChoicePanel();
 
         threadingPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(DemetraBehaviourPanel.class, "DemetraBehaviourPanel.threadingPanel.border.title"))); // NOI18N
 
@@ -244,7 +246,7 @@ final class DemetraBehaviourPanel extends javax.swing.JPanel implements ItemList
     private javax.swing.JPanel providersPanel;
     private javax.swing.JCheckBox showUnavailableCheckBox;
     private javax.swing.JPanel threadingPanel;
-    private ec.nbdemetra.ui.ns.NamedServiceChoicePanel tsActionChoicePanel;
+    private NamedServiceChoicePanel tsActionChoicePanel;
     private javax.swing.JPanel tsPanel;
     // End of variables declaration//GEN-END:variables
 

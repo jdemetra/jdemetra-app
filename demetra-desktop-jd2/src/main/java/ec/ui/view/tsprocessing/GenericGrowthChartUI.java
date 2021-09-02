@@ -37,7 +37,7 @@ public class GenericGrowthChartUI<D extends IProcDocument<?,?,?> >extends Defaul
             if (x != null && x.getTsData() != null)
                 items.add(x);
         }
-        return host.getToolkit().getChart(items);
+        return TsViewToolkit.getChart(items);
     }
 
  }

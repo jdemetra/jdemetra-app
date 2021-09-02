@@ -1,30 +1,30 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package demetra.ui.util;
 
 import ec.util.various.swing.ModernUI;
-import java.awt.Component;
-import java.awt.Toolkit;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import javax.swing.*;
-import javax.swing.border.Border;
 import org.openide.awt.Toolbar;
 import org.openide.windows.TopComponent;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
+import java.util.Optional;
 
 /**
  * TODO: move somewhere else?
@@ -36,6 +36,7 @@ public final class NbComponents {
     private NbComponents() {
         // static class
     }
+
     private static final boolean AQUA = "Aqua".equals(UIManager.getLookAndFeel().getID()); //NOI18N
 
     public static boolean isXPTheme() {
@@ -83,18 +84,18 @@ public final class NbComponents {
         return ModernUI.withEmptyBorders(new JSplitPane(orientation, continuousLayout, left, right));
     }
 
-    @Nullable
-    public static <T extends TopComponent> T findTopComponentByNameAndClass(@NonNull String name, @NonNull Class<T> clazz) {
-        for (TopComponent o : TopComponent.getRegistry().getOpened()) {
-            if (o.getName().equals(name) && clazz.isInstance(o)) {
-                return (T) o;
-            }
-        }
-        return null;
+    @NonNull
+    public static <T extends TopComponent> Optional<T> findTopComponentByNameAndClass(@NonNull String name, @NonNull Class<T> type) {
+        return TopComponent.getRegistry()
+                .getOpened()
+                .stream()
+                .filter(o -> o.getName().equals(name) && type.isInstance(o))
+                .map(type::cast)
+                .findFirst();
     }
 
-    @Nullable
-    public static TopComponent findTopComponentByName(@NonNull String name) {
+    @NonNull
+    public static Optional<TopComponent> findTopComponentByName(@NonNull String name) {
         return findTopComponentByNameAndClass(name, TopComponent.class);
     }
 }

@@ -87,7 +87,11 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-filesystems-nb</artifactId>
         </dependency>
-        
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-windows</artifactId>
+        </dependency>
+
         <!-- test only --> 
         <dependency>
             <groupId>junit</groupId>

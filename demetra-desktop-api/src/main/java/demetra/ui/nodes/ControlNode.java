@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.nodes;
+package demetra.ui.nodes;
 
 import demetra.ui.nodes.AbstractNodeBuilder;
 import demetra.timeseries.TsPeriod;
@@ -12,12 +12,12 @@ import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsMoniker;
 import demetra.tsprovider.DataSourceProvider;
 import demetra.tsprovider.util.MultiLineNameUtil;
+import demetra.ui.IconManager;
 import demetra.ui.TsManager;
 import demetra.ui.components.parts.HasTsCollection;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
-import internal.FrozenTsHelper;
+import demetra.ui.util.FrozenTsHelper;
 import demetra.ui.components.TsSelectionBridge;
 import java.awt.Image;
 import java.beans.PropertyVetoException;
@@ -165,7 +165,7 @@ public class ControlNode {
 
         private Optional<Image> lookupIcon(int type, boolean opened) {
             demetra.timeseries.Ts ts = getLookup().lookup(demetra.timeseries.Ts.class);
-            return DataSourceProviderBuddySupport.getDefault().getIcon(ts.getMoniker(), type, opened);
+            return IconManager.getDefault().getIcon(ts.getMoniker(), type, opened);
         }
 
         @Override

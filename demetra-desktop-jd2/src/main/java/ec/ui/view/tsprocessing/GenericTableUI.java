@@ -38,7 +38,7 @@ public class GenericTableUI<D extends IProcDocument<?,?,?> >extends DefaultItemU
             if (x != null && x.hasData()== TsStatus.Valid)
                 items.add(x);
         }
-        return host.getToolkit().getGrid(items);
+        return TsViewToolkit.getGrid(items);
     }
 
  }

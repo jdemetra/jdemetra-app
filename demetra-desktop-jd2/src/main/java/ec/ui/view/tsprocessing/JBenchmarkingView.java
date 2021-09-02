@@ -5,25 +5,23 @@
 package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
+import demetra.desktop.design.SwingComponent;
 import demetra.timeseries.TsCollection;
-import ec.nbdemetra.ui.OldTsUtil;
+import demetra.ui.components.JTsChart;
+import demetra.ui.components.JTsGrid;
 import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.ui.util.NbComponents;
+import ec.nbdemetra.ui.OldTsUtil;
 import ec.tss.Ts;
 import ec.tss.html.implementation.HtmlTsDifferenceDocument;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.ui.Disposables;
-import demetra.ui.components.JTsChart;
-import demetra.ui.components.JTsGrid;
-import demetra.desktop.design.SwingComponent;
-import java.awt.BorderLayout;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.stream.Stream;
-import javax.swing.Box;
-import javax.swing.JComponent;
-import javax.swing.JSplitPane;
 
 /**
- *
  * @author Jean Palate
  */
 @SwingComponent
@@ -33,7 +31,6 @@ public final class JBenchmarkingView extends JComponent {
     private final JTsChart chart_;
     private final JTsChart dchart_;
     private final Box documentPanel_;
-    private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
 
     public JBenchmarkingView() {
         setLayout(new BorderLayout());
@@ -60,14 +57,6 @@ public final class JBenchmarkingView extends JComponent {
         this.add(splitpane3, BorderLayout.CENTER);
     }
 
-    public void setTsToolkit(ITsViewToolkit toolkit) {
-        toolkit_ = toolkit;
-    }
-
-    public ITsViewToolkit getTsToolkit() {
-        return toolkit_;
-    }
-
     public void set(Ts benchSa, Ts sa, boolean mul) {
         TsData sdiff = mul
                 ? TsData.divide(benchSa.getTsData(), sa.getTsData()).minus(1)
@@ -76,13 +65,13 @@ public final class JBenchmarkingView extends JComponent {
         TsCollection base = Stream.of(TsConverter.toTs(sa), TsConverter.toTs(benchSa)).collect(TsCollection.toTsCollection());
         TsCollection diff = TsCollection.of(OldTsUtil.toTs("Differences", sdiff));
         TsCollection all = Stream.concat(base.stream(), diff.stream()).collect(TsCollection.toTsCollection());
-        
+
         chart_.setTsCollection(base);
         dchart_.setTsCollection(diff);
         grid_.setTsCollection(all);
 
         HtmlTsDifferenceDocument document = new HtmlTsDifferenceDocument(benchSa, sa, mul);
-        Disposables.disposeAndRemoveAll(documentPanel_).add(toolkit_.getHtmlViewer(document));
+        Disposables.disposeAndRemoveAll(documentPanel_).add(TsViewToolkit.getHtmlViewer(document));
         chart_.updateUI();
         dchart_.updateUI();
     }

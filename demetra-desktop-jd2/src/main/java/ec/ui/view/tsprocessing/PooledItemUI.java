@@ -8,10 +8,12 @@ import com.google.common.base.Throwables;
 import ec.tstoolkit.utilities.IPool;
 import ec.tstoolkit.utilities.Pools;
 import ec.ui.Disposables;
-import javax.swing.JComponent;
+import ec.ui.interfaces.IDisposable;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
- *
  * @author Philippe Charles
  */
 public abstract class PooledItemUI<H, I, C extends JComponent> extends DefaultItemUI<H, I> implements IPool.Factory<C> {
@@ -29,7 +31,7 @@ public abstract class PooledItemUI<H, I, C extends JComponent> extends DefaultIt
         final C result = pool.getOrCreate();
         init(result, host, information);
 
-        return new TsViewToolkit.JDisposable(result) {
+        return new JDisposable(result) {
             @Override
             public void dispose() {
                 pool.recycle(result);
@@ -57,4 +59,12 @@ public abstract class PooledItemUI<H, I, C extends JComponent> extends DefaultIt
     }
 
     abstract protected void init(C c, H host, I information);
+
+    private static abstract class JDisposable extends JComponent implements IDisposable {
+
+        JDisposable(Component c) {
+            setLayout(new BorderLayout());
+            add(c, BorderLayout.CENTER);
+        }
+    }
 }

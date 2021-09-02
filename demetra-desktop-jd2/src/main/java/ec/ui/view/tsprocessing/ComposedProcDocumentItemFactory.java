@@ -89,7 +89,7 @@ public abstract class ComposedProcDocumentItemFactory<D extends IProcDocument, I
         D source = getDocumentType().cast(document);
         Object info = informationExtractor.retrieve(source);
         if (info == null) {
-            return host.getToolkit().getMessageViewer("No information for this item");
+            return TsViewToolkit.getMessageViewer("No information for this item");
         }
         return async ? new JAsyncView(host, source) : itemUI.getView(host, info);
     }

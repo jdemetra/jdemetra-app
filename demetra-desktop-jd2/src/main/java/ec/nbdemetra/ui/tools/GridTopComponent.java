@@ -7,7 +7,7 @@ package ec.nbdemetra.ui.tools;
 import demetra.ui.components.parts.HasTsCollection;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import demetra.ui.util.NbComponents;
-import ec.nbdemetra.ui.nodes.ControlNode;
+import demetra.ui.nodes.ControlNode;
 import demetra.ui.components.JTsGrid;
 
 import static demetra.ui.components.JTsGrid.REVERSE_ACTION;

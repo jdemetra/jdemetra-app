@@ -23,7 +23,6 @@ public class BenchmarkingUI<V extends IProcDocumentView<?>> extends DefaultItemU
             return null;
         }
         JBenchmarkingView view = new JBenchmarkingView();
-        view.setTsToolkit(host.getToolkit());
         Ts tsb=DocumentManager.instance.getTs(host.getDocument(), InformationSet.item(GenericSaProcessingFactory.BENCHMARKING, SaBenchmarkingResults.BENCHMARKED));
         Ts tsa=DocumentManager.instance.getTs(host.getDocument(), InformationSet.item(GenericSaProcessingFactory.BENCHMARKING, SaBenchmarkingResults.ORIGINAL));
   

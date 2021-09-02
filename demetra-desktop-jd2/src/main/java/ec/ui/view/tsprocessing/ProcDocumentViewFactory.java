@@ -7,17 +7,14 @@ package ec.ui.view.tsprocessing;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.DefaultInformationExtractor;
 import ec.tstoolkit.utilities.Id;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JComponent;
 
 /**
- *
  * @author Jean Palate
  */
 public abstract class ProcDocumentViewFactory<D extends IProcDocument> implements IProcDocumentViewFactory<D> {
@@ -28,11 +25,6 @@ public abstract class ProcDocumentViewFactory<D extends IProcDocument> implement
 
         public View(D document) {
             document_ = document;
-        }
-
-        @Override
-        public ITsViewToolkit getToolkit() {
-            return toolkit_;
         }
 
         @Override
@@ -81,9 +73,9 @@ public abstract class ProcDocumentViewFactory<D extends IProcDocument> implement
             return ProcDocumentViewFactory.this.getPreferredView();
         }
     }
+
     //
     private final LinkedHashMap<Id, ProcDocumentItemFactory> itemFactories = new LinkedHashMap();
-    private ITsViewToolkit toolkit_ = TsViewToolkit.getInstance();
 
     /**
      * Call this method to register {@link IProcDocumentItemFactory} from
@@ -111,15 +103,6 @@ public abstract class ProcDocumentViewFactory<D extends IProcDocument> implement
         return o instanceof ComposedProcDocumentItemFactory ? o.getActions() : null;
     }
 
-    public void registerToolkit(@Nullable ITsViewToolkit toolkit) {
-        toolkit_ = toolkit != null ? toolkit : TsViewToolkit.getInstance();
-    }
-
-    @NonNull
-    public ITsViewToolkit getToolkit() {
-        return toolkit_;
-    }
-
     @NonNull
     public List<Id> getItems() {
         return new ArrayList<>(itemFactories.keySet());
@@ -132,11 +115,11 @@ public abstract class ProcDocumentViewFactory<D extends IProcDocument> implement
 
     // Let's avoid NPE
     public static class DoNothingExtractor<S> extends DefaultInformationExtractor<S, S> {
-        
+
         @Override
         public S retrieve(S source) {
             return source;
         }
     }
-    
+
 }

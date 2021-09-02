@@ -15,7 +15,7 @@ public abstract class HtmlItemUI<H extends IProcDocumentView<?>, I> extends Defa
 
     @Override
     public JComponent getView(H host, I information) {
-        return host.getToolkit().getHtmlViewer(getHtmlElement(host, information));
+        return TsViewToolkit.getHtmlViewer(getHtmlElement(host, information));
     }
 
     abstract protected IHtmlElement getHtmlElement(H host, I information);
