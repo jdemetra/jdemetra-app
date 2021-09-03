@@ -1,63 +1,61 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.ui;
 
-import demetra.ui.Config;
 import demetra.bridge.TsConverter;
+import demetra.desktop.interchange.InterchangeSpi;
+import demetra.desktop.star.StarList;
 import demetra.tsprovider.DataSourceLoader;
+import demetra.ui.Config;
 import demetra.ui.DemetraOptions;
+import demetra.ui.Persistable;
+import demetra.ui.TsManager;
+import demetra.ui.datatransfer.DataTransfer;
+import demetra.ui.datatransfer.DataTransferSpi;
 import ec.nbdemetra.core.InstallerStep;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.ui.mru.MruProvidersStep;
 import ec.nbdemetra.ui.mru.MruWorkspacesStep;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
-import ec.nbdemetra.ui.star.StarHelper;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.utils.Formatters;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.util.chart.swing.Charts;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-import java.util.stream.Stream;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.openide.modules.ModuleInstall;
 import org.openide.util.Lookup;
+import org.openide.util.NbPreferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import demetra.ui.Persistable;
-import demetra.ui.TsManager;
-import demetra.ui.datatransfer.DataTransfer;
-import demetra.ui.datatransfer.DataTransferSpi;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.*;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
-import nbbrd.io.text.Formatter;
-import nbbrd.io.text.Parser;
-import demetra.desktop.interchange.InterchangeSpi;
+import java.util.stream.Stream;
 
 public final class Installer extends ModuleInstall {
 
@@ -68,7 +66,7 @@ public final class Installer extends ModuleInstall {
             new FormattersStep(),
             new MruProvidersStep(),
             new MruWorkspacesStep(),
-            new StarHelper(),
+            new StarStep(),
             new DemetraUIStep(),
             new PersistOpenedDataSourcesStep(),
             new InterchangeStep(),
@@ -96,6 +94,60 @@ public final class Installer extends ModuleInstall {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Steps implementation">
+    private static final class StarStep extends InstallerStep {
+
+        static final Logger LOGGER = LoggerFactory.getLogger(StarStep.class);
+        static final String DATASOURCE_PROPERTY = "StarDataSource";
+        final Preferences prefs = NbPreferences.forModule(StarStep.class).node("Star");
+
+        @Override
+        public void restore() {
+            StarList.getDefault().clear();
+
+            Parser<demetra.tsprovider.DataSource> parser = ec.tss.tsproviders.DataSource.xmlParser().andThen(TsConverter::toDataSource)::parse;
+
+            try {
+                for (String name : prefs.childrenNames()) {
+                    tryGet(prefs.node(name), DATASOURCE_PROPERTY, parser)
+                            .ifPresent(source -> StarList.getDefault().toggle(source));
+                }
+            } catch (BackingStoreException ex) {
+                LOGGER.warn("Can't get node list", ex);
+            }
+
+            for (demetra.tsprovider.DataSource o : StarList.getDefault()) {
+                TsManager.getDefault()
+                        .getProvider(DataSourceLoader.class, o)
+                        .ifPresent(x -> x.open(o));
+            }
+        }
+
+        @Override
+        public void close() {
+            // clear the backing store
+            try {
+                for (String i : prefs.childrenNames()) {
+                    prefs.node(i).removeNode();
+                }
+            } catch (BackingStoreException ex) {
+                LOGGER.warn("Can't clear storage", ex);
+            }
+
+            Formatter<demetra.tsprovider.DataSource> formatter = ec.tss.tsproviders.DataSource.xmlFormatter(false).compose(TsConverter::fromDataSource)::format;
+
+            int i = 0;
+            for (demetra.tsprovider.DataSource o : StarList.getDefault()) {
+                Preferences node = prefs.node(String.valueOf(i++));
+                tryPut(node, DATASOURCE_PROPERTY, formatter, o);
+            }
+            try {
+                prefs.flush();
+            } catch (BackingStoreException ex) {
+                LOGGER.warn("Can't flush storage", ex);
+            }
+        }
+    }
+
     private static final class JFreeChartStep extends InstallerStep {
 
         @Override

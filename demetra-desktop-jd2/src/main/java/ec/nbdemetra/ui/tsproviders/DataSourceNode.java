@@ -28,7 +28,7 @@ import demetra.ui.Config;
 import demetra.desktop.interchange.Exportable;
 import demetra.ui.nodes.FailSafeChildFactory;
 import demetra.ui.nodes.Nodes;
-import ec.nbdemetra.ui.star.StarList;
+import demetra.desktop.star.StarList;
 import static ec.nbdemetra.ui.tsproviders.DataSourceNode.ACTION_PATH;
 import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.Image;
@@ -73,7 +73,7 @@ import demetra.ui.nodes.NodeAnnotator;
  * @author Philippe Charles
  */
 @ActionReferences({
-    @ActionReference(path = ACTION_PATH, position = 1210, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.star.StarAction"), separatorBefore = 1200),
+    @ActionReference(path = ACTION_PATH, position = 1210, id = @ActionID(category = "File", id = "demetra.desktop.core.star.StarAction"), separatorBefore = 1200),
     @ActionReference(path = ACTION_PATH, position = 1310, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.EditSourceAction"), separatorBefore = 1300),
     @ActionReference(path = ACTION_PATH, position = 1320, id = @ActionID(category = "Edit", id = "ec.nbdemetra.ui.nodes.actions.CloneSourceAction")),
     @ActionReference(path = ACTION_PATH, position = 1330, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.CloseAction")),
@@ -266,7 +266,7 @@ public final class DataSourceNode extends AbstractNode {
                     loader.close(dataSource);
                     demetra.tsprovider.DataSource editedDataSource = loader.encodeBean(bean);
                     loader.open(editedDataSource);
-                    StarList starList = StarList.getInstance();
+                    StarList starList = StarList.getDefault();
                     if (starList.isStarred(dataSource)) {
                         starList.toggle(dataSource);
                         starList.toggle(editedDataSource);
