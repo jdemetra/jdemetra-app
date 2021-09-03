@@ -16,12 +16,12 @@
  */
 package ec.nbdemetra.ui;
 
-import demetra.ui.nodes.AbstractNodeBuilder;
-import demetra.ui.nodes.NamedServiceNode;
+import demetra.desktop.nodes.AbstractNodeBuilder;
+import demetra.desktop.nodes.NamedServiceNode;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
-import demetra.ui.actions.Configurable;
-import demetra.ui.datatransfer.DataTransfer;
+import demetra.desktop.actions.Configurable;
+import demetra.desktop.datatransfer.DataTransfer;
 
 final class DemetraDataTransferPanel extends javax.swing.JPanel implements ExplorerManager.Provider {
 

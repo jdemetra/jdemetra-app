@@ -18,12 +18,12 @@ package ec.nbdemetra.ui.demo;
 
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
-import demetra.ui.util.NbComponents;
+import demetra.desktop.util.NbComponents;
 import ec.tss.html.AbstractHtmlElement;
 import ec.tss.html.HtmlStream;
 import ec.tss.html.HtmlTag;
 import ec.tss.html.HtmlUtil;
-import demetra.ui.components.JHtmlView;
+import demetra.desktop.components.JHtmlView;
 
 import javax.swing.*;
 import java.awt.*;

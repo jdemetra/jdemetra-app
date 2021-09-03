@@ -1,12 +1,10 @@
 package internal.ui;
 
 import demetra.timeseries.TsMoniker;
-import demetra.ui.IconManagerSpi;
+import demetra.desktop.IconManagerSpi;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.util.ImageUtilities;
 
 import javax.swing.*;

@@ -17,8 +17,8 @@
 package ec.nbdemetra.ui.tsproviders.actions;
 
 import demetra.tsprovider.DataSource;
-import demetra.ui.TsManager;
-import demetra.ui.nodes.SingleNodeAction;
+import demetra.desktop.TsManager;
+import demetra.desktop.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.tsproviders.DataSourceNode;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;

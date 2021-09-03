@@ -16,20 +16,22 @@
  */
 package _demo;
 
-import internal.ui.properties.JAutoCompletedComponent;
-import static ec.util.completion.AutoCompletionSource.Behavior.SYNC;
 import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
 import ec.util.various.swing.BasicSwingLauncher;
-import java.awt.Component;
+import internal.ui.properties.JAutoCompletedComponent;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.swing.JTextField;
+
+import static ec.util.completion.AutoCompletionSource.Behavior.SYNC;
 
 /**
  *

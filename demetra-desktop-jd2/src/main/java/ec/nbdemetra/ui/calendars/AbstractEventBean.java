@@ -5,7 +5,7 @@
 package ec.nbdemetra.ui.calendars;
 
 import demetra.desktop.design.SwingProperty;
-import demetra.ui.beans.PropertyChangeSource;
+import demetra.desktop.beans.PropertyChangeSource;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.ValidityPeriod;
 import ec.tstoolkit.timeseries.calendars.ISpecialDay;

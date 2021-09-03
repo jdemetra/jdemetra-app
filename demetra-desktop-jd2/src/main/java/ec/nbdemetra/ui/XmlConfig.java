@@ -1,6 +1,6 @@
 package ec.nbdemetra.ui;
 
-import demetra.ui.Config;
+import demetra.desktop.Config;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import ec.tss.tsproviders.utils.Formatters;

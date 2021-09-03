@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.tsproviders;
 
 import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.DataSet;
-import demetra.ui.TsManager;
+import demetra.desktop.TsManager;
 import static ec.nbdemetra.ui.tsproviders.SeriesNode.ACTION_PATH;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
@@ -30,7 +30,7 @@ import org.netbeans.api.actions.Openable;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
-import demetra.ui.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransfer;
 
 /**
  * A node that represents a DataSet of type series.

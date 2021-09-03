@@ -16,14 +16,17 @@
  */
 package ec.ui.chart;
 
+import demetra.desktop.components.parts.HasColorScheme;
+import demetra.desktop.components.parts.HasColorSchemeResolver;
+import demetra.desktop.components.parts.HasColorSchemeSupport;
+import demetra.desktop.components.parts.HasTsCollection;
 import demetra.timeseries.TsCollection;
-import demetra.ui.components.parts.*;
 import ec.nbdemetra.ui.OldTsUtil;
-import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.util.KeyStrokes;
+import demetra.desktop.components.TimeSeriesComponent;
+import demetra.desktop.util.KeyStrokes;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.utilities.Arrays2;
-import demetra.ui.actions.Actions;
+import demetra.desktop.actions.Actions;
 import ec.ui.view.JChartPanel;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.Charts;
@@ -52,9 +55,9 @@ import org.jfree.data.Range;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import demetra.ui.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.design.SwingComponent;
-import demetra.ui.jfreechart.TsCharts;
+import demetra.desktop.jfreechart.TsCharts;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import java.util.ArrayList;
 

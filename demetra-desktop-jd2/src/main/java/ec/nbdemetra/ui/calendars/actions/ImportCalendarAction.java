@@ -17,11 +17,11 @@
 package ec.nbdemetra.ui.calendars.actions;
 
 import com.google.common.collect.ImmutableList;
-import demetra.ui.Config;
+import demetra.desktop.Config;
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
 import demetra.desktop.interchange.Importable;
 import demetra.desktop.interchange.Interchange;
-import demetra.ui.nodes.SingleNodeAction;
+import demetra.desktop.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.Workspace;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
@@ -35,7 +35,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
-import demetra.ui.Converter;
+import demetra.desktop.Converter;
 
 /**
  *

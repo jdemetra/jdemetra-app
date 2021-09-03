@@ -16,12 +16,13 @@
  */
 package demetra.desktop.core.components;
 
-import demetra.ui.components.parts.HasTsCollection;
-import demetra.ui.util.ActionMaps;
+import demetra.desktop.components.parts.HasTsCollection;
+import demetra.desktop.util.ActionMaps;
 import ec.util.chart.swing.Charts;
+
+import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.ActionMap;
 
 /**
  *

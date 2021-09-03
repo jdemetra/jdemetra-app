@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui;
 
-import demetra.ui.util.PopupListener;
+import demetra.desktop.util.PopupListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -4,14 +4,14 @@
  */
 package ec.nbdemetra.ui.tools;
 
-import demetra.ui.components.parts.HasTsCollection;
+import demetra.desktop.components.parts.HasTsCollection;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import demetra.ui.util.NbComponents;
-import demetra.ui.nodes.ControlNode;
-import demetra.ui.components.JTsGrid;
+import demetra.desktop.util.NbComponents;
+import demetra.desktop.nodes.ControlNode;
+import demetra.desktop.components.JTsGrid;
 
-import static demetra.ui.components.JTsGrid.REVERSE_ACTION;
-import static demetra.ui.components.JTsGrid.TRANSPOSE_ACTION;
+import static demetra.desktop.components.JTsGrid.REVERSE_ACTION;
+import static demetra.desktop.components.JTsGrid.TRANSPOSE_ACTION;
 import java.awt.BorderLayout;
 import javax.swing.*;
 import org.netbeans.api.settings.ConvertAsProperties;

@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui.demo;
 
 import com.google.common.collect.ImmutableMap;
-import demetra.ui.util.NetBeansServiceBackend;
+import demetra.desktop.util.NetBeansServiceBackend;
 import ec.tstoolkit.utilities.Id;
 import java.awt.Component;
 import java.util.Map;

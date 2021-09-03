@@ -17,10 +17,10 @@
 package ec.nbdemetra.tramoseats.actions;
 
 import ec.nbdemetra.tramoseats.TramoSpecificationManager;
-import demetra.ui.Config;
+import demetra.desktop.Config;
 import demetra.desktop.interchange.Importable;
 import demetra.desktop.interchange.Interchange;
-import demetra.ui.nodes.SingleNodeAction;
+import demetra.desktop.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.tss.tsproviders.utils.Parsers;

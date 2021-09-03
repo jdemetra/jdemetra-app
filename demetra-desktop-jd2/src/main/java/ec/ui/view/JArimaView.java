@@ -5,7 +5,7 @@
 package ec.ui.view;
 
 import demetra.desktop.design.SwingComponent;
-import demetra.ui.util.NbComponents;
+import demetra.desktop.util.NbComponents;
 import ec.tss.html.HtmlStream;
 import ec.tss.html.HtmlTag;
 import ec.tss.html.HtmlUtil;
@@ -15,7 +15,7 @@ import ec.tstoolkit.arima.IArimaModel;
 import ec.tstoolkit.sarima.SarimaModel;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.uihelper.ModelInformationProvider;
-import demetra.ui.components.JHtmlView;
+import demetra.desktop.components.JHtmlView;
 import nbbrd.design.SkipProcessing;
 
 import javax.swing.*;

@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.jdbc;
 
-import demetra.ui.Config;
-import demetra.ui.nodes.SingleNodeAction;
+import demetra.desktop.Config;
+import demetra.desktop.nodes.SingleNodeAction;
 import demetra.desktop.interchange.Importable;
 import demetra.desktop.interchange.Interchange;
 import java.util.Collections;

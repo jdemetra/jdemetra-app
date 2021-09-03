@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui.calendars;
 
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.tstoolkit.timeseries.DayOfWeek;
 import ec.tstoolkit.timeseries.Month;
 import org.openide.nodes.Sheet;

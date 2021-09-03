@@ -20,9 +20,9 @@ import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractBean;
 import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractBeanEditor;
 import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.AbstractConverter;
 import ec.nbdemetra.spreadsheet.SpreadSheetTssTransferSupport.Resource;
-import demetra.ui.beans.BeanHandler;
-import demetra.ui.Config;
-import demetra.ui.ConfigEditor;
+import demetra.desktop.beans.BeanHandler;
+import demetra.desktop.Config;
+import demetra.desktop.ConfigEditor;
 import ec.util.spreadsheet.Book;
 import ec.util.spreadsheet.xmlss.XmlssBookFactory;
 import java.awt.datatransfer.DataFlavor;
@@ -32,10 +32,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.function.Supplier;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.Persistable;
-import demetra.ui.actions.Configurable;
-import demetra.ui.datatransfer.DataTransferSpi;
-import demetra.ui.beans.BeanConfigurator;
+import demetra.desktop.Persistable;
+import demetra.desktop.actions.Configurable;
+import demetra.desktop.datatransfer.DataTransferSpi;
+import demetra.desktop.beans.BeanConfigurator;
 import org.openide.util.lookup.ServiceProviders;
 
 /**

@@ -5,10 +5,10 @@
 package ec.ui.view;
 
 import demetra.desktop.design.SwingComponent;
-import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.components.parts.HasColorSchemeResolver;
-import demetra.ui.components.parts.HasColorSchemeSupport;
-import demetra.ui.util.NbComponents;
+import demetra.desktop.components.parts.HasColorScheme;
+import demetra.desktop.components.parts.HasColorSchemeResolver;
+import demetra.desktop.components.parts.HasColorSchemeSupport;
+import demetra.desktop.util.NbComponents;
 import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlRevisionsDocument;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
@@ -17,7 +17,7 @@ import ec.tstoolkit.timeseries.analysis.DiagnosticTarget;
 import ec.tstoolkit.timeseries.analysis.RevisionHistory;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import demetra.ui.components.JHtmlView;
+import demetra.desktop.components.JHtmlView;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;

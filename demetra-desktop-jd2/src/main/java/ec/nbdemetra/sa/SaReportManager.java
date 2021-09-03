@@ -5,8 +5,8 @@
 package ec.nbdemetra.sa;
 
 import demetra.desktop.design.GlobalService;
-import demetra.ui.util.CollectionSupplier;
-import demetra.ui.util.LazyGlobalService;
+import demetra.desktop.util.CollectionSupplier;
+import demetra.desktop.util.LazyGlobalService;
 import java.util.ArrayList;
 import java.util.List;
 

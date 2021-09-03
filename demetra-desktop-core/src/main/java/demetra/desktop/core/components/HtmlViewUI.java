@@ -1,9 +1,9 @@
 package demetra.desktop.core.components;
 
-import demetra.ui.DemetraOptions;
-import demetra.ui.components.JHtmlView;
-import demetra.ui.components.parts.HasZoomRatioSupport;
-import demetra.ui.util.NbComponents;
+import demetra.desktop.DemetraOptions;
+import demetra.desktop.components.JHtmlView;
+import demetra.desktop.components.parts.HasZoomRatioSupport;
+import demetra.desktop.util.NbComponents;
 import ec.util.various.swing.JCommand;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

@@ -4,9 +4,9 @@
  */
 package ec.ui.view;
 
-import demetra.ui.components.JExceptionPanel;
-import demetra.ui.util.NbComponents;
-import demetra.ui.nodes.DecoratedNode;
+import demetra.desktop.components.JExceptionPanel;
+import demetra.desktop.util.NbComponents;
+import demetra.desktop.nodes.DecoratedNode;
 import ec.nbdemetra.ui.IdNodes;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.Arrays2;

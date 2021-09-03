@@ -4,8 +4,8 @@
  */
 package ec.nbdemetra.ui.tools;
 
-import demetra.ui.nodes.ControlNode;
-import demetra.ui.components.JTsGrowthChart;
+import demetra.desktop.nodes.ControlNode;
+import demetra.desktop.components.JTsGrowthChart;
 import java.awt.BorderLayout;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;

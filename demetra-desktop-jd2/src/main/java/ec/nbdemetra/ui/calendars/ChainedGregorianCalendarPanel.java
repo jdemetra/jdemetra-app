@@ -4,10 +4,10 @@
  */
 package ec.nbdemetra.ui.calendars;
 
-import demetra.ui.util.IDialogDescriptorProvider;
-import demetra.ui.util.ListenerState;
-import demetra.ui.properties.ComboBoxPropertyEditor;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.util.IDialogDescriptorProvider;
+import demetra.desktop.util.ListenerState;
+import demetra.desktop.properties.ComboBoxPropertyEditor;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.utils.IConstraint;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.Day;

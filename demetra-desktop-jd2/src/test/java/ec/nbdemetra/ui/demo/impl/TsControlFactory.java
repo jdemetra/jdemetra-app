@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.demo.impl;
 
 import demetra.bridge.TsConverter;
 import demetra.demo.DemoTsBuilder;
-import demetra.ui.components.TimeSeriesComponent;
+import demetra.desktop.components.TimeSeriesComponent;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.nbdemetra.ui.demo.JReflectComponent;
 import ec.tstoolkit.data.DescriptiveStatistics;

@@ -16,11 +16,8 @@
  */
 package demetra.desktop.core.components;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
 
 /**
  *

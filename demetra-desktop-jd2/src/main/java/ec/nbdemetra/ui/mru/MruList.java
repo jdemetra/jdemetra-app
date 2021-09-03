@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.mru;
 
-import demetra.ui.beans.PropertyChangeSource;
+import demetra.desktop.beans.PropertyChangeSource;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Iterator;

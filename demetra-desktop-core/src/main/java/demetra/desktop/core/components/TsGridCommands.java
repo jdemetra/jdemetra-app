@@ -16,21 +16,21 @@
  */
 package demetra.desktop.core.components;
 
-import demetra.ui.components.ComponentCommand;
-import demetra.ui.components.JTsGrid;
+import demetra.desktop.components.ComponentCommand;
+import demetra.desktop.components.JTsGrid;
 import ec.util.various.swing.JCommand;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.awt.*;
 import java.util.EnumMap;
 
-import static demetra.ui.components.JTsGrid.*;
-import static demetra.ui.components.JTsGrid.Chronology.ASCENDING;
-import static demetra.ui.components.JTsGrid.Chronology.DESCENDING;
-import static demetra.ui.components.JTsGrid.Mode.MULTIPLETS;
-import static demetra.ui.components.JTsGrid.Mode.SINGLETS;
-import static demetra.ui.components.JTsGrid.Orientation.NORMAL;
-import static demetra.ui.components.JTsGrid.Orientation.REVERSED;
+import static demetra.desktop.components.JTsGrid.*;
+import static demetra.desktop.components.JTsGrid.Chronology.ASCENDING;
+import static demetra.desktop.components.JTsGrid.Chronology.DESCENDING;
+import static demetra.desktop.components.JTsGrid.Mode.MULTIPLETS;
+import static demetra.desktop.components.JTsGrid.Mode.SINGLETS;
+import static demetra.desktop.components.JTsGrid.Orientation.NORMAL;
+import static demetra.desktop.components.JTsGrid.Orientation.REVERSED;
 
 /**
  * @author Philippe Charles

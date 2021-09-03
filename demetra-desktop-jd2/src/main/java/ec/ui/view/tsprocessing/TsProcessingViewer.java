@@ -6,7 +6,7 @@ package ec.ui.view.tsprocessing;
 
 import com.google.common.base.Strings;
 import demetra.bridge.TsConverter;
-import demetra.ui.IconManager;
+import demetra.desktop.IconManager;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
 import ec.tss.documents.TsDocument;
@@ -17,7 +17,7 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JToolBar;
 import javax.swing.TransferHandler;
-import demetra.ui.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransfer;
 import java.util.Optional;
 
 /**

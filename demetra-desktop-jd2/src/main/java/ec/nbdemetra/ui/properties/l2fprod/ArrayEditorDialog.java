@@ -2,7 +2,7 @@ package ec.nbdemetra.ui.properties.l2fprod;
 
 import com.l2fprod.common.propertysheet.*;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import demetra.ui.util.NbComponents;
+import demetra.desktop.util.NbComponents;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.Dimension;

@@ -17,7 +17,7 @@
 package ec.tss.datatransfer;
 
 import demetra.tsprovider.DataSource;
-import demetra.ui.util.NetBeansServiceBackend;
+import demetra.desktop.util.NetBeansServiceBackend;
 import java.awt.datatransfer.Transferable;
 import java.util.Optional;
 import nbbrd.service.Quantifier;

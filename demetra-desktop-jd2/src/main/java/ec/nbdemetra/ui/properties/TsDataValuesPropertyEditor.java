@@ -18,9 +18,9 @@ package ec.nbdemetra.ui.properties;
 
 import demetra.bridge.TsConverter;
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.DemetraOptions;
+import demetra.desktop.DemetraOptions;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import demetra.ui.jfreechart.TsCharts;
+import demetra.desktop.jfreechart.TsCharts;
 import ec.tss.tsproviders.utils.OptionalTsData;
 import ec.util.chart.swing.Charts;
 import ec.util.various.swing.StandardSwingColor;

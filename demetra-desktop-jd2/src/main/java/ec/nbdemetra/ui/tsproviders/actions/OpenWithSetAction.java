@@ -17,9 +17,9 @@
 package ec.nbdemetra.ui.tsproviders.actions;
 
 import demetra.tsprovider.DataSet;
-import demetra.ui.NamedService;
-import demetra.ui.TsActions;
-import demetra.ui.TsManager;
+import demetra.desktop.NamedService;
+import demetra.desktop.TsActions;
+import demetra.desktop.TsManager;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;

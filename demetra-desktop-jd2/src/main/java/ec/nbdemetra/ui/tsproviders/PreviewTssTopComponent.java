@@ -5,9 +5,10 @@
 package ec.nbdemetra.ui.tsproviders;
 
 import demetra.bridge.TsConverter;
+import demetra.desktop.components.JTsChart;
 import demetra.timeseries.TsCollection;
-import demetra.ui.TsManager;
-import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.desktop.TsManager;
+import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import ec.tss.tsproviders.DataSet;
 import java.util.Optional;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -59,7 +60,7 @@ public final class PreviewTssTopComponent extends TopComponent implements Lookup
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jTsChart1 = new demetra.ui.components.JTsChart();
+        jTsChart1 = new JTsChart();
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -83,7 +84,7 @@ public final class PreviewTssTopComponent extends TopComponent implements Lookup
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private demetra.ui.components.JTsChart jTsChart1;
+    private JTsChart jTsChart1;
     // End of variables declaration//GEN-END:variables
 
     @Override

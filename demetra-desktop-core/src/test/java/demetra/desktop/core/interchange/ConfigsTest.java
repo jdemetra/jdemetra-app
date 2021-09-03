@@ -1,8 +1,10 @@
 package demetra.desktop.core.interchange;
 
-import java.io.IOException;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
+
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConfigsTest {
 

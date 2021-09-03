@@ -16,13 +16,14 @@
  */
 package demetra.desktop.core.properties;
 
-import demetra.ui.components.JCharsetField;
-import demetra.ui.properties.AbstractInplaceEditor;
-import demetra.ui.properties.AbstractExPropertyEditor;
-import java.nio.charset.Charset;
-import javax.swing.JComponent;
+import demetra.desktop.components.JCharsetField;
+import demetra.desktop.properties.AbstractExPropertyEditor;
+import demetra.desktop.properties.AbstractInplaceEditor;
 import org.openide.explorer.propertysheet.InplaceEditor;
 import org.openide.nodes.PropertyEditorRegistration;
+
+import javax.swing.*;
+import java.nio.charset.Charset;
 
 /**
  *

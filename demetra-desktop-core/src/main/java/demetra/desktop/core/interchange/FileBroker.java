@@ -18,6 +18,14 @@ package demetra.desktop.core.interchange;
 
 import demetra.desktop.interchange.Exportable;
 import demetra.desktop.interchange.Importable;
+import demetra.desktop.interchange.InterchangeSpi;
+import nbbrd.design.DirectImpl;
+import nbbrd.service.ServiceProvider;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.openide.filesystems.FileChooserBuilder;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,13 +38,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import nbbrd.design.DirectImpl;
-import nbbrd.service.ServiceProvider;
-import org.openide.filesystems.FileChooserBuilder;
-import demetra.desktop.interchange.InterchangeSpi;
 
 /**
  *

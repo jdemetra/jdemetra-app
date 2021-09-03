@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.calendars.actions;
 
-import demetra.ui.Config;
+import demetra.desktop.Config;
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
 import demetra.desktop.interchange.Exportable;
 import demetra.desktop.interchange.Interchange;
@@ -36,7 +36,7 @@ import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.NodeAction;
 import org.openide.util.actions.Presenter;
-import demetra.ui.Converter;
+import demetra.desktop.Converter;
 
 /**
  *

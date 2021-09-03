@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.ui.actions;
 
-import demetra.ui.actions.AbilityNodeAction;
-import demetra.ui.actions.Configurable;
+import demetra.desktop.actions.AbilityNodeAction;
+import demetra.desktop.actions.Configurable;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.tsproviders.ProvidersNode;
 import java.util.List;

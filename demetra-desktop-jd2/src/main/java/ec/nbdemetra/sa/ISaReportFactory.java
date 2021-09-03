@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.sa;
 
-import demetra.ui.util.NetBeansServiceBackend;
+import demetra.desktop.util.NetBeansServiceBackend;
 import ec.tss.sa.SaProcessing;
 import nbbrd.service.Quantifier;
 import nbbrd.service.ServiceDefinition;

@@ -5,7 +5,7 @@
 package ec.nbdemetra.ui.calendars.actions;
 
 import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
-import demetra.ui.nodes.SingleNodeAction;
+import demetra.desktop.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.calendars.ChainedGregorianCalendarProvider;

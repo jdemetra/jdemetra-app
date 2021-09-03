@@ -4,18 +4,9 @@
  */
 package demetra.desktop.core;
 
-import demetra.ui.DemetraOptions;
-import demetra.ui.TsActions;
-import demetra.ui.nodes.NamedServiceChoicePanel;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
-import javax.swing.AbstractAction;
-import javax.swing.JPanel;
+import demetra.desktop.DemetraOptions;
+import demetra.desktop.TsActions;
+import demetra.desktop.nodes.NamedServiceChoicePanel;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -25,6 +16,14 @@ import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 
 @ActionID(category = "Edit",
         id = "ec.nbdemetra.ui.ChooseTsActionAction")

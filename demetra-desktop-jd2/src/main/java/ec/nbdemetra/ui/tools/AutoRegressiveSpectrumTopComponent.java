@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui.tools;
 
-import demetra.ui.components.parts.HasTs;
+import demetra.desktop.components.parts.HasTs;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
 import ec.ui.view.AutoRegressiveSpectrumView;

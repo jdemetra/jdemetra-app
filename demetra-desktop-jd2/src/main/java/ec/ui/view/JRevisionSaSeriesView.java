@@ -16,11 +16,11 @@
  */
 package ec.ui.view;
 
+import demetra.desktop.components.parts.*;
 import demetra.desktop.design.SwingComponent;
-import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.components.parts.*;
-import demetra.ui.jfreechart.TsCharts;
-import demetra.ui.util.NbComponents;
+import demetra.desktop.components.TimeSeriesComponent;
+import demetra.desktop.jfreechart.TsCharts;
+import demetra.desktop.util.NbComponents;
 import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlRevisionsDocument;
 import ec.tstoolkit.timeseries.TsPeriodSelector;
@@ -31,7 +31,7 @@ import ec.tstoolkit.timeseries.simplets.TsDataFunction;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.chart.ChartPopup;
-import demetra.ui.components.JHtmlView;
+import demetra.desktop.components.JHtmlView;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import org.jfree.chart.ChartFactory;

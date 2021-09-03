@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.anomalydetection.report;
 
-import demetra.ui.util.NbComponents;
+import demetra.desktop.util.NbComponents;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.utilities.Paths;
 import java.awt.Dimension;

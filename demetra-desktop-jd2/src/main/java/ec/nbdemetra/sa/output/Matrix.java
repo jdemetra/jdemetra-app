@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.sa.output;
 
-import demetra.ui.properties.ListSelectionEditor;
+import demetra.desktop.properties.ListSelectionEditor;
 import ec.tss.sa.SaManager;
 import ec.tss.sa.output.BasicConfiguration;
 

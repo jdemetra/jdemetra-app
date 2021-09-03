@@ -16,10 +16,10 @@
  */
 package ec.ui.view;
 
+import demetra.desktop.components.parts.*;
 import demetra.desktop.design.SwingComponent;
-import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.components.parts.*;
-import demetra.ui.jfreechart.TsCharts;
+import demetra.desktop.components.TimeSeriesComponent;
+import demetra.desktop.jfreechart.TsCharts;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.ui.chart.BasicXYDataset;
 import ec.util.chart.ColorScheme.KnownColor;

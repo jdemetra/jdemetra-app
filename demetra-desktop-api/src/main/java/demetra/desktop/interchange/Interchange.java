@@ -1,18 +1,17 @@
 package demetra.desktop.interchange;
 
 import demetra.desktop.design.GlobalService;
-import demetra.ui.util.CollectionSupplier;
-import demetra.ui.util.LazyGlobalService;
+import demetra.desktop.util.CollectionSupplier;
+import demetra.desktop.util.LazyGlobalService;
+import nbbrd.design.VisibleForTesting;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.openide.util.Exceptions;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import javax.swing.AbstractAction;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import nbbrd.design.VisibleForTesting;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.openide.util.Exceptions;
 
 @GlobalService
 public final class Interchange {

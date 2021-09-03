@@ -6,8 +6,8 @@ package ec.nbdemetra.ui.tsproviders.actions;
 
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceLoader;
-import demetra.ui.TsManager;
-import demetra.ui.nodes.SingleNodeAction;
+import demetra.desktop.TsManager;
+import demetra.desktop.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.tsproviders.DataSourceNode;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import java.beans.IntrospectionException;

@@ -4,12 +4,13 @@
  */
 package demetra.desktop.core.actions;
 
-import demetra.ui.actions.AbilityNodeAction;
-import java.util.stream.Stream;
+import demetra.desktop.actions.AbilityNodeAction;
 import org.netbeans.api.actions.Closable;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
+
+import java.util.stream.Stream;
 
 @ActionID(category = "File", id = "demetra.desktop.core.actions.CloseNodeAction")
 @ActionRegistration(displayName = "#CloseNodeAction", lazy = false)

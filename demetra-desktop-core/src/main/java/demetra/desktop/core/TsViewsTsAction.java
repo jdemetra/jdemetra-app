@@ -16,8 +16,8 @@
  */
 package demetra.desktop.core;
 
-import demetra.ui.TsActionsOpenSpi;
-import demetra.ui.components.parts.HasTs;
+import demetra.desktop.TsActionsOpenSpi;
+import demetra.desktop.components.parts.HasTs;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.openide.windows.TopComponent;

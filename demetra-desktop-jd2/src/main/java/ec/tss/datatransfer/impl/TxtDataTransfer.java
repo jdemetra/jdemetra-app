@@ -21,12 +21,12 @@ import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.ImmutableList;
 import demetra.bridge.TsConverter;
 import demetra.math.matrices.MatrixType;
-import demetra.ui.Config;
-import demetra.ui.ConfigEditor;
-import demetra.ui.beans.BeanHandler;
+import demetra.desktop.Config;
+import demetra.desktop.ConfigEditor;
+import demetra.desktop.beans.BeanHandler;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.properties.PropertySheetDialogBuilder;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.tss.Ts;
 import ec.tss.TsInformationType;
 import ec.tss.TsStatus;
@@ -45,14 +45,14 @@ import java.util.Date;
 import java.util.Locale;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.datatransfer.DataTransferSpi;
+import demetra.desktop.datatransfer.DataTransferSpi;
 import nbbrd.io.text.BooleanProperty;
 import org.openide.util.lookup.ServiceProviders;
-import demetra.ui.properties.BeanEditor;
-import demetra.ui.Converter;
-import demetra.ui.Persistable;
-import demetra.ui.actions.Configurable;
-import demetra.ui.beans.BeanConfigurator;
+import demetra.desktop.properties.BeanEditor;
+import demetra.desktop.Converter;
+import demetra.desktop.Persistable;
+import demetra.desktop.actions.Configurable;
+import demetra.desktop.beans.BeanConfigurator;
 
 /**
  * @author Jean Palate

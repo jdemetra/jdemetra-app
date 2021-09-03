@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.ui.properties;
 
-import demetra.ui.properties.AbstractInplaceEditor;
-import demetra.ui.properties.AbstractExPropertyEditor;
+import demetra.desktop.properties.AbstractInplaceEditor;
+import demetra.desktop.properties.AbstractExPropertyEditor;
 import com.l2fprod.common.swing.LookAndFeelTweaks;
 import com.toedter.calendar.JDateChooser;
 import ec.tstoolkit.timeseries.Day;

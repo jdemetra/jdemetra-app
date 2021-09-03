@@ -16,11 +16,11 @@
  */
 package ec.nbdemetra.ui;
 
-import demetra.ui.DemetraOptions;
-import demetra.ui.TsActions;
-import demetra.ui.concurrent.ThreadPoolSize;
-import demetra.ui.concurrent.ThreadPriority;
-import demetra.ui.nodes.NamedServiceChoicePanel;
+import demetra.desktop.DemetraOptions;
+import demetra.desktop.TsActions;
+import demetra.desktop.concurrent.ThreadPoolSize;
+import demetra.desktop.concurrent.ThreadPriority;
+import demetra.desktop.nodes.NamedServiceChoicePanel;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;

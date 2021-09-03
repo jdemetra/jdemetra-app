@@ -16,18 +16,18 @@
  */
 package ec.ui.view;
 
-import demetra.ui.components.parts.HasColorScheme;
+import demetra.desktop.components.parts.HasColorScheme;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.DescriptiveStatistics;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.dstats.BoundaryType;
 import ec.tstoolkit.dstats.IContinuousDistribution;
-import demetra.ui.jfreechart.TsCharts;
+import demetra.desktop.jfreechart.TsCharts;
 import ec.ui.interfaces.IReadDataBlockView;
-import demetra.ui.components.parts.HasChart.LinesThickness;
-import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.components.parts.HasColorSchemeResolver;
-import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.desktop.components.parts.HasChart.LinesThickness;
+import demetra.desktop.components.TimeSeriesComponent;
+import demetra.desktop.components.parts.HasColorSchemeResolver;
+import demetra.desktop.components.parts.HasColorSchemeSupport;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
 import ec.tstoolkit.utilities.Arrays2;

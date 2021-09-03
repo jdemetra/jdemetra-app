@@ -17,11 +17,11 @@
 package ec.nbdemetra.jdbc;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.TsManager;
+import demetra.desktop.TsManager;
 import ec.nbdemetra.db.DbIcon;
-import demetra.ui.actions.Configurable;
-import demetra.ui.util.SimpleHtmlListCellRenderer;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.actions.Configurable;
+import demetra.desktop.util.SimpleHtmlListCellRenderer;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.db.DbBean;
 import ec.tss.tsproviders.jdbc.ConnectionSupplier;

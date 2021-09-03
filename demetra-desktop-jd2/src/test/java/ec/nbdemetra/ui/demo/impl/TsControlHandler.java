@@ -17,8 +17,8 @@
 package ec.nbdemetra.ui.demo.impl;
 
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.components.parts.HasObsFormat;
-import demetra.ui.components.parts.HasObsFormatSupport;
+import demetra.desktop.components.parts.HasObsFormat;
+import demetra.desktop.components.parts.HasObsFormatSupport;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.util.various.swing.JCommand;

@@ -17,13 +17,13 @@
 package ec.nbdemetra.sa.revisionanalysis;
 
 import demetra.desktop.design.SwingComponent;
-import demetra.ui.IconManager;
-import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.components.parts.HasChart;
-import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.components.parts.HasColorSchemeResolver;
-import demetra.ui.components.parts.HasColorSchemeSupport;
-import demetra.ui.jfreechart.TsCharts;
+import demetra.desktop.IconManager;
+import demetra.desktop.components.TimeSeriesComponent;
+import demetra.desktop.components.parts.HasChart;
+import demetra.desktop.components.parts.HasColorScheme;
+import demetra.desktop.components.parts.HasColorSchemeResolver;
+import demetra.desktop.components.parts.HasColorSchemeSupport;
+import demetra.desktop.jfreechart.TsCharts;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.IProcResults;
 import ec.tstoolkit.utilities.Arrays2;

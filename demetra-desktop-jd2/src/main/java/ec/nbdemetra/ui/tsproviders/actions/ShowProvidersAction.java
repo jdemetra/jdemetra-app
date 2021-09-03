@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
-import demetra.ui.DemetraOptions;
+import demetra.desktop.DemetraOptions;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

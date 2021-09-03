@@ -17,8 +17,8 @@
 package ec.ui.view;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.DemetraOptions;
-import demetra.ui.components.parts.*;
+import demetra.desktop.components.parts.*;
+import demetra.desktop.DemetraOptions;
 import ec.satoolkit.DecompositionMode;
 import ec.tss.TsInformation;
 import ec.tstoolkit.data.DataBlock;
@@ -28,9 +28,9 @@ import ec.tstoolkit.timeseries.simplets.TsDataBlock;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import ec.ui.chart.BasicXYDataset;
-import demetra.ui.jfreechart.TsCharts;
-import demetra.ui.components.parts.HasChart.LinesThickness;
-import demetra.ui.components.TimeSeriesComponent;
+import demetra.desktop.jfreechart.TsCharts;
+import demetra.desktop.components.parts.HasChart.LinesThickness;
+import demetra.desktop.components.TimeSeriesComponent;
 import demetra.desktop.design.SwingComponent;
 import ec.tss.TsInformationType;
 import ec.util.chart.ColorScheme.KnownColor;

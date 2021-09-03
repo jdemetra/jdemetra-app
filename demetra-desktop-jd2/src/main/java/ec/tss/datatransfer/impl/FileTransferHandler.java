@@ -6,8 +6,8 @@ package ec.tss.datatransfer.impl;
 
 import demetra.tsprovider.FileBean;
 import demetra.tsprovider.FileLoader;
-import demetra.ui.TsManager;
-import demetra.ui.datatransfer.DataTransfers;
+import demetra.desktop.TsManager;
+import demetra.desktop.datatransfer.DataTransfers;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.nbdemetra.ui.tsproviders.actions.OpenProvidersAction;
 import ec.tss.datatransfer.DataSourceTransferHandler;

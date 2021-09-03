@@ -18,11 +18,11 @@ package ec.nbdemetra.sa.revisionanalysis;
 
 import com.google.common.base.Stopwatch;
 import demetra.bridge.TsConverter;
-import demetra.ui.components.JTsTable;
+import demetra.desktop.components.JTsTable;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import demetra.ui.util.NbComponents;
-import demetra.ui.util.PopupMenuAdapter;
+import demetra.desktop.util.NbComponents;
+import demetra.desktop.util.PopupMenuAdapter;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.ui.JSpecSelectionComponent;

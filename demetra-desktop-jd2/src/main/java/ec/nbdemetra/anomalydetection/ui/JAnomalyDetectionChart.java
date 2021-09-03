@@ -48,7 +48,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
-import demetra.ui.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
 

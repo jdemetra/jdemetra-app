@@ -4,7 +4,7 @@
  */
 package ec.ui.view.tsprocessing;
 
-import demetra.ui.util.NetBeansServiceBackend;
+import demetra.desktop.util.NetBeansServiceBackend;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.Id;
 import org.checkerframework.checker.nullness.qual.NonNull;

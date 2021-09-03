@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.jdbc;
 
-import demetra.ui.Config;
+import demetra.desktop.Config;
 import demetra.desktop.interchange.Exportable;
 import demetra.desktop.interchange.Interchange;
 import java.util.ArrayList;

@@ -16,12 +16,12 @@
  */
 package demetra.desktop.notification;
 
-import java.awt.event.ActionListener;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 import org.openide.ErrorManager;
 import org.openide.awt.NotificationDisplayer;
+
+import javax.swing.*;
+import java.awt.event.ActionListener;
 
 /**
  *

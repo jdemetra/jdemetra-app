@@ -18,17 +18,18 @@ package demetra.desktop.core.interchange;
 
 import demetra.desktop.interchange.Exportable;
 import demetra.desktop.interchange.Importable;
-import java.awt.Toolkit;
+import demetra.desktop.interchange.InterchangeSpi;
+import nbbrd.design.DirectImpl;
+import nbbrd.service.ServiceProvider;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.List;
-import nbbrd.design.DirectImpl;
-import nbbrd.service.ServiceProvider;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import demetra.desktop.interchange.InterchangeSpi;
 
 /**
  *

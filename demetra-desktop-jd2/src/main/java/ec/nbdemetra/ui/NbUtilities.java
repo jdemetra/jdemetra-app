@@ -5,8 +5,8 @@
 package ec.nbdemetra.ui;
 
 import demetra.tsprovider.TsMeta;
-import demetra.ui.util.NbComponents;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.util.NbComponents;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.DataSource;
 import ec.tstoolkit.MetaData;
 import ec.tstoolkit.algorithm.IProcDocument;

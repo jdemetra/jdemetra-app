@@ -17,8 +17,8 @@
 package ec.nbdemetra.ui.tsproviders;
 
 import demetra.tsprovider.DataSourceProvider;
-import demetra.ui.TsManager;
-import demetra.ui.nodes.ExceptionNode;
+import demetra.desktop.TsManager;
+import demetra.desktop.nodes.ExceptionNode;
 import java.awt.Image;
 import java.io.IOException;
 import org.openide.nodes.Sheet;

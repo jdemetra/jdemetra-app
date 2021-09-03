@@ -6,7 +6,7 @@ package ec.nbdemetra.ui;
 
 import demetra.desktop.design.GlobalService;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
-import demetra.ui.util.LazyGlobalService;
+import demetra.desktop.util.LazyGlobalService;
 import ec.nbdemetra.ui.properties.l2fprod.PropertiesPanelFactory;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;

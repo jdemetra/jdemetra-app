@@ -6,11 +6,11 @@ package ec.nbdemetra.ui.calendars;
 
 import com.google.common.collect.ImmutableList;
 import demetra.desktop.design.SwingProperty;
-import demetra.ui.beans.PropertyChangeSource;
+import demetra.desktop.beans.PropertyChangeSource;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import demetra.ui.util.IDialogDescriptorProvider;
-import demetra.ui.util.ListenerState;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.util.IDialogDescriptorProvider;
+import demetra.desktop.util.ListenerState;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.utils.IConstraint;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;

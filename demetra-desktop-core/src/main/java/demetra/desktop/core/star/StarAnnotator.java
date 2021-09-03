@@ -4,13 +4,14 @@
  */
 package demetra.desktop.core.star;
 
+import demetra.desktop.nodes.NodeAnnotatorSpi;
 import demetra.desktop.star.StarList;
 import demetra.tsprovider.DataSource;
-import java.awt.Image;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.nodes.NodeAnnotatorSpi;
+
+import java.awt.*;
 
 /**
  *

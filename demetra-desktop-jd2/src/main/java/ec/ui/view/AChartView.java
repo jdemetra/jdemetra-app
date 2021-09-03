@@ -4,9 +4,9 @@
  */
 package ec.ui.view;
 
-import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.components.parts.HasColorSchemeResolver;
-import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.desktop.components.parts.HasColorScheme;
+import demetra.desktop.components.parts.HasColorSchemeResolver;
+import demetra.desktop.components.parts.HasColorSchemeSupport;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;

@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.chart3d.functions;
 
-import demetra.ui.components.JExceptionPanel;
+import demetra.desktop.components.JExceptionPanel;
 import ec.nbdemetra.ui.chart3d.JSurfacePanel;
 import ec.nbdemetra.ui.chart3d.SurfaceModel;
 import ec.nbdemetra.ui.chart3d.SurfaceModel.PlotType;

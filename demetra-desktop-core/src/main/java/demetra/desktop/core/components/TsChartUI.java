@@ -16,25 +16,22 @@
  */
 package demetra.desktop.core.components;
 
+import demetra.desktop.IconManager;
+import demetra.desktop.actions.Configurable;
+import demetra.desktop.components.JTsChart;
+import demetra.desktop.components.TsFeatureHelper;
+import demetra.desktop.components.TsSelectionBridge;
+import demetra.desktop.components.parts.*;
+import demetra.desktop.jfreechart.TsXYDataset;
+import demetra.desktop.util.ActionMaps;
+import demetra.desktop.util.InputMaps;
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.IconManager;
-import demetra.ui.actions.Configurable;
-import demetra.ui.components.ComponentBackendSpi;
-import demetra.ui.components.JTsChart;
-import demetra.ui.components.TsFeatureHelper;
-import demetra.ui.components.TsSelectionBridge;
-import demetra.ui.components.parts.*;
-import demetra.ui.jfreechart.TsXYDataset;
-import demetra.ui.util.ActionMaps;
-import demetra.ui.util.InputMaps;
 import demetra.util.IntList;
 import ec.util.chart.*;
 import ec.util.chart.TimeSeriesChart.Element;
 import ec.util.chart.swing.JTimeSeriesChart;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
-import nbbrd.design.DirectImpl;
-import nbbrd.service.ServiceProvider;
 import org.jfree.data.xy.IntervalXYDataset;
 
 import javax.swing.*;
@@ -50,8 +47,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static demetra.ui.actions.PrintableWithPreview.PRINT_ACTION;
-import static demetra.ui.actions.ResetableZoom.RESET_ZOOM_ACTION;
+import static demetra.desktop.actions.PrintableWithPreview.PRINT_ACTION;
+import static demetra.desktop.actions.ResetableZoom.RESET_ZOOM_ACTION;
 
 public final class TsChartUI implements InternalUI<JTsChart> {
 

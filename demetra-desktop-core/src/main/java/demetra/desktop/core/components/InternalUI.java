@@ -16,8 +16,9 @@
  */
 package demetra.desktop.core.components;
 
-import javax.swing.JComponent;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import javax.swing.*;
 
 /**
  *

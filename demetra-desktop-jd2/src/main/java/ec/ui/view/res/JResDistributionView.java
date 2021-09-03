@@ -5,7 +5,7 @@
 package ec.ui.view.res;
 
 import demetra.desktop.design.SwingComponent;
-import demetra.ui.util.NbComponents;
+import demetra.desktop.util.NbComponents;
 import ec.tstoolkit.data.IReadDataBlock;
 import ec.tstoolkit.dstats.Normal;
 import ec.tstoolkit.stats.AutoCorrelations;

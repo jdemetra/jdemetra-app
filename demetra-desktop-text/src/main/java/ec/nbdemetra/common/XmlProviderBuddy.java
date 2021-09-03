@@ -17,8 +17,8 @@
 package ec.nbdemetra.common;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.TsManager;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.TsManager;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.IFileLoader;

@@ -14,8 +14,8 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
-import demetra.ui.datatransfer.DataTransfer;
-import demetra.ui.datatransfer.DataTransfers;
+import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransfers;
 import java.util.Optional;
 
 @ActionID(category = "SaProcessing",

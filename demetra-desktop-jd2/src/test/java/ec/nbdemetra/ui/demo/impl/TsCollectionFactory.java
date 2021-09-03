@@ -16,15 +16,15 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import demetra.ui.components.parts.HasTsCollection;
+import demetra.desktop.components.parts.HasTsCollection;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.nbdemetra.ui.demo.JReflectComponent;
 import ec.tstoolkit.utilities.Id;
-import demetra.ui.components.JTsChart;
-import demetra.ui.components.JTsGrowthChart;
-import demetra.ui.components.JTsGrid;
-import demetra.ui.components.JTsTable;
-import demetra.ui.components.TsGridObs;
+import demetra.desktop.components.JTsChart;
+import demetra.desktop.components.JTsGrowthChart;
+import demetra.desktop.components.JTsGrid;
+import demetra.desktop.components.JTsTable;
+import demetra.desktop.components.TsGridObs;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Map;

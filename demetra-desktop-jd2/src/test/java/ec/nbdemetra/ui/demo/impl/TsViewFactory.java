@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import demetra.ui.components.parts.HasTs;
+import demetra.desktop.components.parts.HasTs;
 import ec.nbdemetra.ui.chart3d.functions.JFunctions2DChart;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.nbdemetra.ui.demo.JReflectComponent;

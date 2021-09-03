@@ -17,10 +17,10 @@
 package demetra.desktop.notification;
 
 import ec.util.various.swing.FontAwesome;
-import java.awt.Color;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import org.openide.NotifyDescriptor;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  *

@@ -5,8 +5,8 @@
 package ec.nbdemetra.ui;
 
 import demetra.tsprovider.FileLoader;
-import demetra.ui.TsManager;
-import demetra.ui.nodes.AbstractNodeBuilder;
+import demetra.desktop.TsManager;
+import demetra.desktop.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.tss.tsproviders.IFileLoader;
 import ec.util.desktop.DesktopManager;

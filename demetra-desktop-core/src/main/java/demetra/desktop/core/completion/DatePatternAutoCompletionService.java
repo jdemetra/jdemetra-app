@@ -1,20 +1,20 @@
 package demetra.desktop.core.completion;
 
+import demetra.desktop.completion.AutoCompletionSpi;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
+import nbbrd.design.DirectImpl;
+import nbbrd.service.ServiceProvider;
+
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
-import javax.swing.text.JTextComponent;
-import demetra.ui.completion.AutoCompletionSpi;
-import java.time.LocalDate;
-import nbbrd.design.DirectImpl;
-import nbbrd.service.ServiceProvider;
 
 /**
  *

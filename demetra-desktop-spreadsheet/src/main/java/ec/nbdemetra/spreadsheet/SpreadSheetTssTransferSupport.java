@@ -19,10 +19,10 @@ package ec.nbdemetra.spreadsheet;
 import demetra.bridge.TsConverter;
 import demetra.math.matrices.MatrixType;
 import demetra.timeseries.TsCollection;
-import demetra.ui.Config;
+import demetra.desktop.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.properties.PropertySheetDialogBuilder;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.DataFormatParam;
 import ec.tss.TsCollectionInformation;
 import ec.tss.TsInformation;
@@ -45,8 +45,8 @@ import nbbrd.io.text.Property;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
-import demetra.ui.properties.BeanEditor;
-import demetra.ui.Converter;
+import demetra.desktop.properties.BeanEditor;
+import demetra.desktop.Converter;
 
 /**
  *

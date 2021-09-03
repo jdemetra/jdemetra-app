@@ -17,10 +17,10 @@
 package ec.nbdemetra.db;
 
 import demetra.tsprovider.FileLoader;
-import demetra.ui.TsManager;
-import demetra.ui.properties.DhmsPropertyEditor;
+import demetra.desktop.TsManager;
+import demetra.desktop.properties.DhmsPropertyEditor;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.tss.tsproviders.db.DbBean;
 import ec.tss.tsproviders.db.DbBean.BulkBean;

@@ -5,7 +5,7 @@
 package ec.nbdemetra.sa;
 
 import ec.nbdemetra.ui.DemetraUI;
-import demetra.ui.util.NbComponents;
+import demetra.desktop.util.NbComponents;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.satoolkit.algorithm.implementation.X13ProcessingFactory;
 import ec.satoolkit.x11.Mstatistics;

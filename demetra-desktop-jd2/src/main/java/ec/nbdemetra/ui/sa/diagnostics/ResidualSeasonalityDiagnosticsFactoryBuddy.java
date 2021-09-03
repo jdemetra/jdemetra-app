@@ -16,11 +16,12 @@
  */
 package ec.nbdemetra.ui.sa.diagnostics;
 
-import demetra.ui.beans.BeanHandler;
-import demetra.ui.Config;
+import demetra.desktop.ConfigEditor;
+import demetra.desktop.beans.BeanHandler;
+import demetra.desktop.Config;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.properties.PropertySheetDialogBuilder;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
 import ec.tss.sa.diagnostics.ResidualSeasonalityDiagnosticsConfiguration;
 import ec.tss.sa.diagnostics.ResidualSeasonalityDiagnosticsFactory;
@@ -32,16 +33,16 @@ import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
-import demetra.ui.actions.Resetable;
+import demetra.desktop.actions.Resetable;
 import nbbrd.io.text.BooleanProperty;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.Parser;
 import nbbrd.io.text.Property;
-import demetra.ui.properties.BeanEditor;
-import demetra.ui.Converter;
-import demetra.ui.Persistable;
-import demetra.ui.actions.Configurable;
-import demetra.ui.beans.BeanConfigurator;
+import demetra.desktop.properties.BeanEditor;
+import demetra.desktop.Converter;
+import demetra.desktop.Persistable;
+import demetra.desktop.actions.Configurable;
+import demetra.desktop.beans.BeanConfigurator;
 import nbbrd.service.ServiceProvider;
 
 /**
@@ -49,7 +50,7 @@ import nbbrd.service.ServiceProvider;
  * @author Laurent Jadoul
  */
 @ServiceProvider(SaDiagnosticsFactoryBuddy.class)
-public final class ResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements Configurable, Persistable, demetra.ui.ConfigEditor, Resetable {
+public final class ResidualSeasonalityDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy implements Configurable, Persistable, ConfigEditor, Resetable {
 
     private static final String NAME = "ResidualSeasonalityDiagnostics";
 

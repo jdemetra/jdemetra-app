@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.sa;
 
-import demetra.ui.DemetraOptions;
-import demetra.ui.concurrent.UIExecutors;
+import demetra.desktop.DemetraOptions;
+import demetra.desktop.concurrent.UIExecutors;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.satoolkit.algorithm.implementation.X13ProcessingFactory;
 import ec.satoolkit.x11.Mstatistics;

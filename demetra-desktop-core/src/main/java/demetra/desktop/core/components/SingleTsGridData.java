@@ -16,11 +16,11 @@
  */
 package demetra.desktop.core.components;
 
+import demetra.desktop.components.TsGridObs;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsDomain;
-import demetra.ui.components.TsGridObs;
 import ec.util.chart.ObsIndex;
 
 import java.util.List;

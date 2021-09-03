@@ -6,10 +6,10 @@
 package ec.nbdemetra.sa;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.IconManager;
+import demetra.desktop.IconManager;
 import ec.nbdemetra.ui.NbUtilities;
-import demetra.ui.nodes.ControlNode;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.nodes.ControlNode;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.tss.sa.SaItem;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.MetaData;

@@ -17,11 +17,11 @@
 package demetra.desktop.core.components;
 
 import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
-import java.awt.Component;
-import javax.swing.JLabel;
-import javax.swing.JTable;
+
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import java.awt.*;
 
 /**
  *

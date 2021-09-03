@@ -9,7 +9,7 @@ import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
 import ec.nbdemetra.ui.calendars.ChainedGregorianCalendarPanel;
 import ec.nbdemetra.ui.calendars.CompositeGregorianCalendarPanel;
 import ec.nbdemetra.ui.calendars.NationalCalendarPanel;
-import demetra.ui.nodes.SingleNodeAction;
+import demetra.desktop.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.calendars.ChainedGregorianCalendarProvider;

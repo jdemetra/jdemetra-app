@@ -1,0 +1,74 @@
+/*
+ * Copyright 2013 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
+ */
+package demetra.desktop;
+
+import demetra.desktop.design.GlobalService;
+import demetra.desktop.util.LazyGlobalService;
+import demetra.timeseries.TsMoniker;
+import ec.util.various.swing.FontAwesome;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import javax.swing.*;
+import java.awt.*;
+import java.beans.BeanInfo;
+import java.util.Optional;
+
+/**
+ * TODO: improve this API
+ *
+ * @author Philippe Charles
+ */
+@GlobalService
+public final class IconManager {
+
+    @NonNull
+    public static IconManager getDefault() {
+        return LazyGlobalService.get(IconManager.class, IconManager::new);
+    }
+
+    private IconManager() {
+    }
+
+    @Nullable
+    public Icon getIcon(@NonNull TsMoniker moniker) {
+        return IconManagerSpiLoader.get()
+                .map(provider -> provider.getIconOrNull(moniker))
+                .orElse(null);
+    }
+
+    @Nullable
+    public Image getImage(@NonNull TsMoniker moniker) {
+        return getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false).orElse(null);
+    }
+
+    @NonNull
+    public Optional<Image> getIcon(@NonNull TsMoniker moniker, int type, boolean opened) {
+        return IconManagerSpiLoader.get()
+                .map(provider -> provider.getImageOrNull(moniker, type, opened));
+    }
+    
+    @Deprecated
+    public @Nullable Icon getPopupMenuIcon(@Nullable Icon icon) {
+        return DemetraOptions.getDefault().isPopupMenuIconsVisible() ? icon : null;
+    }
+
+    @Deprecated
+    public Icon getPopupMenuIcon(FontAwesome icon) {
+        return DemetraOptions.getDefault().isPopupMenuIconsVisible() ? icon.getIcon(Color.BLACK, 13f) : null;
+    }
+}

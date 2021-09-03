@@ -16,10 +16,10 @@
  */
 package ec.nbdemetra.ui.properties;
 
-import demetra.ui.components.JObsFormatComponent;
+import demetra.desktop.components.JObsFormatComponent;
 import demetra.bridge.TsConverter;
-import demetra.ui.properties.AbstractInplaceEditor;
-import demetra.ui.properties.AbstractExPropertyEditor;
+import demetra.desktop.properties.AbstractInplaceEditor;
+import demetra.desktop.properties.AbstractExPropertyEditor;
 import ec.tss.tsproviders.utils.DataFormat;
 import javax.swing.JComponent;
 import org.openide.explorer.propertysheet.InplaceEditor;

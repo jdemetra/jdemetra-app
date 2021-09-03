@@ -19,9 +19,9 @@ package ec.nbdemetra.spreadsheet;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.util.SingleFileExporter;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.properties.PropertySheetDialogBuilder;
+import demetra.desktop.util.SingleFileExporter;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
 import ec.tss.tsproviders.spreadsheet.engine.TsExportOptions;
 import ec.util.spreadsheet.Book;
@@ -40,8 +40,8 @@ import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.TsActionsSaveSpi;
-import demetra.ui.TsManager;
+import demetra.desktop.TsActionsSaveSpi;
+import demetra.desktop.TsManager;
 
 /**
  *

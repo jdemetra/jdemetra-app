@@ -5,7 +5,7 @@
 package ec.nbdemetra.ui.calendars;
 
 import ec.nbdemetra.ui.DemetraUiIcon;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.tstoolkit.timeseries.Day;
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;

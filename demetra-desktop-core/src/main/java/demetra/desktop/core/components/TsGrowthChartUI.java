@@ -16,15 +16,15 @@
  */
 package demetra.desktop.core.components;
 
+import demetra.desktop.actions.Actions;
+import demetra.desktop.components.JTsGrowthChart;
+import demetra.desktop.components.TsSelectionBridge;
+import demetra.desktop.components.parts.*;
+import demetra.desktop.components.parts.HasChart.LinesThickness;
+import demetra.desktop.jfreechart.TsXYDataset;
+import demetra.desktop.util.ActionMaps;
+import demetra.desktop.util.InputMaps;
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.actions.Actions;
-import demetra.ui.components.JTsGrowthChart;
-import demetra.ui.components.TsSelectionBridge;
-import demetra.ui.components.parts.*;
-import demetra.ui.components.parts.HasChart.LinesThickness;
-import demetra.ui.jfreechart.TsXYDataset;
-import demetra.ui.util.ActionMaps;
-import demetra.ui.util.InputMaps;
 import ec.util.chart.ObsFunction;
 import ec.util.chart.SeriesFunction;
 import ec.util.chart.SeriesPredicate;
@@ -40,9 +40,9 @@ import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Date;
 
+import static demetra.desktop.actions.PrintableWithPreview.PRINT_ACTION;
+import static demetra.desktop.actions.ResetableZoom.RESET_ZOOM_ACTION;
 import static demetra.desktop.core.components.TsGrowthChartCommands.*;
-import static demetra.ui.actions.PrintableWithPreview.PRINT_ACTION;
-import static demetra.ui.actions.ResetableZoom.RESET_ZOOM_ACTION;
 
 /**
  * @author Kristof Bayens

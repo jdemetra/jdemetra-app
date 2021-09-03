@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import demetra.ui.components.JTsGrid;
-import demetra.ui.components.parts.HasZoomRatioSupport;
+import demetra.desktop.components.JTsGrid;
+import demetra.desktop.components.parts.HasZoomRatioSupport;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;

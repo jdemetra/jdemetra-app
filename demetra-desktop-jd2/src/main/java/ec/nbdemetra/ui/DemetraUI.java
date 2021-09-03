@@ -16,13 +16,13 @@
  */
 package ec.nbdemetra.ui;
 
-import demetra.ui.Config;
+import demetra.desktop.Config;
 import demetra.desktop.design.GlobalService;
 import demetra.desktop.design.SwingProperty;
-import demetra.ui.Persistable;
-import demetra.ui.actions.Configurable;
-import demetra.ui.beans.PropertyChangeSource;
-import demetra.ui.util.LazyGlobalService;
+import demetra.desktop.Persistable;
+import demetra.desktop.actions.Configurable;
+import demetra.desktop.beans.PropertyChangeSource;
+import demetra.desktop.util.LazyGlobalService;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;

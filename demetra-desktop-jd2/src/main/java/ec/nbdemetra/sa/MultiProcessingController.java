@@ -17,7 +17,7 @@
 package ec.nbdemetra.sa;
 
 import demetra.desktop.design.SwingProperty;
-import demetra.ui.beans.PropertyChangeSource;
+import demetra.desktop.beans.PropertyChangeSource;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 

@@ -16,12 +16,13 @@
  */
 package demetra.desktop.core.components;
 
+import demetra.desktop.components.TsGridObs;
 import demetra.timeseries.Ts;
-import demetra.ui.components.TsGridObs;
 import ec.util.chart.ObsIndex;
-import java.util.List;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.List;
 
 /**
  *

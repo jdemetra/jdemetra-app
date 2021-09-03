@@ -5,7 +5,7 @@
  */
 package ec.nbdemetra.ui;
 
-import demetra.ui.Config;
+import demetra.desktop.Config;
 import com.google.common.base.Strings;
 import ec.tss.tsproviders.utils.DataFormat;
 import java.util.Locale;

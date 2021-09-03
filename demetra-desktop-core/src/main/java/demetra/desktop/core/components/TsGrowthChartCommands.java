@@ -16,24 +16,23 @@
  */
 package demetra.desktop.core.components;
 
-import demetra.ui.components.TsSelectionBridge;
 import com.toedter.components.JSpinField;
+import demetra.desktop.components.ComponentCommand;
+import demetra.desktop.components.JTsGrowthChart;
+import demetra.desktop.components.TsSelectionBridge;
+import demetra.desktop.datatransfer.DataTransfer;
 import demetra.timeseries.TsCollection;
-import demetra.ui.components.JTsGrowthChart;
-import static demetra.ui.components.JTsGrowthChart.GROWTH_KIND_PROPERTY;
-import demetra.ui.components.ComponentCommand;
 import ec.util.various.swing.JCommand;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Transferable;
-import java.util.EnumMap;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import demetra.ui.datatransfer.DataTransfer;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.Transferable;
+import java.util.EnumMap;
+
+import static demetra.desktop.components.JTsGrowthChart.GROWTH_KIND_PROPERTY;
 
 /**
  *

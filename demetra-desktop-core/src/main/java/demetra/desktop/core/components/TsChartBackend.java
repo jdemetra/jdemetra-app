@@ -1,7 +1,7 @@
 package demetra.desktop.core.components;
 
-import demetra.ui.components.ComponentBackendSpi;
-import demetra.ui.components.JTsChart;
+import demetra.desktop.components.ComponentBackendSpi;
+import demetra.desktop.components.JTsChart;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 

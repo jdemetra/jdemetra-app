@@ -16,10 +16,10 @@
  */
 package ec.nbdemetra.ui;
 
-import demetra.ui.actions.Configurable;
+import demetra.desktop.actions.Configurable;
 import ec.nbdemetra.sa.output.INbOutputFactory;
-import demetra.ui.nodes.AbstractNodeBuilder;
-import demetra.ui.nodes.NamedServiceNode;
+import demetra.desktop.nodes.AbstractNodeBuilder;
+import demetra.desktop.nodes.NamedServiceNode;
 import ec.nbdemetra.ws.ui.JSpecSelectionComponent;
 import ec.satoolkit.ISaSpecification;
 import ec.satoolkit.tramoseats.TramoSeatsSpecification;
@@ -44,7 +44,7 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
-import demetra.ui.actions.Resetable;
+import demetra.desktop.actions.Resetable;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddyLoader;
 
 /**

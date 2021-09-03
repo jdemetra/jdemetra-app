@@ -40,7 +40,7 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="demetra.ui.components.JTsChart" name="jTsChart1">
+    <Component class="JTsChart" name="jTsChart1">
     </Component>
   </SubComponents>
 </Form>

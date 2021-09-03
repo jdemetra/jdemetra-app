@@ -16,18 +16,21 @@
  */
 package demetra.desktop.core.components;
 
+import demetra.desktop.IconManager;
+import demetra.desktop.components.JTsGrid;
+import demetra.desktop.components.TsFeatureHelper;
+import demetra.desktop.components.TsGridObs;
+import demetra.desktop.components.TsSelectionBridge;
+import demetra.desktop.components.parts.*;
+import demetra.desktop.util.ActionMaps;
+import demetra.desktop.util.Collections2;
+import demetra.desktop.util.InputMaps;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsPeriod;
 import demetra.tsprovider.util.MultiLineNameUtil;
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.IconManager;
-import demetra.ui.components.*;
-import demetra.ui.components.parts.*;
-import demetra.ui.util.ActionMaps;
-import demetra.ui.util.Collections2;
-import demetra.ui.util.InputMaps;
 import ec.util.chart.ObsIndex;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.grid.CellIndex;
@@ -49,7 +52,7 @@ import java.util.DoubleSummaryStatistics;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 
-import static demetra.ui.components.JTsGrid.TOGGLE_MODE_ACTION;
+import static demetra.desktop.components.JTsGrid.TOGGLE_MODE_ACTION;
 
 public final class TsGridUI implements InternalUI<JTsGrid> {
 

@@ -5,12 +5,12 @@
 package ec.nbdemetra.ui.demo;
 
 import ec.nbdemetra.ui.DemetraUiIcon;
-import ec.tss.Ts;
+
 import java.awt.Image;
 import javax.swing.JOptionPane;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.TsActionsOpenSpi;
+import demetra.desktop.TsActionsOpenSpi;
 
 /**
  *

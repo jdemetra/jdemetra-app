@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.variables.actions;
 
-import demetra.ui.Config;
+import demetra.desktop.Config;
 import ec.tss.tsproviders.utils.Formatters;
 import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.IParser;
@@ -25,7 +25,7 @@ import ec.tss.xml.regression.XmlTsVariables;
 import ec.tstoolkit.algorithm.ProcessingContext;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.utilities.NameManager;
-import demetra.ui.Converter;
+import demetra.desktop.Converter;
 
 /**
  *

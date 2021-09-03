@@ -16,9 +16,10 @@
  */
 package demetra.desktop.core.components;
 
-import demetra.ui.components.parts.HasTsCollection;
+import demetra.desktop.components.parts.HasTsCollection;
 import ec.util.list.swing.JLists;
-import javax.swing.ListSelectionModel;
+
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 

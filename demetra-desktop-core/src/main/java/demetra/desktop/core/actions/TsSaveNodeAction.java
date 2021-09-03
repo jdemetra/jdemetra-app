@@ -16,26 +16,24 @@
  */
 package demetra.desktop.core.actions;
 
+import demetra.desktop.NamedService;
+import demetra.desktop.TsActions;
+import demetra.desktop.TsCollectable;
+import demetra.desktop.actions.AbilityNodeAction;
 import demetra.timeseries.TsCollection;
-import demetra.ui.NamedService;
-import demetra.ui.TsActions;
-import demetra.ui.actions.AbilityNodeAction;
-import java.awt.event.ActionEvent;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.checkerframework.checker.nullness.qual.NonNull;
-import javax.swing.AbstractAction;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
-import demetra.ui.TsCollectable;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *

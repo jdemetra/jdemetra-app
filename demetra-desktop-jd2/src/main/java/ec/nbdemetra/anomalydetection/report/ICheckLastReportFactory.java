@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.anomalydetection.report;
 
-import demetra.ui.util.NetBeansServiceBackend;
+import demetra.desktop.util.NetBeansServiceBackend;
 import java.util.Map;
 import nbbrd.service.Quantifier;
 import nbbrd.service.ServiceDefinition;

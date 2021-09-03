@@ -16,7 +16,7 @@
  */
 package demetra.desktop.interchange;
 
-import demetra.ui.Config;
+import demetra.desktop.Config;
 import ec.util.various.swing.OnEDT;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

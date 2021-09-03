@@ -18,8 +18,8 @@ package ec.nbdemetra.ui.tsproviders.actions;
 
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceLoader;
-import demetra.ui.TsManager;
-import demetra.ui.datatransfer.DataTransfers;
+import demetra.desktop.TsManager;
+import demetra.desktop.datatransfer.DataTransfers;
 import ec.tss.datatransfer.DataSourceTransferSupport;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;

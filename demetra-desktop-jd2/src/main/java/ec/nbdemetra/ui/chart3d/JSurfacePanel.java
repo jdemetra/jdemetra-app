@@ -17,7 +17,7 @@
 package ec.nbdemetra.ui.chart3d;
 
 import demetra.desktop.design.SwingAction;
-import demetra.ui.actions.Actions;
+import demetra.desktop.actions.Actions;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.io.File;

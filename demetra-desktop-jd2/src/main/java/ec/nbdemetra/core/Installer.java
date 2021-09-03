@@ -20,7 +20,7 @@ import demetra.bridge.TsConverter;
 import demetra.demo.PocProvider;
 import demetra.timeseries.TsProvider;
 import demetra.tsprovider.FileLoader;
-import demetra.ui.TsManager;
+import demetra.desktop.TsManager;
 import ec.tss.DynamicTsVariable;
 import ec.tss.ITsProvider;
 import ec.tss.sa.ISaDiagnosticsFactory;

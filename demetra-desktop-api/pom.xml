@@ -242,7 +242,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>demetra.ui.*</publicPackage>
                         <publicPackage>demetra.desktop.*</publicPackage>
                         <!-- tmp -->
                         <publicPackage>internal.ui</publicPackage>

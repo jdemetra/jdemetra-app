@@ -5,7 +5,7 @@
 package ec.nbdemetra.ui.properties.l2fprod;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
-import demetra.ui.util.NbComponents;
+import demetra.desktop.util.NbComponents;
 import ec.satoolkit.x11.SeasonalFilterOption;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;

@@ -17,14 +17,14 @@
 package internal;
 
 import demetra.bridge.TsConverter;
+import demetra.desktop.components.parts.*;
 import demetra.timeseries.TsCollection;
-import demetra.ui.components.ComponentBackendSpi;
-import demetra.ui.components.JTsGrid;
-import demetra.ui.components.parts.*;
-import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
-import demetra.ui.jfreechart.TsCharts;
-import demetra.ui.jfreechart.TsXYDataset;
-import demetra.ui.util.NbComponents;
+import demetra.desktop.components.ComponentBackendSpi;
+import demetra.desktop.components.JTsGrid;
+import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.desktop.jfreechart.TsCharts;
+import demetra.desktop.jfreechart.TsXYDataset;
+import demetra.desktop.util.NbComponents;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.DescriptiveStatistics;
@@ -53,8 +53,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Collections;
 
-import static demetra.ui.components.parts.HasObsFormat.OBS_FORMAT_PROPERTY;
-import static demetra.ui.components.parts.HasTsData.TS_DATA_PROPERTY;
+import static demetra.desktop.components.parts.HasObsFormat.OBS_FORMAT_PROPERTY;
+import static demetra.desktop.components.parts.HasTsData.TS_DATA_PROPERTY;
 
 /**
  * @author Philippe Charles

@@ -6,11 +6,11 @@ package ec.nbdemetra.ui.tools;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.ui.TsManager;
-import demetra.ui.components.parts.HasTsCollection;
-import demetra.ui.Config;
-import demetra.ui.DemetraOptions;
-import demetra.ui.Persistable;
+import demetra.desktop.TsManager;
+import demetra.desktop.components.parts.HasTsCollection;
+import demetra.desktop.Config;
+import demetra.desktop.DemetraOptions;
+import demetra.desktop.Persistable;
 import ec.nbdemetra.ui.XmlConfig;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;

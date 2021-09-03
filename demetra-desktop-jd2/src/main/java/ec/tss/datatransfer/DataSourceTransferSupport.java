@@ -18,8 +18,8 @@ package ec.tss.datatransfer;
 
 import demetra.tsprovider.DataSource;
 import demetra.desktop.design.GlobalService;
-import demetra.ui.util.CollectionSupplier;
-import demetra.ui.util.LazyGlobalService;
+import demetra.desktop.util.CollectionSupplier;
+import demetra.desktop.util.LazyGlobalService;
 import java.awt.datatransfer.Transferable;
 import java.util.Optional;
 import java.util.stream.Stream;

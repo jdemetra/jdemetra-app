@@ -16,9 +16,9 @@
  */
 package demetra.desktop.core.star;
 
+import demetra.desktop.nodes.SingleNodeAction;
 import demetra.desktop.star.StarList;
 import demetra.tsprovider.DataSource;
-import demetra.ui.nodes.SingleNodeAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

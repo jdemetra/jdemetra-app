@@ -16,12 +16,11 @@
  */
 package demetra.desktop.core.components;
 
+import demetra.desktop.IconManager;
+import demetra.desktop.actions.PrintableWithPreview;
+import demetra.desktop.components.parts.HasTsCollection;
+import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.DemetraOptions;
-import demetra.ui.IconManager;
-import demetra.ui.actions.PrintableWithPreview;
-import demetra.ui.components.parts.HasTsCollection;
-import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
 import ec.util.chart.swing.JTimeSeriesChart;
 import ec.util.chart.swing.JTimeSeriesChartCommand;
 import ec.util.various.swing.FontAwesome;
@@ -36,7 +35,7 @@ import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.Date;
 
-import static demetra.ui.actions.ResetableZoom.RESET_ZOOM_ACTION;
+import static demetra.desktop.actions.ResetableZoom.RESET_ZOOM_ACTION;
 
 /**
  * @author Philippe Charles

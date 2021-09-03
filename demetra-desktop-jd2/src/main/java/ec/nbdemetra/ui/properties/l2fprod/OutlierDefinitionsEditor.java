@@ -7,7 +7,7 @@ package ec.nbdemetra.ui.properties.l2fprod;
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import ec.nbdemetra.ui.DemetraUI;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import demetra.ui.util.NbComponents;
+import demetra.desktop.util.NbComponents;
 import ec.nbdemetra.ui.properties.l2fprod.CheckComboBox.CheckListItem;
 import ec.tstoolkit.timeseries.Day;
 import ec.tstoolkit.timeseries.regression.OutlierDefinition;

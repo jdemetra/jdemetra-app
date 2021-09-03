@@ -1,7 +1,7 @@
 package demetra.desktop.core.components;
 
-import demetra.ui.components.ComponentBackendSpi;
-import demetra.ui.components.JTsTable;
+import demetra.desktop.components.ComponentBackendSpi;
+import demetra.desktop.components.JTsTable;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 

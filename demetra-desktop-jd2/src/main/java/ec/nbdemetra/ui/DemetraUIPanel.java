@@ -17,15 +17,15 @@
 package ec.nbdemetra.ui;
 
 import demetra.demo.DemoTsBuilder;
-import demetra.ui.ColorSchemeManager;
-import demetra.ui.DemetraOptions;
-import demetra.ui.NamedService;
-import demetra.ui.TsActions;
-import demetra.ui.components.JObsFormatComponent;
-import demetra.ui.components.JTsChart;
-import demetra.ui.components.parts.HasColorSchemeSupport;
-import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
-import demetra.ui.nodes.NamedServiceChoicePanel;
+import demetra.desktop.ColorSchemeManager;
+import demetra.desktop.DemetraOptions;
+import demetra.desktop.NamedService;
+import demetra.desktop.TsActions;
+import demetra.desktop.components.JObsFormatComponent;
+import demetra.desktop.components.JTsChart;
+import demetra.desktop.components.parts.HasColorSchemeSupport;
+import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.desktop.nodes.NamedServiceChoicePanel;
 import ec.nbdemetra.ui.properties.l2fprod.OutlierDefinitionsEditor;
 import ec.util.chart.ColorScheme;
 import org.openide.explorer.ExplorerManager;
@@ -85,7 +85,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
         chartPreviewPanel = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         dataFormatLabel = new javax.swing.JLabel();
-        dataFormatComponent = new demetra.ui.components.JObsFormatComponent();
+        dataFormatComponent = new JObsFormatComponent();
         jPanel4 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         growthChartsPanel = new javax.swing.JPanel();
@@ -289,7 +289,7 @@ final class DemetraUIPanel extends javax.swing.JPanel implements VetoableChangeL
     private javax.swing.JPanel chartsPanel;
     private NamedServiceChoicePanel colorSchemeChoicePanel;
     private javax.swing.JLabel colorSchemeLabel;
-    private demetra.ui.components.JObsFormatComponent dataFormatComponent;
+    private JObsFormatComponent dataFormatComponent;
     private javax.swing.JLabel dataFormatLabel;
     private javax.swing.Box.Filler filler2;
     private javax.swing.JPanel growthChartsPanel;

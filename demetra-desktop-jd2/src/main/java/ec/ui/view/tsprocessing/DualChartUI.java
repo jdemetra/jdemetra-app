@@ -6,10 +6,10 @@ package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import ec.tss.documents.DocumentManager;
 import ec.tss.documents.TsDocument;
-import demetra.ui.components.JTsChart;
+import demetra.desktop.components.JTsChart;
 import java.util.stream.Stream;
 
 /**

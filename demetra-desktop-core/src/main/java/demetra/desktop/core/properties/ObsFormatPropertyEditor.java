@@ -16,13 +16,14 @@
  */
 package demetra.desktop.core.properties;
 
-import demetra.ui.components.JObsFormatComponent;
+import demetra.desktop.components.JObsFormatComponent;
+import demetra.desktop.properties.AbstractExPropertyEditor;
+import demetra.desktop.properties.AbstractInplaceEditor;
 import demetra.tsprovider.util.ObsFormat;
-import demetra.ui.properties.AbstractInplaceEditor;
-import demetra.ui.properties.AbstractExPropertyEditor;
-import javax.swing.JComponent;
 import org.openide.explorer.propertysheet.InplaceEditor;
 import org.openide.nodes.PropertyEditorRegistration;
+
+import javax.swing.*;
 
 /**
  *

@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.sa.output;
 
-import demetra.ui.NamedService;
+import demetra.desktop.NamedService;
 import java.awt.Image;
 import org.openide.nodes.Sheet;
 

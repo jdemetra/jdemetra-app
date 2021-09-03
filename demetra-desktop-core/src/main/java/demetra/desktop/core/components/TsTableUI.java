@@ -16,15 +16,12 @@
  */
 package demetra.desktop.core.components;
 
-import demetra.ui.components.ComponentBackendSpi;
-import demetra.ui.components.JTsTable;
-import demetra.ui.components.TsSelectionBridge;
-import demetra.ui.components.parts.*;
-import demetra.ui.util.*;
+import demetra.desktop.components.JTsTable;
+import demetra.desktop.components.TsSelectionBridge;
+import demetra.desktop.components.parts.*;
+import demetra.desktop.util.*;
 import ec.util.table.swing.JTables;
 import ec.util.various.swing.StandardSwingColor;
-import nbbrd.design.DirectImpl;
-import nbbrd.service.ServiceProvider;
 import org.netbeans.swing.etable.ETable;
 import org.netbeans.swing.etable.ETableColumn;
 import org.netbeans.swing.etable.ETableColumnModel;

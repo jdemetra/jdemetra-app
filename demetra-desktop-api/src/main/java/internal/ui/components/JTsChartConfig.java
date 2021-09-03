@@ -16,24 +16,25 @@
  */
 package internal.ui.components;
 
-import demetra.ui.ColorSchemeManager;
-import demetra.ui.components.parts.HasChart;
-import demetra.ui.beans.BeanHandler;
-import demetra.ui.Config;
-import demetra.ui.properties.NodePropertySetBuilder;
-import demetra.ui.properties.PropertySheetDialogBuilder;
-import demetra.ui.components.JTsChart;
+import demetra.desktop.ColorSchemeManager;
+import demetra.desktop.Config;
+import demetra.desktop.Converter;
+import demetra.desktop.DemetraOptions;
+import demetra.desktop.beans.BeanConfigurator;
+import demetra.desktop.beans.BeanHandler;
+import demetra.desktop.components.JTsChart;
+import demetra.desktop.components.parts.HasChart;
+import demetra.desktop.properties.BeanEditor;
+import demetra.desktop.properties.NodePropertySetBuilder;
+import demetra.desktop.properties.PropertySheetDialogBuilder;
 import ec.util.chart.ColorScheme;
-import java.beans.IntrospectionException;
 import nbbrd.io.text.BooleanProperty;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.Parser;
 import nbbrd.io.text.Property;
 import org.openide.nodes.Sheet;
-import demetra.ui.properties.BeanEditor;
-import demetra.ui.Converter;
-import demetra.ui.DemetraOptions;
-import demetra.ui.beans.BeanConfigurator;
+
+import java.beans.IntrospectionException;
 
 /**
  *

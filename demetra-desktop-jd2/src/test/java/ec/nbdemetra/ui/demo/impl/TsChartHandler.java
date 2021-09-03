@@ -16,9 +16,9 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import demetra.ui.components.parts.HasChart;
-import demetra.ui.components.parts.HasChartSupport;
-import demetra.ui.util.FontAwesomeUtils;
+import demetra.desktop.components.parts.HasChart;
+import demetra.desktop.components.parts.HasChartSupport;
+import demetra.desktop.util.FontAwesomeUtils;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.util.various.swing.FontAwesome;
 import nbbrd.service.ServiceProvider;

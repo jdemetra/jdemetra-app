@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.demo;
 
-import demetra.ui.util.NetBeansServiceBackend;
+import demetra.desktop.util.NetBeansServiceBackend;
 import java.awt.Component;
 import javax.swing.JToolBar;
 import nbbrd.service.Quantifier;

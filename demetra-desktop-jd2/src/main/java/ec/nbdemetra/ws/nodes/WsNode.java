@@ -4,8 +4,8 @@
  */
 package ec.nbdemetra.ws.nodes;
 
-import demetra.ui.nodes.BasicChildFactory;
-import demetra.ui.nodes.BasicNode;
+import demetra.desktop.nodes.BasicChildFactory;
+import demetra.desktop.nodes.BasicNode;
 import ec.nbdemetra.ui.IdNodes;
 import ec.nbdemetra.ws.Workspace;
 import ec.nbdemetra.ws.WorkspaceFactory;

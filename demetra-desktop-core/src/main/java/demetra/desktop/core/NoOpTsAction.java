@@ -4,7 +4,7 @@
  */
 package demetra.desktop.core;
 
-import demetra.ui.TsActionsOpenSpi;
+import demetra.desktop.TsActionsOpenSpi;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 

@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.ui.chart3d.functions;
 
-import demetra.ui.components.parts.*;
-import demetra.ui.components.TimeSeriesComponent;
+import demetra.desktop.components.parts.*;
+import demetra.desktop.components.TimeSeriesComponent;
 import demetra.desktop.design.SwingComponent;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.IReadDataBlock;
@@ -25,7 +25,7 @@ import ec.tstoolkit.maths.realfunctions.IFunction;
 import ec.tstoolkit.maths.realfunctions.IFunctionInstance;
 import ec.tstoolkit.maths.realfunctions.IParametersDomain;
 import ec.ui.chart.BasicXYDataset;
-import demetra.ui.jfreechart.TsCharts;
+import demetra.desktop.jfreechart.TsCharts;
 import ec.ui.view.JChartPanel;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorScheme.KnownColor;

@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.ui.sa;
 
-import demetra.ui.NamedService;
-import demetra.ui.util.NetBeansServiceBackend;
+import demetra.desktop.NamedService;
+import demetra.desktop.util.NetBeansServiceBackend;
 import ec.nbdemetra.ui.DemetraUiIcon;
 import java.awt.Image;
 import nbbrd.service.Quantifier;

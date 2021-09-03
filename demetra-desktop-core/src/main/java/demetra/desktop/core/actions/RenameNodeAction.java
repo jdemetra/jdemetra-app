@@ -4,12 +4,13 @@
  */
 package demetra.desktop.core.actions;
 
-import demetra.ui.actions.AbilityNodeAction;
-import java.util.stream.Stream;
+import demetra.desktop.actions.AbilityNodeAction;
+import demetra.desktop.actions.Renameable;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
-import demetra.ui.actions.Renameable;
+
+import java.util.stream.Stream;
 
 /**
  *

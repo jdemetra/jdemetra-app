@@ -20,7 +20,7 @@ import ec.nbdemetra.sa.MultiProcessingDocument;
 import ec.nbdemetra.sa.MultiProcessingManager;
 import ec.nbdemetra.sa.SaBatchUI;
 import ec.nbdemetra.sa.output.OutputPanel;
-import demetra.ui.util.SingleFileExporter;
+import demetra.desktop.util.SingleFileExporter;
 import demetra.desktop.notification.MessageType;
 import demetra.desktop.notification.NotifyUtil;
 import ec.nbdemetra.ws.WorkspaceItem;

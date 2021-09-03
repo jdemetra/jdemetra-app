@@ -18,9 +18,9 @@ package ec.nbdemetra.spreadsheet;
 
 import demetra.bridge.TsConverter;
 import demetra.tsprovider.FileLoader;
-import demetra.ui.TsManager;
+import demetra.desktop.TsManager;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.DataSet;

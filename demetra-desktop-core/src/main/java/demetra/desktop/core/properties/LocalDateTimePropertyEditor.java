@@ -16,16 +16,16 @@
  */
 package demetra.desktop.core.properties;
 
-import demetra.ui.properties.AbstractInplaceEditor;
-import demetra.ui.properties.AbstractExPropertyEditor;
-import java.beans.PropertyEditor;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
+import demetra.desktop.properties.AbstractExPropertyEditor;
+import demetra.desktop.properties.AbstractInplaceEditor;
 import org.openide.explorer.propertysheet.InplaceEditor;
 import org.openide.explorer.propertysheet.PropertyEnv;
 import org.openide.nodes.PropertyEditorRegistration;
+
+import javax.swing.*;
+import java.beans.PropertyEditor;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  *

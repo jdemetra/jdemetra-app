@@ -16,24 +16,23 @@
  */
 package demetra.desktop.core.completion;
 
-import demetra.ui.ColorSchemeManager;
+import demetra.desktop.ColorSchemeManager;
+import demetra.desktop.completion.AutoCompletionSpi;
+import demetra.desktop.components.parts.HasColorSchemeSupport;
 import ec.util.chart.ColorScheme;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
 import ec.util.completion.swing.JAutoCompletion;
-import demetra.ui.components.parts.HasColorSchemeSupport;
+import nbbrd.design.DirectImpl;
+import nbbrd.service.ServiceProvider;
+
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.swing.Icon;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
-import javax.swing.text.JTextComponent;
-import demetra.ui.completion.AutoCompletionSpi;
-import nbbrd.design.DirectImpl;
-import nbbrd.service.ServiceProvider;
 
 /**
  *

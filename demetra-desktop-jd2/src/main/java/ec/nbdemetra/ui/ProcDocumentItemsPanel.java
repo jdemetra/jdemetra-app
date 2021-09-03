@@ -6,8 +6,8 @@ package ec.nbdemetra.ui;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimaps;
-import demetra.ui.nodes.AbstractNodeBuilder;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.nodes.AbstractNodeBuilder;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.ui.view.tsprocessing.ProcDocumentItemFactory;
 import ec.ui.view.tsprocessing.ProcDocumentItemFactoryLoader;
 import java.awt.Image;

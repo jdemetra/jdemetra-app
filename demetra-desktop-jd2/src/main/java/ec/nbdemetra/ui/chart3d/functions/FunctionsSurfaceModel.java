@@ -16,10 +16,9 @@
  */
 package ec.nbdemetra.ui.chart3d.functions;
 
-import demetra.ui.DemetraOptions;
-import demetra.ui.concurrent.UIExecutors;
+import demetra.desktop.DemetraOptions;
+import demetra.desktop.concurrent.UIExecutors;
 import ec.nbdemetra.ui.chart3d.AbstractSurfaceModel;
-import ec.nbdemetra.ui.chart3d.SurfaceModel.PlotType;
 import ec.nbdemetra.ui.chart3d.SurfaceVertex;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.data.IReadDataBlock;

@@ -6,7 +6,7 @@ package ec.nbdemetra.sa.actions;
 
 import ec.nbdemetra.tramoseats.TramoDocumentManager;
 import ec.nbdemetra.tramoseats.TramoSeatsDocumentManager;
-import demetra.ui.nodes.SingleNodeAction;
+import demetra.desktop.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.nbdemetra.x13.RegArimaDocumentManager;

@@ -1,7 +1,7 @@
 package demetra.desktop.core.components;
 
-import demetra.ui.components.ComponentBackendSpi;
-import demetra.ui.components.JHtmlView;
+import demetra.desktop.components.ComponentBackendSpi;
+import demetra.desktop.components.JHtmlView;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.checkerframework.checker.nullness.qual.NonNull;

@@ -9,8 +9,8 @@ import demetra.tsprovider.DataSource;
 import ec.tss.datatransfer.DataSourceTransferHandler;
 import java.awt.datatransfer.Transferable;
 import java.util.Optional;
-import demetra.ui.datatransfer.DataTransfer;
-import demetra.ui.datatransfer.DataTransfers;
+import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransfers;
 import nbbrd.io.text.Parser;
 import nbbrd.service.ServiceProvider;
 

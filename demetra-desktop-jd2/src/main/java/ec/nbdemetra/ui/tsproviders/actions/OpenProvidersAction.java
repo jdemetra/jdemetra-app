@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.tsproviders.actions;
 
 import demetra.tsprovider.DataSourceLoader;
 import demetra.tsprovider.FileLoader;
-import demetra.ui.TsManager;
+import demetra.desktop.TsManager;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import ec.util.list.swing.JLists;
 import java.awt.event.ActionEvent;

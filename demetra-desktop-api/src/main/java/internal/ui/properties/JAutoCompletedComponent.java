@@ -18,39 +18,27 @@ package internal.ui.properties;
 
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
-import demetra.ui.util.ExtLayerUI;
-import demetra.ui.util.FontAwesomeUtils;
+import demetra.desktop.util.ExtLayerUI;
+import demetra.desktop.util.FontAwesomeUtils;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.list.swing.JListOrdering;
 import ec.util.list.swing.JLists;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
 import internal.util.Strings;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
+import org.openide.util.Exceptions;
+
+import javax.swing.*;
+import java.awt.*;
 import java.beans.BeanInfo;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JLayer;
-import javax.swing.JMenu;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
-import javax.swing.SwingWorker;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
-import org.openide.util.Exceptions;
 
 /**
  *

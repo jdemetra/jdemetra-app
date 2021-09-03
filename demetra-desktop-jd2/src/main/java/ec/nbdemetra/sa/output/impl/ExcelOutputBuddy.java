@@ -18,16 +18,16 @@ package ec.nbdemetra.sa.output.impl;
 
 import ec.nbdemetra.sa.output.AbstractOutputNode;
 import ec.nbdemetra.sa.output.INbOutputFactory;
-import demetra.ui.Config;
-import demetra.ui.ConfigEditor;
+import demetra.desktop.Config;
+import demetra.desktop.ConfigEditor;
 import ec.util.various.swing.FontAwesome;
 import java.awt.Color;
 import java.awt.Image;
 
 import org.openide.util.lookup.ServiceProvider;
-import demetra.ui.actions.Resetable;
-import demetra.ui.Persistable;
-import demetra.ui.actions.Configurable;
+import demetra.desktop.actions.Resetable;
+import demetra.desktop.Persistable;
+import demetra.desktop.actions.Configurable;
 
 /**
  *

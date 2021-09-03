@@ -21,13 +21,13 @@ import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceLoader;
 import demetra.tsprovider.DataSourceProvider;
-import demetra.ui.TsManager;
-import demetra.ui.datatransfer.DataTransfer;
-import demetra.ui.datatransfer.DataTransfers;
-import demetra.ui.Config;
+import demetra.desktop.TsManager;
+import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransfers;
+import demetra.desktop.Config;
 import demetra.desktop.interchange.Exportable;
-import demetra.ui.nodes.FailSafeChildFactory;
-import demetra.ui.nodes.Nodes;
+import demetra.desktop.nodes.FailSafeChildFactory;
+import demetra.desktop.nodes.Nodes;
 import demetra.desktop.star.StarList;
 import static ec.nbdemetra.ui.tsproviders.DataSourceNode.ACTION_PATH;
 import static internal.TsEventHelper.SHOULD_BE_NONE;
@@ -62,10 +62,10 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import demetra.ui.actions.Reloadable;
-import demetra.ui.actions.Renameable;
-import demetra.ui.TsCollectable;
-import demetra.ui.nodes.NodeAnnotator;
+import demetra.desktop.actions.Reloadable;
+import demetra.desktop.actions.Renameable;
+import demetra.desktop.TsCollectable;
+import demetra.desktop.nodes.NodeAnnotator;
 
 /**
  * A node that represents a DataSource.

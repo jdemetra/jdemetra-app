@@ -18,11 +18,11 @@ package ec.nbdemetra.ui.tsproviders;
 
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSourceProvider;
-import demetra.ui.DemetraOptions;
-import demetra.ui.TsActions;
-import demetra.ui.TsManager;
-import demetra.ui.nodes.FailSafeChildFactory;
-import demetra.ui.nodes.Nodes;
+import demetra.desktop.DemetraOptions;
+import demetra.desktop.TsActions;
+import demetra.desktop.TsManager;
+import demetra.desktop.nodes.FailSafeChildFactory;
+import demetra.desktop.nodes.Nodes;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.Image;
@@ -39,8 +39,8 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import demetra.ui.TsCollectable;
-import demetra.ui.nodes.NodeAnnotator;
+import demetra.desktop.TsCollectable;
+import demetra.desktop.nodes.NodeAnnotator;
 import java.util.Optional;
 
 /**

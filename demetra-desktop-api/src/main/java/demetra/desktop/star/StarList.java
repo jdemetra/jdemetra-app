@@ -1,8 +1,8 @@
 package demetra.desktop.star;
 
 import demetra.desktop.design.GlobalService;
+import demetra.desktop.util.LazyGlobalService;
 import demetra.tsprovider.DataSource;
-import demetra.ui.util.LazyGlobalService;
 import ec.util.various.swing.OnEDT;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

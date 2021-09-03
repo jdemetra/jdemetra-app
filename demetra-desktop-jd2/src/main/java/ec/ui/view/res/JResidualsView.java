@@ -16,13 +16,13 @@
  */
 package ec.ui.view.res;
 
-import demetra.ui.components.ComponentBackend;
-import demetra.ui.components.parts.HasObsFormat;
-import demetra.ui.components.parts.HasTsData;
-import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.components.parts.HasObsFormatSupport;
+import demetra.desktop.components.ComponentBackend;
+import demetra.desktop.components.parts.HasObsFormat;
+import demetra.desktop.components.parts.HasTsData;
+import demetra.desktop.components.TimeSeriesComponent;
+import demetra.desktop.components.parts.HasObsFormatSupport;
 import demetra.desktop.design.SwingComponent;
-import demetra.ui.components.parts.HasTsDataSupport;
+import demetra.desktop.components.parts.HasTsDataSupport;
 
 import javax.swing.JComponent;
 

@@ -16,13 +16,14 @@
  */
 package demetra.desktop.core.interchange;
 
+import demetra.desktop.actions.Configurable;
 import demetra.desktop.interchange.Interchange;
-import demetra.ui.actions.Configurable;
-import demetra.ui.nodes.AbstractNodeBuilder;
-import demetra.ui.nodes.NamedServiceNode;
-import java.util.stream.Stream;
+import demetra.desktop.nodes.AbstractNodeBuilder;
+import demetra.desktop.nodes.NamedServiceNode;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
+
+import java.util.stream.Stream;
 
 final class InterchangePanel extends javax.swing.JPanel implements ExplorerManager.Provider {
 

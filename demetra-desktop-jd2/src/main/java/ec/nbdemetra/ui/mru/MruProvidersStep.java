@@ -7,7 +7,7 @@ package ec.nbdemetra.ui.mru;
 import demetra.tsprovider.DataSourceListener;
 import demetra.tsprovider.DataSourceLoader;
 import demetra.tsprovider.DataSourceProvider;
-import demetra.ui.TsManager;
+import demetra.desktop.TsManager;
 import ec.nbdemetra.core.InstallerStep;
 import ec.tss.tsproviders.IDataSourceProvider;
 import java.util.prefs.Preferences;

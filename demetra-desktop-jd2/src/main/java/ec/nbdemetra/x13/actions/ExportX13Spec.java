@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.x13.actions;
 
-import demetra.ui.Config;
+import demetra.desktop.Config;
 import demetra.desktop.interchange.Exportable;
 import demetra.desktop.interchange.Interchange;
 import ec.nbdemetra.ws.WorkspaceItem;

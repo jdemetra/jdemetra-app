@@ -6,14 +6,13 @@ package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
-import demetra.ui.components.parts.HasTsCollection.TsUpdateMode;
-import demetra.ui.components.JTsTable;
+import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.desktop.components.JTsTable;
 import ec.tss.Ts;
 import ec.tss.documents.MultiTsDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
-import demetra.ui.components.JTsTable.Column;
+import demetra.desktop.components.JTsTable.Column;
 import java.awt.Dimension;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Stream;
 import javax.swing.Box;

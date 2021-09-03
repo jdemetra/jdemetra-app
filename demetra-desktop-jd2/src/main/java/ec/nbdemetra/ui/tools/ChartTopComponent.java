@@ -4,13 +4,13 @@
  */
 package ec.nbdemetra.ui.tools;
 
-import demetra.ui.components.parts.HasColorScheme;
-import demetra.ui.components.parts.HasTsCollection;
+import demetra.desktop.components.parts.HasColorScheme;
+import demetra.desktop.components.parts.HasTsCollection;
 import ec.nbdemetra.ui.DemetraUiIcon;
-import demetra.ui.util.NbComponents;
-import demetra.ui.nodes.ControlNode;
-import demetra.ui.components.JTsChart;
-import demetra.ui.components.parts.HasColorSchemeSupport;
+import demetra.desktop.util.NbComponents;
+import demetra.desktop.nodes.ControlNode;
+import demetra.desktop.components.JTsChart;
+import demetra.desktop.components.parts.HasColorSchemeSupport;
 
 import java.awt.BorderLayout;
 import javax.swing.*;

@@ -17,9 +17,9 @@
 package ec.ui.view;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.components.TimeSeriesComponent;
-import demetra.ui.components.parts.*;
-import demetra.ui.jfreechart.TsCharts;
+import demetra.desktop.components.TimeSeriesComponent;
+import demetra.desktop.components.parts.*;
+import demetra.desktop.jfreechart.TsCharts;
 import ec.tss.TsInformation;
 import ec.tss.TsInformationType;
 import ec.tstoolkit.data.IReadDataBlock;

@@ -16,15 +16,16 @@
  */
 package demetra.desktop.interchange;
 
-import demetra.ui.NamedService;
-import demetra.ui.util.NetBeansServiceBackend;
+import demetra.desktop.NamedService;
+import demetra.desktop.util.NetBeansServiceBackend;
 import ec.util.various.swing.OnEDT;
-import java.io.IOException;
-import java.util.List;
 import nbbrd.service.Quantifier;
 import nbbrd.service.ServiceDefinition;
 import nbbrd.service.ServiceSorter;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Service that performs import/export of configs.

@@ -17,10 +17,10 @@
 package ec.nbdemetra.odbc;
 
 import demetra.bridge.TsConverter;
-import demetra.ui.TsManager;
+import demetra.desktop.TsManager;
 import ec.nbdemetra.jdbc.JdbcProviderBuddy;
-import demetra.ui.actions.Configurable;
-import demetra.ui.util.SimpleHtmlListCellRenderer;
+import demetra.desktop.actions.Configurable;
+import demetra.desktop.util.SimpleHtmlListCellRenderer;
 import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
 import ec.tss.tsproviders.jdbc.ConnectionSupplier;
 import ec.tss.tsproviders.jdbc.JdbcBean;

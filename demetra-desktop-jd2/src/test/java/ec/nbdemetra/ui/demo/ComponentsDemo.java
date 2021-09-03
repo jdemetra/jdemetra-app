@@ -17,13 +17,13 @@
 package ec.nbdemetra.ui.demo;
 
 import demetra.demo.PocProvider;
-import demetra.ui.TsActions;
-import demetra.ui.TsManager;
-import demetra.ui.components.JTsTable;
-import demetra.ui.util.NbComponents;
-import demetra.ui.components.JExceptionPanel;
+import demetra.desktop.TsActions;
+import demetra.desktop.TsManager;
+import demetra.desktop.components.JTsTable;
+import demetra.desktop.util.NbComponents;
+import demetra.desktop.components.JExceptionPanel;
 import ec.tstoolkit.utilities.Id;
-import demetra.ui.components.JTsTable.Column;
+import demetra.desktop.components.JTsTable.Column;
 import ec.ui.view.tsprocessing.IdsTree;
 import ec.util.various.swing.BasicSwingLauncher;
 import java.awt.BorderLayout;

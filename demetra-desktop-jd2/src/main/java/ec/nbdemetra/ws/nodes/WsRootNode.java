@@ -6,7 +6,7 @@ package ec.nbdemetra.ws.nodes;
 
 import demetra.bridge.TsConverter;
 import ec.nbdemetra.ui.NbUtilities;
-import demetra.ui.properties.NodePropertySetBuilder;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ws.Workspace;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;

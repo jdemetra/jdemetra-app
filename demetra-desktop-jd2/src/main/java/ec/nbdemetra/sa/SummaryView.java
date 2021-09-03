@@ -4,13 +4,13 @@
  */
 package ec.nbdemetra.sa;
 
-import demetra.ui.util.NbComponents;
+import demetra.desktop.util.NbComponents;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.tss.html.HtmlUtil;
 import ec.tss.html.implementation.HtmlRegArimaReport;
 import ec.tss.sa.RegArimaReport;
 import ec.tstoolkit.algorithm.AlgorithmDescriptor;
-import demetra.ui.components.JHtmlView;
+import demetra.desktop.components.JHtmlView;
 import ec.util.list.swing.JLists;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
