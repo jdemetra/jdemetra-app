@@ -6,8 +6,8 @@ package ec.ui.view;
 
 import demetra.ui.components.JExceptionPanel;
 import demetra.ui.util.NbComponents;
-import ec.nbdemetra.ui.nodes.DecoratedNode;
-import ec.nbdemetra.ui.nodes.IdNodes;
+import demetra.ui.nodes.DecoratedNode;
+import ec.nbdemetra.ui.IdNodes;
 import ec.tstoolkit.algorithm.IProcDocument;
 import ec.tstoolkit.utilities.Arrays2;
 import ec.tstoolkit.utilities.Id;

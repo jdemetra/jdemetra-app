@@ -9,7 +9,7 @@ import java.awt.Image;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
-import ec.nbdemetra.ui.nodes.NodeAnnotatorSpi;
+import demetra.ui.nodes.NodeAnnotatorSpi;
 
 /**
  *

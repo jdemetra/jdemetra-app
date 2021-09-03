@@ -19,7 +19,7 @@ package ec.nbdemetra.x13.actions;
 import demetra.ui.Config;
 import demetra.desktop.interchange.Importable;
 import demetra.desktop.interchange.Interchange;
-import ec.nbdemetra.ui.nodes.SingleNodeAction;
+import demetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.x13.RegArimaSpecificationManager;

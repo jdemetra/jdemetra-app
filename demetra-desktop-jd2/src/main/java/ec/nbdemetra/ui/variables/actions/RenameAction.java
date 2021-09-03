@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui.variables.actions;
 
-import ec.nbdemetra.ui.nodes.SingleNodeAction;
+import demetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.variables.VariablesDocumentManager;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;

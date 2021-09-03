@@ -6,7 +6,7 @@ package ec.nbdemetra.ui.tsproviders.actions;
 
 import demetra.tsprovider.DataSourceLoader;
 import demetra.ui.datatransfer.DataTransfers;
-import ec.nbdemetra.ui.nodes.SingleNodeAction;
+import demetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.tsproviders.ProviderNode;
 import ec.tss.datatransfer.DataSourceTransferSupport;
 import org.openide.awt.ActionID;

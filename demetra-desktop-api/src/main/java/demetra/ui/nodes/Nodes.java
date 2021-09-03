@@ -14,10 +14,11 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.nodes;
+package demetra.ui.nodes;
 
-import ec.tstoolkit.utilities.Trees;
+import demetra.util.TreeTraverser;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.Action;
@@ -45,12 +46,19 @@ public class Nodes {
     }
 
     @NonNull
+    private Iterable<Node> children(@NonNull Node root) {
+        return !root.isLeaf()
+                ? Arrays.asList(root.getChildren().getNodes())
+                : Collections.emptyList();
+    }
+
+    @NonNull
     public Stream<Node> breadthFirstStream(@NonNull Node root) {
-        return Trees.breadthFirstStream(root, Nodes::childrenStream);
+        return TreeTraverser.of(root, Nodes::children).breadthFirstStream();
     }
 
     @NonNull
     public Stream<Node> depthFirstStream(@NonNull Node root) {
-        return Trees.depthFirstStream(root, Nodes::childrenStream);
+        return TreeTraverser.of(root, Nodes::children).depthFirstStream();
     }
 }

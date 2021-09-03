@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.nodes;
+package demetra.ui.nodes;
 
 import java.util.List;
 import org.openide.nodes.ChildFactory;

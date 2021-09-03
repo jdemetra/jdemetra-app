@@ -20,7 +20,7 @@ import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
 import demetra.ui.util.IDialogDescriptorProvider;
 import ec.nbdemetra.ui.calendars.CustomDialogDescriptor;
-import ec.nbdemetra.ui.nodes.DecoratedNode;
+import demetra.ui.nodes.DecoratedNode;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.DummyWsNode;

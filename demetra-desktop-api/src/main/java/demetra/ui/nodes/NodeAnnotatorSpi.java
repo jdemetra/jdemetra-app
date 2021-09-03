@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.nodes;
+package demetra.ui.nodes;
 
 import demetra.ui.util.NetBeansServiceBackend;
 import java.awt.Image;

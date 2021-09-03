@@ -5,7 +5,7 @@
 package ec.nbdemetra.sa.actions;
 
 import ec.nbdemetra.sa.MultiProcessingManager;
-import ec.nbdemetra.ui.nodes.SingleNodeAction;
+import demetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import org.openide.DialogDisplayer;

@@ -7,7 +7,7 @@ package ec.nbdemetra.ui.tsproviders.actions;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceLoader;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.nodes.SingleNodeAction;
+import demetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ui.tsproviders.DataSourceNode;
 import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
 import java.beans.IntrospectionException;

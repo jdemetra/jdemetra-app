@@ -18,7 +18,7 @@ package ec.nbdemetra.jdbc;
 
 import static ec.nbdemetra.jdbc.DbExplorerUtil.findConnection;
 import static ec.nbdemetra.jdbc.DbExplorerUtil.isTableOrView;
-import ec.nbdemetra.ui.nodes.SingleNodeAction;
+import demetra.ui.nodes.SingleNodeAction;
 import ec.tss.tsproviders.jdbc.JdbcBean;
 import ec.tss.tsproviders.jdbc.jndi.JndiJdbcProvider;
 import java.beans.IntrospectionException;

@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.nodes;
+package demetra.ui.nodes;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.nodes.Node;

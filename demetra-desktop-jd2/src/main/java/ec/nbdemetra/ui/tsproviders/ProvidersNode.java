@@ -25,7 +25,7 @@ import demetra.ui.Config;
 import demetra.ui.DemetraOptions;
 import demetra.ui.TsManager;
 import demetra.desktop.interchange.Importable;
-import ec.nbdemetra.ui.nodes.Nodes;
+import demetra.ui.nodes.Nodes;
 import ec.tss.datatransfer.DataSourceTransferSupport;
 import ec.tss.tsproviders.IDataSourceProvider;
 import org.openide.awt.ActionID;

@@ -21,8 +21,8 @@ import demetra.tsprovider.DataSourceProvider;
 import demetra.ui.DemetraOptions;
 import demetra.ui.TsActions;
 import demetra.ui.TsManager;
-import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
-import ec.nbdemetra.ui.nodes.Nodes;
+import demetra.ui.nodes.FailSafeChildFactory;
+import demetra.ui.nodes.Nodes;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import static internal.TsEventHelper.SHOULD_BE_NONE;
 import java.awt.Image;
@@ -40,7 +40,7 @@ import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import demetra.ui.TsCollectable;
-import ec.nbdemetra.ui.nodes.NodeAnnotator;
+import demetra.ui.nodes.NodeAnnotator;
 import java.util.Optional;
 
 /**

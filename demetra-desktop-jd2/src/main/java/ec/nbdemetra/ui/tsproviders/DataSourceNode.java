@@ -26,8 +26,8 @@ import demetra.ui.datatransfer.DataTransfer;
 import demetra.ui.datatransfer.DataTransfers;
 import demetra.ui.Config;
 import demetra.desktop.interchange.Exportable;
-import ec.nbdemetra.ui.nodes.FailSafeChildFactory;
-import ec.nbdemetra.ui.nodes.Nodes;
+import demetra.ui.nodes.FailSafeChildFactory;
+import demetra.ui.nodes.Nodes;
 import ec.nbdemetra.ui.star.StarList;
 import static ec.nbdemetra.ui.tsproviders.DataSourceNode.ACTION_PATH;
 import static internal.TsEventHelper.SHOULD_BE_NONE;
@@ -65,7 +65,7 @@ import org.openide.util.lookup.ProxyLookup;
 import demetra.ui.actions.Reloadable;
 import demetra.ui.actions.Renameable;
 import demetra.ui.TsCollectable;
-import ec.nbdemetra.ui.nodes.NodeAnnotator;
+import demetra.ui.nodes.NodeAnnotator;
 
 /**
  * A node that represents a DataSource.

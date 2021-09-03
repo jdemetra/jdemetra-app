@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.tsproviders.actions;
 
-import ec.nbdemetra.ui.nodes.SingleNodeAction;
+import demetra.ui.nodes.SingleNodeAction;
 import org.netbeans.api.actions.Editable;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;

@@ -6,7 +6,6 @@ package ec.nbdemetra.ui;
 
 import demetra.tsprovider.TsMeta;
 import demetra.ui.util.NbComponents;
-import ec.nbdemetra.ui.nodes.StringProperty;
 import demetra.ui.properties.NodePropertySetBuilder;
 import ec.tss.tsproviders.DataSource;
 import ec.tstoolkit.MetaData;
@@ -38,7 +37,7 @@ public class NbUtilities {
                 String dname = key.substring(1);
                 b.with(String.class).selectConst(key, md.get(key)).name(key).display(dname).add();
             } else {
-                b.with(String.class).select(new StringProperty(key, md)).name(key).display(key).add();
+                b.with(String.class).selectConst(key, md.get(key)).name(key).display(key).add();
             }
         }
         return b.build();

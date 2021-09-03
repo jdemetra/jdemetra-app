@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.nodes;
+package ec.nbdemetra.ui;
 
 import com.google.common.base.Strings;
 import ec.nbdemetra.ui.DemetraUiIcon;

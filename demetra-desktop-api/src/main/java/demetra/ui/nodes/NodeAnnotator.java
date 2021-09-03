@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package ec.nbdemetra.ui.nodes;
+package demetra.ui.nodes;
 
 import demetra.desktop.design.GlobalService;
 import demetra.ui.util.CollectionSupplier;
@@ -12,10 +7,6 @@ import java.awt.Image;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.nodes.Node;
 
-/**
- *
- * @author CHARPHI
- */
 @GlobalService
 public final class NodeAnnotator {
 

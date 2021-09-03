@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.nodes;
+package demetra.ui.nodes;
 
+import demetra.ui.nodes.NodeAnnotator;
 import java.awt.Image;
 import javax.swing.Action;
 import org.openide.nodes.AbstractNode;

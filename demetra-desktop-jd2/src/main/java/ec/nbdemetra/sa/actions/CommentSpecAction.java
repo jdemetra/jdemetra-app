@@ -22,7 +22,7 @@ import ec.nbdemetra.tramoseats.TramoDocumentManager;
 import ec.nbdemetra.tramoseats.TramoSeatsDocumentManager;
 import ec.nbdemetra.tramoseats.TramoSeatsSpecificationManager;
 import ec.nbdemetra.tramoseats.TramoSpecificationManager;
-import ec.nbdemetra.ui.nodes.SingleNodeAction;
+import demetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
