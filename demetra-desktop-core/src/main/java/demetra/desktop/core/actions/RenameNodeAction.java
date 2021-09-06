@@ -16,10 +16,12 @@ import java.util.stream.Stream;
  *
  * @author Philippe Charles
  */
-@ActionID(category = "File", id = "demetra.desktop.core.actions.RenameNodeAction")
+@ActionID(category = "File", id = RenameNodeAction.ID)
 @ActionRegistration(displayName = "#RenameNodeAction", lazy = false)
 @NbBundle.Messages({"RenameNodeAction=Rename..."})
 public final class RenameNodeAction extends AbilityNodeAction<Renameable> {
+
+    public static final String ID = "demetra.desktop.core.actions.RenameNodeAction";
 
     public RenameNodeAction() {
         super(Renameable.class);

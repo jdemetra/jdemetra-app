@@ -16,11 +16,12 @@
  */
 package ec.nbdemetra.common;
 
+import demetra.bridge.ToFileBean;
 import demetra.bridge.TsConverter;
 import demetra.desktop.TsManager;
 import demetra.desktop.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
-import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
+import demetra.desktop.tsproviders.AbstractDataSourceProviderBuddy;
+import demetra.desktop.tsproviders.DataSourceProviderBuddy;
 import ec.tss.tsproviders.IFileLoader;
 import ec.tss.tsproviders.common.xml.XmlBean;
 import ec.tss.tsproviders.common.xml.XmlProvider;
@@ -37,7 +38,7 @@ import org.openide.util.ImageUtilities;
  *
  * @author Philippe Charles
  */
-@ServiceProvider(IDataSourceProviderBuddy.class)
+@ServiceProvider(DataSourceProviderBuddy.class)
 public final class XmlProviderBuddy extends AbstractDataSourceProviderBuddy {
 
     @Override
@@ -46,8 +47,13 @@ public final class XmlProviderBuddy extends AbstractDataSourceProviderBuddy {
     }
 
     @Override
-    public Image getIcon(int type, boolean opened) {
+    public Image getIconOrNull(int type, boolean opened) {
         return ImageUtilities.loadImage("ec/nbdemetra/common/document-code.png", true);
+    }
+
+    @Override
+    public boolean editBean(String title, Object bean) throws IntrospectionException {
+        return super.editBean(title, bean instanceof ToFileBean ? ((ToFileBean) bean).getDelegate() : bean);
     }
 
     @Override

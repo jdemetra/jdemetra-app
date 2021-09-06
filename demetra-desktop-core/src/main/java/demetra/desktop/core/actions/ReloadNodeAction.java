@@ -16,10 +16,12 @@ import java.util.stream.Stream;
  *
  * @author Philippe Charles
  */
-@ActionID(category = "File", id = "demetra.desktop.core.actions.ReloadNodeAction")
+@ActionID(category = "File", id = ReloadNodeAction.ID)
 @ActionRegistration(displayName = "#ReloadNodeAction", lazy = false)
 @NbBundle.Messages({"ReloadNodeAction=Reload"})
 public final class ReloadNodeAction extends AbilityNodeAction<Reloadable> {
+
+    public static final String ID = "demetra.desktop.core.actions.ReloadNodeAction";
 
     public ReloadNodeAction() {
         super(Reloadable.class);

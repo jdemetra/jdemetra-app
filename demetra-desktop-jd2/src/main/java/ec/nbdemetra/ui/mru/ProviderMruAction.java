@@ -19,7 +19,7 @@ package ec.nbdemetra.ui.mru;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceLoader;
 import demetra.desktop.TsManager;
-import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import java.awt.event.ActionEvent;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;

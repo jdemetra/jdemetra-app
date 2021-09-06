@@ -28,7 +28,7 @@ import org.openide.util.NbBundle.Messages;
 
 import java.util.Optional;
 
-@ActionID(category = "File", id = "demetra.desktop.core.star.StarAction")
+@ActionID(category = "File", id = StarAction.ID)
 @ActionRegistration(lazy = false, displayName = "#starAction.add")
 @ActionReferences({
         @ActionReference(path = "Menu/File", position = 800, separatorBefore = 799)
@@ -38,6 +38,8 @@ import java.util.Optional;
         "starAction.remove=Remove star"
 })
 public final class StarAction extends SingleNodeAction<Node> {
+
+    public static final String ID = "demetra.desktop.core.star.StarAction";
 
     public StarAction() {
         super(Node.class);

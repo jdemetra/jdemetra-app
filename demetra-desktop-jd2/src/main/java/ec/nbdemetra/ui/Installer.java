@@ -31,7 +31,7 @@ import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.ui.mru.MruProvidersStep;
 import ec.nbdemetra.ui.mru.MruWorkspacesStep;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
-import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
+import demetra.desktop.tsproviders.DataSourceProviderBuddy;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.tss.tsproviders.DataSource;
 import ec.tss.tsproviders.utils.Formatters;
@@ -257,10 +257,10 @@ public final class Installer extends ModuleInstall {
         }
     }
 
-    private static final class ProviderBuddiesStep extends ConfigStep<IDataSourceProviderBuddy> {
+    private static final class ProviderBuddiesStep extends ConfigStep<DataSourceProviderBuddy> {
 
         ProviderBuddiesStep() {
-            super(IDataSourceProviderBuddy.class);
+            super(DataSourceProviderBuddy.class);
         }
     }
 

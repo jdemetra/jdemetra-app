@@ -12,10 +12,12 @@ import org.openide.util.NbBundle.Messages;
 
 import java.util.stream.Stream;
 
-@ActionID(category = "File", id = "demetra.desktop.core.actions.CloseNodeAction")
+@ActionID(category = "File", id = CloseNodeAction.ID)
 @ActionRegistration(displayName = "#CloseNodeAction", lazy = false)
 @Messages("CloseNodeAction=Close")
 public final class CloseNodeAction extends AbilityNodeAction<Closable> {
+
+    public static final String ID = "demetra.desktop.core.actions.CloseNodeAction";
 
     public CloseNodeAction() {
         super(Closable.class);

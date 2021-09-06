@@ -1,0 +1,88 @@
+/*
+ * Copyright 2013 National Bank of Belgium
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ */
+package demetra.desktop.core.tsproviders;
+
+import demetra.desktop.TsManager;
+import demetra.tsprovider.FileLoader;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionRegistration;
+import org.openide.util.Exceptions;
+import org.openide.util.ImageUtilities;
+import org.openide.util.NbBundle.Messages;
+import org.openide.util.actions.Presenter;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.util.Comparator;
+
+/**
+ * @author Philippe Charles
+ */
+@ActionID(category = "File", id = OpenProvidersNodeAction.ID)
+@ActionRegistration(displayName = "#CTL_OpenProvidersAction", lazy = false)
+@Messages("CTL_OpenProvidersAction=Open")
+public final class OpenProvidersNodeAction extends AbstractAction implements Presenter.Popup {
+
+    public static final String ID = "demetra.desktop.core.tsproviders.OpenProvidersAction";
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public JMenuItem getPopupPresenter() {
+        JMenu result = new JMenu(Bundle.CTL_OpenProvidersAction());
+        TsManager.getDefault().getProviders()
+                .filter(FileLoader.class::isInstance)
+                .map(FileLoader.class::cast)
+                .sorted(ON_CLASS_SIMPLENAME)
+                .forEach(o -> result.add(new AbstractActionImpl(o)));
+        return result;
+    }
+
+    private static final Comparator<FileLoader> ON_CLASS_SIMPLENAME = Comparator.comparing(o -> o.getClass().getSimpleName());
+
+    private static final class AbstractActionImpl extends AbstractAction {
+
+        private final FileLoader loader;
+
+        public AbstractActionImpl(FileLoader loader) {
+            super(loader.getDisplayName());
+            DataSourceProviderBuddySupport.getDefault()
+                    .getIcon(loader.getSource(), BeanInfo.ICON_COLOR_16x16, false)
+                    .map(ImageUtilities::image2Icon)
+                    .ifPresent(o -> super.putValue(Action.SMALL_ICON, o));
+            this.loader = loader;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Object bean = loader.newBean();
+            try {
+                if (DataSourceProviderBuddySupport.getDefault().get(loader).editBean("Open data source", bean)) {
+                    loader.open(loader.encodeBean(bean));
+                }
+            } catch (IntrospectionException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+    }
+}

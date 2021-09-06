@@ -16,12 +16,13 @@
  */
 package ec.nbdemetra.db;
 
+import demetra.bridge.ToFileBean;
 import demetra.tsprovider.FileLoader;
 import demetra.desktop.TsManager;
 import demetra.desktop.properties.DhmsPropertyEditor;
 import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import demetra.desktop.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
+import demetra.desktop.tsproviders.AbstractDataSourceProviderBuddy;
 import ec.tss.tsproviders.db.DbBean;
 import ec.tss.tsproviders.db.DbBean.BulkBean;
 import ec.tss.tsproviders.utils.DataFormat;
@@ -62,8 +63,13 @@ public abstract class DbProviderBuddy<BEAN extends DbBean> extends AbstractDataS
     abstract protected boolean isFile();
 
     @Override
-    public Image getIcon(int type, boolean opened) {
+    public Image getIconOrNull(int type, boolean opened) {
         return DbIcon.DATABASE.getImageIcon().getImage();
+    }
+
+    @Override
+    public boolean editBean(String title, Object bean) throws IntrospectionException {
+        return super.editBean(title, bean instanceof ToFileBean ? ((ToFileBean) bean).getDelegate() : bean);
     }
 
     @Override

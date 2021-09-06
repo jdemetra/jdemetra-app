@@ -28,10 +28,12 @@ import java.util.stream.Stream;
  *
  * @author Philippe Charles
  */
-@ActionID(category = "File", id = "demetra.desktop.core.actions.OpenNodeAction")
+@ActionID(category = "File", id = OpenNodeAction.ID)
 @ActionRegistration(displayName = "#OpenNodeAction", lazy = false)
 @Messages("OpenNodeAction=Open")
 public final class OpenNodeAction extends AbilityNodeAction<Openable> {
+
+    public static final String ID = "demetra.desktop.core.actions.OpenNodeAction";
 
     public OpenNodeAction() {
         super(Openable.class);

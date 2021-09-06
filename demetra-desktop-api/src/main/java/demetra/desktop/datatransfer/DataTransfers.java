@@ -121,6 +121,7 @@ public final class DataTransfers {
 
     @NonNull
     public static Transferable systemClipboardAsTransferable() {
+        // TODO: refactor it as a singleton
         return new ClipboardAsTransferable(Toolkit.getDefaultToolkit().getSystemClipboard());
     }
 

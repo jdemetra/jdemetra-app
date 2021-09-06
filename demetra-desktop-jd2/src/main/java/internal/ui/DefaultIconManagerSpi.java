@@ -2,7 +2,7 @@ package internal.ui;
 
 import demetra.timeseries.TsMoniker;
 import demetra.desktop.IconManagerSpi;
-import ec.nbdemetra.ui.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.openide.util.ImageUtilities;

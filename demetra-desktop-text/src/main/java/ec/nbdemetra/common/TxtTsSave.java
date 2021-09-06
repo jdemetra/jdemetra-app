@@ -1,55 +1,54 @@
 /*
  * Copyright 2016 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.common;
 
-import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsInformationType;
-import demetra.desktop.TsManager;
 import demetra.desktop.Config;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.TsActionsSaveSpi;
+import demetra.desktop.TsManager;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.util.SingleFileExporter;
-import demetra.desktop.properties.NodePropertySetBuilder;
-import ec.tss.datatransfer.impl.TxtDataTransfer;
+import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsInformationType;
+import ec.nbdemetra.ui.DemetraUiIcon;
 import ec.tss.tsproviders.common.txt.TxtFileFilter;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
-import java.awt.Image;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import javax.swing.filechooser.FileFilter;
+import nbbrd.io.text.Formatter;
+import nbbrd.service.ServiceProvider;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
-import org.openide.util.lookup.ServiceProvider;
-import demetra.desktop.TsActionsSaveSpi;
+
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
-import nbbrd.io.text.Formatter;
+import java.util.List;
 
 /**
- *
  * @author Philippe Charles
  * @since 2.2.0
  */
-@ServiceProvider(service = TsActionsSaveSpi.class)
+@ServiceProvider
 public final class TxtTsSave implements TsActionsSaveSpi {
 
     private final FileChooserBuilder fileChooser;

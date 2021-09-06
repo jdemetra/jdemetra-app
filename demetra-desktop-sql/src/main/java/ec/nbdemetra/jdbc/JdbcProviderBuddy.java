@@ -17,6 +17,7 @@
 package ec.nbdemetra.jdbc;
 
 import com.google.common.base.Strings;
+import demetra.bridge.ToFileBean;
 import ec.nbdemetra.db.DbProviderBuddy;
 import ec.tss.tsproviders.jdbc.ConnectionSupplier;
 import ec.tss.tsproviders.jdbc.JdbcBean;
@@ -29,6 +30,8 @@ import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.jdbc.JdbcColumn;
 import ec.util.jdbc.JdbcTable;
 import ec.util.jdbc.SqlIdentifierQuoter;
+
+import java.beans.IntrospectionException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -53,6 +56,11 @@ public abstract class JdbcProviderBuddy<BEAN extends JdbcBean> extends DbProvide
 
     public JdbcProviderBuddy(@NonNull ConnectionSupplier supplier) {
         this.supplier = supplier;
+    }
+
+    @Override
+    public boolean editBean(String title, Object bean) throws IntrospectionException {
+        return super.editBean(title, bean instanceof ToFileBean ? ((ToFileBean) bean).getDelegate() : bean);
     }
 
     @Override

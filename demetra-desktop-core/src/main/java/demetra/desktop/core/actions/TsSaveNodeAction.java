@@ -39,10 +39,12 @@ import java.util.stream.Stream;
  *
  * @author Philippe Charles
  */
-@ActionID(category = "File", id = "demetra.desktop.core.actions.TsSaveNodeAction")
+@ActionID(category = "File", id = TsSaveNodeAction.ID)
 @ActionRegistration(displayName = "#CTL_TsSaveNodeAction", lazy = false)
 @Messages("CTL_TsSaveNodeAction=Save to")
 public final class TsSaveNodeAction extends AbilityNodeAction<TsCollectable> implements Presenter.Popup {
+
+    public static final String ID = "demetra.desktop.core.actions.TsSaveNodeAction";
 
     public TsSaveNodeAction() {
         super(TsCollectable.class);

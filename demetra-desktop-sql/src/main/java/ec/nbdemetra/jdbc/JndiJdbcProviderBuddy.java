@@ -16,13 +16,14 @@
  */
 package ec.nbdemetra.jdbc;
 
+import demetra.bridge.ToFileBean;
 import demetra.bridge.TsConverter;
 import demetra.desktop.TsManager;
 import ec.nbdemetra.db.DbIcon;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.util.SimpleHtmlListCellRenderer;
 import demetra.desktop.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
+import demetra.desktop.tsproviders.DataSourceProviderBuddy;
 import ec.tss.tsproviders.db.DbBean;
 import ec.tss.tsproviders.jdbc.ConnectionSupplier;
 import ec.tss.tsproviders.jdbc.JdbcBean;
@@ -38,6 +39,7 @@ import ec.util.jdbc.ForwardingConnection;
 import ec.util.various.swing.FontAwesome;
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -72,7 +74,7 @@ import org.openide.util.NbBundle;
  *
  * @author Philippe Charles
  */
-@ServiceProvider(IDataSourceProviderBuddy.class)
+@ServiceProvider(DataSourceProviderBuddy.class)
 public final class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implements Configurable {
 
     private final AutoCompletionSource dbSource;
@@ -105,13 +107,13 @@ public final class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> imp
     }
 
     @Override
-    public Image getIcon(int type, boolean opened) {
+    public Image getIconOrNull(int type, boolean opened) {
         return DbIcon.DATABASE.getImageIcon().getImage();
     }
 
     @Override
-    public Image getIcon(demetra.tsprovider.DataSource dataSource, int type, boolean opened) {
-        Image image = super.getIcon(dataSource, type, opened);
+    public Image getIconOrNull(demetra.tsprovider.DataSource dataSource, int type, boolean opened) {
+        Image image = super.getIconOrNull(dataSource, type, opened);
         String dbName = DbBean.X_DBNAME.get(TsConverter.fromDataSource(dataSource));
         switch (DbConnStatus.lookupByDisplayName(dbName)) {
             case DISCONNECTED:
@@ -120,6 +122,11 @@ public final class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> imp
                 return ImageUtilities.mergeImages(image, errorBadge, 8, 8);
         }
         return image;
+    }
+
+    @Override
+    public boolean editBean(String title, Object bean) throws IntrospectionException {
+        return super.editBean(title, bean instanceof ToFileBean ? ((ToFileBean) bean).getDelegate() : bean);
     }
 
     @Override

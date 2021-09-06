@@ -40,4 +40,6 @@ public final class Actions {
             ((JComponent) evt.getSource()).setVisible((Boolean) evt.getNewValue());
         }
     };
+
+    public static final String COPY_NODE_ACTION_ID = "org.openide.actions.CopyAction";
 }

@@ -1,28 +1,29 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.spreadsheet;
 
+import demetra.bridge.ToFileBean;
 import demetra.bridge.TsConverter;
-import demetra.tsprovider.FileLoader;
 import demetra.desktop.TsManager;
-import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import demetra.desktop.properties.NodePropertySetBuilder;
-import ec.nbdemetra.ui.tsproviders.AbstractDataSourceProviderBuddy;
-import ec.nbdemetra.ui.tsproviders.IDataSourceProviderBuddy;
+import demetra.desktop.tsproviders.AbstractDataSourceProviderBuddy;
+import demetra.desktop.tsproviders.DataSourceProviderBuddy;
+import demetra.tsprovider.FileLoader;
+import ec.nbdemetra.ui.properties.FileLoaderFileFilter;
 import ec.tss.tsproviders.DataSet;
 import ec.tss.tsproviders.spreadsheet.SpreadSheetBean;
 import ec.tss.tsproviders.spreadsheet.SpreadSheetProvider;
@@ -30,21 +31,21 @@ import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetCollection;
 import ec.tss.tsproviders.utils.DataFormat;
 import ec.tstoolkit.timeseries.TsAggregationType;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
-import java.awt.Image;
-import java.beans.IntrospectionException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import nbbrd.service.ServiceProvider;
 import org.openide.nodes.Sheet.Set;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
 
+import java.awt.*;
+import java.beans.IntrospectionException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author Philippe Charles
  */
-@ServiceProvider(IDataSourceProviderBuddy.class)
+@ServiceProvider(DataSourceProviderBuddy.class)
 public final class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
 
     @Override
@@ -53,17 +54,17 @@ public final class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBu
     }
 
     @Override
-    public Image getIcon(int type, boolean opened) {
+    public Image getIconOrNull(int type, boolean opened) {
         return ImageUtilities.loadImage("ec/nbdemetra/spreadsheet/document-table.png", true);
     }
 
     @Override
-    public Image getIcon(demetra.tsprovider.DataSource dataSource, int type, boolean opened) {
+    public Image getIconOrNull(demetra.tsprovider.DataSource dataSource, int type, boolean opened) {
         return ImageUtilities.loadImage("ec/nbdemetra/spreadsheet/tables.png", true);
     }
 
     @Override
-    public Image getIcon(demetra.tsprovider.DataSet dataSet, int type, boolean opened) {
+    public Image getIconOrNull(demetra.tsprovider.DataSet dataSet, int type, boolean opened) {
         switch (dataSet.getKind()) {
             case COLLECTION:
                 return ImageUtilities.loadImage("ec/nbdemetra/spreadsheet/table-sheet.png", true);
@@ -79,9 +80,14 @@ public final class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBu
         return null;
     }
 
+    @Override
+    public boolean editBean(String title, Object bean) throws IntrospectionException {
+        return super.editBean(title, bean instanceof ToFileBean ? ((ToFileBean) bean).getDelegate() : bean);
+    }
+
     @Messages({
-        "dataset.sheetName.display=Sheet name",
-        "dataset.seriesName.display=Series name"
+            "dataset.sheetName.display=Sheet name",
+            "dataset.seriesName.display=Series name"
     })
     @Override
     protected void fillParamProperties(NodePropertySetBuilder b, demetra.tsprovider.DataSet dataSet) {
@@ -105,18 +111,18 @@ public final class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBu
     }
 
     @Messages({
-        "bean.source.display=Source",
-        "bean.file.display=Spreadsheet file",
-        "bean.file.description=The path to the spreadsheet file.",
-        "bean.options.display=Options",
-        "bean.dataFormat.display=Data format",
-        "bean.dataFormat.description=The format used to read dates and values.",
-        "bean.frequency.display=Frequency",
-        "bean.frequency.description=.",
-        "bean.aggregationType.display=Aggregation type",
-        "bean.aggregationType.description=.",
-        "bean.cleanMissing.display=Clean missing",
-        "bean.cleanMissing.description=Erases the Missing values of the series."
+            "bean.source.display=Source",
+            "bean.file.display=Spreadsheet file",
+            "bean.file.description=The path to the spreadsheet file.",
+            "bean.options.display=Options",
+            "bean.dataFormat.display=Data format",
+            "bean.dataFormat.description=The format used to read dates and values.",
+            "bean.frequency.display=Frequency",
+            "bean.frequency.description=.",
+            "bean.aggregationType.display=Aggregation type",
+            "bean.aggregationType.description=.",
+            "bean.cleanMissing.display=Clean missing",
+            "bean.cleanMissing.description=Erases the Missing values of the series."
     })
     private List<Set> createSheetSets(SpreadSheetBean bean) {
         List<Set> result = new ArrayList<>();
