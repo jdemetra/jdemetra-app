@@ -15,11 +15,13 @@ import demetra.timeseries.TsCollection;
 import demetra.desktop.DemetraOptions;
 import demetra.desktop.TsActions;
 import demetra.desktop.IconManager;
+import demetra.desktop.TsManager;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.datatransfer.DataTransfers;
 import demetra.desktop.util.ListTableModel;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.util.PopupMenuAdapter;
+import demetra.timeseries.Ts;
 import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
 import ec.nbdemetra.ui.*;
 import ec.nbdemetra.ui.Menus.DynamicPopup;
@@ -475,8 +477,14 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     private boolean pasteTs(Transferable dataobj) {
         long count = DataTransfer.getDefault()
                 .toTsCollectionStream(dataobj)
+                .map(col -> col
+                        .load(demetra.timeseries.TsInformationType.All, TsManager.getDefault())
+                        .stream()
+                        .map(Ts::freeze)
+                        .collect(TsCollection.toTsCollection())
+                )
                 .map(TsConverter::fromTsCollection)
-                .peek(o -> getCurrentProcessing().addRange(defaultSpecification, o))
+                .peek(col -> getCurrentProcessing().addRange(defaultSpecification, col))
                 .count();
         if (count > 0) {
             controller.setSaProcessingState(SaProcessingState.READY);

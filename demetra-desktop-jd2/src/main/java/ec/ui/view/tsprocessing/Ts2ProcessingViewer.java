@@ -6,6 +6,7 @@ package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
 import demetra.desktop.IconManager;
+import demetra.desktop.TsManager;
 import ec.tss.Ts;
 import ec.tss.documents.MultiTsDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
@@ -15,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JToolBar;
 import javax.swing.TransferHandler;
 import demetra.desktop.datatransfer.DataTransfer;
+import demetra.timeseries.TsInformationType;
 import java.util.Optional;
 
 /**
@@ -129,7 +131,7 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
                     input = new Ts[2];
                 }else
                     input=input.clone();
-                input[pos] = TsConverter.fromTs(ts.get());
+                input[pos] = TsConverter.fromTs(ts.get().load(TsInformationType.Data, TsManager.getDefault()));
                 getDocument().setInput(input);
                 refreshAll();
                 return true;

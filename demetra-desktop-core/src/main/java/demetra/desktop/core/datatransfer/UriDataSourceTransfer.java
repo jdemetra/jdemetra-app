@@ -13,6 +13,7 @@ import nbbrd.service.ServiceProvider;
 
 import java.awt.datatransfer.Transferable;
 import java.util.Optional;
+import nbbrd.io.text.Parser;
 
 /**
  * @author Philippe Charles
@@ -34,7 +35,7 @@ public final class UriDataSourceTransfer implements DataSourceTransferSpi {
 
     @Override
     public Optional<DataSource> getDataSource(Transferable t) {
-        return !DataTransfer.getDefault().isTssTransferable(t) ? DataTransfers.tryParse(t, DataSource::parse) : Optional.empty();
+        return !DataTransfer.getDefault().isTssTransferable(t) ? DataTransfers.tryParse(t, Parser.of(DataSource::parse)) : Optional.empty();
     }
 
     @Override

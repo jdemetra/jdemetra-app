@@ -7,6 +7,7 @@ package ec.ui.view.tsprocessing;
 import com.google.common.base.Strings;
 import demetra.bridge.TsConverter;
 import demetra.desktop.IconManager;
+import demetra.desktop.TsManager;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
 import ec.tss.documents.TsDocument;
@@ -18,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JToolBar;
 import javax.swing.TransferHandler;
 import demetra.desktop.datatransfer.DataTransfer;
+import demetra.timeseries.TsInformationType;
 import java.util.Optional;
 
 /**
@@ -92,7 +94,9 @@ public class TsProcessingViewer extends DefaultProcessingViewer<TsDocument> {
         public boolean importData(TransferHandler.TransferSupport support) {
             Optional<demetra.timeseries.Ts> ts = DataTransfer.getDefault().toTs(support.getTransferable());
             if (ts.isPresent()) {
-                getDocument().setInput(TsConverter.fromTs(ts.get()));
+                // data needs to be loaded and frozen because JD2 underlying document tries (and fails) to refresh it
+                demetra.timeseries.Ts input = ts.get().load(TsInformationType.All, TsManager.getDefault()).freeze();
+                getDocument().setInput(TsConverter.fromTs(input));
                 refreshAll();
                 return true;
             }

@@ -30,7 +30,6 @@ import demetra.desktop.util.InputMaps;
 import demetra.desktop.util.KeyStrokes;
 import ec.tss.DynamicTsVariable;
 import ec.tss.Ts;
-import ec.tss.TsInformationType;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.timeseries.regression.ITsVariable;
@@ -75,6 +74,8 @@ import demetra.desktop.components.parts.HasTsAction;
 import ec.util.table.swing.JTables;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.design.SwingComponent;
+import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsInformationType;
 import nbbrd.design.SkipProcessing;
 
 /**
@@ -212,16 +213,15 @@ public final class JTsVariableList extends JComponent implements HasTsAction {
         public boolean importData(TransferHandler.TransferSupport support) {
             return DataTransfer.getDefault()
                     .toTsCollectionStream(support.getTransferable())
-                    .map(TsConverter::fromTsCollection)
-                    .peek(o -> o.load(TsInformationType.All))
-                    .filter(o -> !o.isEmpty())
+                    .map(col -> col.load(TsInformationType.All, TsManager.getDefault()))
+                    .filter(col -> !col.isEmpty())
                     .peek(JTsVariableList.this::appendTsVariables)
                     .count() > 0;
         }
     }
 
-    public void appendTsVariables(ec.tss.TsCollection coll) {
-        for (Ts s : coll) {
+    public void appendTsVariables(TsCollection coll) {
+        for (Ts s : TsConverter.fromTsCollection(coll)) {
             String name = variables.nextName();
             TsVariable var;
             if (s.getMoniker().isAnonymous()) {

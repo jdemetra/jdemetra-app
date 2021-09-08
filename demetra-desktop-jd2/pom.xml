@@ -213,6 +213,10 @@
                     <groupId>eu.europa.ec.joinup.sat</groupId>
                     <artifactId>demetra-tsp-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>eu.europa.ec.joinup.sat</groupId>
+                    <artifactId>demetra-toolkit-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -282,7 +286,7 @@
                         <publicPackage>ec.demetra.workspace.file.util</publicPackage>
                         <publicPackage>nbbrd.io.xml.*</publicPackage>
                         <publicPackage>javax.annotation.*</publicPackage>
-                        <publicPackage>javax.xml.bind.*</publicPackage>
+                        <!--<publicPackage>javax.xml.bind.*</publicPackage>-->
                         
                         <!-- old ui -->
                         <publicPackage>ec.benchmarking.*</publicPackage>
