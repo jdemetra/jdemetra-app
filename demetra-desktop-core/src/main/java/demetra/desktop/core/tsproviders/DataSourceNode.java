@@ -66,7 +66,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
-import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -124,27 +123,27 @@ public final class DataSourceNode extends AbstractNode {
         return Nodes.actionsForPath(SOURCE_ACTION_PATH);
     }
 
-    private java.util.Optional<Image> lookupIcon(int type, boolean opened) {
+    private Image lookupIcon(int type, boolean opened) {
         DataSource o = getLookup().lookup(DataSource.class);
-        return DataSourceProviderBuddySupport.getDefault().getIcon(o, type, opened);
+        return DataSourceProviderBuddySupport.getDefault().getImage(o, type, opened);
     }
 
     @Override
     public Image getIcon(int type) {
-        Image image = lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
+        Image image = lookupIcon(type, false);
         return NodeAnnotator.getDefault().annotateIcon(this, image);
     }
 
     @Override
     public Image getOpenedIcon(int type) {
-        Image image = lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
+        Image image = lookupIcon(type, true);
         return NodeAnnotator.getDefault().annotateIcon(this, image);
     }
 
     @Override
     protected Sheet createSheet() {
         DataSource o = getLookup().lookup(DataSource.class);
-        return DataSourceProviderBuddySupport.getDefault().get(o).createSheet(o);
+        return DataSourceProviderBuddySupport.getDefault().createSheet(o);
     }
 
     @Override
@@ -267,19 +266,15 @@ public final class DataSourceNode extends AbstractNode {
             DataSource dataSource = getLookup().lookup(DataSource.class);
             DataSourceLoader loader = TsManager.getDefault().getProvider(DataSourceLoader.class, dataSource).get();
             Object bean = loader.decodeBean(dataSource);
-            try {
-                if (DataSourceProviderBuddySupport.getDefault().get(loader).editBean("Edit data source", bean)) {
-                    loader.close(dataSource);
-                    demetra.tsprovider.DataSource editedDataSource = loader.encodeBean(bean);
-                    loader.open(editedDataSource);
-                    StarList starList = StarList.getDefault();
-                    if (starList.isStarred(dataSource)) {
-                        starList.toggle(dataSource);
-                        starList.toggle(editedDataSource);
-                    }
+            if (DataSourceProviderBuddySupport.getDefault().getBeanEditor(loader.getSource(), "Edit data source").editBean(bean, Exceptions::printStackTrace)) {
+                loader.close(dataSource);
+                DataSource editedDataSource = loader.encodeBean(bean);
+                loader.open(editedDataSource);
+                StarList starList = StarList.getDefault();
+                if (starList.isStarred(dataSource)) {
+                    starList.toggle(dataSource);
+                    starList.toggle(editedDataSource);
                 }
-            } catch (IntrospectionException ex) {
-                Exceptions.printStackTrace(ex);
             }
         }
     }

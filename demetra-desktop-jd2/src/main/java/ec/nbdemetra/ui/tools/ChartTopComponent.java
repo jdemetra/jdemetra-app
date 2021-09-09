@@ -6,7 +6,7 @@ package ec.nbdemetra.ui.tools;
 
 import demetra.desktop.components.parts.HasColorScheme;
 import demetra.desktop.components.parts.HasTsCollection;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.nodes.ControlNode;
 import demetra.desktop.components.JTsChart;
@@ -121,11 +121,11 @@ public final class ChartTopComponent extends TopComponent implements ExplorerMan
         JButton copyBtn = new JButton(getChart().getActionMap().get(HasTsCollection.COPY_ALL_ACTION));
         copyBtn.setText("");
         copyBtn.setToolTipText("Copy");
-        copyBtn.setIcon(DemetraUiIcon.EDIT_COPY_16);
+        copyBtn.setIcon(DemetraIcons.EDIT_COPY_16);
         result.add(copyBtn);
 
         JPopupMenu menuColorScheme = HasColorSchemeSupport.menuOf(getChart()).getPopupMenu();
-        JButton coloSchemeBtn = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.COLOR_SWATCH_16, menuColorScheme);
+        JButton coloSchemeBtn = DropDownButtonFactory.createDropDownButton(DemetraIcons.COLOR_SWATCH_16, menuColorScheme);
         coloSchemeBtn.addActionListener(getChart().getActionMap().get(HasColorScheme.APPLY_MAIN_COLOR_SCHEME_ACTION));
         result.add(coloSchemeBtn);
 

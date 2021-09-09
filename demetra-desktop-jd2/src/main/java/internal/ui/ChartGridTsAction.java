@@ -16,17 +16,17 @@
  */
 package internal.ui;
 
-import demetra.timeseries.Ts;
-import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsInformationType;
-import demetra.tsprovider.util.MultiLineNameUtil;
-import demetra.desktop.IconManager;
 import demetra.desktop.TsActionsOpenSpi;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.JTsGrid;
 import demetra.desktop.components.parts.HasChart.LinesThickness;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import demetra.desktop.util.NbComponents;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsInformationType;
+import demetra.tsprovider.util.MultiLineNameUtil;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import ec.nbdemetra.ui.tools.GridTopComponent;
 import nbbrd.design.DirectImpl;
@@ -38,6 +38,7 @@ import org.openide.util.HelpCtx;
 import org.openide.windows.TopComponent;
 
 import java.awt.*;
+import java.beans.BeanInfo;
 
 /**
  * @author Philippe Charles
@@ -72,7 +73,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
         MultiViewDescription[] descriptions = {new ChartTab(ts), new GridTab(ts)};
         TopComponent c = MultiViewFactory.createMultiView(descriptions, descriptions[0], null);
         c.setName(topComponentName);
-        c.setIcon(IconManager.getDefault().getImage(ts.getMoniker()));
+        c.setIcon(DataSourceProviderBuddySupport.getDefault().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
         applyText(ts.getName(), c);
         c.open();
         return c;
@@ -108,7 +109,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
 
         @Override
         public Image getIcon() {
-            return IconManager.getDefault().getImage(ts.getMoniker());
+            return DataSourceProviderBuddySupport.getDefault().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false);
         }
 
         @Override
@@ -152,7 +153,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
 
         @Override
         public Image getIcon() {
-            return IconManager.getDefault().getImage(ts.getMoniker());
+            return DataSourceProviderBuddySupport.getDefault().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false);
         }
 
         @Override

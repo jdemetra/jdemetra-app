@@ -24,7 +24,7 @@ import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.util.SingleFileExporter;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import ec.tss.tsproviders.common.txt.TxtFileFilter;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
@@ -71,7 +71,7 @@ public final class TxtTsSave implements TsActionsSaveSpi {
 
     @Override
     public Image getIcon(int type, boolean opened) {
-        return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
+        return ImageUtilities.icon2Image(DemetraIcons.PUZZLE_16);
     }
 
     @Override

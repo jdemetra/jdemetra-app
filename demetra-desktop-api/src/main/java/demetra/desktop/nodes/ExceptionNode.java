@@ -16,6 +16,7 @@
  */
 package demetra.desktop.nodes;
 
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.components.JExceptionPanel;
 import demetra.desktop.util.NbComponents;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -52,7 +53,7 @@ public class ExceptionNode extends AbstractNode {
 
     @Override
     public Image getIcon(int type) {
-        return ImageUtilities.loadImage("ec/nbdemetra/ui/nodes/exclamation-red.png", true);
+        return DemetraIcons.EXCLAMATION_MARK_16.getImageIcon().getImage();
     }
 
     @Override

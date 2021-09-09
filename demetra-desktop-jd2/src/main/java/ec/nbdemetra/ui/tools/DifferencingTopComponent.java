@@ -5,31 +5,22 @@
 package ec.nbdemetra.ui.tools;
 
 import demetra.bridge.TsConverter;
-import demetra.timeseries.TsCollection;
-import ec.nbdemetra.ui.OldTsUtil;
 import demetra.desktop.TsManager;
+import demetra.desktop.components.JTsGrid;
+import demetra.desktop.components.JTsGrid.Mode;
 import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.util.NbComponents;
+import demetra.timeseries.TsCollection;
 import ec.nbdemetra.ui.ActiveViewManager;
 import ec.nbdemetra.ui.IActiveView;
-import demetra.desktop.IconManager;
-import demetra.desktop.util.NbComponents;
+import ec.nbdemetra.ui.OldTsUtil;
 import ec.tstoolkit.stats.AutoCorrelations;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import demetra.desktop.components.JTsGrid.Mode;
-import demetra.desktop.components.JTsGrid;
 import ec.ui.view.JAutoCorrelationsView;
 import ec.ui.view.PeriodogramView;
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.lang.reflect.InvocationTargetException;
-import javax.swing.Box;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JSplitPane;
-import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
-import javax.swing.TransferHandler;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -41,7 +32,11 @@ import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import demetra.desktop.datatransfer.DataTransfer;
+
+import javax.swing.*;
+import java.awt.*;
+import java.beans.BeanInfo;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
 /**
@@ -58,9 +53,9 @@ import java.util.Optional;
 @TopComponent.OpenActionRegistration(displayName = "#CTL_DifferencingAction",
         preferredID = "DifferencingTopComponent")
 @Messages({
-    "CTL_DifferencingAction=Differencing",
-    "CTL_DifferencingTopComponent=Differencing Window",
-    "HINT_DifferencingTopComponent=This is a Differencing window"
+        "CTL_DifferencingAction=Differencing",
+        "CTL_DifferencingTopComponent=Differencing Window",
+        "HINT_DifferencingTopComponent=This is a Differencing window"
 })
 public final class DifferencingTopComponent extends TopComponent implements HasTs, IActiveView, ExplorerManager.Provider {
 
@@ -117,7 +112,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
         associateLookup(ExplorerUtils.createLookup(ActiveViewManager.getInstance().getExplorerManager(), getActionMap()));
     }
 
-//    @Override
+    //    @Override
 //    public void open() {
 //        super.open();
 //        org.openide.windows.Mode mode = WindowManager.getDefault().findMode("output");
@@ -133,7 +128,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
             dropDataLabel.setVisible(false);
             tsLabel.setText(ts_.getName());
             demetra.timeseries.TsMoniker moniker = ts_.getMoniker();
-            tsLabel.setIcon(IconManager.getDefault().getIcon(moniker));
+            tsLabel.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false));
             tsLabel.setToolTipText(tsLabel.getText() + (moniker.getSource() != null ? (" (" + moniker.getSource() + ")") : ""));
             tsLabel.setVisible(true);
         }

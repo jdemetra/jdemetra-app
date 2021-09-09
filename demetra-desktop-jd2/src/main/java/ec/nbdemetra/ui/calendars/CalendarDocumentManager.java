@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui.calendars;
 
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import ec.nbdemetra.ws.AbstractWorkspaceItemManager;
 import ec.nbdemetra.ws.IWorkspaceItemManager;
 import ec.nbdemetra.ws.WorkspaceFactory;
@@ -97,14 +97,14 @@ public class CalendarDocumentManager extends AbstractWorkspaceItemManager<IGrego
 
     @Override
     public Icon getManagerIcon() {
-        return DemetraUiIcon.CALENDAR_16;
+        return DemetraIcons.CALENDAR_16;
     }
 
     @Override
     public Icon getItemIcon(WorkspaceItem<IGregorianCalendarProvider> doc) {
         IGregorianCalendarProvider o = doc.getElement();
         if (o instanceof NationalCalendarProvider && ((NationalCalendarProvider) o).isLocked()) {
-            return DemetraUiIcon.PUZZLE_16; // TODO: choose another icon
+            return DemetraIcons.PUZZLE_16; // TODO: choose another icon
         }
         return super.getItemIcon(doc);
     }

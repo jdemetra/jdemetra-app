@@ -20,7 +20,7 @@ import com.google.common.base.Stopwatch;
 import demetra.bridge.TsConverter;
 import demetra.desktop.components.JTsTable;
 import ec.nbdemetra.ui.ActiveViewManager;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.util.PopupMenuAdapter;
 import ec.nbdemetra.ws.WorkspaceFactory;
@@ -120,7 +120,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
         toolBarRepresentation = NbComponents.newInnerToolbar();
         toolBarRepresentation.setFloatable(false);
         toolBarRepresentation.add(Box.createRigidArea(new Dimension(5, 0)));
-        runButton = toolBarRepresentation.add(new AbstractAction("", DemetraUiIcon.COMPILE_16) {
+        runButton = toolBarRepresentation.add(new AbstractAction("", DemetraIcons.COMPILE_16) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 start();
@@ -149,7 +149,7 @@ public class RevisionAnalysisTopComponent extends WorkspaceTopComponent<Revision
 
         toolBarRepresentation.addSeparator();
         JPopupMenu specPopup = new JPopupMenu();
-        final JButton specButton = (JButton) toolBarRepresentation.add(DropDownButtonFactory.createDropDownButton(DemetraUiIcon.BLOG_16, specPopup));
+        final JButton specButton = (JButton) toolBarRepresentation.add(DropDownButtonFactory.createDropDownButton(DemetraIcons.BLOG_16, specPopup));
         specButton.setFocusPainted(false);
         specPopup.add(new JSpecSelectionComponent()).addPropertyChangeListener(new PropertyChangeListener() {
             @Override

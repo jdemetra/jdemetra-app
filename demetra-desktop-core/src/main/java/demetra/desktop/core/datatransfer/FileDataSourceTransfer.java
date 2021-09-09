@@ -17,12 +17,11 @@ import nbbrd.service.ServiceProvider;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.util.ImageUtilities;
+import org.openide.util.Exceptions;
 
 import javax.swing.*;
 import java.awt.datatransfer.Transferable;
 import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
@@ -59,12 +58,8 @@ public final class FileDataSourceTransfer implements DataSourceTransferSpi {
         if (loader.isPresent()) {
             FileBean bean = loader.get().newBean();
             bean.setFile(file);
-            try {
-                if (DataSourceProviderBuddySupport.getDefault().get(loader.get()).editBean("Open data source", bean)) {
-                    return Optional.of(loader.get().encodeBean(bean));
-                }
-            } catch (IntrospectionException ex) {
-                // TODO: throw exception?
+            if (DataSourceProviderBuddySupport.getDefault().getBeanEditor(loader.get().getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
+                return Optional.of(loader.get().encodeBean(bean));
             }
         }
         return Optional.empty();
@@ -76,12 +71,8 @@ public final class FileDataSourceTransfer implements DataSourceTransferSpi {
         FileLoader loader = TsManager.getDefault().getProvider(FileLoader.class, providerName).get();
         FileBean bean = loader.newBean();
         bean.setFile(file);
-        try {
-            if (DataSourceProviderBuddySupport.getDefault().get(loader).editBean("Open data source", bean)) {
-                return Optional.of(loader.encodeBean(bean));
-            }
-        } catch (IntrospectionException ex) {
-            // TODO: throw exception?
+        if (DataSourceProviderBuddySupport.getDefault().getBeanEditor(loader.getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
+            return Optional.of(loader.encodeBean(bean));
         }
         return Optional.empty();
     }
@@ -110,6 +101,6 @@ public final class FileDataSourceTransfer implements DataSourceTransferSpi {
     private static void renderLoader(JLabel label, Object value) {
         DataSourceLoader loader = (DataSourceLoader) value;
         label.setText(loader.getDisplayName());
-        label.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(loader.getSource(), BeanInfo.ICON_COLOR_16x16, false).map(ImageUtilities::image2Icon).orElse(null));
+        label.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(loader.getSource(), BeanInfo.ICON_COLOR_16x16, false));
     }
 }

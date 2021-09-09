@@ -16,8 +16,8 @@
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.design.SwingComponent;
-import demetra.desktop.IconManager;
 import demetra.desktop.components.TimeSeriesComponent;
 import demetra.desktop.components.parts.HasChart;
 import demetra.desktop.components.parts.HasColorScheme;
@@ -93,14 +93,14 @@ public final class JRevisionAnalysisChart extends JComponent implements TimeSeri
 
     private JMenu newExportMenu() {
         JMenu result = new JMenu("Export image to");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_FLOPPY_O));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_FLOPPY_O));
 
         JMenuItem copy = new ActionMenuItem(ChartCommand.copyImage().toAction(chartPanel));
-        copy.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
+        copy.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
         copy.setText("Clipboard");
 
         JMenuItem file = new ActionMenuItem(ChartCommand.saveImage().toAction(chartPanel));
-        file.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_PICTURE_O));
+        file.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_PICTURE_O));
         file.setText("File...");
 
         result.add(copy);

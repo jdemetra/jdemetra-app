@@ -4,6 +4,7 @@
  */
 package demetra.desktop.nodes;
 
+import demetra.desktop.DemetraIcons;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.ImageUtilities;
@@ -13,7 +14,6 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- *
  * @author Philippe Charles
  */
 public abstract class BasicNode<LTYPE> extends AbstractNode {
@@ -51,7 +51,7 @@ public abstract class BasicNode<LTYPE> extends AbstractNode {
 
     protected Image mergeExceptionBadge(Image image) {
         if (factory != null && factory.getException() != null) {
-            Image badge = ImageUtilities.loadImage("ec/nbdemetra/ui/nodes/exclamation-small-red.png", false);
+            Image badge = DemetraIcons.EXCLAMATION_MARK_SMALL_16.getImageIcon().getImage();
             return ImageUtilities.mergeImages(image, badge, 0, 0);
         }
         return image;

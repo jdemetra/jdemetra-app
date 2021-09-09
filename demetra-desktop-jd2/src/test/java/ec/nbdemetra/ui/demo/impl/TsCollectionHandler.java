@@ -28,7 +28,7 @@ import demetra.desktop.components.parts.HasTsAction;
 import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.util.FontAwesomeUtils;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.DemoTsActions;
 import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
@@ -104,7 +104,7 @@ public final class TsCollectionHandler extends TypedDemoComponentHandler<HasTsCo
             menu.add(new AddRandomCommand(i).toAction(view)).setText(Integer.toString(i));
         }
         menu.add(new AddCustomCommand().toAction(view)).setText("Custom...");
-        JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LIST_ADD_16, menu.getPopupMenu());
+        JButton result = DropDownButtonFactory.createDropDownButton(DemetraIcons.LIST_ADD_16, menu.getPopupMenu());
         result.addActionListener(new AddRandomCommand(1).toAction(view));
         return result;
     }
@@ -160,7 +160,7 @@ public final class TsCollectionHandler extends TypedDemoComponentHandler<HasTsCo
     static JButton createRemoveButton(HasTsCollection view) {
         JMenu menu = new JMenu();
         menu.add(((JComponent) view).getActionMap().get(HasTsCollection.CLEAR_ACTION)).setText("Clear");
-        JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LIST_REMOVE_16, menu.getPopupMenu());
+        JButton result = DropDownButtonFactory.createDropDownButton(DemetraIcons.LIST_REMOVE_16, menu.getPopupMenu());
         result.addActionListener(RemoveLastCommand.INSTANCE.toAction(view));
         return result;
     }
@@ -192,7 +192,7 @@ public final class TsCollectionHandler extends TypedDemoComponentHandler<HasTsCo
         for (TsUpdateMode o : TsUpdateMode.values()) {
             menu.add(new JCheckBoxMenuItem(ApplyTsUpdateModeCommand.VALUES.get(o).toAction(view))).setText(o.name());
         }
-        return DropDownButtonFactory.createDropDownButton(DemetraUiIcon.TABLE_RELATION_16, menu.getPopupMenu());
+        return DropDownButtonFactory.createDropDownButton(DemetraIcons.TABLE_RELATION_16, menu.getPopupMenu());
     }
 
     static final class ApplyTsUpdateModeCommand extends JCommand<HasTsCollection> {
@@ -267,7 +267,7 @@ public final class TsCollectionHandler extends TypedDemoComponentHandler<HasTsCo
         for (Action o : selectionActions) {
             menu.add(o);
         }
-        JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.PUZZLE_16, menu);
+        JButton result = DropDownButtonFactory.createDropDownButton(DemetraIcons.PUZZLE_16, menu);
         result.addActionListener(new ActionListener() {
             int i = 0;
 

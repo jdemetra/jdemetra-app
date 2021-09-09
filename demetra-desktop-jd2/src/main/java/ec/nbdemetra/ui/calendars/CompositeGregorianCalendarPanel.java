@@ -7,7 +7,7 @@ package ec.nbdemetra.ui.calendars;
 import com.google.common.collect.ImmutableList;
 import demetra.desktop.design.SwingProperty;
 import demetra.desktop.beans.PropertyChangeSource;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.util.IDialogDescriptorProvider;
 import demetra.desktop.util.ListenerState;
 import demetra.desktop.properties.NodePropertySetBuilder;
@@ -277,7 +277,7 @@ public class CompositeGregorianCalendarPanel extends JPanel implements ExplorerM
 
         @Override
         public Image getIcon(int type) {
-            return DemetraUiIcon.CALENDAR_16.getImageIcon().getImage();
+            return DemetraIcons.CALENDAR_16.getImageIcon().getImage();
         }
 
         @Override

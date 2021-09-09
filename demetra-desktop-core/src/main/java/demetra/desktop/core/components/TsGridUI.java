@@ -16,12 +16,13 @@
  */
 package demetra.desktop.core.components;
 
-import demetra.desktop.IconManager;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.components.JTsGrid;
 import demetra.desktop.components.TsFeatureHelper;
 import demetra.desktop.components.TsGridObs;
 import demetra.desktop.components.TsSelectionBridge;
 import demetra.desktop.components.parts.*;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import demetra.desktop.util.ActionMaps;
 import demetra.desktop.util.Collections2;
 import demetra.desktop.util.InputMaps;
@@ -46,6 +47,7 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.DoubleSummaryStatistics;
@@ -424,7 +426,7 @@ public final class TsGridUI implements InternalUI<JTsGrid> {
 
         item = new JCheckBoxMenuItem(am.get(JTsGrid.REVERSE_ACTION));
         item.setText("Reverse chronology");
-        item.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_SORT_NUMERIC_DESC));
+        item.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_SORT_NUMERIC_DESC));
         result.add(item, index++);
 
         item = new JCheckBoxMenuItem(am.get(TOGGLE_MODE_ACTION));
@@ -435,7 +437,7 @@ public final class TsGridUI implements InternalUI<JTsGrid> {
 
         item = new JMenuItem(am.get(HasObsFormat.EDIT_FORMAT_ACTION));
         item.setText("Edit format...");
-        item.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_GLOBE));
+        item.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_GLOBE));
         result.add(item);
 
         item = new JCheckBoxMenuItem(TsGridCommands.toggleUseColorScheme().toAction(target));
@@ -446,7 +448,7 @@ public final class TsGridUI implements InternalUI<JTsGrid> {
 
         item = new JCheckBoxMenuItem(TsGridCommands.toggleShowBars().toAction(target));
         item.setText("Show bars");
-        item.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_TASKS));
+        item.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_TASKS));
         result.add(item);
 
         item = HasCrosshairSupport.newToggleCrosshairVisibilityMenu(target);
@@ -649,11 +651,9 @@ public final class TsGridUI implements InternalUI<JTsGrid> {
 
     private static final class ComboCellRenderer extends DefaultListCellRenderer {
 
-        private final IconManager monikerUI;
         private final SwingColorSchemeSupport colorSchemeSupport;
 
         public ComboCellRenderer(@Nullable SwingColorSchemeSupport colorSchemeSupport) {
-            this.monikerUI = IconManager.getDefault();
             this.colorSchemeSupport = colorSchemeSupport;
         }
 
@@ -662,7 +662,7 @@ public final class TsGridUI implements InternalUI<JTsGrid> {
             super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             demetra.timeseries.Ts ts = (demetra.timeseries.Ts) value;
             setText(ts.getName());
-            setIcon(monikerUI.getIcon(ts.getMoniker()));
+            setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
             if (colorSchemeSupport != null && index != -1) {
                 if (isSelected) {
                     setBackground(colorSchemeSupport.getPlotColor());

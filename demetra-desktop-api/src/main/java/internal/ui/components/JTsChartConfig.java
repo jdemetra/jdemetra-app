@@ -24,7 +24,7 @@ import demetra.desktop.beans.BeanConfigurator;
 import demetra.desktop.beans.BeanHandler;
 import demetra.desktop.components.JTsChart;
 import demetra.desktop.components.parts.HasChart;
-import demetra.desktop.properties.BeanEditor;
+import demetra.desktop.beans.BeanEditor;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
 import ec.util.chart.ColorScheme;

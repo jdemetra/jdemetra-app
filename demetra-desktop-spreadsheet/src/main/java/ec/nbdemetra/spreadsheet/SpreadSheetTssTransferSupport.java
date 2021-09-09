@@ -20,7 +20,7 @@ import demetra.bridge.TsConverter;
 import demetra.math.matrices.MatrixType;
 import demetra.timeseries.TsCollection;
 import demetra.desktop.Config;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.DataFormatParam;
@@ -45,7 +45,7 @@ import nbbrd.io.text.Property;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
-import demetra.desktop.properties.BeanEditor;
+import demetra.desktop.beans.BeanEditor;
 import demetra.desktop.Converter;
 
 /**
@@ -174,7 +174,7 @@ final class SpreadSheetTssTransferSupport {
         abstract protected String getTitle();
 
         protected Image getImage() {
-            return ImageUtilities.icon2Image(DemetraUiIcon.CLIPBOARD_PASTE_DOCUMENT_TEXT_16);
+            return ImageUtilities.icon2Image(DemetraIcons.CLIPBOARD_PASTE_DOCUMENT_TEXT_16);
         }
 
         @NbBundle.Messages({

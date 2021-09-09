@@ -39,7 +39,7 @@ import nbbrd.io.text.BooleanProperty;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.Parser;
 import nbbrd.io.text.Property;
-import demetra.desktop.properties.BeanEditor;
+import demetra.desktop.beans.BeanEditor;
 import demetra.desktop.Converter;
 import demetra.desktop.Persistable;
 import demetra.desktop.actions.Configurable;

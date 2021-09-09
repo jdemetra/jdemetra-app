@@ -22,7 +22,7 @@ import com.l2fprod.common.propertysheet.PropertySheet;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.l2fprod.common.propertysheet.PropertySheetTable;
 import com.l2fprod.common.propertysheet.PropertySheetTableModel;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.util.NbComponents;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
@@ -81,7 +81,7 @@ public class CoefficientsEditorDialog extends JDialog {
         final JPanel buttonPane = new JPanel();
         BoxLayout layout = new BoxLayout(buttonPane, BoxLayout.LINE_AXIS);
         buttonPane.setLayout(layout);
-        final JButton addButton = new JButton(DemetraUiIcon.LIST_ADD_16);
+        final JButton addButton = new JButton(DemetraIcons.LIST_ADD_16);
         addButton.setPreferredSize(new Dimension(30, 30));
         addButton.setFocusPainted(false);
         addButton.addActionListener(evt -> {
@@ -106,7 +106,7 @@ public class CoefficientsEditorDialog extends JDialog {
         });
         buttonPane.add(addButton);
 
-        final JButton deleteButton = new JButton(DemetraUiIcon.LIST_REMOVE_16);
+        final JButton deleteButton = new JButton(DemetraIcons.LIST_REMOVE_16);
         deleteButton.setEnabled(false);
         deleteButton.setPreferredSize(new Dimension(30, 30));
         deleteButton.setFocusPainted(false);
@@ -129,7 +129,7 @@ public class CoefficientsEditorDialog extends JDialog {
         });
         buttonPane.add(deleteButton);
         
-        final JButton clearButton = new JButton(DemetraUiIcon.BROOM);
+        final JButton clearButton = new JButton(DemetraIcons.BROOM);
         clearButton.setToolTipText("Clear");
         clearButton.setPreferredSize(new Dimension(30, 30));
         clearButton.setFocusPainted(false);
@@ -151,7 +151,7 @@ public class CoefficientsEditorDialog extends JDialog {
         });
         buttonPane.add(clearButton);
 
-        final JButton editButton = new JButton(DemetraUiIcon.PREFERENCES);
+        final JButton editButton = new JButton(DemetraIcons.PREFERENCES);
         editButton.setEnabled(false);
         editButton.setPreferredSize(new Dimension(30, 30));
         editButton.setFocusPainted(false);

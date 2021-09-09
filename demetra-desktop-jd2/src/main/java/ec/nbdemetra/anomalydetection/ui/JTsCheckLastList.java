@@ -22,7 +22,7 @@ import demetra.timeseries.TsCollection;
 import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.components.parts.HasTsCollectionSupport;
 import ec.nbdemetra.anomalydetection.AnomalyItem;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.util.ActionMaps;
 import demetra.desktop.util.InputMaps;
 import ec.tss.Ts;
@@ -557,7 +557,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
                         c.setEnabled(true);
                         if (items.get(rowIndex).isNotProcessable()) {
                             if (column == 0) {
-                                c.setIcon(DemetraUiIcon.WARNING);
+                                c.setIcon(DemetraIcons.WARNING);
                             }
                             c.setBackground(new Color(255, 255, 204));
                             c.setToolTipText(UNPROCESSABLE_MSG);
@@ -576,19 +576,19 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
                             }
                         } else if (items.get(rowIndex).isInvalid()) {
                             if (column == 0) {
-                                c.setIcon(DemetraUiIcon.EXCLAMATION_MARK_16);
+                                c.setIcon(DemetraIcons.EXCLAMATION_MARK_16);
                             }
                             c.setBackground(new Color(255, 204, 204));
                             c.setToolTipText(NO_DATA_MSG);
                         }
                     } else if (items.get(rowIndex).isInvalid()) {
                         if (column == 0) {
-                            c.setIcon(DemetraUiIcon.EXCLAMATION_MARK_16);
+                            c.setIcon(DemetraIcons.EXCLAMATION_MARK_16);
                         }
                         c.setToolTipText(NO_DATA_MSG);
                     } else if (items.get(rowIndex).isNotProcessable()) {
                         if (column == 0) {
-                            c.setIcon(DemetraUiIcon.WARNING);
+                            c.setIcon(DemetraIcons.WARNING);
                         }
                         c.setToolTipText(UNPROCESSABLE_MSG);
                     }

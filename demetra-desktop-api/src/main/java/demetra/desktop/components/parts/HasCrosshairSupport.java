@@ -1,6 +1,6 @@
 package demetra.desktop.components.parts;
 
-import demetra.desktop.IconManager;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.beans.PropertyChangeBroadcaster;
 import ec.util.various.swing.FontAwesome;
 import ec.util.various.swing.JCommand;
@@ -24,7 +24,7 @@ public class HasCrosshairSupport {
         JCommand<HasCrosshair>.ActionAdapter action = ToggleCrosshairVisibilityCommand.INSTANCE.toAction(component);
         JCheckBoxMenuItem result = new JCheckBoxMenuItem(action);
         result.setText("Show crosshair");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_CROSSHAIRS));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_CROSSHAIRS));
         return result;
     }
 

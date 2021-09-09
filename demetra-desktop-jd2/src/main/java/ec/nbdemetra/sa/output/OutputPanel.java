@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.sa.output;
 
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import ec.tss.sa.ISaOutputFactory;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ public class OutputPanel extends javax.swing.JPanel implements ExplorerManager.P
         outputProperties = new org.openide.explorer.propertysheet.PropertySheetView();
         jToolBar1 = new javax.swing.JToolBar();
         jLabel2 = new javax.swing.JLabel();
-        addButton = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LIST_ADD_16, addPopupMenu);
+        addButton = DropDownButtonFactory.createDropDownButton(DemetraIcons.LIST_ADD_16, addPopupMenu);
         removeButton = new javax.swing.JButton();
 
         jSplitPane1.setDividerLocation(150);
@@ -96,7 +96,7 @@ public class OutputPanel extends javax.swing.JPanel implements ExplorerManager.P
         jLabel2.setText(org.openide.util.NbBundle.getMessage(OutputPanel.class, "OutputPanel.jLabel2.text")); // NOI18N
         jToolBar1.add(jLabel2);
 
-        addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/list-add_16x16.png"))); // NOI18N
+        addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/icons/list-add_16x16.png"))); // NOI18N
         addButton.setToolTipText(org.openide.util.NbBundle.getMessage(OutputPanel.class, "OutputPanel.addButton.toolTipText_1")); // NOI18N
         addButton.setFocusable(false);
         addButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -108,7 +108,7 @@ public class OutputPanel extends javax.swing.JPanel implements ExplorerManager.P
         });
         jToolBar1.add(addButton);
 
-        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/list-remove_16x16.png"))); // NOI18N
+        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/icons/list-remove_16x16.png"))); // NOI18N
         removeButton.setFocusable(false);
         removeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         removeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);

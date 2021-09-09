@@ -21,7 +21,7 @@ import demetra.desktop.notification.MessageType;
 import demetra.desktop.notification.NotifyUtil;
 import ec.nbdemetra.anomalydetection.ControlNode;
 import ec.nbdemetra.ui.ActiveViewManager;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import ec.nbdemetra.ui.IActiveView;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
@@ -230,7 +230,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
         result.setFloatable(false);
         result.addSeparator();
         result.add(Box.createRigidArea(new Dimension(5, 0)));
-        runButton = result.add(new AbstractAction("", DemetraUiIcon.COMPILE_16) {
+        runButton = result.add(new AbstractAction("", DemetraIcons.COMPILE_16) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 grid.calculateOutliers();
@@ -244,7 +244,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
         itemsLabel = (JLabel) result.add(new JLabel("No items"));
         result.addSeparator();
 
-        prefButton = result.add(new AbstractAction("", DemetraUiIcon.PREFERENCES) {
+        prefButton = result.add(new AbstractAction("", DemetraIcons.PREFERENCES) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new PropertySheetDialogBuilder().title("Properties").editNode(node);
@@ -286,7 +286,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
             }
         });
 
-        JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.MAGNIFYING_TOOL, addPopup);
+        JButton result = DropDownButtonFactory.createDropDownButton(DemetraIcons.MAGNIFYING_TOOL, addPopup);
         result.setToolTipText("Zoom ratio of the current view");
         return result;
     }

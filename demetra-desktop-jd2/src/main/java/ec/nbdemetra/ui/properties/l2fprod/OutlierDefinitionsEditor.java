@@ -6,7 +6,7 @@ package ec.nbdemetra.ui.properties.l2fprod;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import ec.nbdemetra.ui.DemetraUI;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.util.NbComponents;
 import ec.nbdemetra.ui.properties.l2fprod.CheckComboBox.CheckListItem;
 import ec.tstoolkit.timeseries.Day;
@@ -96,7 +96,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                         subPane.setLayout(subLayout);
                         subPane.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
 
-                        JButton clearButton = new JButton("Clear", DemetraUiIcon.BROOM);
+                        JButton clearButton = new JButton("Clear", DemetraIcons.BROOM);
                         clearButton.addActionListener(event -> {
                             OutliersModel mdl = (OutliersModel) table.getModel();
                             table.setModel(new OutliersModel(mdl.getFirstYear(), mdl.getLastYear(), mdl.getFreq(),

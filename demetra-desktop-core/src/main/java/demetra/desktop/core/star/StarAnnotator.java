@@ -4,6 +4,7 @@
  */
 package demetra.desktop.core.star;
 
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.nodes.NodeAnnotatorSpi;
 import demetra.desktop.star.StarList;
 import demetra.tsprovider.DataSource;
@@ -14,7 +15,6 @@ import org.openide.util.lookup.ServiceProvider;
 import java.awt.*;
 
 /**
- *
  * @author Philippe Charles
  */
 @ServiceProvider(service = NodeAnnotatorSpi.class)
@@ -28,7 +28,7 @@ public class StarAnnotator implements NodeAnnotatorSpi {
     @Override
     public Image annotateIcon(Node node, Image image) {
         if (isStarred(node)) {
-            Image badge = ImageUtilities.loadImage("ec/nbdemetra/ui/nodes/bullet_star.png", false);
+            Image badge = DemetraIcons.BULLET_STAR.getImageIcon().getImage();
             return ImageUtilities.mergeImages(image, badge, 10, 0);
 
 //            String ressource = !starred ? "ec/nbdemetra/ui/nodes/star-empty.png" : "ec/nbdemetra/ui/nodes/star.png";

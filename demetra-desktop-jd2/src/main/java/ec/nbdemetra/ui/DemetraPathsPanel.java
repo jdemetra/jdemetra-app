@@ -4,23 +4,12 @@
  */
 package ec.nbdemetra.ui;
 
-import demetra.tsprovider.FileLoader;
 import demetra.desktop.TsManager;
 import demetra.desktop.nodes.AbstractNodeBuilder;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.tsprovider.FileLoader;
 import ec.tss.tsproviders.IFileLoader;
 import ec.util.desktop.DesktopManager;
-import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFileChooser;
-import javax.swing.tree.TreeSelectionModel;
 import org.openide.explorer.ExplorerManager;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.nodes.AbstractNode;
@@ -30,6 +19,15 @@ import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.Lookups;
+
+import javax.swing.*;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerManager.Provider {
 
@@ -81,7 +79,7 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
         jToolBar1.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jToolBar1.setRollover(true);
 
-        addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/list-add_16x16.png"))); // NOI18N
+        addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/icons/list-add_16x16.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(addButton, org.openide.util.NbBundle.getMessage(DemetraPathsPanel.class, "DemetraPathsPanel.addButton.text")); // NOI18N
         addButton.setEnabled(false);
         addButton.setFocusable(false);
@@ -94,7 +92,7 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
         });
         jToolBar1.add(addButton);
 
-        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/list-remove_16x16.png"))); // NOI18N
+        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/icons/list-remove_16x16.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(removeButton, org.openide.util.NbBundle.getMessage(DemetraPathsPanel.class, "DemetraPathsPanel.removeButton.text")); // NOI18N
         removeButton.setEnabled(false);
         removeButton.setFocusable(false);
@@ -107,7 +105,7 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
         });
         jToolBar1.add(removeButton);
 
-        moveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/go-up_16x16.png"))); // NOI18N
+        moveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/icons/go-up_16x16.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(moveUpButton, org.openide.util.NbBundle.getMessage(DemetraPathsPanel.class, "DemetraPathsPanel.moveUpButton.text")); // NOI18N
         moveUpButton.setEnabled(false);
         moveUpButton.setFocusable(false);
@@ -120,7 +118,7 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
         });
         jToolBar1.add(moveUpButton);
 
-        moveDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/go-down_16x16.png"))); // NOI18N
+        moveDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/icons/go-down_16x16.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(moveDownButton, org.openide.util.NbBundle.getMessage(DemetraPathsPanel.class, "DemetraPathsPanel.moveDownButton.text")); // NOI18N
         moveDownButton.setEnabled(false);
         moveDownButton.setFocusable(false);
@@ -136,19 +134,19 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(pathView, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(pathView, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
-                    .addComponent(pathView, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(0, 11, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                                        .addComponent(pathView, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                                .addGap(0, 11, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -175,6 +173,7 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
         Index.ArrayChildren children = (Index.ArrayChildren) node.getParentNode().getChildren();
         children.moveDown(children.indexOf(node));
     }//GEN-LAST:event_moveDownButtonActionPerformed
+
     @Override
     public ExplorerManager getExplorerManager() {
         return em;
@@ -188,19 +187,19 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
             setDisplayName(loader.getDisplayName());
         }
 
-        private Optional<Image> lookupIcon(int type, boolean opened) {
+        private Image lookupIcon(int type, boolean opened) {
             FileLoader o = getLookup().lookup(FileLoader.class);
-            return DataSourceProviderBuddySupport.getDefault().getIcon(o.getSource(), type, opened);
+            return DataSourceProviderBuddySupport.getDefault().getImage(o.getSource(), type, opened);
         }
 
         @Override
         public Image getIcon(int type) {
-            return lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
+            return lookupIcon(type, false);
         }
 
         @Override
         public Image getOpenedIcon(int type) {
-            return lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
+            return lookupIcon(type, true);
         }
     }
 
@@ -292,6 +291,7 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
     boolean valid() {
         return true;
     }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JToolBar jToolBar1;

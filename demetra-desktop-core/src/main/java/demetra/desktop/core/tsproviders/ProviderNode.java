@@ -35,6 +35,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.nodes.*;
+import org.openide.util.Exceptions;
 import org.openide.util.datatransfer.PasteType;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
@@ -44,7 +45,6 @@ import org.openide.util.lookup.ProxyLookup;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
-import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
@@ -92,25 +92,25 @@ public final class ProviderNode extends AbstractNode {
         return Nodes.actionsForPath(PROVIDER_ACTION_PATH);
     }
 
-    private java.util.Optional<Image> lookupIcon(int type, boolean opened) {
+    private Image lookupIcon(int type, boolean opened) {
         DataSourceProvider o = getLookup().lookup(DataSourceProvider.class);
-        return DataSourceProviderBuddySupport.getDefault().getIcon(o.getSource(), type, opened);
+        return DataSourceProviderBuddySupport.getDefault().getImage(o.getSource(), type, opened);
     }
 
     @Override
     public Image getIcon(int type) {
-        return lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
+        return lookupIcon(type, false);
     }
 
     @Override
     public Image getOpenedIcon(int type) {
-        return lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
+        return lookupIcon(type, true);
     }
 
     @Override
     protected Sheet createSheet() {
         DataSourceProvider o = getLookup().lookup(DataSourceProvider.class);
-        return DataSourceProviderBuddySupport.getDefault().get(o).createSheet();
+        return DataSourceProviderBuddySupport.getDefault().createSheet(o.getSource());
     }
 
     @Override
@@ -196,12 +196,8 @@ public final class ProviderNode extends AbstractNode {
         public void open() {
             DataSourceLoader loader = getLookup().lookup(DataSourceLoader.class);
             Object bean = loader.newBean();
-            try {
-                if (DataSourceProviderBuddySupport.getDefault().get(loader).editBean("Open data source", bean)) {
-                    loader.open(loader.encodeBean(bean));
-                }
-            } catch (IntrospectionException ex) {
-                throw new RuntimeException(ex);
+            if (DataSourceProviderBuddySupport.getDefault().getBeanEditor(loader.getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
+                loader.open(loader.encodeBean(bean));
             }
         }
     }

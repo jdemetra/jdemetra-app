@@ -6,22 +6,21 @@
 package ec.nbdemetra.sa;
 
 import demetra.bridge.TsConverter;
-import demetra.desktop.IconManager;
-import ec.nbdemetra.ui.NbUtilities;
 import demetra.desktop.nodes.ControlNode;
 import demetra.desktop.properties.NodePropertySetBuilder;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import ec.nbdemetra.ui.NbUtilities;
 import ec.tss.sa.SaItem;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.MetaData;
-import java.awt.Image;
-import java.util.Optional;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.Lookups;
 
+import java.awt.*;
+
 /**
- *
  * @author Thomas Witthohn
  */
 public class SaItemNode extends AbstractNode {
@@ -33,19 +32,19 @@ public class SaItemNode extends AbstractNode {
         setShortDescription(MultiLineNameUtil.toHtml(item.getName()));
     }
 
-    private Optional<Image> lookupIcon(int type, boolean opened) {
+    private Image lookupIcon(int type, boolean opened) {
         SaItem item = getLookup().lookup(SaItem.class);
-        return IconManager.getDefault().getIcon(TsConverter.toTsMoniker(item.getMoniker()), type, opened);
+        return DataSourceProviderBuddySupport.getDefault().getImage(TsConverter.toTsMoniker(item.getMoniker()), type, opened);
     }
 
     @Override
     public Image getOpenedIcon(int type) {
-        return lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
+        return lookupIcon(type, true);
     }
 
     @Override
     public Image getIcon(int type) {
-        return lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
+        return lookupIcon(type, false);
     }
 
     @Override

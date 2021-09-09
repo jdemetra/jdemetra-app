@@ -48,24 +48,24 @@ final class ProviderExceptionNode extends ExceptionNode {
         return TsManager.getDefault().getProvider(DataSourceProvider.class, providerName).get().getDisplayName(ex);
     }
 
-    private java.util.Optional<Image> lookupIcon(int type, boolean opened) {
+    private Image lookupIcon(int type, boolean opened) {
         IOException o = getLookup().lookup(IOException.class);
-        return DataSourceProviderBuddySupport.getDefault().getIcon(providerName, o, type, opened);
+        return DataSourceProviderBuddySupport.getDefault().getImage(providerName, o, type, opened);
     }
 
     @Override
     public Image getIcon(int type) {
-        return lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
+        return lookupIcon(type, false);
     }
 
     @Override
     public Image getOpenedIcon(int type) {
-        return lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
+        return lookupIcon(type, true);
     }
 
     @Override
     protected Sheet createSheet() {
         IOException ex = getLookup().lookup(IOException.class);
-        return DataSourceProviderBuddySupport.getDefault().get(providerName).createSheet(ex);
+        return DataSourceProviderBuddySupport.getDefault().createSheet(providerName, ex);
     }
 }

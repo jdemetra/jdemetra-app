@@ -9,22 +9,26 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.bridge.TsConverter;
-import demetra.desktop.notification.MessageType;
-import demetra.desktop.notification.NotifyUtil;
-import demetra.timeseries.TsCollection;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.DemetraOptions;
 import demetra.desktop.TsActions;
-import demetra.desktop.IconManager;
 import demetra.desktop.TsManager;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.datatransfer.DataTransfers;
+import demetra.desktop.notification.MessageType;
+import demetra.desktop.notification.NotifyUtil;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import demetra.desktop.util.ListTableModel;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.util.PopupMenuAdapter;
 import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
 import ec.nbdemetra.sa.MultiProcessingController.SaProcessingState;
-import ec.nbdemetra.ui.*;
+import ec.nbdemetra.ui.ActiveViewManager;
+import ec.nbdemetra.ui.IActiveView;
+import ec.nbdemetra.ui.Menus;
 import ec.nbdemetra.ui.Menus.DynamicPopup;
+import ec.nbdemetra.ui.OldTsUtil;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.ui.JSpecSelectionComponent;
@@ -73,6 +77,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.BeanInfo;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.*;
@@ -216,7 +221,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         toolBarRepresentation.setFloatable(false);
         toolBarRepresentation.addSeparator();
         toolBarRepresentation.add(Box.createRigidArea(new Dimension(5, 0)));
-        runButton = toolBarRepresentation.add(new AbstractAction("", DemetraUiIcon.COMPILE_16) {
+        runButton = toolBarRepresentation.add(new AbstractAction("", DemetraIcons.COMPILE_16) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 start(false);
@@ -230,7 +235,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         toolBarRepresentation.addSeparator();
 
         JPopupMenu specPopup = new JPopupMenu();
-        final JButton specButton = (JButton) toolBarRepresentation.add(DropDownButtonFactory.createDropDownButton(DemetraUiIcon.BLOG_16, specPopup));
+        final JButton specButton = (JButton) toolBarRepresentation.add(DropDownButtonFactory.createDropDownButton(DemetraIcons.BLOG_16, specPopup));
         specPopup.add(new JSpecSelectionComponent()).addPropertyChangeListener(evt -> {
             String p = evt.getPropertyName();
             if (p.equals(JSpecSelectionComponent.SPECIFICATION_PROPERTY) && evt.getNewValue() != null) {
@@ -856,8 +861,6 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     static class SeriesRenderer extends SimpleRenderer<SaItem> {
 
-        final IconManager monikerUI = IconManager.getDefault();
-
         @Override
         protected String getText(SaItem item) {
             String name = item.getName();
@@ -872,7 +875,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         public Icon getIcon(SaItem item) {
-            return monikerUI.getIcon(TsConverter.toTsMoniker(item.getTs().getMoniker()));
+            return DataSourceProviderBuddySupport.getDefault().getIcon(TsConverter.toTsMoniker(item.getTs().getMoniker()), BeanInfo.ICON_COLOR_16x16, false);
         }
     }
 
@@ -1039,7 +1042,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         @Override
         public Icon getIcon(SaItem item) {
             if (!Strings.isNullOrEmpty(item.getComment())) {
-                return DemetraUiIcon.COMMENT.getImageIcon();
+                return DemetraIcons.COMMENT;
             } else {
                 return null;
             }

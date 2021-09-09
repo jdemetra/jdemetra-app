@@ -6,24 +6,22 @@ package ec.ui.view.tsprocessing;
 
 import com.google.common.base.Strings;
 import demetra.bridge.TsConverter;
-import demetra.desktop.IconManager;
 import demetra.desktop.TsManager;
+import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.timeseries.TsInformationType;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
 import ec.tss.documents.TsDocument;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.algorithm.IProcSpecification;
-import java.awt.Font;
-import javax.swing.Box;
-import javax.swing.JLabel;
-import javax.swing.JToolBar;
-import javax.swing.TransferHandler;
-import demetra.desktop.datatransfer.DataTransfer;
-import demetra.timeseries.TsInformationType;
+
+import javax.swing.*;
+import java.awt.*;
+import java.beans.BeanInfo;
 import java.util.Optional;
 
 /**
- *
  * @author Jean Palate
  */
 public class TsProcessingViewer extends DefaultProcessingViewer<TsDocument> {
@@ -36,6 +34,7 @@ public class TsProcessingViewer extends DefaultProcessingViewer<TsDocument> {
         }
         return viewer;
     }
+
     // < FACTORY METHODS
     // CONSTANTS
     private static final Font DROP_DATA_FONT = new JLabel().getFont().deriveFont(Font.ITALIC);
@@ -71,11 +70,11 @@ public class TsProcessingViewer extends DefaultProcessingViewer<TsDocument> {
             specLabel.setVisible(false);
         } else {
             dropDataLabel.setVisible(false);
-            String displayName = ((Ts)doc.getInput()).getName();
+            String displayName = ((Ts) doc.getInput()).getName();
             tsLabel.setText(MultiLineNameUtil.lastWithMax(displayName, 70));
             tsLabel.setToolTipText(!Strings.isNullOrEmpty(displayName) ? MultiLineNameUtil.toHtml(displayName) : null);
             TsMoniker moniker = doc.getMoniker();
-            tsLabel.setIcon(IconManager.getDefault().getIcon(TsConverter.toTsMoniker(moniker)));
+            tsLabel.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(TsConverter.toTsMoniker(moniker), BeanInfo.ICON_COLOR_16x16, false));
             tsLabel.setVisible(true);
             IProcSpecification spec = doc.getSpecification();
             specLabel.setText("Spec: " + (spec != null ? spec.toString() : ""));

@@ -27,7 +27,7 @@ import ec.nbdemetra.anomalydetection.AnomalyItem;
 import ec.nbdemetra.anomalydetection.ControlNode;
 import ec.nbdemetra.anomalydetection.report.CheckLastReportAction;
 import ec.nbdemetra.ui.ActiveViewManager;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import ec.nbdemetra.ui.IActiveView;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
@@ -187,7 +187,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
         toolBar.setFloatable(false);
         toolBar.addSeparator();
         toolBar.add(Box.createRigidArea(new Dimension(5, 0)));
-        runButton = toolBar.add(new AbstractAction("", DemetraUiIcon.COMPILE_16) {
+        runButton = toolBar.add(new AbstractAction("", DemetraIcons.COMPILE_16) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 start(false);
@@ -203,7 +203,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
         toolBar.add(createLastButton(list));
         toolBar.addSeparator();
 
-        prefButton = toolBar.add(new AbstractAction("", DemetraUiIcon.PREFERENCES) {
+        prefButton = toolBar.add(new AbstractAction("", DemetraIcons.PREFERENCES) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new PropertySheetDialogBuilder().title("Properties").editNode(n);
@@ -218,7 +218,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
         toolBar.add(Box.createHorizontalGlue());
         toolBar.addSeparator();
 
-        reportButton = toolBar.add(new AbstractAction("", DemetraUiIcon.DOCUMENT_16) {
+        reportButton = toolBar.add(new AbstractAction("", DemetraIcons.DOCUMENT_16) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 generateReport();
@@ -269,7 +269,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
             }
         });
 
-        JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.BLOG_16, addPopup);
+        JButton result = DropDownButtonFactory.createDropDownButton(DemetraIcons.BLOG_16, addPopup);
         result.setToolTipText("Specification used for the Check Last processing");
         return result;
     }
@@ -300,7 +300,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
             }
         });
 
-        JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.NB_CHECK_LAST_16, addPopup);
+        JButton result = DropDownButtonFactory.createDropDownButton(DemetraIcons.NB_CHECK_LAST_16, addPopup);
         result.setToolTipText("Number of last observations to check");
         return result;
     }

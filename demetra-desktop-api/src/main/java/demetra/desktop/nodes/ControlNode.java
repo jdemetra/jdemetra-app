@@ -4,12 +4,12 @@
  */
 package demetra.desktop.nodes;
 
-import demetra.desktop.IconManager;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.TsSelectionBridge;
 import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.properties.NodePropertySetBuilder;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import demetra.desktop.util.FrozenTsHelper;
 import demetra.timeseries.*;
 import demetra.tsprovider.DataSourceProvider;
@@ -30,7 +30,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 /**
- *
  * @author Philippe Charles
  */
 public class ControlNode {
@@ -154,19 +153,19 @@ public class ControlNode {
             setShortDescription(MultiLineNameUtil.toHtml(ts.getName()));
         }
 
-        private Optional<Image> lookupIcon(int type, boolean opened) {
+        private Image lookupIcon(int type, boolean opened) {
             demetra.timeseries.Ts ts = getLookup().lookup(demetra.timeseries.Ts.class);
-            return IconManager.getDefault().getIcon(ts.getMoniker(), type, opened);
+            return DataSourceProviderBuddySupport.getDefault().getImage(ts.getMoniker(), type, opened);
         }
 
         @Override
         public Image getOpenedIcon(int type) {
-            return lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
+            return lookupIcon(type, true);
         }
 
         @Override
         public Image getIcon(int type) {
-            return lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
+            return lookupIcon(type, false);
         }
 
         @Override

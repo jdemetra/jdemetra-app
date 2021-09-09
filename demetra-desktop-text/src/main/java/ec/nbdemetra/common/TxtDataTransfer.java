@@ -24,7 +24,7 @@ import demetra.math.matrices.MatrixType;
 import demetra.desktop.Config;
 import demetra.desktop.ConfigEditor;
 import demetra.desktop.beans.BeanHandler;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.tss.Ts;
@@ -48,7 +48,7 @@ import org.openide.util.lookup.ServiceProvider;
 import demetra.desktop.datatransfer.DataTransferSpi;
 import nbbrd.io.text.BooleanProperty;
 import org.openide.util.lookup.ServiceProviders;
-import demetra.desktop.properties.BeanEditor;
+import demetra.desktop.beans.BeanEditor;
 import demetra.desktop.Converter;
 import demetra.desktop.Persistable;
 import demetra.desktop.actions.Configurable;
@@ -499,7 +499,7 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
 
             return new PropertySheetDialogBuilder()
                     .title("Configure Tab-delimited values")
-                    .icon(DemetraUiIcon.CLIPBOARD_PASTE_DOCUMENT_TEXT_16)
+                    .icon(DemetraIcons.CLIPBOARD_PASTE_DOCUMENT_TEXT_16)
                     .editSheet(sheet);
         }
     }

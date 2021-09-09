@@ -17,19 +17,17 @@
 package demetra.desktop.core.tsproviders;
 
 import demetra.desktop.TsManager;
-import demetra.tsprovider.FileLoader;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.tsprovider.FileLoader;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.Exceptions;
-import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
 import java.util.Comparator;
 
 /**
@@ -66,22 +64,15 @@ public final class OpenProvidersNodeAction extends AbstractAction implements Pre
 
         public AbstractActionImpl(FileLoader loader) {
             super(loader.getDisplayName());
-            DataSourceProviderBuddySupport.getDefault()
-                    .getIcon(loader.getSource(), BeanInfo.ICON_COLOR_16x16, false)
-                    .map(ImageUtilities::image2Icon)
-                    .ifPresent(o -> super.putValue(Action.SMALL_ICON, o));
+            super.putValue(Action.SMALL_ICON, DataSourceProviderBuddySupport.getDefault().getIcon(loader.getSource(), BeanInfo.ICON_COLOR_16x16, false));
             this.loader = loader;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             Object bean = loader.newBean();
-            try {
-                if (DataSourceProviderBuddySupport.getDefault().get(loader).editBean("Open data source", bean)) {
-                    loader.open(loader.encodeBean(bean));
-                }
-            } catch (IntrospectionException ex) {
-                Exceptions.printStackTrace(ex);
+            if (DataSourceProviderBuddySupport.getDefault().getBeanEditor(loader.getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
+                loader.open(loader.encodeBean(bean));
             }
         }
     }

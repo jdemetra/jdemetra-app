@@ -16,7 +16,7 @@
  */
 package demetra.desktop.core.components;
 
-import demetra.desktop.IconManager;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.actions.PrintableWithPreview;
 import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
@@ -46,14 +46,14 @@ public class InternalComponents {
     public static JMenuItem newCopyImageMenu(JTimeSeriesChart chart) {
         JMenuItem result = new JMenuItem(JTimeSeriesChartCommand.copyImage().toAction(chart));
         result.setText("Clipboard");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
         return result;
     }
 
     public static JMenuItem newSaveImageMenu(JTimeSeriesChart chart) {
         JMenuItem result = new JMenuItem(JTimeSeriesChartCommand.saveImage().toAction(chart));
         result.setText("File...");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_PICTURE_O));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_PICTURE_O));
         return result;
     }
 
@@ -70,7 +70,7 @@ public class InternalComponents {
     public static JMenuItem newResetZoomMenu(ActionMap am) {
         JMenuItem result = new JMenuItem(am.get(RESET_ZOOM_ACTION));
         result.setText("Show all");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_EYE));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_EYE));
         return result;
     }
 
@@ -82,7 +82,7 @@ public class InternalComponents {
     @NonNull
     public static JMenuItem menuItemOf(@NonNull PrintableWithPreview component) {
         JMenuItem result = new JMenuItem(printPreview().toAction(component));
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_PRINT));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_PRINT));
         result.setText("Printer...");
         return result;
     }

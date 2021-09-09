@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.sa.output;
 
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import ec.tss.sa.ISaOutputFactory;
 import java.awt.Image;
 import org.openide.nodes.AbstractNode;
@@ -37,7 +37,7 @@ public abstract class AbstractOutputNode<T> extends AbstractNode {
  
     @Override
     public Image getIcon(int type) {
-        return DemetraUiIcon.DOCUMENT_PRINT_16.getImageIcon().getImage();
+        return DemetraIcons.DOCUMENT_PRINT_16.getImageIcon().getImage();
     }
     
 }

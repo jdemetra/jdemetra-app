@@ -5,7 +5,7 @@
 package ec.nbdemetra.ui;
 
 import com.google.common.base.Strings;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import ec.tstoolkit.design.IBuilder;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
@@ -41,7 +41,7 @@ public final class IdNodes {
 
         @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
-            g.drawImage(DemetraUiIcon.DOCUMENT_16.getImageIcon().getImage(), x, y, null);
+            g.drawImage(DemetraIcons.DOCUMENT_16.getImageIcon().getImage(), x, y, null);
             String tail = id.tail();
             if (!Strings.isNullOrEmpty(tail)) {
                 Graphics2D g2 = (Graphics2D) g;

@@ -18,7 +18,7 @@ package ec.nbdemetra.spreadsheet;
 
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.util.SingleFileExporter;
 import demetra.desktop.properties.NodePropertySetBuilder;
@@ -70,7 +70,7 @@ public final class SpreadsheetTsSave implements TsActionsSaveSpi {
 
     @Override
     public Image getIcon(int type, boolean opened) {
-        return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
+        return ImageUtilities.icon2Image(DemetraIcons.PUZZLE_16);
     }
 
     @Override

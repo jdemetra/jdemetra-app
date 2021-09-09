@@ -5,7 +5,7 @@
 package ec.nbdemetra.ui.tools;
 
 import demetra.desktop.components.parts.HasTsCollection;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.nodes.ControlNode;
 import demetra.desktop.components.JTsGrid;
@@ -105,21 +105,21 @@ public final class GridTopComponent extends TopComponent implements ExplorerMana
         JButton copy = new JButton(getGrid().getActionMap().get(HasTsCollection.COPY_ALL_ACTION));
         copy.setText("");
         copy.setToolTipText("Copy");
-        copy.setIcon(DemetraUiIcon.EDIT_COPY_16);
+        copy.setIcon(DemetraIcons.EDIT_COPY_16);
         result.add(copy);
 
         JToggleButton transpose = new JToggleButton(getGrid().getActionMap().get(TRANSPOSE_ACTION));
         transpose.setText("");
         transpose.setToolTipText("Transpose");
-        transpose.setIcon(DemetraUiIcon.HORIZONTAL_16);
-        transpose.setSelectedIcon(DemetraUiIcon.VERTICAL_16);
+        transpose.setIcon(DemetraIcons.HORIZONTAL_16);
+        transpose.setSelectedIcon(DemetraIcons.VERTICAL_16);
         result.add(transpose);
 
         JToggleButton reverse = new JToggleButton(getGrid().getActionMap().get(REVERSE_ACTION));
         reverse.setText("");
         reverse.setToolTipText("Reverse chronology");
-        reverse.setIcon(DemetraUiIcon.SORT_DATE_16);
-        reverse.setSelectedIcon(DemetraUiIcon.SORT_DATE_DESCENDING_16);
+        reverse.setIcon(DemetraIcons.SORT_DATE_16);
+        reverse.setSelectedIcon(DemetraIcons.SORT_DATE_DESCENDING_16);
         result.add(reverse);
 
         return result;

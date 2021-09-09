@@ -102,27 +102,27 @@ abstract public class DataSetNode extends AbstractNode {
         return Nodes.actionsForPath(actionPath);
     }
 
-    private java.util.Optional<Image> lookupIcon(int type, boolean opened) {
+    private Image lookupIcon(int type, boolean opened) {
         DataSet o = getLookup().lookup(DataSet.class);
-        return DataSourceProviderBuddySupport.getDefault().getIcon(o, type, opened);
+        return DataSourceProviderBuddySupport.getDefault().getImage(o, type, opened);
     }
 
     @Override
     public Image getIcon(int type) {
-        Image image = lookupIcon(type, false).orElseGet(() -> super.getIcon(type));
+        Image image = lookupIcon(type, false);
         return NodeAnnotator.getDefault().annotateIcon(this, image);
     }
 
     @Override
     public Image getOpenedIcon(int type) {
-        Image image = lookupIcon(type, true).orElseGet(() -> super.getOpenedIcon(type));
+        Image image = lookupIcon(type, true);
         return NodeAnnotator.getDefault().annotateIcon(this, image);
     }
 
     @Override
     protected Sheet createSheet() {
         DataSet o = getLookup().lookup(DataSet.class);
-        return DataSourceProviderBuddySupport.getDefault().get(o).createSheet(o);
+        return DataSourceProviderBuddySupport.getDefault().createSheet(o);
     }
 
     @Override

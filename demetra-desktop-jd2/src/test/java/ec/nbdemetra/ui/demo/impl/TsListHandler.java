@@ -16,7 +16,7 @@
  */
 package ec.nbdemetra.ui.demo.impl;
 
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import demetra.desktop.components.JTsTable;
 import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
@@ -72,7 +72,7 @@ public final class TsListHandler extends TypedDemoComponentHandler<JTsTable> {
             item.setState(currentInfo.contains(o));
             menu.add(item);
         }
-        JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.COMPILE_16, menu);
+        JButton result = DropDownButtonFactory.createDropDownButton(DemetraIcons.COMPILE_16, menu);
         result.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {

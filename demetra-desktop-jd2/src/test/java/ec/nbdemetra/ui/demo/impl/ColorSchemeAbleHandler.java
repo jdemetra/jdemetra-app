@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.demo.impl;
 
 import demetra.desktop.components.parts.HasColorScheme;
 import demetra.desktop.components.parts.HasColorSchemeSupport;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import nbbrd.service.ServiceProvider;
 import org.openide.awt.DropDownButtonFactory;
@@ -47,7 +47,7 @@ public final class ColorSchemeAbleHandler implements DemoComponentHandler {
     public void fillToolBar(JToolBar toolBar, Component c) {
         JMenu menu = HasColorSchemeSupport.menuOf((JComponent & HasColorScheme) c);
 
-        JButton colorSchemeBtn = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.COLOR_SWATCH_16, menu.getPopupMenu());
+        JButton colorSchemeBtn = DropDownButtonFactory.createDropDownButton(DemetraIcons.COLOR_SWATCH_16, menu.getPopupMenu());
         colorSchemeBtn.addActionListener(new AbstractAction() {
             int i = 0;
 

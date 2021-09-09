@@ -9,7 +9,7 @@ import demetra.timeseries.TsCollection;
 import demetra.desktop.TsManager;
 import ec.nbdemetra.sa.composite.DirectIndirectViewFactory;
 import ec.nbdemetra.ui.ActiveViewManager;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import ec.nbdemetra.ui.IActiveView;
 import demetra.desktop.util.NbComponents;
 import ec.nbdemetra.ws.ui.JSpecSelectionComponent;
@@ -108,7 +108,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
         toolBarRepresentation.setFloatable(false);
         toolBarRepresentation.addSeparator();
         toolBarRepresentation.add(Box.createRigidArea(new Dimension(5, 0)));
-        runButton = toolBarRepresentation.add(new AbstractAction("", DemetraUiIcon.COMPILE_16) {
+        runButton = toolBarRepresentation.add(new AbstractAction("", DemetraIcons.COMPILE_16) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 start();

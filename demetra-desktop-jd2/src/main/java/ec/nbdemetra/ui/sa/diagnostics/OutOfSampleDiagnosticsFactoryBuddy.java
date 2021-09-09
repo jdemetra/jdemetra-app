@@ -19,7 +19,7 @@ package ec.nbdemetra.ui.sa.diagnostics;
 import demetra.desktop.ConfigEditor;
 import demetra.desktop.beans.BeanHandler;
 import demetra.desktop.Config;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.nbdemetra.ui.sa.SaDiagnosticsFactoryBuddy;
@@ -38,7 +38,7 @@ import nbbrd.io.text.BooleanProperty;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.Parser;
 import nbbrd.io.text.Property;
-import demetra.desktop.properties.BeanEditor;
+import demetra.desktop.beans.BeanEditor;
 import demetra.desktop.Converter;
 import demetra.desktop.Persistable;
 import demetra.desktop.actions.Configurable;
@@ -161,7 +161,7 @@ public final class OutOfSampleDiagnosticsFactoryBuddy extends SaDiagnosticsFacto
     }
 
     private static Image getIcon() {
-        return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
+        return ImageUtilities.icon2Image(DemetraIcons.PUZZLE_16);
     }
 
     private static BeanConfigurator<OutOfSampleDiagnosticsConfiguration, OutOfSampleDiagnosticsFactory> createConfigurator() {

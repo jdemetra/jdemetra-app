@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.demo.impl;
 
 import demetra.desktop.components.JTsGrid;
 import demetra.desktop.components.parts.HasZoomRatioSupport;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.nbdemetra.ui.demo.TypedDemoComponentHandler;
 import nbbrd.service.ServiceProvider;
@@ -42,6 +42,6 @@ public final class TsGridHandler extends TypedDemoComponentHandler<JTsGrid> {
     }
 
     static JButton createZoomButton(JTsGrid view) {
-        return DropDownButtonFactory.createDropDownButton(DemetraUiIcon.MAGNIFYING_TOOL, HasZoomRatioSupport.newZoomRatioMenu(view).getPopupMenu());
+        return DropDownButtonFactory.createDropDownButton(DemetraIcons.MAGNIFYING_TOOL, HasZoomRatioSupport.newZoomRatioMenu(view).getPopupMenu());
     }
 }

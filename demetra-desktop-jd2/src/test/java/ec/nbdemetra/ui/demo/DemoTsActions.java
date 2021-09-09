@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui.demo;
 
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 
 import java.awt.Image;
 import javax.swing.JOptionPane;
@@ -28,7 +28,7 @@ public final class DemoTsActions implements TsActionsOpenSpi {
 
     @Override
     public Image getIcon(int type, boolean opened) {
-        return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
+        return ImageUtilities.icon2Image(DemetraIcons.PUZZLE_16);
     }
 
     @Override

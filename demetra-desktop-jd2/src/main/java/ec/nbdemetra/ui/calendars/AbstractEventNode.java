@@ -4,7 +4,7 @@
  */
 package ec.nbdemetra.ui.calendars;
 
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.tstoolkit.timeseries.Day;
 import java.awt.Image;
@@ -34,7 +34,7 @@ public class AbstractEventNode extends AbstractNode implements PropertyChangeLis
 
     @Override
     public Image getIcon(int type) {
-        return DemetraUiIcon.CALENDAR_16.getImageIcon().getImage();
+        return DemetraIcons.CALENDAR_16.getImageIcon().getImage();
     }
 
     @Override

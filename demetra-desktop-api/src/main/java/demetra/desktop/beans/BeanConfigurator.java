@@ -3,11 +3,8 @@ package demetra.desktop.beans;
 import demetra.desktop.Config;
 import demetra.desktop.ConfigEditor;
 import demetra.desktop.Converter;
-import demetra.desktop.properties.BeanEditor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.util.Exceptions;
-
-import java.beans.IntrospectionException;
 
 @lombok.AllArgsConstructor
 public final class BeanConfigurator<B, R> implements ConfigEditor {
@@ -33,12 +30,8 @@ public final class BeanConfigurator<B, R> implements ConfigEditor {
     @Override
     public Config editConfig(Config config) throws IllegalArgumentException {
         B bean = converter.doBackward(config);
-        try {
-            if (editor.editBean(bean)) {
-                return converter.doForward(bean);
-            }
-        } catch (IntrospectionException ex) {
-            Exceptions.printStackTrace(ex);
+        if (editor.editBean(bean, Exceptions::printStackTrace)) {
+            return converter.doForward(bean);
         }
         return config;
     }

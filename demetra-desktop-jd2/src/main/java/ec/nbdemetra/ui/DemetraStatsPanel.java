@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.actions.Configurable;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import demetra.desktop.nodes.AbstractNodeBuilder;
@@ -169,7 +170,7 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         stabilityLength = new javax.swing.JSpinner();
         saPanel = new javax.swing.JPanel();
         defaultSpecLabel = new javax.swing.JLabel();
-        specButton = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.BLOG_16, specPopup);
+        specButton = DropDownButtonFactory.createDropDownButton(DemetraIcons.BLOG_16, specPopup);
         selectedSpecLabel = new javax.swing.JLabel();
         revisionHistoryPanel = new javax.swing.JPanel();
         estimationLabel = new javax.swing.JLabel();
@@ -257,7 +258,7 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         jToolBar1.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jToolBar1.setRollover(true);
 
-        editDiagnostic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/preferences-system_16x16.png"))); // NOI18N
+        editDiagnostic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/icons/preferences-system_16x16.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(editDiagnostic, org.openide.util.NbBundle.getMessage(DemetraStatsPanel.class, "DemetraStatsPanel.editDiagnostic.text")); // NOI18N
         editDiagnostic.setFocusable(false);
         editDiagnostic.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -269,7 +270,7 @@ final class DemetraStatsPanel extends javax.swing.JPanel {
         });
         jToolBar1.add(editDiagnostic);
 
-        resetDiagnostic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/reset_16x16.png"))); // NOI18N
+        resetDiagnostic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/icons/reset_16x16.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(resetDiagnostic, org.openide.util.NbBundle.getMessage(DemetraStatsPanel.class, "DemetraStatsPanel.resetDiagnostic.text")); // NOI18N
         resetDiagnostic.setFocusable(false);
         resetDiagnostic.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);

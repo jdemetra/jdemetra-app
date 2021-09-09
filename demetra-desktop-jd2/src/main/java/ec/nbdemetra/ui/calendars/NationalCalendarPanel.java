@@ -6,7 +6,7 @@ package ec.nbdemetra.ui.calendars;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.util.IDialogDescriptorProvider;
 import demetra.desktop.util.ListenerState;
 import ec.tss.tsproviders.utils.IConstraint;
@@ -183,7 +183,7 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
         nameTextField = new javax.swing.JTextField();
         jToolBar1 = new javax.swing.JToolBar();
         jLabel2 = new javax.swing.JLabel();
-        jButton1 = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LIST_ADD_16, addPopupMenu);
+        jButton1 = DropDownButtonFactory.createDropDownButton(DemetraIcons.LIST_ADD_16, addPopupMenu);
         removeButton = new javax.swing.JButton();
         jSplitPane1 = new javax.swing.JSplitPane();
         listView1 = new org.openide.explorer.view.ListView();
@@ -199,14 +199,14 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
         jLabel2.setText("Special days:");
         jToolBar1.add(jLabel2);
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/list-add_16x16.png"))); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/icons/list-add_16x16.png"))); // NOI18N
         jButton1.setToolTipText("");
         jButton1.setFocusable(false);
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButton1);
 
-        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/list-remove_16x16.png"))); // NOI18N
+        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/icons/list-remove_16x16.png"))); // NOI18N
         removeButton.setFocusable(false);
         removeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         removeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);

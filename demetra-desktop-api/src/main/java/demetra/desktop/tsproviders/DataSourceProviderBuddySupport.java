@@ -16,7 +16,9 @@
  */
 package demetra.desktop.tsproviders;
 
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.actions.Configurable;
+import demetra.desktop.beans.BeanEditor;
 import demetra.desktop.design.GlobalService;
 import demetra.desktop.util.CollectionSupplier;
 import demetra.desktop.util.FrozenTsHelper;
@@ -24,10 +26,12 @@ import demetra.desktop.util.LazyGlobalService;
 import demetra.timeseries.TsMoniker;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
-import demetra.tsprovider.DataSourceProvider;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.openide.nodes.Sheet;
+import org.openide.util.ImageUtilities;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Optional;
@@ -45,6 +49,7 @@ public final class DataSourceProviderBuddySupport {
 
     private final CollectionSupplier<DataSourceProviderBuddy> providers;
     private final DataSourceProviderBuddy fallback;
+    private final Image defaultImage;
 
     private DataSourceProviderBuddySupport() {
         this.providers = DataSourceProviderBuddyLoader::get;
@@ -54,15 +59,15 @@ public final class DataSourceProviderBuddySupport {
                 return "fallback";
             }
         };
+        this.defaultImage = DemetraIcons.DOCUMENT_16.getImageIcon().getImage();
+    }
+
+    private Image getOrDefault(Image result) {
+        return result != null ? result : defaultImage;
     }
 
     @NonNull
-    public DataSourceProviderBuddy get(@Nullable DataSourceProvider provider) {
-        return get(provider.getSource());
-    }
-
-    @NonNull
-    public DataSourceProviderBuddy get(@Nullable String providerName) {
+    private DataSourceProviderBuddy getByName(@Nullable String providerName) {
         String tmp = providerName == null ? "" : providerName;
         return providers.stream()
                 .filter(o -> o.getProviderName().equals(tmp))
@@ -71,91 +76,36 @@ public final class DataSourceProviderBuddySupport {
                 .orElse(fallback);
     }
 
-    @NonNull
-    public DataSourceProviderBuddy get(@NonNull DataSource dataSource) {
-        return get(dataSource.getProviderName());
-    }
-
-    @NonNull
-    public DataSourceProviderBuddy get(@NonNull DataSet dataSet) {
-        return get(dataSet.getDataSource());
-    }
-
-    @NonNull
-    public DataSourceProviderBuddy get(@NonNull TsMoniker moniker) {
-        return get(moniker.getSource());
-    }
-
     /**
      * Gets an icon for a provider.
      *
      * @param providerName
      * @param type
      * @param opened
-     * @return an optional icon
+     * @return an icon
      * @since 2.2.0
      */
     @NonNull
-    public Optional<Image> getIcon(@NonNull String providerName, int type, boolean opened) {
-        return Optional.ofNullable(get(providerName).getIconOrNull(type, opened));
+    public Image getImage(@NonNull String providerName, int type, boolean opened) {
+        DataSourceProviderBuddy buddy = getByName(providerName);
+        return getOrDefault(buddy.getIconOrNull(type, opened));
     }
 
-    /**
-     * Gets an icon for a data source.
-     *
-     * @param dataSource
-     * @param type
-     * @param opened
-     * @return an optional icon
-     * @since 2.2.0
-     */
     @NonNull
-    public Optional<Image> getIcon(@NonNull DataSource dataSource, int type, boolean opened) {
-        return Optional.ofNullable(get(dataSource).getIconOrNull(dataSource, type, opened));
+    public Icon getIcon(@NonNull String providerName, int type, boolean opened) {
+        return ImageUtilities.image2Icon(getImage(providerName, type, opened));
     }
 
-    /**
-     * Gets an icon for a data set.
-     *
-     * @param dataSet
-     * @param type
-     * @param opened
-     * @return an optional icon
-     * @since 2.2.0
-     */
     @NonNull
-    public Optional<Image> getIcon(@NonNull DataSet dataSet, int type, boolean opened) {
-        return Optional.ofNullable(get(dataSet).getIconOrNull(dataSet, type, opened));
+    public Sheet createSheet(@NonNull String providerName) {
+        DataSourceProviderBuddy buddy = getByName(providerName);
+        return buddy.createSheet();
     }
 
-    /**
-     * Gets an icon for an exception thrown by a provider.
-     *
-     * @param providerName
-     * @param ex
-     * @param type
-     * @param opened
-     * @return an optional icon
-     * @since 2.2.0
-     */
     @NonNull
-    public Optional<Image> getIcon(@NonNull String providerName, @NonNull IOException ex, int type, boolean opened) {
-        return Optional.ofNullable(get(providerName).getIconOrNull(ex, type, opened));
-    }
-
-    /**
-     * Gets an icon for a moniker.
-     *
-     * @param moniker
-     * @param type
-     * @param opened
-     * @return an optional icon
-     * @since 2.2.0
-     */
-    @NonNull
-    public Optional<Image> getIcon(@NonNull TsMoniker moniker, int type, boolean opened) {
-        TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
-        return original != null ? Optional.ofNullable(get(original).getIconOrNull(moniker, type, opened)) : Optional.empty();
+    public BeanEditor getBeanEditor(@NonNull String providerName, @NonNull String title) {
+        DataSourceProviderBuddy buddy = getByName(providerName);
+        return bean -> buddy.editBean(title, bean);
     }
 
     /**
@@ -167,7 +117,111 @@ public final class DataSourceProviderBuddySupport {
      */
     @NonNull
     public Optional<Configurable> getConfigurable(@NonNull String providerName) {
-        DataSourceProviderBuddy buddy = get(providerName);
+        DataSourceProviderBuddy buddy = getByName(providerName);
         return buddy instanceof Configurable ? Optional.of((Configurable) buddy) : Optional.empty();
+    }
+
+    /**
+     * Gets an icon for a data source.
+     *
+     * @param dataSource
+     * @param type
+     * @param opened
+     * @return an icon
+     * @since 2.2.0
+     */
+    @NonNull
+    public Image getImage(@NonNull DataSource dataSource, int type, boolean opened) {
+        DataSourceProviderBuddy buddy = getByName(dataSource.getProviderName());
+        return getOrDefault(buddy.getIconOrNull(dataSource, type, opened));
+    }
+
+    @NonNull
+    public Icon getIcon(@NonNull DataSource dataSource, int type, boolean opened) {
+        return ImageUtilities.image2Icon(getImage(dataSource, type, opened));
+    }
+
+    @NonNull
+    public Sheet createSheet(@NonNull DataSource dataSource) {
+        DataSourceProviderBuddy buddy = getByName(dataSource.getProviderName());
+        return buddy.createSheet(dataSource);
+    }
+
+    /**
+     * Gets an icon for a data set.
+     *
+     * @param dataSet
+     * @param type
+     * @param opened
+     * @return an icon
+     * @since 2.2.0
+     */
+    @NonNull
+    public Image getImage(@NonNull DataSet dataSet, int type, boolean opened) {
+        DataSourceProviderBuddy buddy = getByName(dataSet.getDataSource().getProviderName());
+        return getOrDefault(buddy.getIconOrNull(dataSet, type, opened));
+    }
+
+    @NonNull
+    public Icon getIcon(@NonNull DataSet dataSet, int type, boolean opened) {
+        return ImageUtilities.image2Icon(getImage(dataSet, type, opened));
+    }
+
+    @NonNull
+    public Sheet createSheet(@NonNull DataSet dataSet) {
+        DataSourceProviderBuddy buddy = getByName(dataSet.getDataSource().getProviderName());
+        return buddy.createSheet(dataSet);
+    }
+
+    /**
+     * Gets an icon for an exception thrown by a provider.
+     *
+     * @param providerName
+     * @param ex
+     * @param type
+     * @param opened
+     * @return an icon
+     * @since 2.2.0
+     */
+    @NonNull
+    public Image getImage(@NonNull String providerName, @NonNull IOException ex, int type, boolean opened) {
+        DataSourceProviderBuddy buddy = getByName(providerName);
+        return getOrDefault(buddy.getIconOrNull(ex, type, opened));
+    }
+
+    @NonNull
+    public Icon getIcon(@NonNull String providerName, @NonNull IOException ex, int type, boolean opened) {
+        return ImageUtilities.image2Icon(getImage(providerName, ex, type, opened));
+    }
+
+    @NonNull
+    public Sheet createSheet(@NonNull String providerName, @NonNull IOException ex) {
+        DataSourceProviderBuddy buddy = getByName(providerName);
+        return buddy.createSheet(ex);
+    }
+
+    /**
+     * Gets an icon for a moniker.
+     *
+     * @param moniker
+     * @param type
+     * @param opened
+     * @return an icon
+     * @since 2.2.0
+     */
+    @NonNull
+    public Image getImage(@NonNull TsMoniker moniker, int type, boolean opened) {
+        TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
+        if (original != null) {
+            DataSourceProviderBuddy buddy = getByName(original.getSource());
+            return getOrDefault(buddy.getIconOrNull(moniker, type, opened));
+        } else {
+            return defaultImage;
+        }
+    }
+
+    @NonNull
+    public Icon getIcon(@NonNull TsMoniker moniker, int type, boolean opened) {
+        return ImageUtilities.image2Icon(getImage(moniker, type, opened));
     }
 }

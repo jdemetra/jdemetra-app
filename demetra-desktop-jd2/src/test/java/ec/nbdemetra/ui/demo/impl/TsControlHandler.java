@@ -19,7 +19,7 @@ package ec.nbdemetra.ui.demo.impl;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.desktop.components.parts.HasObsFormat;
 import demetra.desktop.components.parts.HasObsFormatSupport;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import ec.nbdemetra.ui.demo.DemoComponentHandler;
 import ec.util.various.swing.JCommand;
 import nbbrd.service.ServiceProvider;
@@ -88,7 +88,7 @@ public final class TsControlHandler implements DemoComponentHandler {
             for (ObsFormat o : dataFormats) {
                 popup.add(HasObsFormatSupport.newApplyFormatMenu(c, o));
             }
-            JButton result = DropDownButtonFactory.createDropDownButton(DemetraUiIcon.LOCALE_ALTERNATE_16, popup);
+            JButton result = DropDownButtonFactory.createDropDownButton(DemetraIcons.LOCALE_ALTERNATE_16, popup);
             result.addActionListener(toAction(c));
             return result;
         }

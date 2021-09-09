@@ -17,12 +17,12 @@
 package demetra.desktop.components;
 
 import demetra.desktop.DemetraOptions;
-import demetra.desktop.IconManager;
 import demetra.desktop.beans.PropertyChangeSource;
 import demetra.desktop.components.parts.*;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
 import demetra.desktop.jfreechart.TsSparklineCellRenderer;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import demetra.timeseries.TsData;
 import demetra.tsprovider.util.MultiLineNameUtil;
 import demetra.tsprovider.util.ObsFormat;
@@ -35,6 +35,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.beans.BeanInfo;
 import java.beans.Beans;
 import java.util.List;
 import java.util.*;
@@ -225,8 +226,6 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
 
     private static final class TsIdentifierTableCellRenderer extends DefaultTableCellRenderer {
 
-        private final IconManager monikerUI = IconManager.getDefault();
-
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -243,7 +242,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
                     result.setText(MultiLineNameUtil.join(text));
                     result.setToolTipText(MultiLineNameUtil.toHtml(text));
                 }
-                result.setIcon(monikerUI.getIcon(id.getMoniker()));
+                result.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(id.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
             }
             return result;
         }

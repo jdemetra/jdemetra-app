@@ -18,7 +18,7 @@ package ec.nbdemetra.ui.sa;
 
 import demetra.desktop.NamedService;
 import demetra.desktop.util.NetBeansServiceBackend;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import java.awt.Image;
 import nbbrd.service.Quantifier;
 import nbbrd.service.ServiceDefinition;
@@ -38,6 +38,6 @@ public abstract class SaDiagnosticsFactoryBuddy implements NamedService {
 
     @Override
     public Image getIcon(int type, boolean opened) {
-        return ImageUtilities.icon2Image(DemetraUiIcon.PUZZLE_16);
+        return ImageUtilities.icon2Image(DemetraIcons.PUZZLE_16);
     }
 }

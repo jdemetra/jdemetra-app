@@ -5,22 +5,20 @@
 package ec.ui.view.tsprocessing;
 
 import demetra.bridge.TsConverter;
-import demetra.desktop.IconManager;
 import demetra.desktop.TsManager;
+import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.timeseries.TsInformationType;
 import ec.tss.Ts;
 import ec.tss.documents.MultiTsDocument;
 import ec.tstoolkit.algorithm.IProcSpecification;
-import java.awt.Font;
-import javax.swing.Box;
-import javax.swing.JLabel;
-import javax.swing.JToolBar;
-import javax.swing.TransferHandler;
-import demetra.desktop.datatransfer.DataTransfer;
-import demetra.timeseries.TsInformationType;
+
+import javax.swing.*;
+import java.awt.*;
+import java.beans.BeanInfo;
 import java.util.Optional;
 
 /**
- *
  * @author Jean Palate
  */
 public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument> {
@@ -33,6 +31,7 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
         }
         return viewer;
     }
+
     // < FACTORY METHODS
     // CONSTANTS
     private static final Font DROP_DATA_FONT = new JLabel().getFont().deriveFont(Font.ITALIC);
@@ -84,7 +83,7 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
         } else {
             dropDataLabely.setVisible(false);
             demetra.timeseries.TsMoniker monikery = TsConverter.toTsMoniker(input[0].getMoniker());
-            tsLabely.setIcon(IconManager.getDefault().getIcon(monikery));
+            tsLabely.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(monikery, BeanInfo.ICON_COLOR_16x16, false));
             tsLabely.setToolTipText(tsLabely.getText() + (monikery.getSource() != null ? (" (" + monikery.getSource() + ")") : ""));
             tsLabely.setVisible(true);
         }
@@ -94,7 +93,7 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
         } else {
             dropDataLabelz.setVisible(false);
             demetra.timeseries.TsMoniker monikerz = TsConverter.toTsMoniker(input[1].getMoniker());
-            tsLabelz.setIcon(IconManager.getDefault().getIcon(monikerz));
+            tsLabelz.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(monikerz, BeanInfo.ICON_COLOR_16x16, false));
             tsLabelz.setToolTipText(tsLabelz.getText() + (monikerz.getSource() != null ? (" (" + monikerz.getSource() + ")") : ""));
             tsLabelz.setVisible(true);
         }
@@ -129,8 +128,8 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
                 Ts[] input = (Ts[]) getDocument().getInput();
                 if (input == null) {
                     input = new Ts[2];
-                }else
-                    input=input.clone();
+                } else
+                    input = input.clone();
                 input[pos] = TsConverter.fromTs(ts.get().load(TsInformationType.Data, TsManager.getDefault()));
                 getDocument().setInput(input);
                 refreshAll();

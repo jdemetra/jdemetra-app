@@ -16,21 +16,22 @@
  */
 package internal.ui;
 
+import demetra.desktop.TsActionsOpenSpi;
+import demetra.desktop.TsManager;
+import demetra.desktop.components.parts.HasChart;
+import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.util.NbComponents;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSourceProvider;
-import demetra.desktop.IconManager;
-import demetra.desktop.TsActionsOpenSpi;
-import demetra.desktop.TsManager;
-import demetra.desktop.components.parts.HasChart;
-import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
-import demetra.desktop.util.NbComponents;
 import ec.nbdemetra.ui.tools.ChartTopComponent;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 
+import java.beans.BeanInfo;
 import java.util.Optional;
 
 /**
@@ -66,7 +67,7 @@ public final class SimpleChartTsAction implements TsActionsOpenSpi {
         ChartTopComponent result = new ChartTopComponent();
         result.setName(topComponentName);
         result.setDisplayName(getDisplayName(ts));
-        result.setIcon(IconManager.getDefault().getImage(ts.getMoniker()));
+        result.setIcon(DataSourceProviderBuddySupport.getDefault().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
 
         TsCollection col = TsCollection.of(ts);
 

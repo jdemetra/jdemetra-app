@@ -1,38 +1,38 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.sa.revisionanalysis;
 
-import demetra.timeseries.Ts;
-import demetra.timeseries.TsCollection;
-import ec.nbdemetra.ui.DemetraUiIcon;
-import demetra.desktop.IconManager;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.components.JTsGrid;
 import demetra.desktop.design.SwingComponent;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
 import ec.util.list.swing.JLists;
-import java.awt.BorderLayout;
+import nbbrd.design.SkipProcessing;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ItemEvent;
+import java.beans.BeanInfo;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import nbbrd.design.SkipProcessing;
 
 /**
  * Component combining a standard <code>JTsGrid</code> and a
@@ -95,7 +95,7 @@ public final class JTsComboGrid extends JComponent {
      * Sets the input data to be displayed in this view
      *
      * @param collections Map of results (key are each input Ts, values are
-     * their corresponding TsCollection results)
+     *                    their corresponding TsCollection results)
      */
     public void setCollections(LinkedHashMap<Ts, TsCollection> collections) {
         this.collections = collections;
@@ -114,11 +114,11 @@ public final class JTsComboGrid extends JComponent {
     private static void renderTsIdentifier(JLabel label, Object value) {
         if (value instanceof String) {
             label.setText(String.valueOf(value));
-            label.setIcon(DemetraUiIcon.DOCUMENT_TASK_16);
+            label.setIcon(DemetraIcons.DOCUMENT_TASK_16);
         } else {
             Ts ts = (Ts) value;
             label.setText(ts.getName());
-            label.setIcon(IconManager.getDefault().getIcon(ts.getMoniker()));
+            label.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
         }
     }
 }

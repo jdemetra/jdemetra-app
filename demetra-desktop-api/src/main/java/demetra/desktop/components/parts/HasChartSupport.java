@@ -16,7 +16,7 @@
  */
 package demetra.desktop.components.parts;
 
-import demetra.desktop.IconManager;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.beans.PropertyChangeBroadcaster;
 import demetra.desktop.components.ComponentCommand;
 import ec.util.various.swing.FontAwesome;
@@ -45,7 +45,7 @@ public class HasChartSupport {
     public static <C extends JComponent & HasChart> JMenuItem newToggleTitleVisibilityMenu(C component) {
         JMenuItem result = new JCheckBoxMenuItem(component.getActionMap().get(HasChart.TOGGLE_TITLE_VISIBILITY_ACTION));
         result.setText("Show title");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_FONT));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_FONT));
         return result;
     }
 

@@ -16,7 +16,7 @@
  */
 package demetra.desktop.components.parts;
 
-import demetra.desktop.IconManager;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.beans.PropertyChangeBroadcaster;
 import demetra.desktop.components.ComponentCommand;
 import demetra.desktop.components.JObsFormatComponent;
@@ -58,7 +58,7 @@ public class HasObsFormatSupport {
     public static <C extends JComponent & HasObsFormat> JMenuItem newEditFormatMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasObsFormat.EDIT_FORMAT_ACTION));
         result.setText("Edit format...");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_GLOBE));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_GLOBE));
         return result;
     }
 

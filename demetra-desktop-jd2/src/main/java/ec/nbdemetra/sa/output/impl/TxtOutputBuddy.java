@@ -23,7 +23,7 @@ import ec.nbdemetra.sa.output.Series;
 import demetra.desktop.beans.BeanHandler;
 import demetra.desktop.Config;
 import demetra.desktop.ConfigEditor;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import ec.tss.sa.ISaOutputFactory;
@@ -42,7 +42,7 @@ import nbbrd.io.text.BooleanProperty;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.Parser;
 import nbbrd.io.text.Property;
-import demetra.desktop.properties.BeanEditor;
+import demetra.desktop.beans.BeanEditor;
 import demetra.desktop.Converter;
 import demetra.desktop.Persistable;
 import demetra.desktop.actions.Configurable;
@@ -100,7 +100,7 @@ public class TxtOutputBuddy implements INbOutputFactory, Configurable, Persistab
 
     @Override
     public Image getIcon(int type, boolean opened) {
-        return ImageUtilities.icon2Image(DemetraUiIcon.DOCUMENT_16);
+        return ImageUtilities.icon2Image(DemetraIcons.DOCUMENT_16);
     }
 
     private static BeanConfigurator<TxtOutputConfiguration, TxtOutputBuddy> createConfigurator() {

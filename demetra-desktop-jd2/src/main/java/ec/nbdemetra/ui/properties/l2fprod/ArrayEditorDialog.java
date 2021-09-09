@@ -1,7 +1,7 @@
 package ec.nbdemetra.ui.properties.l2fprod;
 
 import com.l2fprod.common.propertysheet.*;
-import ec.nbdemetra.ui.DemetraUiIcon;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.util.NbComponents;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
@@ -94,7 +94,7 @@ public class ArrayEditorDialog<T> extends JDialog {
         final JPanel buttonPane = new JPanel();
         BoxLayout layout = new BoxLayout(buttonPane, BoxLayout.LINE_AXIS);
         buttonPane.setLayout(layout);
-        final JButton addButton = new JButton(DemetraUiIcon.LIST_ADD_16);
+        final JButton addButton = new JButton(DemetraIcons.LIST_ADD_16);
         addButton.setPreferredSize(new Dimension(30, 30));
         addButton.setFocusPainted(false);
         addButton.addActionListener(event -> {
@@ -114,7 +114,7 @@ public class ArrayEditorDialog<T> extends JDialog {
             }
         });
         buttonPane.add(addButton);
-        final JButton deleteButton = new JButton(DemetraUiIcon.LIST_REMOVE_16);
+        final JButton deleteButton = new JButton(DemetraIcons.LIST_REMOVE_16);
         deleteButton.setPreferredSize(new Dimension(30, 30));
         deleteButton.setFocusPainted(false);
         deleteButton.setEnabled(false);
@@ -136,7 +136,7 @@ public class ArrayEditorDialog<T> extends JDialog {
         });
         buttonPane.add(deleteButton);
 
-        final JButton clearButton = new JButton(DemetraUiIcon.BROOM);
+        final JButton clearButton = new JButton(DemetraIcons.BROOM);
         clearButton.setToolTipText("Clear");
         clearButton.setPreferredSize(new Dimension(30, 30));
         clearButton.setFocusPainted(false);

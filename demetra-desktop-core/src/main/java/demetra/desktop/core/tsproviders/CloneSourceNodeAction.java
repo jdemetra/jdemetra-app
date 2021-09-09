@@ -11,9 +11,9 @@ import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceLoader;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 
-import java.beans.IntrospectionException;
 import java.util.stream.Stream;
 
 @ActionID(category = "Edit", id = CloneSourceNodeAction.ID)
@@ -29,13 +29,7 @@ public final class CloneSourceNodeAction extends AbilityNodeAction<DataSource> {
 
     @Override
     protected void performAction(Stream<DataSource> items) {
-        items.forEach(dataSource -> {
-            try {
-                clone(dataSource);
-            } catch (IntrospectionException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        items.forEach(CloneSourceNodeAction::clone);
     }
 
     @Override
@@ -43,10 +37,10 @@ public final class CloneSourceNodeAction extends AbilityNodeAction<DataSource> {
         return items.anyMatch(item -> TsManager.getDefault().getProvider(DataSourceLoader.class, item).isPresent());
     }
 
-    private static DataSource clone(DataSource dataSource) throws IntrospectionException {
+    private static DataSource clone(DataSource dataSource) {
         DataSourceLoader loader = TsManager.getDefault().getProvider(DataSourceLoader.class, dataSource).get();
         final Object bean = loader.decodeBean(dataSource);
-        if (DataSourceProviderBuddySupport.getDefault().get(loader).editBean("Clone data source", bean)) {
+        if (DataSourceProviderBuddySupport.getDefault().getBeanEditor(loader.getSource(), "Clone data source").editBean(bean, Exceptions::printStackTrace)) {
             DataSource newDataSource = loader.encodeBean(bean);
             return loader.open(newDataSource) ? newDataSource : null;
         }

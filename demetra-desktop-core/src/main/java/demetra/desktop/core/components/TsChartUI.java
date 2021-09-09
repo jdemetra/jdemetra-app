@@ -16,7 +16,7 @@
  */
 package demetra.desktop.core.components;
 
-import demetra.desktop.IconManager;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.components.JTsChart;
 import demetra.desktop.components.TsFeatureHelper;
@@ -373,7 +373,7 @@ public final class TsChartUI implements InternalUI<JTsChart> {
 
         result.addSeparator();
         JMenuItem item = new JMenuItem(am.get(Configurable.CONFIGURE_ACTION));
-        item.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_COGS));
+        item.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_COGS));
         item.setText("Configure...");
         result.add(item);
 

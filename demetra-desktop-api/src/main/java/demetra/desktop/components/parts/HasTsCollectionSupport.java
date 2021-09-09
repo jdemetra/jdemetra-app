@@ -128,7 +128,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newRenameMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.RENAME_ACTION));
         result.setText("Rename");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_PENCIL_SQUARE_O));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_PENCIL_SQUARE_O));
         Actions.hideWhenDisabled(result);
         return result;
     }
@@ -136,7 +136,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newOpenMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.OPEN_ACTION));
         result.setText("Open");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_FOLDER_OPEN_O));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_FOLDER_OPEN_O));
         Actions.hideWhenDisabled(result);
         result.setAccelerator(KeyStrokes.OPEN.get(0));
         result.setFont(result.getFont().deriveFont(Font.BOLD));
@@ -146,16 +146,18 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenu newOpenWithMenu(C component) {
         JMenu result = new JMenu(new MainOpenWithCommand().toAction(component));
         result.setText("Open with");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_BAR_CHART_O));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_BAR_CHART_O));
         Actions.hideWhenDisabled(result);
 
         for (NamedService o : TsActions.getDefault().getOpenActions()) {
             JMenuItem item = new JMenuItem(((JCommand<HasTsCollection>) new OpenWithCommand(o.getName())).toAction(component));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
-            Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
-            if (image != null) {
-                item.setIcon(IconManager.getDefault().getPopupMenuIcon(ImageUtilities.image2Icon(image)));
+            if (DemetraOptions.getDefault().isPopupMenuIconsVisible()) {
+                Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
+                if (image != null) {
+                    item.setIcon(ImageUtilities.image2Icon(image));
+                }
             }
             result.add(item);
         }
@@ -171,9 +173,11 @@ public class HasTsCollectionSupport {
             JMenuItem item = new JMenuItem(((JCommand<HasTsCollection>) new SaveCommand(o)).toAction(component));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
-            Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
-            if (image != null) {
-                item.setIcon(IconManager.getDefault().getPopupMenuIcon(ImageUtilities.image2Icon(image)));
+            if (DemetraOptions.getDefault().isPopupMenuIconsVisible()) {
+                Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
+                if (image != null) {
+                    item.setIcon(ImageUtilities.image2Icon(image));
+                }
             }
             result.add(item);
         }
@@ -183,7 +187,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newCopyMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.COPY_ACTION));
         result.setText("Copy");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_FILES_O));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_FILES_O));
         result.setAccelerator(KeyStrokes.COPY.get(0));
         Actions.hideWhenDisabled(result);
         return result;
@@ -192,7 +196,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newPasteMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.PASTE_ACTION));
         result.setText("Paste");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_CLIPBOARD));
         result.setAccelerator(KeyStrokes.PASTE.get(0));
 //        ExtAction.hideWhenDisabled(item);
         return result;
@@ -201,7 +205,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newDeleteMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.DELETE_ACTION));
         result.setText("Remove");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_TRASH_O));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_TRASH_O));
         result.setAccelerator(KeyStrokes.DELETE.get(0));
         Actions.hideWhenDisabled(result);
         return result;
@@ -210,7 +214,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newClearMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.CLEAR_ACTION));
         result.setText("Clear");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_ERASER));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_ERASER));
         result.setAccelerator(KeyStrokes.CLEAR.get(0));
         return result;
     }
@@ -218,7 +222,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newSelectAllMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.SELECT_ALL_ACTION));
         result.setText("Select all");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_ASTERISK));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_ASTERISK));
         result.setAccelerator(KeyStrokes.SELECT_ALL.get(0));
         return result;
     }
@@ -226,7 +230,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newFreezeMenu(C component) {
         JMenuItem result = new JMenuItem(component.getActionMap().get(HasTsCollection.FREEZE_ACTION));
         result.setText("Freeze");
-        result.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_LOCK));
+        result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_LOCK));
         Actions.hideWhenDisabled(result);
         return result;
     }
@@ -234,7 +238,7 @@ public class HasTsCollectionSupport {
     public static <C extends JComponent & HasTsCollection> JMenuItem newSplitMenu(C component) {
         JMenuItem item = new JMenuItem(component.getActionMap().get(HasTsCollection.SPLIT_ACTION));
         item.setText("Split into yearly components");
-        item.setIcon(IconManager.getDefault().getPopupMenuIcon(FontAwesome.FA_CHAIN_BROKEN));
+        item.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_CHAIN_BROKEN));
         Actions.hideWhenDisabled(item);
         return item;
     }
