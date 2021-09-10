@@ -31,7 +31,7 @@ import demetra.desktop.DemetraIcons;
 import ec.nbdemetra.ui.IActiveView;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
-import ec.nbdemetra.ui.tools.ToolsPersistence;
+import demetra.desktop.tools.ToolsPersistence;
 import ec.tstoolkit.modelling.arima.CheckLast;
 import ec.tstoolkit.modelling.arima.tramo.TramoSpecification;
 import demetra.desktop.components.JTsChart;

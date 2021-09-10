@@ -1,4 +1,4 @@
-package internal.ui.components;
+package demetra.desktop.core.components;
 
 import demetra.data.Range;
 import demetra.desktop.components.ComponentCommand;
@@ -7,7 +7,7 @@ import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import demetra.timeseries.*;
 import demetra.tsprovider.util.ObsFormat;
-import ec.nbdemetra.ui.tools.ChartTopComponent;
+import demetra.desktop.core.tools.JTsChartTopComponent;
 import ec.util.list.swing.JLists;
 
 import java.beans.BeanInfo;
@@ -36,7 +36,7 @@ public final class SplitIntoYearlyComponentsCommand extends ComponentCommand<Has
     @Override
     public void execute(HasTsCollection component) throws Exception {
         Ts ts = (component.getTsCollection().get(component.getTsSelectionModel().getMinSelectionIndex()));
-        ChartTopComponent c = new ChartTopComponent();
+        JTsChartTopComponent c = new JTsChartTopComponent();
         c.getChart().setTitle(ts.getName());
         c.getChart().setObsFormat(ObsFormat.of(null, "MMM", null));
         c.getChart().setTsUpdateMode(HasTsCollection.TsUpdateMode.None);

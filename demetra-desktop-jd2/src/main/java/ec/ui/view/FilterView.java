@@ -4,13 +4,15 @@
  */
 package ec.ui.view;
 
+import demetra.bridge.TsConverter;
 import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.uihelper.DiscreteDisplayDomain;
 import ec.tstoolkit.uihelper.IDiscreteInformationProvider;
 import demetra.desktop.jfreechart.TsCharts;
+import demetra.math.matrices.MatrixType;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.SwingColorSchemeSupport;
-import ec.util.chart.swing.ext.MatrixChartCommand;
+import demetra.desktop.jfreechart.MatrixChartCommand;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
@@ -173,7 +175,7 @@ public class FilterView extends AChartView {
     private static class CustomCommand extends MatrixChartCommand {
 
         @Override
-        protected Matrix toMatrix(ChartPanel chartPanel) {
+        protected MatrixType toMatrix(ChartPanel chartPanel) {
             XYDataset dataset = chartPanel.getChart().getXYPlot().getDataset(0);
             Matrix result = new Matrix(dataset.getItemCount(0), dataset.getSeriesCount() + 1);
             for (int i = 0; i < result.getRowsCount(); i++) {
@@ -182,7 +184,7 @@ public class FilterView extends AChartView {
                     result.set(i, j + 1, dataset.getYValue(j, i));
                 }
             }
-            return result;
+            return TsConverter.toMatrix(result);
         }
 
         @Override

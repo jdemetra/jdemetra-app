@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.tools;
+package demetra.desktop.core.tools;
 
+import demetra.desktop.tools.ToolsPersistence;
 import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.DemetraIcons;
 import demetra.desktop.util.NbComponents;
@@ -45,11 +46,11 @@ import org.openide.windows.WindowManager;
     "CTL_GridTopComponent=Grid",
     "HINT_GridTopComponent=This is a Grid window"
 })
-public final class GridTopComponent extends TopComponent implements ExplorerManager.Provider, MultiViewElement {
+public final class JTsGridTopComponent extends TopComponent implements ExplorerManager.Provider, MultiViewElement {
 
     private final ExplorerManager mgr = new ExplorerManager();
 
-    public GridTopComponent() {
+    public JTsGridTopComponent() {
         initComponents();
         setName(Bundle.CTL_GridTopComponent());
         setToolTipText(Bundle.HINT_GridTopComponent());

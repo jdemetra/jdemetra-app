@@ -14,12 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.ui.view.res;
+package demetra.desktop.components;
 
-import demetra.desktop.components.ComponentBackend;
 import demetra.desktop.components.parts.HasObsFormat;
 import demetra.desktop.components.parts.HasTsData;
-import demetra.desktop.components.TimeSeriesComponent;
 import demetra.desktop.components.parts.HasObsFormatSupport;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.components.parts.HasTsDataSupport;

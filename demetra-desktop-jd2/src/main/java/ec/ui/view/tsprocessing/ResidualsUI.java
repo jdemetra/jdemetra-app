@@ -8,7 +8,7 @@ package ec.ui.view.tsprocessing;
 import demetra.bridge.TsConverter;
 import ec.tss.tsproviders.utils.OptionalTsData;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.view.res.JResidualsView;
+import demetra.desktop.components.JResidualsView;
 import javax.swing.JComponent;
 
 /**

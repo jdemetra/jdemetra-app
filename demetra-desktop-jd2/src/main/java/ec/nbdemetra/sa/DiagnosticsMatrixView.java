@@ -32,7 +32,7 @@ import ec.tstoolkit.information.InformationSet;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.JGrid;
 import ec.util.grid.swing.XTable;
-import ec.util.grid.swing.ext.TableGridCommand;
+import demetra.desktop.components.GridCommands;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.ArrayList;
@@ -124,7 +124,7 @@ public class DiagnosticsMatrixView extends JPanel {
         });
 
         JMenu menu = new JMenu();
-        menu.add(TableGridCommand.copyAll(true, true).toAction(result)).setText("Copy");
+        menu.add(GridCommands.copyAll(true, true).toAction(result)).setText("Copy");
         result.setComponentPopupMenu(menu.getPopupMenu());
 
         return result;

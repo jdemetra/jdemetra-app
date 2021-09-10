@@ -4,7 +4,6 @@ import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import com.l2fprod.common.swing.LookAndFeelTweaks;
 import com.toedter.calendar.JTextFieldDateEditor;
 import ec.tstoolkit.timeseries.Day;
-import internal.CustomPropertyEditorSupport;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.function.BiConsumer;

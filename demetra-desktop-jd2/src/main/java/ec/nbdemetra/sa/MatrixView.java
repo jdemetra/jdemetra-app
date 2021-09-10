@@ -20,7 +20,7 @@ import ec.tstoolkit.data.Table;
 import ec.tstoolkit.information.InformationSet;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.JGrid;
-import ec.util.grid.swing.ext.TableGridCommand;
+import demetra.desktop.components.GridCommands;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -135,7 +135,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         });
 
         JMenu menu = new JMenu();
-        menu.add(TableGridCommand.copyAll(true, true).toAction(result)).setText("Copy");
+        menu.add(GridCommands.copyAll(true, true).toAction(result)).setText("Copy");
         result.setComponentPopupMenu(menu.getPopupMenu());
 
         return result;

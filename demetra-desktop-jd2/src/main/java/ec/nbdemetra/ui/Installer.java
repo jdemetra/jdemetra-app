@@ -16,6 +16,7 @@
  */
 package ec.nbdemetra.ui;
 
+import demetra.desktop.util.XmlConfig;
 import demetra.bridge.TsConverter;
 import demetra.desktop.interchange.InterchangeSpi;
 import demetra.desktop.star.StarList;

@@ -22,7 +22,7 @@ import ec.tstoolkit.algorithm.IProcResults;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
-import ec.util.grid.swing.ext.TableGridCommand;
+import demetra.desktop.components.GridCommands;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.text.DecimalFormat;
@@ -78,7 +78,7 @@ public final class JRevisionAnalysisJGrid extends JComponent {
         result.setModel(createTableModel(Arrays.asList(MAIN_TITLE), Arrays.asList(MAIN)));
 
         JMenu menu = new JMenu();
-        menu.add(TableGridCommand.copyAll(true, true).toAction(result)).setText("Copy All");
+        menu.add(GridCommands.copyAll(true, true).toAction(result)).setText("Copy All");
         result.setComponentPopupMenu(menu.getPopupMenu());
 
         return result;

@@ -27,7 +27,7 @@ import demetra.desktop.jfreechart.TsCharts;
 import ec.tstoolkit.algorithm.CompositeResults;
 import ec.tstoolkit.algorithm.IProcResults;
 import ec.tstoolkit.utilities.Arrays2;
-import ec.ui.chart.BasicXYDataset;
+import demetra.desktop.jfreechart.BasicXYDataset;
 import ec.ui.view.JChartPanel;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.SwingColorSchemeSupport;

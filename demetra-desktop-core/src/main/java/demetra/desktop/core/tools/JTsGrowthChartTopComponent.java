@@ -2,10 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.tools;
+package demetra.desktop.core.tools;
 
 import demetra.desktop.nodes.ControlNode;
-import demetra.desktop.components.JTsTable;
+import demetra.desktop.components.JTsGrowthChart;
+import demetra.desktop.tools.ToolsPersistence;
 import java.awt.BorderLayout;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -13,38 +14,47 @@ import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.nodes.Node;
+import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.Mode;
-import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//ec.nbdemetra.ui.tools//List//EN",
+@ConvertAsProperties(dtd = "-//ec.nbdemetra.ui.tools//GrowthChart//EN",
         autostore = false)
-@TopComponent.Description(preferredID = "ListTopComponent",
+@TopComponent.Description(preferredID = "GrowthChartTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS)
-@TopComponent.Registration(mode = "tsnavigator", openAtStartup = false)
-@ActionID(category = "Window", id = "ec.nbdemetra.ui.tools.ListTopComponent")
-@ActionReference(path = "Menu/Tools/Container", position = 400)
-@TopComponent.OpenActionRegistration(displayName = "#CTL_ListAction")
+        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED)
+@TopComponent.Registration(mode = "output", openAtStartup = false)
+@ActionID(category = "Window", id = "ec.nbdemetra.ui.tools.GrowthChartTopComponent")
+@ActionReference(path = "Menu/Tools/Container", position = 300)
+@TopComponent.OpenActionRegistration(displayName = "#CTL_GrowthChartAction")
 @Messages({
-    "CTL_ListAction=List",
-    "CTL_ListTopComponent=List",
-    "HINT_ListTopComponent=This is a List window"
+    "CTL_GrowthChartAction=GrowthChart",
+    "CTL_GrowthChartTopComponent=GrowthChart",
+    "HINT_GrowthChartTopComponent=This is a GrowthChart window"
 })
-public final class ListTopComponent extends TopComponent implements ExplorerManager.Provider {
+public final class JTsGrowthChartTopComponent extends TopComponent implements ExplorerManager.Provider {
 
     private final ExplorerManager mgr = new ExplorerManager();
 
-    public ListTopComponent() {
+    public JTsGrowthChartTopComponent() {
         initComponents();
-        setName(Bundle.CTL_ListTopComponent());
-        setToolTipText(Bundle.HINT_ListTopComponent());
+        setName(Bundle.CTL_GrowthChartTopComponent());
+        setToolTipText(Bundle.HINT_GrowthChartTopComponent());
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
-        add(new JTsTable(), BorderLayout.CENTER);
+        add(new JTsGrowthChart(), BorderLayout.CENTER);
+    }
+
+    @Override
+    public void open() {
+        super.open();
+        Mode mode = WindowManager.getDefault().findMode("output");
+        if (mode != null && mode.canDock(this)) {
+            mode.dockInto(this);
+        }
     }
 
     /**
@@ -58,20 +68,11 @@ public final class ListTopComponent extends TopComponent implements ExplorerMana
         setLayout(new java.awt.BorderLayout());
     }// </editor-fold>//GEN-END:initComponents
 
-    @Override
-    public void open() {
-        super.open();
-        WindowManager.getDefault().getModes();
-        Mode mode = WindowManager.getDefault().findMode("tsnavigator");
-        if (mode != null) {
-            mode.dockInto(this);
-        }
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
-        ControlNode.onComponentOpened(mgr, getList());
+        ControlNode.onComponentOpened(mgr, getGrowthChart());
     }
 
     @Override
@@ -83,12 +84,12 @@ public final class ListTopComponent extends TopComponent implements ExplorerMana
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        ToolsPersistence.writeTsCollection(getList(), p);
+        ToolsPersistence.writeTsCollection(getGrowthChart(), p);
     }
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
-        ToolsPersistence.readTsCollection(getList(), p);
+        ToolsPersistence.readTsCollection(getGrowthChart(), p);
     }
 
     @Override
@@ -96,7 +97,7 @@ public final class ListTopComponent extends TopComponent implements ExplorerMana
         return mgr;
     }
 
-    public JTsTable getList() {
-        return (JTsTable) getComponent(0);
+    public JTsGrowthChart getGrowthChart() {
+        return (JTsGrowthChart) getComponent(0);
     }
 }

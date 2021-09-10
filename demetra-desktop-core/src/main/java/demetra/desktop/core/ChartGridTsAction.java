@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package internal.ui;
+package demetra.desktop.core;
 
 import demetra.desktop.TsActionsOpenSpi;
 import demetra.desktop.TsManager;
@@ -27,8 +27,8 @@ import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.util.MultiLineNameUtil;
-import ec.nbdemetra.ui.tools.ChartTopComponent;
-import ec.nbdemetra.ui.tools.GridTopComponent;
+import demetra.desktop.core.tools.JTsChartTopComponent;
+import demetra.desktop.core.tools.JTsGridTopComponent;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.netbeans.core.spi.multiview.MultiViewDescription;
@@ -125,7 +125,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
         @Override
         public MultiViewElement createElement() {
             TsCollection col = TsCollection.of(ts);
-            ChartTopComponent result = new ChartTopComponent();
+            JTsChartTopComponent result = new JTsChartTopComponent();
             result.getChart().setTsCollection(col);
             result.getChart().setTsUpdateMode(TsUpdateMode.None);
             result.getChart().setLegendVisible(true);
@@ -169,7 +169,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
         @Override
         public MultiViewElement createElement() {
             TsCollection col = TsCollection.of(ts);
-            GridTopComponent result = new GridTopComponent();
+            JTsGridTopComponent result = new JTsGridTopComponent();
             result.getGrid().setTsCollection(col);
             result.getGrid().setTsUpdateMode(TsUpdateMode.None);
             result.getGrid().setMode(JTsGrid.Mode.SINGLETS);

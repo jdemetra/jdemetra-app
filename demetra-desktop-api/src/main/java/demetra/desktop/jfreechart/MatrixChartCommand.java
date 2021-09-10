@@ -2,12 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.util.chart.swing.ext;
+package demetra.desktop.jfreechart;
 
-import com.google.common.base.Preconditions;
-import demetra.bridge.TsConverter;
 import demetra.math.matrices.MatrixType;
-import ec.tstoolkit.maths.matrices.Matrix;
 import ec.util.chart.swing.ChartCommand;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
@@ -27,7 +24,7 @@ public abstract class MatrixChartCommand extends ChartCommand {
 
     @Override
     public void execute(ChartPanel chartPanel) {
-        MatrixType matrix = TsConverter.toMatrix(toMatrix(chartPanel));
+        MatrixType matrix = toMatrix(chartPanel);
         Transferable t = DataTransfer.getDefault().fromMatrix(matrix);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
     }
@@ -39,7 +36,7 @@ public abstract class MatrixChartCommand extends ChartCommand {
      * @return a non-null matrix
      */
     @NonNull
-    abstract protected Matrix toMatrix(@NonNull ChartPanel chartPanel);
+    abstract protected MatrixType toMatrix(@NonNull ChartPanel chartPanel);
 
     /**
      * Creates a command that extracts a single series from a chart and put in
@@ -51,8 +48,12 @@ public abstract class MatrixChartCommand extends ChartCommand {
      */
     @NonNull
     public static ChartCommand copySeries(int index, int series) {
-        Preconditions.checkArgument(index >= 0, "index must be positive");
-        Preconditions.checkArgument(series >= 0, "series must be positive");
+        if (index < 0) {
+            throw new IllegalArgumentException("index must be positive");
+        }
+        if (series < 0) {
+            throw new IllegalArgumentException("series must be positive");
+        }
         return new CopySeries(index, series);
     }
 
@@ -67,9 +68,9 @@ public abstract class MatrixChartCommand extends ChartCommand {
         }
 
         @Override
-        protected Matrix toMatrix(ChartPanel chartPanel) {
+        protected MatrixType toMatrix(ChartPanel chartPanel) {
             XYDataset dataset = chartPanel.getChart().getXYPlot().getDataset(index);
-            Matrix result = new Matrix(dataset.getItemCount(series), 2);
+            MatrixType.Mutable result = MatrixType.Mutable.make(dataset.getItemCount(series), 2);
             for (int i = 0; i < result.getRowsCount(); i++) {
                 result.set(i, 0, dataset.getXValue(series, i));
                 result.set(i, 1, dataset.getYValue(series, i));

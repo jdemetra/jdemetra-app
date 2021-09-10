@@ -19,7 +19,7 @@ package ec.nbdemetra.ui.demo.impl;
 import ec.nbdemetra.ui.demo.DemoComponentFactory;
 import ec.nbdemetra.ui.demo.JReflectComponent;
 import ec.tstoolkit.utilities.Id;
-import ec.ui.view.res.JResidualsView;
+import demetra.desktop.components.JResidualsView;
 import java.awt.Component;
 import java.util.Map;
 import java.util.concurrent.Callable;

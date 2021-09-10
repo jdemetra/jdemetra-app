@@ -24,8 +24,6 @@ import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import ec.tstoolkit.timeseries.regression.OutlierEstimation;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import static ec.ui.chart.JTimeSeriesChartUtil.newExportImageMenu;
-import static ec.ui.chart.JTimeSeriesChartUtil.setSeriesColorist;
 import ec.ui.chart.TsXYDatasets;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.ObsFunction;
@@ -51,6 +49,9 @@ import javax.swing.JMenu;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
+import static ec.util.chart.swing.JTimeSeriesChartCommand.copyImage;
+import static ec.util.chart.swing.JTimeSeriesChartCommand.printImage;
+import static ec.util.chart.swing.JTimeSeriesChartCommand.saveImage;
 
 /**
  *
@@ -283,4 +284,23 @@ final class JAnomalyDetectionChart extends JComponent {
         }
     }
     //</editor-fold>
+    
+    private static void setSeriesColorist(final @NonNull JTimeSeriesChart chart, final @NonNull SeriesFunction<ColorScheme.KnownColor> colorist) {
+        chart.setSeriesColorist(new SeriesFunction<Color>() {
+            @Override
+            public Color apply(int series) {
+                ColorScheme.KnownColor color = colorist.apply(series);
+                return color != null ? chart.getColorSchemeSupport().getLineColor(color) : null;
+            }
+        });
+    }
+
+    @NonNull
+    private static JMenu newExportImageMenu(@NonNull JTimeSeriesChart chart) {
+        JMenu result = new JMenu("Export image to");
+        result.add(printImage().toAction(chart)).setText("Printer...");
+        result.add(copyImage().toAction(chart)).setText("Clipboard");
+        result.add(saveImage().toAction(chart)).setText("File...");
+        return result;
+    }
 }

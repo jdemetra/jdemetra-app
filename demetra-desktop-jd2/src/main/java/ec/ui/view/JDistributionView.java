@@ -35,7 +35,7 @@ import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.SwingColorSchemeSupport;
-import ec.util.chart.swing.ext.MatrixChartCommand;
+import demetra.desktop.jfreechart.MatrixChartCommand;
 import java.awt.BorderLayout;
 import java.text.DecimalFormat;
 import javax.swing.JComponent;

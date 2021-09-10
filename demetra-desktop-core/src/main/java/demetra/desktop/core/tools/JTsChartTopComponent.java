@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.tools;
+package demetra.desktop.core.tools;
 
+import demetra.desktop.tools.ToolsPersistence;
 import demetra.desktop.components.parts.HasColorScheme;
 import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.DemetraIcons;
@@ -46,11 +47,11 @@ import org.openide.windows.WindowManager;
     "CTL_ChartTopComponent=Chart",
     "HINT_ChartTopComponent=This is a Chart window"
 })
-public final class ChartTopComponent extends TopComponent implements ExplorerManager.Provider, MultiViewElement {
+public final class JTsChartTopComponent extends TopComponent implements ExplorerManager.Provider, MultiViewElement {
 
     private final ExplorerManager mgr = new ExplorerManager();
 
-    public ChartTopComponent() {
+    public JTsChartTopComponent() {
         initComponents();
         setName(Bundle.CTL_ChartTopComponent());
         setToolTipText(Bundle.HINT_ChartTopComponent());

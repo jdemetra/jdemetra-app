@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package internal.ui;
+package demetra.desktop.core;
 
 import demetra.desktop.TsActionsOpenSpi;
 import demetra.desktop.TsManager;
@@ -27,7 +27,7 @@ import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSourceProvider;
-import ec.nbdemetra.ui.tools.ChartTopComponent;
+import demetra.desktop.core.tools.JTsChartTopComponent;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 
@@ -54,7 +54,7 @@ public final class SimpleChartTsAction implements TsActionsOpenSpi {
     @Override
     public void open(Ts ts) {
         String topComponentName = getTopComponentName(ts);
-        NbComponents.findTopComponentByNameAndClass(topComponentName, ChartTopComponent.class)
+        NbComponents.findTopComponentByNameAndClass(topComponentName, JTsChartTopComponent.class)
                 .orElseGet(() -> createComponent(topComponentName, ts))
                 .requestActive();
     }
@@ -63,8 +63,8 @@ public final class SimpleChartTsAction implements TsActionsOpenSpi {
         return getName() + ts.getMoniker();
     }
 
-    private static ChartTopComponent createComponent(String topComponentName, Ts ts) {
-        ChartTopComponent result = new ChartTopComponent();
+    private static JTsChartTopComponent createComponent(String topComponentName, Ts ts) {
+        JTsChartTopComponent result = new JTsChartTopComponent();
         result.setName(topComponentName);
         result.setDisplayName(getDisplayName(ts));
         result.setIcon(DataSourceProviderBuddySupport.getDefault().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));

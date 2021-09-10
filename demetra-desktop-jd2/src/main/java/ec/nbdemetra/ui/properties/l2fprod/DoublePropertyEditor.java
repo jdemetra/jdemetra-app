@@ -17,7 +17,6 @@
 package ec.nbdemetra.ui.properties.l2fprod;
 
 import com.l2fprod.common.swing.LookAndFeelTweaks;
-import internal.CustomPropertyEditorSupport;
 import static demetra.desktop.util.JTextComponents.enableDecimalMappingOnNumpad;
 import static demetra.desktop.util.JTextComponents.enableValidationFeedback;
 import static demetra.desktop.util.JTextComponents.fixMaxDecimals;

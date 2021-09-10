@@ -14,9 +14,8 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package internal;
+package demetra.desktop.core.components;
 
-import demetra.bridge.TsConverter;
 import demetra.desktop.components.parts.*;
 import demetra.timeseries.TsCollection;
 import demetra.desktop.components.ComponentBackendSpi;
@@ -25,10 +24,7 @@ import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.jfreechart.TsCharts;
 import demetra.desktop.jfreechart.TsXYDataset;
 import demetra.desktop.util.NbComponents;
-import ec.tss.tsproviders.utils.DataFormat;
-import ec.tstoolkit.data.DataBlock;
-import ec.tstoolkit.data.DescriptiveStatistics;
-import ec.ui.view.res.JResidualsView;
+import demetra.desktop.components.JResidualsView;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
@@ -55,11 +51,14 @@ import java.util.Collections;
 
 import static demetra.desktop.components.parts.HasObsFormat.OBS_FORMAT_PROPERTY;
 import static demetra.desktop.components.parts.HasTsData.TS_DATA_PROPERTY;
+import demetra.tsprovider.util.ObsFormat;
+import java.util.DoubleSummaryStatistics;
+import java.util.stream.DoubleStream;
 
 /**
  * @author Philippe Charles
  */
-public final class InternalResidualsViewUI {
+public final class ResidualsViewUI implements InternalUI<JResidualsView> {
 
     @DirectImpl
     @ServiceProvider
@@ -72,7 +71,7 @@ public final class InternalResidualsViewUI {
 
         @Override
         public void install(JComponent component) {
-            new InternalResidualsViewUI().install((JResidualsView) component);
+            new ResidualsViewUI().install((JResidualsView) component);
         }
     }
 
@@ -83,13 +82,14 @@ public final class InternalResidualsViewUI {
     private HasObsFormatResolver obsFormatResolver;
     private HasColorSchemeResolver colorSchemeResolver;
 
-    public InternalResidualsViewUI() {
+    public ResidualsViewUI() {
         this.chartPanel = Charts.newChartPanel(buildResidualViewChart());
         this.grid = new JTsGrid();
         this.grid.setTsUpdateMode(TsUpdateMode.None);
         this.grid.setMode(JTsGrid.Mode.SINGLETS);
     }
 
+    @Override
     public void install(JResidualsView view) {
         this.obsFormatResolver = new HasObsFormatResolver(view, () -> onDataFormatChange(view));
         HasColorScheme todo = HasColorSchemeSupport.of((propertyName, oldValue, newValue) -> {
@@ -148,12 +148,8 @@ public final class InternalResidualsViewUI {
 
     private void onDataFormatChange(JResidualsView view) {
         grid.setObsFormat(view.getObsFormat());
-        try {
-            DataFormat dataFormat = TsConverter.fromObsFormat(obsFormatResolver.resolve());
-            ((DateAxis) chartPanel.getChart().getXYPlot().getDomainAxis()).setDateFormatOverride(dataFormat.newDateFormat());
-        } catch (IllegalArgumentException ex) {
-            // do nothing?
-        }
+        ObsFormat obsFormat = obsFormatResolver.resolve();
+        ((DateAxis) chartPanel.getChart().getXYPlot().getDomainAxis()).setDateFormatOverride(new InternalComponents.DateFormatAdapter(obsFormat));
     }
 
     private void onColorSchemeChange() {
@@ -223,7 +219,7 @@ public final class InternalResidualsViewUI {
     private static Range calcRange(double[] values) {
         double min = Double.NEGATIVE_INFINITY, max = -Double.POSITIVE_INFINITY;
 
-        DescriptiveStatistics stats = new DescriptiveStatistics(new DataBlock(values));
+        final DoubleSummaryStatistics stats = DoubleStream.of(values).summaryStatistics();
         double smin = stats.getMin(), smax = stats.getMax();
         if (Double.isInfinite(min) || smin < min) {
             min = smin;

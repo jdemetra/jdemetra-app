@@ -2,24 +2,22 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.tools;
+package demetra.desktop.tools;
 
-import demetra.bridge.TsConverter;
 import demetra.timeseries.TsCollection;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.Config;
 import demetra.desktop.DemetraOptions;
 import demetra.desktop.Persistable;
-import ec.nbdemetra.ui.XmlConfig;
-import ec.tss.Ts;
-import ec.tss.TsMoniker;
-import ec.tss.tsproviders.utils.Formatters;
-import ec.tss.tsproviders.utils.IFormatter;
-import ec.tss.tsproviders.utils.IParser;
-import ec.tss.tsproviders.utils.Parsers;
-import ec.tstoolkit.utilities.URLEncoder2;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsInformationType;
+import demetra.timeseries.TsMoniker;
+import demetra.desktop.util.XmlConfig;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +27,12 @@ import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import nbbrd.io.function.IOFunction;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+import nbbrd.io.xml.Xml;
+import nbbrd.io.xml.bind.Jaxb;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
@@ -40,13 +44,13 @@ public final class ToolsPersistence {
         // static class
     }
 
-    private static <T> Optional<T> tryGet(Properties p, String key, IParser<T> parser, boolean escape) {
-        CharSequence stringValue = p.getProperty(key);
+    private static <T> Optional<T> tryGet(Properties p, String key, Parser<T> parser, boolean escape) {
+        String stringValue = p.getProperty(key);
         if (stringValue == null) {
             return Optional.empty();
         }
         if (escape) {
-            stringValue = Decoder.INSTANCE.parse(stringValue);
+            stringValue = unescape(stringValue);
             if (stringValue == null) {
                 return Optional.empty();
             }
@@ -54,13 +58,13 @@ public final class ToolsPersistence {
         return parser.parseValue(stringValue);
     }
 
-    private static <T> boolean tryPut(Properties p, String key, IFormatter<T> formatter, boolean escape, T value) {
+    private static <T> boolean tryPut(Properties p, String key, Formatter<T> formatter, boolean escape, T value) {
         String stringValue = formatter.formatAsString(value);
         if (stringValue == null) {
             return false;
         }
         if (escape) {
-            stringValue = Encoder.INSTANCE.formatAsString(stringValue);
+            stringValue = escape(stringValue);
             if (stringValue == null) {
                 return false;
             }
@@ -69,54 +73,74 @@ public final class ToolsPersistence {
         return true;
     }
 
-    public static void writeTsCollection(HasTsCollection view, Properties p) {
+    public static void writeTsCollection(@NonNull HasTsCollection view, @NonNull Properties p) {
         if (view instanceof Persistable) {
             Config config = ((Persistable) view).getConfig();
-            tryPut(p, "config", XmlConfig.xmlFormatter(false), true, config);
+            tryPut(p, "config", XmlConfig.xmlFormatter(false)::format, true, config);
         }
         if (DemetraOptions.getDefault().isPersistToolsContent()) {
             Content content = new Content(
-                    view.getTsCollection().stream().map(TsConverter::fromTs).collect(Collectors.toList()),
-                    view.getTsSelectionStream().map(TsConverter::fromTs).collect(Collectors.toList()));
-            tryPut(p, "content", CONTENT_FORMATTER, true, content);
+                    view.getTsCollection().getItems(),
+                    view.getTsSelectionStream().collect(Collectors.toList()));
+            tryPut(p, "content", IOFunction.unchecked(CONTENT_FORMATTER::formatToString)::apply, true, content);
         }
     }
 
-    public static void readTsCollection(HasTsCollection view, Properties p) {
+    public static void readTsCollection(@NonNull HasTsCollection view, @NonNull Properties p) {
         if (DemetraOptions.getDefault().isPersistToolsContent()) {
-            tryGet(p, "content", CONTENT_PARSER, true).ifPresent(o -> {
-                List<demetra.timeseries.Ts> tmp = o.collection.stream().map(TsConverter::toTs).collect(Collectors.toList());
-                view.setTsCollection(TsCollection.of(tmp));
+            tryGet(p, "content", IOFunction.unchecked(CONTENT_PARSER::parseChars)::apply, true).ifPresent(o -> {
+                view.setTsCollection(TsCollection.of(o.collection));
                 view.getTsSelectionModel().clearSelection();
-                tmp
+                o.collection
                         .stream()
                         .mapToInt(view.getTsCollection().getItems()::indexOf)
                         .forEach(i -> view.getTsSelectionModel().addSelectionInterval(i, i));
             });
         }
         if (view instanceof Persistable) {
-            tryGet(p, "config", XmlConfig.xmlParser(), true).ifPresent(((Persistable) view)::setConfig);
+            tryGet(p, "config", XmlConfig.xmlParser()::parse, true).ifPresent(((Persistable) view)::setConfig);
         }
     }
 
-    private static final IFormatter<Content> CONTENT_FORMATTER = Formatters.onJAXB(ContentBean.class, false).compose(Content::toBean);
-    private static final IParser<Content> CONTENT_PARSER = Parsers.onJAXB(ContentBean.class).andThen(Content::fromBean);
+    private static final Xml.Formatter<Content> CONTENT_FORMATTER;
+    private static final Xml.Parser<Content> CONTENT_PARSER;
 
+    static {
+        try {
+            CONTENT_FORMATTER = Jaxb.Formatter.of(ContentBean.class).compose(Content::toBean);
+            CONTENT_PARSER = Jaxb.Parser.of(ContentBean.class).andThen(Content::fromBean);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private static String escape(String value) {
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException | RuntimeException ex) {
+            return null;
+        }
+    }
+
+    private static String unescape(String value) {
+        try {
+            return URLDecoder.decode(value, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException | RuntimeException ex) {
+            return null;
+        }
+    }
+
+    @lombok.AllArgsConstructor
     private static class Content {
 
         final List<Ts> collection;
         final List<Ts> selection;
 
-        Content(List<Ts> collection, List<Ts> selection) {
-            this.collection = collection;
-            this.selection = selection;
-        }
-
         ContentBean toBean() {
             List<ContentItemBean> items = new ArrayList<>();
             for (Ts o : collection) {
                 TsMoniker moniker = o.getMoniker();
-                if (!moniker.isAnonymous()) {
+                if (!moniker.isNull()) {
                     ContentItemBean bean = new ContentItemBean();
                     bean.name = o.getName();
                     bean.source = moniker.getSource();
@@ -134,13 +158,11 @@ public final class ToolsPersistence {
             Content result = new Content(new ArrayList<>(), new ArrayList<>());
             if (input.items != null) {
                 for (ContentItemBean o : input.items) {
-                    Ts ts = TsConverter.fromTs(
-                            TsManager.getDefault()
-                                    .makeTs(demetra.timeseries.TsMoniker.of(o.source, o.id), demetra.timeseries.TsInformationType.Definition)
-                                    .toBuilder()
-                                    .name(o.name)
-                                    .build()
-                    );
+                    Ts ts = TsManager.getDefault()
+                            .makeTs(TsMoniker.of(o.source, o.id), TsInformationType.Definition)
+                            .toBuilder()
+                            .name(o.name)
+                            .build();
                     if (o.selected) {
                         result.selection.add(ts);
                     }
@@ -165,25 +187,5 @@ public final class ToolsPersistence {
         String id;
         String name;
         boolean selected;
-    }
-
-    private static class Encoder extends Formatters.Formatter<CharSequence> {
-
-        static final Encoder INSTANCE = new Encoder();
-
-        @Override
-        public CharSequence format(CharSequence value) throws NullPointerException {
-            return URLEncoder2.encode(value.toString(), StandardCharsets.UTF_8);
-        }
-    }
-
-    private static class Decoder extends Parsers.FailSafeParser<CharSequence> {
-
-        static final Decoder INSTANCE = new Decoder();
-
-        @Override
-        protected CharSequence doParse(CharSequence input) throws Exception {
-            return URLDecoder.decode(input.toString(), StandardCharsets.UTF_8.name());
-        }
     }
 }

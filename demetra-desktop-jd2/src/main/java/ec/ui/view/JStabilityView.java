@@ -21,7 +21,7 @@ import demetra.desktop.design.SwingComponent;
 import demetra.desktop.components.TimeSeriesComponent;
 import demetra.desktop.jfreechart.TsCharts;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
-import ec.ui.chart.BasicXYDataset;
+import demetra.desktop.jfreechart.BasicXYDataset;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.SwingColorSchemeSupport;

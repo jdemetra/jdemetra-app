@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal;
+package ec.nbdemetra.ui.properties.l2fprod;
 
 import java.awt.Component;
 import java.awt.Graphics;
@@ -28,7 +28,7 @@ import java.util.function.BiConsumer;
  *
  * @author Philippe Charles
  */
-public final class CustomPropertyEditorSupport implements PropertyEditor {
+final class CustomPropertyEditorSupport implements PropertyEditor {
 
     public interface Resource<C extends Component, V> {
 

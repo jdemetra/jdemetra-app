@@ -14,12 +14,9 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.util.grid.swing.ext;
+package demetra.desktop.components;
 
-import com.google.common.collect.BoundType;
-import com.google.common.collect.Range;
-import demetra.bridge.TsConverter;
-import ec.tstoolkit.data.Table;
+import demetra.data.Range;
 import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
 import ec.util.various.swing.JCommand;
@@ -28,37 +25,42 @@ import java.awt.datatransfer.Transferable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ListSelectionModel;
 import demetra.desktop.datatransfer.DataTransfer;
+import demetra.util.Table;
 
 /**
  *
  * @author Philippe Charles
  */
-public abstract class TableGridCommand extends JCommand<JGrid> {
-
-    @Override
-    public void execute(JGrid grid) {
-        Table<?> table = toTable(grid);
-        Transferable t = DataTransfer.getDefault().fromTable(TsConverter.toTable(table));
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
-    }
+@lombok.experimental.UtilityClass
+public class GridCommands {
 
     @NonNull
-    public static TableGridCommand copyAll(boolean rowHeader, boolean columnHeader) {
+    public static JCommand<JGrid> copyAll(boolean rowHeader, boolean columnHeader) {
         return new CopyAllCommand(rowHeader, columnHeader);
     }
 
     @NonNull
-    public static TableGridCommand copySelection(boolean rowHeader, boolean columnHeader) {
+    public static JCommand<JGrid> copySelection(boolean rowHeader, boolean columnHeader) {
         return new CopySelectionCommand(rowHeader, columnHeader);
     }
 
     @NonNull
-    private static TableGridCommand copyRange(Range<Integer> rowRange, Range<Integer> columnRange, boolean rowHeader, boolean columnHeader) {
+    public static JCommand<JGrid> copyRange(Range<Integer> rowRange, Range<Integer> columnRange, boolean rowHeader, boolean columnHeader) {
         return new CopyRangeCommand(rowRange, columnRange, rowHeader, columnHeader);
     }
 
-    @NonNull
-    abstract public Table<?> toTable(@NonNull JGrid grid);
+    private static abstract class TableGridCommand extends JCommand<JGrid> {
+
+        @Override
+        public void execute(JGrid grid) {
+            Table<?> table = toTable(grid);
+            Transferable t = DataTransfer.getDefault().fromTable(table);
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
+        }
+
+        @NonNull
+        abstract public Table<?> toTable(@NonNull JGrid grid);
+    }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation">
     private static Table<?> copy(GridModel model, int firstRow, int firstColumn, int lastRow, int lastColumn, boolean rowHeader, boolean columnHeader) {
@@ -85,10 +87,10 @@ public abstract class TableGridCommand extends JCommand<JGrid> {
         if (model.getRowCount() == 0 || model.getColumnCount() == 0) {
             return new Table<>(0, 0);
         }
-        int firstRow = r.hasLowerBound() ? (r.lowerBoundType().equals(BoundType.CLOSED) ? r.lowerEndpoint() : (r.lowerEndpoint() + 1)) : 0;
-        int lastRow = r.hasUpperBound() ? (r.upperBoundType().equals(BoundType.CLOSED) ? r.upperEndpoint() : (r.upperEndpoint() - 1)) : (model.getRowCount() - 1);
-        int firstColumn = c.hasLowerBound() ? (c.lowerBoundType().equals(BoundType.CLOSED) ? c.lowerEndpoint() : (c.lowerEndpoint() + 1)) : 0;
-        int lastColumn = c.hasUpperBound() ? (c.upperBoundType().equals(BoundType.CLOSED) ? c.upperEndpoint() : (c.upperEndpoint() - 1)) : (model.getColumnCount() - 1);
+        int firstRow = r.start().equals(Integer.MIN_VALUE) ? 0 : r.start();
+        int lastRow = r.end().equals(Integer.MAX_VALUE) ? (model.getRowCount() - 1) : (r.end() - 1);
+        int firstColumn = c.start().equals(Integer.MIN_VALUE) ? 0 : c.start();
+        int lastColumn = c.end().equals(Integer.MAX_VALUE) ? (model.getColumnCount() - 1) : (c.end() - 1);
         return copy(model, firstRow, firstColumn, lastRow, lastColumn, rowHeader, columnHeader);
     }
 
@@ -125,8 +127,10 @@ public abstract class TableGridCommand extends JCommand<JGrid> {
         @Override
         public Table<?> toTable(JGrid grid) {
             GridModel model = grid.getModel();
-            return copy2(model, Range.all(), Range.all(), rowHeader, columnHeader);
+            return copy2(model, ALL, ALL, rowHeader, columnHeader);
         }
+
+        private static final Range<Integer> ALL = Range.of(Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
     private static final class CopySelectionCommand extends TableGridCommand {
@@ -144,7 +148,7 @@ public abstract class TableGridCommand extends JCommand<JGrid> {
             ListSelectionModel r = grid.getRowSelectionModel();
             ListSelectionModel c = grid.getColumnSelectionModel();
             return !r.isSelectionEmpty() && !c.isSelectionEmpty()
-                    ? copy2(grid.getModel(), Range.closed(r.getMinSelectionIndex(), r.getMaxSelectionIndex()), Range.closed(c.getMinSelectionIndex(), c.getMaxSelectionIndex()), rowHeader, columnHeader)
+                    ? copy2(grid.getModel(), Range.of(r.getMinSelectionIndex(), r.getMaxSelectionIndex() + 1), Range.of(c.getMinSelectionIndex(), c.getMaxSelectionIndex() + 1), rowHeader, columnHeader)
                     : new Table<>(0, 0);
         }
     }
