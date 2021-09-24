@@ -1,23 +1,22 @@
 /*
  * Copyright 2013 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.ui;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Iterables;
 import ec.nbdemetra.core.InstallerStep;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.ui.interchange.InterchangeBroker;
@@ -37,15 +36,6 @@ import ec.tss.tsproviders.utils.IFormatter;
 import ec.tss.tsproviders.utils.IParser;
 import ec.tss.tsproviders.utils.Parsers;
 import ec.util.chart.swing.Charts;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-import java.util.stream.Stream;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.renderer.category.BarRenderer;
@@ -54,6 +44,16 @@ import org.openide.modules.ModuleInstall;
 import org.openide.util.Lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
+import java.util.stream.Stream;
 
 public final class Installer extends ModuleInstall {
 
@@ -240,20 +240,23 @@ public final class Installer extends ModuleInstall {
 
     public static void loadConfig(Collection<?> list, Preferences root) {
         IParser<Config> parser = Config.xmlParser();
-        for (IConfigurable o : Iterables.filter(list, IConfigurable.class)) {
-            Config current = o.getConfig();
-            try {
-                if (root.nodeExists(current.getDomain())) {
-                    Preferences domain = root.node(current.getDomain());
-                    Optional<Config> config = InstallerStep.tryGet(domain, current.getName(), parser);
-                    if (config.isPresent()) {
-                        o.setConfig(config.get());
+        list.stream()
+                .filter(IConfigurable.class::isInstance)
+                .map(IConfigurable.class::cast)
+                .forEach(o -> {
+                    Config current = o.getConfig();
+                    try {
+                        if (root.nodeExists(current.getDomain())) {
+                            Preferences domain = root.node(current.getDomain());
+                            Optional<Config> config = InstallerStep.tryGet(domain, current.getName(), parser);
+                            if (config.isPresent()) {
+                                o.setConfig(config.get());
+                            }
+                        }
+                    } catch (BackingStoreException ex) {
+                        // do nothing?
                     }
-                }
-            } catch (BackingStoreException ex) {
-                // do nothing?
-            }
-        }
+                });
     }
 
     public static void storeConfig(Collection<?> list, Preferences root) {

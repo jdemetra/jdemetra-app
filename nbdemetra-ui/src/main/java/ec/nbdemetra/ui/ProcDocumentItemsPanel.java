@@ -5,16 +5,11 @@
 package ec.nbdemetra.ui;
 
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimaps;
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
 import ec.nbdemetra.ui.nodes.IdNodes;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
 import ec.ui.view.tsprocessing.ProcDocumentItemFactory;
-import java.awt.Image;
-import java.util.stream.Collectors;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.Icon;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
@@ -23,6 +18,12 @@ import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 final class ProcDocumentItemsPanel extends javax.swing.JPanel implements ExplorerManager.Provider {
 
@@ -51,21 +52,21 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
         outlineView1 = new org.openide.explorer.view.OutlineView();
         jComboBox1 = new javax.swing.JComboBox();
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(outlineView1, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
-            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(outlineView1, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
+                        .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(outlineView1, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(outlineView1, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -87,6 +88,7 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
     boolean valid() {
         return true;
     }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox jComboBox1;
     private org.openide.explorer.view.OutlineView outlineView1;
@@ -99,7 +101,7 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
             public Node getRoot(Iterable<? extends ProcDocumentItemFactory> factories) {
                 return new AbstractNodeBuilder()
                         .name("Items")
-                        .add(Iterables.transform(factories, o -> new ProcDocumentItemFactoryNode(o)))
+                        .add(StreamSupport.stream(factories.spliterator(), false).map(ProcDocumentItemFactoryNode::new))
                         .build();
             }
 
@@ -115,7 +117,7 @@ final class ProcDocumentItemsPanel extends javax.swing.JPanel implements Explore
 
                 AbstractNodeBuilder result = new AbstractNodeBuilder().name("Items");
                 for (Class<?> o : index.keySet()) {
-                    Iterable<Node> children = Iterables.transform(index.get(o), x -> new ProcDocumentItemFactoryNode(x));
+                    Stream<Node> children = index.get(o).stream().map(ProcDocumentItemFactoryNode::new);
                     result.add(new AbstractNodeBuilder().name(o.getName()).add(children).build());
                 }
                 return result.build();
