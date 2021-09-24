@@ -36,7 +36,7 @@
 
     <properties>
         <brandingToken>nbdemetra</brandingToken>
-        <netbeans.version>RELEASE124</netbeans.version>
+        <netbeans.version>RELEASE125</netbeans.version>
         <jdemetra.version>${project.version}</jdemetra.version>
     </properties>
 
