@@ -13,7 +13,7 @@ import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import demetra.desktop.util.FrozenTsHelper;
 import demetra.timeseries.*;
 import demetra.tsprovider.DataSourceProvider;
-import demetra.tsprovider.util.MultiLineNameUtil;
+import demetra.util.MultiLineNameUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;

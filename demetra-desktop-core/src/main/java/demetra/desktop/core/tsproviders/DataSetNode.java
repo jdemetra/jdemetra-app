@@ -26,7 +26,7 @@ import demetra.desktop.nodes.Nodes;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSourceProvider;
-import demetra.tsprovider.util.MultiLineNameUtil;
+import demetra.util.MultiLineNameUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.netbeans.api.actions.Openable;
 import org.openide.nodes.AbstractNode;

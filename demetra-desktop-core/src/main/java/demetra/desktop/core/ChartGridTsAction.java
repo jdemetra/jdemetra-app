@@ -26,7 +26,7 @@ import demetra.desktop.util.NbComponents;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
-import demetra.tsprovider.util.MultiLineNameUtil;
+import demetra.util.MultiLineNameUtil;
 import demetra.desktop.core.tools.JTsChartTopComponent;
 import demetra.desktop.core.tools.JTsGridTopComponent;
 import nbbrd.design.DirectImpl;
