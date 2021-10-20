@@ -30,11 +30,15 @@ import java.util.List;
  */
 final class SingleTsGridData implements TsGridData {
 
+    private static final String[] MONTHS = {"jan", "feb", "mar", "apr", "may", "jun",
+        "jul", "aug", "sep", "oct", "nov", "dec"};
+
     private final int seriesIndex;
     private final TsData data;
     private final TsDomain domain;
     private final int startYear;
     private final int startPosition;
+    private final int frequency;
     private final TsGridObs obs;
 
     public SingleTsGridData(List<Ts> col, int seriesIndex) {
@@ -44,11 +48,13 @@ final class SingleTsGridData implements TsGridData {
         this.domain = ts.getData().getDomain();
         this.startYear = domain.getStartPeriod().year();
         this.startPosition = domain.getStartPeriod().annualPosition();
+        int period = domain.getAnnualFrequency();
+        this.frequency = period < 0 ? 0 : period;
         this.obs = new TsGridObs();
     }
 
     private int getPeriodId(int i, int j) {
-        int periodId = j + (getColumnCount() * i) - startPosition;
+        int periodId = j + (frequency * i) - startPosition;
         return (periodId < 0 || periodId >= domain.getLength()) ? -1 : periodId;
     }
 
@@ -59,7 +65,7 @@ final class SingleTsGridData implements TsGridData {
 
     @Override
     public String getColumnName(int j) {
-        return domain.get(j).display();
+        return MONTHS[(j + 1) * 12 / frequency - 1];
     }
 
     @Override
@@ -80,20 +86,20 @@ final class SingleTsGridData implements TsGridData {
 
     @Override
     public int getColumnCount() {
-        return domain.getAnnualFrequency();
+        return frequency;
     }
 
     @Override
     public int getRowIndex(ObsIndex index) {
         return index.getSeries() != seriesIndex
                 ? -1
-                : index.getObs() + startPosition / getColumnCount();
+                : (index.getObs() + startPosition) / frequency;
     }
 
     @Override
     public int getColumnIndex(ObsIndex index) {
         return index.getSeries() != seriesIndex
                 ? -1
-                : index.getObs() + startPosition % getColumnCount();
+                : (index.getObs() + startPosition) % frequency;
     }
 }

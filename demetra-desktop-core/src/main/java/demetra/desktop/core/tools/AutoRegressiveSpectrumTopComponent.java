@@ -2,19 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.tools;
+package demetra.desktop.core.tools;
 
-import demetra.desktop.components.parts.HasTs;
-import ec.nbdemetra.ui.ActiveViewManager;
-import ec.nbdemetra.ui.IActiveView;
-import ec.ui.view.AutoRegressiveSpectrumView;
+import demetra.desktop.components.tools.AutoRegressiveSpectrumView;
+import demetra.desktop.util.TsTopComponent;
 import java.lang.reflect.InvocationTargetException;
-import javax.swing.JMenu;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.explorer.ExplorerManager;
-import org.openide.explorer.ExplorerUtils;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -27,13 +22,13 @@ import org.openide.windows.WindowManager;
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//ec.nbdemetra.ui.tools//AutoRegressiveSpectrum//EN",
+@ConvertAsProperties(dtd = "-//demetra.desktop.core.tools//AutoRegressiveSpectrum//EN",
         autostore = false)
 @TopComponent.Description(preferredID = "AutoRegressiveSpectrumTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "output", openAtStartup = false)
-@ActionID(category = "Window", id = "ec.nbdemetra.ui.tools.AutoRegressiveSpectrumTopComponent")
+@ActionID(category = "Window", id = "demetra.desktop.core.tools.AutoRegressiveSpectrumTopComponent")
 @ActionReference(path = "Menu/Tools/Spectral analysis", position = 100)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_AutoRegressiveSpectrumAction")
 @Messages({
@@ -41,19 +36,18 @@ import org.openide.windows.WindowManager;
     "CTL_AutoRegressiveSpectrumTopComponent=Auto-regressive spectrum Window",
     "HINT_AutoRegressiveSpectrumTopComponent=This is a Auto-regressive spectrum window"
 })
-public final class AutoRegressiveSpectrumTopComponent extends TopComponent implements HasTs, IActiveView, ExplorerManager.Provider {
+public final class AutoRegressiveSpectrumTopComponent extends TsTopComponent {
 
     private final AutoRegressiveSpectrumView view;
-    private final Node node;
+    private final Node internalNode;
 
     public AutoRegressiveSpectrumTopComponent() {
         initComponents();
-        node = new InternalNode();
         view = new AutoRegressiveSpectrumView();
         add(view);
         setName(Bundle.CTL_AutoRegressiveSpectrumTopComponent());
         setToolTipText(Bundle.HINT_AutoRegressiveSpectrumTopComponent());
-        associateLookup(ExplorerUtils.createLookup(ActiveViewManager.getInstance().getExplorerManager(), getActionMap()));
+        internalNode=new InternalNode();
     }
 
     @Override
@@ -78,30 +72,11 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-    @Override
-    public void componentOpened() {
-        // TODO add custom code on component opening
-    }
-
-    @Override
-    public void componentClosed() {
-        // TODO add custom code on component closing
-    }
-
-    @Override
-    public void componentActivated() {
-        ActiveViewManager.getInstance().set(this);
-    }
-
-    @Override
-    public void componentDeactivated() {
-        ActiveViewManager.getInstance().set(null);
-    }
 
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
-        p.setProperty("version", "1.0");
+        p.setProperty("version", "3.0");
         // TODO store your settings
     }
 
@@ -112,7 +87,7 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
 
     @Override
     public demetra.timeseries.Ts getTs() {
-        return null;
+        return view.getTs();
     }
 
     @Override
@@ -121,25 +96,10 @@ public final class AutoRegressiveSpectrumTopComponent extends TopComponent imple
     }
 
     @Override
-    public boolean fill(JMenu menu) {
-        return false;
-    }
-
-    @Override
     public Node getNode() {
-        return node;
+        return internalNode;
     }
-
-    @Override
-    public ExplorerManager getExplorerManager() {
-        return ActiveViewManager.getInstance().getExplorerManager();
-    }
-
-    @Override
-    public boolean hasContextMenu() {
-        return false;
-    }
-
+    
     class InternalNode extends AbstractNode {
 
         @Messages({

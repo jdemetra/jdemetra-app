@@ -33,17 +33,17 @@ import java.util.stream.StreamSupport;
 @lombok.experimental.UtilityClass
 public class Collections2 {
 
-    public static <T> T[] toArray(Iterable<? extends T> iterable, Class<T> type) {
+    public <T> T[] toArray(Iterable<? extends T> iterable, Class<T> type) {
         Stream<? extends T> stream = StreamSupport.stream(iterable.spliterator(), false);
         return stream.toArray(o -> newArray(type, o));
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T[] newArray(Class<T> type, int length) {
+    private <T> T[] newArray(Class<T> type, int length) {
         return (T[]) Array.newInstance(type, length);
     }
 
-    public static <T> void addAll(List<T> x, Iterable<? extends T> y) {
+    public <T> void addAll(List<T> x, Iterable<? extends T> y) {
         if (y instanceof Collection) {
             x.addAll((Collection<? extends T>) y);
         } else {
@@ -53,12 +53,17 @@ public class Collections2 {
         }
     }
 
-    public static <X, Y> Predicate<Y> compose(Predicate<X> predicate, Function<? super Y, ? extends X> func) {
+    public <X, Y> Predicate<Y> compose(Predicate<X> predicate, Function<? super Y, ? extends X> func) {
         return o -> predicate.test(func.apply(o));
     }
 
-    public static <T> Supplier<T> memoize(Supplier<T> supplier) {
+    public <T> Supplier<T> memoize(Supplier<T> supplier) {
         ConcurrentMap<String, T> data = new ConcurrentHashMap<>();
         return () -> data.computeIfAbsent("", key -> supplier.get());
     }
+    
+    public boolean isNullOrEmpty(Collection coll){
+        return coll == null || coll.isEmpty();
+    }
+    
 }

@@ -91,12 +91,13 @@ public final class TsXYDataset extends AbstractSeriesDataset implements Interval
 
     @Override
     public double getStartXValue(int series, int item) {
-        return delegate.get(series).getData().getDomain().get(item).start().toEpochSecond(ZoneOffset.UTC);
+        // Date in milliseconds !!
+        return 1000*delegate.get(series).getData().getDomain().get(item).start().toEpochSecond(ZoneOffset.UTC);
     }
 
     @Override
     public double getEndXValue(int series, int item) {
-        return delegate.get(series).getData().getDomain().get(item).end().toEpochSecond(ZoneOffset.UTC);
+        return 1000*delegate.get(series).getData().getDomain().get(item).end().toEpochSecond(ZoneOffset.UTC);
     }
 
     @Override
@@ -107,7 +108,7 @@ public final class TsXYDataset extends AbstractSeriesDataset implements Interval
     @Override
     public double getXValue(int series, int item) {
         // FIXME: use middle instead of start
-        return delegate.get(series).getData().getDomain().get(item).start().toEpochSecond(ZoneOffset.UTC);
+        return 1000*delegate.get(series).getData().getDomain().get(item).start().toEpochSecond(ZoneOffset.UTC);
     }
 
     @Override

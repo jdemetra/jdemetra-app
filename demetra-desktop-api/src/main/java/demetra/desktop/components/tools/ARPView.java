@@ -132,7 +132,7 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
     private void onTsChange() {
         TsData tsdata = getData();
-        if (tsdata == null) {
+        if (tsdata == null || tsdata.isEmpty()) {
             clear();
         } else {
             String name = getTs().getName();

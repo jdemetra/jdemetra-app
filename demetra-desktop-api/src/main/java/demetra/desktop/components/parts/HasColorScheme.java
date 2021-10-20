@@ -20,7 +20,8 @@ public interface HasColorScheme {
     void setColorScheme(@Nullable ColorScheme colorScheme);
 
     default boolean hasColorScheme() {
-        return getColorScheme() != null;
+        return false;
+        //return getColorScheme() != null;
     }
 
     @SwingAction

@@ -4,14 +4,12 @@
  */
 package demetra.desktop.core.tools;
 
-import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.components.tools.PeriodogramView;
+import demetra.desktop.util.TsTopComponent;
 import java.lang.reflect.InvocationTargetException;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.explorer.ExplorerManager;
-import org.openide.explorer.ExplorerUtils;
 import org.openide.nodes.*;
 import org.openide.nodes.Sheet.Set;
 import org.openide.util.NbBundle.Messages;
@@ -22,13 +20,13 @@ import org.openide.windows.WindowManager;
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//ec.nbdemetra.ui.tools//Periodogram//EN",
+@ConvertAsProperties(dtd = "-//demetra.desktop.core.tools//Periodogram//EN",
         autostore = false)
 @TopComponent.Description(preferredID = "PeriodogramTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "output", openAtStartup = false)
-@ActionID(category = "Window", id = "ec.nbdemetra.ui.tools.PeriodogramTopComponent")
+@ActionID(category = "Window", id = "demetra.desktop.core.tools.PeriodogramTopComponent")
 @ActionReference(path = "Menu/Tools/Spectral analysis", position = 200)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_PeriodogramAction")
 @Messages({
@@ -36,10 +34,10 @@ import org.openide.windows.WindowManager;
     "CTL_PeriodogramTopComponent=Periodogram Window",
     "HINT_PeriodogramTopComponent=This is a Periodogram window"
 })
-public final class PeriodogramTopComponent extends TopComponent implements HasTs, ExplorerManager.Provider {
+public final class PeriodogramTopComponent extends TsTopComponent {
 
     private final PeriodogramView view;
-    private final ExplorerManager mgr = new ExplorerManager();
+    private final Node internalNode;
 
     public PeriodogramTopComponent() {
         initComponents();
@@ -47,7 +45,7 @@ public final class PeriodogramTopComponent extends TopComponent implements HasTs
         add(view);
         setName(Bundle.CTL_PeriodogramTopComponent());
         setToolTipText(Bundle.HINT_PeriodogramTopComponent());
-        associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
+        internalNode=new InternalNode();
     }
 
     @Override
@@ -72,29 +70,12 @@ public final class PeriodogramTopComponent extends TopComponent implements HasTs
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-    @Override
-    public void componentOpened() {
-    }
 
-    @Override
-    public void componentClosed() {
-        // TODO add custom code on component closing
-    }
-
-//    @Override
-//    public void componentActivated() {
-//        ActiveViewManager.getInstance().set(this);
-//    }
-//
-//    @Override
-//    public void componentDeactivated() {
-//        ActiveViewManager.getInstance().set(null);
-//    }
 
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
-        p.setProperty("version", "1.0");
+        p.setProperty("version", "3.0");
         // TODO store your settings
     }
 
@@ -105,7 +86,7 @@ public final class PeriodogramTopComponent extends TopComponent implements HasTs
 
     @Override
     public demetra.timeseries.Ts getTs() {
-        return null;
+        return view.getTs();
     }
 
     @Override
@@ -113,25 +94,11 @@ public final class PeriodogramTopComponent extends TopComponent implements HasTs
         view.setTs(ts);
     }
 
-//    @Override
-//    public boolean fill(JMenu menu) {
-//        return false;
-//    }
-//
-//    @Override
-//    public Node getNode() {
-//        return node;
-//    }
-//
-    @Override
-    public ExplorerManager getExplorerManager() {
-        return mgr;
-    }
 
-//    @Override
-//    public boolean hasContextMenu() {
-//        return false;
-//    }
+    @Override
+    public Node getNode() {
+        return internalNode;
+    }
 
     class InternalNode extends AbstractNode {
 

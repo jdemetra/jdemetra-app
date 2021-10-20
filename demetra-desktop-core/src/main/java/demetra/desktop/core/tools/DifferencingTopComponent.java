@@ -2,25 +2,22 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.tools;
+package demetra.desktop.core.tools;
 
-import demetra.bridge.TsConverter;
+import demetra.data.DoubleSeq;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.JTsGrid;
 import demetra.desktop.components.JTsGrid.Mode;
-import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.desktop.components.tools.JAutoCorrelationsView;
+import demetra.desktop.components.tools.PeriodogramView;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import demetra.desktop.util.NbComponents;
+import demetra.desktop.util.TsTopComponent;
+import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
-import ec.nbdemetra.ui.ActiveViewManager;
-import ec.nbdemetra.ui.IActiveView;
-import ec.nbdemetra.ui.OldTsUtil;
-import ec.tstoolkit.stats.AutoCorrelations;
-import ec.tstoolkit.timeseries.simplets.TsData;
-import ec.ui.view.JAutoCorrelationsView;
-import ec.ui.view.PeriodogramView;
+import demetra.timeseries.TsData;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -42,13 +39,13 @@ import java.util.Optional;
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//ec.nbdemetra.ui.tools//Differencing//EN",
+@ConvertAsProperties(dtd = "-//demetra.desktop.core.tools//Differencing//EN",
         autostore = false)
 @TopComponent.Description(preferredID = "DifferencingTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "output", openAtStartup = false)
-@ActionID(category = "Window", id = "ec.nbdemetra.ui.tools.DifferencingTopComponent")
+@ActionID(category = "Window", id = "demetra.desktop.core.tools.DifferencingTopComponent")
 @ActionReference(path = "Menu/Tools", position = 334)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_DifferencingAction",
         preferredID = "DifferencingTopComponent")
@@ -57,7 +54,7 @@ import java.util.Optional;
         "CTL_DifferencingTopComponent=Differencing Window",
         "HINT_DifferencingTopComponent=This is a Differencing window"
 })
-public final class DifferencingTopComponent extends TopComponent implements HasTs, IActiveView, ExplorerManager.Provider {
+public final class DifferencingTopComponent extends TsTopComponent  {
 
     private final JToolBar toolBar;
     // CONSTANTS
@@ -70,7 +67,7 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
     private final PeriodogramView periodogramView;
     private final JAutoCorrelationsView acView;
     private final JTsGrid grid;
-    private demetra.timeseries.Ts ts_;
+    private demetra.timeseries.Ts ts;
     private final Node node;
     private boolean isLog = false;
     private int diffOrder = 1, seasonalDiffOrder = 1;
@@ -109,7 +106,6 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
         add(splitter1, BorderLayout.CENTER);
         setTransferHandler(new TsHandler());
         node = new InternalNode();
-        associateLookup(ExplorerUtils.createLookup(ActiveViewManager.getInstance().getExplorerManager(), getActionMap()));
     }
 
     //    @Override
@@ -121,13 +117,13 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
 //        }
 //    }
     public void refreshHeader() {
-        if (ts_ == null) {
+        if (ts == null) {
             dropDataLabel.setVisible(true);
             tsLabel.setVisible(false);
         } else {
             dropDataLabel.setVisible(false);
-            tsLabel.setText(ts_.getName());
-            demetra.timeseries.TsMoniker moniker = ts_.getMoniker();
+            tsLabel.setText(ts.getName());
+            demetra.timeseries.TsMoniker moniker = ts.getMoniker();
             tsLabel.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false));
             tsLabel.setToolTipText(tsLabel.getText() + (moniker.getSource() != null ? (" (" + moniker.getSource() + ")") : ""));
             tsLabel.setVisible(true);
@@ -165,22 +161,10 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
         //grid.dispose();
     }
 
-    @Override
-    public void componentActivated() {
-        super.componentActivated();
-        ActiveViewManager.getInstance().set(this);
-    }
-
-    @Override
-    public void componentDeactivated() {
-        super.componentDeactivated();
-        ActiveViewManager.getInstance().set(null);
-    }
-
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
-        p.setProperty("version", "1.0");
+        p.setProperty("version", "3.0");
         // TODO store your settings
     }
 
@@ -209,62 +193,50 @@ public final class DifferencingTopComponent extends TopComponent implements HasT
 
     void showTests() {
         clear();
-        TsData s = TsConverter.fromTsData(ts_.getData()).get();
+        TsData s = ts.getData();
         if (isLog) {
             s = s.log();
         }
         if (diffOrder > 0) {
             s = s.delta(1, diffOrder);
         }
-        int ifreq = s.getFrequency().intValue();
+        int ifreq = s.getAnnualFrequency();
         if (ifreq > 1 && seasonalDiffOrder > 0) {
             s = s.delta(ifreq, seasonalDiffOrder);
         }
-        demetra.timeseries.Ts del = OldTsUtil.toTs("Differenced series", s);
+       
+        Ts del = Ts.builder()
+                .name("Differenced series")
+                .data(s)
+                .build();
         grid.setTsCollection(TsCollection.of(del));
-        AutoCorrelations ac = new AutoCorrelations(s);
-        acView.setLength(ifreq * 3);
-        acView.setAutoCorrelations(ac);
+        acView.setLength(ifreq * 6);
+        acView.setSample(s.getValues());
 
-        periodogramView.setData("Periodogram", ifreq, s);
+        periodogramView.setData("Periodogram", ifreq, s.getValues());
     }
 
     private void clear() {
-        acView.reset();
+        acView.setSample(DoubleSeq.empty());
         periodogramView.reset();
         grid.setTsCollection(TsCollection.EMPTY);
     }
 
     @Override
     public void setTs(demetra.timeseries.Ts s) {
-        ts_ = s.load(demetra.timeseries.TsInformationType.All, TsManager.getDefault()).freeze();
+        ts = s.load(demetra.timeseries.TsInformationType.All, TsManager.getDefault()).freeze();
         refreshHeader();
         showTests();
     }
 
     @Override
     public demetra.timeseries.Ts getTs() {
-        return ts_;
-    }
-
-    @Override
-    public boolean fill(JMenu menu) {
-        return false;
+        return ts;
     }
 
     @Override
     public Node getNode() {
         return node;
-    }
-
-    @Override
-    public ExplorerManager getExplorerManager() {
-        return ActiveViewManager.getInstance().getExplorerManager();
-    }
-
-    @Override
-    public boolean hasContextMenu() {
-        return false;
     }
 
     class InternalNode extends AbstractNode {

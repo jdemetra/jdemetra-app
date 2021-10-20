@@ -2,19 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.tools;
+package demetra.desktop.core.tools;
 
-import demetra.bridge.TsConverter;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
-import ec.nbdemetra.ui.OldTsUtil;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.util.NbComponents;
-import ec.tstoolkit.timeseries.simplets.TsData;
 import demetra.desktop.components.JTsChart;
 import demetra.desktop.components.JTsTable;
-import ec.tss.tsproviders.utils.OptionalTsData;
+import demetra.timeseries.TsData;
 import java.awt.BorderLayout;
 import java.util.Optional;
 import javax.swing.JSplitPane;
@@ -28,14 +25,14 @@ import org.openide.util.NbBundle.Messages;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//ec.nbdemetra.ui.tools//Aggregation//EN",
+        dtd = "-//demetra.desktop.core.tools//Aggregation//EN",
         autostore = false)
 @TopComponent.Description(
         preferredID = "AggregationTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Window", id = "ec.nbdemetra.ui.tools.AggregationTopComponent")
+@ActionID(category = "Window", id = "demetra.desktop.core.tools.AggregationTopComponent")
 @ActionReference(path = "Menu/Tools", position = 332)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_AggregationAction")
@@ -102,12 +99,10 @@ public final class AggregationTopComponent extends TopComponent {
         inputList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             Optional<Ts> sum = inputList.getTsCollection()
                     .stream()
-                    .map(ts -> TsManager.getDefault().makeTs(ts.getMoniker(), demetra.timeseries.TsInformationType.Data).getData())
-                    .map(TsConverter::fromTsData)
-                    .filter(OptionalTsData::isPresent)
-                    .map(OptionalTsData::get)
+                    .map(ts -> ts.getData())
+                    .filter(s->!s.isEmpty())
                     .reduce(TsData::add)
-                    .map(OldTsUtil::toTs);
+                    .map(s-> s == null || s.isEmpty() ? null : Ts.builder().data(s).name("Sum").build());
             aggChart.setTsCollection(sum.map(TsCollection::of).orElse(TsCollection.EMPTY));
         });
     }

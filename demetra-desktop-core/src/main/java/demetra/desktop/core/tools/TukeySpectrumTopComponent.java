@@ -2,20 +2,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.ui.tools;
+package demetra.desktop.core.tools;
 
-import demetra.desktop.components.parts.HasTs;
-import ec.nbdemetra.ui.ActiveViewManager;
-import ec.nbdemetra.ui.IActiveView;
-import ec.tstoolkit.data.WindowType;
-import ec.ui.view.TukeySpectrumView;
+import demetra.desktop.components.tools.TukeySpectrumView;
+import demetra.desktop.util.TsTopComponent;
 import java.lang.reflect.InvocationTargetException;
-import javax.swing.JMenu;
+import jdplus.data.analysis.DiscreteWindowFunction;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.explorer.ExplorerManager;
-import org.openide.explorer.ExplorerUtils;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -29,13 +24,13 @@ import org.openide.windows.WindowManager;
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//ec.nbdemetra.ui.tools//TukeySpectrum//EN",
-autostore = false)
+@ConvertAsProperties(dtd = "-//demetra.desktop.core.tools//TukeySpectrum//EN",
+        autostore = false)
 @TopComponent.Description(preferredID = "TukeySpectrumTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_NEVER)
+        //iconBase="SET/PATH/TO/ICON/HERE", 
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "output", openAtStartup = false)
-@ActionID(category = "Window", id = "ec.nbdemetra.ui.tools.TukeySpectrumTopComponent")
+@ActionID(category = "Window", id = "demetra.desktop.core.tools.TukeySpectrumTopComponent")
 @ActionReference(path = "Menu/Tools/Spectral analysis", position = 300)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_TukeySpectrumAction")
 @Messages({
@@ -43,10 +38,10 @@ persistenceType = TopComponent.PERSISTENCE_NEVER)
     "CTL_TukeySpectrumTopComponent=Tukey Spectrum Window",
     "HINT_TukeySpectrumTopComponent=This is a Tukey Spectrum window"
 })
-public final class TukeySpectrumTopComponent extends TopComponent implements HasTs, IActiveView, ExplorerManager.Provider {
+public final class TukeySpectrumTopComponent extends TsTopComponent {
 
     private final TukeySpectrumView view;
-    private final Node node;
+    private final Node internalNode;
 
     public TukeySpectrumTopComponent() {
         initComponents();
@@ -54,9 +49,7 @@ public final class TukeySpectrumTopComponent extends TopComponent implements Has
         add(view);
         setName(Bundle.CTL_TukeySpectrumTopComponent());
         setToolTipText(Bundle.HINT_TukeySpectrumTopComponent());
-        node = new InternalNode();
-        associateLookup(ExplorerUtils.createLookup(ActiveViewManager.getInstance().getExplorerManager(), getActionMap()));
-
+        internalNode = new InternalNode();
     }
 
     @Override
@@ -81,30 +74,10 @@ public final class TukeySpectrumTopComponent extends TopComponent implements Has
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-    @Override
-    public void componentOpened() {
-        // TODO add custom code on component opening
-    }
-
-    @Override
-    public void componentClosed() {
-        // TODO add custom code on component closing
-    }
-
-    @Override
-    public void componentActivated() {
-        ActiveViewManager.getInstance().set(this);
-    }
-
-    @Override
-    public void componentDeactivated() {
-        ActiveViewManager.getInstance().set(null);
-    }
-
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
-        p.setProperty("version", "1.0");
+        p.setProperty("version", "3.0");
         // TODO store your settings
     }
 
@@ -114,28 +87,13 @@ public final class TukeySpectrumTopComponent extends TopComponent implements Has
     }
 
     @Override
-    public boolean fill(JMenu menu) {
-        return false;
-    }
-
-    @Override
     public Node getNode() {
-        return node;
-    }
-
-    @Override
-    public ExplorerManager getExplorerManager() {
-        return ActiveViewManager.getInstance().getExplorerManager();
-    }
-
-    @Override
-    public boolean hasContextMenu() {
-        return false;
+        return internalNode;
     }
 
     @Override
     public demetra.timeseries.Ts getTs() {
-        return null;
+        return view.getTs();
     }
 
     @Override
@@ -175,7 +133,7 @@ public final class TukeySpectrumTopComponent extends TopComponent implements Has
             "turkeySpectrumTopComponent.windowType.desc=It refers to the weighting scheme that it is used to smooth the auto-covariance function. The available windows types (Square, Welch, Tukey, Barlett, Hamming, Parzen) are suitable to estimate the spectral density."
         })
         protected Sheet createSheet() {
-            Sheet sheet= super.createSheet();
+            Sheet sheet = super.createSheet();
             Set transform = Sheet.createPropertiesSet();
             transform.setName(Bundle.turkeySpectrumTopComponent_transform_name());
             transform.setDisplayName(Bundle.turkeySpectrumTopComponent_transform_displayName());
@@ -343,7 +301,7 @@ public final class TukeySpectrumTopComponent extends TopComponent implements Has
             wlength.setName(Bundle.turkeySpectrumTopComponent_windowLenght_name());
             wlength.setShortDescription(Bundle.turkeySpectrumTopComponent_windowLenght_desc());
             spectrum.put(wlength);
-            Property<WindowType> wtype = new Property(WindowType.class) {
+            Property<DiscreteWindowFunction> wtype = new Property(DiscreteWindowFunction.class) {
 
                 @Override
                 public boolean canRead() {
@@ -362,7 +320,7 @@ public final class TukeySpectrumTopComponent extends TopComponent implements Has
 
                 @Override
                 public void setValue(Object t) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-                    view.setWindowType((WindowType) t);
+                    view.setWindowType((DiscreteWindowFunction) t);
                 }
             };
 

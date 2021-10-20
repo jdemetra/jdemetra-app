@@ -94,7 +94,12 @@
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
-            <artifactId>demetra-toolkit-basic</artifactId>
+            <artifactId>demetra-sa-core</artifactId>
+            <version>${jd3-basic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-sa-html</artifactId>
             <version>${jd3-basic.version}</version>
         </dependency>
         <dependency>
@@ -268,6 +273,7 @@
                         <publicPackage>javax.xml.bind.*</publicPackage>
                         <!-- core libs -->
                         <publicPackage>demetra.*</publicPackage>
+                        <publicPackage>jdplus.*</publicPackage>
                         <publicPackage>nbbrd.io.*</publicPackage>
                         <publicPackage>javax.annotation.*</publicPackage>
                         <!-- desktop libs -->
