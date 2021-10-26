@@ -20,7 +20,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.ImmutableList;
 import demetra.bridge.TsConverter;
-import demetra.math.matrices.MatrixType;
 import demetra.desktop.Config;
 import demetra.desktop.ConfigEditor;
 import demetra.desktop.beans.BeanHandler;
@@ -128,12 +127,12 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
     }
 
     @Override
-    public boolean canExportMatrix(MatrixType matrix) {
+    public boolean canExportMatrix(demetra.math.matrices.Matrix matrix) {
         return config.exportMatrix && !matrix.isEmpty();
     }
 
     @Override
-    public Object exportMatrix(MatrixType matrix) throws IOException {
+    public Object exportMatrix(demetra.math.matrices.Matrix matrix) throws IOException {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < matrix.getRowsCount(); i++) {
             result.append(numberFormat.format(matrix.get(i, 0)));
@@ -151,7 +150,7 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
     }
 
     @Override
-    public MatrixType importMatrix(Object obj) throws IOException, ClassCastException {
+    public demetra.math.matrices.Matrix importMatrix(Object obj) throws IOException, ClassCastException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

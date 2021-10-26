@@ -22,7 +22,6 @@ import demetra.desktop.design.GlobalService;
 import demetra.desktop.design.SwingProperty;
 import demetra.desktop.util.CollectionSupplier;
 import demetra.desktop.util.LazyGlobalService;
-import demetra.math.matrices.MatrixType;
 import demetra.timeseries.*;
 import demetra.util.Table;
 import ec.util.various.swing.OnEDT;
@@ -43,6 +42,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
+import demetra.math.matrices.Matrix;
 
 /**
  * A support class that deals with the clipboard. It allows the user to get/set
@@ -149,12 +149,12 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
     /**
      * Creates a Transferable from a matrix.
      *
-     * @param data a non-null {@link MatrixType}
+     * @param data a non-null {@link Matrix}
      * @return a never-null {@link Transferable}
      */
     @OnEDT
     @NonNull
-    public Transferable fromMatrix(@NonNull MatrixType data) {
+    public Transferable fromMatrix(@NonNull Matrix data) {
         requireNonNull(data);
         return asTransferable(data, providers.stream(), MatrixHelper.INSTANCE);
     }
@@ -258,11 +258,11 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
      * Retrieves a matrix from a transferable.
      *
      * @param transferable a non-null object
-     * @return an optional {@link MatrixType}
+     * @return an optional {@link Matrix}
      */
     @OnEDT
     @NonNull
-    public Optional<MatrixType> toMatrix(@NonNull Transferable transferable) {
+    public Optional<Matrix> toMatrix(@NonNull Transferable transferable) {
         return providers.stream()
                 .filter(onDataFlavors(transferable.getTransferDataFlavors()))
                 .map(o -> getMatrixOrNull(o, transferable, logger))
@@ -351,7 +351,7 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
         return null;
     }
 
-    private static MatrixType getMatrixOrNull(DataTransferSpi o, Transferable t, Logger logger) {
+    private static Matrix getMatrixOrNull(DataTransferSpi o, Transferable t, Logger logger) {
         try {
             Object data = t.getTransferData(requireNonNull(o.getDataFlavor()));
             if (o.canImportMatrix(data)) {
@@ -418,17 +418,17 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
         }
     }
 
-    private static final class MatrixHelper implements TypeHelper<MatrixType> {
+    private static final class MatrixHelper implements TypeHelper<Matrix> {
 
         private static final MatrixHelper INSTANCE = new MatrixHelper();
 
         @Override
-        public boolean canTransferData(MatrixType data, DataTransferSpi handler) {
+        public boolean canTransferData(Matrix data, DataTransferSpi handler) {
             return handler.canExportMatrix(data);
         }
 
         @Override
-        public Object getTransferData(MatrixType data, DataTransferSpi handler) throws IOException {
+        public Object getTransferData(Matrix data, DataTransferSpi handler) throws IOException {
             return handler.exportMatrix(data);
         }
     }

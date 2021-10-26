@@ -17,7 +17,6 @@
 package demetra.desktop.datatransfer;
 
 import demetra.desktop.util.CollectionSupplier;
-import demetra.math.matrices.MatrixType;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsUnit;
@@ -34,6 +33,7 @@ import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import demetra.math.matrices.Matrix;
 
 /**
  *
@@ -66,7 +66,7 @@ public class DataTransferTest {
         assertThat(empty.fromTs(Ts.builder().build()).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTsCollection(demetra.timeseries.TsCollection.EMPTY).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTsData(demetra.timeseries.TsData.random(TsUnit.YEAR, 0)).getTransferDataFlavors()).isEmpty();
-        assertThat(empty.fromMatrix(MatrixType.of(new double[]{3.14}, 1, 1)).getTransferDataFlavors()).isEmpty();
+        assertThat(empty.fromMatrix(Matrix.of(new double[]{3.14}, 1, 1)).getTransferDataFlavors()).isEmpty();
         assertThat(empty.fromTable(new Table<>(1, 1)).getTransferDataFlavors()).isEmpty();
     }
 
@@ -134,14 +134,14 @@ public class DataTransferTest {
 
         assertThat(of(new CustomHandler(DataFlavor.stringFlavor) {
             @Override
-            public boolean canExportMatrix(MatrixType matrix) {
+            public boolean canExportMatrix(Matrix matrix) {
                 return true;
             }
         }).toMatrix(t)).isEmpty();
 
         assertThat(of(new CustomHandler(DataFlavor.stringFlavor) {
             @Override
-            public boolean canExportMatrix(MatrixType matrix) {
+            public boolean canExportMatrix(Matrix matrix) {
                 return true;
             }
 
@@ -207,12 +207,12 @@ public class DataTransferTest {
         }
 
         @Override
-        public boolean canExportMatrix(MatrixType matrix) {
+        public boolean canExportMatrix(Matrix matrix) {
             return false;
         }
 
         @Override
-        public Object exportMatrix(MatrixType matrix) throws IOException {
+        public Object exportMatrix(Matrix matrix) throws IOException {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
@@ -222,7 +222,7 @@ public class DataTransferTest {
         }
 
         @Override
-        public MatrixType importMatrix(Object obj) throws IOException, ClassCastException {
+        public Matrix importMatrix(Object obj) throws IOException, ClassCastException {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 

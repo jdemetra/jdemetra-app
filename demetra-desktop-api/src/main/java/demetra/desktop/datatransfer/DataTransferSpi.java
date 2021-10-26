@@ -18,7 +18,6 @@ package demetra.desktop.datatransfer;
 
 import demetra.desktop.NamedService;
 import demetra.desktop.util.NetBeansServiceBackend;
-import demetra.math.matrices.MatrixType;
 import demetra.timeseries.TsCollection;
 import demetra.util.Table;
 import ec.util.various.swing.OnAnyThread;
@@ -30,6 +29,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
+import demetra.math.matrices.Matrix;
 
 /**
  * SPI that allows to import/export specific data structures from/to the
@@ -66,18 +66,18 @@ public interface DataTransferSpi extends NamedService {
     TsCollection importTsCollection(@NonNull Object obj) throws IOException, ClassCastException;
 
     @OnEDT
-    boolean canExportMatrix(@NonNull MatrixType matrix);
+    boolean canExportMatrix(@NonNull Matrix matrix);
 
     @OnAnyThread
     @NonNull
-    Object exportMatrix(@NonNull MatrixType matrix) throws IOException;
+    Object exportMatrix(@NonNull Matrix matrix) throws IOException;
 
     @OnEDT
     boolean canImportMatrix(@NonNull Object obj);
 
     @OnEDT
     @NonNull
-    MatrixType importMatrix(@NonNull Object obj) throws IOException, ClassCastException;
+    Matrix importMatrix(@NonNull Object obj) throws IOException, ClassCastException;
 
     @OnEDT
     boolean canExportTable(@NonNull Table<?> table);

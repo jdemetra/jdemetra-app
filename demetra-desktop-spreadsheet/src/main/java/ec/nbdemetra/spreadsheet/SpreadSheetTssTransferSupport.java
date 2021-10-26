@@ -17,7 +17,6 @@
 package ec.nbdemetra.spreadsheet;
 
 import demetra.bridge.TsConverter;
-import demetra.math.matrices.MatrixType;
 import demetra.timeseries.TsCollection;
 import demetra.desktop.Config;
 import demetra.desktop.DemetraIcons;
@@ -108,15 +107,15 @@ final class SpreadSheetTssTransferSupport {
         return false;
     }
 
-    public MatrixType importMatrix(Object obj) throws IOException, ClassCastException {
+    public demetra.math.matrices.Matrix importMatrix(Object obj) throws IOException, ClassCastException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public boolean canExportMatrix(MatrixType matrix) {
+    public boolean canExportMatrix(demetra.math.matrices.Matrix matrix) {
         return resource.getInternalConfig().exportMatrix && !matrix.isEmpty();
     }
 
-    public Object exportMatrix(MatrixType matrix) throws IOException {
+    public Object exportMatrix(demetra.math.matrices.Matrix matrix) throws IOException {
         return resource.fromBook(resource.getFactory().fromMatrix(TsConverter.fromMatrix(matrix)).toBook());
     }
 

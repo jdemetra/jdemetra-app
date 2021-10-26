@@ -4,7 +4,6 @@
  */
 package demetra.desktop.jfreechart;
 
-import demetra.math.matrices.MatrixType;
 import ec.util.chart.swing.ChartCommand;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
@@ -13,6 +12,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
 import demetra.desktop.datatransfer.DataTransfer;
+import demetra.math.matrices.Matrix;
 
 /**
  * A command that extract a matrix from a chart and put it into the system
@@ -24,7 +24,7 @@ public abstract class MatrixChartCommand extends ChartCommand {
 
     @Override
     public void execute(ChartPanel chartPanel) {
-        MatrixType matrix = toMatrix(chartPanel);
+        Matrix matrix = toMatrix(chartPanel);
         Transferable t = DataTransfer.getDefault().fromMatrix(matrix);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
     }
@@ -36,7 +36,7 @@ public abstract class MatrixChartCommand extends ChartCommand {
      * @return a non-null matrix
      */
     @NonNull
-    abstract protected MatrixType toMatrix(@NonNull ChartPanel chartPanel);
+    abstract protected Matrix toMatrix(@NonNull ChartPanel chartPanel);
 
     /**
      * Creates a command that extracts a single series from a chart and put in
@@ -68,9 +68,9 @@ public abstract class MatrixChartCommand extends ChartCommand {
         }
 
         @Override
-        protected MatrixType toMatrix(ChartPanel chartPanel) {
+        protected Matrix toMatrix(ChartPanel chartPanel) {
             XYDataset dataset = chartPanel.getChart().getXYPlot().getDataset(index);
-            MatrixType.Mutable result = MatrixType.Mutable.make(dataset.getItemCount(series), 2);
+            Matrix.Mutable result = Matrix.Mutable.make(dataset.getItemCount(series), 2);
             for (int i = 0; i < result.getRowsCount(); i++) {
                 result.set(i, 0, dataset.getXValue(series, i));
                 result.set(i, 1, dataset.getYValue(series, i));

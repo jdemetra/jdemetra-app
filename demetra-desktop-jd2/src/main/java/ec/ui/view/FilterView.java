@@ -9,7 +9,6 @@ import ec.tstoolkit.maths.matrices.Matrix;
 import ec.tstoolkit.uihelper.DiscreteDisplayDomain;
 import ec.tstoolkit.uihelper.IDiscreteInformationProvider;
 import demetra.desktop.jfreechart.TsCharts;
-import demetra.math.matrices.MatrixType;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import demetra.desktop.jfreechart.MatrixChartCommand;
@@ -175,7 +174,7 @@ public class FilterView extends AChartView {
     private static class CustomCommand extends MatrixChartCommand {
 
         @Override
-        protected MatrixType toMatrix(ChartPanel chartPanel) {
+        protected demetra.math.matrices.Matrix toMatrix(ChartPanel chartPanel) {
             XYDataset dataset = chartPanel.getChart().getXYPlot().getDataset(0);
             Matrix result = new Matrix(dataset.getItemCount(0), dataset.getSeriesCount() + 1);
             for (int i = 0; i < result.getRowsCount(); i++) {
