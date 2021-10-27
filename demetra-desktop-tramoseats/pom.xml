@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>eu.europa.ec.joinup.sat</groupId>
+        <artifactId>demetra-desktop-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>demetra-desktop-tramoseats</artifactId>
+    <packaging>pom</packaging>
+    
+    <name>JD3 - Desktop - TramoSeats</name>
+    <modules>
+        <module>demetra-desktop-tramoseats-api</module>
+        <module>demetra-desktop-tramo-ui</module>
+        <module>demetra-desktop-tramo-outliers</module>
+        <module>demetra-desktop-tramoseats-ui</module>
+    </modules>
+    
+    <properties>
+        <jd3-tramoseats.version>1.0.0-SNAPSHOT</jd3-tramoseats.version>
+        <tramoseats-desktop.version>3.0.0-SNAPSHOT</tramoseats-desktop.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-tramoseats-core</artifactId>
+                <version>${jd3-tramoseats.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-tramoseats-xml</artifactId>
+                <version>${jd3-tramoseats.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-tramoseats-information</artifactId>
+                <version>${jd3-tramoseats.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-tramoseats-html</artifactId>
+                <version>${jd3-tramoseats.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-desktop-tramoseats-api</artifactId>
+                <version>${tramoseats-desktop.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-desktop-tramoseats-ui</artifactId>
+                <version>${tramoseats-desktop.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-desktop-tramo-ui</artifactId>
+                <version>${tramoseats-desktop.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-desktop-tramo-outliers</artifactId>
+                <version>${tramoseats-desktop.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

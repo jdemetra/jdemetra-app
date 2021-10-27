@@ -1,4 +1,4 @@
-package internal.ui.interfaces;
+package demetra.desktop.interfaces;
 
 import demetra.data.DoubleSeq;
 

@@ -19,6 +19,7 @@
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
         <project.x.binaries>${project.build.directory}/binaries</project.x.binaries>
         <project.x.zipname>jdemetra-${project.version}-bin</project.x.zipname>
+        <tramoseats.version>1.0.0-SNAPSHOT</tramoseats.version>
     </properties>
 
     <dependencies>
@@ -89,6 +90,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-spreadsheet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-tramoseats</artifactId>
+            <version>${tramoseats.version}</version>
         </dependency>
     </dependencies>
 

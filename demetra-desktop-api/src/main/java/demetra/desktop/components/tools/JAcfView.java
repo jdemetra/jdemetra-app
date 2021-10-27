@@ -7,7 +7,7 @@ package demetra.desktop.components.tools;
 
 import demetra.desktop.design.SwingComponent;
 import ec.util.chart.swing.Charts;
-import internal.ui.interfaces.DoubleSeqView;
+import demetra.desktop.interfaces.DoubleSeqView;
 import java.awt.BorderLayout;
 import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
