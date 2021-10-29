@@ -40,6 +40,10 @@
         <!-- compile & runtime -->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-api</artifactId>
         </dependency>
         <dependency>

@@ -41,10 +41,19 @@
             <artifactId>java-service-processor</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- nbdemetra -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-design</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-api</artifactId>
         </dependency>
 
         <!-- test only -->
@@ -63,8 +72,6 @@
             <artifactId>demetra-desktop-core</artifactId>
             <scope>test</scope>
         </dependency>
-
-        
         <!-- NetBeans -->
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -175,28 +182,6 @@
             <artifactId>demetra-workspace</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-            <scope>compile</scope>
-        </dependency>        
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>
-        <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
             <artifactId>demetra-tsp-bridge</artifactId>
             <version>${jd3.version}</version>
@@ -219,26 +204,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.java-io-util</groupId>
-            <artifactId>java-io-xml</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.4.0-b180830.0359</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-runtime</artifactId>
-            <version>2.4.0-b180830.0438</version>
-        </dependency>
                 
-        <!-- nbdemetra -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>demetra-desktop-api</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
@@ -277,15 +243,10 @@
                         <publicPackage>ec.nbdemetra.core</publicPackage>
                         <publicPackage>ec.nbdemetra.ws</publicPackage>
                         <publicPackage>ec.util.*</publicPackage>
-                        <publicPackage>org.slf4j.*</publicPackage>
-                        <publicPackage>com.google.common.*</publicPackage>
-                        <publicPackage>org.apache.commons.logging.*</publicPackage>
                         <publicPackage>ec.demetra.workspace</publicPackage>
                         <publicPackage>ec.demetra.workspace.file</publicPackage>
                         <publicPackage>ec.demetra.workspace.file.spi</publicPackage>
                         <publicPackage>ec.demetra.workspace.file.util</publicPackage>
-                        <publicPackage>nbbrd.io.xml.*</publicPackage>
-                        <publicPackage>javax.annotation.*</publicPackage>
                         <!--<publicPackage>javax.xml.bind.*</publicPackage>-->
                         
                         <!-- old ui -->

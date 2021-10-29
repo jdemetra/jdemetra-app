@@ -19,7 +19,7 @@
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
         <project.x.binaries>${project.build.directory}/binaries</project.x.binaries>
         <project.x.zipname>jdemetra-${project.version}-bin</project.x.zipname>
-        <tramoseats.version>1.0.0-SNAPSHOT</tramoseats.version>
+        <tramoseats.version>3.0.0-SNAPSHOT</tramoseats.version>
     </properties>
 
     <dependencies>
@@ -77,6 +77,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-util</artifactId>   
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-jd2</artifactId>   
         </dependency>
         <dependency>
@@ -87,13 +91,18 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-text</artifactId>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-spreadsheet</artifactId>
+        </dependency-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-tramoseats-api</artifactId>
+            <version>${tramoseats.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>demetra-desktop-tramoseats</artifactId>
+            <artifactId>demetra-desktop-tramo-outliers</artifactId>
             <version>${tramoseats.version}</version>
         </dependency>
     </dependencies>

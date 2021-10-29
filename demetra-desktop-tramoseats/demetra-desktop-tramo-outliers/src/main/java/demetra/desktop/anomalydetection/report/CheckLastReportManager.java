@@ -33,13 +33,13 @@ public final class CheckLastReportManager {
         return LazyGlobalService.get(CheckLastReportManager.class, CheckLastReportManager::new);
     }
 
-    private final CollectionSupplier<ICheckLastReportFactory> factories;
+    private final CollectionSupplier<CheckLastReportFactory> factories;
 
     private CheckLastReportManager() {
-        factories = ICheckLastReportFactoryLoader::get;
+        factories = CheckLastReportFactoryLoader::get;
     }
 
-    public List<ICheckLastReportFactory> getFactories() {
+    public List<CheckLastReportFactory> getFactories() {
         return new ArrayList<>(factories.get());
     }
 }

@@ -19,16 +19,15 @@ package demetra.desktop.anomalydetection.ui;
 import com.google.common.base.Stopwatch;
 import demetra.desktop.notification.MessageType;
 import demetra.desktop.notification.NotifyUtil;
-import ec.nbdemetra.anomalydetection.ControlNode;
-import ec.nbdemetra.ui.ActiveViewManager;
 import demetra.desktop.DemetraIcons;
-import ec.nbdemetra.ui.IActiveView;
+import demetra.desktop.anomalydetection.ControlNode;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
-import ec.tstoolkit.modelling.arima.PreprocessingModel;
 import demetra.desktop.components.JTsGrid;
 import ec.util.chart.ObsIndex;
 import demetra.desktop.components.TsSelectionBridge;
+import demetra.desktop.util.ActiveView;
+import demetra.desktop.util.ActiveViewManager;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -47,6 +46,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingWorker;
+import jdplus.regsarima.regular.RegSarimaModel;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
@@ -77,7 +77,7 @@ import org.openide.windows.TopComponent;
     "CTL_OutliersTopComponent=Outliers Detection Window",
     "HINT_OutliersTopComponent=This is an Outlier Detection Window"
 })
-public final class OutliersTopComponent extends TopComponent implements ExplorerManager.Provider, MultiViewElement, IActiveView {
+public final class OutliersTopComponent extends TopComponent implements ExplorerManager.Provider, MultiViewElement, ActiveView {
 
     public static final String STATE_CHANGED = "Processing state changed";
     private final JTsAnomalyGrid grid;
@@ -97,7 +97,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
 
     private void calculateNbItems() {
         if (grid.getTsCollection() != null) {
-            nbElements = grid.getTsCollection().getCount();
+            nbElements = grid.getTsCollection().size();
             itemsLabel.setText(nbElements == 0 ? "No items" : nbElements + (nbElements < 2 ? " item" : " items"));
         } else {
             nbElements = 0;
@@ -152,7 +152,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
                     if (obs == -1 || model == null) {
                         grid.setHoveredObs(ObsIndex.NULL);
                     } else {
-                        grid.setHoveredObs(ObsIndex.valueOf(grid.getTsCollection().indexOf(model.getTs()), obs));
+                        grid.setHoveredObs(ObsIndex.valueOf(grid.getTsCollection().indexOf(s->s == model.getTs()), obs));
                     }
                     break;
             }
@@ -183,7 +183,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
 
     // <editor-fold defaultstate="collapsed" desc="Event Handlers">
     private void refreshSummary() {
-        PreprocessingModel ppm = grid.getModelOfSelection();
+        RegSarimaModel ppm = grid.getModelOfSelection();
         if (ppm != null) {
             summary.set(ppm);
             chart.setModel(new JAnomalyDetectionChart.Model(grid.getSelectedItem(), ppm));
@@ -210,7 +210,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
                 runButton.setEnabled(!grid.getTsCollection().isEmpty());
                 makeBusy(false);
                 try {
-                    NotifyUtil.show("Done !", "Processed " + grid.getTsCollection().getCount() + " items in " + stopwatch.stop().toString(), MessageType.SUCCESS, null, null, null);
+                    NotifyUtil.show("Done !", "Processed " + grid.getTsCollection().size() + " items in " + stopwatch.stop().toString(), MessageType.SUCCESS, null, null, null);
                 } catch (IllegalStateException e) {
                 }
 

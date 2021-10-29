@@ -16,14 +16,8 @@
  */
 package demetra.desktop.anomalydetection.ui;
 
-import ec.util.chart.ColorScheme;
-import ec.util.chart.ObsFunction;
-import ec.util.chart.ObsIndex;
-import ec.util.chart.ObsPredicate;
-import ec.util.chart.SeriesFunction;
-import ec.util.chart.SeriesPredicate;
-import ec.util.chart.swing.JTimeSeriesChart;
-import ec.util.various.swing.JCommand;
+import demetra.desktop.anomalydetection.OutlierEstimation;
+import demetra.desktop.l2fprod.OutlierColorChooser;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Toolkit;
@@ -31,8 +25,6 @@ import java.awt.datatransfer.Transferable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
@@ -40,9 +32,23 @@ import javax.swing.JMenu;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
+import demetra.desktop.ui.TsXYDatasets;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsData;
+import demetra.timeseries.TsPeriod;
+import demetra.util.Table;
+import ec.util.chart.ColorScheme;
+import ec.util.chart.ObsFunction;
+import ec.util.chart.ObsIndex;
+import ec.util.chart.ObsPredicate;
+import ec.util.chart.SeriesFunction;
+import ec.util.chart.SeriesPredicate;
+import ec.util.chart.swing.JTimeSeriesChart;
 import static ec.util.chart.swing.JTimeSeriesChartCommand.copyImage;
 import static ec.util.chart.swing.JTimeSeriesChartCommand.printImage;
 import static ec.util.chart.swing.JTimeSeriesChartCommand.saveImage;
+import ec.util.various.swing.JCommand;
+import jdplus.regsarima.regular.RegSarimaModel;
 
 /**
  *
@@ -73,36 +79,36 @@ final class JAnomalyDetectionChart extends JComponent {
         chart.setObsFormatter(new ObsFunction<String>() {
             @Override
             public String apply(int series, int obs) {
-                TsData data = model.getTs().getTsData();
+                TsData data = model.getTs().getData();
                 TsPeriod period = data.getDomain().get(obs);
-                double value = data.get(obs);
+                double value = data.getValue(obs);
                 NumberFormat valueFormat = chart.getValueFormat();
-                OutlierEstimation outlier = model.outliers[obs];
+                OutlierEstimation outlier = model.getOutlier(obs);
                 return outlier != null
                         ? new StringBuilder()
-                        .append("Period : ").append(period).append('\n')
-                        .append("Value : ").append(valueFormat.format(value)).append('\n')
-                        .append("Outlier Value : ").append(valueFormat.format(outlier.getValue())).append('\n')
-                        .append("Std Err : ").append(valueFormat.format(outlier.getStdev())).append('\n')
-                        .append("TStat : ").append(valueFormat.format(outlier.getTStat())).append('\n')
-                        .append("Outlier type : ").append(outlier.getCode()).toString()
+                                .append("Period : ").append(period).append('\n')
+                                .append("Value : ").append(valueFormat.format(value)).append('\n')
+                                .append("Outlier Value : ").append(valueFormat.format(outlier.getValue())).append('\n')
+                                .append("Std Err : ").append(valueFormat.format(outlier.getStderr())).append('\n')
+                                .append("TStat : ").append(valueFormat.format(outlier.getTstat())).append('\n')
+                                .append("Outlier type : ").append(outlier.getCode()).toString()
                         : new StringBuilder()
-                        .append("Period : ").append(period).append('\n')
-                        .append("Value : ").append(valueFormat.format(value)).toString();
+                                .append("Period : ").append(period).append('\n')
+                                .append("Value : ").append(valueFormat.format(value)).toString();
             }
         });
         chart.setObsHighlighter(new ObsPredicate() {
             @Override
             public boolean apply(int series, int obs) {
-                return model.outliers[obs] != null || chart.getHoveredObs().equals(series, obs);
+                return model.getOutlier(obs) != null || chart.getHoveredObs().equals(series, obs);
             }
         });
         chart.setObsColorist(new ObsFunction<Color>() {
             @Override
             public Color apply(int series, int obs) {
-                OutlierEstimation outlier = model.outliers[obs];
+                OutlierEstimation outlier = model.getOutlier(obs);
                 return outlier != null
-                        ? ColorChooser.getColor(outlier.getCode())
+                        ? OutlierColorChooser.getColor(outlier.getCode())
                         : chart.getSeriesColorist().apply(series);
             }
         });
@@ -166,19 +172,23 @@ final class JAnomalyDetectionChart extends JComponent {
         private final Ts ts;
         private final OutlierEstimation[] outliers;
 
-        Model(@NonNull Ts ts, @NonNull PreprocessingModel model) {
+        Model(@NonNull Ts ts, @NonNull RegSarimaModel model) {
             this.ts = ts;
-            TsData data = ts.getTsData();
-            this.outliers = new OutlierEstimation[data.getLength()];
-            TsPeriod start = data.getStart();
-            for (OutlierEstimation o : model.outliersEstimation(true, false)) {
-                outliers[o.getPosition().minus(start)] = o;
-            }
+            outliers = OutlierEstimation.of(model);
         }
 
         @NonNull
         public Ts getTs() {
             return ts;
+        }
+
+        public OutlierEstimation getOutlier(int obs) {
+            for (int i = 0; i < outliers.length; ++i) {
+                if (outliers[i].getPosition() == obs) {
+                    return outliers[i];
+                }
+            }
+            return null;
         }
 
         @NonNull
@@ -242,7 +252,7 @@ final class JAnomalyDetectionChart extends JComponent {
 
         @Override
         public void execute(JAnomalyDetectionChart c) throws Exception {
-            Transferable t = DataTransfer.getDefault().fromTs(TsConverter.toTs(c.model.getTs()));
+            Transferable t = DataTransfer.getDefault().fromTs(c.model.getTs());
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
     }
@@ -251,31 +261,30 @@ final class JAnomalyDetectionChart extends JComponent {
 
         @Override
         public void execute(JAnomalyDetectionChart c) throws Exception {
-            Transferable t = DataTransfer.getDefault().fromTable(TsConverter.toTable(toTable(c.model.getOutliers())));
+            Transferable t = DataTransfer.getDefault().fromTable(toTable(c.model.getOutliers()));
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
 
         private Table<Object> toTable(OutlierEstimation[] input) {
-            OutlierEstimation[] tmp = Arrays.stream(input).filter(Objects::nonNull).toArray(OutlierEstimation[]::new);
-            Table<Object> result = new Table<>(tmp.length + 1, 5);
+            Table<Object> result = new Table<>(input.length + 1, 5);
             result.set(0, 0, "");
             result.set(0, 1, "Period");
             result.set(0, 2, "Value");
             result.set(0, 3, "StdErr");
             result.set(0, 4, "TStat");
-            for (int i = 0; i < tmp.length; i++) {
-                OutlierEstimation o = tmp[i];
+            for (int i = 0; i < input.length; i++) {
+                OutlierEstimation o = input[i];
                 result.set(i + 1, 0, o.getCode());
                 result.set(i + 1, 1, o.getPosition());
                 result.set(i + 1, 2, o.getValue());
-                result.set(i + 1, 3, o.getStdev());
-                result.set(i + 1, 4, o.getTStat());
+                result.set(i + 1, 3, o.getStderr());
+                result.set(i + 1, 4, o.getTstat());
             }
             return result;
         }
     }
     //</editor-fold>
-    
+
     private static void setSeriesColorist(final @NonNull JTimeSeriesChart chart, final @NonNull SeriesFunction<ColorScheme.KnownColor> colorist) {
         chart.setSeriesColorist(new SeriesFunction<Color>() {
             @Override

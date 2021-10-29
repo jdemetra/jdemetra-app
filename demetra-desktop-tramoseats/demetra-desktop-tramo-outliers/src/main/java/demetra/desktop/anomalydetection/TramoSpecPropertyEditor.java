@@ -51,12 +51,30 @@ public class TramoSpecPropertyEditor extends PropertyEditorSupport implements Ex
         }
         return ed;
     }
+    
+    @Override
+    public String getAsText(){
+        Object val = this.getValue();
+        if (val == null || ! (val instanceof TramoSpec))
+            return null;
+        TramoSpec spec=(TramoSpec) val; 
+        return spec.display();
+    }
 
     private static class TramoSpecEditor implements InplaceEditor {
+        
+        private static String[] allSpecs(){
+            TramoSpec[] all = TramoSpec.allSpecifications();
+            String[] n=new String[all.length];
+            for (int i=0; i<n.length; ++i){
+                n[i]=all[i].display();
+            }
+            return n;
+        }
 
         private PropertyEditor editor = null;
         private PropertyModel model = null;
-        private final JComboBox specs = new JComboBox(TramoSpec.allSpecifications());
+        private final JComboBox specs = new JComboBox(allSpecs());
 
         @Override
         public void connect(PropertyEditor pe, PropertyEnv pe1) {
@@ -71,12 +89,15 @@ public class TramoSpecPropertyEditor extends PropertyEditorSupport implements Ex
 
         @Override
         public Object getValue() {
-            return specs.getSelectedItem();
+            String sel = (String) specs.getSelectedItem();
+            return TramoSpec.fromString(sel);
         }
 
         @Override
         public void setValue(Object o) {
-            if (o == null) {
+            if (o != null && o instanceof TramoSpec) {
+                TramoSpec spec=(TramoSpec) o;
+                specs.setSelectedItem(spec.display());
             }
         }
 

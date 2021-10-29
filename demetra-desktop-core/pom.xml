@@ -40,6 +40,10 @@
             <artifactId>demetra-desktop-design</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-util</artifactId>
+        </dependency>
 
         <!-- compile & runtime -->
         <dependency>
@@ -129,6 +133,11 @@
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
+                <configuration>
+                    <publicPackages>
+                        <publicPackage>demetra.desktop.core.*</publicPackage>
+                    </publicPackages>
+                </configuration>
             </plugin>
         </plugins>
     </build>

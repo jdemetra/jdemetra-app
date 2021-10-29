@@ -17,15 +17,14 @@
 package demetra.desktop.anomalydetection.html;
 
 import demetra.desktop.anomalydetection.AnomalyItem;
+import demetra.desktop.anomalydetection.OutlierEstimation;
 import demetra.html.AbstractHtmlElement;
 import demetra.html.HtmlElement;
 import demetra.html.HtmlStream;
 import demetra.html.HtmlTag;
-import demetra.timeseries.regression.IOutlier;
+import demetra.html.modelling.HtmlRegArima;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import jdplus.regsarima.regular.RegSarimaModel;
-import jdplus.regsarima.regular.RegSarimaModel.RegressionDesc;
 
 /**
  * Html report of a check last processed Ts
@@ -36,8 +35,7 @@ public class HtmlCheckLast extends AbstractHtmlElement implements HtmlElement {
 
     private final AnomalyItem anomalyItem;
     private final RegSarimaModel model;
-    private final DecimalFormat df = new DecimalFormat("0.000");
-
+ 
     public HtmlCheckLast(AnomalyItem a, RegSarimaModel m) {
         anomalyItem = a;
         model = m;
@@ -49,9 +47,6 @@ public class HtmlCheckLast extends AbstractHtmlElement implements HtmlElement {
 
         HtmlRegArima reg = new HtmlRegArima(model, false);
         reg.writeDetails(stream, false);
-        RegressionDesc[] all = model.getDetails().getRegressionItems().stream()
-                .filter(item->item.getCore() instanceof IOutlier)
-                .toArray(n->new RegressionDesc[n]);
-        stream.write(new HtmlOutliers(all));
+        stream.write(new HtmlOutliers(OutlierEstimation.of(model)));
     }
 }

@@ -16,10 +16,15 @@
  */
 package demetra.desktop.anomalydetection.ui;
 
+import demetra.desktop.anomalydetection.html.HtmlAnomalyDetection;
+import demetra.desktop.core.components.TsViewToolkit;
 import demetra.desktop.design.SwingComponent;
+import demetra.desktop.interfaces.Disposable;
+import demetra.desktop.ui.Disposables;
 
 import javax.swing.*;
 import java.awt.*;
+import jdplus.regsarima.regular.RegSarimaModel;
 
 /**
  * Component containing all Html contents regarding an Outlier Detection of a Ts
@@ -27,7 +32,7 @@ import java.awt.*;
  * @author Mats Maggi
  */
 @SwingComponent
-public final class JAnomalyDetectionSummary extends JComponent implements IDisposable {
+public final class JAnomalyDetectionSummary extends JComponent implements Disposable {
 
     private final Box document_;
 
@@ -37,7 +42,7 @@ public final class JAnomalyDetectionSummary extends JComponent implements IDispo
         add(document_, BorderLayout.CENTER);
     }
 
-    public void set(PreprocessingModel model) {
+    public void set(RegSarimaModel model) {
         Disposables.disposeAndRemoveAll(document_);
         if (model != null) {
             HtmlAnomalyDetection document = new HtmlAnomalyDetection(model);

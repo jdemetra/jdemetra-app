@@ -16,6 +16,7 @@
  */
 package demetra.desktop.anomalydetection.comparer;
 
+import demetra.desktop.anomalydetection.OutlierEstimation;
 import java.util.Comparator;
 
 /**
@@ -27,6 +28,6 @@ public class OutlierEstimationComparator implements Comparator<OutlierEstimation
 
     @Override
     public int compare(OutlierEstimation o1, OutlierEstimation o2) {
-        return o1.getPosition().compareTo(o2.getPosition());
+        return Integer.compare(o1.getPosition(), o2.getPosition());
     }
 }

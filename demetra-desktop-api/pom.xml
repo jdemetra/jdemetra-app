@@ -73,6 +73,10 @@
             <artifactId>demetra-desktop-design</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-util</artifactId>
+        </dependency>
 
         <!-- test only -->
         <dependency>
@@ -112,18 +116,6 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.java-io-util</groupId>
-            <artifactId>java-io-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.java-io-util</groupId>
-            <artifactId>java-io-win</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.java-io-util</groupId>
-            <artifactId>java-io-xml</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.nbbrd.java-desktop-util</groupId>
@@ -236,17 +228,7 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-actions</artifactId>
         </dependency>
-        
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.4.0-b180830.0359</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-runtime</artifactId>
-            <version>2.4.0-b180830.0438</version>
-        </dependency>
+       
     </dependencies>
 
     <build>
@@ -268,14 +250,12 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>demetra.desktop.*</publicPackage>
+                        <publicPackage>internal.ui.*</publicPackage>
                         <!-- tmp -->
                         <publicPackage>internal.ui</publicPackage>
-                        <publicPackage>javax.xml.bind.*</publicPackage>
                         <!-- core libs -->
                         <publicPackage>demetra.*</publicPackage>
                         <publicPackage>jdplus.*</publicPackage>
-                        <publicPackage>nbbrd.io.*</publicPackage>
-                        <publicPackage>javax.annotation.*</publicPackage>
                         <!-- desktop libs -->
                         <publicPackage>ec.util.chart.*</publicPackage>
                         <publicPackage>ec.util.completion.*</publicPackage>

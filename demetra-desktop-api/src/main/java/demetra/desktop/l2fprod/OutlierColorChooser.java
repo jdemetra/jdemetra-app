@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.core.l2fprod;
+package demetra.desktop.l2fprod;
 
 import demetra.html.HtmlClass;
 import static ec.util.chart.swing.SwingColorSchemeSupport.toHex;

@@ -30,15 +30,16 @@
 
     <modules>
         <module>demetra-desktop-design</module>
+        <module>demetra-desktop-util</module>
         <module>demetra-desktop-api</module>
         <module>demetra-desktop-core</module>
-        <module>demetra-desktop-spreadsheet</module>
+        <!--module>demetra-desktop-spreadsheet</module-->
         <module>demetra-desktop-sql</module>
         <module>demetra-desktop-text</module>
+        <module>demetra-desktop-tramoseats</module>
+        <module>demetra-desktop-jd2</module>
         <module>demetra-desktop-branding</module>
         <module>demetra-desktop-app</module>
-        <module>demetra-desktop-jd2</module>
-        <module>demetra-desktop-tramoseats</module>
     </modules>
 
     <dependencyManagement>
@@ -214,6 +215,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-design</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-desktop-util</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

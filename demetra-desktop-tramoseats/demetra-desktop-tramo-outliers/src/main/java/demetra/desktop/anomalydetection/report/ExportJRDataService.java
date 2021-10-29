@@ -16,7 +16,7 @@
  */
 package demetra.desktop.anomalydetection.report;
 
-import ec.nbdemetra.anomalydetection.AnomalyItem;
+import demetra.desktop.anomalydetection.AnomalyItem;
 import java.util.List;
 import java.util.Map;
 

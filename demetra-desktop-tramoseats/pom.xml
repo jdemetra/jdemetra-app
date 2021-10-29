@@ -20,7 +20,7 @@
     <properties>
         <jd3-tramoseats.version>1.0.0-SNAPSHOT</jd3-tramoseats.version>
         <tramoseats-desktop.version>3.0.0-SNAPSHOT</tramoseats-desktop.version>
-    </properties>
+   </properties>
 
     <dependencyManagement>
         <dependencies>

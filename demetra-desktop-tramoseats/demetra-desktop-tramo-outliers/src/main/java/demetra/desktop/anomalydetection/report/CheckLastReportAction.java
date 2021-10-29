@@ -16,10 +16,9 @@
  */
 package demetra.desktop.anomalydetection.report;
 
-import ec.nbdemetra.anomalydetection.AnomalyItem;
-import ec.nbdemetra.anomalydetection.report.AnomalyPojo.Status;
+import demetra.desktop.anomalydetection.AnomalyItem;
+import demetra.desktop.anomalydetection.report.AnomalyPojo.Status;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.openide.DialogDisplayer;
@@ -33,7 +32,7 @@ public class CheckLastReportAction {
 
     public static void process(List<AnomalyItem> items, Map parameters) {
         AnomalyPojoComparator comparator = null;
-        ICheckLastReportFactory factory = null;
+        CheckLastReportFactory factory = null;
 
         NotifyDescriptor d = new NotifyDescriptor(
                 new CheckLastSortPanel(),
@@ -78,7 +77,7 @@ public class CheckLastReportAction {
                         if (parameters.containsKey("_ORANGE_CELLS")
                                 && Math.abs(item.getRelativeError(j)) >= ((Double) parameters.get("_ORANGE_CELLS"))) {
                             AnomalyPojo p = new AnomalyPojo(item.getTs().getName(),
-                                    item.getTs().getTsData().getLastPeriod().minus(j),
+                                    item.getTs().getData().getDomain().getLastPeriod().plus(-j),
                                     item.getRelativeError(j),
                                     item.getAbsoluteError(j),
                                     Status.Valid);

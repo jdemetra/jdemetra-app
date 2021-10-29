@@ -36,7 +36,7 @@ import org.openide.windows.WindowManager;
 public class ReportSelectionDialog extends JDialog {
 
     private String report;
-    private final JList<ICheckLastReportFactory> list;
+    private final JList<CheckLastReportFactory> list;
 
     private void fillList() {
         list.setModel(JLists.modelOf(CheckLastReportManager.getDefault().getFactories()));
@@ -83,12 +83,12 @@ public class ReportSelectionDialog extends JDialog {
         });
     }
 
-    public ICheckLastReportFactory getReportFactory() {
+    public CheckLastReportFactory getReportFactory() {
         if (report == null) {
             return null;
         }
-        List<ICheckLastReportFactory> factories = CheckLastReportManager.getDefault().getFactories();
-        for (ICheckLastReportFactory item : factories) {
+        List<CheckLastReportFactory> factories = CheckLastReportManager.getDefault().getFactories();
+        for (CheckLastReportFactory item : factories) {
             if (item.getReportName().equals(report))
                 return item;
         }

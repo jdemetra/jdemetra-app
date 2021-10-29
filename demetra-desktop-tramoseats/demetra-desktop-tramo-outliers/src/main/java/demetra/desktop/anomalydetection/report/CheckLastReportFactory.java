@@ -16,16 +16,25 @@
  */
 package demetra.desktop.anomalydetection.report;
 
-import ec.nbdemetra.anomalydetection.AnomalyItem;
-import java.util.List;
+import demetra.desktop.util.NetBeansServiceBackend;
 import java.util.Map;
+import nbbrd.service.Quantifier;
+import nbbrd.service.ServiceDefinition;
 
 /**
- * Interface to implement to provide data export
- * for Jasper Reports support
+ *
  * @author Mats Maggi
  */
-public interface ExportJRDataService {
+@ServiceDefinition(
+        quantifier = Quantifier.MULTIPLE,
+        backend = NetBeansServiceBackend.class,
+        singleton = true
+)
+public interface CheckLastReportFactory {
 
-    void exportAnomalies(List<AnomalyItem> items, Map parameters);
+    String getReportName();
+
+    String getReportDescription();
+
+    boolean createReport(Map parameters);
 }

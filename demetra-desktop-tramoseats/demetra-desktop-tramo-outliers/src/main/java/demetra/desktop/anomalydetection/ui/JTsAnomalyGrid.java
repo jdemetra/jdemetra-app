@@ -16,6 +16,7 @@
  */
 package demetra.desktop.anomalydetection.ui;
 
+import demetra.desktop.anomalydetection.OutlierEstimation;
 import demetra.timeseries.TsCollection;
 import demetra.desktop.components.parts.HasHoveredObs;
 import demetra.desktop.components.parts.HasTsCollection;
@@ -24,10 +25,15 @@ import demetra.desktop.components.TsGridObs;
 import ec.util.chart.ObsIndex;
 import ec.util.list.swing.JLists;
 import demetra.desktop.components.TsSelectionBridge;
+import demetra.desktop.l2fprod.OutlierColorChooser;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
+import demetra.modelling.TransformationType;
 import demetra.timeseries.Ts;
+import demetra.tramo.OutlierSpec;
+import demetra.tramo.TramoException;
 import demetra.tramo.TramoSpec;
+import demetra.tramo.TransformSpec;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.text.DecimalFormat;
@@ -44,6 +50,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import jdplus.regsarima.regular.RegSarimaModel;
+import jdplus.tramo.TramoKernel;
 import nbbrd.design.SkipProcessing;
 import org.netbeans.api.progress.ProgressHandle;
 
@@ -82,9 +90,9 @@ public final class JTsAnomalyGrid extends JComponent {
 
     private final JTsGrid grid;
     private List<OutlierEstimation[]> outliers;
-    private IPreprocessor preprocessor;
-    private PreprocessingModel model;
-    private DefaultTransformationType transformation;
+    private TramoKernel preprocessor;
+    private RegSarimaModel model;
+    private TransformationType transformation;
     private TsCollection tsCollection;
     private TramoSpec defaultSpec = TramoSpec.TRfull;
     private TramoSpec spec = TramoSpec.TRfull;
@@ -137,8 +145,8 @@ public final class JTsAnomalyGrid extends JComponent {
 
         add(grid, BorderLayout.CENTER);
 
-        preprocessor = spec.build();
-        transformation = DefaultTransformationType.None;
+        preprocessor = TramoKernel.of(spec, null);
+        transformation = TransformationType.None;
     }
     // </editor-fold>
 
@@ -151,12 +159,12 @@ public final class JTsAnomalyGrid extends JComponent {
         return defaultCritical;
     }
 
-    public DefaultTransformationType getTransformation() {
+    public TransformationType getTransformation() {
         return transformation;
     }
 
-    public void setTransformation(DefaultTransformationType transformation) {
-        DefaultTransformationType old = this.transformation;
+    public void setTransformation(TransformationType transformation) {
+        TransformationType old = this.transformation;
         this.transformation = transformation;
         firePropertyChange(TRANSFORMATION_PROPERTY, old, this.transformation);
     }
@@ -169,16 +177,16 @@ public final class JTsAnomalyGrid extends JComponent {
         return grid.getZoomRatio();
     }
 
-    public PreprocessingModel getModelOfSelection() {
+    public RegSarimaModel getModelOfSelection() {
         Ts selectedItem = getSelectedItem();
         return selectedItem != null
-                ? preprocessor.process(selectedItem.getTsData(), null)
+                ? preprocessor.process(selectedItem.getData(), null)
                 : null;
     }
 
     public Ts getSelectedItem() {
         OptionalInt singleSelection = JLists.getSelectionIndexStream(grid.getTsSelectionModel()).findFirst();
-        return singleSelection.isPresent() ? TsConverter.fromTs(grid.getTsCollection().get(singleSelection.getAsInt())) : null;
+        return singleSelection.isPresent() ? grid.getTsCollection().get(singleSelection.getAsInt()) : null;
     }
 
     public boolean isShowAO() {
@@ -217,14 +225,14 @@ public final class JTsAnomalyGrid extends JComponent {
         refreshOutliersDisplayed();
     }
 
-    public void setDefaultSpec(TramoSpecification spec) {
-        TramoSpecification old = this.spec;
-        this.defaultSpec = spec.clone();
-        this.spec = spec.clone();
+    public void setDefaultSpec(TramoSpec spec) {
+        TramoSpec old = this.spec;
+        this.defaultSpec = spec;
+        this.spec = spec;
         firePropertyChange(DEFAULT_SPEC_PROPERTY, old, this.spec);
     }
 
-    public TramoSpecification getDefaultSpec() {
+    public TramoSpec getDefaultSpec() {
         return defaultSpec;
     }
 
@@ -256,8 +264,8 @@ public final class JTsAnomalyGrid extends JComponent {
         return worker != null ? worker.getState() : SwingWorker.StateValue.PENDING;
     }
 
-    public ec.tss.TsCollection getTsCollection() {
-        return TsConverter.fromTsCollection(grid.getTsCollection());
+    public TsCollection getTsCollection() {
+        return grid.getTsCollection();
     }
 
     @NonNull
@@ -274,24 +282,23 @@ public final class JTsAnomalyGrid extends JComponent {
     private void refreshOutliersDisplayed() {
         outliers.clear();
         grid.getTsSelectionModel().clearSelection();
-        OutlierType[] types = spec.getOutliers().getTypes();
-        spec.getOutliers().clearTypes();
-        if (showAO) {
-            spec.getOutliers().add(OutlierType.AO);
-        }
-        if (showLS) {
-            spec.getOutliers().add(OutlierType.LS);
-        }
-        if (showTC) {
-            spec.getOutliers().add(OutlierType.TC);
-        }
-        if (showSO) {
-            spec.getOutliers().add(OutlierType.SO);
-        }
-        spec.getOutliers().setCriticalValue(defaultCritical ? 0.0 : criticalValue);
-        spec.getTransform().setFunction(transformation);
-        preprocessor = spec.build();
-        firePropertyChange(TYPES_PROPERTY, types, spec.getOutliers().getTypes());
+        OutlierSpec oldspec=spec.getOutliers();
+        OutlierSpec newspec = oldspec
+                .toBuilder()
+                .ao(showAO)
+                .ls(showLS)
+                .tc(showTC)
+                .so(showSO)
+                .criticalValue(defaultCritical ? 0.0 : criticalValue)
+                .build();
+        TransformSpec.Builder tbuilder = spec.getTransform().toBuilder()
+                .function(transformation);
+        spec=spec.toBuilder()
+                .transform(tbuilder.build())
+                .outliers(newspec)
+                .build();
+        preprocessor = TramoKernel.of(spec, null);
+        firePropertyChange(TYPES_PROPERTY, oldspec, newspec);
     }
 
     private void onCollectionChange(TsCollection col) {
@@ -354,9 +361,9 @@ public final class JTsAnomalyGrid extends JComponent {
                     outliers.add(i, null);
                 } else {
                     OutlierEstimation[] o;
-                    model = preprocessor.process(TsConverter.fromTsData(tsCollection.get(i).getData()).get(), null);
+                    model = preprocessor.process(tsCollection.get(i).getData(), null);
                     if (model != null) {
-                        o = model.outliersEstimation(true, false);
+                        o = OutlierEstimation.of(model);
                     } else {
                         o = null;
                     }
@@ -367,7 +374,7 @@ public final class JTsAnomalyGrid extends JComponent {
                         outliers.add(i, null);
                     }
                 }
-                publish(TsConverter.fromTs(tsCollection.get(i)));
+                publish(tsCollection.get(i));
 
             }
             return null;
@@ -462,7 +469,7 @@ public final class JTsAnomalyGrid extends JComponent {
                                 OutlierEstimation[] est = outliers.get(obs.getSeriesIndex());
                                 int i = 0;
                                 while (currentOutlier == null && i < est.length) {
-                                    if (est[i].getPosition().equals(TsConverter.fromTsPeriod(obs.getPeriod()))) {
+                                    if (est[i].getPeriod().equals(obs.getPeriod())) {
                                         currentOutlier = est[i];
                                     }
                                     i++;
@@ -473,11 +480,11 @@ public final class JTsAnomalyGrid extends JComponent {
                                     setToolTipText("<html>Period : " + obs.getPeriod().toString() + "<br>"
                                             + "Value : " + df.format(obs.getValue()) + "<br>"
                                             + "Outlier Value : " + df.format(currentOutlier.getValue()) + "<br>"
-                                            + "Std Err : " + df.format(currentOutlier.getStdev()) + "<br>"
-                                            + "TStat : " + df.format(currentOutlier.getTStat()) + "<br>"
+                                            + "Std Err : " + df.format(currentOutlier.getStderr()) + "<br>"
+                                            + "TStat : " + df.format(currentOutlier.getTstat()) + "<br>"
                                             + "Outlier type : " + currentOutlier.getCode());
-                                    setBackground(ColorChooser.getColor(currentOutlier.getCode()));
-                                    setForeground(ColorChooser.getForeColor(currentOutlier.getCode()));
+                                    setBackground(OutlierColorChooser.getColor(currentOutlier.getCode()));
+                                    setForeground(OutlierColorChooser.getForeColor(currentOutlier.getCode()));
                                 } else {
                                     setToolTipText("<html>Period : " + obs.getPeriod().toString() + "<br>"
                                             + "Value : " + df.format(obs.getValue()));

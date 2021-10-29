@@ -16,24 +16,23 @@
  */
 package demetra.desktop.anomalydetection.html;
 
+import demetra.desktop.anomalydetection.OutlierEstimation;
 import demetra.desktop.anomalydetection.comparer.OutlierEstimationComparator;
-import demetra.desktop.core.l2fprod.OutlierColorChooser;
+import demetra.desktop.l2fprod.OutlierColorChooser;
 import demetra.html.AbstractHtmlElement;
-import static demetra.html.Bootstrap4.TEXT_CENTER;
+import demetra.html.Bootstrap4;
 import demetra.html.HtmlElement;
 import demetra.html.HtmlStream;
 import demetra.html.HtmlTable;
 import demetra.html.HtmlTableCell;
 import demetra.html.HtmlTableHeader;
 import demetra.html.HtmlTag;
-import demetra.timeseries.regression.IOutlier;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jdplus.regsarima.regular.RegSarimaModel.RegressionDesc;
 
 /**
  * Html content displaying a table with all outliers information
@@ -42,10 +41,10 @@ import jdplus.regsarima.regular.RegSarimaModel.RegressionDesc;
  */
 public class HtmlOutliers extends AbstractHtmlElement implements HtmlElement {
 
-    private final RegressionDesc[] outliers_;
+    private final OutlierEstimation[] outliers_;
     Map<String, OutlierPojo> map = new HashMap<>();
 
-    public HtmlOutliers(RegressionDesc[] estimations) {
+    public HtmlOutliers(OutlierEstimation[] estimations) {
         outliers_ = estimations;
     }
 
@@ -68,14 +67,13 @@ public class HtmlOutliers extends AbstractHtmlElement implements HtmlElement {
         // Data
         Arrays.sort(outliers_, new OutlierEstimationComparator());
 
-        for (RegressionDesc e : outliers_) {
-            IOutlier outlier=(IOutlier) e.getCore();
+        for (OutlierEstimation e : outliers_) {
             stream.open(HtmlTag.TABLEROW);
-            stream.write(new HtmlTableCell(outlier.getCode()).withWidth(40).withClass(OutlierColorChooser.getCodeClass(outlier.getCode())));
-            stream.write(new HtmlTableCell(outlier.getPosition().toString()).withWidth(50));
-            stream.write(new HtmlTableCell(df4.format(e.getCoef())).withWidth(80));
+            stream.write(new HtmlTableCell(e.getCode()).withWidth(40).withClass(OutlierColorChooser.getCodeClass(e.getCode())));
+            stream.write(new HtmlTableCell(e.getPeriod().display()).withWidth(50));
+            stream.write(new HtmlTableCell(df4.format(e.getValue())).withWidth(80));
             stream.write(new HtmlTableCell(df4.format(e.getStderr())).withWidth(80));
-            stream.write(new HtmlTableCell(df4.format(e.getTStat())).withWidth(80));
+            stream.write(new HtmlTableCell(df4.format(e.getTstat())).withWidth(80));
             stream.close(HtmlTag.TABLEROW);
         }
 
@@ -88,7 +86,7 @@ public class HtmlOutliers extends AbstractHtmlElement implements HtmlElement {
         // Headers
         stream.open(HtmlTag.TABLEROW);
         stream.write(new HtmlTableHeader("").withWidth(40));
-        stream.write(new HtmlTableHeader("Number").withClass(TEXT_CENTER));
+        stream.write(new HtmlTableHeader("Number").withClass(Bootstrap4.TEXT_CENTER));
         stream.write(new HtmlTableHeader("Avg Value"));
         stream.close(HtmlTag.TABLEROW);
 
@@ -100,24 +98,26 @@ public class HtmlOutliers extends AbstractHtmlElement implements HtmlElement {
             OutlierPojo o = map.get(s);
 
             stream.write(new HtmlTableCell(s).withWidth(40).withClass(OutlierColorChooser.getCodeClass(s)));
-            stream.write(new HtmlTableCell(String.valueOf(o.getNumberOfValues())).withWidth(80).withClass(TEXT_CENTER));
-            stream.write(new HtmlTableCell(df4.format(o.getAverageValue())).withWidth(80));
+            stream.write(new HtmlTableCell(String.valueOf(o.getNumberOfValues())).withWidth(80).withClass(Bootstrap4.TEXT_CENTER));
+            stream.write(new HtmlTableCell(df4.format(o.getMaxT())).withWidth(80));
             stream.close(HtmlTag.TABLEROW);
         }
     }
 
     private static class OutlierPojo {
 
-        private double totalValue;
+        private double maxT;
         private int numberOfValues;
 
         public OutlierPojo() {
-            totalValue = 0.0;
+            maxT = 0.0;
             numberOfValues = 0;
         }
 
-        public void add(RegressionDesc e) {
-            totalValue += e.getCoef();
+        public void add(OutlierEstimation e) {
+            if (Math.abs(e.getTstat()) > Math.abs(maxT)) {
+                maxT = e.getTstat();
+            }
             numberOfValues++;
         }
 
@@ -125,12 +125,8 @@ public class HtmlOutliers extends AbstractHtmlElement implements HtmlElement {
             return numberOfValues;
         }
 
-        public double getAverageValue() {
-            if (numberOfValues > 0) {
-                return totalValue / (double) numberOfValues;
-            } else {
-                return 0.0;
-            }
+        public double getMaxT() {
+            return maxT;
         }
     }
 
@@ -141,9 +137,8 @@ public class HtmlOutliers extends AbstractHtmlElement implements HtmlElement {
         map.put("TC", new OutlierPojo());
         map.put("SO", new OutlierPojo());
 
-        for (RegressionDesc e : outliers_) {
-            IOutlier outlier=(IOutlier) e.getCore();
-           map.get(outlier.getCode()).add(e);
+        for (OutlierEstimation e : outliers_) {
+            map.get(e.getCode()).add(e);
         }
     }
 }

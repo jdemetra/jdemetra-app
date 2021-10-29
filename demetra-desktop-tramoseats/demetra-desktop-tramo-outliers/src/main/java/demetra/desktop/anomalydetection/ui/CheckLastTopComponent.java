@@ -16,6 +16,7 @@
  */
 package demetra.desktop.anomalydetection.ui;
 
+import com.google.common.base.Stopwatch;
 import demetra.desktop.notification.MessageType;
 import demetra.desktop.notification.NotifyUtil;
 import demetra.timeseries.TsCollection;
@@ -212,7 +213,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
         toolBar.addSeparator();
 
         toolBar.add(createSpecDropDownButton(list));
-        defSpecLabel = (JLabel) toolBar.add(new JLabel(list.getSpec() == null ? "" : list.getSpec().toString()));
+        defSpecLabel = (JLabel) toolBar.add(new JLabel(list.getSpec() == null ? "" : list.getSpec().display()));
 
         toolBar.add(Box.createHorizontalGlue());
         toolBar.addSeparator();
@@ -237,7 +238,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
         final JPopupMenu addPopup = new JPopupMenu();
         TramoSpec[] specs = TramoSpec.allSpecifications();
         for (int i = 0; i < specs.length; ++i) {
-            String name = specs[i].toString();
+            String name = specs[i].display();
             JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(name);
             menuItem.setName(name);
             menuItem.addActionListener(new AbstractAction(name) {
@@ -246,7 +247,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
                     TramoSpec s = TramoSpec.TR0;
                     JCheckBoxMenuItem source = (JCheckBoxMenuItem) e.getSource();
                     try {
-                        s = (TramoSpec) TramoSpec.class.getDeclaredField(source.getText()).get(new TramoSpecification());
+                        s = (TramoSpec) TramoSpec.class.getDeclaredField(source.getText()).get(TramoSpec.DEFAULT);
                     } catch (IllegalAccessException | NoSuchFieldException | SecurityException ex) {
                         LOGGER.error("Tramo Specification " + source.getText() + " can't be accessed !");
                     }
@@ -261,9 +262,9 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
             refreshNode();
             for (Component o : addPopup.getComponents()) {
                 JCheckBoxMenuItem item = (JCheckBoxMenuItem) o;
-                item.setState(view.getSpec().toString().equals(o.getName()));
+                item.setState(view.getSpec().display().equals(o.getName()));
                 item.setEnabled(!item.isSelected());
-                defSpecLabel.setText(view.getSpec().toString());
+                defSpecLabel.setText(view.getSpec().display());
                 reportButton.setEnabled(false);
             }
         });
@@ -522,7 +523,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
             } else if (a.getTsData() != null) {
                 CheckLast cl = new CheckLast(TramoKernel.of(list.getSpec(), null), list.getLastChecks());
                 cl.check(a.getTsData());
-                summary.set(a, cl.getEstimatedModel());
+                summary.set(a, cl.getModel());
             }
 
             chart.setTsCollection(TsCollection.of(a.getTs()));
@@ -534,7 +535,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
     private void onCollectionChange() {
         int nbElements = list.getItems() != null ? list.getItems().size() : 0;
         itemsLabel.setText(nbElements == 0 ? "No items" : nbElements + (nbElements < 2 ? " item" : " items"));
-        summary.set(null, list.getCheckLast().getEstimatedModel());
+        summary.set(null, list.getCheckLast().getModel());
         summary.repaint();
 
         runButton.setEnabled(nbElements != 0);

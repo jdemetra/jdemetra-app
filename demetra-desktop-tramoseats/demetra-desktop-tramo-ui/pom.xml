@@ -102,7 +102,7 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-core-multiview</artifactId>
         </dependency>
-    </dependencies>
+   </dependencies>
 
     <build>
         <plugins>

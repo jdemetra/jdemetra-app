@@ -17,8 +17,8 @@
 package demetra.desktop.anomalydetection.report;
 
 import demetra.desktop.util.NbComponents;
-import ec.tss.tsproviders.utils.MultiLineNameUtil;
-import ec.tstoolkit.utilities.Paths;
+import demetra.util.MultiLineNameUtil;
+import demetra.util.Paths;
 import java.awt.Dimension;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -41,7 +41,7 @@ import org.openide.util.Exceptions;
  */
 @DirectImpl
 @ServiceProvider
-public final class DefaultCheckLastReport implements ICheckLastReportFactory {
+public final class DefaultCheckLastReport implements CheckLastReportFactory {
 
     private final FileChooserBuilder fileChooserBuilder;
     private static final String NL = "\r\n", NL2 = "\r\n\r\n";

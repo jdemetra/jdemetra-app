@@ -35,13 +35,13 @@ public class CheckLastSortPanel extends javax.swing.JPanel {
     }
     
     private void fillList() {
-        List<ICheckLastReportFactory> factories = CheckLastReportManager.getDefault().getFactories();        
-        DefaultComboBoxModel<ICheckLastReportFactory> model = new DefaultComboBoxModel(factories.toArray());
+        List<CheckLastReportFactory> factories = CheckLastReportManager.getDefault().getFactories();        
+        DefaultComboBoxModel<CheckLastReportFactory> model = new DefaultComboBoxModel(factories.toArray());
         reportCombo.setModel(model);
     }
     
-    public ICheckLastReportFactory getFactory() {
-        return (ICheckLastReportFactory)reportCombo.getSelectedItem();
+    public CheckLastReportFactory getFactory() {
+        return (CheckLastReportFactory)reportCombo.getSelectedItem();
     }
 
     public AnomalyPojoComparator getComparator() {
