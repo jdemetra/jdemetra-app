@@ -258,6 +258,7 @@ public class TukeySpectrumView extends ARPView {
         }
 
         SmoothedPeriodogram tukey = SmoothedPeriodogram.builder()
+                .data(val)
                 .taper(taperPart == 0 ? null : new TukeyHanningTaper(taperPart))
                 .windowFunction(windowType)
                 .windowLength(len)
