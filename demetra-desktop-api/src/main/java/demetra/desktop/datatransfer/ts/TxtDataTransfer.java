@@ -18,44 +18,43 @@ package demetra.desktop.datatransfer.ts;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.StandardSystemProperty;
-import com.google.common.collect.ImmutableList;
 import demetra.desktop.Config;
 import demetra.desktop.ConfigEditor;
-import demetra.desktop.beans.BeanHandler;
-import demetra.desktop.DemetraIcons;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
-import demetra.desktop.properties.NodePropertySetBuilder;
-import java.awt.datatransfer.DataFlavor;
-import java.beans.IntrospectionException;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import org.openide.nodes.Sheet;
-import org.openide.util.lookup.ServiceProvider;
-import demetra.desktop.datatransfer.DataTransferSpi;
-import nbbrd.io.text.BooleanProperty;
-import org.openide.util.lookup.ServiceProviders;
-import demetra.desktop.beans.BeanEditor;
 import demetra.desktop.Converter;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.Persistable;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.beans.BeanConfigurator;
+import demetra.desktop.beans.BeanEditor;
+import demetra.desktop.beans.BeanHandler;
+import demetra.desktop.datatransfer.DataTransferSpi;
+import demetra.desktop.properties.NodePropertySetBuilder;
+import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsInformationType;
 import demetra.util.MultiLineNameUtil;
+import java.awt.datatransfer.DataFlavor;
+import java.beans.IntrospectionException;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import jdplus.math.matrices.FastMatrix;
+import nbbrd.io.text.BooleanProperty;
 import nbbrd.io.text.Parser;
+import org.openide.nodes.Sheet;
+import org.openide.util.lookup.ServiceProvider;
+import org.openide.util.lookup.ServiceProviders;
 
 /**
  * @author Jean Palate
@@ -305,47 +304,81 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
         Parser<Number> valueParser = Parser.onNumberFormat(numberFormat);
 
         try {
-            int rows = 0;
-            int cols = 0;
-            boolean datesAreVertical = true;
+            int nrows = 0;
+            int ncols = 0;
 
             String[] rowarray = text.split("\\r?\\n");
-            rows = rowarray.length;
-            for (int i = 0; i < rows; i++) {
+            List<String[]> rows = new ArrayList<>();
+            nrows = rowarray.length;
+            for (int i = 0; i < nrows; i++) {
                 String[] colarray = rowarray[i].split("\\t");
-                if (cols < colarray.length) {
-                    cols = colarray.length;
+                rows.add(colarray);
+                if (ncols < colarray.length) {
+                    ncols = colarray.length;
                 }
-                datesAreVertical = null != parseDate(colarray[0]);
             }
-
-            if (cols < 1 || rows < 1) {
+            if (ncols < 1 || nrows < 1) {
                 return null;
             }
-            FastMatrix datamatrix = FastMatrix.make(rows, cols);
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    datamatrix.set(i, j, Double.NaN);
+            // Search for the orientation, the titles and the dates
+            // if vertical, m(1,0) is a date. Otherwise m(0,1)
+            boolean datesAreVertical = null != parseDate(rows.get(1)[0]);
+            boolean hasTitles = null == parseDate(rows.get(0)[0]);
+            boolean datesAreHorizontal = null != parseDate(rows.get(0)[1]);
+            if (!datesAreVertical && !datesAreHorizontal) {
+                return null;
+            }
+            LocalDate[] dates;
+            String[] titles;
+            FastMatrix data;
+            int nr=(hasTitles || datesAreHorizontal) ? nrows-1 : nrows;
+            int nc=(hasTitles || datesAreVertical) ? ncols-1 : ncols;
+            if (datesAreVertical) {
+                titles = new String[ncols - 1];
+                if (hasTitles) {
+                    for (int i = 0; i < titles.length; ++i) {
+                        titles[i] = rows.get(0)[i + 1];
+                    }
+                    data = FastMatrix.make(nrows - 1, ncols - 1);
+                } else {
+                    data = FastMatrix.make(nrows, ncols - 1);
+                    for (int i = 0; i < titles.length; ++i) {
+                        titles[i] = "s" + (i + 1);
+                    }
+                }
+                dates = new LocalDate[data.getRowsCount()];
+                for (int i = 0, j = hasTitles ? 1 : 0; i < dates.length; ++i, ++j) {
+                    dates[i] = parseDate(rows.get(j)[0]);
+                }
+            } else {
+                titles = new String[nrows - 1];
+                if (hasTitles) {
+                    for (int i = 0; i < titles.length; ++i) {
+                        titles[i] = rows.get(i + 1)[0];
+                    }
+                    data = FastMatrix.make(ncols - 1, nrows - 1);
+                } else {
+                    data = FastMatrix.make(ncols, nrows - 1);
+                    for (int i = 0; i < titles.length; ++i) {
+                        titles[i] = "s" + (i + 1);
+                    }
+                }
+                dates = new LocalDate[data.getRowsCount()];
+                for (int i = 0, j = hasTitles ? 1 : 0; i < dates.length; ++i, ++j) {
+                    dates[i] = parseDate(rows.get(0)[j]);
                 }
             }
-            LocalDate[] dates = new LocalDate[(datesAreVertical ? rows : cols)];
-            String[] titles = new String[(datesAreVertical ? cols : rows)];
+            data.set(Double.NaN);
 
-            rowarray = text.split("\\r?\\n");
-            for (int i = 0; i < rowarray.length; i++) {
-                String[] colarray = rowarray[i].split("\\t");
-                for (int j = 0; j < colarray.length; j++) {
-                    if ((j == 0 && datesAreVertical) || (i == 0 && !datesAreVertical)) {
-                        LocalDate d = parseDate(colarray[j]);
-                        dates[(datesAreVertical ? i : j)] = d;
-                    } else if ((j == 0 && !datesAreVertical)
-                            || (i == 0 && datesAreVertical)) {
-                        titles[(datesAreVertical ? j : i)] = colarray[j];
-                    } else {
-                        Number value = valueParser.parse(colarray[j]);
-                        if (value != null) {
-                            datamatrix.set(i, j, value.doubleValue());
-                        }
+            for (int i = 0, j = (datesAreHorizontal || hasTitles) ? 1 : 0; i < nr; ++i, ++j) {
+                String[] cols = rows.get(j);
+                for (int k = 0, l = (datesAreVertical || hasTitles) ? 1 : 0; k < nc; ++k, ++l) {
+                    Number value = valueParser.parse(cols[l]);
+                    if (value != null) {
+                        if (datesAreVertical) 
+                        data.set(i, k, value.doubleValue());
+                        else
+                        data.set(k,i, value.doubleValue());
                     }
                 }
             }
@@ -361,7 +394,7 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
             }
             TsCollectionAnalyser analyser = new TsCollectionAnalyser();
 
-            analyser.data = (datesAreVertical ? datamatrix : datamatrix.transpose());
+            analyser.data = data;
             analyser.dates = dates;
             analyser.titles = titles;
             List<Ts> result = analyser.create();
@@ -375,12 +408,11 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
                 } else {
                     nresult.add(s);
                 }
-                return TsCollection.of(nresult);
             }
+            return TsCollection.of(nresult);
         } catch (Exception ex) {
             throw new IOException("Problem while retrieving data", ex);
         }
-        return TsCollection.EMPTY;
     }
 
     // TODO: use parsers

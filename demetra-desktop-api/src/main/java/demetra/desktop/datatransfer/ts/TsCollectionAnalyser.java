@@ -14,8 +14,6 @@ import demetra.timeseries.util.ObsGathering;
 import demetra.timeseries.util.TsDataBuilder;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import jdplus.math.matrices.FastMatrix;
 
@@ -31,10 +29,10 @@ class TsCollectionAnalyser {
 
     public List<Ts> create() {
         if (titles == null || dates == null || data == null) {
-            return Collections.emptyList();
+            return null;
         }
         List<Ts> coll = new ArrayList<>();
-        for (int i = 1; i < titles.length; ++i) {
+        for (int i = 0; i < titles.length; ++i) {
             TsDataBuilder<LocalDate> cur = TsDataBuilder.byDate(ObsGathering.DEFAULT, ObsCharacteristics.ORDERED);
             for (int j = 0; j < dates.length; ++j) {
                 double val = data.get(j, i);
