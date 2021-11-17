@@ -14,7 +14,7 @@ import demetra.desktop.components.tools.PeriodogramView;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import demetra.desktop.util.NbComponents;
-import demetra.desktop.util.TsTopComponent;
+import demetra.desktop.ui.TsTopComponent;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;

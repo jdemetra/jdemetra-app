@@ -13,13 +13,13 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionID;
 import org.openide.util.NbBundle.Messages;
 
-@ActionID(category = "File",
-id = "ec.nbdemetra.ws.actions.SaveWorkspaceAs")
-@ActionRegistration(displayName = "#CTL_SaveWorkspaceAs")
-@ActionReferences({
-    @ActionReference(path = "Menu/File", position = 310)
-})
-@Messages("CTL_SaveWorkspaceAs=Save Workspace As...")
+//@ActionID(category = "File",
+//id = "ec.nbdemetra.ws.actions.SaveWorkspaceAs")
+//@ActionRegistration(displayName = "#CTL_SaveWorkspaceAs")
+//@ActionReferences({
+//    @ActionReference(path = "Menu/File", position = 310)
+//})
+//@Messages("CTL_SaveWorkspaceAs=Save Workspace As...")
 public final class SaveWorkspaceAs implements ActionListener {
 
     @Override

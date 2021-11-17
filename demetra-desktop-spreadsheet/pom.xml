@@ -16,11 +16,6 @@
     <dependencies>
         <!-- compile only -->
         <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
@@ -90,10 +85,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-api</artifactId>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-jd2</artifactId>
-        </dependency>
+        </dependency-->
 
         <!-- JDemetra -->
         <dependency>

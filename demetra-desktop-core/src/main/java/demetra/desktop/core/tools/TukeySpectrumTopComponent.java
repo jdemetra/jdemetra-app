@@ -5,7 +5,7 @@
 package demetra.desktop.core.tools;
 
 import demetra.desktop.components.tools.TukeySpectrumView;
-import demetra.desktop.util.TsTopComponent;
+import demetra.desktop.ui.TsTopComponent;
 import java.lang.reflect.InvocationTargetException;
 import jdplus.data.analysis.DiscreteWindowFunction;
 import org.netbeans.api.settings.ConvertAsProperties;

@@ -14,26 +14,17 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.common;
+package demetra.desktop.datatransfer.ts;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.ImmutableList;
-import demetra.bridge.TsConverter;
 import demetra.desktop.Config;
 import demetra.desktop.ConfigEditor;
 import demetra.desktop.beans.BeanHandler;
 import demetra.desktop.DemetraIcons;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.properties.NodePropertySetBuilder;
-import ec.tss.Ts;
-import ec.tss.TsInformationType;
-import ec.tss.TsStatus;
-import ec.tss.tsproviders.utils.DataFormat;
-import ec.tss.tsproviders.utils.IParser;
-import ec.tss.tsproviders.utils.MultiLineNameUtil;
-import ec.tss.tsproviders.utils.Parsers;
-import ec.tstoolkit.maths.matrices.Matrix;
 import java.awt.datatransfer.DataFlavor;
 import java.beans.IntrospectionException;
 import java.io.IOException;
@@ -52,6 +43,19 @@ import demetra.desktop.Converter;
 import demetra.desktop.Persistable;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.beans.BeanConfigurator;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsData;
+import demetra.timeseries.TsFactory;
+import demetra.timeseries.TsInformationType;
+import demetra.util.MultiLineNameUtil;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import jdplus.math.matrices.FastMatrix;
+import nbbrd.io.text.Parser;
 
 /**
  * @author Jean Palate
@@ -107,9 +111,8 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
 
     @Override
     public Object exportTsCollection(demetra.timeseries.TsCollection col) throws IOException {
-        ec.tss.TsCollection tmp = TsConverter.fromTsCollection(col);
-        tmp.load(TsInformationType.Data);
-        return tsCollectionToString(tmp);
+        TsCollection loaded = col.load(TsInformationType.Data, TsFactory.getDefault());
+        return tsCollectionToString(loaded);
     }
 
     @Override
@@ -119,11 +122,11 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
 
     @Override
     public demetra.timeseries.TsCollection importTsCollection(Object obj) throws IOException {
-        ec.tss.TsCollection result = tsCollectionFromString((String) obj);
-        if (result != null) {
-            return TsConverter.toTsCollection(result);
+        demetra.timeseries.TsCollection col = tsCollectionFromString((String) obj);
+        if (col == null) {
+            throw new IOException("Cannot parse collection");
         }
-        throw new IOException("Cannot parse collection");
+        return col;
     }
 
     @Override
@@ -219,11 +222,6 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
     }
 
     public String tsCollectionToString(demetra.timeseries.TsCollection col) throws IOException {
-        return tsCollectionToString(TsConverter.fromTsCollection(col));
-    }
-
-    //writes the collection of ts in a tab delimited txt format into a string
-    public String tsCollectionToString(ec.tss.TsCollection col) throws IOException {
         if (col.isEmpty()) {
             return "";
         }
@@ -303,11 +301,9 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
         return result.toString();
     }
 
-    public ec.tss.TsCollection tsCollectionFromString(String text) throws IOException {
-        IParser<Date> periodParser = FALLBACK_PARSER.get();
-        IParser<Number> valueParser = Parsers.onNumberFormat(numberFormat);
+    public TsCollection tsCollectionFromString(String text) throws IOException {
+        Parser<Number> valueParser = Parser.onNumberFormat(numberFormat);
 
-        ec.tss.TsCollection result = null;
         try {
             int rows = 0;
             int cols = 0;
@@ -320,28 +316,28 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
                 if (cols < colarray.length) {
                     cols = colarray.length;
                 }
-                datesAreVertical = periodParser.parseValue(colarray[0]).isPresent();
+                datesAreVertical = null != parseDate(colarray[0]);
             }
 
             if (cols < 1 || rows < 1) {
                 return null;
             }
-            Matrix datamatrix = new Matrix(rows, cols);
+            FastMatrix datamatrix = FastMatrix.make(rows, cols);
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
                     datamatrix.set(i, j, Double.NaN);
                 }
             }
-            Date[] dates = new Date[(datesAreVertical ? rows : cols)];
+            LocalDate[] dates = new LocalDate[(datesAreVertical ? rows : cols)];
             String[] titles = new String[(datesAreVertical ? cols : rows)];
 
             rowarray = text.split("\\r?\\n");
             for (int i = 0; i < rowarray.length; i++) {
                 String[] colarray = rowarray[i].split("\\t");
                 for (int j = 0; j < colarray.length; j++) {
-                    if (((j == 0 && datesAreVertical) || (i == 0 && !datesAreVertical))
-                            && periodParser.parseValue(colarray[j]).isPresent()) {
-                        dates[(datesAreVertical ? i : j)] = periodParser.parse(colarray[j]);
+                    if ((j == 0 && datesAreVertical) || (i == 0 && !datesAreVertical)) {
+                        LocalDate d = parseDate(colarray[j]);
+                        dates[(datesAreVertical ? i : j)] = d;
                     } else if ((j == 0 && !datesAreVertical)
                             || (i == 0 && datesAreVertical)) {
                         titles[(datesAreVertical ? j : i)] = colarray[j];
@@ -354,7 +350,7 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
                 }
             }
             int ndates = 0;
-            for (Date date : dates) {
+            for (LocalDate date : dates) {
                 if (date != null) {
                     ++ndates;
                 }
@@ -368,28 +364,51 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
             analyser.data = (datesAreVertical ? datamatrix : datamatrix.transpose());
             analyser.dates = dates;
             analyser.titles = titles;
-            result = TsConverter.fromTsCollection(analyser.create());
+            List<Ts> result = analyser.create();
 
+            List<Ts> nresult = new ArrayList<>();
             for (Ts s : result) {
-                if (s.hasData() == TsStatus.Valid) {
-                    s.set(s.getTsData());//.cleanExtremities());
+                TsData d = s.getData();
+                TsData nd = d.cleanExtremities();
+                if (d != nd) {
+                    nresult.add(s.toBuilder().data(nd).build());
+                } else {
+                    nresult.add(s);
                 }
+                return TsCollection.of(nresult);
             }
         } catch (Exception ex) {
             throw new IOException("Problem while retrieving data", ex);
         }
-        return result;
+        return TsCollection.EMPTY;
     }
-    private static final ThreadLocal<IParser<Date>> FALLBACK_PARSER = new ThreadLocal<IParser<Date>>() {
-        @Override
-        protected IParser<Date> initialValue() {
-            ImmutableList.Builder<Parsers.Parser<Date>> list = ImmutableList.builder();
-            for (String o : FALLBACK_FORMATS) {
-                list.add(new DataFormat(Locale.ROOT, o, null).dateParser());
-            }
-            return Parsers.firstNotNull(list.build());
+
+    // TODO: use parsers
+    private static LocalDate parseDate(String sd) {
+        try {
+            return LocalDate.parse(sd, DateTimeFormatter.ISO_DATE);
+        } catch (DateTimeParseException ex) {
         }
-    };
+        for (int i = 0; i < FALLBACK_FORMATS.length; ++i) {
+            try {
+                return LocalDate.parse(sd, DateTimeFormatter.ofPattern(FALLBACK_FORMATS[i], Locale.getDefault()));
+            } catch (DateTimeParseException ex) {
+            }
+        }
+        return null;
+    }
+
+//    private static final ThreadLocal<Parser<LocalDate>> FALLBACK_PARSER = new ThreadLocal<Parser<LocalDate>>() {
+//        @Override
+//        protected Parser<LocalDate> initialValue() {
+//            ImmutableList.Builder<Parser<Date>> list = ImmutableList.builder();
+//            for (String o : FALLBACK_FORMATS) {
+//                DateFormat fmt;
+//                list.add(Parser.onDateFormat(DateFormat(o)));
+//            }
+//            return Parsers  ..firstNotNull(list.build());
+//        }
+//    };
     // fallback formats; order matters!
     private static final String[] FALLBACK_FORMATS = {
         "yyyy-MM-dd",

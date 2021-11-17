@@ -9,7 +9,7 @@ import demetra.desktop.components.JTsChart;
 import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.components.JHtmlView;
-import demetra.desktop.util.TsTopComponent;
+import demetra.desktop.ui.TsTopComponent;
 import demetra.html.HtmlUtil;
 import demetra.sa.html.HtmlSeasonalityDiagnostics;
 import demetra.timeseries.TsData;

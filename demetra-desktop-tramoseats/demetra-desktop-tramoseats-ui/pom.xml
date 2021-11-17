@@ -38,10 +38,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>demetra-desktop-text</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-tramoseats-api</artifactId>
         </dependency>
         <dependency>

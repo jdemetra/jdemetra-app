@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.util;
+package demetra.desktop.ui;
 
 import javax.swing.JMenu;
 import org.openide.nodes.Node;

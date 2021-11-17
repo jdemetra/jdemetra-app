@@ -98,6 +98,11 @@
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-workspace</artifactId>
+            <version>${jd3-workspace.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
             <artifactId>demetra-sa-core</artifactId>
             <version>${jd3-basic.version}</version>
         </dependency>
@@ -179,6 +184,10 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-annotations-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-settings</artifactId>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>

@@ -48,10 +48,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>demetra-desktop-text</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>demetra-tramoseats-core</artifactId>
         </dependency>
         <dependency>
