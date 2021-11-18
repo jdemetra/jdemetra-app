@@ -57,8 +57,6 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
     // PROPERTIES
     private String calendarName;
     private ImmutableList<Holiday> holidays;
-    private boolean meanCorrection;
-    private boolean julianEaster;
     // OTHER
     final ExplorerManager em;
     final ListOfSpecialDayEvent childFactory;
@@ -72,9 +70,7 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
     public NationalCalendarPanel() {
         this.calendarName = "";
         this.holidays = ImmutableList.of();
-        this.meanCorrection = true;
-        this.julianEaster = false;
-
+ 
         this.em = new ExplorerManager();
         this.childFactory = new ListOfSpecialDayEvent();
 
@@ -183,14 +179,14 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
         jLabel2.setText("Special days:");
         jToolBar1.add(jLabel2);
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/list-add_16x16.png"))); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/icons/list-add_16x16.png"))); // NOI18N
         jButton1.setToolTipText("");
         jButton1.setFocusable(false);
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButton1);
 
-        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/list-remove_16x16.png"))); // NOI18N
+        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/icons/list-remove_16x16.png"))); // NOI18N
         removeButton.setFocusable(false);
         removeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         removeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -232,7 +228,7 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
                 .add(27, 27, 27)
                 .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
+                .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -294,26 +290,6 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
         String old = this.calendarName;
         this.calendarName = calendarName != null ? calendarName : "";
         firePropertyChange(CALENDAR_NAME_PROPERTY, old, this.calendarName);
-    }
-
-    public boolean isMeanCorrection() {
-        return meanCorrection;
-    }
-
-    public void setMeanCorrection(boolean mean) {
-        boolean old = this.meanCorrection;
-        this.meanCorrection = mean;
-        firePropertyChange(MEAN_CORRECTION_PROPERTY, old, this.meanCorrection);
-    }
-
-    public boolean isJulianCalendar() {
-        return julianEaster;
-    }
-
-    public void setJulianEaster(boolean julian) {
-        boolean old = this.julianEaster;
-        this.julianEaster = julian;
-        firePropertyChange(JULIAN_EASTER_PROPERTY, old, this.julianEaster);
     }
 
     public ImmutableList<Holiday> getHolidays() {

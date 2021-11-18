@@ -597,7 +597,7 @@ public class HasTsCollectionSupport {
         }
 
         private static void importData(HasTsCollection view, TsCollection data) {
-            if (view.isFreezeOnImport()) {
+            if (view.isFreezeOnImport() && data.getMoniker().isProvided()) {
                 TsCollection latest = TsManager.getDefault().makeTsCollection(data.getMoniker(), TsInformationType.All);
                 view.setTsCollection(update(view.getTsUpdateMode(), view.getTsCollection(), frozenCopyOf(latest)));
             } else {
