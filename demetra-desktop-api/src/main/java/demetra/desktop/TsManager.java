@@ -118,8 +118,14 @@ public final class TsManager implements DataSourceFactory, Closeable {
     @OnEDT
     public void loadAsync(@NonNull TsCollection col, @NonNull TsInformationType info, @NonNull Consumer<? super TsCollection> onLoaded) {
         executor.execute(() -> {
-            TsCollection loaded = makeTsCollection(col.getMoniker(), info);
-            SwingUtilities.invokeLater(() -> onLoaded.accept(loaded));
+            if (col.getMoniker().isProvided()) {
+                TsCollection loaded = makeTsCollection(col.getMoniker(), info);
+                SwingUtilities.invokeLater(() -> onLoaded.accept(loaded));
+            }else{
+                // One by one
+                TsCollection loaded = col.getItems().stream().map(s->makeTs(s.getMoniker(), info)).collect(TsCollection.toTsCollection());
+                SwingUtilities.invokeLater(() -> onLoaded.accept(loaded));
+            }
         });
     }
 

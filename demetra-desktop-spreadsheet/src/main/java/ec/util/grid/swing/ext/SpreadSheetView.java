@@ -19,10 +19,6 @@ package ec.util.grid.swing.ext;
 import demetra.desktop.components.parts.HasColorScheme;
 import demetra.desktop.components.parts.HasColorSchemeResolver;
 import demetra.desktop.components.parts.HasColorSchemeSupport;
-import ec.tss.tsproviders.utils.DataFormat;
-import ec.tss.tsproviders.utils.MultiLineNameUtil;
-import ec.tstoolkit.utilities.IPool;
-import ec.tstoolkit.utilities.Pools;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.grid.swing.JGrid;
 import ec.util.spreadsheet.Sheet;
@@ -36,6 +32,11 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.JTabbedPane;
+import demetra.desktop.util.IPool;
+import demetra.desktop.util.Pools;
+import demetra.tsprovider.util.ObsFormat;
+import demetra.util.MultiLineNameUtil;
+
 
 /**
  *
@@ -53,7 +54,7 @@ public final class SpreadSheetView extends javax.swing.JPanel implements HasColo
     private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
     
     private final IPool<JGrid> gridPool;
-    private final DataFormat dataFormat;
+    private final ObsFormat dataFormat;
     private int zoomRatio;
     private boolean invertColors;
     private ArrayBook model;
@@ -65,7 +66,7 @@ public final class SpreadSheetView extends javax.swing.JPanel implements HasColo
         initComponents();
 
         this.gridPool = Pools.on(new GridPoolFactory(), 100);
-        this.dataFormat = new DataFormat(Locale.ROOT, "yyyy-MM-dd", null);
+        this.dataFormat = ObsFormat.DEFAULT;
         this.zoomRatio = 100;
         this.invertColors = false;
         this.model = ArrayBook.builder().build();

@@ -191,9 +191,8 @@ public class ControlNode {
         if (col.getMoniker().isProvided()) {
             addDataSourceProperties(col.getMoniker(), b);
         }
-
         b.withEnum(TsInformationType.class).select(col, "getType", null).display("Information type").add();
-        b.withInt().select(col, "getSize", null).display("Series count").add();
+        b.withInt().select(col, "size", null).display("Series count").add();
 
         return b.build();
     }

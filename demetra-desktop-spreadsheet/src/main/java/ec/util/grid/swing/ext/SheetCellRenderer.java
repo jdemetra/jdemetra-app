@@ -16,8 +16,7 @@
  */
 package ec.util.grid.swing.ext;
 
-import ec.tss.tsproviders.utils.DataFormat;
-import ec.tss.tsproviders.utils.IFormatter;
+import demetra.tsprovider.util.ObsFormat;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import ec.util.spreadsheet.Cell;
@@ -32,6 +31,7 @@ import javax.swing.JTable;
 import javax.swing.JToolTip;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import nbbrd.io.text.Formatter;
 
 /**
  *
@@ -39,15 +39,15 @@ import javax.swing.table.TableCellRenderer;
  */
 public final class SheetCellRenderer implements TableCellRenderer {
 
-    private final IFormatter<Number> numberFormat;
-    private final IFormatter<Date> dateFormat;
+    private final Formatter<Number> numberFormat;
+    private final Formatter<Date> dateFormat;
     private final SwingColorSchemeSupport colorSchemeSupport;
     private final boolean invertColors;
     private final DefaultTableCellRenderer2 delegate;
 
-    public SheetCellRenderer(@NonNull DataFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean invertColors) {
+    public SheetCellRenderer(@NonNull ObsFormat dataFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean invertColors) {
         this.numberFormat = dataFormat.numberFormatter();
-        this.dateFormat = dataFormat.dateFormatter();
+        this.dateFormat = dataFormat.calendarFormatter();
         this.colorSchemeSupport = colorSchemeSupport;
         this.invertColors = invertColors;
         this.delegate = new DefaultTableCellRenderer2() {

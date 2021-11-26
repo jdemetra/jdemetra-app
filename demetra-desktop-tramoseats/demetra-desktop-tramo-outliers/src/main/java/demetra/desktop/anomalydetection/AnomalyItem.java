@@ -19,6 +19,8 @@ package demetra.desktop.anomalydetection;
 import demetra.data.DoubleSeqCursor;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsData;
+import demetra.timeseries.TsFactory;
+import demetra.timeseries.TsInformationType;
 import java.util.ArrayList;
 import java.util.Collection;
 import jdplus.regsarima.regular.CheckLast;
@@ -125,6 +127,9 @@ public class AnomalyItem {
     }
 
     public TsData getTsData() {
+//        if (ts_.getData().isEmpty()){
+//            ts_ = ts_.load(TsInformationType.Data, TsFactory.getDefault());
+//        }
         return ts_.getData();
     }
 

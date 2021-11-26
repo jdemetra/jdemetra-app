@@ -1,6 +1,7 @@
 package demetra.desktop.ui.properties.l2fprod;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
+import demetra.timeseries.regression.InterventionVariable;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -57,10 +58,7 @@ public class InterventionVariablesEditor extends AbstractPropertyEditor {
     public void setValue(Object value) {
         if (null != value && value instanceof InterventionVariable[]) {
             InterventionVariable[] val = (InterventionVariable[]) value;
-            vars_ = new InterventionVariable[val.length];
-            for (int i = 0; i < val.length; ++i) {
-                vars_[i] = val[i].clone();
-            }
+            vars_ = val.clone();
         }
         else {
             vars_ = new InterventionVariable[0];

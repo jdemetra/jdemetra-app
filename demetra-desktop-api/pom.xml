@@ -56,22 +56,18 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.nbbrd.java-design-util</groupId>
             <artifactId>java-design-processor</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.nbbrd.java-service-util</groupId>
             <artifactId>java-service-processor</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-design</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -111,7 +107,7 @@
             <artifactId>demetra-sa-html</artifactId>
             <version>${jd3-basic.version}</version>
         </dependency>
-        <dependency>
+         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
             <artifactId>demetra-tsp-api</artifactId>
             <version>${jd3.version}</version>
@@ -122,6 +118,17 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency> 
+            <groupId>org.jsr107.ri</groupId> 
+            <artifactId>cache-ri-impl</artifactId> 
+            <version>1.1.1</version> 
+             <exclusions>
+                <exclusion>
+                    <groupId>javax.enterprise</groupId>
+                    <artifactId>cdi-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency> 
         <dependency>
             <groupId>com.github.nbbrd.java-desktop-util</groupId>
             <artifactId>java-desktop-util-swing</artifactId>
@@ -184,6 +191,10 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-annotations-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-modules</artifactId>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -279,6 +290,10 @@
                         <publicPackage>com.l2fprod.common.*</publicPackage>
                         <publicPackage>com.toedter.*</publicPackage>
                         <publicPackage>org.jdesktop.layout.*</publicPackage>
+                        <publicPackage>nbbrd.*</publicPackage>
+                        <publicPackage>javax.*</publicPackage>
+                        <!-- TO FIX -->
+                        <publicPackage>internal.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

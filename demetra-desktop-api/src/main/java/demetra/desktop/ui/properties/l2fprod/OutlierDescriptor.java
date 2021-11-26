@@ -16,8 +16,12 @@
  */
 package demetra.desktop.ui.properties.l2fprod;
 
+import demetra.desktop.descriptors.IObjectDescriptor;
+import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.desktop.ui.properties.l2fprod.OutlierDefinition.OutlierType;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,11 +32,11 @@ import java.util.List;
 public class OutlierDescriptor implements IObjectDescriptor<OutlierDefinition> {
 
     private static final int POSITION_ID = 1, TYPE_ID = 2;
-    private Day day;
+    private LocalDate day;
     private OutlierType type;
 
     public OutlierDescriptor() {
-        day=Day.toDay();
+        day=LocalDate.now();
         type=OutlierType.AO;
     }
 
@@ -46,11 +50,11 @@ public class OutlierDescriptor implements IObjectDescriptor<OutlierDefinition> {
         return new OutlierDefinition(day, type);
     }
 
-    public Day getPosition() {
+    public LocalDate getPosition() {
         return day;
     }
 
-    public void setPosition(Day position) {
+    public void setPosition(LocalDate position) {
         day=position;
     }
 

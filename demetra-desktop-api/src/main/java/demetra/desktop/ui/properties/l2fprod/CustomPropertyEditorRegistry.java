@@ -1,7 +1,14 @@
 package demetra.desktop.ui.properties.l2fprod;
 
 import com.l2fprod.common.propertysheet.PropertyEditorRegistry;
+import demetra.data.Parameter;
+import demetra.desktop.ui.properties.l2fprod.OutlierDefinition.OutlierType;
+import demetra.timeseries.regression.InterventionVariable;
+import demetra.timeseries.regression.Ramp;
+import demetra.timeseries.regression.TsContextVariable;
 import java.beans.PropertyEditor;
+import java.io.File;
+import java.time.LocalDate;
 
 /**
  *
@@ -20,13 +27,11 @@ public enum CustomPropertyEditorRegistry {
         m_registry.registerEditor(Double.class, DoublePropertyEditor.class);
 
         //registerCompositeEditor(SeasonalFilterOption[].class);
-        register(Directory.class, new DirectoryEditor());
-        register(Day.class, new JDayPropertyEditor());
+        register(File.class, new DirectoryEditor());
+        register(LocalDate.class, new JDayPropertyEditor());
         register(Parameter[].class, new ParametersPropertyEditor());
-        register(SeasonalFilterOption[].class, new SeasonalFilterPropertyEditor());
-        register(SigmavecOption[].class, new SigmavecPropertyEditor());
         register(Ramp[].class, new RampsEditor());
-        register(TsVariableDescriptor[].class, new TsVariableDescriptorsEditor());
+        register(TsContextVariable[].class, new TsVariableDescriptorsEditor());
         register(InterventionVariable[].class, new InterventionVariablesEditor());
         register(Sequence[].class, new SequencesEditor());
         register(OutlierDefinition[].class, new OutlierDefinitionsEditor());
@@ -35,7 +40,6 @@ public enum CustomPropertyEditorRegistry {
         register(UserVariable.class, new UserVariableSelector());
         register(UserVariables.class, new UserVariablesEditor());
         register(Coefficients.class, new FixedCoefficientsEditor());
-
         registerEnumEditor(OutlierType.class, new OutlierTypeSelector());
     }
 

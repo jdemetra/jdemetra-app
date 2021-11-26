@@ -6,7 +6,11 @@ package demetra.desktop.ui.properties.l2fprod;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import demetra.desktop.DemetraIcons;
+import demetra.desktop.ui.properties.l2fprod.OutlierCheckComboBox.CheckListItem;
+import demetra.desktop.ui.properties.l2fprod.OutlierDefinition.OutlierType;
 import demetra.desktop.util.NbComponents;
+import demetra.timeseries.TsPeriod;
+import demetra.timeseries.TsUnit;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -15,6 +19,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.text.DateFormatSymbols;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.swing.AbstractAction;
@@ -47,22 +52,25 @@ import javax.swing.table.TableCellEditor;
  */
 public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
 
-    private Map<Day, List<OutlierDefinition>> definitions_;
+    private Map<LocalDate, List<OutlierDefinition>> definitions_;
+    
+    public static boolean grid=true;
 
     public OutlierDefinitionsEditor() {
         editor = new JButton(new AbstractAction("...") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Window ancestor = SwingUtilities.getWindowAncestor(editor);
-                switch (DemetraUI.getDefault().getPrespecifiedOutliersEditor()) {
-                    case CALENDAR_GRID:
+//                switch (DemetraUI.getDefault().getPrespecifiedOutliersEditor()) {
+//                    case CALENDAR_GRID:
+                    if (grid){
                         int first,
                          last,
                          frequency;
                         if (UserInterfaceContext.INSTANCE.getDomain() != null) {
-                            first = UserInterfaceContext.INSTANCE.getDomain().getStart().getYear();
-                            last = UserInterfaceContext.INSTANCE.getDomain().getEnd().getYear();
-                            frequency = UserInterfaceContext.INSTANCE.getDomain().getFrequency().intValue();
+                            first = UserInterfaceContext.INSTANCE.getDomain().getStartPeriod().year();
+                            last = UserInterfaceContext.INSTANCE.getDomain().getEndPeriod().year();
+                            frequency = UserInterfaceContext.INSTANCE.getDomain().getAnnualFrequency();
                         } else {
                             first = 1980;
                             last = GregorianCalendar.getInstance().get(Calendar.YEAR);
@@ -173,10 +181,11 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                         dialog.pack();
                         dialog.setModal(true);
                         dialog.setLocationRelativeTo(ancestor);
-                        dialog.setVisible(true);
-                        break;
-
-                    case LIST:
+                        dialog.setVisible(true);}
+                        else{
+//                        break;
+//
+//                    case LIST:
                         final ArrayEditorDialog<OutlierDescriptor> arrayEditorDialog = new ArrayEditorDialog<>(ancestor,
                                 null != definitions_ ? getDescriptors() : new OutlierDescriptor[]{}, OutlierDescriptor.class);
                         arrayEditorDialog.setTitle("Pre-specified outliers");
@@ -185,8 +194,9 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                         if (arrayEditorDialog.isDirty()) {
                             setDescriptors(arrayEditorDialog.getElements());
                         }
-                        break;
-                }
+                                }
+//                        break;
+//                }
             }
         });
     }
@@ -196,8 +206,8 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         if (cellEditor != null) {
             cellEditor.stopCellEditing();
         }
-        Map<Day, List<OutlierDefinition>> old = definitions_;
-        Map<Day, List<OutlierDefinition>> modelDefs = ((OutliersModel) table.getModel()).getDefinitions();
+        Map<LocalDate, List<OutlierDefinition>> old = definitions_;
+        Map<LocalDate, List<OutlierDefinition>> modelDefs = ((OutliersModel) table.getModel()).getDefinitions();
         OutlierDefinition[] list = modelDefs
                 .values()
                 .stream()
@@ -208,10 +218,10 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
     }
 
     private void setDescriptors(List<OutlierDescriptor> elements) {
-        Map<Day, List<OutlierDefinition>> old = definitions_;
+        Map<LocalDate, List<OutlierDefinition>> old = definitions_;
         definitions_ = new HashMap<>();
         for (OutlierDescriptor element : elements) {
-            Day key = element.getPosition();
+            LocalDate key = element.getPosition();
             if (!definitions_.containsKey(key) || definitions_.get(key) == null) {
                 definitions_.put(key, new ArrayList<>());
             }
@@ -234,7 +244,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         if (value instanceof OutlierDefinition[]) {
             OutlierDefinition[] outs = ((OutlierDefinition[]) value);
             for (OutlierDefinition out : outs) {
-                Day key = out.getPosition();
+                LocalDate key = out.getPosition();
                 if (!definitions_.containsKey(key) || definitions_.get(key) == null) {
                     definitions_.put(key, new ArrayList<>());
                 }
@@ -257,10 +267,10 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         private final int firstYear_;
         private final int lastYear_;
         private final int freq_;
-        private final Map<Day, List<OutlierDefinition>> defs_;
+        private final Map<LocalDate, List<OutlierDefinition>> defs_;
         private final String[] months;
 
-        public Map<Day, List<OutlierDefinition>> getDefinitions() {
+        public Map<LocalDate, List<OutlierDefinition>> getDefinitions() {
             return defs_;
         }
 
@@ -276,7 +286,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
             return freq_;
         }
 
-        public OutliersModel(int first, int last, int freq, Map<Day, List<OutlierDefinition>> defs) {
+        public OutliersModel(int first, int last, int freq, Map<LocalDate, List<OutlierDefinition>> defs) {
             this.firstYear_ = first;
             this.lastYear_ = last;
             this.freq_ = freq;
@@ -340,8 +350,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
             if (column == 0) {
                 return firstYear_ + row;
             }
-
-            final Day day = new TsPeriod(TsFrequency.valueOf(freq_), firstYear_ + row, column - 1).firstday();
+            final LocalDate day = LocalDate.of(firstYear_ + row, (column-1)*(12/freq_)+1, 1);
             if (defs_.containsKey(day)) {
                 return defs_.get(day).stream().map(OutlierDefinition::getType).toArray();
             } else {
@@ -351,7 +360,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
 
         @Override
         public void setValueAt(Object aValue, int row, int column) {
-            final Day day = new TsPeriod(TsFrequency.valueOf(freq_), firstYear_ + row, column - 1).firstday();
+            final LocalDate day =  LocalDate.of(firstYear_ + row, (column-1)*(12/freq_)+1, 1);
             if (aValue != null) {
                 defs_.put(day, new ArrayList<>());
 
@@ -391,8 +400,8 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                     label.setHorizontalAlignment(JLabel.CENTER);
                     label.setOpaque(true);
                     label.setFont(label.getFont().deriveFont(10.0f));
-                    label.setBackground(ColorChooser.getColor(t.toString()));
-                    label.setForeground(ColorChooser.getForeColor(t.toString()));
+                    label.setBackground(OutlierColorChooser.getColor(t.toString()));
+                    label.setForeground(OutlierColorChooser.getForeColor(t.toString()));
                     panel_.add(label);
                 }
 
@@ -406,7 +415,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
 
     static class OutlierTypeEditor extends AbstractCellEditor implements TableCellEditor {
 
-        private final CheckComboBox box;
+        private final OutlierCheckComboBox box;
 
         public OutlierTypeEditor() {
             OutlierType[] items = {
@@ -416,7 +425,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                 OutlierType.TC,
                 OutlierType.SO
             };
-            box = new CheckComboBox(items);
+            box = new OutlierCheckComboBox(items);
         }
 
         @Override
@@ -444,8 +453,8 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
             setEnabled(list.isEnabled());
             setSelected(item.isSelected());
             setFont(list.getFont());
-            setBackground(ColorChooser.getColor(item.getType().toString()));
-            setForeground(ColorChooser.getForeColor(item.getType().toString()));
+            setBackground(OutlierColorChooser.getColor(item.getType().toString()));
+            setForeground(OutlierColorChooser.getForeColor(item.getType().toString()));
             setText(value.toString());
             return this;
         }

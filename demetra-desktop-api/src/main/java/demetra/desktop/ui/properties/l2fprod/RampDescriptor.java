@@ -4,8 +4,11 @@
  */
 package demetra.desktop.ui.properties.l2fprod;
 
+import demetra.desktop.descriptors.*;
+import demetra.timeseries.regression.Ramp;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,40 +18,42 @@ import java.util.List;
  */
 public class RampDescriptor implements IObjectDescriptor<Ramp> {
     
-    private final Ramp ramp_;
+    private LocalDate start, end;
     
     @Override
     public String toString(){
-        return ramp_.toString();
+        return getCore().toString();
     }
     
     public RampDescriptor(){
-        ramp_= new Ramp();
+        start=LocalDate.now();
+        end=LocalDate.now();
     }
 
     public RampDescriptor(Ramp ramp){
-        ramp_= ramp;
+        start=ramp.getStart().toLocalDate();
+        end=ramp.getEnd().toLocalDate();
     }
 
     @Override
     public Ramp getCore() {
-        return ramp_;
+        return new Ramp(start.atStartOfDay(), end.atStartOfDay());
     }
     
-    public Day getStart(){
-        return ramp_.getStart();
+    public LocalDate getStart(){
+        return start;
     }
 
-    public void setStart(Day day){
-        ramp_.setStart(day);
+    public void setStart(LocalDate day){
+        start=day;
     }
 
-    public Day getEnd(){
-        return ramp_.getEnd();
+    public LocalDate getEnd(){
+        return end;
     }
 
-    public void setEnd(Day day){
-        ramp_.setEnd(day);
+    public void setEnd(LocalDate day){
+        end=day;
     }
 
     @Override

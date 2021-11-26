@@ -4,6 +4,8 @@
  */
 package demetra.desktop.ui.properties.l2fprod;
 
+import demetra.timeseries.calendars.CalendarManager;
+
 
 /**
  *
@@ -18,7 +20,7 @@ public class Holidays {
             this.name_ = name;
         }
         else {
-            this.name_ = GregorianCalendarManager.DEF;
+            this.name_ = CalendarManager.DEF;
         }
     }
 

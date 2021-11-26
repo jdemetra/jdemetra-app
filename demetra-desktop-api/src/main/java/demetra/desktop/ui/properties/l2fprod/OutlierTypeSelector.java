@@ -16,6 +16,7 @@
  */
 package demetra.desktop.ui.properties.l2fprod;
 
+import demetra.desktop.ui.properties.l2fprod.OutlierDefinition.OutlierType;
 import com.l2fprod.common.beans.editor.ComboBoxPropertyEditor;
 import ec.util.list.swing.JLists;
 import java.awt.Color;
@@ -49,8 +50,8 @@ public class OutlierTypeSelector extends ComboBoxPropertyEditor {
         if (null != value) {
             OutlierType oType = (OutlierType) value;
             label.setText(oType.toString());
-            label.setBackground(ColorChooser.getColor(oType.name()));
-            label.setForeground(ColorChooser.getForeColor(oType.name()));
+            label.setBackground(OutlierColorChooser.getColor(oType.name()));
+            label.setForeground(OutlierColorChooser.getForeColor(oType.name()));
             label.setOpaque(true);
         } else {
             label.setBackground(Color.white);

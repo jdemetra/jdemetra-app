@@ -6,7 +6,7 @@ package demetra.desktop.workspace.ui;
 
 import demetra.desktop.ui.ActiveViewManager;
 import demetra.desktop.ui.Menus;
-import demetra.desktop.ui.TsTopComponent;
+import demetra.desktop.ui.processing.TsTopComponent;
 import demetra.timeseries.TsDocument;
 import demetra.desktop.workspace.WorkspaceItem;
 import javax.swing.Action;

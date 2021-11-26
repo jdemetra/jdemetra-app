@@ -5,6 +5,8 @@
 package demetra.desktop.ui.properties.l2fprod;
 
 import com.l2fprod.common.beans.editor.ComboBoxPropertyEditor;
+import demetra.timeseries.calendars.CalendarManager;
+import demetra.timeseries.regression.ModellingContext;
 import java.awt.Component;
 
 /**
@@ -18,7 +20,7 @@ public class HolidaysSelector extends ComboBoxPropertyEditor {
 
     @Override
     public Component getCustomEditor() {
-        GregorianCalendarManager mgr = ProcessingContext.getActiveContext().getGregorianCalendars();
+        CalendarManager mgr = ModellingContext.getActiveContext().getCalendars();
         String[] names = mgr.getNames();
         Value[] values = new Value[mgr.getCount()];
         for (int i = 0; i < values.length; i++) {

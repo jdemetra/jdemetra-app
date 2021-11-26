@@ -4,12 +4,11 @@
  */
 package demetra.desktop.ui.properties.l2fprod;
 
-import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
-import ec.tstoolkit.descriptors.IObjectDescriptor;
-import ec.tstoolkit.timeseries.Day;
-import ec.tstoolkit.timeseries.regression.Sequence;
+import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.desktop.descriptors.IObjectDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,40 +18,42 @@ import java.util.List;
  */
 public class SequenceDescriptor implements IObjectDescriptor<Sequence> {
     
-    private final Sequence seq_;
+    private LocalDate start, end;
     
     @Override
     public String toString(){
-        return seq_.toString();
+        return getCore().toString();
     }
     
     public SequenceDescriptor(){
-        seq_=new Sequence();
+        start=LocalDate.now();
+        end=LocalDate.now();
     }
-    
+
     public SequenceDescriptor(Sequence seq){
-        seq_= seq;
+        start=seq.getStart();
+        end=seq.getEnd();
     }
 
     @Override
     public Sequence getCore() {
-        return seq_;
+        return new Sequence(start, end);
     }
     
-    public Day getStart(){
-        return seq_.getStart();
+    public LocalDate getStart(){
+        return start;
     }
 
-    public void setStart(Day day){
-        seq_.setStart(day);
+    public void setStart(LocalDate day){
+        start=day;
     }
 
-    public Day getEnd(){
-        return seq_.getEnd();
+    public LocalDate getEnd(){
+        return end;
     }
 
-    public void setEnd(Day day){
-        seq_.setEnd(day);
+    public void setEnd(LocalDate day){
+        end=day;
     }
 
     @Override

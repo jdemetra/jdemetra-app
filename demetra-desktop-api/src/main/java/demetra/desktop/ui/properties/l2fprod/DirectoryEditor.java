@@ -17,7 +17,7 @@ import javax.swing.JFileChooser;
  * @author Kristof Bayens
  */
 public class DirectoryEditor extends AbstractPropertyEditor {
-    private Directory directory_;
+    private File directory_;
 
     public DirectoryEditor() {
         editor = new JButton(new AbstractAction("...") {
@@ -30,22 +30,22 @@ public class DirectoryEditor extends AbstractPropertyEditor {
                 comp.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                 comp.setAcceptAllFileFilterUsed(false);
                 if (comp.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
-                    setValue(new Directory(comp.getCurrentDirectory().getPath()));
+                    setValue(comp.getCurrentDirectory());
             }
         });
     }
 
     @Override
     public void setValue(Object value) {
-        if (null != value && value instanceof Directory) {
-            Directory old = directory_;
-            directory_ = (Directory) value;
+        if (null != value && value instanceof File) {
+            File old = directory_;
+            directory_ = (File) value;
             firePropertyChange(old, directory_);
         }
     }
 
     @Override
-    public Object getValue() {
+    public File getValue() {
         return directory_;
     }
 }

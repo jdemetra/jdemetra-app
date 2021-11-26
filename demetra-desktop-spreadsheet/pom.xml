@@ -13,6 +13,9 @@
     <name>JD3 - Desktop - Spreadsheet</name>
     <description>This module provides spreadsheet IO (such as Excel files) to Demetra.</description>
 
+    <properties>
+        <spreadsheet4j.version>2.2.5</spreadsheet4j.version>
+    </properties>
     <dependencies>
         <!-- compile only -->
         <dependency>
@@ -93,23 +96,57 @@
         <!-- JDemetra -->
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
-            <artifactId>demetra-spreadsheet</artifactId>
+            <artifactId>demetra-tsp-spreadsheet-core</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
             <exclusions>
-                <exclusion>
-                    <groupId>eu.europa.ec.joinup.sat</groupId>
-                    <artifactId>demetra-tss</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>eu.europa.ec.joinup.sat</groupId>
-                    <artifactId>demetra-utils</artifactId>
+                    <artifactId>demetra-tsp-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.cache</groupId> 
+                    <artifactId>cache-api</artifactId> 
                 </exclusion>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
                     <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>spreadsheet-xmlss</artifactId>
+            <version>${spreadsheet4j.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-openide-util-lookup</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>spreadsheet-od</artifactId>
+            <version>${spreadsheet4j.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-openide-util-lookup</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>spreadsheet-poi</artifactId>
+            <version>${spreadsheet4j.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-openide-util-lookup</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -133,9 +170,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>ec.tss.sa.output</publicPackage>
-                        <publicPackage>ec.tss.tsproviders.spreadsheet.*</publicPackage>
-                        <publicPackage>ec.nbdemetra.spreadsheet.*</publicPackage>
+                        <publicPackage>demetra.desktop.spreadsheet.*</publicPackage>
                         <publicPackage>org.apache.poi.*</publicPackage>
                     </publicPackages>
                 </configuration>

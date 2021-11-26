@@ -93,7 +93,7 @@ public class ItemWsNode extends WsNode {
         if (doc == null) {
             return sheet;
         }
-        final Map<String, String> metaData = doc.getElement().getMetaData();
+        final Map<String, String> metaData = doc.getElement().getMetadata();
         if (metaData.isEmpty()) {
             return sheet;
         }

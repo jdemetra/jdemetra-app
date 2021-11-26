@@ -3,9 +3,12 @@ package demetra.desktop.ui.properties.l2fprod;
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import com.l2fprod.common.swing.LookAndFeelTweaks;
 import com.toedter.calendar.JTextFieldDateEditor;
+import demetra.timeseries.calendars.CalendarUtility;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.function.BiConsumer;
 
 /**
@@ -26,7 +29,7 @@ public class JDayPropertyEditor extends AbstractPropertyEditor {
 
     @Override
     public void setValue(Object o) {
-        DayResource.INSTANCE.setValue((JTextFieldDateEditor) editor, (Day) o);
+        DayResource.INSTANCE.setValue((JTextFieldDateEditor) editor, (LocalDate) o);
     }
 
     private static JTextFieldDateEditor createEditor() {
@@ -40,29 +43,37 @@ public class JDayPropertyEditor extends AbstractPropertyEditor {
         INSTANCE;
 
         @Override
-        public void bindValue(JTextFieldDateEditor editor, BiConsumer<Day, Day> broadcaster) {
+        public void bindValue(JTextFieldDateEditor editor, BiConsumer<LocalDate, LocalDate> broadcaster) {
             editor.addPropertyChangeListener("date", evt -> {
-                Day oday = null, nday = null;
+                LocalDate oday = null, nday = null;
                 if (evt.getOldValue() instanceof Date) {
-                    oday = new Day((Date) evt.getOldValue());
+                    oday=CalendarUtility.toLocalDate((Date) evt.getOldValue());
                 }
                 if (evt.getNewValue() instanceof Date) {
-                    nday = new Day((Date) evt.getNewValue());
+                    nday = CalendarUtility.toLocalDate((Date) evt.getNewValue());
                 }
                 broadcaster.accept(oday, nday);
             });
         }
 
         @Override
-        public Day getValue(JTextFieldDateEditor editor) {
+        public LocalDate getValue(JTextFieldDateEditor editor) {
             Date date = editor.getDate();
-            return date != null ? new Day(date) : Day.BEG;
+            return date != null ? CalendarUtility.toLocalDate(date) : LocalDate.MIN;
         }
 
         @Override
-        public void setValue(JTextFieldDateEditor editor, Day value) {
-            editor.setDate(value != null ? value.getTime() : Day.toDay().getTime());
+        public void setValue(JTextFieldDateEditor editor, LocalDate value) {
+            editor.setDate(value != null ? CalendarUtility.toDate(value) : CalendarUtility.toDate(LocalDate.now()));
         }
+
+        /**
+         * Calendar.getInstance() creates a new instance of GregorianCalendar
+         * and
+         * its constructor triggers a lot of internal synchronized code. => We
+         * use
+         * ThreadLocal to avoid this overhead
+         */
     }
 
     private static final class PatchedTextFieldDateEditor extends JTextFieldDateEditor {

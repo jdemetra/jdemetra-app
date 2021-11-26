@@ -18,8 +18,6 @@ package ec.util.grid.swing.ext;
 
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
-import demetra.bridge.TsConverter;
-import ec.tstoolkit.data.Table;
 import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
 import ec.util.spreadsheet.Cell;
@@ -29,6 +27,7 @@ import java.awt.datatransfer.Transferable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ListSelectionModel;
 import demetra.desktop.datatransfer.DataTransfer;
+import demetra.util.Table;
 
 /**
  *
@@ -39,7 +38,7 @@ public abstract class SheetGridCommand extends JCommand<JGrid> {
     @Override
     public void execute(JGrid grid) {
         Table<?> table = toTable(grid);
-        Transferable t = DataTransfer.getDefault().fromTable(TsConverter.toTable(table));
+        Transferable t = DataTransfer.getDefault().fromTable(table);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
     }
 

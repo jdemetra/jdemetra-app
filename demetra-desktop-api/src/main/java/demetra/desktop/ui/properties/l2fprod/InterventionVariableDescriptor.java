@@ -4,8 +4,13 @@
  */
 package demetra.desktop.ui.properties.l2fprod;
 
+import demetra.data.Range;
+import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.timeseries.regression.InterventionVariable;
+import demetra.desktop.descriptors.IObjectDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,28 +19,27 @@ import java.util.List;
  * @author Jean Palate
  */
 public class InterventionVariableDescriptor implements IObjectDescriptor<InterventionVariable> {
-    
-    private final InterventionVariable core_;
-    
+
+    private InterventionVariable core;
+
     @Override
-    public String toString(){
-        return core_.toString();
+    public String toString() {
+        return core.toString();
     }
 
-    public InterventionVariableDescriptor(){
-        core_=new InterventionVariable();
+    public InterventionVariableDescriptor() {
+        core = InterventionVariable.empty();
     }
 
-    
-    public InterventionVariableDescriptor(InterventionVariable var){
-        core_= var;
+    public InterventionVariableDescriptor(InterventionVariable var) {
+        core = var;
     }
 
     @Override
     public InterventionVariable getCore() {
-        return core_;
+        return core;
     }
-    
+
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
@@ -51,15 +55,11 @@ public class InterventionVariableDescriptor implements IObjectDescriptor<Interve
         if (desc != null) {
             descs.add(desc);
         }
-        desc = d1dSDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
         return descs;
     }
-    
+
     private static final int SEQ_ID = 1,
-            DELTA_ID = 2, DELTAS_ID=3, D1DS_ID=4;
+            DELTA_ID = 2, DELTAS_ID = 3;
 
     private EnhancedPropertyDescriptor seqDesc() {
         try {
@@ -78,72 +78,65 @@ public class InterventionVariableDescriptor implements IObjectDescriptor<Interve
             PropertyDescriptor desc = new PropertyDescriptor("delta", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DELTA_ID);
             desc.setDisplayName("Delta");
-            edesc.setReadOnly(core_.getD1DS() );
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
-    
+
     private EnhancedPropertyDescriptor deltaSDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("deltaS", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DELTAS_ID);
             desc.setDisplayName("Seasonal delta");
-            edesc.setReadOnly(core_.getD1DS() );
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
-    private EnhancedPropertyDescriptor d1dSDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("D1DS", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, D1DS_ID);
-            desc.setDisplayName("D1 DS");
-            //edesc.setReadOnly(true);
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
+    public Sequence[] getSequences() {
+        List<Range<LocalDateTime>> sequences = core.getSequences();
+        Sequence[] seq = new Sequence[sequences.size()];
+        int i = 0;
+        for (Range<LocalDateTime> s : sequences) {
+            seq[i++] = new Sequence(s.start().toLocalDate(), s.end().toLocalDate());
         }
+        return seq;
     }
-    
-    public Sequence[] getSequences(){
-        return core_.getSequences();
-    }
-    
+
     public void setSequences(Sequence[] val) {
-        core_.setSequences(val);
+        InterventionVariable.Builder builder = core.toBuilder()
+                .clearSequences();
+        if (val != null) {
+            for (int i = 0; i < val.length; ++i) {
+                builder.sequence(Range.of(val[i].getStart().atStartOfDay(), val[i].getEnd().atStartOfDay()));
+            }
+        }
+        core = builder.build();
     }
 
-    public double getDelta(){
-        return core_.getDelta();
+    public double getDelta() {
+        return core.getDelta();
     }
-    
+
     public void setDelta(double val) {
-        core_.setDelta(val);
+        core = core.toBuilder()
+                .delta(val).build();
     }
 
-    public double getDeltaS(){
-        return core_.getDeltaS();
+    public double getDeltaS() {
+        return core.getDeltaSeasonal();
     }
-    
+
     public void setDeltaS(double val) {
-        core_.setDeltaS(val);
-    }
-
-    public boolean isD1DS(){
-        return core_.getD1DS();
-    }
-    
-    public void setD1DS(boolean val) {
-        core_.setD1DS(val);
+        core = core.toBuilder()
+                .deltaSeasonal(val).build();
     }
 
     @Override
     public String getDisplayName() {
         return "Intervention variable";
     }
-    
+
 }

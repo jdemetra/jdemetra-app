@@ -1,6 +1,8 @@
 package demetra.desktop.ui.properties.l2fprod;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
+import demetra.data.Parameter;
+import demetra.data.ParameterType;
 import demetra.desktop.util.NbComponents;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
@@ -33,21 +35,29 @@ public class ParametersPropertyEditor extends AbstractPropertyEditor {
 
     private static ParameterType convert(String val){
         Type t=Type.valueOf(val);
-        if (t == Type.Initial)
-            return ParameterType.Initial;
-        else if (t== Type.Fixed)
-            return ParameterType.Fixed;
-        else
+        if (null == t)
             return ParameterType.Undefined;
+        else switch (t) {
+            case Initial:
+                return ParameterType.Initial;
+            case Fixed:
+                return ParameterType.Fixed;
+            default:
+                return ParameterType.Undefined;
+        }
     }
     
     private static Type convert(ParameterType t){
-         if (t == ParameterType.Initial)
-            return Type.Initial;
-        else if (t== ParameterType.Fixed)
-            return Type.Fixed;
-        else
-            return Type.Undefined;
+         if (null == t)
+             return Type.Undefined;
+        else switch (t) {
+            case Initial:
+                return Type.Initial;
+            case Fixed:
+                return Type.Fixed;
+            default:
+                return Type.Undefined;
+        }
     }
     
     
@@ -143,13 +153,11 @@ public class ParametersPropertyEditor extends AbstractPropertyEditor {
                                 switch (column) {
                                     case 0:
                                         double val = Double.parseDouble(aValue.toString());
-                                        param.setValue(val);
+                                        nparameters_[row]=Parameter.of(val, param.getType());
                                         break;
                                     case 1:
-                                        param.setType(convert(aValue.toString()));
-                                        //boolean fixed = Boolean.parseBoolean(aValue.toString());
-                                        //param.setType(fixed ? ParameterType.Fixed : ParameterType.Undefined);
-                                        break;
+                                       nparameters_[row]=Parameter.of(param.getValue(), convert(aValue.toString()));
+                                         break;
                                 }
                                 
                                 fireTableCellUpdated(row, column);
@@ -184,7 +192,7 @@ public class ParametersPropertyEditor extends AbstractPropertyEditor {
         }
 
         public void setParameters(final Parameter[] param) {
-            nparameters_ = Parameter.clone(param);
+            nparameters_ = param.clone();
         }
 
         public Parameter[] getParameters() {

@@ -10,6 +10,7 @@ import nbbrd.service.ServiceDefinition;
 /**
  *
  * @author Jean Palate
+ * @param <D>
  */
 @ServiceDefinition
 public interface WorkspaceItemRepository<D> {

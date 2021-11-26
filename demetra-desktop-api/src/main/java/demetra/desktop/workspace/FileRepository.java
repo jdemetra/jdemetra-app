@@ -17,7 +17,6 @@
 package demetra.desktop.workspace;
 
 import com.google.common.base.StandardSystemProperty;
-import demetra.desktop.ui.calendar.CalendarDocumentManager;
 import demetra.timeseries.calendars.CalendarDefinition;
 import demetra.timeseries.calendars.CalendarManager;
 import demetra.tsprovider.DataSource;

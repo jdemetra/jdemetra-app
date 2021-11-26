@@ -17,7 +17,7 @@
 package demetra.desktop.anomalydetection.ui;
 
 import demetra.desktop.anomalydetection.OutlierEstimation;
-import demetra.desktop.l2fprod.OutlierColorChooser;
+import demetra.desktop.ui.properties.l2fprod.OutlierColorChooser;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Toolkit;

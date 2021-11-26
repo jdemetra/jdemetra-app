@@ -110,7 +110,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     private CheckLast checkLast;
 
     public JTsCheckLastList() {
-         this.table = new JTsTable();
+        this.table = new JTsTable();
         this.orangeCells = 4.0;
         this.redCells = 5.0;
         this.lastChecks = 1;
@@ -133,6 +133,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
             setTsUpdateMode(TsUpdateMode.None);
             setPreferredSize(new Dimension(200, 150));
         }
+
     }
 
     private void enableProperties() {
@@ -332,23 +333,16 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         Map<String, AnomalyItem> temp = new HashMap<>();
         items.clear();
+        map.clear();
         TsCollection collection = getTsCollection();
         for (int i = 0; i < collection.size(); i++) {
             String name = collection.get(i).getName();
-            if (map.containsKey(name)) {
-                temp.put(name, map.get(name));
-                items.add(map.get(name));
-            } else {
-                AnomalyItem item = new AnomalyItem(collection.get(i));
-                item.setId(i);
-                item.setBackCount(lastChecks);
-                temp.put(name, item);
-                items.add(item);
-            }
+            AnomalyItem item = new AnomalyItem(collection.get(i));
+            item.setId(i);
+            item.setBackCount(lastChecks);
+            map.put(name, item);
+            items.add(item);
         }
-
-        map = temp;
-
         fireTableDataChanged();
 
         firePropertyChange(COLLECTION_CHANGE_PROPERTY, null, collection);
@@ -396,7 +390,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     private final JTsTable.Column lastPeriodColumn = JTsTable.Column.builder()
             .name("<html><center>&nbsp;Last<br>Period<br>&nbsp;")
             .type(TsPeriod.class)
-            .mapper(ts -> getAnomaly(ts).filter(o -> o.getTsData() != null).map(o -> o.getTsData().getDomain().getLastPeriod()).orElse(null))
+            .mapper(ts -> getAnomaly(ts).filter(o -> o.getTsData() != null && !o.getTsData().isEmpty()).map(o -> o.getTsData().getDomain().getLastPeriod()).orElse(null))
             .comparator(JTsTable.Column.LAST.getComparator())
             .renderer(o -> new Decorator(JTsTable.Column.LAST.getRenderer().apply(o)))
             .build();

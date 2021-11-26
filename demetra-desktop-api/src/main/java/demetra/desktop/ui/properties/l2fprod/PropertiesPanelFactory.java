@@ -1,5 +1,6 @@
 package demetra.desktop.ui.properties.l2fprod;
 
+import demetra.desktop.descriptors.*;
 import com.l2fprod.common.propertysheet.DefaultProperty;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;

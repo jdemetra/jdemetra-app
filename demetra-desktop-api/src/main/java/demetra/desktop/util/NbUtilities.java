@@ -57,7 +57,7 @@ public class NbUtilities {
         JEditorPane editor = new JEditorPane();
         JScrollPane scroll = NbComponents.newJScrollPane(editor);
         scroll.setPreferredSize(new Dimension(300, 100));
-        Map<String, String> md = doc.getMetaData();
+        Map<String, String> md = doc.getMetadata();
         String oldNote = TsMeta.NOTE.load(md);
         editor.setText(oldNote);
         DialogDescriptor desc = new DialogDescriptor(scroll, "Note");

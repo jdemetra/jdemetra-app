@@ -8,6 +8,6 @@ import demetra.data.DoubleSeq;
  */
 public interface DoubleSeqView {
 
-    void setData(DoubleSeq data);
+    void set(DoubleSeq data);
     void reset();
 }

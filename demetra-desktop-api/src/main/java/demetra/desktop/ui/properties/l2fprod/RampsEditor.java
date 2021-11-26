@@ -5,6 +5,7 @@
 package demetra.desktop.ui.properties.l2fprod;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
+import demetra.timeseries.regression.Ramp;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -59,11 +60,7 @@ public class RampsEditor extends AbstractPropertyEditor {
     @Override
     public void setValue(Object value) {
         if (null != value && value instanceof Ramp[]) {
-            Ramp[] val = (Ramp[]) value;
-            ramps_ = new Ramp[val.length];
-            for (int i = 0; i < val.length; ++i) {
-                ramps_[i] = val[i].clone();
-            }
+            ramps_ = ((Ramp[]) value).clone();
         }
         else {
             ramps_ = new Ramp[0];
