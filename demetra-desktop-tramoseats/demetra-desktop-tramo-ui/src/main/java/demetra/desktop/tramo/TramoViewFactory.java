@@ -4,13 +4,13 @@
  */
 package demetra.desktop.tramo;
 
+import demetra.desktop.ui.processing.IProcDocumentItemFactory;
 import demetra.desktop.ui.processing.IProcDocumentViewFactory;
 import demetra.tramo.TramoSpec;
+import demetra.tramoseats.io.information.TramoSpecMapping;
 import java.util.concurrent.atomic.AtomicReference;
 import jdplus.tramo.TramoDocument;
 import org.openide.util.lookup.ServiceProvider;
-import demetra.desktop.ui.processing.IProcDocumentItemFactory;
-import demetra.tramoseats.io.information.TramoSpecMapping;
 
 /**
  *
@@ -160,60 +160,60 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpec, TramoD
 //    }
 //    //</editor-fold>
 //
-//    //<editor-fold defaultstate="collapsed" desc="REGISTER RESIDUALS">
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 1000)
-//    public static class ModelResFactory extends PreprocessingViewFactory.ModelResFactory<TramoDocument> {
-//
-//        public ModelResFactory() {
-//            super(TramoDocument.class);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 401000;
-//        }
-//    }
-//
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 2000)
-//    public static class ModelResStatsFactory extends PreprocessingViewFactory.ModelResStatsFactory<TramoDocument> {
-//
-//        public ModelResStatsFactory() {
-//            super(TramoDocument.class);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 402000;
-//        }
-//    }
-//
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 3000)
-//    public static class ModelResDist extends PreprocessingViewFactory.ModelResDist<TramoDocument> {
-//
-//        public ModelResDist() {
-//            super(TramoDocument.class);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 403000;
-//        }
-//    }
-//
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 4000)
-//    public static class ModelResSpectrum extends PreprocessingViewFactory.ModelResSpectrum<TramoDocument> {
-//
-//        public ModelResSpectrum() {
-//            super(TramoDocument.class);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 404000;
-//        }
-//    }
-//
-//    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="REGISTER RESIDUALS">
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 1000)
+    public static class ModelResFactory extends PreprocessingViewFactory.ModelResFactory<TramoDocument> {
+
+        public ModelResFactory() {
+            super(TramoDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 401000;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 2000)
+    public static class ModelResStatsFactory extends PreprocessingViewFactory.ModelResStatsFactory<TramoDocument> {
+
+        public ModelResStatsFactory() {
+            super(TramoDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 402000;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 3000)
+    public static class ModelResDist extends PreprocessingViewFactory.ModelResDist<TramoDocument> {
+
+        public ModelResDist() {
+            super(TramoDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 403000;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 4000)
+    public static class ModelResSpectrum extends PreprocessingViewFactory.ModelResSpectrum<TramoDocument> {
+
+        public ModelResSpectrum() {
+            super(TramoDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 404000;
+        }
+    }
+
+    //</editor-fold>
 //    //<editor-fold defaultstate="collapsed" desc="REGISTER DETAILS">
 //    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 500000)
 //    public static class LikelihoodFactory extends PreprocessingViewFactory.LikelihoodFactory<TramoDocument> {

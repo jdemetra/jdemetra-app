@@ -5,10 +5,13 @@
 package demetra.desktop.tramo;
 
 
-import demetra.desktop.ui.chart3d.functions.SurfacePlotterUI.Functions;
+import demetra.desktop.ui.SpectrumUI;
 import demetra.desktop.ui.modelling.EstimationUI;
 import demetra.desktop.ui.modelling.OutOfSampleTestUI;
 import demetra.desktop.ui.modelling.PreprocessingUI;
+import demetra.desktop.ui.modelling.ResidualsDistUI;
+import demetra.desktop.ui.modelling.ResidualsStatsUI;
+import demetra.desktop.ui.modelling.ResidualsUI;
 import demetra.desktop.ui.processing.ComposedProcDocumentItemFactory;
 import demetra.desktop.ui.processing.DefaultItemUI;
 import demetra.desktop.ui.processing.HtmlItemUI;
@@ -32,6 +35,7 @@ import javax.swing.JComponent;
 import jdplus.regarima.tests.OneStepAheadForecastingTest;
 import jdplus.regsarima.RegSarimaComputer;
 import jdplus.regsarima.regular.RegSarimaModel;
+import jdplus.stats.tests.NiidTests;
 
 /**
  *
@@ -230,45 +234,46 @@ public abstract class PreprocessingViewFactory<S extends ProcSpecification, D ex
 //</editor-fold>
 //
 //<editor-fold defaultstate="collapsed" desc="REGISTER RESIDUALS">
-//    protected abstract static class ModelResFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
-//            extends ItemFactory<D, TsData> {
-//
-//        protected ModelResFactory(Class<D> documentType) {
-//            super(documentType, MODEL_RES, ResExtractor.INSTANCE, new ResidualsUI());
-//        }
-//    }
-//
-//    protected abstract static class ModelResStatsFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
-//            extends ItemFactory<D, NiidTests> {
-//
-//        protected ModelResStatsFactory(Class<D> documentType) {
-//            super(documentType, MODEL_RES_STATS, new DefaultInformationExtractor<D, NiidTests>() {
-//                @Override
-//                public NiidTests retrieve(D source) {
-//                    RegSarimaModel rslt = source.getResults();
-//                    TsData res = rslt.getFullResiduals();
-//                    return new NiidTests(res, res.getFrequency().intValue(),
-//                            rslt.description.getArimaComponent().getFreeParametersCount(), true);
-//                }
-//            }, new ResidualsStatsUI());
-//        }
-//    }
-//
-//    protected abstract static class ModelResDist<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
-//            extends ItemFactory<D, TsData> {
-//
-//        protected ModelResDist(Class<D> documentType) {
-//            super(documentType, MODEL_RES_DIST, ResExtractor.INSTANCE, new ResidualsDistUI());
-//        }
-//    }
-//
-//    protected abstract static class ModelResSpectrum<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
-//            extends ItemFactory<D, TsData> {
-//
-//        protected ModelResSpectrum(Class<D> documentType) {
-//            super(documentType, MODEL_RES_SPECTRUM, ResExtractor.INSTANCE, new SpectrumUI(true));
-//        }
-//    }
+    protected abstract static class ModelResFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
+            extends ItemFactory<D, TsData> {
+
+        protected ModelResFactory(Class<D> documentType) {
+            super(documentType, MODEL_RES, RESEXTRACTOR, new ResidualsUI());
+        }
+    }
+
+    protected abstract static class ModelResStatsFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
+            extends ItemFactory<D, NiidTests> {
+
+        protected ModelResStatsFactory(Class<D> documentType) {
+            super(documentType, MODEL_RES_STATS, (D source)->{
+                    RegSarimaModel rslt = source.getResult();
+                    TsData res = rslt.fullResiduals();
+                    return NiidTests.builder()
+                            .data(res.getValues())
+                            .hyperParametersCount(rslt.freeArimaParametersCount())
+                            .period(res.getAnnualFrequency())
+                            .defaultTestsLength()
+                            .build();
+                }, new ResidualsStatsUI());
+        }
+    }
+
+    protected abstract static class ModelResDist<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
+            extends ItemFactory<D, TsData> {
+
+        protected ModelResDist(Class<D> documentType) {
+            super(documentType, MODEL_RES_DIST, RESEXTRACTOR, new ResidualsDistUI());
+        }
+    }
+
+    protected abstract static class ModelResSpectrum<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
+            extends ItemFactory<D, TsData> {
+
+        protected ModelResSpectrum(Class<D> documentType) {
+            super(documentType, MODEL_RES_SPECTRUM, RESEXTRACTOR, new SpectrumUI(true));
+        }
+    }
 //</editor-fold>
 //
 //<editor-fold defaultstate="collapsed" desc="REGISTER DETAILS">
