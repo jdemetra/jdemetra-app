@@ -4,6 +4,7 @@
  */
 package demetra.desktop.ui.processing;
 
+import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.ui.ActiveView;
@@ -51,6 +52,7 @@ public abstract class TsTopComponent extends TopComponent implements HasTs, Acti
     @Override
     public void componentOpened() {
         result.addLookupListener(this);
+        TsDynamicProvider.OnDocumentOpened(panel.getDocument());
         // TODO add custom code on component opening
     }
 
@@ -60,6 +62,7 @@ public abstract class TsTopComponent extends TopComponent implements HasTs, Acti
             panel.dispose();
         }
         result.removeLookupListener(this);
+        TsDynamicProvider.OnDocumentClosing(panel.getDocument());
     }
 
     @Override
@@ -72,6 +75,7 @@ public abstract class TsTopComponent extends TopComponent implements HasTs, Acti
         Ts loadedTs = ts.load(TsInformationType.All, TsManager.getDefault());
         panel.getDocument().set(loadedTs);
         panel.refreshAll();
+        panel.updateDocument();
     }
 
     @Override

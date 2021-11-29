@@ -15,7 +15,6 @@ import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.tramo.TramoSpec;
 import demetra.util.Id;
 import demetra.util.LinearId;
-import jdplus.tramo.TramoDocument;
 import org.openide.util.lookup.ServiceProvider;
 
 /**

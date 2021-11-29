@@ -135,7 +135,7 @@ public final class TsManager implements DataSourceFactory, Closeable {
     }
 
     @OnAnyThread
-    private void notify(TsMoniker moniker, Predicate<TsMoniker> related) {
+    public void notify(TsMoniker moniker, Predicate<TsMoniker> related) {
         events.add(new TsEvent(this, moniker, related));
         SwingUtilities.invokeLater(this::notifyUpdateListeners);
     }

@@ -14,6 +14,7 @@ import demetra.desktop.ui.modelling.ResidualsStatsUI;
 import demetra.desktop.ui.modelling.ResidualsUI;
 import demetra.desktop.ui.processing.ComposedProcDocumentItemFactory;
 import demetra.desktop.ui.processing.DefaultItemUI;
+import demetra.desktop.ui.processing.GenericTableUI;
 import demetra.desktop.ui.processing.HtmlItemUI;
 import demetra.desktop.ui.processing.IProcDocumentView;
 import demetra.desktop.ui.processing.ItemUI;
@@ -22,6 +23,8 @@ import demetra.desktop.ui.processing.TsViewToolkit;
 import demetra.html.HtmlElement;
 import demetra.html.core.HtmlInformationSet;
 import demetra.information.InformationSet;
+import demetra.modelling.ModellingDictionary;
+import demetra.modelling.SeriesInfo;
 import demetra.processing.ProcSpecification;
 import demetra.timeseries.TimeSelector;
 import demetra.timeseries.Ts;
@@ -151,7 +154,8 @@ public abstract class PreprocessingViewFactory<S extends ProcSpecification, D ex
                     RegSarimaModel model = source.getResult();
                     TsData orig = model.getDescription().getSeries();
                     TimeSelector sel = TimeSelector.last(3 * orig.getAnnualFrequency());
-                    TsData f=model.getData("y_f", TsData.class), ef= model.getData("y_ef", TsData.class);
+                    RegSarimaModel.Forecasts fcasts = model.forecasts(-2);
+                    TsData f=fcasts.getForecasts(), ef= fcasts.getForecastsStdev();
                     if (f == null)
                         return null;
                     else
@@ -160,19 +164,19 @@ public abstract class PreprocessingViewFactory<S extends ProcSpecification, D ex
            , new EstimationUI());
         }
     }
-//
-//    protected abstract static class PreprocessingFCastsTableFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
-//            extends ItemFactory<D, RegSarimaModel> {
-//
-//        private static String[] generateItems() {
-//            return new String[]{ModellingDictionary.Y + SeriesInfo.F_SUFFIX, ModellingDictionary.Y + SeriesInfo.EF_SUFFIX};
-//        }
-//
-//        protected PreprocessingFCastsTableFactory(Class<D> documentType) {
-//            super(documentType, MODEL_FCASTS_TABLE, PmExtractor.INSTANCE, new GenericTableUI(false, generateItems()));
-//        }
-//    }
-//
+
+    protected abstract static class PreprocessingFCastsTableFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
+            extends ItemFactory<D, TsDocument> {
+
+        private static String[] generateItems() {
+            return new String[]{ModellingDictionary.Y + SeriesInfo.F_SUFFIX, ModellingDictionary.Y + SeriesInfo.EF_SUFFIX};
+        }
+
+        protected PreprocessingFCastsTableFactory(Class documentType) {
+            super(documentType, MODEL_FCASTS_TABLE, DUMMYEXTRACTOR, new GenericTableUI(false, generateItems()));
+        }
+    }
+
     protected abstract static class ModelFCastsOutFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
             extends ItemFactory<D, OneStepAheadForecastingTest> {
 

@@ -1,5 +1,6 @@
 package demetra.desktop.ui.processing;
 
+import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.interfaces.Disposable;
 import demetra.desktop.components.JExceptionPanel;
 import demetra.desktop.descriptors.IObjectDescriptor;
@@ -72,13 +73,20 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         m_tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         this.em = new ExplorerManager();
-        em.addVetoableChangeListener(evt -> {
-            if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
-                Node[] nodes = (Node[]) evt.getNewValue();
-                if (nodes.length > 0) {
-                    Id id = nodes[0].getLookup().lookup(Id.class);
-                    showComponent(id);
-                }
+        em.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case ExplorerManager.PROP_SELECTED_NODES:
+                    Node[] nodes = (Node[]) evt.getNewValue();
+                    if (nodes.length > 0) {
+                        Id id = nodes[0].getLookup().lookup(Id.class);
+                        showComponent(id);
+                    }
+                    break;
+                case BUTTON_APPLY:
+                case BUTTON_RESTORE:
+                    refreshAll();
+                    updateDocument();
+                    break;
             }
         });
 
@@ -150,8 +158,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
     public void updateDocument() {
         dirty = true;
-        D doc=getDocument();
-        originalSpec = doc.getSpecification();
+        D doc = getDocument();
         m_procView.refresh();
         refreshHeader();
     }
@@ -207,7 +214,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
     private void initApplySpecView() {
         Action[] commands = {
-            new AbstractAction("Apply") {
+            new AbstractAction(BUTTON_APPLY) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     ProcDocument doc = getDocument();
@@ -215,10 +222,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     doc.set(pspec);
                     setDirty(BUTTON_APPLY);
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
-                    refreshView();
-                    if (isHeaderVisible()) {
-                        refreshHeader();
-                    }
+                    refreshAll();
+                    updateDocument();
                 }
             }};
         setPropertiesPanel(commands, factory.getSpecView(specDescriptor), specWidth_);
@@ -233,41 +238,24 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 public void actionPerformed(ActionEvent e) {
                     S pspec = specDescriptor.getCore();
                     doc.set(pspec);
-                    updateDocument();
                     setDirty(BUTTON_APPLY);
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
-                    refreshView();
-                    if (isHeaderVisible()) {
-                        refreshHeader();
-                    }
                 }
             },
             new AbstractAction(BUTTON_RESTORE) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     doc.set(originalSpec);
-                    updateDocument();
                     setDirty(BUTTON_RESTORE);
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_RESTORE, null, null);
-                    refreshView();
-                    if (isHeaderVisible()) {
-                        refreshHeader();
-                    }
                 }
             },
             new AbstractAction(BUTTON_SAVE) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     // Apply & Save
-                    S pspec = specDescriptor.getCore();
-                    doc.set(pspec);
-                    updateDocument();
                     setDirty(BUTTON_SAVE);
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_SAVE, null, null);
-                    refreshView();
-                    if (isHeaderVisible()) {
-                        refreshHeader();
-                    }
                 }
             }};
 
@@ -297,21 +285,11 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         specPanel.validate();
     }
 
+    /**
+     * Refresh all parts of the view
+     */
     public void refreshAll() {
-        m_procView.refresh();
-        // refresh properties
-        D doc = getDocument();
-        initSpecView(doc);
-
-        Node[] sel = em.getSelectedNodes();
-        if (!Arrays2.isNullOrEmpty(sel)) {
-            Id curid = sel[0].getLookup().lookup(Id.class);
-            if (curid != null) {
-                showComponent(curid);
-            }
-        } else {
-            selectPreferredView();
-        }
+        refreshView();
         if (isHeaderVisible()) {
             refreshHeader();
         }
@@ -321,6 +299,9 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         // do nothing
     }
 
+    /**
+     * Refresh the views panel
+     */
     public void refreshView() {
         m_procView.refresh();
         Node[] sel = em.getSelectedNodes();

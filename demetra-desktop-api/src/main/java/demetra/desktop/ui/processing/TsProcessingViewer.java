@@ -5,6 +5,7 @@
 package demetra.desktop.ui.processing;
 
 import com.google.common.base.Strings;
+import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.TsManager;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
@@ -62,6 +63,12 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
 
         setTransferHandler(new TsHandler());
     }
+    
+    @Override
+    public void updateDocument(){
+        super.updateDocument();
+        TsDynamicProvider.OnDocumentChanged(getDocument());
+   }
 
     @Override
     public void refreshHeader() {

@@ -22,7 +22,7 @@ public class Formatters {
     public DateFormat dateFormatOf(ObsFormat fmt) {
         String datePattern = fmt.getDateTimePattern();
         Locale locale = fmt.getLocale();
-        DateFormat result = datePattern == null
+        DateFormat result = datePattern != null
                 ? new SimpleDateFormat(datePattern, locale == null ? Locale.getDefault() : locale)
                 : SimpleDateFormat.getDateInstance(DateFormat.DEFAULT, locale == null ? Locale.getDefault() : locale);
         result.setLenient(datePattern == null && locale == null);
