@@ -135,8 +135,8 @@ public final class TsManager implements DataSourceFactory, Closeable {
     }
 
     @OnAnyThread
-    public void notify(TsMoniker moniker, Predicate<TsMoniker> related) {
-        events.add(new TsEvent(this, moniker, related));
+    public void notify(Predicate<TsMoniker> related) {
+        events.add(new TsEvent(this, related));
         SwingUtilities.invokeLater(this::notifyUpdateListeners);
     }
 
@@ -165,8 +165,7 @@ public final class TsManager implements DataSourceFactory, Closeable {
         public void changed(DataSource ds) {
             Optional<DataSourceProvider> provider = getProvider(DataSourceProvider.class, ds);
             if (provider.isPresent()) {
-                TsMoniker dataSourceMoniker = provider.get().toMoniker(ds);
-                TsManager.this.notify(dataSourceMoniker, dataSetMoniker -> isRelated(provider.get(), ds, dataSetMoniker));
+                TsManager.this.notify(dataSetMoniker -> isRelated(provider.get(), ds, dataSetMoniker));
             }
         }
 

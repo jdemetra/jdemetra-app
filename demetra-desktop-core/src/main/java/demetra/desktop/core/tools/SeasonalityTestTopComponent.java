@@ -9,10 +9,14 @@ import demetra.desktop.components.JTsChart;
 import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.components.JHtmlView;
+import demetra.desktop.components.parts.HasTs;
+import demetra.desktop.components.parts.HasTsSupport;
 import demetra.desktop.ui.processing.TsTopComponent;
 import demetra.html.HtmlUtil;
 import demetra.sa.html.HtmlSeasonalityDiagnostics;
+import demetra.timeseries.Ts;
 import demetra.timeseries.TsData;
+import demetra.timeseries.TsInformationType;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -53,6 +57,8 @@ public final class SeasonalityTestTopComponent extends TsTopComponent {
     private int diffOrder = 1;
     private int lastYears = 0;
 
+    @lombok.experimental.Delegate
+    private final HasTs proxy;
     private final JTsChart jTsChart1;
     private final JHtmlView jEditorPane1;
 
@@ -60,9 +66,9 @@ public final class SeasonalityTestTopComponent extends TsTopComponent {
         initComponents();
         setName(Bundle.CTL_SeasonalityTestTopComponent());
         setToolTipText(Bundle.HINT_SeasonalityTestTopComponent());
-
         jTsChart1 = new JTsChart();
         jTsChart1.setTsUpdateMode(TsUpdateMode.Single);
+        proxy=HasTsSupport.of(jTsChart1);
 
         jEditorPane1 = new JHtmlView();
 
@@ -72,7 +78,14 @@ public final class SeasonalityTestTopComponent extends TsTopComponent {
         jSplitPane1.setTopComponent(jTsChart1);
         jSplitPane1.setBottomComponent(jEditorPane1);
 
-    }
+        jTsChart1.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case HasTsCollection.TS_COLLECTION_PROPERTY:
+                    onTsChange();
+                    break;
+            }
+        });
+   }
 
     @Override
     public void componentOpened() {
@@ -105,19 +118,36 @@ public final class SeasonalityTestTopComponent extends TsTopComponent {
     private javax.swing.JSplitPane jSplitPane1;
     // End of variables declaration//GEN-END:variables
 
+    private void onTsChange(){
+        showTests();
+    }
+
+    private TsData requestData() {
+        Ts ts = getTs();
+        if (ts == null) {
+            return null;
+        }
+        if (ts.getType().encompass(TsInformationType.Data)) {
+            return ts.getData();
+        } else {
+            loadAsync(TsInformationType.Data);
+            return null;
+        }
+    }
+    
     private void showTests() {
         demetra.timeseries.Ts cur = getTs();
         if (cur == null) {
             jEditorPane1.setHtml("");
         } else {
-            test(cur);
+            test();
         }
     }
 
-    private void test(demetra.timeseries.Ts ts) {
+    private void test() {
 
-        TsData s = ts.getData();
-        if (s.isEmpty()) {
+        TsData s = requestData();
+        if (s==null || s.isEmpty()) {
             return;
         }
         int freq = s.getAnnualFrequency();
@@ -150,17 +180,6 @@ public final class SeasonalityTestTopComponent extends TsTopComponent {
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
-    }
-
-    @Override
-    public demetra.timeseries.Ts getTs() {
-        return jTsChart1.getTsCollection().stream().findFirst().orElse(null);
-    }
-
-    @Override
-    public void setTs(demetra.timeseries.Ts ts) {
-        jTsChart1.setTsCollection(TsCollection.of(ts));
-        //test(ts);
     }
 
     @Override

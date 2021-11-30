@@ -4,6 +4,7 @@
  */
 package demetra.desktop.core.tools;
 
+import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.components.tools.TukeySpectrumView;
 import demetra.desktop.ui.processing.TsTopComponent;
 import java.lang.reflect.InvocationTargetException;
@@ -40,6 +41,7 @@ import org.openide.windows.WindowManager;
 })
 public final class TukeySpectrumTopComponent extends TsTopComponent {
 
+    @lombok.experimental.Delegate(types=HasTs.class)
     private final TukeySpectrumView view;
     private final Node internalNode;
 

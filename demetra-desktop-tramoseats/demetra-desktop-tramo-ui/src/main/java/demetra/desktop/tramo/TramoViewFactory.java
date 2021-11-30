@@ -119,46 +119,46 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpec, TramoD
 
     //</editor-fold>
 //
-//    //<editor-fold defaultstate="collapsed" desc="REGISTER MODEL">
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 1000)
-//    public static class ModelRegsFactory extends PreprocessingViewFactory.ModelRegsFactory<TramoDocument> {
-//
-//        public ModelRegsFactory() {
-//            super(TramoDocument.class);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 301000;
-//        }
-//    }
-//
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 2000)
-//    public static class ModelArimaFactory extends PreprocessingViewFactory.ModelArimaFactory<TramoDocument> {
-//
-//        public ModelArimaFactory() {
-//            super(TramoDocument.class);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 302000;
-//        }
-//    }
-//
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 3000)
-//    public static class PreprocessingDetFactory extends PreprocessingViewFactory.PreprocessingDetFactory<TramoDocument> {
-//
-//        public PreprocessingDetFactory() {
-//            super(TramoDocument.class);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 303000;
-//        }
-//    }
-//    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="REGISTER MODEL">
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 1000)
+    public static class ModelRegsFactory extends PreprocessingViewFactory.ModelRegsFactory<TramoDocument> {
+
+        public ModelRegsFactory() {
+            super(TramoDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 301000;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 2000)
+    public static class ModelArimaFactory extends PreprocessingViewFactory.ModelArimaFactory<TramoDocument> {
+
+        public ModelArimaFactory() {
+            super(TramoDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 302000;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 3000)
+    public static class PreprocessingDetFactory extends PreprocessingViewFactory.PreprocessingDetFactory<TramoDocument> {
+
+        public PreprocessingDetFactory() {
+            super(TramoDocument.class);
+        }
+
+        @Override
+        public int getPosition() {
+            return 303000;
+        }
+    }
+    //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="REGISTER RESIDUALS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 1000)
@@ -215,19 +215,19 @@ public class TramoViewFactory extends PreprocessingViewFactory<TramoSpec, TramoD
 
     //</editor-fold>
 
-//    //<editor-fold defaultstate="collapsed" desc="REGISTER DETAILS">
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 500000)
-//    public static class LikelihoodFactory extends PreprocessingViewFactory.LikelihoodFactory<TramoDocument> {
-//
-//        public LikelihoodFactory() {
-//            super(TramoDocument.class);
-//            setAsync(true);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 500000;
-//        }
-//    }
-//    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="REGISTER DETAILS">
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 500000)
+    public static class LikelihoodFactory extends PreprocessingViewFactory.LikelihoodFactory<TramoDocument> {
+
+        public LikelihoodFactory() {
+            super(TramoDocument.class);
+            setAsync(true);
+        }
+
+        @Override
+        public int getPosition() {
+            return 500000;
+        }
+    }
+    //</editor-fold>
 }

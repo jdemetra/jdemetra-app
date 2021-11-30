@@ -514,7 +514,7 @@ public class HasTsCollectionSupport {
                         demetra.timeseries.TsCollection tmp = c.getTsCollection();
                         List<demetra.timeseries.Ts> list = tmp.toList();
                         list.add(list.get(i).freeze());
-                        c.setTsCollection(tmp.toBuilder().items(list).build());
+                        c.setTsCollection(tmp.toBuilder().clearItems().items(list).build());
                     });
         }
     }
@@ -819,7 +819,7 @@ public class HasTsCollectionSupport {
         public void tsUpdated(TsEvent event) {
             TsCollection currentData = getTsCollection();
             if (isEventRelatedToCollection(event, currentData)) {
-                TsCollection newData = event.getSource().makeTsCollection(event.getMoniker(), currentData.getType());
+                TsCollection newData = event.getSource().makeTsCollection(currentData.getMoniker(), currentData.getType());
                 setTsCollection(newData);
             } else {
                 boolean requireChange = false;
@@ -839,7 +839,7 @@ public class HasTsCollectionSupport {
         }
 
         private static boolean isEventRelatedToCollection(TsEvent event, TsCollection col) {
-            return !col.getMoniker().isNull() && col.getMoniker().equals(event.getMoniker());
+            return event.getRelated().test(col.getMoniker());
         }
     }
 }

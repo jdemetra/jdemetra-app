@@ -58,7 +58,7 @@ public final class TsDynamicProvider implements TsProvider {
     }
 
     private static final Map< UUID, WeakReference<TsDocument>> DOCUMENTS = new HashMap<>();
-    private static final Map< UUID, Set<String>> DOCITEMS = new HashMap<>();
+//    private static final Map< UUID, Set<String>> DOCITEMS = new HashMap<>();
 
     @Override
     public void clearCache() {
@@ -105,17 +105,20 @@ public final class TsDynamicProvider implements TsProvider {
                 if (data == null) {
                     return invalidTs(moniker, "unsupported id");
                 }
-                updateItems(uuid, items[1]);
+//                updateItems(uuid, items[1]);
                 return Ts.builder()
                         .moniker(moniker)
                         .name(items[1])
                         .data(data)
+                        .type(TsInformationType.All)
                         .build();
             } else {
                 return invalidTs(moniker, "invalid source");
             }
         }
     }
+    
+    
 
     @Override
     public String getSource() {
@@ -127,33 +130,37 @@ public final class TsDynamicProvider implements TsProvider {
         return true;
     }
 
-    private static void updateItems(UUID uuid, String item) {
-        Set<String> ids = DOCITEMS.get(uuid);
-        if (ids == null) {
-            ids = new HashSet<>();
-            DOCITEMS.put(uuid, ids);
-        }
-        ids.add(item);
-    }
-
-    public static Set<String> itemsForDocument(TsDocument doc) {
-        Set<String> items = DOCITEMS.get(doc.getKey());
-        if (items == null) {
-            return Collections.emptySet();
-        } else {
-            return Collections.unmodifiableSet(items);
-        }
-    }
+//    private static void updateItems(UUID uuid, String item) {
+//        Set<String> ids = DOCITEMS.get(uuid);
+//        if (ids == null) {
+//            ids = new HashSet<>();
+//            DOCITEMS.put(uuid, ids);
+//        }
+//        ids.add(item);
+//    }
+//
+//    public static Set<String> itemsForDocument(TsDocument doc) {
+//        Set<String> items = DOCITEMS.get(doc.getKey());
+//        if (items == null) {
+//            return Collections.emptySet();
+//        } else {
+//            return Collections.unmodifiableSet(items);
+//        }
+//    }
     
     public static void OnDocumentClosing(TsDocument doc){
+        if (doc == null)
+            return;
         synchronized (DOCUMENTS) {
             UUID uuid=doc.getKey();
             DOCUMENTS.remove(uuid);
-            DOCITEMS.remove(uuid);
+//            DOCITEMS.remove(uuid);
         }
     }
 
     public static void OnDocumentOpened(TsDocument doc){
+        if (doc == null)
+            return;
         synchronized (DOCUMENTS) {
             UUID uuid=doc.getKey();
             DOCUMENTS.put(uuid, new WeakReference(doc));
@@ -161,13 +168,9 @@ public final class TsDynamicProvider implements TsProvider {
     }
 
     public static void OnDocumentChanged(TsDocument doc){
-        synchronized (DOCUMENTS) {
-            Set<String> items = itemsForDocument(doc);
-            for (String s: items){
-                TsMoniker moniker=monikerOf(doc, s);
-                TsManager.getDefault().notify(moniker, other->other.equals(moniker));
-            }
-        }
+        if (doc == null)
+            return;
+        TsManager.getDefault().notify(m->m.getSource().equals(DYNAMIC) && m.getId().startsWith(doc.getKey().toString()));
     }
 
     static class CompositeTs {

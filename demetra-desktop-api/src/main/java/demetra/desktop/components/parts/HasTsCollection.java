@@ -16,10 +16,12 @@
  */
 package demetra.desktop.components.parts;
 
+import demetra.desktop.TsManager;
 import demetra.desktop.design.SwingAction;
 import demetra.desktop.design.SwingProperty;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsInformationType;
 import ec.util.list.swing.JLists;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -41,6 +43,37 @@ public interface HasTsCollection {
 
     void setTsCollection(@Nullable TsCollection tsCollection);
 
+    default void loadAsync(TsInformationType info) {
+        TsCollection tss = getTsCollection();
+        if (tss != null) {
+            if (tss.getMoniker().isProvided())
+                if (!tss.getType().encompass(info))
+                    TsManager.getDefault().loadAsync(tss, info, this::replaceTsCollection);
+            else{
+                if (tss.stream().filter(s->s.getType().encompass(info)).count() ==tss.size())
+                    return;
+                TsCollection.Builder newData = tss.toBuilder().clearItems();
+                for (Ts ts : tss) {
+                    TsManager.getDefault().loadAsync(ts, info, s->replaceTs(ts, s));
+                 }
+            }
+        }
+    }
+    
+    default void replaceTs(Ts oldTs, Ts newTs){
+        TsCollection coll = getTsCollection();
+        TsCollection.Builder builder = coll.toBuilder()
+                .clearItems();
+        for (Ts s : coll){
+            if (s == oldTs)
+                builder.item(newTs);
+            else
+                builder.item(s);
+        }
+        setTsCollection(builder.build());
+        
+    }
+    
     @SwingProperty
     String TS_SELECTION_MODEL_PROPERTY = "tsSelectionModel";
 

@@ -4,8 +4,10 @@ import demetra.desktop.TsEvent;
 import demetra.desktop.TsListener;
 import demetra.desktop.TsManager;
 import demetra.desktop.beans.PropertyChangeBroadcaster;
+import static demetra.desktop.components.parts.HasTs.TS_PROPERTY;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -17,6 +19,11 @@ public class HasTsSupport {
     @NonNull
     public static HasTs of(@NonNull PropertyChangeBroadcaster broadcaster) {
         return new HasTsImpl(broadcaster).register(TsManager.getDefault());
+    }
+
+    @NonNull
+    public static HasTs of(@NonNull HasTsCollection collection) {
+        return new HasSingleTs(collection);
     }
 
     public static TransferHandler newTransferHandler(HasTs delegate) {
@@ -91,4 +98,31 @@ public class HasTsSupport {
             return ts != null;
         }
     }
+
+    @lombok.RequiredArgsConstructor
+    private static final class HasSingleTs implements HasTs {
+
+        @lombok.NonNull
+        private final HasTsCollection coll;
+
+        @Override
+        public Ts getTs() {
+            TsCollection c = coll.getTsCollection();
+            return c.isEmpty() ? null : c.get(0);
+        }
+
+        @Override
+        public void setTs(Ts ts) {
+            if (ts == null) {
+                coll.setTsCollection(TsCollection.EMPTY);
+            } else {
+                coll.setTsCollection(TsCollection.of(ts));
+            }
+        }
+
+        private boolean hasTs() {
+            return !coll.getTsCollection().isEmpty();
+        }
+    }
+
 }

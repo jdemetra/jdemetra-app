@@ -38,7 +38,7 @@ public class GenericChartUI<D extends ProcDocument<?,?,?> >extends DefaultItemUI
         List<Ts> items=new ArrayList<>();
         for (String s : names_){
             TsMoniker moniker = TsDynamicProvider.monikerOf(doc, s);
-            Ts x = TsFactory.getDefault().makeTs(moniker, TsInformationType.All); 
+            Ts x =  TsFactory.getDefault().makeTs(moniker, TsInformationType.All); 
             items.add(x);
        }
         return TsViewToolkit.getChart(items);

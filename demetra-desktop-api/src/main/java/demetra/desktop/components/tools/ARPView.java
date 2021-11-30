@@ -95,7 +95,7 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
 
         setLayout(new BorderLayout());
         add(chartPanel, BorderLayout.CENTER);
-        
+
     }
 
     public void reset() {
@@ -121,17 +121,22 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
         onColorSchemeChange();
     }
 
-    private TsData getData() {
+    private TsData requestData() {
         Ts ts = getTs();
         if (ts == null) {
             return null;
         }
-        return ts.getData();
+        if (ts.getType().encompass(TsInformationType.Data)) {
+            return ts.getData();
+        } else {
+            loadAsync(TsInformationType.Data);
+            return null;
+        }
     }
 
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
     private void onTsChange() {
-        TsData tsdata = getData();
+        TsData tsdata = requestData();
         if (tsdata == null || tsdata.isEmpty()) {
             clear();
         } else {

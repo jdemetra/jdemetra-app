@@ -5,9 +5,10 @@
 package demetra.desktop.core.tools;
 
 import demetra.data.DoubleSeq;
-import demetra.desktop.TsManager;
 import demetra.desktop.components.JTsGrid;
 import demetra.desktop.components.JTsGrid.Mode;
+import demetra.desktop.components.parts.HasTs;
+import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.components.tools.JAutoCorrelationsView;
 import demetra.desktop.components.tools.PeriodogramView;
@@ -18,11 +19,10 @@ import demetra.desktop.ui.processing.TsTopComponent;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
+import demetra.timeseries.TsInformationType;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.explorer.ExplorerManager;
-import org.openide.explorer.ExplorerUtils;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -64,10 +64,11 @@ public final class DifferencingTopComponent extends TsTopComponent  {
     private final JLabel tsLabel;
     private final JSplitPane splitter1;
     private final JSplitPane splitter2;
+    
+    @lombok.experimental.Delegate(types=HasTs.class)
     private final PeriodogramView periodogramView;
     private final JAutoCorrelationsView acView;
     private final JTsGrid grid;
-    private demetra.timeseries.Ts ts;
     private final Node node;
     private boolean isLog = false;
     private int diffOrder = 1, seasonalDiffOrder = 1;
@@ -106,6 +107,15 @@ public final class DifferencingTopComponent extends TsTopComponent  {
         add(splitter1, BorderLayout.CENTER);
         setTransferHandler(new TsHandler());
         node = new InternalNode();
+        
+        periodogramView.addPropertyChangeListener(evt -> {
+            switch (evt.getPropertyName()) {
+                case TS_PROPERTY :
+                    onTsChange();
+                    break;
+            }
+        });
+        
     }
 
     //    @Override
@@ -117,6 +127,7 @@ public final class DifferencingTopComponent extends TsTopComponent  {
 //        }
 //    }
     public void refreshHeader() {
+        Ts ts=getTs();
         if (ts == null) {
             dropDataLabel.setVisible(true);
             tsLabel.setVisible(false);
@@ -191,9 +202,28 @@ public final class DifferencingTopComponent extends TsTopComponent  {
         }
     }
 
+    private TsData requestData() {
+        Ts ts = getTs();
+        if (ts == null) {
+            return null;
+        }
+        if (ts.getType().encompass(TsInformationType.Data)) {
+            return ts.getData();
+        } else {
+            loadAsync(TsInformationType.Data);
+            return null;
+        }
+    }
+    
+    void onTsChange(){
+        showTests();
+    }
+
     void showTests() {
         clear();
-        TsData s = ts.getData();
+        TsData s = requestData();
+        if (s == null || s.isEmpty())
+            return;
         if (isLog) {
             s = s.log();
         }
@@ -218,20 +248,7 @@ public final class DifferencingTopComponent extends TsTopComponent  {
 
     private void clear() {
         acView.setSample(DoubleSeq.empty());
-        periodogramView.reset();
         grid.setTsCollection(TsCollection.EMPTY);
-    }
-
-    @Override
-    public void setTs(demetra.timeseries.Ts s) {
-        ts = s.load(demetra.timeseries.TsInformationType.All, TsManager.getDefault()).freeze();
-        refreshHeader();
-        showTests();
-    }
-
-    @Override
-    public demetra.timeseries.Ts getTs() {
-        return ts;
     }
 
     @Override

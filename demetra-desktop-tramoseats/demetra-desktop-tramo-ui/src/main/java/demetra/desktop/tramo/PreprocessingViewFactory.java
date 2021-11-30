@@ -5,10 +5,15 @@
 package demetra.desktop.tramo;
 
 
+import demetra.modelling.ModellingDictionary;
 import demetra.desktop.ui.SpectrumUI;
+import demetra.desktop.ui.chart3d.functions.SurfacePlotterUI;
+import demetra.desktop.ui.chart3d.functions.SurfacePlotterUI.Functions;
+import demetra.desktop.ui.modelling.ArimaUI;
 import demetra.desktop.ui.modelling.EstimationUI;
 import demetra.desktop.ui.modelling.OutOfSampleTestUI;
 import demetra.desktop.ui.modelling.PreprocessingUI;
+import demetra.desktop.ui.modelling.RegressorsUI;
 import demetra.desktop.ui.modelling.ResidualsDistUI;
 import demetra.desktop.ui.modelling.ResidualsStatsUI;
 import demetra.desktop.ui.modelling.ResidualsUI;
@@ -33,11 +38,16 @@ import demetra.timeseries.TsDocument;
 import demetra.util.Id;
 import demetra.util.LinearId;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Function;
 import javax.swing.JComponent;
+import jdplus.arima.IArimaModel;
+import jdplus.math.functions.IFunction;
 import jdplus.regarima.tests.OneStepAheadForecastingTest;
 import jdplus.regsarima.RegSarimaComputer;
 import jdplus.regsarima.regular.RegSarimaModel;
+import jdplus.sarima.SarimaModel;
 import jdplus.stats.tests.NiidTests;
 
 /**
@@ -127,15 +137,15 @@ public abstract class PreprocessingViewFactory<S extends ProcSpecification, D ex
             });
         }
     }
-//
-//    protected abstract static class LikelihoodFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
-//            extends ItemFactory<D, Functions> {
-//
-//        protected LikelihoodFactory(Class<D> documentType) {
-//            super(documentType, MODEL_LIKELIHOOD, LikelihoodExtractor.INSTANCE, new SurfacePlotterUI());
-//        }
-//    }
-//
+
+    protected abstract static class LikelihoodFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
+            extends ItemFactory<D, Functions> {
+
+        protected LikelihoodFactory(Class<D> documentType) {
+            super(documentType, MODEL_LIKELIHOOD, LLEXTRACTOR, new SurfacePlotterUI());
+        }
+    }
+
     protected abstract static class SummaryFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
             extends ItemFactory<D, RegSarimaModel> {
 
@@ -208,33 +218,28 @@ public abstract class PreprocessingViewFactory<S extends ProcSpecification, D ex
 //</editor-fold>
 //
 //<editor-fold defaultstate="collapsed" desc="REGISTER MODEL">
-//    public abstract static class ModelRegsFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
-//            extends ItemFactory<D, RegSarimaModel> {
-//
-//        protected ModelRegsFactory(Class<D> documentType) {
-//            super(documentType, MODEL_REGS, PmExtractor.INSTANCE, new RegressorsUI());
-//        }
-//    }
-//
-//    public abstract static class ModelArimaFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
-//            extends ItemFactory<D, LinkedHashMap<String, IArimaModel>> {
-//
-//        protected ModelArimaFactory(Class<D> documentType) {
-//            super(documentType, MODEL_ARIMA, new DefaultInformationExtractor<D, LinkedHashMap<String, IArimaModel>>() {
-//                @Override
-//                public LinkedHashMap<String, IArimaModel> retrieve(D source) {
-//                    LinkedHashMap<String, IArimaModel> models = new LinkedHashMap<>();
-//                    RegSarimaModel pm = source.getResults();
-//                    if (pm == null) {
-//                        return null;
-//                    }
-//                    SarimaModel model = pm.estimation.getArima();
-//                    models.put("Arima model", model);
-//                    return models;
-//                }
-//            }, new ArimaUI());
-//        }
-//    }
+    public abstract static class ModelRegsFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
+            extends ItemFactory<D, RegSarimaModel> {
+
+        protected ModelRegsFactory(Class<D> documentType) {
+            super(documentType, MODEL_REGS, PMEXTRACTOR, new RegressorsUI());
+        }
+    }
+
+    public abstract static class ModelArimaFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
+            extends ItemFactory<D, Map<String, IArimaModel>> {
+
+        protected ModelArimaFactory(Class<D> documentType) {
+            super(documentType, MODEL_ARIMA, source-> {
+                     RegSarimaModel pm = source.getResult();
+                    if (pm == null) {
+                        return null;
+                    }
+                    IArimaModel model = pm.arima();
+                    return Collections.singletonMap("Arima model", model);
+            }, new ArimaUI());
+        }
+    }
 //</editor-fold>
 //
 //<editor-fold defaultstate="collapsed" desc="REGISTER RESIDUALS">
@@ -295,27 +300,24 @@ public abstract class PreprocessingViewFactory<S extends ProcSpecification, D ex
     static final Function<TsDocument<? extends ProcSpecification, RegSarimaModel>, TsData> RESEXTRACTOR=source->source.getResult().fullResiduals();
     static final Function<TsDocument<? extends ProcSpecification, RegSarimaModel>, ProcSpecification> SPECEXTRACTOR=source->source.getSpecification();
 //
-//    protected abstract static class PreprocessingDetFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
-//            extends ItemFactory<D, RegSarimaModel> {
-//
-//        protected PreprocessingDetFactory(Class<D> documentType) {
-//            super(documentType, MODEL_DET, PMEXTRACTOR, new SaTableUI(ModellingDictionary.getDeterministicSeries(), null));
-//        }
-//    }
-//
-//     private static class LikelihoodExtractor extends TsDocumentInformationExtractor<TsDocument<? extends ProcSpecification, RegSarimaModel>, Functions> {
-//
-//        public static final LikelihoodExtractor INSTANCE = new LikelihoodExtractor();
-//
-//        @Override
-//        protected Functions buildInfo(TsDocument<? extends ProcSpecification, RegSarimaModel> source) {
-//            RegSarimaModel model = source.getResults();
-//            if (model == null) {
-//                return null;
-//            } else {
-//                return Functions.create(model.likelihoodFunction(), model.maxLikelihoodFunction());
-//            }
-//        }
-//    }
+    protected abstract static class PreprocessingDetFactory<D extends TsDocument<? extends ProcSpecification, RegSarimaModel>>
+            extends ItemFactory<D, D> {
 
+        protected PreprocessingDetFactory(Class<D> documentType) {
+            super(documentType, MODEL_DET, x->x, new GenericTableUI(true, ModellingDictionary.Y_LIN, ModellingDictionary.DET, 
+                    ModellingDictionary.CAL, ModellingDictionary.TDE, ModellingDictionary.EE, 
+                    ModellingDictionary.OUT, ModellingDictionary.FULL_RES));
+        }
+    }
+
+     private static final Function<TsDocument<? extends ProcSpecification, RegSarimaModel>, Functions> LLEXTRACTOR = source -> {
+            RegSarimaModel model = source.getResult();
+            
+            if (model == null) {
+                return null;
+            } else {
+                IFunction fn = model.likelihoodFunction();
+                return Functions.create(fn, fn.evaluate(model.getEstimation().getParameters().getValues()));
+            }
+        };
 }
