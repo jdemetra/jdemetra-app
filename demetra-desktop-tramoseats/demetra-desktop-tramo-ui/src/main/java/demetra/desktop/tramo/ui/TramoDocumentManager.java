@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.tramo;
+package demetra.desktop.tramo.ui;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.tramo.descriptors.TramoSpecUI;

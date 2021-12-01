@@ -45,9 +45,17 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-api</artifactId>
         </dependency>
+       <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-modelling</artifactId>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-sa-api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

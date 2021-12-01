@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.tramo;
+package demetra.desktop.modelling;
 
 
 import demetra.modelling.ModellingDictionary;

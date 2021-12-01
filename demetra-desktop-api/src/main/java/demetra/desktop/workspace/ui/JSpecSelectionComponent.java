@@ -21,7 +21,6 @@ import demetra.desktop.design.SwingProperty;
 import demetra.desktop.util.IDialogDescriptorProvider;
 import demetra.desktop.nodes.DecoratedNode;
 import demetra.desktop.ui.CustomDialogDescriptor;
-import demetra.sa.SaSpecification;
 import demetra.util.Constraint;
 import demetra.util.Id;
 import demetra.util.LinearId;
@@ -29,6 +28,7 @@ import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.ItemWsNode;
 import demetra.desktop.workspace.nodes.DummyWsNode;
+import demetra.processing.ProcSpecification;
 import demetra.util.Arrays2;
 import org.openide.DialogDescriptor;
 import org.openide.explorer.ExplorerManager;
@@ -52,7 +52,7 @@ import java.util.function.Predicate;
 @SwingComponent
 public final class JSpecSelectionComponent extends JComponent implements ExplorerManager.Provider, IDialogDescriptorProvider {
 
-    public static final Id SPECS_ID = new LinearId(SaSpecification.FAMILY, WorkspaceFactory.SPECIFICATIONS);
+    public static final Id SPECS_ID = new LinearId(WorkspaceFactory.SPECIFICATIONS);
 
     @SwingProperty
     public static final String SPECIFICATION_PROPERTY = "specification";
@@ -64,7 +64,7 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
     private final ExplorerManager em;
     private final SelectionListener selectionListener;
 
-    private SaSpecification specification;
+    private ProcSpecification specification;
     private Image icon;
 
     public JSpecSelectionComponent() {
@@ -113,7 +113,7 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
                 Node[] nodes = (Node[]) evt.getNewValue();
                 if (nodes.length > 0 && ((DecoratedNode) nodes[0]).getOriginal() instanceof ItemWsNode) {
                     ItemWsNode node = (ItemWsNode) ((DecoratedNode) nodes[0]).getOriginal();
-                    setSpecification((SaSpecification) node.getItem().getElement());
+                    setSpecification((ProcSpecification) node.getItem().getElement());
                     setIcon(node.getIcon(BeanInfo.ICON_COLOR_16x16));
                 } else {
                     setSpecification(null);
@@ -147,12 +147,12 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
         return em;
     }
 
-    public SaSpecification getSpecification() {
+    public ProcSpecification getSpecification() {
         return specification;
     }
 
-    public void setSpecification(SaSpecification specification) {
-        SaSpecification old = this.specification;
+    public void setSpecification(ProcSpecification specification) {
+        ProcSpecification old = this.specification;
         this.specification = specification;
         firePropertyChange(SPECIFICATION_PROPERTY, old, this.specification);
     }

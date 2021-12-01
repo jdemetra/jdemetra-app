@@ -2,9 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.core.tools;
+package demetra.desktop.sa.ui;
 
-import demetra.timeseries.TsCollection;
 import demetra.desktop.components.JTsChart;
 import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
@@ -35,13 +34,13 @@ import jdplus.sa.tests.SeasonalityTests;
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//demetra.desktop.core.tools//SeasonalityTest//EN",
+@ConvertAsProperties(dtd = "-//demetra.desktop.sa.ui//SeasonalityTest//EN",
         autostore = false)
 @TopComponent.Description(preferredID = "SeasonalityTestTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
-@ActionID(category = "Tool", id = "demetra.desktop.core.tools.SeasonalityTestTopComponent")
+@ActionID(category = "Tool", id = "demetra.desktop.sa.ui.SeasonalityTestTopComponent")
 @ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Tools", position = 333)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_SeasonalityTestAction",
         preferredID = "SeasonalityTestTopComponent")

@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.tramo;
+package demetra.desktop.tramo.ui;
 
 import demetra.processing.ProcessingLog;
 import demetra.timeseries.TsData;

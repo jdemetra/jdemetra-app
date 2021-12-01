@@ -41,6 +41,9 @@
         <!--module>demetra-desktop-jd2</module-->
         <module>demetra-desktop-branding</module>
         <module>demetra-desktop-app</module>
+        <module>demetra-desktop-modelling</module>
+        <module>demetra-desktop-x13</module>
+        <module>demetra-desktop-sa</module>
     </modules>
 
     <dependencyManagement>

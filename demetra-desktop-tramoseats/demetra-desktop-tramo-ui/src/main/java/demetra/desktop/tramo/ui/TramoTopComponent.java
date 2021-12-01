@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.tramo;
+package demetra.desktop.tramo.ui;
 
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.workspace.WorkspaceFactory;
@@ -17,13 +17,13 @@ import org.openide.util.NbBundle;
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//demetra.desktop.tramo//Tramo//EN",
+@ConvertAsProperties(dtd = "-//demetra.desktop.tramo.ui//Tramo//EN",
 autostore = false)
 @TopComponent.Description(preferredID = "TramoTopComponent",
 //iconBase="SET/PATH/TO/ICON/HERE", 
 persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Modelling", id = "demetra.desktop.tramo.TramoTopComponent")
+@ActionID(category = "Modelling", id = "demetra.desktop.tramo.ui.TramoTopComponent")
 @ActionReference(path = "Menu/Statistical methods/Modelling/Single Analysis", position = 1000)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_TramoAction")
 @NbBundle.Messages({

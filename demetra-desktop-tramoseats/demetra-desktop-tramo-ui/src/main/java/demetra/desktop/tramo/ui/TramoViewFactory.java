@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.tramo;
+package demetra.desktop.tramo.ui;
 
+import demetra.desktop.modelling.PreprocessingViewFactory;
 import demetra.desktop.ui.processing.IProcDocumentItemFactory;
 import demetra.desktop.ui.processing.IProcDocumentViewFactory;
 import demetra.tramo.TramoSpec;

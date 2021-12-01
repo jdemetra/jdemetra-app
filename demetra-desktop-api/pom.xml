@@ -99,12 +99,37 @@
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
-            <artifactId>demetra-sa-core</artifactId>
+            <artifactId>demetra-toolkit-basic</artifactId>
             <version>${jd3-basic.version}</version>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
-            <artifactId>demetra-sa-html</artifactId>
+            <artifactId>demetra-toolkit-modelling</artifactId>
+            <version>${jd3-basic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-toolkit-ssf</artifactId>
+            <version>${jd3-basic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-toolkit-regarima</artifactId>
+            <version>${jd3-basic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-toolkit-html</artifactId>
+            <version>${jd3-basic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-toolkit-information</artifactId>
+            <version>${jd3-basic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <artifactId>demetra-toolkit-xml</artifactId>
             <version>${jd3-basic.version}</version>
         </dependency>
          <dependency>

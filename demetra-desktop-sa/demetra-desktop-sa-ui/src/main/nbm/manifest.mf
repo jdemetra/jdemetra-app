@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: eu/europa/ec/joinup/sat/demetra/desktop/sa/ui/Bundle.properties
+

@@ -17,28 +17,14 @@
 package demetra.desktop.util;
 
 import demetra.timeseries.TsProvider;
-import demetra.tsprovider.FileLoader;
 import demetra.desktop.TsManager;
 import demetra.desktop.workspace.WorkspaceFactory;
-import demetra.sa.SaDiagnosticsFactory;
-import demetra.sa.SaManager;
-import demetra.sa.SaOutputFactory;
-import demetra.sa.SaProcessingFactory;
-import demetra.timeseries.regression.TsVariable;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import nbbrd.io.text.Formatter;
-import nbbrd.io.text.Parser;
 import org.openide.modules.ModuleInstall;
 import org.openide.util.Lookup;
 import org.slf4j.Logger;
@@ -51,10 +37,6 @@ public final class Installer extends ModuleInstall{
     public static final InstallerStep STEP = InstallerStep.all(
             new AppVersionStep(),
             new ProvidersV3Step(),
-//            new ProvidersV2Step(),
-            new SaFactoriesStep(),
-            new SaDiagnosticsStep(),
-            new SaOutputStep(),
             new TsVariableStep());
 
     @Override
@@ -257,87 +239,6 @@ public final class Installer extends ModuleInstall{
 //        }
 //    }
     
-    private static final class SaFactoriesStep extends InstallerStep.LookupStep<SaProcessingFactory> {
-
-        SaFactoriesStep() {
-            super(SaProcessingFactory.class);
-        }
-
-        @Override
-        protected void onResultChanged(Lookup.Result<SaProcessingFactory> lookup) {
-            for (SaProcessingFactory o : lookup.allInstances()) {
-                // TODO
-            }
-        }
-
-        @Override
-        protected void onRestore(Lookup.Result<SaProcessingFactory> lookup) {
-//            for (SaProcessingFactory cur : lookup.allInstances()) {
-//                SaManager.add(cur);
-//            }
-            //LOGGER.debug("Loaded sa factories: [{}]", Strings.join(SaManager.instance.get..., ", "));
-        }
-
-        @Override
-        protected void onClose(Lookup.Result<SaProcessingFactory> lookup) {
-            //closeProvidersByName(TsFactory.instance.getProviders());
-        }
-    }
-
-    private static final class SaDiagnosticsStep extends InstallerStep.LookupStep<SaDiagnosticsFactory> {
-
-        SaDiagnosticsStep() {
-            super(SaDiagnosticsFactory.class);
-        }
-
-        @Override
-        protected void onResultChanged(Lookup.Result<SaDiagnosticsFactory> lookup) {
-            for (SaDiagnosticsFactory o : lookup.allInstances()) {
-                // TODO
-            }
-        }
-
-        @Override
-        protected void onRestore(Lookup.Result<SaDiagnosticsFactory> lookup) {
-//            for (SaDiagnosticsFactory cur : lookup.allInstances()) {
-//                SaManager.instance.add(cur);
-//            }
-            //LOGGER.debug("Loaded sa diagnostics: [{}]", Strings.join(SaManager.instance.get..., ", "));
-        }
-
-        @Override
-        protected void onClose(Lookup.Result<SaDiagnosticsFactory> lookup) {
-            // TODO
-        }
-    }
-
-    private static final class SaOutputStep extends InstallerStep.LookupStep<SaOutputFactory> {
-
-        SaOutputStep() {
-            super(SaOutputFactory.class);
-        }
-
-        @Override
-        protected void onResultChanged(Lookup.Result<SaOutputFactory> lookup) {
-            for (SaOutputFactory o : lookup.allInstances()) {
-                // TODO
-            }
-        }
-
-        @Override
-        protected void onRestore(Lookup.Result<SaOutputFactory> lookup) {
-//            for (SaOutputFactory cur : lookup.allInstances()) {
-//                SaManager.instance.add(cur);
-//            }
-            //LOGGER.debug("Loaded sa output: [{}]", Strings.join(SaManager.instance.get..., ", "));
-        }
-
-        @Override
-        protected void onClose(Lookup.Result<SaOutputFactory> lookup) {
-            // TODO
-        }
-    }
-
     private static final class TsVariableStep extends InstallerStep {
 
         @Override
