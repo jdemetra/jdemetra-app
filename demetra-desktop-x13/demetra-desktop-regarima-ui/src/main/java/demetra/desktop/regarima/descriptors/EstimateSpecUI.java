@@ -41,46 +41,12 @@ public class EstimateSpecUI extends BaseRegArimaSpecUI {
         update(inner().toBuilder().span(span).build());
     }
 
-    public boolean isEml() {
-        return inner().isMaximumLikelihood();
-    }
-
-    public void setEml(boolean value) {
-        update(inner().toBuilder().maximumLikelihood(value).build());
-    }
-
     public double getTol() {
         return inner().getTol();
     }
 
     public void setTol(double value) {
         update(inner().toBuilder().tol(value).build());
-    }
-
-    public double getUbp() {
-        return inner().getUbp();
-    }
-
-    public void setUbp(double u) {
-        update(inner().toBuilder().ubp(u).build());
-    }
-
-    @Messages({
-        "estimateSpecUI.urlimitDesc.name=Unit root limit",
-        "estimateSpecUI.urlimitDesc.desc=[urfinal] Unit root limit for final model. Should be > 1."
-    })
-    private EnhancedPropertyDescriptor urlimitDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("Ubp", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, UBP_ID);
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(Bundle.estimateSpecUI_urlimitDesc_name());
-            desc.setShortDescription(Bundle.estimateSpecUI_urlimitDesc_desc());
-            edesc.setReadOnly(isRo());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
     }
 
     @Override
@@ -94,39 +60,11 @@ public class EstimateSpecUI extends BaseRegArimaSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
-        desc = emlDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = urlimitDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
         return descs;
     }
-    private static final int SPAN_ID = 0, TOL_ID = 1, EML_ID = 2, XL_ID = 3, UBP_ID = 4;
-
-    @Messages({
-        "estimateSpecUI.spanDesc.name=Model span",
-        "estimateSpecUI.spanDesc.desc=Span used for the estimation of the pre-processing model"
-    })
-    private EnhancedPropertyDescriptor spanDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("span", this.getClass(), "getSpan", null);
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SPAN_ID);
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(Bundle.estimateSpecUI_spanDesc_desc());
-            desc.setDisplayName(Bundle.estimateSpecUI_spanDesc_name());
-            edesc.setReadOnly(isRo());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-
     @Messages({
         "estimateSpecUI.tolDesc.name=Tolerance",
-        "estimateSpecUI.tolDesc.desc=Precision of the estimation procedure"
+        "estimateSpecUI.tolDesc.desc=[tol] Precision used in the optimization procedure."
     })
     private EnhancedPropertyDescriptor tolDesc() {
         try {
@@ -143,22 +81,24 @@ public class EstimateSpecUI extends BaseRegArimaSpecUI {
     }
 
     @Messages({
-        "estimateSpecUI.emlDesc.name=Exact ML",
-        "estimateSpecUI.emlDesc.desc=Use exact maximum likelihood in optimization procedure"
+        "estimateSpecUI.spanDesc.name=Model span",
+        "estimateSpecUI.spanDesc.desc=Span used for the estimation of the pre-processing model"
     })
-    private EnhancedPropertyDescriptor emlDesc() {
+    private EnhancedPropertyDescriptor spanDesc() {
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("Eml", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, EML_ID);
+            PropertyDescriptor desc = new PropertyDescriptor("span", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SPAN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(Bundle.estimateSpecUI_emlDesc_name());
-            desc.setShortDescription(Bundle.estimateSpecUI_emlDesc_desc());
+            desc.setShortDescription(Bundle.estimateSpecUI_spanDesc_desc());
+            desc.setDisplayName(Bundle.estimateSpecUI_spanDesc_name());
             edesc.setReadOnly(isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
+    
+    private static final int SPAN_ID = 0, TOL_ID = 1;
 
     @Override
     @Messages("estimateSpecUI.getDisplayName=Estimate")
@@ -166,3 +106,4 @@ public class EstimateSpecUI extends BaseRegArimaSpecUI {
         return Bundle.estimateSpecUI_getDisplayName();
     }
 }
+

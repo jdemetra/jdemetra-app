@@ -25,19 +25,19 @@ public class BasicSpecUI extends BaseRegArimaSpecUI {
     }
 
     public DateSelectorUI getSpan() {
-        return new DateSelectorUI(core().getTransform().getSpan(), UserInterfaceContext.INSTANCE.getDomain(), isRo(), selector->updateSpan(selector));
+        return new DateSelectorUI(core().getBasic().getSpan(), UserInterfaceContext.INSTANCE.getDomain(), isRo(), selector->updateSpan(selector));
     }
     
     public void updateSpan(TimeSelector span){
-        update(core().getTransform().toBuilder().span(span).build());
+        update(core().getBasic().toBuilder().span(span).build());
     }
 
     public boolean isPreliminaryCheck() {
-        return core().getTransform().isPreliminaryCheck();
+        return core().getBasic().isPreliminaryCheck();
     }
 
     public void setPreliminaryCheck(boolean value) {
-        update(core().getTransform().toBuilder()
+        update(core().getBasic().toBuilder()
                 .preliminaryCheck(value)
                 .build());
     }

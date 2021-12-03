@@ -4,29 +4,28 @@
  */
 package demetra.desktop.tramo.descriptors;
 
+import demetra.timeseries.TsDomain;
 import demetra.tramo.TramoSpec;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *
  * @author Jean Palate
  */
+@lombok.Getter
+@lombok.AllArgsConstructor
 class TramoSpecRoot  {
-
+    
     TramoSpec core;
-    final boolean ro_;
+    boolean ro;
+    TsDomain domain;
 
-    TramoSpecRoot(@NonNull TramoSpec spec, boolean ro) {
-        core = spec;
-        ro_ = ro;
-    }
-
+ 
     TramoSpec getCore() {
         return core;
     }
     
     boolean isRo(){
-        return ro_;
+        return ro;
     }
-
+    
  }

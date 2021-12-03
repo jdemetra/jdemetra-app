@@ -30,9 +30,11 @@ abstract class BaseTramoSpecUI implements IPropertyDescriptors{
     
     TramoSpec core(){return root.getCore();}
     
-    boolean isRo(){return root.ro_;}
+    boolean isRo(){return root.ro;}
     
-   void update(EstimateSpec spec) {
+    int getPeriod(){return root.getDomain().getAnnualFrequency();}
+
+    void update(EstimateSpec spec) {
         root.core = root.core.toBuilder().estimate(spec).build();
     }
 

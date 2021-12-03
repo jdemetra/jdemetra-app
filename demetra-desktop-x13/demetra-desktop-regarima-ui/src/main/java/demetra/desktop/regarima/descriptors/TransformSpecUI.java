@@ -54,22 +54,20 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
     }
 
     public void setFunction(TransformationType value) {
-        update(inner().toBuilder().function(value).build());
-        TransformSpec tr = inner();
+        LengthOfPeriodType adjust=value != TransformationType.Log 
+                ? LengthOfPeriodType.None 
+                : LengthOfPeriodType.LeapYear;
+        update(inner().toBuilder()
+                .function(value)
+                .adjust(adjust)
+                .build());
+
         TradingDaysSpec td=core().getRegression().getTradingDays();
         
         // Fn == None -> No autoadjust + Lp set if auto-adjust
-        LengthOfPeriodType adjust = tr.getAdjust();
-        boolean auto = td.isAutoAdjust();
-        
-        TransformSpec.Builder builder = inner().toBuilder().function(value);
-        if (value == TransformationType.None)
-            builder.adjust(LengthOfPeriodType.None);
-        update(builder.build());
         
         if ((td.isDefaultTradingDays() || td.isHolidays()) 
-                && ((value == TransformationType.Auto && ! td.isAutoAdjust())
-                || value == TransformationType.None && auto)){
+                && (value != TransformationType.Auto && td.isAutoAdjust())){
             // we need to update the trading days options
             if (td.isDefaultTradingDays())
                 update(TradingDaysSpec.td(td.getTradingDaysType(), adjust,
@@ -175,6 +173,8 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
         "transformSpecUI.adjustDesc.desc=[adjust] Preadjustment of the series for length of period or leap year effects. The series is divided by the specified effect. Not available with the \"auto\" mode"
     })
     private EnhancedPropertyDescriptor adjustDesc() {
+        if (inner().getFunction() != TransformationType.Log)
+            return null;
         try {
             PropertyDescriptor desc = new PropertyDescriptor("adjust", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ADJUST_ID);

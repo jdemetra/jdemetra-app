@@ -25,7 +25,7 @@ public class EasterSpecUI extends BaseRegArimaSpecUI {
     }
 
     private EasterSpec inner() {
-        EasterSpec easter = core().getRegression().getCalendar().getEaster();
+        EasterSpec easter = core().getRegression().getEaster();
         return easter;
     }
     

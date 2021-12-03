@@ -69,7 +69,7 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
         return Menus.createActions(super.getActions(), WorkspaceFactory.TSCONTEXTPATH, getContextPath());
     }
     
-        public void refresh() {
+    public void refresh() {
         panel.refreshAll();
     }
 
@@ -102,6 +102,7 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
     public void setTs(demetra.timeseries.Ts ts) {
         Ts loadedTs = ts.load(TsInformationType.All, TsManager.getDefault());
         panel.getDocument().set(loadedTs);
+        panel.initSpecView();
         panel.refreshAll();
         panel.updateDocument();
     }

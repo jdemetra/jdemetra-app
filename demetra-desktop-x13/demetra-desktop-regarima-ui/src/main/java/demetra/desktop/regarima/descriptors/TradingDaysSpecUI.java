@@ -7,6 +7,10 @@ package demetra.desktop.regarima.descriptors;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.ui.properties.l2fprod.Holidays;
 import demetra.desktop.ui.properties.l2fprod.UserVariables;
+import demetra.desktop.modelling.util.TradingDaysSpecType;
+import demetra.modelling.TransformationType;
+import demetra.regarima.RegressionTestSpec;
+import demetra.regarima.TradingDaysSpec;
 import demetra.timeseries.calendars.CalendarManager;
 import demetra.timeseries.calendars.LengthOfPeriodType;
 import demetra.timeseries.calendars.TradingDaysType;
@@ -30,15 +34,7 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
-        EnhancedPropertyDescriptor desc = autoDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = pftdDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = optionDesc();
+        EnhancedPropertyDescriptor desc = optionDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -55,6 +51,10 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
             descs.add(desc);
         }
         desc = lpDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = autoDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -76,7 +76,7 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
     }
 
     private TradingDaysSpec inner() {
-        TradingDaysSpec spec = core().getRegression().getCalendar().getTradingDays();
+        TradingDaysSpec spec = core().getRegression().getTradingDays();
         
         return spec;
     }
@@ -107,42 +107,55 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
     }
 
     public void setOption(TradingDaysSpecType value) {
+        LengthOfPeriodType adjust = core().getTransform().getAdjust();
+        TransformationType function = core().getTransform().getFunction();
+        boolean auto = function == TransformationType.Auto;
+        boolean lp=adjust==LengthOfPeriodType.None;
         switch (value) {
             case None:
                 update(TradingDaysSpec.none());
                 break;
             case Default:
-                update(TradingDaysSpec.td(TradingDaysType.TradingDays, LengthOfPeriodType.LeapYear, RegressionTestType.Separate_T));
+                update(TradingDaysSpec.td(TradingDaysType.TradingDays, 
+                        lp ? LengthOfPeriodType.LeapYear : LengthOfPeriodType.None, 
+                        RegressionTestSpec.Remove,
+                        auto));
                 break;
             case Holidays:
-                update(TradingDaysSpec.holidays(CalendarManager.DEF, TradingDaysType.TradingDays, LengthOfPeriodType.LengthOfPeriod, RegressionTestType.Separate_T));
+                update(TradingDaysSpec.holidays(CalendarManager.DEF, 
+                        TradingDaysType.TradingDays, 
+                        lp ? LengthOfPeriodType.LeapYear : LengthOfPeriodType.None, 
+                        RegressionTestSpec.Remove,
+                        auto));
                 break;
             case Stock:
-                update(TradingDaysSpec.stockTradingDays(31, RegressionTestType.Separate_T));
+                update(TradingDaysSpec.stockTradingDays(31, RegressionTestSpec.Remove));
                 break;
             case UserDefined:
-                update(TradingDaysSpec.userDefined(new String[]{}, RegressionTestType.Separate_T));
+                update(TradingDaysSpec.userDefined(new String[]{}, RegressionTestSpec.Remove));
                 break;
             default:
                 throw new UnsupportedOperationException("Not supported yet.");
         }
     }
 
-    public RegressionTestType getRegressionTestType() {
+    public RegressionTestSpec getRegressionTest() {
         return inner().getRegressionTestType();
     }
 
-    public void setRegressionTestType(RegressionTestType value) {
+    public void setRegressionTest(RegressionTestSpec value) {
         TradingDaysSpec td = inner();
         // No fixed coefficient (otherwise, read only)
         if (value.equals(td.getRegressionTestType()))
             return;
         switch (getOption()){
             case Default:
-                update(TradingDaysSpec.td(td.getTradingDaysType(), td.getLengthOfPeriodType(), value));
+                update(TradingDaysSpec.td(td.getTradingDaysType(), td.getLengthOfPeriodType(), 
+                        value, td.isAutoAdjust()));
                 break;
             case Holidays:
-                update(TradingDaysSpec.holidays(td.getHolidays(), td.getTradingDaysType(), td.getLengthOfPeriodType(), value));
+                update(TradingDaysSpec.holidays(td.getHolidays(), td.getTradingDaysType(), 
+                        td.getLengthOfPeriodType(), value, td.isAutoAdjust()));
                 break;
             case Stock:
                 update(TradingDaysSpec.stockTradingDays(td.getStockTradingDays(), value));
@@ -176,10 +189,33 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
             return;
         switch (getOption()){
             case Default:
-                update(TradingDaysSpec.td(value, td.getLengthOfPeriodType(), td.getRegressionTestType()));
+                update(TradingDaysSpec.td(value, td.getLengthOfPeriodType(), 
+                        td.getRegressionTestType(), td.isAutoAdjust()));
                 break;
             case Holidays:
-                update(TradingDaysSpec.holidays(td.getHolidays(), value, td.getLengthOfPeriodType(), td.getRegressionTestType()));
+                update(TradingDaysSpec.holidays(td.getHolidays(), value, 
+                        td.getLengthOfPeriodType(), td.getRegressionTestType(),
+                        td.isAutoAdjust()));
+                break;
+        }
+    }
+
+    public boolean isAutoAdjust() {
+        return inner().isAutoAdjust();
+    }
+
+    public void setAutoAdjust(boolean value) {
+        TradingDaysSpec td = inner();
+        // No fixed coefficient (otherwise, read only)
+        switch (getOption()){
+            case Default:
+                update(TradingDaysSpec.td(td.getTradingDaysType(), td.getLengthOfPeriodType(), 
+                        td.getRegressionTestType(), value));
+                break;
+            case Holidays:
+                update(TradingDaysSpec.holidays(td.getHolidays(), td.getTradingDaysType(), 
+                        td.getLengthOfPeriodType(), td.getRegressionTestType(),
+                        value));
                 break;
         }
     }
@@ -195,10 +231,14 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
             return;
         switch (getOption()){
             case Default:
-                update(TradingDaysSpec.td(td.getTradingDaysType(), value, td.getRegressionTestType()));
+                update(TradingDaysSpec.td(td.getTradingDaysType(), value, 
+                        td.getRegressionTestType(), td.isAutoAdjust()));
                 break;
             case Holidays:
-                update(TradingDaysSpec.holidays(td.getHolidays(), td.getTradingDaysType(), value, td.getRegressionTestType()));
+                update(TradingDaysSpec.holidays(td.getHolidays(), 
+                        td.getTradingDaysType(), value, 
+                        td.getRegressionTestType(), td.isAutoAdjust()
+                ));
                 break;
         }
     }
@@ -209,7 +249,8 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
 
     public void setHolidays(Holidays holidays) {
         TradingDaysSpec td = inner();
-        update(TradingDaysSpec.holidays(holidays.getName(), td.getTradingDaysType(), td.getLengthOfPeriodType(), td.getRegressionTestType()));
+        update(TradingDaysSpec.holidays(holidays.getName(), td.getTradingDaysType(), 
+                td.getLengthOfPeriodType(), td.getRegressionTestType(), td.isAutoAdjust()));
     }
 
     public UserVariables getUserVariables() {
@@ -221,51 +262,10 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         update(TradingDaysSpec.userDefined(vars.getNames(), td.getRegressionTestType()));
     }
 
-    public TradingDaysSpec.AutoMethod getAutomatic() {
-        return inner().getAutomaticMethod();
-    }
-
-    public void setAutomatic(TradingDaysSpec.AutoMethod value) {
-        TradingDaysSpec td = inner();
-        // No fixed coefficient (otherwise, read only)
-        if (value.equals(td.getAutomaticMethod()))
-            return;
-        if (value.equals(TradingDaysSpec.AutoMethod.Unused)){
-            update(TradingDaysSpec.td(TradingDaysType.WorkingDays, LengthOfPeriodType.LeapYear, RegressionTestType.Joint_F));
-        }else{
-            switch (getOption()){
-                case Default:
-                    update(TradingDaysSpec.automatic(value, td.getProbabilityForFTest()));
-                    break;
-                case Holidays:
-                    update(TradingDaysSpec.automaticHolidays(td.getHolidays(), value, td.getProbabilityForFTest()));
-                    break;
-            }
-        }
-    }
-    
-   public double getPftd() {
-        return inner().getProbabilityForFTest();
-    }
-
-    public void setPftd(double value) {
-        TradingDaysSpec td = inner();
-        // No fixed coefficient (otherwise, read only)
-        if (value == td.getProbabilityForFTest())
-            return;
-        switch (getOption()){
-            case Default:
-                update(TradingDaysSpec.automatic(td.getAutomaticMethod(), value));
-                break;
-            case Holidays:
-                update(TradingDaysSpec.automaticHolidays(td.getHolidays(), td.getAutomaticMethod(), value));
-                break;
-        }
-    }
-    
+   
     
 /////////////////////////////////////////////////////////
-    private static final int AUTO_ID = 0, PFTD_ID=10, OPTION_ID = 20, STOCK_ID = 30, HOLIDAYS_ID = 40, USER_ID = 50, TEST_ID = 1;
+     private static final int OPTION_ID = 1, STOCK_ID = 2, HOLIDAYS_ID = 3, USER_ID = 4, TD_ID = 5, LP_ID = 6, AUTO_ID = 7, TEST_ID = 10;
 
     @Messages({"tradingDaysSpecUI.optionDesc.name=option",
         "tradingDaysSpecUI.optionDesc.desc=Specifies the type of a calendar being assigned to the series (Default – default calendar without country-specific holidays; Stock – day-of-week effects for inventories and other stock reported for the w-th day of the month; Holidays – the calendar variables based on user-defined calendar possibly with country specific holidays; UserDefined – calendar variables specified by the user) or excludes calendar variables from the regression model (None)."
@@ -284,129 +284,12 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
-    @Messages({"tradingDaysSpecUI.automaticDesc.name=automatic",
-        "tradingDaysSpecUI.automaticDesc.desc= The calendar effects can be added to the model manually, through the Option, tradingDays and LeapYear parameters (Unused ); or automatically, where the  choice of the number of calendar variables is based on  F Test or Wald test.  In both cases for an automatic choice the model with higher F value is chosen, provided that it is higher than Pftd."
-    })
-    private EnhancedPropertyDescriptor autoDesc() {
-        if (getOption() != TradingDaysSpecType.Default && getOption() != TradingDaysSpecType.Holidays) {
-            return null;
-        }
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("automatic", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AUTO_ID);
-            desc.setDisplayName(Bundle.tradingDaysSpecUI_automaticDesc_name());
-            desc.setShortDescription(Bundle.tradingDaysSpecUI_automaticDesc_desc());
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-
-    @Messages({"tradingDaysSpecUI.holidaysDesc.name=holidays",
-        "tradingDaysSpecUI.holidaysDesc.desc=holidays"
-    })
-    private EnhancedPropertyDescriptor holidaysDesc() {
-        if (inner().getHolidays() == null) {
-            return null;
-        }
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("holidays", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, HOLIDAYS_ID);
-            desc.setDisplayName(Bundle.tradingDaysSpecUI_holidaysDesc_name());
-            desc.setShortDescription(Bundle.tradingDaysSpecUI_holidaysDesc_desc());
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-
-    @Messages({"tradingDaysSpecUI.pftdDesc.name=Pftd",
-        "tradingDaysSpecUI.pftdDesc.desc=P-Value applied in the test specified by the automatic parameter to assess the significance of the pre-tested calendar effect and to decide if calendar effects are included into the TRAMO model."
-    })
-    private EnhancedPropertyDescriptor pftdDesc() {
-        if (! inner().isAutomatic()) {
-            return null;
-        }
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("pftd", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, PFTD_ID);
-            desc.setDisplayName(Bundle.tradingDaysSpecUI_pftdDesc_name());
-            desc.setShortDescription(Bundle.tradingDaysSpecUI_pftdDesc_desc());
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-    
-    @Messages({"tradingDaysSpecUI.userDesc.name=User Variable",
-        "tradingDaysSpecUI.userDesc.desc="
-    })
-    private EnhancedPropertyDescriptor userDesc() {
-        if (inner().getUserVariables() == null) {
-            return null;
-        }
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("userVariables", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, USER_ID);
-            desc.setDisplayName(Bundle.tradingDaysSpecUI_userDesc_name());
-            desc.setShortDescription(Bundle.tradingDaysSpecUI_userDesc_desc());
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-
-    @Messages({"tradingDaysSpecUI.testDesc.name=RegressionTestType",
-        "tradingDaysSpecUI.testDesc.desc="
-    })
-    private EnhancedPropertyDescriptor testDesc() {
-        if (getOption() == TradingDaysSpecType.None) {
-            return null;
-        }
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("RegressionTestType", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OPTION_ID);
-            desc.setDisplayName(Bundle.tradingDaysSpecUI_testDesc_name());
-            desc.setShortDescription(Bundle.tradingDaysSpecUI_testDesc_desc());
-            edesc.setReadOnly(isRo() || inner().isAutomatic());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-
-    @Messages({"tradingDaysSpecUI.tdDesc.name=tradingDays",
-        "tradingDaysSpecUI.tdDesc.desc="
-    })
-    private EnhancedPropertyDescriptor tdDesc() {
-        if (getOption() != TradingDaysSpecType.Default && getOption() != TradingDaysSpecType.Holidays) {
-            return null;
-        }
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("tradingDays", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OPTION_ID);
-            desc.setDisplayName(Bundle.tradingDaysSpecUI_tdDesc_name());
-            desc.setShortDescription(Bundle.tradingDaysSpecUI_tdDesc_desc());
-            edesc.setReadOnly(isRo() || inner().isAutomatic());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-
-    @Messages({"tradingDaysSpecUI.stdDesc.name=w",
+    @Messages({
+        "tradingDaysSpecUI.stdDesc.name=W",
         "tradingDaysSpecUI.stdDesc.desc=Position of the day in the month. 31 for last day."
     })
     private EnhancedPropertyDescriptor stdDesc() {
-        if (getOption() != TradingDaysSpecType.Stock) {
+        if (! inner().isStockTradingDays()) {
             return null;
         }
         try {
@@ -421,19 +304,125 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
-    @Messages({"tradingDaysSpecUI.leapyearDesc.name=Leap year",
-        "tradingDaysSpecUI.leapyearDesc.desc=Enables/disables for a leap-year correction."
+    private EnhancedPropertyDescriptor userDesc() {
+        if (!inner().isUserDefined()) {
+            return null;
+        }
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("userVariables", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, USER_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            edesc.setReadOnly(isRo());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+    
+    @Messages({
+        "tradingDaysSpecUI.testDesc.name=test",
+        "tradingDaysSpecUI.testDesc.desc="
     })
-    private EnhancedPropertyDescriptor lpDesc() {
+    private EnhancedPropertyDescriptor testDesc() {
+        if (!inner().isUsed()) {
+            return null;
+        }
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("test", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TEST_ID);
+            desc.setDisplayName(Bundle.tradingDaysSpecUI_testDesc_name());
+            desc.setShortDescription(Bundle.tradingDaysSpecUI_testDesc_desc());
+            edesc.setReadOnly(isRo());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "tradingDaysSpecUI.autoDesc.name=autoAdjust",
+        "tradingDaysSpecUI.autoDesc.desc="
+    })
+    private EnhancedPropertyDescriptor autoDesc() {
+        if (!inner().isDefaultTradingDays() && ! inner().isHolidays()) {
+            return null;
+       }
+        boolean auto = core().getTransform().getFunction()== TransformationType.Auto;
+        if (! auto)
+            return null;
+        boolean lp = inner().getLengthOfPeriodType() != LengthOfPeriodType.None;
+        if (! lp)
+            return null;
+         try {
+             PropertyDescriptor desc = new PropertyDescriptor("autoAdjust", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AUTO_ID);
+            desc.setDisplayName(Bundle.tradingDaysSpecUI_autoDesc_name());
+            desc.setShortDescription(Bundle.tradingDaysSpecUI_autoDesc_desc());
+            edesc.setReadOnly(isRo());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "tradingDaysSpecUI.tdDesc.name=td",
+        "tradingDaysSpecUI.tdDesc.desc=Option for trading days"
+    })
+    private EnhancedPropertyDescriptor tdDesc() {
         if (getOption() != TradingDaysSpecType.Default && getOption() != TradingDaysSpecType.Holidays) {
             return null;
         }
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("leapYear", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OPTION_ID);
-            desc.setDisplayName(Bundle.tradingDaysSpecUI_leapyearDesc_name());
-            desc.setShortDescription(Bundle.tradingDaysSpecUI_leapyearDesc_desc());
-            edesc.setReadOnly(isRo() || inner().isAutomatic());
+            PropertyDescriptor desc = new PropertyDescriptor("tradingDays", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TD_ID);
+            desc.setDisplayName(Bundle.tradingDaysSpecUI_tdDesc_name());
+            desc.setShortDescription(Bundle.tradingDaysSpecUI_tdDesc_desc());
+            edesc.setReadOnly(isRo());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "tradingDaysSpecUI.lpDesc.name=lp",
+        "tradingDaysSpecUI.lpDesc.desc=Option for length of period"
+    })
+    private EnhancedPropertyDescriptor lpDesc() {
+        if (!inner().isDefaultTradingDays() && ! inner().isHolidays()) {
+            return null;
+        }
+        boolean adjust = core().getTransform().getAdjust() != LengthOfPeriodType.None;
+        if (adjust)
+            return null;
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("LeapYear", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, LP_ID);
+            desc.setDisplayName(Bundle.tradingDaysSpecUI_lpDesc_name());
+            desc.setShortDescription(Bundle.tradingDaysSpecUI_lpDesc_desc());
+            edesc.setReadOnly(isRo() || core().getTransform().getAdjust() != LengthOfPeriodType.None || isAutoAdjust());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "tradingDaysSpecUI.holidaysDesc.name=holidays",
+        "tradingDaysSpecUI.holidaysDesc.desc="
+    })
+    private EnhancedPropertyDescriptor holidaysDesc() {
+        if (! inner().isHolidays()) {
+            return null;
+        }
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("holidays", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, HOLIDAYS_ID);
+            desc.setDisplayName(Bundle.tradingDaysSpecUI_holidaysDesc_name());
+            desc.setShortDescription(Bundle.tradingDaysSpecUI_holidaysDesc_desc());
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            edesc.setReadOnly(isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

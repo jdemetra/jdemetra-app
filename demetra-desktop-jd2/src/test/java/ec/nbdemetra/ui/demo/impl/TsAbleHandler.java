@@ -165,7 +165,7 @@ public final class TsAbleHandler extends TypedDemoComponentHandler<HasTs> {
             Optional<Ts> ts = TsManager.getDefault().getTs(dataSet, TsInformationType.Definition);
             if (ts.isPresent()) {
                 c.setTs(ts.get());
-                TsManager.getDefault().loadAsync(ts.get(), TsInformationType.All, c::replaceTs);
+                TsManager.getDefault().loadAsync(ts.get(), TsInformationType.All, c::updateTs);
             } else {
                 c.setTs(null);
             }

@@ -36,7 +36,7 @@ public interface HasTs {
 
     void setTs(@Nullable Ts ts);
 
-    default void replaceTs(@NonNull Ts ts) {
+    default void updateTs(@NonNull Ts ts) {
         Ts current = getTs();
         if (current != null && current.getMoniker().equals(ts.getMoniker())) {
             setTs(ts);
@@ -46,7 +46,7 @@ public interface HasTs {
     default void loadAsync(TsInformationType info) {
         Ts ts = getTs();
         if (ts != null && !ts.getType().encompass(info)) {
-            TsManager.getDefault().loadAsync(ts, info, this::replaceTs);
+            TsManager.getDefault().loadAsync(ts, info, this::updateTs);
         }
     }
     

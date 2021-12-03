@@ -7,6 +7,7 @@ package demetra.desktop.tramo.descriptors;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.ui.properties.l2fprod.Holidays;
 import demetra.desktop.ui.properties.l2fprod.UserVariables;
+import demetra.desktop.modelling.util.TradingDaysSpecType;
 import demetra.timeseries.calendars.CalendarManager;
 import demetra.timeseries.calendars.LengthOfPeriodType;
 import demetra.timeseries.calendars.TradingDaysType;

@@ -52,7 +52,7 @@ public class HasTsSupport {
             Optional<Ts> ts = dataTransfer.toTs(support.getTransferable());
             if (ts.isPresent()) {
                 delegate.setTs(ts.get());
-                TsManager.getDefault().loadAsync(ts.get(), TsInformationType.All, delegate::replaceTs);
+                TsManager.getDefault().loadAsync(ts.get(), TsInformationType.All, delegate::updateTs);
                 return true;
             }
             return false;

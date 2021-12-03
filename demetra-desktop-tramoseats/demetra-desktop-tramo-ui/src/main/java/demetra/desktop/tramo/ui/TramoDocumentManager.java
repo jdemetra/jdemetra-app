@@ -12,6 +12,8 @@ import demetra.desktop.ui.processing.IProcDocumentView;
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsDomain;
 import demetra.tramo.TramoSpec;
 import demetra.util.Id;
 import demetra.util.LinearId;
@@ -25,7 +27,7 @@ import org.openide.util.lookup.ServiceProvider;
         position = 500)
 public class TramoDocumentManager extends AbstractWorkspaceTsItemManager<TramoSpec, TramoDocument> {
 
-    public static final UIFactory<TramoSpec, TramoDocument> FACTORY=new DocumentUIServices.AbstractUIFactory<TramoSpec, TramoDocument>() {
+    public static final UIFactory<TramoSpec, TramoDocument> FACTORY=new DocumentUIServices.UIFactory<TramoSpec, TramoDocument>() {
             @Override
             public IProcDocumentView<TramoDocument> getDocumentView(TramoDocument document) {
                 return TramoViewFactory.getDefault().create(document);
@@ -33,7 +35,12 @@ public class TramoDocumentManager extends AbstractWorkspaceTsItemManager<TramoSp
 
             @Override
             public IObjectDescriptor<TramoSpec> getSpecificationDescriptor(TramoDocument doc) {
-                return new TramoSpecUI(doc.getSpecification(), false);
+                Ts input = doc.getInput();
+                TsDomain domain = null;
+                if (input != null){
+                    domain=input.getData().getDomain();
+                }
+                return new TramoSpecUI(doc.getSpecification(), false, domain);
             }
         };
  

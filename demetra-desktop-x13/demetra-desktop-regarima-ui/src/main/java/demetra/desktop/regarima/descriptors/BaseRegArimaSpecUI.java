@@ -6,24 +6,41 @@ package demetra.desktop.regarima.descriptors;
 
 import demetra.desktop.descriptors.IPropertyDescriptors;
 import demetra.modelling.implementations.SarimaSpec;
+import demetra.regarima.OutlierSpec;
+import demetra.regarima.EstimateSpec;
+import demetra.regarima.AutoModelSpec;
+import demetra.regarima.BasicSpec;
+import demetra.regarima.RegressionSpec;
+import demetra.regarima.TransformSpec;
+import demetra.regarima.EasterSpec;
+import demetra.regarima.TradingDaysSpec;
+import demetra.regarima.RegArimaSpec;
 
 /**
  *
  * @author PALATEJ
  */
-abstract class BaseRegArimaSpecUI implements IPropertyDescriptors{
-    
+abstract class BaseRegArimaSpecUI implements IPropertyDescriptors {
+
     final RegArimaSpecRoot root;
-        
-    BaseRegArimaSpecUI(RegArimaSpecRoot root){
-        this.root =root;
+
+    BaseRegArimaSpecUI(RegArimaSpecRoot root) {
+        this.root = root;
     }
-    
-    RegArimaSpec core(){return root.getCore();}
-    
-    boolean isRo(){return root.ro_;}
-    
-   void update(EstimateSpec spec) {
+
+    RegArimaSpec core() {
+        return root.getCore();
+    }
+
+    boolean isRo() {
+        return root.ro;
+    }
+
+    void update(BasicSpec spec) {
+        root.core = root.core.toBuilder().basic(spec).build();
+    }
+
+    void update(EstimateSpec spec) {
         root.core = root.core.toBuilder().estimate(spec).build();
     }
 

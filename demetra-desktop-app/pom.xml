@@ -80,6 +80,14 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-util</artifactId>   
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-modelling</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-sa-api</artifactId>
+        </dependency>
         <!--dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-jd2</artifactId>   
@@ -115,6 +123,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-tramo-outliers</artifactId>
             <version>${tramoseats.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-x13-api</artifactId>
+            <version>${x13.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

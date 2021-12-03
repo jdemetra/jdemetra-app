@@ -42,11 +42,10 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
     private final UIFactory<S, D> factory;
     protected final Type type_;
-    protected final UUID m_identifier;
     // visual components
     protected final JSplitPane splitter;
     protected final JPanel specPanel;
-    protected final BeanTreeView m_tree;
+    protected final BeanTreeView tree;
     protected final ExplorerManager em;
     protected final JToolBar toolBar;
     protected final JComponent emptyView;
@@ -61,19 +60,18 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     protected DefaultProcessingViewer(UIFactory<S, D> factory, Type type) {
         this.factory = factory;
         this.type_ = type;
-        this.m_identifier = UUID.randomUUID();
-
+ 
         this.dirty = false;
 
         this.specPanel = new JPanel(new BorderLayout());
         specPanel.setVisible(false);
 
-        this.m_tree = new BeanTreeView();
-        m_tree.setRootVisible(false);
-        m_tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        this.tree = new BeanTreeView();
+        tree.setRootVisible(false);
+        tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         this.em = new ExplorerManager();
-        em.addPropertyChangeListener(evt -> {
+        addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
                 case ExplorerManager.PROP_SELECTED_NODES:
                     Node[] nodes = (Node[]) evt.getNewValue();
@@ -92,7 +90,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
         this.emptyView = new JPanel(new BorderLayout());
 
-        this.splitter = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, m_tree, emptyView);
+        this.splitter = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, tree, emptyView);
         splitter.setDividerLocation(200);
         splitter.setResizeWeight(.20);
 
@@ -116,10 +114,6 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     @Override
     public ExplorerManager getExplorerManager() {
         return em;
-    }
-
-    public UUID getIdentifier() {
-        return m_identifier;
     }
 
     public int getSpecWidth() {
@@ -159,9 +153,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     public void updateDocument() {
         dirty = true;
         D doc = getDocument();
-        m_procView.refresh();
-        refreshHeader();
-    }
+     }
 
     public boolean isHeaderVisible() {
         return toolBar.isVisible();
@@ -213,17 +205,15 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     }
 
     private void initApplySpecView() {
+        D doc = getDocument();
         Action[] commands = {
             new AbstractAction(BUTTON_APPLY) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    ProcDocument doc = getDocument();
-                    ProcSpecification pspec = specDescriptor.getCore();
+                    S pspec = specDescriptor.getCore();
                     doc.set(pspec);
                     setDirty(BUTTON_APPLY);
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
-                    refreshAll();
-                    updateDocument();
                 }
             }};
         setPropertiesPanel(commands, factory.getSpecView(specDescriptor), specWidth_);
@@ -259,7 +249,6 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 }
             }};
 
-        specDescriptor = factory.getSpecificationDescriptor(doc);
         setPropertiesPanel(commands, factory.getSpecView(specDescriptor), specWidth_);
     }
 
@@ -316,7 +305,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     }
 
     protected void setTreeTransferHandler(TransferHandler handler) {
-        m_tree.setTransferHandler(handler);
+        tree.setTransferHandler(handler);
     }
 
     private void buildTree() {
@@ -368,7 +357,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         if (m_procView != null) {
             m_procView.dispose();
         }
-        m_tree.setTransferHandler(null);
+        tree.setTransferHandler(null);
         Component old = splitter.getBottomComponent();
         if (old instanceof Disposable) {
             ((Disposable) old).dispose();

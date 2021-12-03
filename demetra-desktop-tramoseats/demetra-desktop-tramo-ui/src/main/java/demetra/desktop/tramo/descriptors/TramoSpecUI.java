@@ -6,6 +6,7 @@ package demetra.desktop.tramo.descriptors;
 
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.descriptors.IObjectDescriptor;
+import demetra.timeseries.TsDomain;
 import demetra.tramo.TramoSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -26,8 +27,8 @@ public class TramoSpecUI implements IObjectDescriptor<TramoSpec> {
         return root.getCore();
     }
 
-    public TramoSpecUI(TramoSpec spec, boolean ro) {
-        root=new TramoSpecRoot(spec, ro);
+    public TramoSpecUI(TramoSpec spec, boolean ro, TsDomain domain) {
+        root=new TramoSpecRoot(spec, ro, domain);
     }
 
     public BasicSpecUI getBasic() {

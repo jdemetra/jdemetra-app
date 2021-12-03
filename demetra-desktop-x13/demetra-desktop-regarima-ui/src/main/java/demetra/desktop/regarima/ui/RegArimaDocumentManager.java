@@ -9,10 +9,12 @@ import demetra.desktop.regarima.descriptors.RegArimaSpecUI;
 import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.DocumentUIServices.UIFactory;
 import demetra.desktop.ui.processing.IProcDocumentView;
+import demetra.desktop.ui.properties.l2fprod.UserInterfaceContext;
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.regarima.RegArimaSpec;
+import demetra.timeseries.Ts;
 import demetra.util.Id;
 import demetra.util.LinearId;
 import org.openide.util.lookup.ServiceProvider;
@@ -25,7 +27,7 @@ import org.openide.util.lookup.ServiceProvider;
         position = 500)
 public class RegArimaDocumentManager extends AbstractWorkspaceTsItemManager<RegArimaSpec, RegArimaDocument> {
 
-    public static final UIFactory<RegArimaSpec, RegArimaDocument> FACTORY=new DocumentUIServices.AbstractUIFactory<RegArimaSpec, RegArimaDocument>() {
+    public static final UIFactory<RegArimaSpec, RegArimaDocument> FACTORY=new DocumentUIServices.UIFactory<RegArimaSpec, RegArimaDocument>() {
             @Override
             public IProcDocumentView<RegArimaDocument> getDocumentView(RegArimaDocument document) {
                 return RegArimaViewFactory.getDefault().create(document);
@@ -33,6 +35,11 @@ public class RegArimaDocumentManager extends AbstractWorkspaceTsItemManager<RegA
 
             @Override
             public IObjectDescriptor<RegArimaSpec> getSpecificationDescriptor(RegArimaDocument doc) {
+                Ts input = doc.getInput();
+                if (input != null){
+                    UserInterfaceContext.INSTANCE.setDomain(input.getData().getDomain());
+                }else 
+                    UserInterfaceContext.INSTANCE.setDomain(null);
                 return new RegArimaSpecUI(doc.getSpecification(), false);
             }
         };

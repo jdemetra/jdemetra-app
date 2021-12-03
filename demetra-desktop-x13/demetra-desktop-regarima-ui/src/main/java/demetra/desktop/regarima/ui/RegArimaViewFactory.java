@@ -7,8 +7,8 @@ package demetra.desktop.regarima.ui;
 import demetra.desktop.modelling.PreprocessingViewFactory;
 import demetra.desktop.ui.processing.IProcDocumentItemFactory;
 import demetra.desktop.ui.processing.IProcDocumentViewFactory;
-import demetra.tramo.TramoSpec;
-import demetra.tramoseats.io.information.TramoSpecMapping;
+import demetra.regarima.RegArimaSpec;
+import demetra.x13.io.information.RegArimaSpecMapping;
 import java.util.concurrent.atomic.AtomicReference;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -16,29 +16,29 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author Jean Palate
  */
-public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, TramoDocument> {
+public class RegArimaViewFactory extends PreprocessingViewFactory<RegArimaSpec, RegArimaDocument> {
 
-    private static final AtomicReference<IProcDocumentViewFactory<TramoDocument>> INSTANCE = new AtomicReference(new RegArimaViewFactory());
+    private static final AtomicReference<IProcDocumentViewFactory<RegArimaDocument>> INSTANCE = new AtomicReference(new RegArimaViewFactory());
 
-    public static IProcDocumentViewFactory<TramoDocument> getDefault() {
+    public static IProcDocumentViewFactory<RegArimaDocument> getDefault() {
         return INSTANCE.get();
     }
 
-    public static void setDefault(IProcDocumentViewFactory<TramoDocument> factory) {
+    public static void setDefault(IProcDocumentViewFactory<RegArimaDocument> factory) {
         INSTANCE.set(factory);
     }
 
     public RegArimaViewFactory() {
-        registerFromLookup(TramoDocument.class);
+        registerFromLookup(RegArimaDocument.class);
     }
 
 //<editor-fold defaultstate="collapsed" desc="REGISTER SPEC">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100000)
-    public static class SpecAllFactory extends PreprocessingViewFactory.SpecAllFactory<TramoDocument> {
+    public static class SpecAllFactory extends PreprocessingViewFactory.SpecAllFactory<RegArimaDocument> {
 
         public SpecAllFactory() {
-            super(TramoDocument.class, doc -> {
-                return TramoSpecMapping.write(doc.getSpecification(), true);
+            super(RegArimaDocument.class, doc -> {
+                return RegArimaSpecMapping.write(doc.getSpecification(), true);
             });
         }
 
@@ -49,10 +49,10 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, Tra
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100010)
-    public static class InputFactory extends PreprocessingViewFactory.InputFactory<TramoDocument> {
+    public static class InputFactory extends PreprocessingViewFactory.InputFactory<RegArimaDocument> {
 
         public InputFactory() {
-            super(TramoDocument.class);
+            super(RegArimaDocument.class);
         }
 
         @Override
@@ -65,10 +65,10 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, Tra
 //
 //<editor-fold defaultstate="collapsed" desc="REGISTER SUMMARY">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100000 + 1000)
-    public static class SummaryFactory extends PreprocessingViewFactory.SummaryFactory<TramoDocument> {
+    public static class SummaryFactory extends PreprocessingViewFactory.SummaryFactory<RegArimaDocument> {
 
         public SummaryFactory() {
-            super(TramoDocument.class);
+            super(RegArimaDocument.class);
         }
 
         @Override
@@ -81,10 +81,10 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, Tra
 
 //<editor-fold defaultstate="collapsed" desc="REGISTER FORECASTS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 200000 + 500)
-    public static class ModelFCastsTableFactory extends PreprocessingViewFactory.PreprocessingFCastsTableFactory<TramoDocument> {
+    public static class ModelFCastsTableFactory extends PreprocessingViewFactory.PreprocessingFCastsTableFactory<RegArimaDocument> {
 
         public ModelFCastsTableFactory() {
-            super(TramoDocument.class);
+            super(RegArimaDocument.class);
         }
 
         @Override
@@ -93,10 +93,10 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, Tra
         }
     }
      @ServiceProvider(service = IProcDocumentItemFactory.class, position = 200000 + 1000)
-    public static class ModelFCastsFactory extends PreprocessingViewFactory.ModelFCastsFactory<TramoDocument> {
+    public static class ModelFCastsFactory extends PreprocessingViewFactory.ModelFCastsFactory<RegArimaDocument> {
 
         public ModelFCastsFactory() {
-            super(TramoDocument.class);
+            super(RegArimaDocument.class);
         }
 
         @Override
@@ -106,10 +106,10 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, Tra
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 200000 + 2000)
-    public static class ModelFCastsOutFactory extends PreprocessingViewFactory.ModelFCastsOutFactory<TramoDocument> {
+    public static class ModelFCastsOutFactory extends PreprocessingViewFactory.ModelFCastsOutFactory<RegArimaDocument> {
 
         public ModelFCastsOutFactory() {
-            super(TramoDocument.class);
+            super(RegArimaDocument.class);
         }
 
         @Override
@@ -122,10 +122,10 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, Tra
 //
     //<editor-fold defaultstate="collapsed" desc="REGISTER MODEL">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 1000)
-    public static class ModelRegsFactory extends PreprocessingViewFactory.ModelRegsFactory<TramoDocument> {
+    public static class ModelRegsFactory extends PreprocessingViewFactory.ModelRegsFactory<RegArimaDocument> {
 
         public ModelRegsFactory() {
-            super(TramoDocument.class);
+            super(RegArimaDocument.class);
         }
 
         @Override
@@ -135,10 +135,10 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, Tra
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 2000)
-    public static class ModelArimaFactory extends PreprocessingViewFactory.ModelArimaFactory<TramoDocument> {
+    public static class ModelArimaFactory extends PreprocessingViewFactory.ModelArimaFactory<RegArimaDocument> {
 
         public ModelArimaFactory() {
-            super(TramoDocument.class);
+            super(RegArimaDocument.class);
         }
 
         @Override
@@ -148,10 +148,10 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, Tra
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 3000)
-    public static class PreprocessingDetFactory extends PreprocessingViewFactory.PreprocessingDetFactory<TramoDocument> {
+    public static class PreprocessingDetFactory extends PreprocessingViewFactory.PreprocessingDetFactory<RegArimaDocument> {
 
         public PreprocessingDetFactory() {
-            super(TramoDocument.class);
+            super(RegArimaDocument.class);
         }
 
         @Override
@@ -163,10 +163,10 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, Tra
 
 //<editor-fold defaultstate="collapsed" desc="REGISTER RESIDUALS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 1000)
-    public static class ModelResFactory extends PreprocessingViewFactory.ModelResFactory<TramoDocument> {
+    public static class ModelResFactory extends PreprocessingViewFactory.ModelResFactory<RegArimaDocument> {
 
         public ModelResFactory() {
-            super(TramoDocument.class);
+            super(RegArimaDocument.class);
         }
 
         @Override
@@ -176,10 +176,10 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, Tra
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 2000)
-    public static class ModelResStatsFactory extends PreprocessingViewFactory.ModelResStatsFactory<TramoDocument> {
+    public static class ModelResStatsFactory extends PreprocessingViewFactory.ModelResStatsFactory<RegArimaDocument> {
 
         public ModelResStatsFactory() {
-            super(TramoDocument.class);
+            super(RegArimaDocument.class);
         }
 
         @Override
@@ -189,10 +189,10 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, Tra
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 3000)
-    public static class ModelResDist extends PreprocessingViewFactory.ModelResDist<TramoDocument> {
+    public static class ModelResDist extends PreprocessingViewFactory.ModelResDist<RegArimaDocument> {
 
         public ModelResDist() {
-            super(TramoDocument.class);
+            super(RegArimaDocument.class);
         }
 
         @Override
@@ -202,10 +202,10 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, Tra
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 4000)
-    public static class ModelResSpectrum extends PreprocessingViewFactory.ModelResSpectrum<TramoDocument> {
+    public static class ModelResSpectrum extends PreprocessingViewFactory.ModelResSpectrum<RegArimaDocument> {
 
         public ModelResSpectrum() {
-            super(TramoDocument.class);
+            super(RegArimaDocument.class);
         }
 
         @Override
@@ -218,10 +218,10 @@ public class RegArimaViewFactory extends PreprocessingViewFactory<TramoSpec, Tra
 
     //<editor-fold defaultstate="collapsed" desc="REGISTER DETAILS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 500000)
-    public static class LikelihoodFactory extends PreprocessingViewFactory.LikelihoodFactory<TramoDocument> {
+    public static class LikelihoodFactory extends PreprocessingViewFactory.LikelihoodFactory<RegArimaDocument> {
 
         public LikelihoodFactory() {
-            super(TramoDocument.class);
+            super(RegArimaDocument.class);
             setAsync(true);
         }
 

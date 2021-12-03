@@ -26,17 +26,11 @@ public class DocumentUIServices {
 
         IProcDocumentView<D> getDocumentView(D document);
 
-        JComponent getSpecView(IObjectDescriptor<S> desc);
-    }
-
-    public static abstract class AbstractUIFactory<S extends ProcSpecification, D extends ProcDocument<S, ?, ?>> implements UIFactory<S, D> {
-
-        @Override
-        public JComponent getSpecView(IObjectDescriptor<S> desc) {
+        default PropertySheetPanel getSpecView(IObjectDescriptor<S> desc) {
             final PropertySheetPanel panel = PropertiesPanelFactory.INSTANCE.createPanel(desc);
             panel.addPropertySheetChangeListener(evt -> panel.firePropertyChange(SPEC_PROPERTY, 0, 1));
             return panel;
         }
-    }
+   }
 
 }
