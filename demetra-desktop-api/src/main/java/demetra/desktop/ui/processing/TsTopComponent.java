@@ -9,6 +9,7 @@ import demetra.desktop.TsManager;
 import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.ui.ActiveView;
 import demetra.desktop.ui.ActiveViewManager;
+import demetra.desktop.ui.properties.l2fprod.UserInterfaceContext;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.timeseries.Ts;

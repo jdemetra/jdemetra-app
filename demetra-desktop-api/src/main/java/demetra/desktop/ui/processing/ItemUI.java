@@ -12,10 +12,11 @@ import javax.swing.JMenu;
 /**
  *
  * @author Jean Palate
+ * @param <I>
  */
-public interface ItemUI<H, I> {
+public interface ItemUI<I> {
 
-    JComponent getView(H host, I information);
-    boolean fillMenu(JMenu menu, H host, I information);
-    Icon getIcon(H host, I information);
+    JComponent getView(I document);
+    default boolean fillMenu(JMenu menu, I info){return false;}
+    default Icon getIcon(I info){return null;}
 }

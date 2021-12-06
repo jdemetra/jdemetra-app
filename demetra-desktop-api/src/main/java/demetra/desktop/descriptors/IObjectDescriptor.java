@@ -21,6 +21,7 @@ package demetra.desktop.descriptors;
 /**
  *
  * @author Jean Palate
+ * @param <T>
  */
 public interface IObjectDescriptor<T> extends IPropertyDescriptors {
 

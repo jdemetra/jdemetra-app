@@ -10,6 +10,7 @@ import demetra.desktop.ui.ActiveViewManager;
 import demetra.desktop.ui.Menus;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.ui.processing.TsTopComponent;
+import demetra.desktop.ui.properties.l2fprod.UserInterfaceContext;
 import demetra.timeseries.TsDocument;
 import demetra.desktop.workspace.WorkspaceItem;
 import javax.swing.Action;
@@ -47,6 +48,31 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
     public WorkspaceItem<T> getDocument() {
         return doc;
     }
+    
+    public void updateUserInterfaceContext() {
+        if (doc == null)
+            return;
+        T element = doc.getElement();
+        if (element == null) {
+            UserInterfaceContext.INSTANCE.setDomain(null);
+        } else {
+            Ts s = element.getInput();
+            if (s == null) {
+                UserInterfaceContext.INSTANCE.setDomain(null);
+            } else {
+                UserInterfaceContext.INSTANCE.setDomain(s.getData().getDomain());
+            }
+        }
+    }
+
+
+    @Override
+    public void componentActivated(){
+        super.componentActivated();
+        updateUserInterfaceContext();
+    }
+    
+    
     
     @Override
     public boolean hasContextMenu(){

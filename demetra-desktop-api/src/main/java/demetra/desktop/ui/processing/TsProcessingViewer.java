@@ -9,10 +9,12 @@ import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.TsManager;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.ui.properties.l2fprod.UserInterfaceContext;
 import demetra.information.Explorable;
 import demetra.processing.ProcSpecification;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsDocument;
+import demetra.timeseries.TsDomain;
 import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsMoniker;
 import demetra.util.MultiLineNameUtil;
@@ -63,12 +65,12 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
 
         setTransferHandler(new TsHandler());
     }
-    
+
     @Override
-    public void updateDocument(){
+    public void updateDocument() {
         super.updateDocument();
         TsDynamicProvider.OnDocumentChanged(getDocument());
-   }
+    }
 
     @Override
     public void refreshHeader() {
@@ -80,7 +82,7 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
         } else {
             dropDataLabel.setVisible(false);
             Ts input = doc.getInput();
-            String displayName = ( input).getName();
+            String displayName = (input).getName();
             tsLabel.setText(MultiLineNameUtil.lastWithMax(displayName, 70));
             tsLabel.setToolTipText(!Strings.isNullOrEmpty(displayName) ? MultiLineNameUtil.toHtml(displayName) : null);
             TsMoniker moniker = input.getMoniker();
@@ -89,6 +91,7 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
             ProcSpecification spec = doc.getSpecification();
             specLabel.setText("Spec: " + spec.display());
             specLabel.setVisible(true);
+
         }
     }
 

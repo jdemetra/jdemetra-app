@@ -5,10 +5,8 @@
 package demetra.desktop.ui.processing;
 
 import demetra.desktop.TsDynamicProvider;
-import demetra.information.Explorable;
 import demetra.processing.ProcDocument;
 import demetra.timeseries.Ts;
-import demetra.timeseries.TsData;
 import demetra.timeseries.TsDocument;
 import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsInformationType;
@@ -22,7 +20,7 @@ import javax.swing.JComponent;
  *
  * @author Jean Palate
  */
-public class GenericTableUI<D extends ProcDocument<?,?,?> >extends DefaultItemUI<IProcDocumentView<D>, TsDocument> {
+public class GenericTableUI<D extends TsDocument>implements ItemUI<D> {
 
     private final List<String> names_;
     private final boolean full_;
@@ -34,7 +32,7 @@ public class GenericTableUI<D extends ProcDocument<?,?,?> >extends DefaultItemUI
 
 
     @Override
-    public JComponent getView(IProcDocumentView<D> host, TsDocument doc) {
+    public JComponent getView(D doc) {
 
         List<Ts> items=new ArrayList<>();
         for (String s : names_){

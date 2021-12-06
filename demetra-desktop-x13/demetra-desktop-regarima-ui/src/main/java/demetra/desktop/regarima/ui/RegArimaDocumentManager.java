@@ -35,11 +35,6 @@ public class RegArimaDocumentManager extends AbstractWorkspaceTsItemManager<RegA
 
             @Override
             public IObjectDescriptor<RegArimaSpec> getSpecificationDescriptor(RegArimaDocument doc) {
-                Ts input = doc.getInput();
-                if (input != null){
-                    UserInterfaceContext.INSTANCE.setDomain(input.getData().getDomain());
-                }else 
-                    UserInterfaceContext.INSTANCE.setDomain(null);
                 return new RegArimaSpecUI(doc.getSpecification(), false);
             }
         };

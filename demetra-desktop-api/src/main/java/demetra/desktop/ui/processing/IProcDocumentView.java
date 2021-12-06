@@ -15,6 +15,7 @@ import java.util.List;
 
 /**
  * @author Jean Palate
+ * @param <D>
  */
 public interface IProcDocumentView<D extends ProcDocument> extends Disposable {
 

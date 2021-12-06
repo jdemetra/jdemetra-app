@@ -24,11 +24,9 @@ import demetra.desktop.tsproviders.DataSourceProviderBuddy;
 import demetra.desktop.ui.properties.FileLoaderFileFilter;
 import demetra.spreadsheet.SpreadSheetBean;
 import demetra.tsprovider.FileLoader;
-import demetra.spreadsheet.SpreadSheetProvider;
 import demetra.timeseries.TsUnit;
 import demetra.timeseries.calendars.RegularFrequency;
 import demetra.timeseries.util.ObsGathering;
-import demetra.tsprovider.DataSet;
 import demetra.tsprovider.util.ObsFormat;
 import nbbrd.service.ServiceProvider;
 import org.openide.nodes.Sheet.Set;
@@ -37,7 +35,6 @@ import org.openide.util.NbBundle.Messages;
 
 import java.awt.*;
 import java.beans.IntrospectionException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -171,7 +168,7 @@ public final class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBu
         b.withEnum(RegularFrequency.class)
                 .select(bean, "obsGathering", ObsGathering.class,
                         (ObsGathering og) -> RegularFrequency.valueOf(og.getUnit().getAnnualFrequency()),
-                        af -> bean.getObsGathering().toBuilder().unit(TsUnit.ofAnnualFrequency(af.intValue())).build())
+                        af -> bean.getObsGathering().toBuilder().unit(af.intValue()==0? TsUnit.UNDEFINED : TsUnit.ofAnnualFrequency(af.intValue())).build())
                 .name("frequency")
                 .display(Bundle.bean_frequency_display())
                 .description(Bundle.bean_frequency_description())

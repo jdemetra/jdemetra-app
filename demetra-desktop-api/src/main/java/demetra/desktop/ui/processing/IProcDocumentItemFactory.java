@@ -37,7 +37,7 @@ public interface IProcDocumentItemFactory {
     Id getItemId();
 
     @NonNull
-    JComponent getView(@NonNull IProcDocumentView<? extends ProcDocument> host, @NonNull ProcDocument doc) throws IllegalArgumentException;
+    JComponent getView(@NonNull ProcDocument doc) throws IllegalArgumentException;
 
     @Nullable
     default Icon getIcon() {

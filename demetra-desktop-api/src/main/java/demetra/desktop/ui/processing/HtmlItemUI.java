@@ -10,14 +10,11 @@ import javax.swing.JComponent;
 /**
  *
  * @author Philippe Charles
- * @param <H>
- */
-public abstract class HtmlItemUI<H extends IProcDocumentView<?>, I> extends DefaultItemUI<H, I> {
-
+  */
+public class HtmlItemUI implements ItemUI<HtmlElement> {
+    
     @Override
-    public JComponent getView(H host, I information) {
-        return TsViewToolkit.getHtmlViewer(getHtmlElement(host, information));
+    public JComponent getView(HtmlElement information) {
+        return TsViewToolkit.getHtmlViewer(information);
     }
-
-    abstract protected HtmlElement getHtmlElement(H host, I information);
 }

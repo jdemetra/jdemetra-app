@@ -1,28 +1,26 @@
 package demetra.desktop.ui.processing;
 
-import demetra.desktop.TsDynamicProvider;
-import demetra.desktop.interfaces.Disposable;
+import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import demetra.desktop.components.JExceptionPanel;
 import demetra.desktop.descriptors.IObjectDescriptor;
-import demetra.desktop.util.NbComponents;
+import demetra.desktop.interfaces.Disposable;
 import demetra.desktop.nodes.DecoratedNode;
-import demetra.desktop.ui.processing.DocumentUIServices.UIFactory;
 import demetra.desktop.ui.IdNodes;
+import demetra.desktop.ui.processing.DocumentUIServices.UIFactory;
+import demetra.desktop.util.NbComponents;
 import demetra.processing.ProcDocument;
 import demetra.processing.ProcSpecification;
 import demetra.util.Arrays2;
 import demetra.util.Id;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyVetoException;
+import javax.swing.*;
+import javax.swing.tree.TreeSelectionModel;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
-
-import javax.swing.*;
-import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyVetoException;
-import java.util.UUID;
 
 /**
  *
@@ -152,7 +150,6 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
     public void updateDocument() {
         dirty = true;
-        D doc = getDocument();
      }
 
     public boolean isHeaderVisible() {
@@ -216,7 +213,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
                 }
             }};
-        setPropertiesPanel(commands, factory.getSpecView(specDescriptor), specWidth_);
+        PropertySheetPanel specView = factory.getSpecView(specDescriptor);
+        setPropertiesPanel(commands, specView, specWidth_);
     }
 
     private void initAllSpecView() {
@@ -245,11 +243,12 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 public void actionPerformed(ActionEvent e) {
                     // Apply & Save
                     setDirty(BUTTON_SAVE);
+                    refreshAll();
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_SAVE, null, null);
                 }
             }};
-
-        setPropertiesPanel(commands, factory.getSpecView(specDescriptor), specWidth_);
+        PropertySheetPanel specView = factory.getSpecView(specDescriptor);
+        setPropertiesPanel(commands, specView, specWidth_);
     }
 
     private void setPropertiesPanel(final Action[] commands, final JComponent pane, int width) {
@@ -273,7 +272,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         specPanel.setPreferredSize(new Dimension(width, 100));
         specPanel.validate();
     }
-
+    
     /**
      * Refresh all parts of the view
      */

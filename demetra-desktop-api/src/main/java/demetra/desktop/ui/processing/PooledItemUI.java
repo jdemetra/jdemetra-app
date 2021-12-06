@@ -16,7 +16,7 @@ import java.awt.*;
 /**
  * @author Philippe Charles
  */
-public abstract class PooledItemUI<H, I, C extends JComponent> extends DefaultItemUI<H, I> implements IPool.Factory<C> {
+public abstract class PooledItemUI<D, C extends JComponent> implements ItemUI<D>, IPool.Factory<C> {
 
     final Class<? extends C> clazz;
     final IPool<C> pool;
@@ -27,9 +27,9 @@ public abstract class PooledItemUI<H, I, C extends JComponent> extends DefaultIt
     }
 
     @Override
-    public JComponent getView(H host, I information) {
+    public JComponent getView(D document) {
         final C result = pool.getOrCreate();
-        init(result, host, information);
+        init(result, document);
 
         return new JDisposable(result) {
             @Override
@@ -58,7 +58,7 @@ public abstract class PooledItemUI<H, I, C extends JComponent> extends DefaultIt
         Disposables.dispose(o);
     }
 
-    abstract protected void init(C c, H host, I information);
+    abstract protected void init(C c, D document);
 
     private static abstract class JDisposable extends JComponent implements Disposable {
 

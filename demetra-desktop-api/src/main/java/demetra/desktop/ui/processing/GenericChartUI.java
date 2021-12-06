@@ -21,7 +21,7 @@ import javax.swing.JComponent;
  * @author Jean Palate
  * @param <D> Document type
  */
-public class GenericChartUI<D extends ProcDocument<?,?,?> >extends DefaultItemUI<IProcDocumentView<D>, TsDocument> {
+public class GenericChartUI<D extends TsDocument<?,?> >implements ItemUI<TsDocument> {
 
     private final List<String> names_;
     private final boolean full_;
@@ -33,7 +33,7 @@ public class GenericChartUI<D extends ProcDocument<?,?,?> >extends DefaultItemUI
 
 
     @Override
-    public JComponent getView(IProcDocumentView<D> host, TsDocument doc) {
+    public JComponent getView(TsDocument doc) {
 
         List<Ts> items=new ArrayList<>();
         for (String s : names_){

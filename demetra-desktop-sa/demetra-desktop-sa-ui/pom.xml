@@ -110,8 +110,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        demetra.desktop.sa.*
-                    </publicPackages>
+                        <publicPackage>demetra.desktop.sa.*</publicPackage>
+                     </publicPackages>
                 </configuration>
             </plugin>
             <plugin>

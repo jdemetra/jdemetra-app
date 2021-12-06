@@ -22,19 +22,19 @@ public abstract class ProcDocumentViewFactory<D extends ProcDocument> implements
 
     public class View implements IProcDocumentView<D> {
 
-        private final D document_;
+        private final D document;
 
         public View(D document) {
-            document_ = document;
+            this.document = document;
         }
 
         @Override
         public JComponent getView(Id path) {
-            if (document_ == null || document_.getResult() == null) {
+            if (document == null || document.getResult() == null) {
                 return null;
             }
             IProcDocumentItemFactory itemFactory = itemFactories.get(path);
-            return itemFactory != null ? itemFactory.getView(this, document_) : null;
+            return itemFactory != null ? itemFactory.getView(document) : null;
         }
 
         @Override
@@ -51,8 +51,8 @@ public abstract class ProcDocumentViewFactory<D extends ProcDocument> implements
         public void refresh() {
             // Necessary ?
 //            itemFactories.values().stream()
-//                    .filter(ComposedProcDocumentItemFactory.class::isInstance)
-//                    .forEach(o -> ((ComposedProcDocumentItemFactory) o).getInformationExtractor().flush(document_));
+//                    .filter(ProcDocumentItemFactory.class::isInstance)
+//                    .forEach(o -> ((ProcDocumentItemFactory) o).getInformationExtractor().flush(document));
         }
 
         @Override
@@ -62,7 +62,7 @@ public abstract class ProcDocumentViewFactory<D extends ProcDocument> implements
 
         @Override
         public D getDocument() {
-            return document_;
+            return document;
         }
 
         @Override
@@ -95,14 +95,14 @@ public abstract class ProcDocumentViewFactory<D extends ProcDocument> implements
 
     public Icon getIcon(Id id) {
         IProcDocumentItemFactory o = itemFactories.get(id);
-        return o instanceof ComposedProcDocumentItemFactory ? o.getIcon() : null;
+        return o instanceof ProcDocumentItemFactory ? o.getIcon() : null;
     }
 
     public abstract Id getPreferredView();
 
     public Action[] getActions(Id path) {
         IProcDocumentItemFactory o = itemFactories.get(path);
-        return o instanceof ComposedProcDocumentItemFactory ? o.getActions() : null;
+        return o instanceof ProcDocumentItemFactory ? o.getActions() : null;
     }
 
     @NonNull

@@ -12,8 +12,6 @@ import demetra.desktop.ui.processing.IProcDocumentView;
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
-import demetra.timeseries.Ts;
-import demetra.timeseries.TsDomain;
 import demetra.tramo.TramoSpec;
 import demetra.util.Id;
 import demetra.util.LinearId;
@@ -35,12 +33,7 @@ public class TramoDocumentManager extends AbstractWorkspaceTsItemManager<TramoSp
 
             @Override
             public IObjectDescriptor<TramoSpec> getSpecificationDescriptor(TramoDocument doc) {
-                Ts input = doc.getInput();
-                TsDomain domain = null;
-                if (input != null){
-                    domain=input.getData().getDomain();
-                }
-                return new TramoSpecUI(doc.getSpecification(), false, domain);
+                return new TramoSpecUI(doc.getSpecification(), false);
             }
         };
  
