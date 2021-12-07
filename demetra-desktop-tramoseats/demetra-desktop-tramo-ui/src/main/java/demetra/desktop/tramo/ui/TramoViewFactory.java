@@ -29,6 +29,7 @@ import demetra.timeseries.TsData;
 import demetra.tramoseats.io.information.TramoSpecMapping;
 import demetra.util.Id;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
 import jdplus.stats.tests.NiidTests;
 import org.openide.util.lookup.ServiceProvider;
@@ -39,7 +40,12 @@ import org.openide.util.lookup.ServiceProvider;
  */
 public class TramoViewFactory extends ProcDocumentViewFactory<TramoDocument> {
 
-    private static final AtomicReference<IProcDocumentViewFactory<TramoDocument>> INSTANCE = new AtomicReference(new TramoViewFactory());
+
+    private final static Function<TramoDocument, RegSarimaModel> MODELEXTRACTOR = doc -> doc.getResult();
+    private final static Function<TramoDocument, TsData> RESEXTRACTOR = doc ->{ 
+        RegSarimaModel result = doc.getResult();
+        return result == null ? null : result.fullResiduals();
+                    };
 
     public static IProcDocumentViewFactory<TramoDocument> getDefault() {
         return INSTANCE.get();
@@ -99,8 +105,8 @@ public class TramoViewFactory extends ProcDocumentViewFactory<TramoDocument> {
 
         public SummaryFactory() {
             super(TramoDocument.class, PreprocessingViews.MODEL_SUMMARY,
-            source->new demetra.html.modelling.HtmlRegArima(source.getResult(), false),
-            new HtmlItemUI());
+                    source -> new demetra.html.modelling.HtmlRegArima(source.getResult(), false),
+                    new HtmlItemUI());
         }
 
         @Override
@@ -128,7 +134,7 @@ public class TramoViewFactory extends ProcDocumentViewFactory<TramoDocument> {
     public static class FCastsFactory extends ForecastsFactory<TramoDocument> {
 
         public FCastsFactory() {
-            super(TramoDocument.class, PreprocessingViews.MODEL_FCASTS);
+            super(TramoDocument.class, PreprocessingViews.MODEL_FCASTS, MODELEXTRACTOR);
         }
 
         @Override
@@ -180,14 +186,14 @@ public class TramoViewFactory extends ProcDocumentViewFactory<TramoDocument> {
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 3000)
-    public static class PreprocessingDetFactory extends ProcDocumentItemFactory<TramoDocument, RegSarimaModel> {
+    public static class PreprocessingDetFactory extends ProcDocumentItemFactory<TramoDocument, TramoDocument> {
 
         public PreprocessingDetFactory() {
             super(TramoDocument.class, PreprocessingViews.MODEL_DET,
-                    source->source.getResult(), new GenericTableUI(false, 
-                            ModellingDictionary.Y_LIN, ModellingDictionary.DET, 
-                    ModellingDictionary.CAL, ModellingDictionary.TDE, ModellingDictionary.EE, 
-                    ModellingDictionary.OUT, ModellingDictionary.FULL_RES));
+                    source -> source, new GenericTableUI(false,
+                            ModellingDictionary.Y_LIN, ModellingDictionary.DET,
+                            ModellingDictionary.CAL, ModellingDictionary.TDE, ModellingDictionary.EE,
+                            ModellingDictionary.OUT, ModellingDictionary.FULL_RES));
         }
 
         @Override
@@ -203,9 +209,9 @@ public class TramoViewFactory extends ProcDocumentViewFactory<TramoDocument> {
 
         public ModelResFactory() {
             super(TramoDocument.class, PreprocessingViews.MODEL_RES,
-                    (TramoDocument source)->source.getResult().fullResiduals(),
+                    (TramoDocument source) -> source.getResult().fullResiduals(),
                     new ResidualsUI()
-                    );
+            );
         }
 
         @Override
@@ -231,10 +237,9 @@ public class TramoViewFactory extends ProcDocumentViewFactory<TramoDocument> {
     public static class ModelResDist extends ProcDocumentItemFactory<TramoDocument, TsData> {
 
         public ModelResDist() {
-            super(TramoDocument.class, PreprocessingViews.MODEL_RES_DIST,
-                    (TramoDocument source)->source.getResult().fullResiduals(),
+            super(TramoDocument.class, PreprocessingViews.MODEL_RES_DIST, RESEXTRACTOR,
                     new ResidualsDistUI());
-                   
+
         }
 
         @Override
@@ -244,13 +249,12 @@ public class TramoViewFactory extends ProcDocumentViewFactory<TramoDocument> {
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 4000)
-    public static class ModelResSpectrum extends ProcDocumentItemFactory<TramoDocument, TsData>  {
+    public static class ModelResSpectrum extends ProcDocumentItemFactory<TramoDocument, TsData> {
 
         public ModelResSpectrum() {
-            super(TramoDocument.class, PreprocessingViews.MODEL_RES_SPECTRUM,
-                    (TramoDocument source)->source.getResult().fullResiduals(),
+            super(TramoDocument.class, PreprocessingViews.MODEL_RES_SPECTRUM, RESEXTRACTOR,
                     new SpectrumUI(true));
-                   
+
         }
 
         @Override
@@ -275,4 +279,6 @@ public class TramoViewFactory extends ProcDocumentViewFactory<TramoDocument> {
         }
     }
 //</editor-fold>
+
+    private static final AtomicReference<IProcDocumentViewFactory<TramoDocument>> INSTANCE = new AtomicReference(new TramoViewFactory());
 }

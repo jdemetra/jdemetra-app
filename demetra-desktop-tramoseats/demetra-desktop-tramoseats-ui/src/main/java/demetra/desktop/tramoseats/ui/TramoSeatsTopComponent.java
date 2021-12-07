@@ -19,7 +19,7 @@ import org.openide.windows.TopComponent;
  */
 @ConvertAsProperties(dtd = "-//demetra.desktop.tramoseats.ui//TramoSeats//EN",
 autostore = false)
-@TopComponent.Description(preferredID = "TramoTopComponent",
+@TopComponent.Description(preferredID = "TramoSeatsTopComponent",
 //iconBase="SET/PATH/TO/ICON/HERE", 
 persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
@@ -49,7 +49,7 @@ public final class TramoSeatsTopComponent extends WorkspaceTsTopComponent<TramoS
 
     private void initDocument() {
         initComponents();
-        setToolTipText(NbBundle.getMessage(TramoSeatsTopComponent.class, "HINT_TramoTopComponent"));
+        setToolTipText(NbBundle.getMessage(TramoSeatsTopComponent.class, "HINT_TramoSeatsTopComponent"));
         setName(getDocument().getDisplayName());
         panel = TsProcessingViewer.create(getDocument().getElement(), TramoSeatsDocumentManager.FACTORY);
         this.add(panel);

@@ -117,17 +117,17 @@ public abstract class ProcDocumentItemFactory<D extends ProcDocument, I> impleme
             setLayout(new BorderLayout());
             add(newLoadingComponent(), BorderLayout.CENTER);
 
-            new SwingWorker<Object, Void>() {
+            new SwingWorker<I, Void>() {
                 @Override
-                protected Object doInBackground() throws Exception {
+                protected I doInBackground() throws Exception {
                     return extractor.apply(source);
                 }
 
                 @Override
                 protected void done() {
                     try {
-                        switchToComponent(itemUI.getView(source));
-                    } catch (Exception ex) {
+                        switchToComponent(itemUI.getView(get()));
+                    } catch (InterruptedException | ExecutionException ex) {
                         Thread.currentThread().interrupt();
                         switchToComponent(JExceptionPanel.create(ex));
                     }

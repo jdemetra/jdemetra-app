@@ -25,7 +25,7 @@ public abstract class ForecastsTableFactory<D extends TsDocument<?, RegSarimaMod
         }
 
         protected ForecastsTableFactory(Class documentType, Id id) {
-            super(documentType, id, null, 
+            super(documentType, id, s->s, 
                     new GenericTableUI(false, generateItems()));
         }
     }

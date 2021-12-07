@@ -4,6 +4,7 @@
  */
 package demetra.desktop.tramoseats.ui;
 
+import demetra.desktop.modelling.ForecastsFactory;
 import demetra.desktop.modelling.ForecastsTableFactory;
 import demetra.desktop.modelling.InputFactory;
 import demetra.desktop.modelling.NiidTestsFactory;
@@ -24,7 +25,9 @@ import demetra.timeseries.TsData;
 import demetra.tramoseats.io.information.TramoSeatsSpecMapping;
 import demetra.util.Id;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
+import jdplus.tramoseats.TramoSeatsResults;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -33,7 +36,13 @@ import org.openide.util.lookup.ServiceProvider;
  */
 public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDocument> {
 
-    private static final AtomicReference<IProcDocumentViewFactory<TramoSeatsDocument>> INSTANCE = new AtomicReference(new TramoSeatsViewFactory());
+    private final static Function<TramoSeatsDocument, RegSarimaModel> MODELEXTRACTOR =  source ->{
+                TramoSeatsResults tr = source.getResult();
+                return tr == null ? null : tr.getPreprocessing();
+                    };
+
+    private final static Function<TramoSeatsDocument, TsData> RESEXTRACTOR = MODELEXTRACTOR
+            .andThen(regarima ->regarima.fullResiduals());
 
     public static IProcDocumentViewFactory<TramoSeatsDocument> getDefault() {
         return INSTANCE.get();
@@ -92,9 +101,11 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     public static class SummaryFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
 
         public SummaryFactory() {
-            super(TramoSeatsDocument.class, PreprocessingViews.MODEL_SUMMARY,
-            (TramoSeatsDocument source)->new demetra.html.modelling.HtmlRegArima(source.getResult().getPreprocessing(), false),
-            new HtmlItemUI());
+            
+            super(TramoSeatsDocument.class, PreprocessingViews.MODEL_SUMMARY, MODELEXTRACTOR
+                    .andThen(regarima->regarima == null ? null :
+                            new demetra.html.modelling.HtmlRegArima(regarima, false)),
+                    new HtmlItemUI());
         }
 
         @Override
@@ -118,18 +129,18 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 //        }
 //    }
 //
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 200000 + 1000)
-//    public static class FCastsFactory extends ForecastsFactory<TramoSeatsDocument> {
-//
-//        public FCastsFactory() {
-//            super(TramoSeatsDocument.class, PreprocessingViews.MODEL_FCASTS);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 201000;
-//        }
-//    }
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 200000 + 1000)
+    public static class FCastsFactory extends ForecastsFactory<TramoSeatsDocument> {
+
+        public FCastsFactory() {
+            super(TramoSeatsDocument.class, PreprocessingViews.MODEL_FCASTS, MODELEXTRACTOR);
+        }
+
+        @Override
+        public int getPosition() {
+            return 201000;
+        }
+    }
 
 //    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 200000 + 2000)
 //    public static class FCastsOutFactory extends OutOfSampleTestFactory<TramoSeatsDocument> {
@@ -143,7 +154,6 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 //            return 202000;
 //        }
 //    }
-
 //</editor-fold>
 //
 //<editor-fold defaultstate="collapsed" desc="REGISTER MODEL">
@@ -172,7 +182,6 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 //            return 302000;
 //        }
 //    }
-
 //    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 3000)
 //    public static class PreprocessingDetFactory extends ProcDocumentItemFactory<TramoSeatsDocument, RegSarimaModel> {
 //
@@ -190,16 +199,14 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 //        }
 //    }
 //</editor-fold>
-
 //<editor-fold defaultstate="collapsed" desc="REGISTER RESIDUALS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 1000)
     public static class ModelResFactory extends ProcDocumentItemFactory<TramoSeatsDocument, TsData> {
 
         public ModelResFactory() {
-            super(TramoSeatsDocument.class, PreprocessingViews.MODEL_RES,
-                    (TramoSeatsDocument source)->source.getResult().getPreprocessing().fullResiduals(),
+            super(TramoSeatsDocument.class, PreprocessingViews.MODEL_RES, RESEXTRACTOR,
                     new ResidualsUI()
-                    );
+            );
         }
 
         @Override
@@ -220,15 +227,14 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 //            return 402000;
 //        }
 //    }
-
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 3000)
     public static class ModelResDist extends ProcDocumentItemFactory<TramoSeatsDocument, TsData> {
 
         public ModelResDist() {
             super(TramoSeatsDocument.class, PreprocessingViews.MODEL_RES_DIST,
-                    (TramoSeatsDocument source)->source.getResult().getPreprocessing().fullResiduals(),
+                    RESEXTRACTOR,
                     new ResidualsDistUI());
-                   
+
         }
 
         @Override
@@ -238,13 +244,13 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 4000)
-    public static class ModelResSpectrum extends ProcDocumentItemFactory<TramoSeatsDocument, TsData>  {
+    public static class ModelResSpectrum extends ProcDocumentItemFactory<TramoSeatsDocument, TsData> {
 
         public ModelResSpectrum() {
             super(TramoSeatsDocument.class, PreprocessingViews.MODEL_RES_SPECTRUM,
-                    (TramoSeatsDocument source)->source.getResult().getPreprocessing().fullResiduals(),
+                    RESEXTRACTOR,
                     new SpectrumUI(true));
-                   
+
         }
 
         @Override
@@ -269,4 +275,6 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 //        }
 //    }
 //</editor-fold>
+    private static final AtomicReference<IProcDocumentViewFactory<TramoSeatsDocument>> INSTANCE = new AtomicReference(new TramoSeatsViewFactory());
+
 }

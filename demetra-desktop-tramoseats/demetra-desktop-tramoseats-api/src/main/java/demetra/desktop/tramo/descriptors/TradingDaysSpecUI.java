@@ -173,6 +173,11 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
     }
 
     public void setTradingDays(TradingDaysType value) {
+        if (value.equals(TradingDaysType.None)){
+            setOption(TradingDaysSpecType.None);
+            return;
+        }
+            
         TradingDaysSpec td = inner();
         // No fixed coefficient (otherwise, read only)
         if (value.equals(td.getTradingDaysType()))
@@ -236,12 +241,15 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
         if (value.equals(TradingDaysSpec.AutoMethod.Unused)){
             update(TradingDaysSpec.td(TradingDaysType.WorkingDays, LengthOfPeriodType.LeapYear, RegressionTestType.Joint_F));
         }else{
+            double pr = td.getProbabilityForFTest();
             switch (getOption()){
                 case Default:
-                    update(TradingDaysSpec.automatic(value, td.getProbabilityForFTest()));
+                    update(TradingDaysSpec.automatic(value, 
+                            pr != 0 ? pr : TradingDaysSpec.DEF_PFTD));
                     break;
                 case Holidays:
-                    update(TradingDaysSpec.automaticHolidays(td.getHolidays(), value, td.getProbabilityForFTest()));
+                    update(TradingDaysSpec.automaticHolidays(td.getHolidays(), value, 
+                            pr != 0 ? pr : TradingDaysSpec.DEF_PFTD));
                     break;
             }
         }

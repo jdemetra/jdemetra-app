@@ -19,6 +19,7 @@ import javax.swing.JComponent;
 /**
  *
  * @author Jean Palate
+ * @param <D>
  */
 public class GenericTableUI<D extends TsDocument>implements ItemUI<D> {
 

@@ -69,7 +69,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         this.em = new ExplorerManager();
-        addPropertyChangeListener(evt -> {
+        em.addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
                 case ExplorerManager.PROP_SELECTED_NODES:
                     Node[] nodes = (Node[]) evt.getNewValue();
@@ -77,11 +77,6 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                         Id id = nodes[0].getLookup().lookup(Id.class);
                         showComponent(id);
                     }
-                    break;
-                case BUTTON_APPLY:
-                case BUTTON_RESTORE:
-                    refreshAll();
-                    updateDocument();
                     break;
             }
         });
@@ -211,6 +206,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     doc.set(pspec);
                     setDirty(BUTTON_APPLY);
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
+                    refreshAll();
+                    updateDocument();
                 }
             }};
         PropertySheetPanel specView = factory.getSpecView(specDescriptor);
@@ -228,6 +225,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     doc.set(pspec);
                     setDirty(BUTTON_APPLY);
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
+                    refreshAll();
+                    updateDocument();
                 }
             },
             new AbstractAction(BUTTON_RESTORE) {
@@ -235,6 +234,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 public void actionPerformed(ActionEvent e) {
                     doc.set(originalSpec);
                     setDirty(BUTTON_RESTORE);
+                    refreshAll();
+                    updateDocument();
                     DefaultProcessingViewer.this.firePropertyChange(BUTTON_RESTORE, null, null);
                 }
             },

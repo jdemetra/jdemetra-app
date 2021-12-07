@@ -10,6 +10,7 @@ import demetra.timeseries.TimeSelector;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDocument;
 import demetra.util.Id;
+import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
 
 /**
@@ -17,12 +18,12 @@ import jdplus.regsarima.regular.RegSarimaModel;
  * @author PALATEJ
  * @param <D>
  */
-public abstract class ForecastsFactory<D extends TsDocument<?, RegSarimaModel>>
+public abstract class ForecastsFactory<D extends TsDocument<?, ?>>
         extends ProcDocumentItemFactory<D, EstimationUI.Information> {
 
-    protected ForecastsFactory(Class<D> documentType, Id id) {
+    protected ForecastsFactory(Class<D> documentType, Id id, Function<D, RegSarimaModel> extractor) {
         super(documentType, id, (D source) -> {
-            RegSarimaModel model = source.getResult();
+            RegSarimaModel model = extractor.apply(source);
             TsData orig = model.getDescription().getSeries();
             TimeSelector sel = TimeSelector.last(3 * orig.getAnnualFrequency());
             RegSarimaModel.Forecasts fcasts = model.forecasts(-2);

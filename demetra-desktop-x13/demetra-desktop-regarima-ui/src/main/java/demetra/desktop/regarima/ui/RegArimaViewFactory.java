@@ -29,6 +29,7 @@ import demetra.timeseries.TsData;
 import demetra.util.Id;
 import demetra.x13.io.information.RegArimaSpecMapping;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -38,8 +39,12 @@ import org.openide.util.lookup.ServiceProvider;
  */
 public class RegArimaViewFactory extends ProcDocumentViewFactory<RegArimaDocument> {
 
-    private static final AtomicReference<IProcDocumentViewFactory<RegArimaDocument>> INSTANCE = new AtomicReference(new RegArimaViewFactory());
+    private final static Function<RegArimaDocument, RegSarimaModel> MODELEXTRACTOR= doc->doc.getResult();
 
+    private final static Function<RegArimaDocument, TsData> RESEXTRACTOR = doc ->{ 
+        RegSarimaModel result = doc.getResult();
+        return result == null ? null : result.fullResiduals();
+                    };
     public static IProcDocumentViewFactory<RegArimaDocument> getDefault() {
         return INSTANCE.get();
     }
@@ -56,6 +61,7 @@ public class RegArimaViewFactory extends ProcDocumentViewFactory<RegArimaDocumen
     public Id getPreferredView() {
         return PreprocessingViews.MODEL_SUMMARY;
     }
+    
 
 //<editor-fold defaultstate="collapsed" desc="REGISTER SPEC">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100010)
@@ -127,7 +133,7 @@ public class RegArimaViewFactory extends ProcDocumentViewFactory<RegArimaDocumen
     public static class FCastsFactory extends ForecastsFactory<RegArimaDocument> {
 
         public FCastsFactory() {
-            super(RegArimaDocument.class, PreprocessingViews.MODEL_FCASTS);
+            super(RegArimaDocument.class, PreprocessingViews.MODEL_FCASTS, MODELEXTRACTOR);
         }
 
         @Override
@@ -179,14 +185,14 @@ public class RegArimaViewFactory extends ProcDocumentViewFactory<RegArimaDocumen
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 3000)
-    public static class PreprocessingDetFactory extends ProcDocumentItemFactory<RegArimaDocument, RegSarimaModel> {
+    public static class PreprocessingDetFactory extends ProcDocumentItemFactory<RegArimaDocument, RegArimaDocument> {
 
         public PreprocessingDetFactory() {
             super(RegArimaDocument.class, PreprocessingViews.MODEL_DET,
-                    source->source.getResult(), new GenericTableUI(false, 
-                            ModellingDictionary.Y_LIN, ModellingDictionary.DET, 
-                    ModellingDictionary.CAL, ModellingDictionary.TDE, ModellingDictionary.EE, 
-                    ModellingDictionary.OUT, ModellingDictionary.FULL_RES));
+                    source -> source, new GenericTableUI(false,
+                            ModellingDictionary.Y_LIN, ModellingDictionary.DET,
+                            ModellingDictionary.CAL, ModellingDictionary.TDE, ModellingDictionary.EE,
+                            ModellingDictionary.OUT, ModellingDictionary.FULL_RES));
         }
 
         @Override
@@ -201,8 +207,7 @@ public class RegArimaViewFactory extends ProcDocumentViewFactory<RegArimaDocumen
     public static class ModelResFactory extends ProcDocumentItemFactory<RegArimaDocument, TsData> {
 
         public ModelResFactory() {
-            super(RegArimaDocument.class, PreprocessingViews.MODEL_RES,
-                    (RegArimaDocument source)->source.getResult().fullResiduals(),
+            super(RegArimaDocument.class, PreprocessingViews.MODEL_RES, RESEXTRACTOR,
                     new ResidualsUI()
                     );
         }
@@ -230,8 +235,7 @@ public class RegArimaViewFactory extends ProcDocumentViewFactory<RegArimaDocumen
     public static class ModelResDist extends ProcDocumentItemFactory<RegArimaDocument, TsData> {
 
         public ModelResDist() {
-            super(RegArimaDocument.class, PreprocessingViews.MODEL_RES_DIST,
-                    (RegArimaDocument source)->source.getResult().fullResiduals(),
+            super(RegArimaDocument.class, PreprocessingViews.MODEL_RES_DIST, RESEXTRACTOR,
                     new ResidualsDistUI());
                    
         }
@@ -246,8 +250,7 @@ public class RegArimaViewFactory extends ProcDocumentViewFactory<RegArimaDocumen
     public static class ModelResSpectrum extends ProcDocumentItemFactory<RegArimaDocument, TsData>  {
 
         public ModelResSpectrum() {
-            super(RegArimaDocument.class, PreprocessingViews.MODEL_RES_SPECTRUM,
-                    (RegArimaDocument source)->source.getResult().fullResiduals(),
+            super(RegArimaDocument.class, PreprocessingViews.MODEL_RES_SPECTRUM, RESEXTRACTOR,
                     new SpectrumUI(true));
                    
         }
@@ -274,4 +277,7 @@ public class RegArimaViewFactory extends ProcDocumentViewFactory<RegArimaDocumen
         }
     }
 //</editor-fold>
+    
+    private static final AtomicReference<IProcDocumentViewFactory<RegArimaDocument>> INSTANCE = new AtomicReference(new RegArimaViewFactory());
+    
 }

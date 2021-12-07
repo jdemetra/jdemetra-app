@@ -183,6 +183,10 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
     }
 
     public void setTradingDays(TradingDaysType value) {
+        if (value.equals(TradingDaysType.None)){
+            setOption(TradingDaysSpecType.None);
+            return;
+        }
         TradingDaysSpec td = inner();
         // No fixed coefficient (otherwise, read only)
         if (value.equals(td.getTradingDaysType()))
