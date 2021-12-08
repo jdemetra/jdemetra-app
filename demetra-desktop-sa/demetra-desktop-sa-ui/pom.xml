@@ -111,6 +111,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>demetra.desktop.sa.*</publicPackage>
+                        <publicPackage>demetra.desktop.processing.ui.sa.*</publicPackage>
                      </publicPackages>
                 </configuration>
             </plugin>

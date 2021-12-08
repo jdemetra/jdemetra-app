@@ -4,9 +4,11 @@
  */
 package demetra.desktop.sa.ui;
 
-import demetra.desktop.ui.processing.ProcDocumentViewFactory;
-import demetra.sa.SaSpecification;
-import demetra.timeseries.TsDocument;
+import demetra.desktop.TsDynamicProvider;
+import demetra.information.BasicInformationExtractor;
+import demetra.modelling.ModellingDictionary;
+import demetra.modelling.SeriesInfo;
+import demetra.sa.SaDictionary;
 import demetra.util.Id;
 import demetra.util.LinearId;
 
@@ -76,15 +78,6 @@ public class SaViews {
     public final Id INPUT_SPEC = new LinearId(INPUT, SPEC),
             INPUT_SERIES = new LinearId(INPUT, SERIES),
             MAIN_SUMMARY = new LinearId(MAIN),
-            MODEL_SUMMARY = new LinearId(MODEL),
-            MODEL_FCASTS = new LinearId(MODEL, FCASTS),
-            MODEL_FCASTS_OUTOFSAMPLE = new LinearId(MODEL, FCASTS, OSAMPLE),
-            MODEL_REGS = new LinearId(MODEL, REGRESSORS),
-            MODEL_ARIMA = new LinearId(MODEL, ARIMA),
-            MODEL_RES = new LinearId(MODEL, RESIDUALS),
-            MODEL_RES_STATS = new LinearId(MODEL, RESIDUALS, STATS),
-            MODEL_RES_DIST = new LinearId(MODEL, RESIDUALS, DISTRIBUTION),
-            MODEL_RES_SPECTRUM = new LinearId(MODEL, RESIDUALS, SPECTRAL),
             MAIN_CHART = new LinearId(MAIN, CHART),
             MAIN_CHARTS_LOW = new LinearId(MAIN, CHARTS, SA_TREND),
             MAIN_CHARTS_HIGH = new LinearId(MAIN, CHARTS, C_S_I),
@@ -129,5 +122,7 @@ public class SaViews {
             DIAGNOSTICS_STABILITY_EASTER = new LinearId(DIAGNOSTICS, STABILITY, EASTER),
             DIAGNOSTICS_STABILITY_ARIMA = new LinearId(DIAGNOSTICS, STABILITY, ARIMA),
             DIAGNOSTICS_MATRIX = new LinearId(DIAGNOSTICS, MATRIX);
+    
+
 
 }

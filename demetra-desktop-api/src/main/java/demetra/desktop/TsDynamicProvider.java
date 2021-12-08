@@ -26,13 +26,9 @@ import demetra.timeseries.TsMoniker;
 import demetra.timeseries.TsProvider;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import nbbrd.service.ServiceProvider;
 
@@ -101,24 +97,17 @@ public final class TsDynamicProvider implements TsProvider {
                 if (result == null) {
                     return invalidTs(moniker, "unprocessed document");
                 }
-                TsData data = result.getData(items[1], TsData.class);
-                if (data == null) {
-                    return invalidTs(moniker, "unsupported id");
+                CompositeTs composite = CompositeTs.decode(items[1]);
+                if (composite != null) {
+                    return compositeTs(moniker, result, composite);
+                } else {
+                    return simpleTs(moniker, result, items[1]);
                 }
-//                updateItems(uuid, items[1]);
-                return Ts.builder()
-                        .moniker(moniker)
-                        .name(items[1])
-                        .data(data)
-                        .type(TsInformationType.All)
-                        .build();
             } else {
                 return invalidTs(moniker, "invalid source");
             }
         }
     }
-    
-    
 
     @Override
     public String getSource() {
@@ -147,62 +136,129 @@ public final class TsDynamicProvider implements TsProvider {
 //            return Collections.unmodifiableSet(items);
 //        }
 //    }
-    
-    public static void OnDocumentClosing(TsDocument doc){
-        if (doc == null)
+    public static void OnDocumentClosing(TsDocument doc) {
+        if (doc == null) {
             return;
+        }
         synchronized (DOCUMENTS) {
-            UUID uuid=doc.getKey();
+            UUID uuid = doc.getKey();
             DOCUMENTS.remove(uuid);
 //            DOCITEMS.remove(uuid);
         }
     }
 
-    public static void OnDocumentOpened(TsDocument doc){
-        if (doc == null)
+    public static void OnDocumentOpened(TsDocument doc) {
+        if (doc == null) {
             return;
+        }
         synchronized (DOCUMENTS) {
-            UUID uuid=doc.getKey();
+            UUID uuid = doc.getKey();
             DOCUMENTS.put(uuid, new WeakReference(doc));
         }
     }
 
-    public static void OnDocumentChanged(TsDocument doc){
-        if (doc == null)
+    public static void OnDocumentChanged(TsDocument doc) {
+        if (doc == null) {
             return;
-        TsManager.getDefault().notify(m->m.getSource().equals(DYNAMIC) && m.getId().startsWith(doc.getKey().toString()));
+        }
+        TsManager.getDefault().notify(m -> m.getSource().equals(DYNAMIC) && m.getId().startsWith(doc.getKey().toString()));
     }
 
-    static class CompositeTs {
+    private Ts simpleTs(TsMoniker moniker, Explorable result, String item) {
+        TsData data = result.getData(item, TsData.class);
+        if (data == null) {
+            return invalidTs(moniker, "unsupported id");
+        }
+//                updateItems(uuid, items[1]);
+        return Ts.builder()
+                .moniker(moniker)
+                .name(item)
+                .data(data)
+                .type(TsInformationType.All)
+                .build();
+    }
+
+    private Ts compositeTs(TsMoniker moniker, Explorable result, CompositeTs composite) {
+
+        Map<String, String> md = new HashMap<>();
+        TsData data = makeCompositeData(composite, result, md);
+        if (data == null) {
+            return invalidTs(moniker, "unsupported id");
+        }
+//                updateItems(uuid, items[1]);
+        return Ts.builder()
+                .moniker(moniker)
+                .name(composite.name)
+                .data(data)
+                .meta(md)
+                .type(TsInformationType.All)
+                .build();
+    }
+
+    private TsData makeCompositeData(CompositeTs item, Explorable source, Map<String, String> md) {
+        TsData data = null;
+        LocalDate beg = null, end = null;
+        TsData b = null, n = null, f = null;
+        if (item.back != null) {
+            b = source.getData(item.back, TsData.class);
+        }
+        if (item.now != null) {
+            n = source.getData(item.now, TsData.class);
+            if (n != null) {
+                beg = n.getStart().start().toLocalDate();
+                end = n.getEnd().end().toLocalDate();
+            }
+        }
+        if (item.fore != null) {
+            f = source.getData(item.fore, TsData.class);
+        }
+        data = TsData.concatenate(b, n, f);
+        if (beg != null) {
+            md.put(Ts.BEG, beg.toString());
+        } else {
+            md.remove(Ts.BEG);
+        }
+        if (end != null) {
+            md.put(Ts.END, end.toString());
+        } else {
+            md.remove(Ts.END);
+        }
+        return data;
+    }
+
+    @lombok.Value
+    @lombok.Builder(builderClassName = "Builder")
+    public static class CompositeTs {
 
         static CompositeTs decode(String str) {
-            CompositeTs cmp = new CompositeTs();
             int cur = 0;
             int pos = str.indexOf('=');
             if (pos < 0) {
                 return null;
-            } else if (pos > cur) {
-                cmp.name = str.substring(cur, pos);
+            }
+            Builder builder = CompositeTs.builder();
+            if (pos > cur) {
+                builder.name(str.substring(cur, pos));
             }
             cur = pos + 1;
             pos = str.indexOf(',', cur);
             if (pos < 0) {
                 return null;
             } else if (pos > cur) {
-                cmp.back = str.substring(cur, pos);
+                builder.back(str.substring(cur, pos));
             }
             cur = pos + 1;
             pos = str.indexOf(',', cur);
             if (pos < 0) {
                 return null;
             } else if (pos > cur) {
-                cmp.now = str.substring(cur, pos);
+                builder.now(str.substring(cur, pos));
             }
             cur = pos + 1;
             if (cur < str.length()) {
-                cmp.fore = str.substring(cur);
+                builder.fore(str.substring(cur));
             }
-            return cmp;
+            return builder.build();
         }
 
         @Override
@@ -222,9 +278,9 @@ public final class TsDynamicProvider implements TsProvider {
             }
             return builder.toString();
         }
-        String back, now, fore;
+
         String name;
-        TsMoniker moniker;
+        String back, now, fore;
     }
 
 }

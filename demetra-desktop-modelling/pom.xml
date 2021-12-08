@@ -117,6 +117,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>demetra.desktop.modelling.*</publicPackage>
+                        <publicPackage>demetra.desktop.processing.ui.modelling.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

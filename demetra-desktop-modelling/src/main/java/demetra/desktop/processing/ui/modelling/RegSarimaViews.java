@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.modelling;
+package demetra.desktop.processing.ui.modelling;
 
 
 import demetra.util.Id;
@@ -13,7 +13,7 @@ import demetra.util.LinearId;
  * @author Jean Palate
  */
 @lombok.experimental.UtilityClass
-public class PreprocessingViews{
+public class RegSarimaViews{
 
     public final String INPUT = "Input", SPEC = "Specifications", SERIES = "Series",
             MAIN = "Main results",

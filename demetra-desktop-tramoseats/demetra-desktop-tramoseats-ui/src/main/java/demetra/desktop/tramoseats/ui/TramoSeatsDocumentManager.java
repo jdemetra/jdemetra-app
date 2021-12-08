@@ -44,7 +44,7 @@ public class TramoSeatsDocumentManager extends AbstractWorkspaceTsItemManager<Tr
 
     @Override
     protected String getItemPrefix() {
-        return "TramoDoc";
+        return "TramoSeatsDoc";
     }
 
     @Override
