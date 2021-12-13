@@ -165,8 +165,7 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
             return null;
         }
         result = result.select(selector);
-        result.fastFn(x -> x * .01);
-        return result;
+        return result.fastFn(x -> x * .01);
     }
     //</editor-fold>
 

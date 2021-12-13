@@ -14,6 +14,7 @@ import demetra.desktop.processing.ui.modelling.NiidTestsFactory;
 import demetra.desktop.processing.ui.modelling.OutOfSampleTestFactory;
 import demetra.desktop.processing.ui.sa.SIFactory;
 import demetra.desktop.sa.ui.SaViews;
+import demetra.desktop.ui.processing.GenericChartUI;
 import demetra.desktop.ui.processing.GenericTableUI;
 import demetra.desktop.ui.processing.HtmlItemUI;
 import demetra.desktop.ui.processing.IProcDocumentItemFactory;
@@ -141,8 +142,52 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             return 1000;
         }
     }
-
 //</editor-fold>
+    
+    private static String generateId(String name, String id){
+        return TsDynamicProvider.CompositeTs.builder()
+                .name(name)
+                .back(id+SeriesInfo.B_SUFFIX)
+                .now(id)
+                .fore(id+SeriesInfo.F_SUFFIX)
+                .build().toString();
+    }
+
+    private static String generateStdErrorId(String name, String id){
+        return TsDynamicProvider.CompositeTs.builder()
+                .name(name)
+                .back(id+SeriesInfo.EB_SUFFIX)
+                .now(id+SeriesInfo.E_SUFFIX)
+                .fore(id+SeriesInfo.EF_SUFFIX)
+                .build().toString();
+    }
+    
+    public static String[] lowSeries(){
+        return new String[]{
+            generateId("Series", SaDictionary.Y),
+            generateId("Seasonally adjusted", SaDictionary.SA),
+            generateId("Trend", SaDictionary.T)
+        };
+    }
+    
+    public static String[] highSeries(){
+        return new String[]{
+            generateId("Seasonal (component)", BasicInformationExtractor.concatenate(SaDictionary.DECOMPOSITION,SaDictionary.S_CMP)),
+            generateId("Calendar effects", ModellingDictionary.CAL),
+            generateId("Irregular", SaDictionary.I)
+        };
+    }
+    
+    public static String[] finalSeries(){
+        return new String[]{
+            generateId("Series", SaDictionary.Y),
+            generateId("Seasonally adjusted", SaDictionary.SA),
+            generateId("Trend", SaDictionary.T),
+            generateId("Seasonal", SaDictionary.S),
+            generateId("Irregular", SaDictionary.I)
+        };
+    }
+    
 //    //<editor-fold defaultstate="collapsed" desc="MAIN">
 //    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000)
 //    public static class MainSummaryFactory extends ItemFactory<TramoSeatsDocument> {
@@ -225,6 +270,46 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 //        }
 //    }
 //
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
+    public static class MainLowChart extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
+
+        public MainLowChart() {
+            super(TramoSeatsDocument.class, SaViews.MAIN_CHARTS_LOW, s -> s, new GenericChartUI(false, lowSeries()));
+        }
+
+        @Override
+        public int getPosition() {
+            return 2000;
+        }
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2100)
+    public static class MainHighChart extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
+
+        public MainHighChart() {
+            super(TramoSeatsDocument.class, SaViews.MAIN_CHARTS_HIGH, s -> s, new GenericChartUI(false, highSeries()));
+        }
+
+        @Override
+        public int getPosition() {
+            return 2100;
+        }
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2200)
+    public static class MainTable extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
+
+        public MainTable() {
+            super(TramoSeatsDocument.class, SaViews.MAIN_TABLE, s -> s, new GenericTableUI(false, finalSeries()));
+        }
+
+        @Override
+        public int getPosition() {
+            return 2200;
+        }
+
+    }
+
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2300)
     public static class MainSiFactory extends SIFactory<TramoSeatsDocument> {
 

@@ -332,7 +332,7 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
             return null;
         }
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("test", this.getClass());
+            PropertyDescriptor desc = new PropertyDescriptor("regressionTest", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TEST_ID);
             desc.setDisplayName(Bundle.tradingDaysSpecUI_testDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_testDesc_desc());
