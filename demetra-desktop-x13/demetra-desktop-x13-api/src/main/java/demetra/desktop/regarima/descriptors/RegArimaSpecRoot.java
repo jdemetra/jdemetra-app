@@ -12,8 +12,7 @@ import demetra.regarima.RegArimaSpec;
  */
 @lombok.Getter
 @lombok.AllArgsConstructor
-class RegArimaSpecRoot  {
-
+public class RegArimaSpecRoot  {
     RegArimaSpec core;
     boolean ro;
 }

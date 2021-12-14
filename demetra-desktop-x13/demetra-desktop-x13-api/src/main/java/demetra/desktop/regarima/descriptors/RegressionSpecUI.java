@@ -49,7 +49,7 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         return core().getRegression();
     }
 
-    RegressionSpecUI(RegArimaSpecRoot root) {
+    public RegressionSpecUI(RegArimaSpecRoot root) {
         super(root);
     }
 

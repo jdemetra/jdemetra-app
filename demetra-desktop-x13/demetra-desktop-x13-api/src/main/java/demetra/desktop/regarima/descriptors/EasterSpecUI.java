@@ -33,7 +33,7 @@ public class EasterSpecUI extends BaseRegArimaSpecUI {
         return inner().getType() != EasterSpec.Type.Unused;
     }
 
-    EasterSpecUI(RegArimaSpecRoot root) {
+    public EasterSpecUI(RegArimaSpecRoot root) {
         super(root);
     }
     

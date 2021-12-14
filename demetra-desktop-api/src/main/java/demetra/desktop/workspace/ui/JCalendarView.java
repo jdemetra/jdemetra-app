@@ -53,10 +53,6 @@ import org.openide.nodes.Sheet;
 @SwingComponent
 public final class JCalendarView extends JComponent {
 
-    private static final String[] TD = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Leap Year"};
-    private static final String[] WD = {"Working days", "Leap Year"};
-    private static final String[] TDALL = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Leap Year"};
-    private static final String[] WDALL = {"Week-end", "Week days", "Leap Year"};
     // data
     private CalendarDefinition calendar;
     private TsDomain domain;
@@ -72,7 +68,7 @@ public final class JCalendarView extends JComponent {
     public JCalendarView() {
         this.calendar = null;
         this.domain = newDomain(12, 1960, 28 * 5);
-        this.dtype = TradingDaysType.TradingDays;
+        this.dtype = TradingDaysType.TD7;
         this.ltype = LengthOfPeriodType.LeapYear;
 
         this.propertySheet = new PropertySheet();
@@ -112,7 +108,7 @@ public final class JCalendarView extends JComponent {
             return;
         }
         
-        DayClustering clustering = dtype == TradingDaysType.TradingDays ? DayClustering.TD7 : DayClustering.TD2;
+        DayClustering clustering = DayClustering.of(dtype);
         List<ITsVariable> vars=new ArrayList<>();
         GenericTradingDays td = contrast ? GenericTradingDays.contrasts(clustering)
                 : mean ? GenericTradingDays.meanCorrected(clustering) : GenericTradingDays.raw(clustering);
@@ -142,28 +138,14 @@ public final class JCalendarView extends JComponent {
     }
 
     private String getCmpName(int idx) {
+            int ntd=dtype.getVariablesCount();
         if (contrast){
-        if (null == dtype) {
-            return WD[1];
-        } else switch (dtype) {
-            case TradingDays:
-                return TD[idx];
-            case WorkingDays:
-                return WD[idx];
-            default:
-                return WD[1];
+            --ntd;
         }
+        if (idx < ntd){
+            return GenericTradingDaysVariable.description(DayClustering.of(dtype), idx);
         }else{
-        if (null == dtype) {
-            return WDALL[2];
-        } else switch (dtype) {
-            case TradingDays:
-                return TDALL[idx];
-            case WorkingDays:
-                return WDALL[idx];
-            default:
-                return WDALL[2];
-        }
+            return ltype.name();
         }
     }
 

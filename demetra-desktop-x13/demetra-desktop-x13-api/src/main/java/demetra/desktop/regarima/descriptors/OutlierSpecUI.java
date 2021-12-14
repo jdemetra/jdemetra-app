@@ -25,7 +25,7 @@ import org.openide.util.NbBundle.Messages;
  */
 public class OutlierSpecUI extends BaseRegArimaSpecUI {
 
-    OutlierSpecUI(RegArimaSpecRoot root) {
+    public OutlierSpecUI(RegArimaSpecRoot root) {
         super(root);
     }
 

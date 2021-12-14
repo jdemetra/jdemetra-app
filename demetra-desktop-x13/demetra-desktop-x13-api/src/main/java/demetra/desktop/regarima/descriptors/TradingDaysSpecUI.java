@@ -116,14 +116,14 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
                 update(TradingDaysSpec.none());
                 break;
             case Default:
-                update(TradingDaysSpec.td(TradingDaysType.TradingDays, 
+                update(TradingDaysSpec.td(TradingDaysType.TD7, 
                         lp ? LengthOfPeriodType.LeapYear : LengthOfPeriodType.None, 
                         RegressionTestSpec.Remove,
                         auto));
                 break;
             case Holidays:
                 update(TradingDaysSpec.holidays(CalendarManager.DEF, 
-                        TradingDaysType.TradingDays, 
+                        TradingDaysType.TD7, 
                         lp ? LengthOfPeriodType.LeapYear : LengthOfPeriodType.None, 
                         RegressionTestSpec.Remove,
                         auto));
@@ -183,7 +183,7 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
     }
 
     public void setTradingDays(TradingDaysType value) {
-        if (value.equals(TradingDaysType.None)){
+        if (value.equals(TradingDaysType.NONE)){
             setOption(TradingDaysSpecType.None);
             return;
         }

@@ -115,10 +115,10 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
                 update(TradingDaysSpec.none());
                 break;
             case Default:
-                update(TradingDaysSpec.td(TradingDaysType.TradingDays, LengthOfPeriodType.LeapYear, RegressionTestType.Separate_T));
+                update(TradingDaysSpec.td(TradingDaysType.TD7, LengthOfPeriodType.LeapYear, RegressionTestType.Separate_T));
                 break;
             case Holidays:
-                update(TradingDaysSpec.holidays(CalendarManager.DEF, TradingDaysType.TradingDays, LengthOfPeriodType.LengthOfPeriod, RegressionTestType.Separate_T));
+                update(TradingDaysSpec.holidays(CalendarManager.DEF, TradingDaysType.TD7, LengthOfPeriodType.LengthOfPeriod, RegressionTestType.Separate_T));
                 break;
             case Stock:
                 update(TradingDaysSpec.stockTradingDays(31, RegressionTestType.Separate_T));
@@ -173,7 +173,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
     }
 
     public void setTradingDays(TradingDaysType value) {
-        if (value.equals(TradingDaysType.None)){
+        if (value.equals(TradingDaysType.NONE)){
             setOption(TradingDaysSpecType.None);
             return;
         }
@@ -239,7 +239,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
         if (value.equals(td.getAutomaticMethod()))
             return;
         if (value.equals(TradingDaysSpec.AutoMethod.Unused)){
-            update(TradingDaysSpec.td(TradingDaysType.WorkingDays, LengthOfPeriodType.LeapYear, RegressionTestType.Joint_F));
+            update(TradingDaysSpec.td(TradingDaysType.TD2, LengthOfPeriodType.LeapYear, RegressionTestType.Joint_F));
         }else{
             double pr = td.getProbabilityForFTest();
             switch (getOption()){

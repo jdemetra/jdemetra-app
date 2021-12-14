@@ -32,7 +32,7 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
         return core().getTransform();
     }
 
-    TransformSpecUI(RegArimaSpecRoot root) {
+    public TransformSpecUI(RegArimaSpecRoot root) {
         super(root);
 //        validator=null;
     }

@@ -29,7 +29,7 @@ public class EstimateSpecUI extends BaseRegArimaSpecUI {
         return core().getEstimate();
     }
     
-    EstimateSpecUI(RegArimaSpecRoot root) {
+    public EstimateSpecUI(RegArimaSpecRoot root) {
         super(root);
      }
 

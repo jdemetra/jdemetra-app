@@ -20,7 +20,7 @@ import org.openide.util.NbBundle.Messages;
  */
 public class ArimaSpecUI extends BaseRegArimaSpecUI {
 
-    ArimaSpecUI(RegArimaSpecRoot spec) {
+    public ArimaSpecUI(RegArimaSpecRoot spec) {
         super(spec);
     }
 

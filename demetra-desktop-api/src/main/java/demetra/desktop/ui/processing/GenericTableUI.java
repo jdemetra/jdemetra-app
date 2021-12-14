@@ -5,6 +5,7 @@
 package demetra.desktop.ui.processing;
 
 import demetra.desktop.TsDynamicProvider;
+import demetra.information.BasicInformationExtractor;
 import demetra.processing.ProcDocument;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsDocument;
@@ -21,27 +22,32 @@ import javax.swing.JComponent;
  * @author Jean Palate
  * @param <D>
  */
-public class GenericTableUI<D extends TsDocument>implements ItemUI<D> {
+public class GenericTableUI<D extends TsDocument> implements ItemUI<D> {
 
-    private final List<String> names_;
-    private final boolean full_;
+    private final String[] ids;
+    private final boolean fullNames;
 
-    public GenericTableUI(boolean fullNames, String...names){
-        names_= Arrays.asList(names);
-        full_=fullNames;
+    public GenericTableUI(boolean fullNames, String... ids) {
+        this.ids = ids.clone();
+        this.fullNames = fullNames;
     }
-
 
     @Override
     public JComponent getView(D doc) {
 
-        List<Ts> items=new ArrayList<>();
-        for (String s : names_){
+        List<Ts> items = new ArrayList<>();
+        for (String s : ids) {
             TsMoniker moniker = TsDynamicProvider.monikerOf(doc, s);
-            Ts x = TsFactory.getDefault().makeTs(moniker, TsInformationType.All); 
+            Ts x = TsFactory.getDefault().makeTs(moniker, TsInformationType.All);
+            if (!fullNames) {
+                int idx = s.lastIndexOf(BasicInformationExtractor.SEP);
+                if (idx > 0) {
+                    x = x.withName(s.substring(idx + 1));
+                }
+            }
             items.add(x);
         }
         return TsViewToolkit.getGrid(items);
     }
 
- }
+}
