@@ -25,16 +25,22 @@ import demetra.desktop.ui.processing.stats.ResidualsDistUI;
 import demetra.desktop.ui.processing.stats.ResidualsUI;
 import demetra.desktop.ui.processing.stats.SpectrumUI;
 import demetra.html.HtmlElement;
+import demetra.html.core.HtmlDiagnosticsSummary;
 import demetra.information.BasicInformationExtractor;
 import demetra.information.InformationSet;
 import demetra.modelling.ModellingDictionary;
 import demetra.modelling.SeriesInfo;
+import demetra.processing.ProcDiagnostic;
 import demetra.sa.SaDictionary;
+import demetra.sa.SaManager;
+import demetra.sa.SaProcessingFactory;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDocument;
 import demetra.tramoseats.io.information.TramoSeatsSpecMapping;
 import demetra.util.Id;
 import demetra.util.LinearId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
@@ -513,6 +519,27 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="DIAGNOSTICS">
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5000)
+    public static class DiagnosticsSummaryFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public DiagnosticsSummaryFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_SUMMARY, (TramoSeatsDocument doc)->{
+                TramoSeatsResults rslt = doc.getResult();
+                if (rslt == null)
+                    return null;
+                SaProcessingFactory factory = SaManager.factoryFor(doc.getSpecification());
+                List<ProcDiagnostic> diags=new ArrayList<>();
+                factory.fillDiagnostics(diags, rslt);
+                return new HtmlDiagnosticsSummary(diags);
+                    }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5000;
+        }
+    }
+
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5310)
     public static class ModelResSpectrum extends ProcDocumentItemFactory<TramoSeatsDocument, TsData> {
 

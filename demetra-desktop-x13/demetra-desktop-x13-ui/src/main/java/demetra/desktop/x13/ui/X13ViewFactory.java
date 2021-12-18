@@ -28,12 +28,16 @@ import demetra.html.AbstractHtmlElement;
 import demetra.html.HtmlElement;
 import demetra.html.HtmlStream;
 import demetra.html.HtmlTag;
+import demetra.html.core.HtmlDiagnosticsSummary;
 import demetra.information.BasicInformationExtractor;
 import demetra.information.InformationSet;
 import demetra.modelling.ModellingDictionary;
 import demetra.modelling.SeriesInfo;
+import demetra.processing.ProcDiagnostic;
 import demetra.sa.ComponentType;
 import demetra.sa.SaDictionary;
+import demetra.sa.SaManager;
+import demetra.sa.SaProcessingFactory;
 import demetra.sa.SeriesDecomposition;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDocument;
@@ -43,12 +47,15 @@ import demetra.x11.SeasonalFilterOption;
 import demetra.x11.X11Results;
 import demetra.x13.X13Dictionary;
 import demetra.x13.io.information.X13SpecMapping;
+import jdplus.x13.X13Results;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
-import jdplus.x13.X13Results;
 import org.openide.util.lookup.ServiceProvider;
+
 
 /**
  *
@@ -655,6 +662,27 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 //</editor-fold>
 //<editor-fold defaultstate="collapsed" desc="DIAGNOSTICS">
 
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5000)
+    public static class DiagnosticsSummaryFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
+
+        public DiagnosticsSummaryFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_SUMMARY, (X13Document doc)->{
+                jdplus.x13.X13Results rslt = doc.getResult();
+                if (rslt == null)
+                    return null;
+                SaProcessingFactory factory = SaManager.factoryFor(doc.getSpecification());
+                List<ProcDiagnostic> diags=new ArrayList<>();
+                factory.fillDiagnostics(diags, rslt);
+                return new HtmlDiagnosticsSummary(diags);
+                    }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5000;
+        }
+    }
+    
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5310)
     public static class ModelResSpectrum extends ProcDocumentItemFactory<X13Document, TsData> {
 

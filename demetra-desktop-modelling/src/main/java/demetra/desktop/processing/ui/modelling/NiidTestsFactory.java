@@ -31,7 +31,7 @@ public abstract class NiidTestsFactory<D extends TsDocument<?, ?>>
                     .period(res.getAnnualFrequency())
                     .defaultTestsLength()
                     .build();
-            return new demetra.html.stat.HtmlNiidTest(niid);
+            return new demetra.html.stats.HtmlNiidTest(niid);
         }), new HtmlItemUI());
     }
 }
