@@ -45,6 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
 import jdplus.tramoseats.TramoSeatsResults;
+import jdplus.tramoseats.TramoSeatsDocument;
 import org.openide.util.lookup.ServiceProvider;
 
 /**

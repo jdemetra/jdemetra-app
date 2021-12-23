@@ -827,7 +827,7 @@ public class HasTsCollectionSupport {
                 for (Ts ts : currentData) {
                     if (event.getRelated().test(ts.getMoniker())) {
                         requireChange = true;
-                        newData.item(event.getSource().makeTs(ts.getMoniker(), TsInformationType.All));
+                        newData.item(event.getSource().makeTs(ts.getMoniker(), TsInformationType.All).withName(ts.getName()));
                     } else {
                         newData.item(ts);
                     }

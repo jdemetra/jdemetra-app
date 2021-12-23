@@ -48,6 +48,7 @@ import demetra.x11.X11Results;
 import demetra.x13.X13Dictionary;
 import demetra.x13.io.information.X13SpecMapping;
 import jdplus.x13.X13Results;
+import jdplus.x13.X13Document;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

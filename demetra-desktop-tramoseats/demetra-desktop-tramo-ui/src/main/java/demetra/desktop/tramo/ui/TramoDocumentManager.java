@@ -4,6 +4,7 @@
  */
 package demetra.desktop.tramo.ui;
 
+import jdplus.tramo.TramoDocument;
 import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.tramo.descriptors.TramoSpecUI;
 import demetra.desktop.ui.processing.DocumentUIServices;

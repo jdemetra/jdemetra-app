@@ -4,6 +4,7 @@
  */
 package demetra.desktop.tramo.ui;
 
+import jdplus.tramo.TramoDocument;
 import demetra.desktop.processing.ui.modelling.ForecastsFactory;
 import demetra.desktop.processing.ui.modelling.InputFactory;
 import demetra.desktop.processing.ui.modelling.LikelihoodFactory;

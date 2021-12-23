@@ -29,6 +29,7 @@ import demetra.timeseries.TsData;
 import demetra.timeseries.TsDocument;
 import demetra.util.Id;
 import demetra.x13.io.information.RegArimaSpecMapping;
+import jdplus.x13.regarima.RegArimaDocument;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;

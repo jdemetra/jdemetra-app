@@ -4,6 +4,7 @@
  */
 package demetra.desktop.tramo.ui;
 
+import jdplus.tramo.TramoDocument;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;

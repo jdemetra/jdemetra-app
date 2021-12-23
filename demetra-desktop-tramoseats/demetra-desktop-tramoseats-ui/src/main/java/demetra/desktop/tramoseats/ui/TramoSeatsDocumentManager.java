@@ -15,6 +15,7 @@ import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.tramoseats.TramoSeatsSpec;
 import demetra.util.Id;
 import demetra.util.LinearId;
+import jdplus.tramoseats.TramoSeatsDocument;
 import org.openide.util.lookup.ServiceProvider;
 
 /**

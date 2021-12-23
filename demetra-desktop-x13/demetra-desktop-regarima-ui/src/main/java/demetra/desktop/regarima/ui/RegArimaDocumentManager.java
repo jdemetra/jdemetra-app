@@ -9,14 +9,13 @@ import demetra.desktop.regarima.descriptors.RegArimaSpecUI;
 import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.DocumentUIServices.UIFactory;
 import demetra.desktop.ui.processing.IProcDocumentView;
-import demetra.desktop.ui.properties.l2fprod.UserInterfaceContext;
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.regarima.RegArimaSpec;
-import demetra.timeseries.Ts;
 import demetra.util.Id;
 import demetra.util.LinearId;
+import jdplus.x13.regarima.RegArimaDocument;
 import org.openide.util.lookup.ServiceProvider;
 
 /**

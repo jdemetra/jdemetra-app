@@ -90,7 +90,7 @@ public class HasTsSupport {
         @Override
         public void tsUpdated(TsEvent event) {
             if (hasTs() && event.getRelated().test(ts.getMoniker())) {
-                setTs(event.getSource().makeTs(ts.getMoniker(), ts.getType()));
+                setTs(event.getSource().makeTs(ts.getMoniker(), ts.getType()).withName(ts.getName()));
             }
         }
 

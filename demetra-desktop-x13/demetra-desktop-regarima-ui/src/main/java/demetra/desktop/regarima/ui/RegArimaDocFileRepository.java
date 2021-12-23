@@ -11,6 +11,7 @@ import demetra.tsprovider.TsMeta;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import jdplus.x13.regarima.RegArimaDocument;
 import org.openide.util.lookup.ServiceProvider;
 
 /**

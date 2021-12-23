@@ -4,6 +4,7 @@
  */
 package demetra.desktop.tramo.ui;
 
+import jdplus.tramo.TramoDocument;
 import demetra.desktop.workspace.AbstractFileItemRepository;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemRepository;

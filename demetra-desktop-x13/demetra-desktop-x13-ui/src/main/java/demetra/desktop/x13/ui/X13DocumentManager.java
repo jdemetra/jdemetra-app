@@ -15,6 +15,7 @@ import demetra.desktop.x13.descriptors.X13SpecUI;
 import demetra.util.Id;
 import demetra.util.LinearId;
 import demetra.x13.X13Spec;
+import jdplus.x13.X13Document;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
