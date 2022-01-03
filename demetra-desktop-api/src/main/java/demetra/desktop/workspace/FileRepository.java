@@ -125,7 +125,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         boolean exist = file.exists();
         try (demetra.workspace.file.FileWorkspace storage = exist
                 ? demetra.workspace.file.FileWorkspace.open(file.toPath())
-                : demetra.workspace.file.FileWorkspace.create(file.toPath(), demetra.workspace.file.FileFormat.GENERIC)) {
+                : demetra.workspace.file.FileWorkspace.create(file.toPath())) {
             storage.setName(ws.getName());
             storeCalendar(storage, ws.getContext().getCalendars());
             if (exist) {
