@@ -87,7 +87,7 @@ final class AutoCompletedComponentDemo {
     @lombok.Value
     private static final class StandardSystemProperty {
 
-        private String name;
+        String name;
 
         static StandardSystemProperty[] values() {
             return System

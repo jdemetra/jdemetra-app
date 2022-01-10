@@ -110,15 +110,19 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
     }
 
     public void setOption(TradingDaysSpecType value) {
+        TradingDaysSpec spec = inner();
+        boolean automatic = spec.isAutomatic();
         switch (value) {
             case None:
                 update(TradingDaysSpec.none());
                 break;
             case Default:
-                update(TradingDaysSpec.td(TradingDaysType.TD7, LengthOfPeriodType.LeapYear, RegressionTestType.Separate_T));
+                update(automatic ? TradingDaysSpec.automatic(spec.getAutomaticMethod(), spec.getProbabilityForFTest())
+                        : TradingDaysSpec.td(TradingDaysType.TD7, LengthOfPeriodType.LeapYear, RegressionTestType.Separate_T));
                 break;
             case Holidays:
-                update(TradingDaysSpec.holidays(CalendarManager.DEF, TradingDaysType.TD7, LengthOfPeriodType.LengthOfPeriod, RegressionTestType.Separate_T));
+                update(automatic ? TradingDaysSpec.automaticHolidays(CalendarManager.DEF, spec.getAutomaticMethod(), spec.getProbabilityForFTest())
+                        :TradingDaysSpec.holidays(CalendarManager.DEF, TradingDaysType.TD7, LengthOfPeriodType.LengthOfPeriod, RegressionTestType.Separate_T));
                 break;
             case Stock:
                 update(TradingDaysSpec.stockTradingDays(31, RegressionTestType.Separate_T));
@@ -217,7 +221,9 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
 
     public void setHolidays(Holidays holidays) {
         TradingDaysSpec td = inner();
-        update(TradingDaysSpec.holidays(holidays.getName(), td.getTradingDaysType(), td.getLengthOfPeriodType(), td.getRegressionTestType()));
+        boolean automatic = td.isAutomatic();
+        update(automatic ? TradingDaysSpec.automaticHolidays(holidays.getName(), td.getAutomaticMethod(), td.getProbabilityForFTest())
+                : TradingDaysSpec.holidays(holidays.getName(), td.getTradingDaysType(), td.getLengthOfPeriodType(), td.getRegressionTestType()));
     }
 
     public UserVariables getUserVariables() {
