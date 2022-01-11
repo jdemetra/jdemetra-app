@@ -26,16 +26,11 @@ jobs:
           submodules: true
 
       - name: Setup Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: ${{ matrix.java }}
-
-      - name: Setup Maven cache
-        uses: actions/cache@v1
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+          cache: 'maven'
 
       - name: Build and (headless) test with Maven
         uses: GabrielBB/xvfb-action@v1
@@ -60,16 +55,11 @@ jobs:
           submodules: true
 
       - name: Setup Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: ${{ matrix.java }}
-
-      - name: Setup Maven cache
-        uses: actions/cache@v1
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+          cache: 'maven'
 
       - name: Deploy snapshot with Maven if settings defined
         run: test ! -f ci.settings.xml || mvn -B -ntp deploy -DskipTests=true -s ci.settings.xml -P base-deploy,snapshot-deploy,!non-deployable-modules
@@ -97,16 +87,11 @@ jobs:
           submodules: true
 
       - name: Setup Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: ${{ matrix.java }}
-
-      - name: Setup Maven cache
-        uses: actions/cache@v1
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+          cache: 'maven'
 
       - name: Deploy with Maven if settings defined
         run: test ! -f ci.settings.xml || mvn -B -ntp deploy -DskipTests=true -s ci.settings.xml -P base-deploy,release-deploy,!non-deployable-modules
