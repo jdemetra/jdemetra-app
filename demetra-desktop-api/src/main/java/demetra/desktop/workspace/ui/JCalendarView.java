@@ -4,19 +4,18 @@
  */
 package demetra.desktop.workspace.ui;
 
+import demetra.desktop.components.JTsGrid;
+import demetra.desktop.components.TsSelectionBridge;
+import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.desktop.components.tools.PeriodogramView;
+import demetra.desktop.design.SwingComponent;
+import demetra.desktop.properties.NodePropertySetBuilder;
+import demetra.desktop.util.NbComponents;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
-import demetra.timeseries.TsPeriod;
-import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
-import demetra.desktop.util.NbComponents;
-import demetra.desktop.properties.NodePropertySetBuilder;
-import demetra.desktop.components.JTsGrid;
-import ec.util.list.swing.JLists;
-import demetra.desktop.components.TsSelectionBridge;
-import demetra.desktop.components.tools.PeriodogramView;
-import demetra.desktop.design.SwingComponent;
 import demetra.timeseries.TsDomain;
+import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;
 import demetra.timeseries.calendars.CalendarDefinition;
 import demetra.timeseries.calendars.DayClustering;
@@ -29,7 +28,9 @@ import demetra.timeseries.regression.HolidaysCorrectedTradingDays;
 import demetra.timeseries.regression.ITsVariable;
 import demetra.timeseries.regression.LengthOfPeriod;
 import demetra.timeseries.regression.ModellingContext;
+import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,7 +115,7 @@ public final class JCalendarView extends JComponent {
                 : mean ? GenericTradingDays.meanCorrected(clustering) : GenericTradingDays.raw(clustering);
         
         HolidaysCorrectedTradingDays htd=new HolidaysCorrectedTradingDays(td, HolidaysCorrectionFactory.corrector(calendar, 
-                ModellingContext.getActiveContext().getCalendars(), mean));
+                ModellingContext.getActiveContext().getCalendars(), DayOfWeek.SUNDAY, mean));
         vars.add(htd);
         if (ltype != LengthOfPeriodType.None) {
             vars.add(new LengthOfPeriod(ltype));
