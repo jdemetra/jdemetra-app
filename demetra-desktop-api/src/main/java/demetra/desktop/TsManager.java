@@ -118,8 +118,14 @@ public final class TsManager implements DataSourceFactory, Closeable {
     @OnEDT
     public void loadAsync(@NonNull TsCollection col, @NonNull TsInformationType info, @NonNull Consumer<? super TsCollection> onLoaded) {
         executor.execute(() -> {
-            TsCollection loaded = makeTsCollection(col.getMoniker(), info);
-            SwingUtilities.invokeLater(() -> onLoaded.accept(loaded));
+            if (col.getMoniker().isProvided()) {
+                TsCollection loaded = makeTsCollection(col.getMoniker(), info);
+                SwingUtilities.invokeLater(() -> onLoaded.accept(loaded));
+            }else{
+                // One by one
+                TsCollection loaded = col.getItems().stream().map(s->makeTs(s.getMoniker(), info)).collect(TsCollection.toTsCollection());
+                SwingUtilities.invokeLater(() -> onLoaded.accept(loaded));
+            }
         });
     }
 
@@ -129,8 +135,8 @@ public final class TsManager implements DataSourceFactory, Closeable {
     }
 
     @OnAnyThread
-    private void notify(TsMoniker moniker, Predicate<TsMoniker> related) {
-        events.add(new TsEvent(this, moniker, related));
+    public void notify(Predicate<TsMoniker> related) {
+        events.add(new TsEvent(this, related));
         SwingUtilities.invokeLater(this::notifyUpdateListeners);
     }
 
@@ -159,8 +165,7 @@ public final class TsManager implements DataSourceFactory, Closeable {
         public void changed(DataSource ds) {
             Optional<DataSourceProvider> provider = getProvider(DataSourceProvider.class, ds);
             if (provider.isPresent()) {
-                TsMoniker dataSourceMoniker = provider.get().toMoniker(ds);
-                TsManager.this.notify(dataSourceMoniker, dataSetMoniker -> isRelated(provider.get(), ds, dataSetMoniker));
+                TsManager.this.notify(dataSetMoniker -> isRelated(provider.get(), ds, dataSetMoniker));
             }
         }
 

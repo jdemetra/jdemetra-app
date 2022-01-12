@@ -16,8 +16,10 @@
  */
 package demetra.desktop.components.parts;
 
+import demetra.desktop.TsManager;
 import demetra.desktop.design.SwingProperty;
 import demetra.timeseries.Ts;
+import demetra.timeseries.TsInformationType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -34,10 +36,18 @@ public interface HasTs {
 
     void setTs(@Nullable Ts ts);
 
-    default void replaceTs(@NonNull Ts ts) {
+    default void updateTs(@NonNull Ts ts) {
         Ts current = getTs();
         if (current != null && current.getMoniker().equals(ts.getMoniker())) {
             setTs(ts);
         }
     }
+
+    default void loadAsync(TsInformationType info) {
+        Ts ts = getTs();
+        if (ts != null && !ts.getType().encompass(info)) {
+            TsManager.getDefault().loadAsync(ts, info, this::updateTs);
+        }
+    }
+    
 }

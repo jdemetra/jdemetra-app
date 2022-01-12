@@ -18,7 +18,7 @@ package demetra.desktop.anomalydetection.html;
 
 import demetra.desktop.anomalydetection.OutlierEstimation;
 import demetra.desktop.anomalydetection.comparer.OutlierEstimationComparator;
-import demetra.desktop.l2fprod.OutlierColorChooser;
+import demetra.desktop.ui.properties.l2fprod.OutlierColorChooser;
 import demetra.html.AbstractHtmlElement;
 import demetra.html.Bootstrap4;
 import demetra.html.HtmlElement;

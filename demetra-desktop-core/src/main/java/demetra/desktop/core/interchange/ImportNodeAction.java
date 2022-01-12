@@ -17,6 +17,7 @@
 package demetra.desktop.core.interchange;
 
 import demetra.desktop.actions.AbilityNodeAction;
+import demetra.desktop.core.tsproviders.ProviderNode;
 import demetra.desktop.interchange.Importable;
 import demetra.desktop.interchange.Interchange;
 import demetra.desktop.nodes.AbstractNodeBuilder;
@@ -52,7 +53,7 @@ public final class ImportNodeAction extends AbilityNodeAction<Importable> implem
     @Override
     public JMenuItem getPopupPresenter() {
         Node[] nodes = getActivatedNodes();
-        if (isProvidersNode(nodes)) {
+        if (nodes == null || isProvidersNode(nodes)) {
             nodes = new Node[]{fakeProviderNode};
         }
         JMenuItem result = Interchange.getDefault().newImportMenu(getImportables(nodes));
@@ -77,6 +78,7 @@ public final class ImportNodeAction extends AbilityNodeAction<Importable> implem
     }
 
     private static boolean isProvidersNode(Node[] activatedNodes) {
-        return activatedNodes != null && activatedNodes.length == 0;
+        return activatedNodes.length == 1 && activatedNodes[0] instanceof ProviderNode;
+//        return activatedNodes != null && activatedNodes.length == 0;
     }
 }

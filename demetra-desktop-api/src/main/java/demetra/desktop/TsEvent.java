@@ -12,18 +12,23 @@ import java.util.function.Predicate;
  */
 public final class TsEvent extends EventObject {
 
-    @NonNull
-    @lombok.Getter
-    private final TsMoniker moniker;
-
+//    @NonNull
+//    @lombok.Getter
+//    private final TsMoniker moniker;
+//
     @NonNull
     @lombok.Getter
     private final Predicate<TsMoniker> related;
     
-    public TsEvent(@NonNull TsManager source, @NonNull TsMoniker moniker, @NonNull Predicate<TsMoniker> related) {
+//    public TsEvent(@NonNull TsManager source, @NonNull TsMoniker moniker, @NonNull Predicate<TsMoniker> related) {
+//        super(source);
+//        this.moniker = Objects.requireNonNull(moniker);
+//        this.related = Objects.requireNonNull(related);
+//    }
+//
+    public TsEvent(@NonNull TsManager source, @NonNull Predicate<TsMoniker> related) {
         super(source);
-        this.moniker = Objects.requireNonNull(moniker);
-        this.related = Objects.requireNonNull(related);
+         this.related = Objects.requireNonNull(related);
     }
 
     @Override

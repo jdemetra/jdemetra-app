@@ -4,8 +4,9 @@
  */
 package demetra.desktop.core.tools;
 
+import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.components.tools.PeriodogramView;
-import demetra.desktop.util.TsTopComponent;
+import demetra.desktop.ui.processing.TsTopComponent;
 import java.lang.reflect.InvocationTargetException;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -36,6 +37,7 @@ import org.openide.windows.WindowManager;
 })
 public final class PeriodogramTopComponent extends TsTopComponent {
 
+    @lombok.experimental.Delegate(types=HasTs.class)
     private final PeriodogramView view;
     private final Node internalNode;
 

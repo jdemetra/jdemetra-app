@@ -20,6 +20,7 @@
         <project.x.binaries>${project.build.directory}/binaries</project.x.binaries>
         <project.x.zipname>jdemetra-${project.version}-bin</project.x.zipname>
         <tramoseats.version>3.0.0-SNAPSHOT</tramoseats.version>
+        <x13.version>3.0.0-SNAPSHOT</x13.version>
     </properties>
 
     <dependencies>
@@ -81,6 +82,14 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-modelling</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-sa-api</artifactId>
+        </dependency>
+        <!--dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-jd2</artifactId>   
         </dependency>
         <dependency>
@@ -90,11 +99,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-text</artifactId>
-        </dependency>
-        <!--dependency>
+        </dependency-->
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-spreadsheet</artifactId>
-        </dependency-->
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-tramoseats-api</artifactId>
@@ -102,8 +111,33 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-tramo-ui</artifactId>
+            <version>${tramoseats.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-tramoseats-ui</artifactId>
+            <version>${tramoseats.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-tramo-outliers</artifactId>
             <version>${tramoseats.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-x13-api</artifactId>
+            <version>${x13.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-regarima-ui</artifactId>
+            <version>${x13.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-x13-ui</artifactId>
+            <version>${x13.version}</version>
         </dependency>
     </dependencies>
 

@@ -31,8 +31,8 @@ import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.tools.ToolsPersistence;
 import demetra.desktop.components.JTsChart;
 import demetra.desktop.concurrent.UIExecutors;
-import demetra.desktop.util.ActiveView;
-import demetra.desktop.util.ActiveViewManager;
+import demetra.desktop.ui.ActiveView;
+import demetra.desktop.ui.ActiveViewManager;
 import demetra.tramo.TramoSpec;
 import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
@@ -83,12 +83,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mats Maggi
  */
-@ConvertAsProperties(dtd = "-//ec.nbdemetra.ui.tools//CheckLastList//EN",
+@ConvertAsProperties(dtd = "-//demetra.desktop.anomalydetection.ui/CheckLastList//EN",
         autostore = false)
 @TopComponent.Description(preferredID = "CheckLastTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Window", id = "ec.nbdemetra.anomalydetection.ui.CheckLastTopComponent")
+@ActionID(category = "Window", id = "demetra.desktop.anomalydetection.ui.CheckLastTopComponent")
 @ActionReference(path = "Menu/Statistical methods/Anomaly Detection")
 @TopComponent.OpenActionRegistration(displayName = "#CTL_CheckLastTopComponentAction")
 @NbBundle.Messages({

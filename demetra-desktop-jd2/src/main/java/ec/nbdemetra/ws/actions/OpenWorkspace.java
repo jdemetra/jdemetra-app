@@ -13,13 +13,13 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
-@ActionID(category = "File",
-id = "ec.nbdemetra.ws.actions.OpenWorkspace")
-@ActionRegistration(displayName = "#CTL_OpenWorkspace")
-@ActionReferences({
-    @ActionReference(path = "Menu/File", position = 200)
-})
-@Messages("CTL_OpenWorkspace=Open Workspace")
+//@ActionID(category = "File",
+//id = "ec.nbdemetra.ws.actions.OpenWorkspace")
+//@ActionRegistration(displayName = "#CTL_OpenWorkspace")
+//@ActionReferences({
+//    @ActionReference(path = "Menu/File", position = 200)
+//})
+//@Messages("CTL_OpenWorkspace=Open Workspace")
 public final class OpenWorkspace implements ActionListener {
 
     @Override

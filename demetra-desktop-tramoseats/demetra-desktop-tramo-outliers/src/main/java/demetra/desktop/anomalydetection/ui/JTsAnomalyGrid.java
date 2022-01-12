@@ -25,7 +25,7 @@ import demetra.desktop.components.TsGridObs;
 import ec.util.chart.ObsIndex;
 import ec.util.list.swing.JLists;
 import demetra.desktop.components.TsSelectionBridge;
-import demetra.desktop.l2fprod.OutlierColorChooser;
+import demetra.desktop.ui.properties.l2fprod.OutlierColorChooser;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
 import demetra.modelling.TransformationType;

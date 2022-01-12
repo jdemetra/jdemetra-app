@@ -4,8 +4,9 @@
  */
 package demetra.desktop.core.tools;
 
+import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.components.tools.AutoRegressiveSpectrumView;
-import demetra.desktop.util.TsTopComponent;
+import demetra.desktop.ui.processing.TsTopComponent;
 import java.lang.reflect.InvocationTargetException;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -38,6 +39,7 @@ import org.openide.windows.WindowManager;
 })
 public final class AutoRegressiveSpectrumTopComponent extends TsTopComponent {
 
+    @lombok.experimental.Delegate(types=HasTs.class)
     private final AutoRegressiveSpectrumView view;
     private final Node internalNode;
 
@@ -83,16 +85,6 @@ public final class AutoRegressiveSpectrumTopComponent extends TsTopComponent {
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
-    }
-
-    @Override
-    public demetra.timeseries.Ts getTs() {
-        return view.getTs();
-    }
-
-    @Override
-    public void setTs(demetra.timeseries.Ts ts) {
-        view.setTs(ts);
     }
 
     @Override

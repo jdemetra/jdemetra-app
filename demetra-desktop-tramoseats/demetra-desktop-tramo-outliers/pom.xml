@@ -45,13 +45,17 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-api</artifactId>
         </dependency>
+       <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-modelling</artifactId>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-core</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>demetra-desktop-text</artifactId>
+            <artifactId>demetra-desktop-sa-api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -88,6 +92,10 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-javahelp</artifactId>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>

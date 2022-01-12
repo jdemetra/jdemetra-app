@@ -17,14 +17,10 @@
 package ec.nbdemetra.common;
 
 import demetra.bridge.ToFileBean;
-import demetra.bridge.TsConverter;
 import demetra.desktop.TsManager;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import demetra.desktop.tsproviders.AbstractDataSourceProviderBuddy;
 import demetra.desktop.tsproviders.DataSourceProviderBuddy;
-import ec.tss.tsproviders.IFileBean;
-import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.common.tsw.TswBean;
 import ec.tss.tsproviders.common.tsw.TswProvider;
 import java.awt.Image;
 import java.beans.IntrospectionException;

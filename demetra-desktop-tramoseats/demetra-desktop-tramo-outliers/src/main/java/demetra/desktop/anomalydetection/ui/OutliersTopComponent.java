@@ -26,8 +26,8 @@ import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.components.JTsGrid;
 import ec.util.chart.ObsIndex;
 import demetra.desktop.components.TsSelectionBridge;
-import demetra.desktop.util.ActiveView;
-import demetra.desktop.util.ActiveViewManager;
+import demetra.desktop.ui.ActiveView;
+import demetra.desktop.ui.ActiveViewManager;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -69,7 +69,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Description(preferredID = "OutliersTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Window", id = "ec.nbdemetra.anomalydetection.ui.OutliersTopComponent")
+@ActionID(category = "Window", id = "demetra.desktop.anomalydetection.ui.OutliersTopComponent")
 @ActionReference(path = "Menu/Statistical methods/Anomaly Detection")
 @TopComponent.OpenActionRegistration(displayName = "#CTL_OutliersTopComponentAction")
 @NbBundle.Messages({
