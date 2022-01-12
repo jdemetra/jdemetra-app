@@ -39,7 +39,7 @@ import static ec.util.completion.AutoCompletionSource.Behavior.SYNC;
  */
 final class AutoCompletedComponentDemo {
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         new BasicSwingLauncher()
                 .content(AutoCompletedComponentDemo::create)
                 .size(400, 300)
@@ -98,5 +98,5 @@ final class AutoCompletedComponentDemo {
                     .map(StandardSystemProperty::new)
                     .toArray(StandardSystemProperty[]::new);
         }
-    }
+    }*/
 }
