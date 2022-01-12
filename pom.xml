@@ -515,6 +515,14 @@
 
     <repositories>
         <repository>
+            <id>jfrog-maven-mirror</id>
+            <url>https://raw.githubusercontent.com/nbbrd/jfrog-maven-mirror/main</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <!-- Temp fix for binary incompatibility -->
+        <repository>
             <id>ossrh-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
             <snapshots>
