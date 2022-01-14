@@ -4,28 +4,22 @@
  */
 package ec.nbdemetra.common;
 
-import demetra.bridge.ToFileBean;
-import demetra.desktop.tsproviders.AbstractDataSourceProviderBuddy;
 import demetra.desktop.tsproviders.DataSourceProviderBuddy;
-import ec.tss.tsproviders.common.uscb.UscbProvider;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
-
-import java.beans.IntrospectionException;
 
 /**
  *
  * @author Philippe Charles
  */
+@DirectImpl
 @ServiceProvider(DataSourceProviderBuddy.class)
-public final class UscbProviderBuddy extends AbstractDataSourceProviderBuddy {
+public final class UscbProviderBuddy implements DataSourceProviderBuddy {
+
+    private static final String SOURCE = "USCB";
 
     @Override
     public String getProviderName() {
-        return UscbProvider.SOURCE;
-    }
-
-    @Override
-    public boolean editBean(String title, Object bean) throws IntrospectionException {
-        return super.editBean(title, bean instanceof ToFileBean ? ((ToFileBean) bean).getDelegate() : bean);
+        return SOURCE;
     }
 }

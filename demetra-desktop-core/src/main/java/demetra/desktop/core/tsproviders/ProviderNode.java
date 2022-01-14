@@ -18,13 +18,14 @@ package demetra.desktop.core.tsproviders;
 
 import demetra.desktop.Config;
 import demetra.desktop.TsManager;
+import demetra.desktop.core.actions.ConfigureNodeAction;
 import demetra.desktop.core.actions.OpenNodeAction;
 import demetra.desktop.core.interchange.ImportNodeAction;
 import demetra.desktop.datatransfer.DataSourceTransfer;
 import demetra.desktop.interchange.Importable;
 import demetra.desktop.nodes.Nodes;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
-import demetra.desktop.tsproviders.ProvidersUtil;
+import demetra.desktop.tsproviders.DataSourceProviderBuddyUtil;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceListener;
 import demetra.tsprovider.DataSourceLoader;
@@ -60,7 +61,7 @@ import static demetra.desktop.tsproviders.TsProviderNodes.PROVIDER_ACTION_PATH;
         @ActionReference(path = PROVIDER_ACTION_PATH, separatorBefore = 300, position = 310, id = @ActionID(category = "File", id = OpenNodeAction.ID)),
         @ActionReference(path = PROVIDER_ACTION_PATH, separatorBefore = 400, position = 420, id = @ActionID(category = "Edit", id = PasteProviderNodeAction.ID)),
         @ActionReference(path = PROVIDER_ACTION_PATH, separatorBefore = 400, position = 430, id = @ActionID(category = "File", id = ImportNodeAction.ID)),
-        @ActionReference(path = PROVIDER_ACTION_PATH, separatorBefore = 500, position = 520, id = @ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ConfigureAction"))
+        @ActionReference(path = PROVIDER_ACTION_PATH, separatorBefore = 500, position = 520, id = @ActionID(category = "File", id = ConfigureNodeAction.ID))
 })
 public final class ProviderNode extends AbstractNode {
 
@@ -206,12 +207,12 @@ public final class ProviderNode extends AbstractNode {
 
         @Override
         public String getDomain() {
-            return ProvidersUtil.getDataSourceDomain();
+            return DataSourceProviderBuddyUtil.getDataSourceDomain();
         }
 
         @Override
         public void importConfig(Config config) throws IllegalArgumentException {
-            DataSource dataSource = ProvidersUtil.getDataSource(config);
+            DataSource dataSource = DataSourceProviderBuddyUtil.getDataSource(config);
             TsManager.getDefault()
                     .getProvider(DataSourceLoader.class, dataSource)
                     .ifPresent(provider -> {

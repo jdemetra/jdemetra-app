@@ -84,13 +84,13 @@ public class XmlConfig {
             return item;
         }
 
-        static SortedMap<String, String> toSortedMap(ParamBean[] params) {
+        public static SortedMap<String, String> toSortedMap(ParamBean[] params) {
             return params != null
                     ? Stream.of(params).collect(Collectors.toMap(ParamBean::getKeyOrEmpty, ParamBean::getValueOrEmpty, (l, r) -> l, TreeMap::new))
                     : Collections.emptySortedMap();
         }
 
-        static ParamBean[] fromSortedMap(SortedMap<String, String> sortedMap) {
+        public static ParamBean[] fromSortedMap(SortedMap<String, String> sortedMap) {
             return !sortedMap.isEmpty()
                     ? sortedMap.entrySet().stream().map(ParamBean::of).toArray(ParamBean[]::new)
                     : null;

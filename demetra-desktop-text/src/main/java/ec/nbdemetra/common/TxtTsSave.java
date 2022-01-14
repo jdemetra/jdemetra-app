@@ -25,9 +25,10 @@ import demetra.desktop.util.SingleFileExporter;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
 import demetra.desktop.DemetraIcons;
-import ec.tss.tsproviders.common.txt.TxtFileFilter;
+import demetra.desktop.datatransfer.ts.TxtDataTransfer;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
+import internal.demetra.tsp.text.TxtFileFilter;
 import nbbrd.io.text.Formatter;
 import nbbrd.service.ServiceProvider;
 import org.netbeans.api.progress.ProgressHandle;
@@ -133,7 +134,7 @@ public final class TxtTsSave implements TsActionsSaveSpi {
 
         @Override
         public String getDescription() {
-            return delegate.getDescription();
+            return delegate.getFileDescription();
         }
     }
 

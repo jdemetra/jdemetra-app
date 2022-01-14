@@ -14,28 +14,28 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.jdbc;
+package demetra.desktop.sql.jdbc;
 
-import demetra.bridge.ToFileBean;
-import demetra.bridge.TsConverter;
 import demetra.desktop.TsManager;
 import ec.nbdemetra.db.DbIcon;
 import demetra.desktop.actions.Configurable;
-import demetra.desktop.util.SimpleHtmlListCellRenderer;
 import demetra.desktop.properties.NodePropertySetBuilder;
+import demetra.desktop.sql.SqlColumnListCellRenderer;
+import demetra.desktop.sql.SqlProviderBuddy;
+import demetra.desktop.sql.SqlTableListCellRenderer;
 import demetra.desktop.tsproviders.DataSourceProviderBuddy;
-import ec.tss.tsproviders.db.DbBean;
-import ec.tss.tsproviders.jdbc.ConnectionSupplier;
-import ec.tss.tsproviders.jdbc.JdbcBean;
-import ec.tss.tsproviders.jdbc.jndi.JndiJdbcProvider;
-import ec.tss.tsproviders.utils.Formatters;
-import ec.tss.tsproviders.utils.Parsers;
+import demetra.desktop.tsproviders.DataSourceProviderBuddyUtil;
+import demetra.desktop.tsproviders.TsProviderProperties;
+import demetra.desktop.util.SimpleHtmlCellRenderer;
+import demetra.sql.HasSqlProperties;
+import demetra.sql.jdbc.JdbcBean;
+import demetra.sql.jdbc.JdbcProvider;
+import demetra.tsprovider.DataSource;
 import static ec.util.chart.impl.TangoColorScheme.DARK_ORANGE;
 import static ec.util.chart.impl.TangoColorScheme.DARK_SCARLET_RED;
 import static ec.util.chart.swing.SwingColorSchemeSupport.rgbToColor;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.ExtAutoCompletionSource;
-import ec.util.jdbc.ForwardingConnection;
 import ec.util.various.swing.FontAwesome;
 import java.awt.EventQueue;
 import java.awt.Image;
@@ -46,6 +46,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
@@ -57,7 +58,11 @@ import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
+import nbbrd.design.DirectImpl;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
 import nbbrd.service.ServiceProvider;
+import nbbrd.sql.jdbc.SqlConnectionSupplier;
 import org.netbeans.api.db.explorer.ConnectionManager;
 import org.netbeans.api.db.explorer.DatabaseConnection;
 import org.netbeans.api.db.explorer.DatabaseException;
@@ -74,36 +79,46 @@ import org.openide.util.NbBundle;
  *
  * @author Philippe Charles
  */
+@DirectImpl
 @ServiceProvider(DataSourceProviderBuddy.class)
-public final class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> implements Configurable {
+public final class JdbcProviderBuddy implements DataSourceProviderBuddy, Configurable {
 
+    private static final String SOURCE = "JNDI-JDBC";
+
+    private final SqlConnectionSupplier supplier;
     private final AutoCompletionSource dbSource;
     private final ListCellRenderer dbRenderer;
+    private final ListCellRenderer tableRenderer;
+    private final ListCellRenderer columnRenderer;
     private final Image warningBadge;
     private final Image errorBadge;
 
-    public JndiJdbcProviderBuddy() {
-        super(new DbExplorerConnectionSupplier());
+    public JdbcProviderBuddy() {
+        this.supplier = new DbExplorerConnectionSupplier();
         this.dbSource = dbExplorerSource();
-        this.dbRenderer = new SimpleHtmlListCellRenderer<>((DatabaseConnection o) -> "<html><b>" + o.getDisplayName() + "</b> - <i>" + o.getName() + "</i>");
+        this.dbRenderer = new SimpleHtmlCellRenderer<>((DatabaseConnection o) -> "<html><b>" + o.getDisplayName() + "</b> - <i>" + o.getName() + "</i>");
+        this.tableRenderer = new SqlTableListCellRenderer();
+        this.columnRenderer = new SqlColumnListCellRenderer();
         this.warningBadge = FontAwesome.FA_EXCLAMATION_TRIANGLE.getImage(rgbToColor(DARK_ORANGE), 8f);
         this.errorBadge = FontAwesome.FA_EXCLAMATION_CIRCLE.getImage(rgbToColor(DARK_SCARLET_RED), 8f);
         overrideDefaultConnectionSupplier();
     }
 
+    private Optional<JdbcProvider> getProvider() {
+        return TsManager.getDefault().getProvider(JdbcProvider.class, SOURCE);
+    }
+
     // this overrides default connection supplier since we don't have JNDI in JavaSE
     private void overrideDefaultConnectionSupplier() {
-        TsManager.getDefault()
-                .getProvider(JndiJdbcProvider.SOURCE)
-                .map(TsConverter::fromTsProvider)
-                .filter(JndiJdbcProvider.class::isInstance)
-                .map(JndiJdbcProvider.class::cast)
+        getProvider()
+                .filter(HasSqlProperties.class::isInstance)
+                .map(HasSqlProperties.class::cast)
                 .ifPresent(o -> o.setConnectionSupplier(supplier));
     }
 
     @Override
     public String getProviderName() {
-        return JndiJdbcProvider.SOURCE;
+        return SOURCE;
     }
 
     @Override
@@ -112,52 +127,138 @@ public final class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> imp
     }
 
     @Override
-    public Image getIconOrNull(demetra.tsprovider.DataSource dataSource, int type, boolean opened) {
-        Image image = super.getIconOrNull(dataSource, type, opened);
-        String dbName = DbBean.X_DBNAME.get(TsConverter.fromDataSource(dataSource));
-        switch (DbConnStatus.lookupByDisplayName(dbName)) {
+    public Image getIconOrNull(DataSource dataSource, int type, boolean opened) {
+        Image image = DataSourceProviderBuddy.super.getIconOrNull(dataSource, type, opened);
+        switch (getStatus(dataSource)) {
             case DISCONNECTED:
                 return ImageUtilities.mergeImages(image, warningBadge, 8, 8);
             case MISSING:
                 return ImageUtilities.mergeImages(image, errorBadge, 8, 8);
+            default:
+                return image;
         }
-        return image;
+    }
+
+    private DbConnStatus getStatus(DataSource dataSource) {
+        return getProvider()
+                .map(provider -> provider.decodeBean(dataSource))
+                .map(bean -> DbConnStatus.lookupByDisplayName(bean.getDatabase()))
+                .orElse(DbConnStatus.CONNECTED);
     }
 
     @Override
-    public boolean editBean(String title, Object bean) throws IntrospectionException {
-        return super.editBean(title, bean instanceof ToFileBean ? ((ToFileBean) bean).getDelegate() : bean);
-    }
-
-    @Override
-    protected List<Sheet.Set> createSheetSets(demetra.tsprovider.DataSource dataSource) {
-        List<Sheet.Set> result = super.createSheetSets(dataSource);
+    public Sheet createSheet(DataSource dataSource) {
+        Sheet result = DataSourceProviderBuddy.super.createSheet(dataSource);
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("Connection");
-        b.add(new DbConnStatusProperty(DbBean.X_DBNAME.get(TsConverter.fromDataSource(dataSource))));
-        result.add(b.build());
+
+        getProvider()
+                .map(provider -> provider.decodeBean(dataSource))
+                .map(bean -> new DbConnStatusProperty(bean.getDatabase()))
+                .ifPresent(b::add);
+
+        result.put(b.build());
         return result;
     }
 
     @Override
-    protected boolean isFile() {
-        return false;
+    public Sheet createSheetOfBean(Object bean) throws IntrospectionException {
+        return bean instanceof JdbcBean
+                ? createSheetSets((JdbcBean) bean)
+                : DataSourceProviderBuddy.super.createSheetOfBean(bean);
     }
 
-    @Override
-    protected AutoCompletionSource getDbSource(JdbcBean bean) {
-        return dbSource;
+    private Sheet createSheetSets(JdbcBean bean) {
+        NodePropertySetBuilder b = new NodePropertySetBuilder();
+        return DataSourceProviderBuddyUtil.sheetOf(
+                createSource(b, bean),
+                createCube(b, bean),
+                createParsing(b, bean),
+                createCache(b, bean)
+        );
     }
 
-    @Override
-    protected ListCellRenderer getDbRenderer(JdbcBean bean) {
-        return dbRenderer;
+    @NbBundle.Messages({
+        "bean.source.display=Source",
+        "bean.source.description=",
+        "bean.database.display=Data source name",
+        "bean.database.description=Data structure describing the connection to the database.",
+        "bean.table.display=Table name",
+        "bean.table.description=The name of the table (or view) that contains observations.",})
+    private Sheet.Set createSource(NodePropertySetBuilder b, JdbcBean bean) {
+        b.reset("source")
+                .display(Bundle.bean_source_display())
+                .description(Bundle.bean_source_description());
+
+        b.withAutoCompletion()
+                .select("database", bean::getDatabase, bean::setDatabase)
+                .source(dbSource)
+                .cellRenderer(dbRenderer)
+                .display(Bundle.bean_database_display())
+                .description(Bundle.bean_database_description())
+                .add();
+
+        b.withAutoCompletion()
+                .select("table", bean::getTable, bean::setTable)
+                .source(SqlProviderBuddy.getTableSource(supplier, bean::getDatabase, bean::getTable))
+                .cellRenderer(tableRenderer)
+                .display(Bundle.bean_table_display())
+                .description(Bundle.bean_table_description())
+                .add();
+
+        return b.build();
+    }
+
+    @NbBundle.Messages({
+        "bean.cube.display=Cube structure",
+        "bean.cube.description=",})
+    private Sheet.Set createCube(NodePropertySetBuilder b, JdbcBean bean) {
+        b.reset("cube")
+                .display(Bundle.bean_cube_display())
+                .description(Bundle.bean_cube_description());
+
+        TsProviderProperties.addTableAsCubeStructure(b, bean::getCube, bean::setCube,
+                SqlProviderBuddy.getColumnSource(supplier, bean::getDatabase, bean::getTable),
+                columnRenderer
+        );
+
+        return b.build();
+    }
+
+    @NbBundle.Messages({
+        "bean.parsing.display=Parsing",
+        "bean.parsing.description=",})
+    private Sheet.Set createParsing(NodePropertySetBuilder b, JdbcBean bean) {
+        b.reset("parsing")
+                .display(Bundle.bean_parsing_display())
+                .description(Bundle.bean_parsing_description());
+
+        TsProviderProperties.addTableAsCubeParsing(b, bean::getCube, bean::setCube);
+
+        return b.build();
+    }
+
+    @NbBundle.Messages({
+        "bean.cache.display=Cache",
+        "bean.cache.description=Mechanism used to improve performance.",})
+    private Sheet.Set createCache(NodePropertySetBuilder b, JdbcBean bean) {
+        b.reset("cache")
+                .display(Bundle.bean_cache_display())
+                .description(Bundle.bean_cache_description());
+
+        TsProviderProperties.addBulkCube(b, bean::getCache, bean::setCache);
+
+        return b.build();
     }
 
     @Override
     public void configure() {
-        final Action openServicesTab = FileUtil.getConfigObject("Actions/Window/org-netbeans-core-ide-ServicesTabAction.instance", Action.class);
-        if (openServicesTab != null) {
-            EventQueue.invokeLater(() -> openServicesTab.actionPerformed(null));
+        openServiceTab();
+    }
+
+    private static void openServiceTab() {
+        Action serviceTabAction = FileUtil.getConfigObject("Actions/Window/org-netbeans-core-ide-ServicesTabAction.instance", Action.class);
+        if (serviceTabAction != null) {
+            EventQueue.invokeLater(() -> serviceTabAction.actionPerformed(null));
         }
     }
 
@@ -176,9 +277,9 @@ public final class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> imp
 
     private static AutoCompletionSource dbExplorerSource() {
         return ExtAutoCompletionSource
-                .builder(JndiJdbcProviderBuddy::getDatabaseConnections)
+                .builder(JdbcProviderBuddy::getDatabaseConnections)
                 .behavior(AutoCompletionSource.Behavior.ASYNC)
-                .postProcessor(JndiJdbcProviderBuddy::getDatabaseConnections)
+                .postProcessor(JdbcProviderBuddy::getDatabaseConnections)
                 .valueToString(DatabaseConnection::getDisplayName)
                 .build();
     }
@@ -206,16 +307,12 @@ public final class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> imp
         "dbexplorer.requestConnection=A process request a connection to the database ''{0}''.\nDo you want to open the connection dialog?",
         "dbexplorer.skip=Don't ask again"
     })
-    private static final class DbExplorerConnectionSupplier implements ConnectionSupplier {
+    private static final class DbExplorerConnectionSupplier implements SqlConnectionSupplier {
 
         private final Properties map = new Properties();
 
         @Override
-        public Connection getConnection(JdbcBean bean) throws SQLException {
-            return getConnectionByName(bean.getDbName());
-        }
-
-        private Connection getConnectionByName(String dbName) throws SQLException {
+        public Connection getConnection(String dbName) throws SQLException {
             DatabaseConnection o = DbExplorerUtil.getConnectionByDisplayName(dbName)
                     .orElseThrow(() -> new SQLException(Bundle.dbexplorer_missingConnection(dbName)));
             return getJDBCConnection(o);
@@ -270,11 +367,11 @@ public final class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> imp
         }
 
         boolean isSkip(String dbName) {
-            return Parsers.boolParser().parse(map.getProperty(dbName, Boolean.FALSE.toString()));
+            return Parser.onBoolean().parse(map.getProperty(dbName, Boolean.FALSE.toString()));
         }
 
         void setSkip(String dbName, boolean remember) {
-            map.setProperty(dbName, Formatters.boolFormatter().formatAsString(remember));
+            map.setProperty(dbName, Formatter.onBoolean().formatAsString(remember));
         }
     }
 
@@ -288,8 +385,9 @@ public final class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> imp
         }
     }
 
-    private static final class FailSafeConnection extends ForwardingConnection {
+    private static final class FailSafeConnection implements Connection {
 
+        @lombok.experimental.Delegate
         private final Connection delegate;
         private final String defaultSchema;
 
@@ -299,14 +397,9 @@ public final class JndiJdbcProviderBuddy extends JdbcProviderBuddy<JdbcBean> imp
         }
 
         @Override
-        protected Connection getConnection() {
-            return delegate;
-        }
-
-        @Override
         public String getSchema() throws SQLException {
             try {
-                String result = super.getSchema();
+                String result = delegate.getSchema();
                 return result != null ? result : defaultSchema;
             } catch (SQLException | AbstractMethodError ex) {
                 // occurs when :

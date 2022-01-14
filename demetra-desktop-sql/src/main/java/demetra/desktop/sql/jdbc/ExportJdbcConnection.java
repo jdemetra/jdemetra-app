@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.jdbc;
+package demetra.desktop.sql.jdbc;
 
 import demetra.desktop.Config;
 import demetra.desktop.interchange.Exportable;
@@ -33,21 +33,21 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.NodeAction;
 import org.openide.util.actions.Presenter;
 
-@ActionID(category = "Edit", id = "ec.nbdemetra.jdbc.ExportJndiJdbcConnection")
-@ActionRegistration(displayName = "#CTL_ExportJndiJdbcConnection", lazy = false)
+@ActionID(category = "Edit", id = "demetra.desktop.sql.jdbc.ExportJdbcConnection")
+@ActionRegistration(displayName = "#CTL_ExportJdbcConnection", lazy = false)
 @ActionReferences({
     @ActionReference(path = "Databases/Explorer/Connection/Actions", position = 470)
 })
-@Messages("CTL_ExportJndiJdbcConnection=Export to")
-public final class ExportJndiJdbcConnection extends NodeAction implements Presenter.Popup {
+@Messages("CTL_ExportJdbcConnection=Export to")
+public final class ExportJdbcConnection extends NodeAction implements Presenter.Popup {
 
-    public ExportJndiJdbcConnection() {
+    public ExportJdbcConnection() {
     }
 
     @Override
     public JMenuItem getPopupPresenter() {
         JMenuItem result = Interchange.getDefault().newExportMenu(getExportables(getActivatedNodes()));
-        result.setText(Bundle.CTL_ExportJndiJdbcConnection());
+        result.setText(Bundle.CTL_ExportJdbcConnection());
         return result;
     }
 
@@ -88,7 +88,7 @@ public final class ExportJndiJdbcConnection extends NodeAction implements Presen
                 .parameter("driverClass", conn.getDriverClass())
                 .parameter("databaseUrl", conn.getDatabaseUrl())
                 .parameter("schema", conn.getSchema());
-        conn.forEach((k, v) -> result.parameter("prop_" + k, v));
+        conn.getParams().forEach((k, v) -> result.parameter("prop_" + k, v));
         return result.build();
     }
 }

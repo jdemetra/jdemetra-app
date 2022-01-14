@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.jdbc;
+package demetra.desktop.sql.jdbc;
 
 import demetra.desktop.Config;
 import demetra.desktop.nodes.SingleNodeAction;
@@ -32,22 +32,22 @@ import org.openide.nodes.Node;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
 
-@ActionID(category = "Edit", id = "ec.nbdemetra.jdbc.ImportJndiJdbcConnection")
-@ActionRegistration(displayName = "#CTL_ImportJndiJdbcConnection", lazy = false)
+@ActionID(category = "Edit", id = "demetra.desktop.sql.jdbc.ImportJdbcConnection")
+@ActionRegistration(displayName = "#CTL_ImportJdbcConnection", lazy = false)
 @ActionReferences({
     @ActionReference(path = "Databases/Explorer/Root/Actions", position = 155, separatorAfter = 170)
 })
-@Messages("CTL_ImportJndiJdbcConnection=Import from")
-public final class ImportJndiJdbcConnection extends SingleNodeAction<Node> implements Presenter.Popup {
+@Messages("CTL_ImportJdbcConnection=Import from")
+public final class ImportJdbcConnection extends SingleNodeAction<Node> implements Presenter.Popup {
 
-    public ImportJndiJdbcConnection() {
+    public ImportJdbcConnection() {
         super(Node.class);
     }
 
     @Override
     public JMenuItem getPopupPresenter() {
         JMenuItem result = Interchange.getDefault().newImportMenu(getImportables());
-        result.setText(Bundle.CTL_ImportJndiJdbcConnection());
+        result.setText(Bundle.CTL_ImportJdbcConnection());
         return result;
     }
 
@@ -89,7 +89,7 @@ public final class ImportJndiJdbcConnection extends SingleNodeAction<Node> imple
         DriverBasedConfig.Builder result = DriverBasedConfig.builder(config.getParameter("driverClass"), config.getParameter("databaseUrl"), config.getParameter("schema"), config.getName());
         config.getParameters().entrySet().stream()
                 .filter(o -> o.getKey().startsWith("prop_"))
-                .forEach(o -> result.put(o.getKey().substring(5), o.getValue()));
+                .forEach(o -> result.param(o.getKey().substring(5), o.getValue()));
         return result.build();
     }
 }
