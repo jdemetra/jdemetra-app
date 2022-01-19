@@ -14,11 +14,10 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package ec.nbdemetra.ui.actions;
+package demetra.desktop.core.actions;
 
 import demetra.desktop.actions.AbilityNodeAction;
 import demetra.desktop.actions.Configurable;
-import ec.nbdemetra.ui.DemetraUI;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
@@ -31,10 +30,12 @@ import java.util.stream.Stream;
 /**
  * @author Philippe Charles
  */
-@ActionID(category = "File", id = "ec.nbdemetra.ui.actions.ConfigureAction")
+@ActionID(category = "File", id = ConfigureNodeAction.ID)
 @ActionRegistration(displayName = "#ConfigureAction", lazy = false)
 @NbBundle.Messages("ConfigureAction=Configure")
-public class ConfigureNodeAction extends AbilityNodeAction<Configurable> {
+public final class ConfigureNodeAction extends AbilityNodeAction<Configurable> {
+
+    public static final String ID = "demetra.desktop.core.actions.ConfigureNodeAction";
 
     public ConfigureNodeAction() {
         super(Configurable.class);
@@ -62,7 +63,8 @@ public class ConfigureNodeAction extends AbilityNodeAction<Configurable> {
 
     private void configure(List<Configurable> list) {
         if (list.isEmpty()) {
-            DemetraUI.getDefault().configure();
+            // FIXME: move DemetraUI from jd2 to core
+//            DemetraUI.getDefault().configure();
         } else {
             list.forEach(Configurable::configure);
         }

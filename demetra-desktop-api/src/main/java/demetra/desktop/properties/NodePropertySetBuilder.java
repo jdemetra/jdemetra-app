@@ -41,6 +41,8 @@ import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 import static demetra.desktop.util.JTextComponents.fixMaxDecimals;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Builder that simplifies the creation of property sheets.
@@ -234,7 +236,7 @@ public final class NodePropertySetBuilder {
         return result;
     }
 
-    public static final class SelectStep<T, NEXT_STEP> {
+    public static final class SelectStep<T, NEXT_STEP extends PropertyStep> {
 
         private final Class<T> valueType;
         private final Function<Node.Property<T>, NEXT_STEP> next;
@@ -291,6 +293,11 @@ public final class NodePropertySetBuilder {
         @NonNull
         public NEXT_STEP selectField(@NonNull Object bean, @NonNull String fieldName) {
             return next.apply(FieldNodeProperty.create(bean, valueType, fieldName));
+        }
+
+        @NonNull
+        public <BEAN> NEXT_STEP select(@NonNull String name, @Nullable Supplier<T> getter, @Nullable Consumer<T> setter) {
+            return next.apply(new FunctionalProperty<>(valueType, name, getter, setter));
         }
     }
 
@@ -922,6 +929,47 @@ public final class NodePropertySetBuilder {
         @Override
         public void setValue(Y t) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
             source.setValue(backward.apply(t));
+        }
+    }
+
+    private static final class FunctionalProperty<T> extends Node.Property<T> {
+
+        @Nullable
+        private final Supplier<T> getter;
+
+        @Nullable
+        private final Consumer<T> setter;
+
+        private FunctionalProperty(
+                @NonNull Class<T> valueType,
+                @NonNull String name,
+                @Nullable Supplier<T> getter,
+                @Nullable Consumer<T> setter
+        ) {
+            super(Objects.requireNonNull(valueType));
+            setName(Objects.requireNonNull(name));
+            this.getter = getter;
+            this.setter = setter;
+        }
+
+        @Override
+        public boolean canRead() {
+            return getter != null;
+        }
+
+        @Override
+        public T getValue() throws IllegalAccessException, InvocationTargetException {
+            return getter.get();
+        }
+
+        @Override
+        public boolean canWrite() {
+            return setter != null;
+        }
+
+        @Override
+        public void setValue(T t) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+            setter.accept(t);
         }
     }
     //</editor-fold>

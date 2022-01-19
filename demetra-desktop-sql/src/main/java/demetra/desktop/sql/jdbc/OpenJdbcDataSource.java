@@ -14,13 +14,13 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.jdbc;
+package demetra.desktop.sql.jdbc;
 
-import static ec.nbdemetra.jdbc.DbExplorerUtil.findConnection;
-import static ec.nbdemetra.jdbc.DbExplorerUtil.isTableOrView;
+import static demetra.desktop.sql.jdbc.DbExplorerUtil.findConnection;
+import static demetra.desktop.sql.jdbc.DbExplorerUtil.isTableOrView;
 import demetra.desktop.nodes.SingleNodeAction;
-import ec.tss.tsproviders.jdbc.JdbcBean;
-import ec.tss.tsproviders.jdbc.jndi.JndiJdbcProvider;
+import demetra.sql.jdbc.JdbcBean;
+import demetra.sql.jdbc.JdbcProvider;
 import java.beans.IntrospectionException;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -31,23 +31,23 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.slf4j.LoggerFactory;
 
-@ActionID(category = "Edit", id = "ec.nbdemetra.jdbc.OpenJndiJdbcDataSource")
-@ActionRegistration(displayName = "#CTL_OpenJndiJdbcDataSource", lazy = false)
+@ActionID(category = "Edit", id = "demetra.desktop.sql.jdbc.OpenJdbcDataSource")
+@ActionRegistration(displayName = "#CTL_OpenJdbcDataSource", lazy = false)
 @ActionReferences({
     @ActionReference(path = "Databases/Explorer/Connection/Actions", position = 1, separatorAfter = 10),
     @ActionReference(path = "Databases/Explorer/Table/Actions", position = 1, separatorAfter = 10),
     @ActionReference(path = "Databases/Explorer/View/Actions", position = 1, separatorAfter = 10)
 })
-@Messages("CTL_OpenJndiJdbcDataSource=Open as JDemetra+ DataSource")
-public final class OpenJndiJdbcDataSource extends SingleNodeAction<Node> {
+@Messages("CTL_OpenJdbcDataSource=Open as JDemetra+ DataSource")
+public final class OpenJdbcDataSource extends SingleNodeAction<Node> {
 
-    private final JndiJdbcProvider provider;
-    private final JndiJdbcProviderBuddy buddy;
+    private final JdbcProvider provider;
+    private final JdbcProviderBuddy buddy;
 
-    public OpenJndiJdbcDataSource() {
+    public OpenJdbcDataSource() {
         super(Node.class);
-        this.provider = Lookup.getDefault().lookup(JndiJdbcProvider.class);
-        this.buddy = Lookup.getDefault().lookup(JndiJdbcProviderBuddy.class);
+        this.provider = Lookup.getDefault().lookup(JdbcProvider.class);
+        this.buddy = Lookup.getDefault().lookup(JdbcProviderBuddy.class);
     }
 
     @Override
@@ -59,7 +59,7 @@ public final class OpenJndiJdbcDataSource extends SingleNodeAction<Node> {
                 provider.open(provider.encodeBean(bean));
             }
         } catch (IntrospectionException ex) {
-            LoggerFactory.getLogger(OpenJndiJdbcDataSource.class).error("While opening", ex);
+            LoggerFactory.getLogger(OpenJdbcDataSource.class).error("While opening", ex);
         }
     }
 
@@ -72,14 +72,14 @@ public final class OpenJndiJdbcDataSource extends SingleNodeAction<Node> {
 
     @Override
     public String getName() {
-        return Bundle.CTL_OpenJndiJdbcDataSource();
+        return Bundle.CTL_OpenJdbcDataSource();
     }
 
     static void preFillBean(JdbcBean bean, Node node) {
         findConnection(node)
-                .ifPresent(o -> bean.setDbName(o.getDisplayName()));
+                .ifPresent(o -> bean.setDatabase(o.getDisplayName()));
         if (isTableOrView(node)) {
-            bean.setTableName(node.getName());
+            bean.setTable(node.getName());
         }
     }
 }

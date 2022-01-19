@@ -91,7 +91,7 @@
         <!--dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-jd2</artifactId>   
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-sql</artifactId>
@@ -99,7 +99,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-text</artifactId>
-        </dependency-->
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-spreadsheet</artifactId>

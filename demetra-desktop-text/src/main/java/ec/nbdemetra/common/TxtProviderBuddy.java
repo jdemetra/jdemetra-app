@@ -16,40 +16,34 @@
  */
 package ec.nbdemetra.common;
 
-import demetra.bridge.ToFileBean;
-import demetra.bridge.TsConverter;
 import demetra.desktop.TsManager;
 import demetra.desktop.properties.NodePropertySetBuilder;
-import demetra.desktop.tsproviders.AbstractDataSourceProviderBuddy;
 import demetra.desktop.tsproviders.DataSourceProviderBuddy;
-import ec.tss.tsproviders.IFileBean;
-import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.common.txt.TxtBean;
-import ec.tss.tsproviders.common.txt.TxtBean.Delimiter;
-import ec.tss.tsproviders.common.txt.TxtBean.TextQualifier;
-import ec.tss.tsproviders.common.txt.TxtProvider;
-import ec.tss.tsproviders.utils.DataFormat;
-import ec.tstoolkit.timeseries.TsAggregationType;
-import ec.tstoolkit.timeseries.simplets.TsFrequency;
+import demetra.desktop.tsproviders.DataSourceProviderBuddyUtil;
+import demetra.desktop.tsproviders.TsProviderProperties;
+import demetra.tsp.text.TxtBean;
+import demetra.tsprovider.FileLoader;
 import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
-import org.openide.nodes.Sheet.Set;
+import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 
 /**
  *
  * @author Philippe Charles
  */
+@DirectImpl
 @ServiceProvider(DataSourceProviderBuddy.class)
-public final class TxtProviderBuddy extends AbstractDataSourceProviderBuddy {
+public final class TxtProviderBuddy implements DataSourceProviderBuddy {
+
+    private static final String SOURCE = "Txt";
 
     @Override
     public String getProviderName() {
-        return TxtProvider.SOURCE;
+        return SOURCE;
     }
 
     @Override
@@ -58,60 +52,46 @@ public final class TxtProviderBuddy extends AbstractDataSourceProviderBuddy {
     }
 
     @Override
-    public boolean editBean(String title, Object bean) throws IntrospectionException {
-        return super.editBean(title, bean instanceof ToFileBean ? ((ToFileBean) bean).getDelegate() : bean);
-    }
-
-    @Override
-    protected List<Set> createSheetSets(Object bean) throws IntrospectionException {
+    public Sheet createSheetOfBean(Object bean) throws IntrospectionException {
         return bean instanceof TxtBean
                 ? createSheetSets((TxtBean) bean)
-                : super.createSheetSets(bean);
+                : DataSourceProviderBuddy.super.createSheetOfBean(bean);
     }
 
-    private List<Set> createSheetSets(TxtBean bean) {
-        List<Set> result = new ArrayList<>();
-
+    private Sheet createSheetSets(TxtBean bean) {
         NodePropertySetBuilder b = new NodePropertySetBuilder();
+        return DataSourceProviderBuddyUtil.sheetOf(
+                createSource(b, bean),
+                createContent(b, bean)
+        );
+    }
 
+    private Sheet.Set createSource(NodePropertySetBuilder b, TxtBean bean) {
         b.reset("Source");
         TsManager.getDefault()
-                .getProvider(TxtProvider.SOURCE)
-                .map(TsConverter::fromTsProvider)
-                .filter(TxtProvider.class::isInstance)
-                .map(TxtProvider.class::cast)
-                .ifPresent(o -> addFileProperty(b, bean, o));
+                .getProvider(FileLoader.class, SOURCE)
+                .ifPresent(o -> TsProviderProperties.addFile(b, o, bean));
         addReaderProperty(b, bean);
         addCsvDialectProperty(b, bean);
-        result.add(b.build());
-
-        b.reset("Content");
-        addObsFormatProperty(b, bean);
-        addObsGatheringProperty(b, bean);
-        result.add(b.build());
-
-        return result;
+        return b.build();
     }
 
-    private static void addFileProperty(NodePropertySetBuilder b, IFileBean bean, IFileLoader loader) {
-        b.withFile()
-                .select(bean, "file")
-                .display("Text file")
-                .description("The path to the text file.")
-                //  .filterForSwing(new FileLoaderFileFilter(loader))
-                .paths(loader.getPaths())
-                .directories(false)
-                .add();
+    private Sheet.Set createContent(NodePropertySetBuilder b, TxtBean bean) {
+        b.reset("Content");
+        TsProviderProperties.addObsFormat(b, bean::getObsFormat, bean::setObsFormat);
+        TsProviderProperties.addObsGathering(b, bean::getObsGathering, bean::setObsGathering);
+        return b.build();
     }
 
     private static void addReaderProperty(NodePropertySetBuilder b, TxtBean bean) {
         b.with(Charset.class)
-                .select(bean, "charset")
+                .select("charset", bean::getCharset, bean::setCharset)
                 .display("Charset")
                 .description("The charset used to read the file.")
                 .add();
+
         b.withInt()
-                .select(bean, "skipLines")
+                .select("skipLines", bean::getSkipLines, bean::setSkipLines)
                 .min(0)
                 .display("Lines to skip")
                 .description("The number of lines to skip before reading the data.")
@@ -119,44 +99,22 @@ public final class TxtProviderBuddy extends AbstractDataSourceProviderBuddy {
     }
 
     private static void addCsvDialectProperty(NodePropertySetBuilder b, TxtBean bean) {
-        b.withEnum(Delimiter.class)
-                .select(bean, "delimiter")
+        b.withEnum(TxtBean.Delimiter.class)
+                .select("delimiter", bean::getDelimiter, bean::setDelimiter)
                 .display("Delimiter")
                 .description("The character used to separate fields.")
                 .add();
-        b.withEnum(TextQualifier.class)
-                .select(bean, "textQualifier")
+
+        b.withEnum(TxtBean.TextQualifier.class)
+                .select("textQualifier", bean::getTextQualifier, bean::setTextQualifier)
                 .display("Text qualifier")
                 .description("The characters used to retreive text fields.")
                 .add();
+
         b.withBoolean()
-                .select(bean, "headers")
+                .select("headers", bean::isHeaders, bean::setHeaders)
                 .display("Has headers?")
                 .description("Use first line as headers.")
-                .add();
-    }
-
-    private static void addObsFormatProperty(NodePropertySetBuilder b, TxtBean bean) {
-        b.with(DataFormat.class)
-                .select(bean, "dataFormat")
-                .display("Data format")
-                .description("The format used to read dates and values.")
-                .add();
-    }
-
-    private static void addObsGatheringProperty(NodePropertySetBuilder b, TxtBean bean) {
-        b.withEnum(TsFrequency.class)
-                .select(bean, "frequency")
-                .display("Frequency")
-                .add();
-        b.withEnum(TsAggregationType.class)
-                .select(bean, "aggregationType")
-                .display("Aggregation type")
-                .add();
-        b.withBoolean()
-                .select(bean, "cleanMissing")
-                .display("Clean missing")
-                .description("Erases the Missing values of the series.")
                 .add();
     }
 }

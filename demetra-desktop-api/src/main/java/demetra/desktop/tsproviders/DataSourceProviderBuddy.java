@@ -74,32 +74,37 @@ public interface DataSourceProviderBuddy {
 
     @NonNull
     default Sheet createSheet() {
-        List<Sheet.Set> result = ProvidersUtil.sheetSetsOfProvider(getProviderName());
-        return ProvidersUtil.sheetOf(result);
+        List<Sheet.Set> result = DataSourceProviderBuddyUtil.sheetSetsOfProvider(getProviderName());
+        return DataSourceProviderBuddyUtil.sheetOf(result);
     }
 
     @NonNull
     default Sheet createSheet(@NonNull DataSource dataSource) {
-        List<Sheet.Set> result = ProvidersUtil.sheetSetsOfDataSource(dataSource);
-        return ProvidersUtil.sheetOf(result);
+        List<Sheet.Set> result = DataSourceProviderBuddyUtil.sheetSetsOfDataSource(dataSource);
+        return DataSourceProviderBuddyUtil.sheetOf(result);
     }
 
     @NonNull
     default Sheet createSheet(@NonNull DataSet dataSet) {
-        List<Sheet.Set> result = ProvidersUtil.sheetSetsOfDataSet(dataSet);
-        return ProvidersUtil.sheetOf(result);
+        List<Sheet.Set> result = DataSourceProviderBuddyUtil.sheetSetsOfDataSet(dataSet);
+        return DataSourceProviderBuddyUtil.sheetOf(result);
     }
 
     @NonNull
     default Sheet createSheet(@NonNull IOException ex) {
-        List<Sheet.Set> result = ProvidersUtil.sheetSetsOfException(ex);
-        return ProvidersUtil.sheetOf(result);
+        List<Sheet.Set> result = DataSourceProviderBuddyUtil.sheetSetsOfException(ex);
+        return DataSourceProviderBuddyUtil.sheetOf(result);
+    }
+
+    @NonNull
+    default Sheet createSheetOfBean(@NonNull Object bean) throws IntrospectionException {
+        List<Sheet.Set> result = DataSourceProviderBuddyUtil.sheetSetsOfBean(bean);
+        return DataSourceProviderBuddyUtil.sheetOf(result);
     }
 
     default boolean editBean(@NonNull String title, @NonNull Object bean) throws IntrospectionException {
-        return new PropertySheetDialogBuilder()
-                .title(title)
-                .icon(getIconOrNull(BeanInfo.ICON_COLOR_16x16, false))
-                .editBean(bean);
+        Sheet sheet = createSheetOfBean(bean);
+        Image image = getIconOrNull(BeanInfo.ICON_COLOR_16x16, false);
+        return new PropertySheetDialogBuilder().title(title).icon(image).editSheet(sheet);
     }
 }

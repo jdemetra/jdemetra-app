@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.jdbc;
+package demetra.desktop.sql.jdbc;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -109,7 +109,7 @@ public final class DbExplorerUtil {
             return;
         }
         Properties properties = new Properties();
-        config.forEach(properties::put);
+        config.getParams().forEach(properties::put);
         DatabaseConnection newConn = DatabaseConnection.create(driver.get(), config.getDatabaseUrl(), "", config.getSchema(), "", false, config.getDisplayName(), properties);
         try {
             ConnectionManager.getDefault().addConnection(newConn);
@@ -123,7 +123,7 @@ public final class DbExplorerUtil {
         DriverBasedConfig.Builder b = DriverBasedConfig.builder(conn.getDriverClass(), conn.getDatabaseURL(), conn.getSchema(), conn.getDisplayName());
         Properties properties = conn.getConnectionProperties();
         for (String o : properties.stringPropertyNames()) {
-            b.put(o, properties.getProperty(o));
+            b.param(o, properties.getProperty(o));
         }
         return b.build();
     }

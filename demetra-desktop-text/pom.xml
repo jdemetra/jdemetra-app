@@ -16,6 +16,11 @@
     <dependencies>
         <!-- compile only -->
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
             <scope>provided</scope>
@@ -73,7 +78,8 @@
         <!-- JDemetra -->
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
-            <artifactId>demetra-common</artifactId>
+            <artifactId>demetra-tsp-text-core</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>eu.europa.ec.joinup.sat</groupId>

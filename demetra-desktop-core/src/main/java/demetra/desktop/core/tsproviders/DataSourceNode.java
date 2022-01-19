@@ -35,7 +35,7 @@ import demetra.desktop.nodes.NodeAnnotator;
 import demetra.desktop.nodes.Nodes;
 import demetra.desktop.star.StarList;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
-import demetra.desktop.tsproviders.ProvidersUtil;
+import demetra.desktop.tsproviders.DataSourceProviderBuddyUtil;
 import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
@@ -284,7 +284,7 @@ public final class DataSourceNode extends AbstractNode {
         @Override
         public Config exportConfig() {
             DataSource dataSource = getLookup().lookup(DataSource.class);
-            return ProvidersUtil.getConfig(dataSource, getDisplayName());
+            return DataSourceProviderBuddyUtil.getConfig(dataSource, getDisplayName());
         }
     }
 

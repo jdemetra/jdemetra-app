@@ -36,14 +36,15 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * @author Philippe Charles
  */
-public final class ProvidersUtil {
+public final class DataSourceProviderBuddyUtil {
 
-    private ProvidersUtil() {
+    private DataSourceProviderBuddyUtil() {
         // static class
     }
 
@@ -75,31 +76,42 @@ public final class ProvidersUtil {
     }
 
     @NonNull
+    public static Sheet sheetOf(Sheet.Set... sets) {
+        Sheet result = new Sheet();
+        Stream.of(sets).forEach(result::put);
+        return result;
+    }
+
+    @NonNull
     public static List<Sheet.Set> sheetSetsOfProvider(@NonNull String providerName) {
-        Optional<DataSourceProvider> op = TsManager.getDefault().getProvider(DataSourceProvider.class, providerName);
-        if (op.isPresent()) {
-            DataSourceProvider provider = op.get();
-            List<Sheet.Set> result = new ArrayList<>();
-            NodePropertySetBuilder b = new NodePropertySetBuilder();
-            b.with(String.class).select(provider, "getSource", null).display("Source").add();
-            b.with(Boolean.class).select(provider, "isAvailable", null).display("Available").add();
-            b.withBoolean().selectConst("Loadable", provider instanceof DataSourceLoader).add();
-            b.withBoolean().selectConst("Files as source", provider instanceof FileLoader).add();
-            result.add(b.build());
-            return result;
-        }
-        return Collections.emptyList();
+        return TsManager.getDefault()
+                .getProvider(DataSourceProvider.class, providerName)
+                .map(DataSourceProviderBuddyUtil::sheetSetsOfProvider)
+                .orElseGet(Collections::emptyList);
+    }
+
+    private static List<Sheet.Set> sheetSetsOfProvider(DataSourceProvider provider) {
+        List<Sheet.Set> result = new ArrayList<>();
+        NodePropertySetBuilder b = new NodePropertySetBuilder();
+        b.with(String.class).select(provider, "getSource", null).display("Source").add();
+        b.with(Boolean.class).select(provider, "isAvailable", null).display("Available").add();
+        b.withBoolean().selectConst("Loadable", provider instanceof DataSourceLoader).add();
+        b.withBoolean().selectConst("Files as source", provider instanceof FileLoader).add();
+        result.add(b.build());
+        return result;
     }
 
     @NonNull
     public static List<Sheet.Set> sheetSetsOfBean(@NonNull Object bean) throws IntrospectionException {
-        List<Sheet.Set> result = new ArrayList<>();
-        for (Node.PropertySet o : new BeanNode<>(bean).getPropertySets()) {
-            Sheet.Set set = Sheet.createPropertiesSet();
-            set.put(o.getProperties());
-            result.add(set);
-        }
-        return result;
+        return Stream.of(new BeanNode<>(bean).getPropertySets())
+                .map(DataSourceProviderBuddyUtil::sheetSetOfPropertySet)
+                .collect(Collectors.toList());
+    }
+
+    private static Sheet.Set sheetSetOfPropertySet(Node.PropertySet o) {
+        Sheet.Set set = Sheet.createPropertiesSet();
+        set.put(o.getProperties());
+        return set;
     }
 
     @NonNull
@@ -122,7 +134,7 @@ public final class ProvidersUtil {
 
     @NonNull
     public static List<Sheet.Set> sheetSetsOfDataSource(@NonNull DataSource dataSource) {
-        return sheetSetsOfDataSource(dataSource, usingErrorManager(ProvidersUtil::sheetSetsOfBean, Collections::emptyList));
+        return sheetSetsOfDataSource(dataSource, usingErrorManager(DataSourceProviderBuddyUtil::sheetSetsOfBean, Collections::emptyList));
     }
 
     @NonNull
@@ -145,7 +157,7 @@ public final class ProvidersUtil {
 
     @NonNull
     public static List<Sheet.Set> sheetSetsOfDataSet(DataSet dataSet) {
-        return sheetSetsOfDataSet(dataSet, ProvidersUtil::sheetSetsOfDataSource, ProvidersUtil::fillParamProperties);
+        return sheetSetsOfDataSet(dataSet, DataSourceProviderBuddyUtil::sheetSetsOfDataSource, DataSourceProviderBuddyUtil::fillParamProperties);
     }
 
     public static void fillParamProperties(@NonNull NodePropertySetBuilder b, @NonNull DataSet dataSet) {
@@ -154,8 +166,8 @@ public final class ProvidersUtil {
 
     @NonNull
     public static List<Sheet.Set> sheetSetsOfDataSet(@NonNull DataSet dataSet,
-                                                     @NonNull Function<DataSource, List<Sheet.Set>> sourceFunc,
-                                                     @NonNull BiConsumer<NodePropertySetBuilder, DataSet> paramFiller) {
+            @NonNull Function<DataSource, List<Sheet.Set>> sourceFunc,
+            @NonNull BiConsumer<NodePropertySetBuilder, DataSet> paramFiller) {
         List<Sheet.Set> result = new ArrayList<>(sourceFunc.apply(dataSet.getDataSource()));
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("DataSet");
         b.withEnum(DataSet.Kind.class).select(dataSet, "getKind", null).display("Kind").add();

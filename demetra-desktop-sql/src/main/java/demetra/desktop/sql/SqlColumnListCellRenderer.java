@@ -2,32 +2,30 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ec.nbdemetra.jdbc;
+package demetra.desktop.sql;
 
 import ec.nbdemetra.db.DbColumnListCellRenderer;
 import ec.nbdemetra.db.DbIcon;
-import ec.util.jdbc.JdbcColumn;
 import java.sql.Types;
 import javax.swing.Icon;
+import javax.swing.ListCellRenderer;
+import nbbrd.sql.jdbc.SqlColumn;
 
 /**
  *
  * @author Philippe Charles
  */
-public class JdbcColumnListCellRenderer extends DbColumnListCellRenderer<JdbcColumn> {
+public final class SqlColumnListCellRenderer implements ListCellRenderer<SqlColumn> {
 
-    @Override
-    protected String getName(JdbcColumn value) {
-        return value.getName();
-    }
+    @lombok.experimental.Delegate
+    private final ListCellRenderer<SqlColumn> delegate
+            = new DbColumnListCellRenderer<>(
+                    SqlColumn::getName,
+                    SqlColumn::getTypeName,
+                    SqlColumnListCellRenderer::getTypeIcon
+            );
 
-    @Override
-    protected String getTypeName(JdbcColumn value) {
-        return value.getTypeName();
-    }
-
-    @Override
-    protected Icon getTypeIcon(JdbcColumn value) {
+    private static Icon getTypeIcon(SqlColumn value) {
         switch (value.getType()) {
             case Types.BIGINT:
             case Types.DECIMAL:

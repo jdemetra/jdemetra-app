@@ -51,8 +51,8 @@
         <module>demetra-desktop-api</module>
         <module>demetra-desktop-core</module>
         <module>demetra-desktop-spreadsheet</module>
-        <!--module>demetra-desktop-sql</module>
-        <module>demetra-desktop-text</module-->
+        <module>demetra-desktop-sql</module>
+        <module>demetra-desktop-text</module>
         <module>demetra-desktop-tramoseats</module>
         <!--module>demetra-desktop-jd2</module-->
         <module>demetra-desktop-branding</module>

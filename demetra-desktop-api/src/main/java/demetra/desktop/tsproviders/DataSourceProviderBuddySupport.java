@@ -49,20 +49,23 @@ public final class DataSourceProviderBuddySupport {
 
     private final CollectionSupplier<DataSourceProviderBuddy> providers;
     private final DataSourceProviderBuddy fallback;
-    private final Image defaultImage;
+    private final Image docImage;
+    private final Image errorImage;
 
     private DataSourceProviderBuddySupport() {
         this.providers = DataSourceProviderBuddyLoader::get;
         this.fallback = new DataSourceProviderBuddy() {
             @Override
-            public @NonNull String getProviderName() {
+            public @NonNull
+            String getProviderName() {
                 return "fallback";
             }
         };
-        this.defaultImage = DemetraIcons.DOCUMENT_16.getImageIcon().getImage();
+        this.docImage = DemetraIcons.DOCUMENT_16.getImageIcon().getImage();
+        this.errorImage = DemetraIcons.EXCLAMATION_MARK_16.getImageIcon().getImage();
     }
 
-    private Image getOrDefault(Image result) {
+    private Image getOrDefault(Image result, Image defaultImage) {
         return result != null ? result : defaultImage;
     }
 
@@ -88,7 +91,7 @@ public final class DataSourceProviderBuddySupport {
     @NonNull
     public Image getImage(@NonNull String providerName, int type, boolean opened) {
         DataSourceProviderBuddy buddy = getByName(providerName);
-        return getOrDefault(buddy.getIconOrNull(type, opened));
+        return getOrDefault(buddy.getIconOrNull(type, opened), docImage);
     }
 
     @NonNull
@@ -133,7 +136,7 @@ public final class DataSourceProviderBuddySupport {
     @NonNull
     public Image getImage(@NonNull DataSource dataSource, int type, boolean opened) {
         DataSourceProviderBuddy buddy = getByName(dataSource.getProviderName());
-        return getOrDefault(buddy.getIconOrNull(dataSource, type, opened));
+        return getOrDefault(buddy.getIconOrNull(dataSource, type, opened), docImage);
     }
 
     @NonNull
@@ -159,7 +162,7 @@ public final class DataSourceProviderBuddySupport {
     @NonNull
     public Image getImage(@NonNull DataSet dataSet, int type, boolean opened) {
         DataSourceProviderBuddy buddy = getByName(dataSet.getDataSource().getProviderName());
-        return getOrDefault(buddy.getIconOrNull(dataSet, type, opened));
+        return getOrDefault(buddy.getIconOrNull(dataSet, type, opened), docImage);
     }
 
     @NonNull
@@ -186,7 +189,7 @@ public final class DataSourceProviderBuddySupport {
     @NonNull
     public Image getImage(@NonNull String providerName, @NonNull IOException ex, int type, boolean opened) {
         DataSourceProviderBuddy buddy = getByName(providerName);
-        return getOrDefault(buddy.getIconOrNull(ex, type, opened));
+        return getOrDefault(buddy.getIconOrNull(ex, type, opened), errorImage);
     }
 
     @NonNull
@@ -214,9 +217,9 @@ public final class DataSourceProviderBuddySupport {
         TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
         if (original != null) {
             DataSourceProviderBuddy buddy = getByName(original.getSource());
-            return getOrDefault(buddy.getIconOrNull(moniker, type, opened));
+            return getOrDefault(buddy.getIconOrNull(moniker, type, opened), docImage);
         } else {
-            return defaultImage;
+            return docImage;
         }
     }
 

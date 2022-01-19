@@ -16,34 +16,34 @@
  */
 package ec.nbdemetra.common;
 
-import demetra.bridge.ToFileBean;
-import demetra.bridge.TsConverter;
 import demetra.desktop.TsManager;
 import demetra.desktop.properties.NodePropertySetBuilder;
-import demetra.desktop.tsproviders.AbstractDataSourceProviderBuddy;
 import demetra.desktop.tsproviders.DataSourceProviderBuddy;
-import ec.tss.tsproviders.IFileLoader;
-import ec.tss.tsproviders.common.xml.XmlBean;
-import ec.tss.tsproviders.common.xml.XmlProvider;
+import demetra.desktop.tsproviders.DataSourceProviderBuddyUtil;
+import demetra.desktop.tsproviders.TsProviderProperties;
+import demetra.tsp.text.XmlBean;
+import demetra.tsprovider.FileLoader;
 import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
+import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
-import org.openide.nodes.Sheet.Set;
+import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 
 /**
  *
  * @author Philippe Charles
  */
+@DirectImpl
 @ServiceProvider(DataSourceProviderBuddy.class)
-public final class XmlProviderBuddy extends AbstractDataSourceProviderBuddy {
+public final class XmlProviderBuddy implements DataSourceProviderBuddy {
+
+    private static final String SOURCE = "Xml";
 
     @Override
     public String getProviderName() {
-        return XmlProvider.SOURCE;
+        return SOURCE;
     }
 
     @Override
@@ -52,49 +52,31 @@ public final class XmlProviderBuddy extends AbstractDataSourceProviderBuddy {
     }
 
     @Override
-    public boolean editBean(String title, Object bean) throws IntrospectionException {
-        return super.editBean(title, bean instanceof ToFileBean ? ((ToFileBean) bean).getDelegate() : bean);
-    }
-
-    @Override
-    protected List<Set> createSheetSets(Object bean) throws IntrospectionException {
+    public Sheet createSheetOfBean(Object bean) throws IntrospectionException {
         return bean instanceof XmlBean
                 ? createSheetSets((XmlBean) bean)
-                : super.createSheetSets(bean);
+                : DataSourceProviderBuddy.super.createSheetOfBean(bean);
     }
 
-    private List<Set> createSheetSets(XmlBean bean) {
-        List<Set> result = new ArrayList<>();
-
+    private Sheet createSheetSets(XmlBean bean) {
         NodePropertySetBuilder b = new NodePropertySetBuilder();
+        return DataSourceProviderBuddyUtil.sheetOf(
+                createSource(b, bean)
+        );
+    }
 
+    private Sheet.Set createSource(NodePropertySetBuilder b, XmlBean bean) {
         b.reset("Source");
         TsManager.getDefault()
-                .getProvider(XmlProvider.SOURCE)
-                .map(TsConverter::fromTsProvider)
-                .filter(XmlProvider.class::isInstance)
-                .map(XmlProvider.class::cast)
-                .ifPresent(o -> addFileProperty(b, bean, o));
+                .getProvider(FileLoader.class, SOURCE)
+                .ifPresent(o -> TsProviderProperties.addFile(b, o, bean));
         addReaderProperty(b, bean);
-        result.add(b.build());
-
-        return result;
-    }
-
-    private static void addFileProperty(NodePropertySetBuilder b, XmlBean bean, IFileLoader loader) {
-        b.withFile()
-                .select(bean, "file")
-                .display("Xml file")
-                .description("The path to the xml file.")
-                //   .filterForSwing(new FileLoaderFileFilter(loader))
-                .paths(loader.getPaths())
-                .directories(false)
-                .add();
+        return b.build();
     }
 
     private static void addReaderProperty(NodePropertySetBuilder b, XmlBean bean) {
         b.with(Charset.class)
-                .select(bean, "charset")
+                .select("charset", bean::getCharset, bean::setCharset)
                 .display("Charset")
                 .description("The charset used to read the file.")
                 .add();
