@@ -152,6 +152,8 @@ public final class JCalendarView extends JComponent {
 
     private int getCmpsCount() {
         int n = dtype.getVariablesCount();
+        if (contrast)
+            --n;
         if (ltype != LengthOfPeriodType.None) {
             ++n;
         }
