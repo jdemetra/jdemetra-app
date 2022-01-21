@@ -69,6 +69,7 @@ public class TukeySpectrumView extends ARPView {
     }
 
     private void initComponents() {
+        onColorSchemeChange();
         onComponentPopupMenuChange();
         enableProperties();
     }

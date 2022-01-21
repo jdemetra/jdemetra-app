@@ -43,6 +43,7 @@ public class PeriodogramView extends ARPView {
     public static final String DIFF_LAG_PROPERTY = "differencingLag";
     public static final String LASTYEARS_PROPERTY = "lastYears";
     public static final String FULL_PROPERTY = "fullYears";
+    public static final String DB_PROPERTY = "decibels";
 
     // DEFAULT PROPERTIES
     private static final boolean DEFAULT_LIMIT_VISIBLE = true;
@@ -51,6 +52,7 @@ public class PeriodogramView extends ARPView {
     private static final int DEFAULT_DIFF = 1;
     private static final int DEFAULT_DIFF_LAG = 1;
     private static final boolean DEFAULT_FULL = true;
+    private static final boolean DEFAULT_DB = false;
 
     // PROPERTIES
     protected boolean limitVisible;
@@ -60,6 +62,7 @@ public class PeriodogramView extends ARPView {
     private boolean log;
     private int lastYears;
     private boolean full;
+    private boolean db;
 
     public PeriodogramView() {
         this.limitVisible = DEFAULT_LIMIT_VISIBLE;
@@ -69,9 +72,10 @@ public class PeriodogramView extends ARPView {
         this.log = DEFAULT_LOG;
         this.lastYears = 0;
         this.full = DEFAULT_FULL;
+        this.db = DEFAULT_DB;
         initComponents();
     }
-    
+
     private void initComponents() {
         onColorSchemeChange();
         onComponentPopupMenuChange();
@@ -102,6 +106,9 @@ public class PeriodogramView extends ARPView {
                 case FULL_PROPERTY:
                     onFullChange();
                     break;
+                case DB_PROPERTY:
+                    onDbChange();
+                    break;
                 case "componentPopupMenu":
                     onComponentPopupMenuChange();
                     break;
@@ -115,6 +122,9 @@ public class PeriodogramView extends ARPView {
         if (limitVisible) {
             Chi2 chi = new Chi2(2);
             double val = chi.getProbabilityInverse(.005, ProbabilityType.Upper);
+            if (db) {
+                val = Math.log(val);
+            }
 
             ExtValueMarker limitMarker = new ExtValueMarker(val, KnownColor.GREEN);
             limitMarker.setStroke(LIMIT_STROKE);
@@ -139,6 +149,10 @@ public class PeriodogramView extends ARPView {
     }
 
     protected void onFullChange() {
+        onARPDataChange();
+    }
+
+    protected void onDbChange() {
         onARPDataChange();
     }
 
@@ -180,6 +194,16 @@ public class PeriodogramView extends ARPView {
         int old = del;
         del = order;
         firePropertyChange(DIFF_PROPERTY, old, this.del);
+    }
+
+    public boolean isDb() {
+        return db;
+    }
+
+    public void setDb(boolean f) {
+        boolean old = db;
+        db = f;
+        firePropertyChange(DB_PROPERTY, old, this.db);
     }
 
     public boolean isFullYears() {
@@ -244,13 +268,13 @@ public class PeriodogramView extends ARPView {
         XYSeries result = new XYSeries(data.getName());
         DoubleSeq val = data.getValues();
         if (log) {
-            val=val.log();
+            val = val.log();
         }
         if (del > 0) {
-            val=val.delta(lag, del);
+            val = val.delta(lag, del);
         }
         if (lastYears > 0 && data.getFreq() != 0) {
-            int nmax = (int)(lastYears * data.getFreq());
+            int nmax = (int) (lastYears * data.getFreq());
             int nbeg = val.length() - nmax;
             if (nbeg > 0) {
                 val = val.drop(nbeg, 0);
@@ -258,8 +282,8 @@ public class PeriodogramView extends ARPView {
         } else if (full && data.getFreq() > 0) {
             // Keep full years
             int nvals = val.length();
-            int np=(int)(nvals/data.getFreq());
-            int nbeg = nvals - (int)(np*data.getFreq());
+            int np = (int) (nvals / data.getFreq());
+            int nbeg = nvals - (int) (np * data.getFreq());
             if (nbeg > 0) {
                 val = val.drop(nbeg, 0);
             }
@@ -268,7 +292,7 @@ public class PeriodogramView extends ARPView {
         Periodogram periodogram = Periodogram.of(val);
         double[] yp = periodogram.getP();
         for (int i = 0; i < yp.length; ++i) {
-            result.add(i * TWO_PI / val.length(), yp[i]);
+            result.add(i * TWO_PI / val.length(), db ? Math.log(yp[i]) : yp[i]);
         }
 
         return result;

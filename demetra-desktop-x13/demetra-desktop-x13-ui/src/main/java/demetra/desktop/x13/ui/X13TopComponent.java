@@ -12,6 +12,8 @@ import jdplus.x13.X13Document;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.ExplorerUtils;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -34,18 +36,25 @@ persistenceType = TopComponent.PERSISTENCE_NEVER)
 })
 public final class X13TopComponent extends WorkspaceTsTopComponent<X13Document> {
 
+    private final ExplorerManager mgr = new ExplorerManager();
+
     private static X13DocumentManager manager() {
         return WorkspaceFactory.getInstance().getManager(X13DocumentManager.class);
     }
 
     public X13TopComponent() {
-        super(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
-        initDocument();
+        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
     }
 
     public X13TopComponent(WorkspaceItem<X13Document> doc) {
         super(doc);
         initDocument();
+        associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
+    }
+
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return mgr;
     }
 
     private void initDocument() {
