@@ -4,6 +4,7 @@
  */
 package demetra.desktop.regarima.ui;
 
+import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
@@ -61,7 +62,7 @@ public final class RegArimaTopComponent extends WorkspaceTsTopComponent<RegArima
         initComponents();
         setToolTipText(NbBundle.getMessage(RegArimaTopComponent.class, "HINT_RegArimaTopComponent"));
         setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), RegArimaDocumentManager.FACTORY);
+        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(RegArimaDocument.class));
         this.add(panel);
         panel.refreshHeader();
     }

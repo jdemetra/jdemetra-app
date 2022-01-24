@@ -9,12 +9,9 @@ import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.TsManager;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
-import demetra.desktop.ui.properties.l2fprod.UserInterfaceContext;
-import demetra.information.Explorable;
 import demetra.processing.ProcSpecification;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsDocument;
-import demetra.timeseries.TsDomain;
 import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsMoniker;
 import demetra.util.MultiLineNameUtil;
@@ -32,7 +29,7 @@ import java.util.Optional;
 public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocument<S, ?>> extends DefaultProcessingViewer<S, D> {
 
     // FACTORY METHODS >
-    public static <S extends ProcSpecification, D extends TsDocument<S, ?>> TsProcessingViewer create(D doc, DocumentUIServices.UIFactory<S, D> uifac) {
+    public static <S extends ProcSpecification, D extends TsDocument<S, ?>> TsProcessingViewer create(D doc, DocumentUIServices<S, D> uifac) {
         TsProcessingViewer viewer = new TsProcessingViewer(uifac, Type.APPLY);
         if (doc != null) {
             viewer.setDocument(doc);
@@ -48,7 +45,7 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
     private final JLabel tsLabel;
     private final JLabel specLabel;
 
-    public TsProcessingViewer(DocumentUIServices.UIFactory<S, D> uifac, Type type) {
+    public TsProcessingViewer(DocumentUIServices<S, D> uifac, Type type) {
         super(uifac, type);
         this.dropDataLabel = new JLabel("Drop data here");
         dropDataLabel.setFont(DROP_DATA_FONT);

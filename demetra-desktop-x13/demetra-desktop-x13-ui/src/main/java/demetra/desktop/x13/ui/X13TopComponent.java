@@ -4,6 +4,7 @@
  */
 package demetra.desktop.x13.ui;
 
+import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
@@ -61,7 +62,7 @@ public final class X13TopComponent extends WorkspaceTsTopComponent<X13Document> 
         initComponents();
         setToolTipText(NbBundle.getMessage(X13TopComponent.class, "HINT_X13TopComponent"));
         setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), X13DocumentManager.FACTORY);
+        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(X13Document.class));
         this.add(panel);
         panel.refreshHeader();
     }

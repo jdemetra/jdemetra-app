@@ -4,11 +4,6 @@
  */
 package demetra.desktop.regarima.ui;
 
-import demetra.desktop.descriptors.IObjectDescriptor;
-import demetra.desktop.regarima.descriptors.RegArimaSpecUI;
-import demetra.desktop.ui.processing.DocumentUIServices;
-import demetra.desktop.ui.processing.DocumentUIServices.UIFactory;
-import demetra.desktop.ui.processing.IProcDocumentView;
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
@@ -26,18 +21,6 @@ import org.openide.util.lookup.ServiceProvider;
         position = 500)
 public class RegArimaDocumentManager extends AbstractWorkspaceTsItemManager<RegArimaSpec, RegArimaDocument> {
 
-    public static final UIFactory<RegArimaSpec, RegArimaDocument> FACTORY=new DocumentUIServices.UIFactory<RegArimaSpec, RegArimaDocument>() {
-            @Override
-            public IProcDocumentView<RegArimaDocument> getDocumentView(RegArimaDocument document) {
-                return RegArimaViewFactory.getDefault().create(document);
-            }
-
-            @Override
-            public IObjectDescriptor<RegArimaSpec> getSpecificationDescriptor(RegArimaDocument doc) {
-                return new RegArimaSpecUI(doc.getSpecification(), false);
-            }
-        };
- 
     public static final LinearId ID = new LinearId(RegArimaSpec.FAMILY, "documents", RegArimaSpec.METHOD);
     public static final String PATH = "regarima.doc";
     public static final String ITEMPATH = "regarima.doc.item";

@@ -4,6 +4,7 @@
  */
 package demetra.desktop.tramo.ui;
 
+import demetra.desktop.ui.processing.DocumentUIServices;
 import jdplus.tramo.TramoDocument;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.workspace.WorkspaceFactory;
@@ -61,7 +62,7 @@ public final class TramoTopComponent extends WorkspaceTsTopComponent<TramoDocume
         initComponents();
         setToolTipText(NbBundle.getMessage(TramoTopComponent.class, "HINT_TramoTopComponent"));
         setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), TramoDocumentManager.FACTORY);
+        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(TramoDocument.class));
         this.add(panel);
         panel.refreshHeader();
     }

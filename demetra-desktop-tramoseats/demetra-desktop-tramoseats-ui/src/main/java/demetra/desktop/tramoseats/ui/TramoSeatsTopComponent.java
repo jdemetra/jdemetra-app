@@ -4,6 +4,7 @@
  */
 package demetra.desktop.tramoseats.ui;
 
+import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
@@ -61,7 +62,7 @@ public final class TramoSeatsTopComponent extends WorkspaceTsTopComponent<TramoS
         initComponents();
         setToolTipText(NbBundle.getMessage(TramoSeatsTopComponent.class, "HINT_TramoSeatsTopComponent"));
         setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), TramoSeatsDocumentManager.FACTORY);
+        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(TramoSeatsDocument.class));
         this.add(panel);
         panel.refreshHeader();
     }

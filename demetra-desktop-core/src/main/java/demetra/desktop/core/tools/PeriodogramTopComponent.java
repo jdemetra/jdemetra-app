@@ -6,7 +6,6 @@ package demetra.desktop.core.tools;
 
 import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.components.tools.PeriodogramView;
-import demetra.desktop.ui.processing.TsTopComponent;
 import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import org.netbeans.api.settings.ConvertAsProperties;

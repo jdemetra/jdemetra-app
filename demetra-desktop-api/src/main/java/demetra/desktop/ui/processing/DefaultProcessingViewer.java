@@ -6,7 +6,6 @@ import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.interfaces.Disposable;
 import demetra.desktop.nodes.DecoratedNode;
 import demetra.desktop.ui.IdNodes;
-import demetra.desktop.ui.processing.DocumentUIServices.UIFactory;
 import demetra.desktop.util.NbComponents;
 import demetra.processing.ProcDocument;
 import demetra.processing.ProcSpecification;
@@ -38,7 +37,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         NONE, APPLY, APPLY_RESTORE_SAVE
     }
 
-    private final UIFactory<S, D> factory;
+    private final DocumentUIServices<S, D> factory;
     protected final Type type_;
     // visual components
     protected final JSplitPane splitter;
@@ -55,7 +54,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     protected int specWidth_ = 300;
     private boolean dirty;
 
-    protected DefaultProcessingViewer(UIFactory<S, D> factory, Type type) {
+    protected DefaultProcessingViewer(DocumentUIServices<S, D> factory, Type type) {
         this.factory = factory;
         this.type_ = type;
  
