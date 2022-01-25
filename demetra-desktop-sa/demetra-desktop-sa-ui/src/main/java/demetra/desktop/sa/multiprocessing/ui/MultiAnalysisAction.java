@@ -4,6 +4,7 @@
  */
 package demetra.desktop.sa.multiprocessing.ui;
 
+import demetra.desktop.ui.DemetraUI;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import java.awt.Image;
@@ -32,56 +33,56 @@ public final class MultiAnalysisAction implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         MultiProcessingManager mgr = WorkspaceFactory.getInstance().getManager(MultiProcessingManager.class);
         WorkspaceItem<MultiProcessingDocument> doc = mgr.create(WorkspaceFactory.getInstance().getActiveWorkspace());
-//        TopComponent c = createView(doc);
-//        c.open();
-//        c.requestActive();
+        TopComponent c = createView(doc);
+        c.open();
+        c.requestActive();
     }
 
-//    public static TopComponent createView(final WorkspaceItem<MultiProcessingDocument> doc) {
-//        if (doc.isOpen()) {
-//            return doc.getView();
-//        }
-//        final MultiProcessingController controller = new MultiProcessingController();
-//        SaBatchUI processingView = new SaBatchUI(doc, controller);
-//        SummaryView summaryView = new SummaryView(doc, controller);
-//        MatrixView matrixView = new MatrixView(doc, controller);
-//
-//        MultiViewDescription[] descriptions = {
-//            new QuickAndDirtyDescription("Processing", processingView),
-//            new QuickAndDirtyDescription("Summary", summaryView),
-//            new QuickAndDirtyDescription("Matrix", matrixView),};
-//
-//        final TopComponent result = MultiViewFactory.createMultiView(descriptions, descriptions[0]);
-//        result.setName(doc.getDisplayName());
-//        doc.setView(result);
-//
-//        DemetraUI demetraUI = DemetraUI.getDefault();
-//
+    public static TopComponent createView(final WorkspaceItem<MultiProcessingDocument> doc) {
+        if (doc.isOpen()) {
+            return doc.getView();
+        }
+        final MultiProcessingController controller = new MultiProcessingController();
+        SaBatchUI processingView = new SaBatchUI(doc, controller);
+        SummaryView summaryView = new SummaryView(doc, controller);
+        MatrixView matrixView = new MatrixView(doc, controller);
+
+        MultiViewDescription[] descriptions = {
+            new QuickAndDirtyDescription("Processing", processingView),
+            new QuickAndDirtyDescription("Summary", summaryView),
+            new QuickAndDirtyDescription("Matrix", matrixView),};
+
+        final TopComponent result = MultiViewFactory.createMultiView(descriptions, descriptions[0]);
+        result.setName(doc.getDisplayName());
+        doc.setView(result);
+
+        DemetraUI demetraUI = DemetraUI.getDefault();
+
 //        processingView.setDefaultSpecification(demetraUI.getDefaultSASpecInstance());
 
-//        controller.addPropertyChangeListener(evt -> {
-//            switch (controller.getSaProcessingState()) {
-//                case DONE:
-//                    result.makeBusy(false);
-//                    result.setAttentionHighlight(true);
-//                    break;
-//                case STARTED:
-//                    result.makeBusy(true);
-//                    break;
-//                case CANCELLED:
-//                    result.makeBusy(false);
-//                    break;
-//                case READY:
-//                    result.makeBusy(false);
-//                    result.setAttentionHighlight(false);
-//                    break;
-//                case PENDING:
-//                    result.makeBusy(false);
-//                    break;
-//            }
-//        });
-//        return result;
-//    }
+        controller.addPropertyChangeListener(evt -> {
+            switch (controller.getSaProcessingState()) {
+                case DONE:
+                    result.makeBusy(false);
+                    result.setAttentionHighlight(true);
+                    break;
+                case STARTED:
+                    result.makeBusy(true);
+                    break;
+                case CANCELLED:
+                    result.makeBusy(false);
+                    break;
+                case READY:
+                    result.makeBusy(false);
+                    result.setAttentionHighlight(false);
+                    break;
+                case PENDING:
+                    result.makeBusy(false);
+                    break;
+            }
+        });
+        return result;
+    }
 
     static class QuickAndDirtyDescription implements MultiViewDescription {
 

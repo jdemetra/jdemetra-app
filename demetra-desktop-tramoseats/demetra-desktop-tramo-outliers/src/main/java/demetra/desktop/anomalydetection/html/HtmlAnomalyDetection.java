@@ -21,7 +21,7 @@ import demetra.html.AbstractHtmlElement;
 import demetra.html.HtmlElement;
 import demetra.html.HtmlStream;
 import demetra.html.HtmlTag;
-import demetra.html.modelling.HtmlRegArima;
+import demetra.html.modelling.HtmlRegSarima;
 import java.io.IOException;
 import jdplus.regsarima.regular.RegSarimaModel;
 
@@ -41,7 +41,7 @@ public class HtmlAnomalyDetection extends AbstractHtmlElement implements HtmlEle
     public void write(HtmlStream stream) throws IOException {
         stream.write(HtmlTag.HEADER1, "Anomaly Detection").newLine();
 
-        HtmlRegArima reg = new HtmlRegArima(model, false);
+        HtmlRegSarima reg = new HtmlRegSarima(model, false);
         reg.writeDetails(stream, false);
         
         stream.write(new HtmlOutliers(OutlierEstimation.of(model)));

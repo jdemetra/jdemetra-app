@@ -342,7 +342,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
             super(X13Document.class, SaViews.PREPROCESSING_SUMMARY, MODELEXTRACTOR
                     .andThen(regarima -> regarima == null ? null
-                    : new demetra.html.modelling.HtmlRegArima(regarima, false)),
+                    : new demetra.html.modelling.HtmlRegSarima(regarima, false)),
                     new HtmlItemUI());
         }
 

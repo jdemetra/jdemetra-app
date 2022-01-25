@@ -112,7 +112,7 @@ public class TramoViewFactory extends ProcDocumentViewFactory<TramoDocument> {
 
         public SummaryFactory() {
             super(TramoDocument.class, RegSarimaViews.MODEL_SUMMARY,
-                    source -> new demetra.html.modelling.HtmlRegArima(source.getResult(), false),
+                    source -> new demetra.html.modelling.HtmlRegSarima(source.getResult(), false),
                     new HtmlItemUI());
         }
 

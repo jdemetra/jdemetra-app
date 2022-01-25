@@ -99,9 +99,9 @@ public class MultiProcessingManager extends AbstractWorkspaceItemManager<MultiPr
             return;
         }
 
-//        TopComponent view = MultiAnalysisAction.createView(doc);
-//        view.open();
-//        view.requestActive();
+        TopComponent view = MultiAnalysisAction.createView(doc);
+        view.open();
+        view.requestActive();
     }
 
     @Override

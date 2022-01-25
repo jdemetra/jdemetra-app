@@ -114,7 +114,7 @@ public class RegArimaViewFactory extends ProcDocumentViewFactory<RegArimaDocumen
 
         public SummaryFactory() {
             super(RegArimaDocument.class, RegSarimaViews.MODEL_SUMMARY,
-            source->new demetra.html.modelling.HtmlRegArima(source.getResult(), false),
+            source->new demetra.html.modelling.HtmlRegSarima(source.getResult(), false),
             new HtmlItemUI());
         }
 

@@ -65,6 +65,10 @@ public class MultiProcessingDocument implements Documented {
         current = initial.refresh(policy, TsInformationType.Data);
     }
 
+    public void refresh(EstimationPolicy policy, Predicate<SaItem> test) {
+        current = initial.refresh(policy, TsInformationType.Data, test);
+    }
+
     public void updateMetadata(Map<String, String> nmeta) {
         current = current.withMetadata(nmeta);
     }
