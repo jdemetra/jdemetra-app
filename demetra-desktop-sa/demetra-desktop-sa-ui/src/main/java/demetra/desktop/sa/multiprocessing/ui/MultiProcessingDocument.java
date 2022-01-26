@@ -77,7 +77,9 @@ public class MultiProcessingDocument implements Documented {
         SaItems.Builder builder = current.toBuilder();
         for (Ts ts : nts) {
             builder.item(
-                    SaItem.builder().definition(
+                    SaItem.builder()
+                            .name(ts.getName())
+                            .definition(
                             SaDefinition.builder()
                                     .domainSpec(spec)
                                     .ts(ts)

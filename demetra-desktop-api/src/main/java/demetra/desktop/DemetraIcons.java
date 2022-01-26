@@ -15,7 +15,6 @@ import org.openide.util.ImageUtilities;
  *
  * @author Philippe Charles
  */
-@Deprecated
 public enum DemetraIcons implements Icon {
 
     COLOR_SWATCH_16("color-swatch_16x16.png"),

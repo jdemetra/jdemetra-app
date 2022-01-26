@@ -4,7 +4,7 @@
  */
 package demetra.desktop.sa.multiprocessing.ui;
 
-import demetra.desktop.ui.DemetraUI;
+import demetra.desktop.sa.ui.DemetraSaUI;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import java.awt.Image;
@@ -56,9 +56,9 @@ public final class MultiAnalysisAction implements ActionListener {
         result.setName(doc.getDisplayName());
         doc.setView(result);
 
-        DemetraUI demetraUI = DemetraUI.getDefault();
+        DemetraSaUI demetraUI = DemetraSaUI.getDefault();
 
-//        processingView.setDefaultSpecification(demetraUI.getDefaultSASpecInstance());
+        processingView.setDefaultSpecification(demetraUI.getDefaultSaSpec());
 
         controller.addPropertyChangeListener(evt -> {
             switch (controller.getSaProcessingState()) {

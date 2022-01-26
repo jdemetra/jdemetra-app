@@ -30,6 +30,7 @@ import demetra.sa.EstimationPolicy;
 import demetra.sa.SaDocument;
 import demetra.sa.SaItem;
 import demetra.desktop.sa.multiprocessing.ui.MultiProcessingController.SaProcessingState;
+import demetra.desktop.sa.ui.DemetraSaUI;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.processing.ProcQuality;
 import demetra.processing.ProcessingLog.InformationType;
@@ -80,7 +81,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.openide.explorer.ExplorerManager;
 
@@ -215,7 +215,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     public SaBatchUI(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
         super(doc, controller);
-        this.defaultSpecification=null;
+        this.defaultSpecification= DemetraSaUI.getDefault().getDefaultSaSpec();
 
         setName(doc.getDisplayName());
         toolBarRepresentation = NbComponents.newInnerToolbar();
@@ -237,7 +237,9 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         JPopupMenu specPopup = new JPopupMenu();
         final JButton specButton = (JButton) toolBarRepresentation.add(DropDownButtonFactory.createDropDownButton(DemetraIcons.BLOG_16, specPopup));
-        specPopup.add(new JSpecSelectionComponent()).addPropertyChangeListener(evt -> {
+        JSpecSelectionComponent cmp = new JSpecSelectionComponent();
+        cmp.setFamily(SaSpecification.FAMILY);
+        specPopup.add(cmp).addPropertyChangeListener(evt -> {
             String p = evt.getPropertyName();
             if (p.equals(JSpecSelectionComponent.SPECIFICATION_PROPERTY) && evt.getNewValue() != null) {
                 setDefaultSpecification((SaSpecification) evt.getNewValue());
@@ -253,7 +255,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         });
 
         defSpecLabel = (JLabel) toolBarRepresentation.add(new JLabel());
-        defSpecLabel.setText(defaultSpecification == null ? "" : defaultSpecification.display());
+        defSpecLabel.setText(defaultSpecification == null ? "" : defaultSpecification.longDisplay());
         toolBarRepresentation.add(Box.createHorizontalGlue());
         toolBarRepresentation.addSeparator();
         buttonCollapse = (JToggleButton) toolBarRepresentation.add(new JToggleButton("Specifications"));
@@ -1179,14 +1181,16 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         public boolean importData(TransferSupport support) {
-            // FIXME: use of TsCollection#query(...) brings bugs in SaItem#process()
-            //col.query(TsInformationType.All);
-            Optional<TsCollection> tscoll = DataTransfer.getDefault()
+            
+            long n=DataTransfer.getDefault()
                     .toTsCollectionStream(support.getTransferable())
                     .filter(o -> !o.isEmpty())
-                    .findAny();
-            if (tscoll.isPresent()){
-                getElement().add(defaultSpecification, tscoll.get().toArray(n->new Ts[n]));
+//                    .map(s->s.load(TsInformationType.Data, TsFactory.getDefault()))
+                    .peek(s->{
+                        getElement().add(defaultSpecification, s.toArray(size->new Ts[size]));
+                    })
+                    .count();
+            if (n>0){
                 redrawAll();
                 return true;
             }

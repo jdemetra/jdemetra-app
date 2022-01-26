@@ -14,65 +14,58 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.workspace.ui;
+package demetra.desktop.sa.ui;
 
-import demetra.desktop.design.SwingComponent;
-import demetra.desktop.design.SwingProperty;
-import demetra.desktop.util.IDialogDescriptorProvider;
 import demetra.desktop.nodes.DecoratedNode;
 import demetra.desktop.ui.CustomDialogDescriptor;
+import demetra.desktop.util.IDialogDescriptorProvider;
+import demetra.desktop.util.IPropertyChangeSource;
+import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.desktop.workspace.WorkspaceItem;
+import demetra.desktop.workspace.nodes.DummyWsNode;
+import demetra.desktop.workspace.nodes.ItemWsNode;
+import demetra.sa.SaSpecification;
 import demetra.util.Constraint;
 import demetra.util.Id;
 import demetra.util.LinearId;
-import demetra.desktop.workspace.WorkspaceFactory;
-import demetra.desktop.workspace.WorkspaceItem;
-import demetra.desktop.workspace.nodes.ItemWsNode;
-import demetra.desktop.workspace.nodes.DummyWsNode;
-import demetra.processing.ProcSpecification;
-import demetra.util.Arrays2;
-import org.openide.DialogDescriptor;
-import org.openide.explorer.ExplorerManager;
-import org.openide.explorer.view.BeanTreeView;
-import org.openide.nodes.Node;
-
-import javax.swing.*;
-import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Image;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.util.Optional;
 import java.util.function.Predicate;
+import javax.swing.JComponent;
+import javax.swing.tree.TreeSelectionModel;
+import org.openide.DialogDescriptor;
+import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.view.BeanTreeView;
+import org.openide.nodes.Node;
 
 /**
  *
  * @author Philippe Charles
  */
-@SwingComponent
-public final class JSpecSelectionComponent extends JComponent implements ExplorerManager.Provider, IDialogDescriptorProvider {
+public class SpecSelectionComponent extends JComponent implements IPropertyChangeSource, ExplorerManager.Provider, IDialogDescriptorProvider {
 
-
-    @SwingProperty
+    public static final Id SPECS_ID = new LinearId(SaSpecification.FAMILY, WorkspaceFactory.SPECIFICATIONS);
     public static final String SPECIFICATION_PROPERTY = "specification";
-
-    @SwingProperty
     public static final String ICON_PROPERTY = "icon";
 
     private final BeanTreeView tree;
     private final ExplorerManager em;
     private final SelectionListener selectionListener;
 
-    private ProcSpecification specification;
+    private SaSpecification specification;
     private Image icon;
-    private boolean systemOnly;
 
-    public JSpecSelectionComponent() {
+    public SpecSelectionComponent() {
         this(false);
     }
 
-    public JSpecSelectionComponent(boolean showSystemOnly) {
-        this.systemOnly=showSystemOnly;
+    public SpecSelectionComponent(boolean showSystemOnly) {
         this.tree = new BeanTreeView();
         this.em = new ExplorerManager();
         this.selectionListener = new SelectionListener();
@@ -82,6 +75,10 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
         tree.setRootVisible(false);
         tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
+        DecoratedNode root = new DecoratedNode(new DummyWsNode(WorkspaceFactory.getInstance().getActiveWorkspace(), SPECS_ID), showSystemOnly ? ItemWsNodeFilter.SYSTEM_ONLY : (o -> true));
+        root.breadthFirstStream().peek(o->o.setPreferredActionDecorator(DecoratedNode.PreferredAction.DO_NOTHING));
+
+        em.setRootContext(root);
 
         setLayout(new BorderLayout());
         add(tree, BorderLayout.CENTER);
@@ -94,12 +91,6 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
                 onSpecificationChange();
             }
         });
-    }
-    
-    public void setFamily(String family){
-         DecoratedNode root = new DecoratedNode(new DummyWsNode(WorkspaceFactory.getInstance().getActiveWorkspace(), new LinearId(family, WorkspaceFactory.SPECIFICATIONS)), systemOnly ? ItemWsNodeFilter.SYSTEM_ONLY : (o -> true));
-        root.breadthFirstStream().forEach(o -> o.setPreferredActionDecorator(DecoratedNode.PreferredAction.DO_NOTHING));
-        em.setRootContext(root);
     }
 
     boolean isCurrentSpecificationNode(Node o) {
@@ -116,7 +107,7 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
                 Node[] nodes = (Node[]) evt.getNewValue();
                 if (nodes.length > 0 && ((DecoratedNode) nodes[0]).getOriginal() instanceof ItemWsNode) {
                     ItemWsNode node = (ItemWsNode) ((DecoratedNode) nodes[0]).getOriginal();
-                    setSpecification((ProcSpecification) node.getItem().getElement());
+                    setSpecification((SaSpecification) node.getItem().getElement());
                     setIcon(node.getIcon(BeanInfo.ICON_COLOR_16x16));
                 } else {
                     setSpecification(null);
@@ -150,12 +141,12 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
         return em;
     }
 
-    public ProcSpecification getSpecification() {
+    public SaSpecification getSpecification() {
         return specification;
     }
 
-    public void setSpecification(ProcSpecification specification) {
-        ProcSpecification old = this.specification;
+    public void setSpecification(SaSpecification specification) {
+        SaSpecification old = this.specification;
         this.specification = specification;
         firePropertyChange(SPECIFICATION_PROPERTY, old, this.specification);
     }
@@ -176,9 +167,9 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
         return new SpecSelectionDialogDescriptor(this, title);
     }
 
-    private static class SpecSelectionDialogDescriptor extends CustomDialogDescriptor<JSpecSelectionComponent> {
+    private static class SpecSelectionDialogDescriptor extends CustomDialogDescriptor<SpecSelectionComponent> {
 
-        SpecSelectionDialogDescriptor(JSpecSelectionComponent p, String title) {
+        SpecSelectionDialogDescriptor(SpecSelectionComponent p, String title) {
             super(p, title, p);
             validate(SpecSelectionConstraints.values());
         }
@@ -186,18 +177,18 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             String p = evt.getPropertyName();
-            if (p.equals(JSpecSelectionComponent.SPECIFICATION_PROPERTY)) {
+            if (p.equals(SpecSelectionComponent.SPECIFICATION_PROPERTY)) {
                 validate(SpecSelectionConstraints.values());
             }
         }
     }
 
-    private enum SpecSelectionConstraints implements Constraint<JSpecSelectionComponent> {
+    private enum SpecSelectionConstraints implements Constraint<SpecSelectionComponent> {
 
         SELECTION;
 
         @Override
-        public String check(JSpecSelectionComponent t) {
+        public String check(SpecSelectionComponent t) {
             return t.getSpecification() == null ? "Specification not selected" : null;
         }
     }
@@ -210,13 +201,6 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
         public boolean test(Node input) {
             return !(input instanceof ItemWsNode)
                     || ((ItemWsNode) input).getItem().getStatus() == WorkspaceItem.Status.System;
-        }
-    }
-
-    @Override
-    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-        if (!Arrays2.arrayEquals(oldValue, newValue)) {
-            super.firePropertyChange(propertyName, oldValue, newValue);
         }
     }
 }
