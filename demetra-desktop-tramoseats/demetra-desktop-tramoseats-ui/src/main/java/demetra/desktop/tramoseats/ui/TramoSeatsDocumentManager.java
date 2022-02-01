@@ -38,7 +38,7 @@ public class TramoSeatsDocumentManager extends AbstractWorkspaceTsItemManager<Tr
     }
 
     @Override
-    protected TramoSeatsDocument createNewObject() {
+    public TramoSeatsDocument createNewObject() {
         return new TramoSeatsDocument();
     }
 

@@ -49,7 +49,7 @@ public class X13SpecManager extends AbstractWorkspaceItemManager<X13Spec> {
     }
 
     @Override
-    protected X13Spec createNewObject() {
+    public X13Spec createNewObject() {
         return X13Spec.RSA4;
     }
 

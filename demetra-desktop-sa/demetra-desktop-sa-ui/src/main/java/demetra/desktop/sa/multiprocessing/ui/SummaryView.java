@@ -90,7 +90,7 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
     protected void onSaProcessingStateChange() {
         super.onSaProcessingStateChange();
         if (controller.getSaProcessingState().isFinished()) {
-            SaItems items = getCurrentProcessing();
+            SaItem[] items = current();
             setData(createRegSarimaReports(items));
         } else {
             setData(Collections.emptyMap());
@@ -164,9 +164,9 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
         }
     }
 
-    public Map<Integer, Map<AlgorithmDescriptor, RegSarimaReport>> createRegSarimaReports(SaItems items) {
+    public Map<Integer, Map<AlgorithmDescriptor, RegSarimaReport>> createRegSarimaReports(SaItem[] items) {
         Map<Integer, Map<AlgorithmDescriptor, RegSarimaReport>> reports = new HashMap<>();
-        for (SaItem item : items.getItems()) {
+        for (SaItem item : items) {
             if (item.isProcessed()) {
                 Explorable rslt = item.getEstimation().getResults();
                 if (rslt != null) {

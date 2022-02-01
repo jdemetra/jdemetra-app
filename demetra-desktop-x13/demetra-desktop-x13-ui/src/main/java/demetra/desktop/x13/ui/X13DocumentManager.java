@@ -37,7 +37,7 @@ public class X13DocumentManager extends AbstractWorkspaceTsItemManager<X13Spec, 
     }
 
     @Override
-    protected X13Document createNewObject() {
+    public X13Document createNewObject() {
         return new X13Document();
     }
 

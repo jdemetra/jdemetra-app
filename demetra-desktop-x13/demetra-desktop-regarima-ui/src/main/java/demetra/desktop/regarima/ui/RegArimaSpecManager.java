@@ -61,7 +61,7 @@ public class RegArimaSpecManager extends AbstractWorkspaceItemManager<RegArimaSp
     }
 
     @Override
-    protected RegArimaSpec createNewObject() {
+    public RegArimaSpec createNewObject() {
         return RegArimaSpec.RG4;
     }
 

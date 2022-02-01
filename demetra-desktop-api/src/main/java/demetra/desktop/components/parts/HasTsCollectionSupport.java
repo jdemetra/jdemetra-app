@@ -589,9 +589,25 @@ public class HasTsCollectionSupport {
 
         public static boolean importData(@NonNull HasTsCollection view, @NonNull DataTransfer tssSupport, @NonNull Supplier<Transferable> toData) {
             if (!view.getTsUpdateMode().isReadOnly()) {
-                return tssSupport.toTsCollectionStream(toData.get())
-                        .peek(col -> importData(view, col))
-                        .count() > 0;
+                // merge the collections
+                List<TsCollection> all = tssSupport.toTsCollectionStream(toData.get()).collect(Collectors.toList());
+                switch (all.size()){
+                    case 0:return false;
+                    case 1 : 
+                        importData(view, all.get(0)); 
+                        return true;
+                    default:
+                        TsCollection.Builder builder = TsCollection.builder();
+                        all.forEach(z->builder.items(z.getItems()));
+                        TsCollection coll = builder.build();
+                        if (! coll.isEmpty()){
+                            importData(view, coll);
+                        }
+                        return true;
+                }
+//                return tssSupport.toTsCollectionStream(toData.get())
+//                        .peek(col -> importData(view, col))
+//                        .count() > 0;
             }
             return false;
         }

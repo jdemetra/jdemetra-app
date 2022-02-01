@@ -45,35 +45,39 @@ public interface HasTsCollection {
 
     default void loadAsync(TsInformationType info) {
         TsCollection tss = getTsCollection();
-        if (tss != null) {
-            if (tss.getMoniker().isProvided())
-                if (!tss.getType().encompass(info))
-                    TsManager.getDefault().loadAsync(tss, info, this::replaceTsCollection);
-            else{
-                if (tss.stream().filter(s->s.getType().encompass(info)).count() ==tss.size())
-                    return;
-                TsCollection.Builder newData = tss.toBuilder().clearItems();
-                for (Ts ts : tss) {
-                    TsManager.getDefault().loadAsync(ts, info, s->replaceTs(ts, s));
-                 }
-            }
+        if (tss != null && tss.stream().filter(s -> !s.getType().encompass(info)).count() > 0) {
+            TsManager.getDefault().loadAsync(tss, info, this::replaceTsCollection);
         }
+//        if (tss != null) {
+//            if (tss.getMoniker().isProvided())
+//                if (!tss.getType().encompass(info))
+//                    TsManager.getDefault().loadAsync(tss, info, this::replaceTsCollection);
+//            else{
+//                if (tss.stream().filter(s->s.getType().encompass(info)).count() ==tss.size())
+//                    return;
+//                TsCollection.Builder newData = tss.toBuilder().clearItems();
+//                for (Ts ts : tss) {
+//                    TsManager.getDefault().loadAsync(ts, info, s->replaceTs(ts, s));
+//                 }
+//            }
+//        }
     }
-    
-    default void replaceTs(Ts oldTs, Ts newTs){
+
+    default void replaceTs(Ts oldTs, Ts newTs) {
         TsCollection coll = getTsCollection();
         TsCollection.Builder builder = coll.toBuilder()
                 .clearItems();
-        for (Ts s : coll){
-            if (s == oldTs)
+        for (Ts s : coll) {
+            if (s == oldTs) {
                 builder.item(newTs);
-            else
+            } else {
                 builder.item(s);
+            }
         }
         setTsCollection(builder.build());
-        
+
     }
-    
+
     @SwingProperty
     String TS_SELECTION_MODEL_PROPERTY = "tsSelectionModel";
 

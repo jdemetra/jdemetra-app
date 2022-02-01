@@ -49,7 +49,7 @@ public class TramoSeatsSpecManager extends AbstractWorkspaceItemManager<TramoSea
     }
 
     @Override
-    protected TramoSeatsSpec createNewObject() {
+    public TramoSeatsSpec createNewObject() {
         return TramoSeatsSpec.RSAfull;
     }
 

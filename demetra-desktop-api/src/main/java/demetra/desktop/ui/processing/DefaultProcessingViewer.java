@@ -37,7 +37,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         NONE, APPLY, APPLY_RESTORE_SAVE
     }
 
-    private final DocumentUIServices<S, D> factory;
+    private DocumentUIServices<S, D> factory;
     protected final Type type_;
     // visual components
     protected final JSplitPane splitter;
@@ -124,6 +124,34 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         dirty = false;
 
         try {
+            if (m_procView != null) {
+                m_procView.dispose();
+                m_procView = null;
+            }
+            if (doc == null) {
+                originalSpec = null;
+                return;
+            }
+            originalSpec = doc.getSpecification();
+            // initialize all items
+            m_procView = factory.getDocumentView(doc);
+            initSpecView(doc);
+        } finally {
+            buildTree();
+            refreshHeader();
+        }
+    }
+
+    public void setDocument(D doc, DocumentUIServices<S, D> factory) {
+        boolean newlayout=this.factory != factory;
+        if (! newlayout){
+            setDocument(doc);
+            return;
+        }
+        dirty = false;
+
+        try {
+            this.factory=factory;
             if (m_procView != null) {
                 m_procView.dispose();
                 m_procView = null;

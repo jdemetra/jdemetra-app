@@ -8,6 +8,7 @@ import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.tramoseats.descriptors.TramoSeatsSpecUI;
 import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.IProcDocumentView;
+import demetra.processing.ProcDocument;
 import demetra.tramoseats.TramoSeatsSpec;
 import java.awt.Color;
 import javax.swing.Icon;
@@ -52,6 +53,5 @@ public class TramoSeatsUIFactory implements DocumentUIServices<TramoSeatsSpec, T
     public Icon getIcon() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 
 }

@@ -75,7 +75,7 @@ public class MultiProcessingManager extends AbstractWorkspaceItemManager<MultiPr
     }
 
     @Override
-    protected MultiProcessingDocument createNewObject() {
+    public MultiProcessingDocument createNewObject() {
         MultiProcessingDocument ndoc = MultiProcessingDocument.createNew();
         return ndoc;
     }

@@ -14,7 +14,6 @@ import demetra.processing.AlgorithmDescriptor;
 import demetra.sa.SaItem;
 import demetra.sa.SaItems;
 import demetra.timeseries.TsData;
-import demetra.timeseries.regression.ModellingContext;
 import demetra.util.Table;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.JGrid;
@@ -58,14 +57,13 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
     private final JGrid resMatrix_, calMatrix_, armaMatrix_, outMatrix_, testMatrix_, customMatrix_;
     private final JTabbedPane matrixTabPane_;
     // data
-    private List<SaItem> saItems;
+    private SaItem[] saItems;
     private List<String> selectedComponents;
     private final PropertyChangeListener listener;
 
     public MatrixView(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
         super(doc, controller);
-        this.saItems = new ArrayList<>();
-        this.comboBox = new JComboBox<>();
+         this.comboBox = new JComboBox<>();
         // TODO
         this.selectedComponents = Collections.emptyList(); // DemetraUI.getDefault().getSelectedDiagFields();
 
@@ -103,7 +101,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
             customMatrix_.setModel(new TableModelAdapter(createTableModel(item.getValue(), item.getKey(), selectedComponents, selectedComponents)));
         };
 
-        updateData(Collections.emptyList());
+        updateData(new SaItem[0]);
 
         setLayout(new BorderLayout());
         add(toolBarRepresentation, BorderLayout.NORTH);
@@ -119,11 +117,11 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
     @Override
     protected void onSaProcessingStateChange() {
         super.onSaProcessingStateChange();
-        SaItems current = getCurrentProcessing();
+        SaItem[] items = current();
         if (getState().isFinished()) {
-            updateData(current.getItems());
+            updateData(items);
         } else {
-            updateData(Collections.emptyList());
+            updateData(new SaItem[0]);
         }
 
     }
@@ -191,7 +189,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         return result;
     }
     
-    private static Map<Integer, List<AlgorithmDescriptor>> methods(List<SaItem> items){
+    private static Map<Integer, List<AlgorithmDescriptor>> methods(SaItem[] items){
         Map<Integer, List<AlgorithmDescriptor>> map=new HashMap<>();
         for (SaItem item : items){
             AlgorithmDescriptor alg = item.getDefinition().getDomainSpec().getAlgorithmDescriptor();
@@ -209,7 +207,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         return map;
     }
 
-    private void updateData(List<SaItem> saItems) {
+    private void updateData(SaItem[] saItems) {
         this.saItems = saItems;
         Map<Integer, List<AlgorithmDescriptor>> methods = methods(saItems);
         long count = methods.values().stream().mapToLong(Collection::size).sum();
@@ -262,7 +260,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
         rslt.addColumn("Series");
 
-        for (int idx = 0; idx < titles.size(); ++idx) {
+        for (int idx = 0; idx < ncols; ++idx) {
             if (srslts.column(idx).isEmpty()) {
                 ok[idx] = false;
             } else {

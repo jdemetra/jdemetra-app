@@ -9,9 +9,7 @@ import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemRepository;
 import demetra.sa.SaItems;
 import demetra.tsprovider.TsMeta;
-import java.text.DateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.openide.util.lookup.ServiceProvider;
@@ -36,8 +34,8 @@ public class MultiProcessingDocFileRepository extends AbstractFileItemRepository
         MultiProcessingDocument element = doc.getElement();
         Map<String, String> meta=new HashMap<>(element.getMetadata());
         TsMeta.TIMESTAMP.store(meta, LocalDateTime.now());
-        element.updateMetadata(meta);
-        return storeFile(doc, element, () -> {
+        SaItems current = element.current(meta);
+        return storeFile(doc, current, () -> {
             doc.resetDirty();
         });
     }

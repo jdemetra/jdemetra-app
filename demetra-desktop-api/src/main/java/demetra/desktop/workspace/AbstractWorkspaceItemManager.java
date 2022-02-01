@@ -44,8 +44,6 @@ public abstract class AbstractWorkspaceItemManager<D> implements WorkspaceItemMa
         return name;
     }
 
-    protected abstract D createNewObject();
-
     @Override
     public WorkspaceItem<D> create(Workspace ws) {
         D newObject = createNewObject();

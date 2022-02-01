@@ -37,7 +37,7 @@ public interface DocumentUIServices<S extends ProcSpecification, D extends ProcD
     IObjectDescriptor<S> getSpecificationDescriptor(D document);
 
     IProcDocumentView<D> getDocumentView(D document);
-
+    
     default PropertySheetPanel getSpecView(IObjectDescriptor<S> desc) {
         final PropertySheetPanel panel = PropertiesPanelFactory.INSTANCE.createPanel(desc);
         panel.addPropertySheetChangeListener(evt -> panel.firePropertyChange(SPEC_PROPERTY, 0, 1));

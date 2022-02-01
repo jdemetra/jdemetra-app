@@ -37,7 +37,7 @@ public class RegArimaDocumentManager extends AbstractWorkspaceTsItemManager<RegA
     }
 
     @Override
-    protected RegArimaDocument createNewObject() {
+    public RegArimaDocument createNewObject() {
         return new RegArimaDocument();
     }
 

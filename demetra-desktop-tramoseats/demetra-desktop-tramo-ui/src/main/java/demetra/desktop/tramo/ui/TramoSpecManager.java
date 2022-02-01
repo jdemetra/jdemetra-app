@@ -61,7 +61,7 @@ public class TramoSpecManager extends AbstractWorkspaceItemManager<TramoSpec> {
     }
 
     @Override
-    protected TramoSpec createNewObject() {
+    public TramoSpec createNewObject() {
         return TramoSpec.TRfull;
     }
 

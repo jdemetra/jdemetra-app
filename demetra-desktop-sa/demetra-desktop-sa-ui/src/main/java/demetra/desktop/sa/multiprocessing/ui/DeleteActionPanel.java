@@ -26,13 +26,13 @@ import demetra.util.MultiLineNameUtil;
  */
 public class DeleteActionPanel extends javax.swing.JPanel {
 
-    private SaItem[] items;
+    private SaNode[] items;
 
     public DeleteActionPanel() {
         initComponents();
     }
     
-    public DeleteActionPanel(SaItem[] items) {
+    public DeleteActionPanel(SaNode[] items) {
         this();
         this.items = items;
         refreshItems();
@@ -47,7 +47,7 @@ public class DeleteActionPanel extends javax.swing.JPanel {
         itemList.setSelectionInterval(0, items.length-1);
     }
 
-    public void setItems(SaItem[] items) {
+    public void setItems(SaNode[] items) {
         this.items = items;
         refreshItems();
     }

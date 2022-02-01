@@ -5,17 +5,26 @@
 package demetra.desktop.sa.multiprocessing.ui;
 
 import demetra.sa.EstimationPolicy;
+import demetra.sa.EstimationPolicyType;
 import demetra.sa.SaDefinition;
 import demetra.sa.SaItem;
 import demetra.sa.SaItems;
 import demetra.sa.SaSpecification;
 import demetra.timeseries.Ts;
+import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsInformationType;
+import demetra.timeseries.TsMoniker;
 import demetra.util.Documented;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -24,17 +33,24 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  */
 public class MultiProcessingDocument implements Documented {
 
+    int curId = 0;
+
+
     private Map<String, String> metadata = Collections.emptyMap();
 
-    private SaItems current;
+    private final List<SaNode> current = new ArrayList<>();
     private final SaItems initial;
 
     private MultiProcessingDocument(SaItems initial) {
         this.initial = initial;
-        this.current = initial;
+        this.current.addAll(of(initial.getItems()));
     }
 
-    public SaItems getCurrent() {
+    private List<SaNode> of(List<SaItem> items) {
+        return items.stream().map(item -> SaNode.of(curId++, item)).collect(Collectors.<SaNode>toList());
+    }
+
+    public List<SaNode> getCurrent() {
         return current;
     }
 
@@ -62,54 +78,85 @@ public class MultiProcessingDocument implements Documented {
     }
 
     public void refresh(EstimationPolicy policy) {
-        current = initial.refresh(policy, TsInformationType.Data);
+        current.clear();
+        current.addAll(of(initial.refresh(policy, TsInformationType.Data)));
     }
 
-    public void refresh(EstimationPolicy policy, Predicate<SaItem> test) {
-        current = initial.refresh(policy, TsInformationType.Data, test);
+    public void refresh(EstimationPolicy policy, Predicate<SaNode> test) {
+        for (int i = 0; i < current.size(); ++i) {
+            SaNode cur = current.get(i);
+            if (test.test(cur)) {
+                SaNode n = SaNode.of(cur.getId(), cur.getOutput().refresh(policy, TsInformationType.Data));
+                current.set(i, n);
+            }
+        }
     }
 
-    public void updateMetadata(Map<String, String> nmeta) {
-        current = current.withMetadata(nmeta);
+    public SaItems current(Map<String, String> nmeta) {
+
+        current.forEach(cur -> cur.process());
+
+        return SaItems.builder()
+                .meta(nmeta)
+                .items(current.stream().map(node -> node.getOutput()).collect(Collectors.toList()))
+                .build();
     }
 
     public void add(@NonNull SaSpecification spec, Ts... nts) {
-        SaItems.Builder builder = current.toBuilder();
+
         for (Ts ts : nts) {
-            builder.item(
-                    SaItem.builder()
-                            .name(ts.getName())
-                            .definition(
-                            SaDefinition.builder()
-                                    .domainSpec(spec)
-                                    .ts(ts)
-                                    .build())
-                            .build());
+            current.add(SaNode.of(++curId, ts, spec));
         }
-        current = builder.build();
     }
 
     public void add(SaItem... nitems) {
-        current = current.addItems(nitems);
+        for (SaItem item : nitems) {
+            current.add(SaNode.of(++curId, item));
+        }
     }
 
-    public void replace(int pos, SaItem nitem) {
-        current = current.withItem(pos, nitem);
+    public SaNode search(int id) {
+        Optional<SaNode> found = current.stream().filter(node -> node.getId() == id).findFirst();
+        return found.isPresent() ? found.get() : null;
     }
 
-    public void replace(SaItem oitem, SaItem nitem) {
-        current = current.replaceItem(oitem, nitem);
-    }
-    
-    public void replace(Predicate<SaItem> test, UnaryOperator<SaItem> op){
-        current = current.replaceItems(test, op);
+    public void replace(int id, SaItem nitem) {
+        SaNode node = search(id);
+        if (node != null) {
+            node.setOutput(nitem);
+        }
     }
 
-    public void remove(SaItem... nitems) {
-        current = current.removeItems(nitems);
+    public int positionOfId(int id) {
+        for (int i = 0; i < current.size(); ++i) {
+            if (id == current.get(i).getId()) {
+                return i;
+            }
+        }
+        return -1;
     }
-    
-    public void reset(){
-        this.current=initial;
+
+    public void removeId(int id) {
+        int pos = positionOfId(id);
+        if (pos >= 0) {
+            current.remove(pos);
+        }
+    }
+
+    public void remove(int pos) {
+        current.remove(pos);
+    }
+
+    public void remove(Collection<SaNode> nodes) {
+        current.removeAll(nodes);
+    }
+
+    public void reset() {
+        this.current.clear();
+        current.addAll(of(initial.getItems()));
+    }
+
+    public SaItem[] all() {
+        return current.stream().peek(o->o.process()).map(o->o.getOutput()).toArray(n->new SaItem[n]);
     }
 }

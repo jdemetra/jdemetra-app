@@ -18,6 +18,7 @@ package demetra.desktop.sa.multiprocessing.ui;
 
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.WorkspaceTopComponent;
+import demetra.sa.SaItem;
 import demetra.sa.SaItems;
 import javax.swing.JComponent;
 import org.netbeans.core.spi.multiview.CloseOperationState;
@@ -53,8 +54,8 @@ public abstract class AbstractSaProcessingTopComponent extends WorkspaceTopCompo
         return controller;
     }
 
-    public SaItems getCurrentProcessing() {
-        return getDocument().getElement().getCurrent();
+    public SaItem[] current() {
+        return getDocument().getElement().all();
     }
 
     public SaItems getInitialProcessing() {

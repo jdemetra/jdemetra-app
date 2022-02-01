@@ -123,7 +123,9 @@ public final class TsManager implements DataSourceFactory, Closeable {
                 SwingUtilities.invokeLater(() -> onLoaded.accept(loaded));
             }else{
                 // One by one
-                TsCollection loaded = col.getItems().stream().map(s->makeTs(s.getMoniker(), info)).collect(TsCollection.toTsCollection());
+                TsCollection loaded = col.getItems().stream().map(s->
+                        s.getType().encompass(info) ? s :  makeTs(s.getMoniker(), info))
+                        .collect(TsCollection.toTsCollection());
                 SwingUtilities.invokeLater(() -> onLoaded.accept(loaded));
             }
         });
