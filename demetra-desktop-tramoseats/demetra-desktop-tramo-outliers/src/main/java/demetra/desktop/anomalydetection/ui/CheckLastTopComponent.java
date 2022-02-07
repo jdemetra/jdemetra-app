@@ -397,13 +397,16 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
     private class SwingWorkerImpl extends SwingWorker<Void, AnomalyItem> {
 
         private int progressCount = 0;
+        private int ntasks;
 
         @Override
         protected Void doInBackground() {
+            progressCount = 0;
             List<Callable<Void>> tasks = createTasks();
             if (tasks == null) {
                 return null;
             }
+            ntasks=tasks.size();
 
             DemetraOptions options = DemetraOptions.getDefault();
 
@@ -430,10 +433,11 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
         }
 
         List<Callable<Void>> createTasks() {
-            if (list.getItems() != null && list.getItems().size() > 0) {
-                List<Callable<Void>> result = new ArrayList(list.getItems().size());
-                for (final AnomalyItem o : list.getItems()) {
-                    if (o.getTsData() != null) {
+            AnomalyItem[] items = list.getItems();
+            if (items.length > 0) {
+                List<Callable<Void>> result = new ArrayList(items.length);
+                for (final AnomalyItem o : items) {
+                    if (!o.getData().isEmpty()) {
                         if (!o.isProcessed()) {
                             result.add(() -> {
                                 if (isCancelled()) {
@@ -442,7 +446,6 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
                                 CheckLast c = new CheckLast(TramoKernel.of(list.getSpec(), null), list.getLastChecks());
                                 o.process(c);
                                 publish(o);
-                                list.put(o.getTs().getName(), o);
                                 return null;
                             });
                         }
@@ -460,7 +463,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
             progressCount += chunks.size();
             if (progressHandle != null) {
                 if (!chunks.isEmpty()) {
-                    progressHandle.progress(100 * progressCount / list.getItems().size());
+                    progressHandle.progress(100 * progressCount / ntasks);
                 }
             }
         }
@@ -470,7 +473,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
         switch (getState()) {
             case DONE:
                 runButton.setEnabled(true);
-                if (!list.getItems().isEmpty()) {
+                if (!list.getMap().isEmpty()) {
                     reportButton.setEnabled(true);
                 }
                 makeBusy(false);
@@ -517,23 +520,23 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
             chart.setTsCollection(TsCollection.EMPTY);
         } else {
             demetra.timeseries.Ts single = list.getTsCollection().get(singleSelection.getAsInt());
-            AnomalyItem a = list.getMap().get(single.getName());
+            AnomalyItem a = list.getMap().get(single.getMoniker());
             if (a.isInvalid() || a.isNotProcessable()) {
                 summary.set(null, null);
-            } else if (a.getTsData() != null) {
+            } else if (!a.getData().isEmpty()) {
                 CheckLast cl = new CheckLast(TramoKernel.of(list.getSpec(), null), list.getLastChecks());
-                cl.check(a.getTsData());
+                cl.check(a.getData());
                 summary.set(a, cl.getModel());
             }
 
-            chart.setTsCollection(TsCollection.of(a.getTs()));
+            chart.setTsCollection(TsCollection.of(single));
             chart.repaint();
         }
         summary.repaint();
     }
 
     private void onCollectionChange() {
-        int nbElements = list.getItems() != null ? list.getItems().size() : 0;
+        int nbElements = list.getMap().size();
         itemsLabel.setText(nbElements == 0 ? "No items" : nbElements + (nbElements < 2 ? " item" : " items"));
         summary.set(null, list.getCheckLast().getModel());
         summary.repaint();

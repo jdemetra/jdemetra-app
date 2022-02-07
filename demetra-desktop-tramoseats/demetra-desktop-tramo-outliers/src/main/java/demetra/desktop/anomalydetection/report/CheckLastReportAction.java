@@ -30,7 +30,7 @@ import org.openide.NotifyDescriptor;
  */
 public class CheckLastReportAction {
 
-    public static void process(List<AnomalyItem> items, Map parameters) {
+    public static void process(AnomalyItem[] items, Map parameters) {
         AnomalyPojoComparator comparator = null;
         CheckLastReportFactory factory = null;
 
@@ -57,16 +57,16 @@ public class CheckLastReportAction {
         List<AnomalyPojo> empty = new ArrayList<>();
         for (AnomalyItem item : items) {
             for (int j = 0; j < item.getBackCount(); j++) {
-                if (item.getTsData() != null) {
+                if (! item.getData().isEmpty()) {
                     if (item.isNotProcessable()) {
-                        AnomalyPojo p = new AnomalyPojo(item.getTs().getName(),
+                        AnomalyPojo p = new AnomalyPojo(item.getName(),
                                 null,
                                 Double.NaN,
                                 Double.NaN,
                                 Status.Invalid);
                         invalid.add(p);
                     } else if (item.isInvalid()) {
-                        AnomalyPojo p = new AnomalyPojo(item.getTs().getName(),
+                        AnomalyPojo p = new AnomalyPojo(item.getName(),
                                 null,
                                 Double.NaN,
                                 Double.NaN,
@@ -76,8 +76,8 @@ public class CheckLastReportAction {
 
                         if (parameters.containsKey("_ORANGE_CELLS")
                                 && Math.abs(item.getRelativeError(j)) >= ((Double) parameters.get("_ORANGE_CELLS"))) {
-                            AnomalyPojo p = new AnomalyPojo(item.getTs().getName(),
-                                    item.getTs().getData().getDomain().getLastPeriod().plus(-j),
+                            AnomalyPojo p = new AnomalyPojo(item.getName(),
+                                    item.getData().getDomain().getLastPeriod().plus(-j),
                                     item.getRelativeError(j),
                                     item.getAbsoluteError(j),
                                     Status.Valid);

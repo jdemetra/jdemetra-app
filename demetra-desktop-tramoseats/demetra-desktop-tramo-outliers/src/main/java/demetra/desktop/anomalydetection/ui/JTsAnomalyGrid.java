@@ -30,6 +30,7 @@ import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
 import demetra.modelling.TransformationType;
 import demetra.timeseries.Ts;
+import demetra.timeseries.TsInformationType;
 import demetra.tramo.OutlierSpec;
 import demetra.tramo.TramoException;
 import demetra.tramo.TramoSpec;
@@ -93,7 +94,6 @@ public final class JTsAnomalyGrid extends JComponent {
     private TramoKernel preprocessor;
     private RegSarimaModel model;
     private TransformationType transformation;
-    private TsCollection tsCollection;
     private TramoSpec defaultSpec = TramoSpec.TRfull;
     private TramoSpec spec = TramoSpec.TRfull;
     private double criticalValue = .0;
@@ -112,16 +112,16 @@ public final class JTsAnomalyGrid extends JComponent {
     public JTsAnomalyGrid() {
         super();
         setLayout(new BorderLayout());
-        grid = new JTsGrid();
+        grid = new JTsGrid(TsInformationType.Data);
         outliers = new ArrayList<>();
         grid.setCellRenderer(new AnomalyCellRenderer(grid.getCellRenderer()));
-        grid.setFreezeOnImport(true);
+//        grid.setFreezeOnImport(true);
 
         // Listening to a data change to calculate the new outliers
         grid.addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
                 case HasTsCollection.TS_COLLECTION_PROPERTY:
-                    onCollectionChange((TsCollection) evt.getNewValue());
+                    onCollectionChange((TsCollection) evt.getOldValue(), (TsCollection) evt.getNewValue());
                     break;
                 case JTsGrid.ZOOM_RATIO_PROPERTY:
                     firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
@@ -229,6 +229,7 @@ public final class JTsAnomalyGrid extends JComponent {
         TramoSpec old = this.spec;
         this.defaultSpec = spec;
         this.spec = spec;
+        refreshOutliersDisplayed();
         firePropertyChange(DEFAULT_SPEC_PROPERTY, old, this.spec);
     }
 
@@ -240,7 +241,7 @@ public final class JTsAnomalyGrid extends JComponent {
         try {
             double old = criticalValue;
             criticalValue = value;
-            //refreshOutliersDisplayed();
+            refreshOutliersDisplayed();
             firePropertyChange(CRITICAL_VALUE_PROPERTY, old, criticalValue);
         } catch (TramoException ex) {
             throw new IllegalArgumentException(ex);
@@ -252,10 +253,6 @@ public final class JTsAnomalyGrid extends JComponent {
     }
 
     public int getSelectionIndex() {
-        if (tsCollection == null) {
-            return -1;
-        }
-
         ListSelectionModel selection = grid.getTsSelectionModel();
         return selection.isSelectionEmpty() ? -1 : selection.getMinSelectionIndex();
     }
@@ -282,7 +279,7 @@ public final class JTsAnomalyGrid extends JComponent {
     private void refreshOutliersDisplayed() {
         outliers.clear();
         grid.getTsSelectionModel().clearSelection();
-        OutlierSpec oldspec=spec.getOutliers();
+        OutlierSpec oldspec = spec.getOutliers();
         OutlierSpec newspec = oldspec
                 .toBuilder()
                 .ao(showAO)
@@ -293,7 +290,7 @@ public final class JTsAnomalyGrid extends JComponent {
                 .build();
         TransformSpec.Builder tbuilder = spec.getTransform().toBuilder()
                 .function(transformation);
-        spec=spec.toBuilder()
+        spec = spec.toBuilder()
                 .transform(tbuilder.build())
                 .outliers(newspec)
                 .build();
@@ -301,15 +298,8 @@ public final class JTsAnomalyGrid extends JComponent {
         firePropertyChange(TYPES_PROPERTY, oldspec, newspec);
     }
 
-    private void onCollectionChange(TsCollection col) {
-        TsCollection old = tsCollection;
-
-        tsCollection = col.stream()
-                .filter(ts -> ts != null && !ts.getData().isEmpty())
-                .collect(TsCollection.toTsCollection());
-
-        refreshOutliersDisplayed();
-        firePropertyChange(COLLECTION_PROPERTY, old, tsCollection);
+    private void onCollectionChange(TsCollection oldcol, TsCollection newcol) {
+        firePropertyChange(COLLECTION_PROPERTY, oldcol, newcol);
     }
 
     protected void onStateChange() {
@@ -339,6 +329,7 @@ public final class JTsAnomalyGrid extends JComponent {
     private class SwingWorkerImpl extends SwingWorker<Void, Ts> {
 
         private int progressCount = 0;
+        private int nseries;
 
         @Override
         protected void done() {
@@ -351,17 +342,20 @@ public final class JTsAnomalyGrid extends JComponent {
             outliers.clear();
             grid.repaint();
             outliers = new ArrayList<>();
+            List<Ts> list = grid.getTsCollection().toList();
+            nseries = list.size();
 
-            for (int i = 0; i < tsCollection.length(); i++) {
+            int i = 0;
+            for (Ts s : list) {
                 if (isCancelled()) {
                     progressHandle.finish();
                     return null;
                 }
-                if (tsCollection.get(i).getData().isEmpty()) {
+                if (s.getData().isEmpty()) {
                     outliers.add(i, null);
                 } else {
                     OutlierEstimation[] o;
-                    model = preprocessor.process(tsCollection.get(i).getData(), null);
+                    model = preprocessor.process(s.getData(), null);
                     if (model != null) {
                         o = OutlierEstimation.of(model);
                     } else {
@@ -374,8 +368,8 @@ public final class JTsAnomalyGrid extends JComponent {
                         outliers.add(i, null);
                     }
                 }
-                publish(tsCollection.get(i));
-
+                publish(s);
+                ++i;
             }
             return null;
         }
@@ -386,7 +380,7 @@ public final class JTsAnomalyGrid extends JComponent {
 //            grid.fireTableDataChanged();
             progressCount += chunks.size();
             if (progressHandle != null && !chunks.isEmpty()) {
-                progressHandle.progress(100 * progressCount / tsCollection.length());
+                progressHandle.progress(100 * progressCount / nseries);
             }
         }
     }

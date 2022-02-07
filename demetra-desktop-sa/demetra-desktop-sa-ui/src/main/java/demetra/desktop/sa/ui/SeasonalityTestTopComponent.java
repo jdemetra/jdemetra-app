@@ -10,7 +10,6 @@ import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.components.JHtmlView;
 import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.components.parts.HasTsSupport;
-import demetra.desktop.ui.processing.TsTopComponent;
 import demetra.html.HtmlUtil;
 import demetra.sa.html.HtmlSeasonalityDiagnostics;
 import demetra.timeseries.Ts;
@@ -69,7 +68,7 @@ public final class SeasonalityTestTopComponent extends TopComponent implements H
         initComponents();
         setName(Bundle.CTL_SeasonalityTestTopComponent());
         setToolTipText(Bundle.HINT_SeasonalityTestTopComponent());
-        jTsChart1 = new JTsChart();
+        jTsChart1 = new JTsChart(TsInformationType.Data);
         jTsChart1.setTsUpdateMode(TsUpdateMode.Single);
         proxy=HasTsSupport.of(jTsChart1);
 

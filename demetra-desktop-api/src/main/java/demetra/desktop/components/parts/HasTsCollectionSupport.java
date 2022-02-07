@@ -63,8 +63,15 @@ import java.util.stream.Stream;
 public class HasTsCollectionSupport {
 
     @NonNull
-    public static HasTsCollection of(@NonNull PropertyChangeBroadcaster broadcaster) {
-        return new HasTsCollectionImpl(broadcaster).watch(TsManager.getDefault());
+    public static HasTsCollection of(@NonNull PropertyChangeBroadcaster broadcaster, TsInformationType info) {
+        TsInformationType type=info.encompass(TsInformationType.Data) ? info : TsInformationType.Data;
+        return new HasTsCollectionImpl(broadcaster, info, type).watch(TsManager.getDefault());
+    }
+
+    @NonNull
+    public static HasTsCollection of(@NonNull PropertyChangeBroadcaster broadcaster, TsInformationType broadcastinfo, TsInformationType loadinfo) {
+        TsInformationType type=broadcastinfo.encompass(loadinfo) ? broadcastinfo : loadinfo;
+        return new HasTsCollectionImpl(broadcaster, broadcastinfo, type).watch(TsManager.getDefault());
     }
 
     @NonNull
@@ -161,7 +168,6 @@ public class HasTsCollectionSupport {
             }
             result.add(item);
         }
-
         return result;
     }
 
@@ -613,19 +619,19 @@ public class HasTsCollectionSupport {
         }
 
         private static void importData(HasTsCollection view, TsCollection data) {
-            if (view.isFreezeOnImport() && data.getMoniker().isProvided()) {
-                TsCollection latest = TsManager.getDefault().makeTsCollection(data.getMoniker(), TsInformationType.All);
-                view.setTsCollection(update(view.getTsUpdateMode(), view.getTsCollection(), frozenCopyOf(latest)));
-            } else {
+//            if (view.isFreezeOnImport() && TsManager.isDynamic(data)) {
+//                TsCollection latest = TsManager.getDefault().makeTsCollection(data.getMoniker(), TsInformationType.All);
+//                view.setTsCollection(update(view.getTsUpdateMode(), view.getTsCollection(), frozenCopyOf(latest)));
+//            } else {
                 if (TransferChange.isNotYetLoaded(data)) {
                     // TODO: put load in a separate thread
                     data = data.load(TsInformationType.Definition, TsManager.getDefault());
                 }
                 if (!data.isEmpty()) {
                     view.setTsCollection(update(view.getTsUpdateMode(), view.getTsCollection(), data));
-                    TsManager.getDefault().loadAsync(data, TsInformationType.All, view::replaceTsCollection);
+//                    TsManager.getDefault().loadAsync(data, TsInformationType.All, view::replaceTsCollection);
                 }
-            }
+//            }
         }
 
         private static TsCollection update(HasTsCollection.TsUpdateMode mode, TsCollection first, TsCollection second) {
@@ -644,9 +650,6 @@ public class HasTsCollectionSupport {
             return first;
         }
 
-        private static TsCollection frozenCopyOf(TsCollection input) {
-            return input.stream().map(Ts::freeze).collect(TsCollection.toTsCollection());
-        }
 
         private enum TransferChange {
             YES, NO, MAYBE;
@@ -750,6 +753,8 @@ public class HasTsCollectionSupport {
 
         @lombok.NonNull
         private final PropertyChangeBroadcaster broadcaster;
+        @lombok.NonNull
+        private final TsInformationType broadcastInfo, loadInfo;
 
         private static final TsCollection DEFAULT_TS_COLLECTION = TsCollection.EMPTY;
         private TsCollection tsCollection = DEFAULT_TS_COLLECTION;
@@ -763,7 +768,17 @@ public class HasTsCollectionSupport {
         public void setTsCollection(TsCollection tsCollection) {
             TsCollection old = this.tsCollection;
             this.tsCollection = tsCollection != null ? tsCollection : DEFAULT_TS_COLLECTION;
-            broadcaster.firePropertyChange(TS_COLLECTION_PROPERTY, old, this.tsCollection);
+            boolean toload=tsCollection != null && ! checkInfo(tsCollection, loadInfo);
+            boolean tobroadcast=tsCollection == null || broadcastInfo == TsInformationType.None || checkInfo(tsCollection, broadcastInfo);
+            if (toload){
+                TsManager.getDefault().loadAsync(tsCollection, loadInfo, this::setTsCollection);
+            }
+            if (tobroadcast)
+                broadcaster.firePropertyChange(TS_COLLECTION_PROPERTY, old, this.tsCollection);
+        }
+        
+        private static boolean checkInfo(TsCollection coll, TsInformationType info){
+            return coll.getItems().stream().allMatch(s->s.getType().encompass(info));
         }
 
         private static final Supplier<ListSelectionModel> DEFAULT_TS_SELECTION_MODEL = DefaultListSelectionModel::new;

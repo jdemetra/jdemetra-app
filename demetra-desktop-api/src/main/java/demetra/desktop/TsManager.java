@@ -109,6 +109,9 @@ public final class TsManager implements DataSourceFactory, Closeable {
 
     @OnEDT
     public void loadAsync(@NonNull Ts ts, @NonNull TsInformationType info, @NonNull Consumer<? super Ts> onLoaded) {
+        if (!ts.getMoniker().isProvided()) {
+            return;
+        }
         executor.execute(() -> {
             Ts loaded = makeTs(ts.getMoniker(), info);
             SwingUtilities.invokeLater(() -> onLoaded.accept(loaded));
@@ -117,14 +120,17 @@ public final class TsManager implements DataSourceFactory, Closeable {
 
     @OnEDT
     public void loadAsync(@NonNull TsCollection col, @NonNull TsInformationType info, @NonNull Consumer<? super TsCollection> onLoaded) {
+        if (!col.getMoniker().isProvided() && col.stream().allMatch(s -> !s.getMoniker().isProvided())) {
+            return;
+        }
         executor.execute(() -> {
             if (col.getMoniker().isProvided()) {
                 TsCollection loaded = makeTsCollection(col.getMoniker(), info);
                 SwingUtilities.invokeLater(() -> onLoaded.accept(loaded));
-            }else{
+            } else {
                 // One by one
-                TsCollection loaded = col.getItems().stream().map(s->
-                        s.getType().encompass(info) ? s :  makeTs(s.getMoniker(), info))
+                TsCollection loaded = col.getItems().stream().map(s
+                        -> s.getType().encompass(info) ? s : makeTs(s.getMoniker(), info))
                         .collect(TsCollection.toTsCollection());
                 SwingUtilities.invokeLater(() -> onLoaded.accept(loaded));
             }
@@ -183,4 +189,18 @@ public final class TsManager implements DataSourceFactory, Closeable {
         public void allClosed(String string) {
         }
     }
+
+    public static boolean isDynamic(Ts s) {
+        TsMoniker moniker = s.getMoniker();
+        return moniker.isProvided() && moniker.getSource().equals(TsDynamicProvider.DYNAMIC);
+    }
+
+    public static boolean isDynamic(TsCollection coll) {
+        return coll.stream().anyMatch(s -> isDynamic(s));
+    }
+
+    public static TsCollection frozenCopyOf(TsCollection input) {
+        return input.stream().map(Ts::freeze).collect(TsCollection.toTsCollection());
+    }
+
 }

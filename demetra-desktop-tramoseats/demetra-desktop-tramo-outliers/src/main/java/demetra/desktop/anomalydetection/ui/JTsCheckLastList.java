@@ -59,11 +59,13 @@ import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
 import demetra.timeseries.Ts;
+import demetra.timeseries.TsMoniker;
 import demetra.timeseries.TsPeriod;
 import demetra.tramo.TramoSpec;
 import demetra.util.MultiLineNameUtil;
 import demetra.util.Table;
 import internal.ui.components.DemoTsBuilder;
+import java.util.LinkedHashMap;
 import java.util.function.Predicate;
 import jdplus.regsarima.regular.CheckLast;
 import jdplus.tramo.TramoKernel;
@@ -105,8 +107,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     private int lastChecks;
     private TramoSpec spec;
 
-    private Map<String, AnomalyItem> map;
-    private final List<AnomalyItem> items;
+    private final LinkedHashMap<TsMoniker, AnomalyItem> map = new LinkedHashMap<>();
     private CheckLast checkLast;
 
     public JTsCheckLastList() {
@@ -116,8 +117,6 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
         this.lastChecks = 1;
         this.spec = TramoSpec.TRfull;
 
-        map = new HashMap<>();
-        items = new ArrayList<>();
         initTable();
 
         checkLast = new CheckLast(TramoKernel.of(spec, null), 12);
@@ -213,24 +212,24 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     //</editor-fold>
 
     private void resetValues() {
-        for (AnomalyItem item : items) {
-            item.setBackCount(lastChecks);
-            item.clearValues();
-            map.put(item.getTs().getName(), item);
-            checkLast = new CheckLast(TramoKernel.of(spec, null), lastChecks);
+
+        for (AnomalyItem item : map.values()) {
+            item.reset(lastChecks);
         }
+        checkLast = new CheckLast(TramoKernel.of(spec, null), lastChecks);
     }
 
     public CheckLast getCheckLast() {
         return checkLast;
     }
 
-    public Map<String, AnomalyItem> getMap() {
+    public Map<TsMoniker, AnomalyItem> getMap() {
         return map;
     }
 
-    public List<AnomalyItem> getItems() {
-        return items;
+    public AnomalyItem[] getItems() {
+        AnomalyItem[] all = new AnomalyItem[map.size()];
+        return map.values().toArray(all);
     }
 
     public void fireTableStructureChanged() {
@@ -329,48 +328,38 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     }
 
     private void onCollectionChange() {
-//        table.setTsCollection(getTsCollection());
-
-        Map<String, AnomalyItem> temp = new HashMap<>();
-        items.clear();
-        map.clear();
         TsCollection collection = getTsCollection();
-        for (int i = 0; i < collection.size(); i++) {
-            String name = collection.get(i).getName();
-            AnomalyItem item = new AnomalyItem(collection.get(i));
-            item.setId(i);
-            item.setBackCount(lastChecks);
-            map.put(name, item);
-            items.add(item);
+        for (Ts s : collection) {
+            AnomalyItem item = map.get(s.getMoniker());
+            if (item == null || item.getData().isEmpty()) {
+                String name = s.getName();
+                name = MultiLineNameUtil.join(name);
+                AnomalyItem a = new AnomalyItem(name, s.getData(), lastChecks);
+                map.put(s.getMoniker(), a);
+            }
         }
         fireTableDataChanged();
-
         firePropertyChange(COLLECTION_CHANGE_PROPERTY, null, collection);
         onSelectionChange();
     }
 
     private void onSelectionChange() {
-        OptionalInt index = table.getTsSelectionIndexStream().findFirst();
+        Optional<Ts> fts = table.getTsSelectionStream().findFirst();
         AnomalyItem selected = null;
-        if (index.isPresent()) {
-            selected = items.get(index.getAsInt());
-            if (!selected.isProcessed() && selected.getTsData() != null) {
+        if (fts.isPresent()) {
+            selected = map.get(fts.get().getMoniker());
+            if (!selected.isProcessed()) {
                 CheckLast cl = new CheckLast(TramoKernel.of(spec, null), lastChecks);
                 selected.process(cl);
-                map.put(selected.getTs().getName(), selected);
                 table.repaint();
             }
         }
         firePropertyChange(ITEM_SELECTION_PROPERTY, null, selected);
     }
 
-    public AnomalyItem put(String key, AnomalyItem value) {
-        return map.put(key, value);
-    }
-
     private Optional<AnomalyItem> getAnomaly(demetra.timeseries.Ts ts) {
-        int index = getTsCollection().indexOf(Predicate.isEqual(ts));
-        return index != -1 ? Optional.ofNullable(getItems().get(index)) : Optional.empty();
+        AnomalyItem item = map.get(ts.getMoniker());
+        return Optional.ofNullable(item);
     }
 
     private void onComponentPopupMenuChange() {
@@ -381,7 +370,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     private final JTsTable.Column seriesColumn = JTsTable.Column.builder()
             .name("<html><center>&nbsp;<br>Series Name<br>&nbsp;")
             .type(Ts.class)
-            .mapper(ts -> getAnomaly(ts).map(AnomalyItem::getTs).map(TsIdentifier::of).orElse(null))
+            .mapper(ts -> TsIdentifier.of(ts))
             .comparator(TS_COMP)
             .comparator(JTsTable.Column.TS_IDENTIFIER.getComparator())
             .renderer(o -> new Decorator(JTsTable.Column.TS_IDENTIFIER.getRenderer().apply(o)))
@@ -390,7 +379,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     private final JTsTable.Column lastPeriodColumn = JTsTable.Column.builder()
             .name("<html><center>&nbsp;Last<br>Period<br>&nbsp;")
             .type(TsPeriod.class)
-            .mapper(ts -> getAnomaly(ts).filter(o -> o.getTsData() != null && !o.getTsData().isEmpty()).map(o -> o.getTsData().getDomain().getLastPeriod()).orElse(null))
+            .mapper(ts -> getAnomaly(ts).map(o -> o.getData().isEmpty() ? null : o.getData().getDomain().getLastPeriod()).orElse(null))
             .comparator(JTsTable.Column.LAST.getComparator())
             .renderer(o -> new Decorator(JTsTable.Column.LAST.getRenderer().apply(o)))
             .build();
@@ -398,7 +387,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     private final JTsTable.Column abs1Column = JTsTable.Column.builder()
             .name("<html><center>Abs.<br>Error<br>N-1")
             .type(Double.class)
-            .mapper(ts -> getAnomaly(ts).map(o -> o.getAbsoluteError(0)).orElse(null))
+            .mapper(ts -> getAnomaly(ts).map(o -> o.isProcessed() ? o.getAbsoluteError(0) : null).orElse(null))
             .comparator(DOUBLE_COMP)
             .renderer(o -> new Decorator(JTables.cellRendererOf(JTsCheckLastList::apply)))
             .build();
@@ -406,7 +395,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     private final JTsTable.Column rel1Column = JTsTable.Column.builder()
             .name("<html><center>Rel.<br>Error<br>N-1")
             .type(Double.class)
-            .mapper(ts -> getAnomaly(ts).map(o -> o.getRelativeError(0)).orElse(null))
+            .mapper(ts -> getAnomaly(ts).map(o -> o.isProcessed() ? o.getRelativeError(0) : null).orElse(null))
             .comparator(DOUBLE_COMP)
             .renderer(o -> new Decorator(JTables.cellRendererOf(JTsCheckLastList::apply)))
             .build();
@@ -414,7 +403,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     private final JTsTable.Column abs2Column = JTsTable.Column.builder()
             .name("<html><center>Abs.<br>Error<br>N-2")
             .type(Double.class)
-            .mapper(ts -> getAnomaly(ts).map(o -> o.getAbsoluteError(1)).orElse(null))
+            .mapper(ts -> getAnomaly(ts).map(o -> o.isProcessed() ? o.getAbsoluteError(1) : null).orElse(null))
             .comparator(DOUBLE_COMP)
             .renderer(o -> new Decorator(JTables.cellRendererOf(JTsCheckLastList::apply)))
             .build();
@@ -422,7 +411,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     private final JTsTable.Column rel2Column = JTsTable.Column.builder()
             .name("<html><center>Rel.<br>Error<br>N-2")
             .type(Double.class)
-            .mapper(ts -> getAnomaly(ts).map(o -> o.getRelativeError(1)).orElse(null))
+            .mapper(ts -> getAnomaly(ts).map(o -> o.isProcessed() ? o.getRelativeError(1) : null).orElse(null))
             .comparator(DOUBLE_COMP)
             .renderer(o -> new Decorator(JTables.cellRendererOf(JTsCheckLastList::apply)))
             .build();
@@ -430,7 +419,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     private final JTsTable.Column abs3Column = JTsTable.Column.builder()
             .name("<html><center>Abs.<br>Error<br>N-3")
             .type(Double.class)
-            .mapper(ts -> getAnomaly(ts).map(o -> o.getAbsoluteError(2)).orElse(null))
+            .mapper(ts -> getAnomaly(ts).map(o -> o.isProcessed() ? o.getAbsoluteError(2) : null).orElse(null))
             .comparator(DOUBLE_COMP)
             .renderer(o -> new Decorator(JTables.cellRendererOf(JTsCheckLastList::apply)))
             .build();
@@ -438,7 +427,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     private final JTsTable.Column rel3Column = JTsTable.Column.builder()
             .name("<html><center>Rel.<br>Error<br>N-3")
             .type(Double.class)
-            .mapper(ts -> getAnomaly(ts).map(o -> o.getRelativeError(2)).orElse(null))
+            .mapper(ts -> getAnomaly(ts).map(o -> o.isProcessed() ? o.getRelativeError(2) : null).orElse(null))
             .comparator(DOUBLE_COMP)
             .renderer(o -> new Decorator(JTables.cellRendererOf(JTsCheckLastList::apply)))
             .build();
@@ -451,7 +440,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
         Map parameters = new HashMap();
         parameters.put("_SPECIFICATION", spec.toString());
         parameters.put("_NB_CHECK_LAST", lastChecks);
-        parameters.put("_NB_OF_SERIES", getItems().size());
+        parameters.put("_NB_OF_SERIES", map.size());
         parameters.put("_ORANGE_CELLS", orangeCells);
         parameters.put("_RED_CELLS", redCells);
 
@@ -462,7 +451,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         @Override
         public boolean isEnabled(JTsCheckLastList list) {
-            return list != null && list.getItems() != null && !list.getItems().isEmpty();
+            return list != null && list.getItems() != null && !list.map.isEmpty();
         }
 
         @Override
@@ -472,10 +461,9 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     }
 
     private static Table<Object> toTable(JTsCheckLastList list) {
-        Map<String, AnomalyItem> map = list.getMap();
         int nback = list.getLastChecks();
         int cols = nback < 2 ? 5 : nback > 2 ? 9 : 7;
-        Table<Object> table = new Table<>(map.size() + 1, cols);
+        Table<Object> table = new Table<>(list.map.size() + 1, cols);
 
         table.set(0, 0, "Series name");
         table.set(0, 1, "Last Period");
@@ -492,12 +480,12 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
         }
 
         int row = 1;
-        for (Map.Entry<String, AnomalyItem> entry : map.entrySet()) {
+        for (Map.Entry<TsMoniker, AnomalyItem> entry : list.map.entrySet()) {
             AnomalyItem item = entry.getValue();
-            table.set(row, 0, MultiLineNameUtil.join(entry.getKey()));
+            table.set(row, 0, item.getName());
 
-            if (item.getTsData() != null && !item.getTsData().isEmpty()) {
-                table.set(row, 1, item.getTsData().getDomain().getLastPeriod().display());
+            if (!item.getData().isEmpty()) {
+                table.set(row, 1, item.getData().getDomain().getLastPeriod().display());
             }
 
             table.set(row, 2, item.getStatus().toString());
@@ -539,7 +527,9 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
             if (result instanceof JLabel) {
                 JLabel c = (JLabel) result;
                 int rowIndex = table.convertRowIndexToModel(row);
-                if (getTsCollection().size() > row) {
+                TsCollection coll = getTsCollection();
+                if (coll.size() > row) {
+                    AnomalyItem item = map.get(coll.get(rowIndex).getMoniker());
                     c.setOpaque(true);
                     if (!isSelected) {
                         c.setOpaque(true);
@@ -547,16 +537,16 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
                         c.setForeground(Color.BLACK);
                         c.setToolTipText(null);
                         c.setEnabled(true);
-                        if (items.get(rowIndex).isNotProcessable()) {
+                        if (item.isNotProcessable()) {
                             if (column == 0) {
                                 c.setIcon(DemetraIcons.WARNING);
                             }
                             c.setBackground(new Color(255, 255, 204));
                             c.setToolTipText(UNPROCESSABLE_MSG);
-                        } else if (items.get(rowIndex).isProcessed()) {
+                        } else if (item.isProcessed()) {
                             if (column > 2 && column % 2 != 0) {
                                 int relIndex = (column / 2) - 1;
-                                Double relative_err = items.get(rowIndex).getRelativeError(relIndex);
+                                Double relative_err = item.getRelativeError(relIndex);
                                 if (relative_err != null) {
                                     relative_err = Math.abs(relative_err);
                                     if (relative_err >= orangeCells && relative_err < redCells) {
@@ -566,19 +556,19 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
                                     }
                                 }
                             }
-                        } else if (items.get(rowIndex).isInvalid()) {
+                        } else if (item.isInvalid()) {
                             if (column == 0) {
                                 c.setIcon(DemetraIcons.EXCLAMATION_MARK_16);
                             }
                             c.setBackground(new Color(255, 204, 204));
                             c.setToolTipText(NO_DATA_MSG);
                         }
-                    } else if (items.get(rowIndex).isInvalid()) {
+                    } else if (item.isInvalid()) {
                         if (column == 0) {
                             c.setIcon(DemetraIcons.EXCLAMATION_MARK_16);
                         }
                         c.setToolTipText(NO_DATA_MSG);
-                    } else if (items.get(rowIndex).isNotProcessable()) {
+                    } else if (item.isNotProcessable()) {
                         if (column == 0) {
                             c.setIcon(DemetraIcons.WARNING);
                         }

@@ -223,7 +223,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     public SaBatchUI(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
         super(doc, controller);
-        this.collection = HasTsCollectionSupport.of(this::firePropertyChange);
+        this.collection = HasTsCollectionSupport.of(this::firePropertyChange, TsInformationType.None);
         this.collection.setTsUpdateMode(TsUpdateMode.Append);
         this.defaultSpecification= DemetraSaUI.getDefault().getDefaultSaSpec();
 

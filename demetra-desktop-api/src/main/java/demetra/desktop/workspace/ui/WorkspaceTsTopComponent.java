@@ -89,13 +89,19 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
 
     @Override
     public void setTs(demetra.timeseries.Ts ts) {
-        Ts loadedTs = ts.load(TsInformationType.All, TsManager.getDefault());
-        panel.getDocument().set(loadedTs);
+        Ts cts=null;
+        if (TsManager.isDynamic(ts)){
+            cts=ts.freeze();
+        }else{
+            cts=ts.load(TsInformationType.All, TsManager.getDefault());
+        }
+        panel.getDocument().set(cts);
         panel.initSpecView();
         panel.refreshAll();
         panel.updateDocument();
     }
 
+    @Override
     protected boolean fill(JMenu menu) {
         if (doc != null) {
             Menus.fillMenu(menu, getContextPath());

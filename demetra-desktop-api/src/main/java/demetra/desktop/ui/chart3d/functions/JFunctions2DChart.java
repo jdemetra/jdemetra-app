@@ -23,6 +23,7 @@ import demetra.desktop.components.tools.JChartPanel;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.jfreechart.BasicXYDataset;
 import demetra.desktop.jfreechart.TsCharts;
+import demetra.timeseries.TsInformationType;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.Charts;
@@ -65,7 +66,7 @@ public final class JFunctions2DChart extends JComponent implements TimeSeriesCom
     private final XYLineAndShapeRenderer optimumRenderer;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTsSupport.of(this::firePropertyChange);
+    private final HasTs m_ts = HasTsSupport.of(this::firePropertyChange, TsInformationType.Data);
     
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

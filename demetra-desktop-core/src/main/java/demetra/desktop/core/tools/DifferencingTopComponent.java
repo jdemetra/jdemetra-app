@@ -151,15 +151,15 @@ public final class DifferencingTopComponent extends TopComponent  implements Has
         mgr.setRootContext(Node.EMPTY);
     }
 
-    @Override
-    public void open() {
-        super.open();
-        org.openide.windows.Mode mode = WindowManager.getDefault().findMode("output");
-        if (mode != null && mode.canDock(this)) {
-            mode.dockInto(this);
-        }
-    }
-    
+//    @Override
+//    public void open() {
+//        super.open();
+//        org.openide.windows.Mode mode = WindowManager.getDefault().findMode("output");
+//        if (mode != null && mode.canDock(this)) {
+//            mode.dockInto(this);
+//        }
+//    }
+//    
     public void refreshHeader() {
         Ts ts=getTs();
         if (ts == null) {
