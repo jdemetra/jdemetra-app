@@ -20,10 +20,12 @@ import demetra.desktop.Config;
 import demetra.desktop.interchange.Exportable;
 import demetra.desktop.interchange.Interchange;
 import demetra.desktop.tramo.ui.TramoSpecManager;
+import demetra.desktop.util.Formatters;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.ItemWsNode;
 import demetra.information.InformationSet;
 import demetra.tramo.TramoSpec;
+import demetra.tramoseats.io.information.TramoSpecMapping;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -109,16 +111,11 @@ public class ExportTramoSpec extends NodeAction implements Presenter.Popup {
 
         @Override
         public Config exportConfig() {
-//            final WorkspaceItem<TramoSpec> xdoc = input.getWorkspace().searchDocument(input.lookup(), TramoSpec.class);
-//            InformationSet set = xdoc.getElement().write(true);
-//            XmlInformationSet xmlSet = new XmlInformationSet();
-//            xmlSet.copy(set);
-//
-//            IFormatter<XmlInformationSet> formatter = Formatters.onJAXB(XmlInformationSet.class, true);
-//            Config.Builder b = Config.builder(TramoSpecification.class.getName(), input.getDisplayName(), "1.0.0")
-//                    .parameter("specification", formatter.formatAsString(xmlSet));
-//            return b.build();
-            return null;
+            final WorkspaceItem<TramoSpec> xdoc = input.getWorkspace().searchDocument(input.lookup(), TramoSpec.class);
+            InformationSet set = TramoSpecMapping.SERIALIZER_V3.write(xdoc.getElement(), true);
+            Config.Builder b = Config.builder(TramoSpec.class.getName(), input.getDisplayName(), "3.0.0")
+                    .parameter("specification", Formatters.formatAsString(set));
+            return b.build();
         }
     }
 }

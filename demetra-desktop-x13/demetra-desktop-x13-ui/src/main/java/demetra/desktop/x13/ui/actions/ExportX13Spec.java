@@ -19,11 +19,13 @@ package demetra.desktop.x13.ui.actions;
 import demetra.desktop.Config;
 import demetra.desktop.interchange.Exportable;
 import demetra.desktop.interchange.Interchange;
+import demetra.desktop.util.Formatters;
 import demetra.desktop.x13.ui.X13SpecManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.ItemWsNode;
 import demetra.information.InformationSet;
 import demetra.x13.X13Spec;
+import demetra.x13.io.information.X13SpecMapping;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -109,16 +111,11 @@ public class ExportX13Spec extends NodeAction implements Presenter.Popup {
 
         @Override
         public Config exportConfig() {
-//            final WorkspaceItem<TramoSpec> xdoc = input.getWorkspace().searchDocument(input.lookup(), TramoSpec.class);
-//            InformationSet set = xdoc.getElement().write(true);
-//            XmlInformationSet xmlSet = new XmlInformationSet();
-//            xmlSet.copy(set);
-//
-//            IFormatter<XmlInformationSet> formatter = Formatters.onJAXB(XmlInformationSet.class, true);
-//            Config.Builder b = Config.builder(TramoSpecification.class.getName(), input.getDisplayName(), "1.0.0")
-//                    .parameter("specification", formatter.formatAsString(xmlSet));
-//            return b.build();
-            return null;
+            final WorkspaceItem<X13Spec> xdoc = input.getWorkspace().searchDocument(input.lookup(), X13Spec.class);
+            InformationSet set = X13SpecMapping.SERIALIZER_V3.write(xdoc.getElement(), true);
+            Config.Builder b = Config.builder(X13Spec.class.getName(), input.getDisplayName(), "3.0.0")
+                    .parameter("specification", Formatters.formatAsString(set));
+            return b.build();
         }
     }
 }

@@ -16,82 +16,82 @@
  */
 package demetra.desktop.ui.calendar.actions;
 
-//import com.google.common.collect.ImmutableList;
-//import demetra.desktop.Config;
-//import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
-//import demetra.desktop.interchange.Importable;
-//import demetra.desktop.interchange.Interchange;
-//import demetra.desktop.nodes.SingleNodeAction;
-//import ec.nbdemetra.ws.Workspace;
-//import ec.nbdemetra.ws.WorkspaceFactory;
-//import ec.nbdemetra.ws.WorkspaceItem;
-//import ec.nbdemetra.ws.nodes.ItemWsNode;
-//import ec.tstoolkit.algorithm.ProcessingContext;
-//import ec.tstoolkit.timeseries.calendars.IGregorianCalendarProvider;
-//import javax.swing.JMenuItem;
-//import org.openide.awt.ActionID;
-//import org.openide.awt.ActionReference;
-//import org.openide.awt.ActionReferences;
-//import org.openide.awt.ActionRegistration;
-//import org.openide.util.NbBundle.Messages;
-//import org.openide.util.actions.Presenter;
-//import demetra.desktop.Converter;
-//
-///**
-// *
-// * @author Philippe Charles
-// */
-//@ActionID(category = "Edit", id = "ec.nbdemetra.ui.calendars.actions.ImportCalendarAction")
-//@ActionRegistration(displayName = "#CTL_ImportCalendarAction", lazy = false)
-//@ActionReferences({
-//    @ActionReference(path = CalendarDocumentManager.PATH, position = 1430)
-//})
-//@Messages("CTL_ImportCalendarAction=Import from")
-//public final class ImportCalendarAction extends SingleNodeAction<ItemWsNode> implements Presenter.Popup {
-//
-//    private static final Converter<Config, IGregorianCalendarProvider> CONVERTER = new CalendarConfig().reverse();
-//    private static final ImmutableList<Importable> IMPORTABLES = ImmutableList.of(new ImportableCalendar());
-//
-//    public ImportCalendarAction() {
-//        super(ItemWsNode.class);
-//    }
-//
-//    @Override
-//    public JMenuItem getPopupPresenter() {
-//        JMenuItem result = Interchange.getDefault().newImportMenu(IMPORTABLES);
-//        result.setText(Bundle.CTL_ImportCalendarAction());
-//        return result;
-//    }
-//
-//    @Override
-//    protected void performAction(ItemWsNode activatedNode) {
-//    }
-//
-//    @Override
-//    protected boolean enable(ItemWsNode activatedNode) {
-//        return true;
-//    }
-//
-//    @Override
-//    public String getName() {
-//        return null;
-//    }
-//
-//    private static final class ImportableCalendar implements Importable {
-//
-//        @Override
-//        public String getDomain() {
-//            return CalendarConfig.DOMAIN;
-//        }
-//
-//        @Override
-//        public void importConfig(Config config) throws IllegalArgumentException {
-//            IGregorianCalendarProvider cal = CONVERTER.doForward(config);
-//            Workspace ws = WorkspaceFactory.getInstance().getActiveWorkspace();
-//            if (ws.searchDocument(cal) == null) {
-//                String name = ProcessingContext.getActiveContext().getGregorianCalendars().get(cal);
-//                ws.add(WorkspaceItem.system(CalendarDocumentManager.ID, name, cal));
-//            }
-//        }
-//    }
-//}
+import com.google.common.collect.ImmutableList;
+import demetra.desktop.Config;
+import demetra.desktop.interchange.Importable;
+import demetra.desktop.interchange.Interchange;
+import demetra.desktop.nodes.SingleNodeAction;
+import javax.swing.JMenuItem;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle.Messages;
+import org.openide.util.actions.Presenter;
+import demetra.desktop.Converter;
+import demetra.desktop.workspace.CalendarDocumentManager;
+import demetra.desktop.workspace.Workspace;
+import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.desktop.workspace.WorkspaceItem;
+import demetra.desktop.workspace.nodes.ItemWsNode;
+import demetra.timeseries.calendars.CalendarDefinition;
+import demetra.timeseries.regression.ModellingContext;
+
+/**
+ *
+ * @author Philippe Charles
+ */
+@ActionID(category = "Edit", id = "demetra.desktop.ui.calendars.actions.ImportCalendarAction")
+@ActionRegistration(displayName = "#CTL_ImportCalendarAction", lazy = false)
+@ActionReferences({
+    @ActionReference(path = CalendarDocumentManager.PATH, position = 1430)
+})
+@Messages("CTL_ImportCalendarAction=Import from")
+public final class ImportCalendarAction extends SingleNodeAction<ItemWsNode> implements Presenter.Popup {
+
+    private static final Converter<Config, CalendarDefinition> CONVERTER = new CalendarConfig().reverse();
+    private static final ImmutableList<Importable> IMPORTABLES = ImmutableList.of(new ImportableCalendar());
+
+    public ImportCalendarAction() {
+        super(ItemWsNode.class);
+    }
+
+    @Override
+    public JMenuItem getPopupPresenter() {
+        JMenuItem result = Interchange.getDefault().newImportMenu(IMPORTABLES);
+        result.setText(Bundle.CTL_ImportCalendarAction());
+        return result;
+    }
+
+    @Override
+    protected void performAction(ItemWsNode activatedNode) {
+    }
+
+    @Override
+    protected boolean enable(ItemWsNode activatedNode) {
+        return true;
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    private static final class ImportableCalendar implements Importable {
+
+        @Override
+        public String getDomain() {
+            return CalendarConfig.DOMAIN;
+        }
+
+        @Override
+        public void importConfig(Config config) throws IllegalArgumentException {
+            CalendarDefinition cal = CONVERTER.doForward(config);
+            Workspace ws = WorkspaceFactory.getInstance().getActiveWorkspace();
+            if (ws.searchDocumentByElement(cal) == null) {
+                String name = ModellingContext.getActiveContext().getCalendars().get(cal);
+                ws.add(WorkspaceItem.system(CalendarDocumentManager.ID, name, cal));
+            }
+        }
+    }
+}

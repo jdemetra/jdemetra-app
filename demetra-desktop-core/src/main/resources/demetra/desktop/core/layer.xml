@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.0//EN" "http://www.netbeans.org/dtds/filesystem-1_0.dtd">
+<filesystem>
+ 
+    <folder name="Menu">
+        <file name="Edit_hidden"/>
+        <file name="GoTo_hidden"/>
+        <folder name="Window">
+            <folder name="Tools">
+                <file name="org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow_hidden"/>
+            </folder>
+            <file name="Web_hidden"/>
+            <file name="org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-GlobalPropertiesAction.instance"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="OptionsDialog">
+        <file name="Advanced_hidden"/>
+    </folder>
+    <file name="OptionsExport_hidden"/>
+    <folder name="Toolbars">
+        <file name="UndoRedo_hidden"/>
+    </folder>
+</filesystem>

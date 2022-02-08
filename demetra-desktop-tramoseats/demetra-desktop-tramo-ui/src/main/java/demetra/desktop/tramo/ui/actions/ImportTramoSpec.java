@@ -21,9 +21,11 @@ import demetra.desktop.interchange.Importable;
 import demetra.desktop.interchange.Interchange;
 import demetra.desktop.nodes.SingleNodeAction;
 import demetra.desktop.tramo.ui.TramoSpecManager;
+import demetra.desktop.util.Parsers;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.tramo.TramoSpec;
+import demetra.tramoseats.io.information.TramoSpecMapping;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -99,16 +101,9 @@ public class ImportTramoSpec extends SingleNodeAction<Node> implements Presenter
         if (!TramoSpec.class.getName().equals(config.getDomain())) {
             throw new IllegalArgumentException("Invalid config");
         }
-        return null;
-
-//        return Optional.ofNullable(config.getParameter("specification"))
-//                .map(Parsers.onJAXB(XmlInformationSet.class)::parse)
-//                .map(XmlInformationSet::create)
-//                .map(o -> {
-//                    TramoSpec spec = new TramoSpec();
-//                    spec.read(o);
-//                    return spec;
-//                })
-//                .orElse(null);
+        return Optional.ofNullable(config.getParameter("specification"))
+                .map(Parsers::parseAsInformationSet)
+                .map(TramoSpecMapping.SERIALIZER_V3::read)
+                .orElse(null);
     }
 }

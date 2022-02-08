@@ -20,12 +20,15 @@ import demetra.desktop.Config;
 import demetra.desktop.interchange.Importable;
 import demetra.desktop.interchange.Interchange;
 import demetra.desktop.nodes.SingleNodeAction;
+import demetra.desktop.util.Parsers;
 import demetra.desktop.x13.ui.X13SpecManager;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.x13.X13Spec;
+import demetra.x13.io.information.X13SpecMapping;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JMenuItem;
 import org.openide.awt.ActionID;
@@ -98,16 +101,9 @@ public class ImportX13Spec extends SingleNodeAction<Node> implements Presenter.P
         if (!X13Spec.class.getName().equals(config.getDomain())) {
             throw new IllegalArgumentException("Invalid config");
         }
-        return null;
-
-//        return Optional.ofNullable(config.getParameter("specification"))
-//                .map(Parsers.onJAXB(XmlInformationSet.class)::parse)
-//                .map(XmlInformationSet::create)
-//                .map(o -> {
-//                    TramoSpec spec = new TramoSpec();
-//                    spec.read(o);
-//                    return spec;
-//                })
-//                .orElse(null);
+        return Optional.ofNullable(config.getParameter("specification"))
+                .map(Parsers::parseAsInformationSet)
+                .map(X13SpecMapping.SERIALIZER_V3::read)
+                .orElse(null);
     }
 }
