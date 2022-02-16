@@ -31,7 +31,7 @@ import demetra.information.InformationSet;
 import demetra.modelling.ModellingDictionary;
 import demetra.modelling.SeriesInfo;
 import demetra.processing.ProcDiagnostic;
-import demetra.sa.SaDictionary;
+import demetra.sa.SaDictionaries;
 import demetra.sa.SaManager;
 import demetra.sa.SaProcessingFactory;
 import demetra.timeseries.TsData;
@@ -171,27 +171,27 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     
     public static String[] lowSeries(){
         return new String[]{
-            generateId("Series", SaDictionary.Y),
-            generateId("Seasonally adjusted", SaDictionary.SA),
-            generateId("Trend", SaDictionary.T)
+            generateId("Series", SaDictionaries.Y),
+            generateId("Seasonally adjusted", SaDictionaries.SA),
+            generateId("Trend", SaDictionaries.T)
         };
     }
     
     public static String[] highSeries(){
         return new String[]{
-            generateId("Seasonal (component)", BasicInformationExtractor.concatenate(SaDictionary.DECOMPOSITION,SaDictionary.S_CMP)),
+            generateId("Seasonal (component)", BasicInformationExtractor.concatenate(SaDictionaries.DECOMPOSITION,SaDictionaries.S_CMP)),
             generateId("Calendar effects", ModellingDictionary.CAL),
-            generateId("Irregular", SaDictionary.I)
+            generateId("Irregular", SaDictionaries.I)
         };
     }
     
     public static String[] finalSeries(){
         return new String[]{
-            generateId("Series", SaDictionary.Y),
-            generateId("Seasonally adjusted", SaDictionary.SA),
-            generateId("Trend", SaDictionary.T),
-            generateId("Seasonal", SaDictionary.S),
-            generateId("Irregular", SaDictionary.I)
+            generateId("Series", SaDictionaries.Y),
+            generateId("Seasonally adjusted", SaDictionaries.SA),
+            generateId("Trend", SaDictionaries.T),
+            generateId("Seasonal", SaDictionaries.S),
+            generateId("Irregular", SaDictionaries.I)
         };
     }
     
@@ -224,11 +224,11 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 //        StringBuilder cal = new StringBuilder();
 //        cal.append(TsDynamicProvider.COMPOSITE).append("Calendar effects=,").append(ModellingDictionary.CAL)
 //                .append(',').append(ModellingDictionary.CAL).append(SeriesInfo.F_SUFFIX);
-//        String ss = BasicInformationExtractor.concatenate(prefix, SaDictionary.S_CMP);
+//        String ss = BasicInformationExtractor.concatenate(prefix, SaDictionaries.S_CMP);
 //        StringBuilder s = new StringBuilder();
-//        s.append(TsDynamicProvider.COMPOSITE).append("Seas (component)=,").append(SaDictionary.S_CMP)
-//                .append(',').append(SaDictionary.S_CMP).append(SeriesInfo.F_SUFFIX);
-//        String si = BasicInformationExtractor.concatenate(prefix, SaDictionary.I_CMP);
+//        s.append(TsDynamicProvider.COMPOSITE).append("Seas (component)=,").append(SaDictionaries.S_CMP)
+//                .append(',').append(SaDictionaries.S_CMP).append(SeriesInfo.F_SUFFIX);
+//        String si = BasicInformationExtractor.concatenate(prefix, SaDictionaries.I_CMP);
 //        StringBuilder i = new StringBuilder();
 //        i.append(TsDynamicProvider.COMPOSITE).append("Irregular=")
 //                .append(',').append(si)
@@ -242,7 +242,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 //    public static class MainChartsLowFactory extends SaDocumentViewFactory.MainChartsLowFactory<TramoSeatsDocument> {
 //
 //        public MainChartsLowFactory() {
-//            super(TramoSeatsDocument.class, SaDictionary.FINAL);
+//            super(TramoSeatsDocument.class, SaDictionaries.FINAL);
 //        }
 //
 //        @Override
@@ -432,20 +432,20 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 
         public PreprocessingDetFactory() {
             super(TramoSeatsDocument.class, SaViews.PREPROCESSING_DET, source->source, new GenericTableUI(false,
-//                    BasicInformationExtractor.concatenate(SaDictionary.PREPROCESSING, ModellingDictionary.Y_LIN), 
-//                    BasicInformationExtractor.concatenate(SaDictionary.PREPROCESSING, ModellingDictionary.DET),
-//                    BasicInformationExtractor.concatenate(SaDictionary.PREPROCESSING, ModellingDictionary.CAL), 
-//                    BasicInformationExtractor.concatenate(SaDictionary.PREPROCESSING, ModellingDictionary.TDE), 
-//                    BasicInformationExtractor.concatenate(SaDictionary.PREPROCESSING, ModellingDictionary.EE),
-//                    BasicInformationExtractor.concatenate(SaDictionary.PREPROCESSING, ModellingDictionary.OUT), 
-//                    BasicInformationExtractor.concatenate(SaDictionary.PREPROCESSING, ModellingDictionary.FULL_RES)));
-                    SaDictionary.PREPROCESSING, ModellingDictionary.Y_LIN, 
-                    SaDictionary.PREPROCESSING, ModellingDictionary.DET,
-                    SaDictionary.PREPROCESSING, ModellingDictionary.CAL, 
-                   SaDictionary.PREPROCESSING, ModellingDictionary.TDE, 
-                    SaDictionary.PREPROCESSING, ModellingDictionary.EE,
-                    SaDictionary.PREPROCESSING, ModellingDictionary.OUT, 
-                    SaDictionary.PREPROCESSING, ModellingDictionary.FULL_RES));
+//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.Y_LIN), 
+//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.DET),
+//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.CAL), 
+//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.TDE), 
+//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.EE),
+//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.OUT), 
+//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.FULL_RES)));
+                    SaDictionaries.PREPROCESSING, ModellingDictionary.Y_LIN, 
+                    SaDictionaries.PREPROCESSING, ModellingDictionary.DET,
+                    SaDictionaries.PREPROCESSING, ModellingDictionary.CAL, 
+                   SaDictionaries.PREPROCESSING, ModellingDictionary.TDE, 
+                    SaDictionaries.PREPROCESSING, ModellingDictionary.EE,
+                    SaDictionaries.PREPROCESSING, ModellingDictionary.OUT, 
+                    SaDictionaries.PREPROCESSING, ModellingDictionary.FULL_RES));
         }
 
         @Override

@@ -321,6 +321,7 @@
                         <publicPackage>org.jdesktop.layout.*</publicPackage>
                         <publicPackage>nbbrd.*</publicPackage>
                         <publicPackage>javax.*</publicPackage>
+                        <publicPackage>org.jsr107.ri.*</publicPackage>
                         <!-- TO FIX -->
                         <publicPackage>internal.*</publicPackage>
                     </publicPackages>

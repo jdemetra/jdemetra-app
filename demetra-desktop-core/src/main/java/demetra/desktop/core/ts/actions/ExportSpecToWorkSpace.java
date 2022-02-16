@@ -14,18 +14,15 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.regarima.ui.doc.actions;
+package demetra.desktop.core.ts.actions;
 
-import demetra.desktop.regarima.ui.RegArimaSpecManager;
-import demetra.desktop.regarima.ui.RegArimaTopComponent;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.desktop.workspace.actions.AbstractViewAction;
+import demetra.desktop.workspace.ui.WorkspaceTsTopComponent;
 import demetra.processing.ProcSpecification;
-import demetra.regarima.RegArimaSpec;
 import demetra.timeseries.TsDocument;
-import jdplus.x13.regarima.RegArimaDocument;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -40,17 +37,17 @@ import org.openide.util.NbBundle.Messages;
  */
 @ActionID(
         category = "Tools",
-        id = "demetra.desktop.regarima.ui.actions.ExportSpecToWorkSpace")
+        id = "demetra.desktop.core.ts.actions.ExportSpecToWorkSpace")
 @ActionRegistration(
         displayName = "#CTL_ExportSpecToWorkSpace", lazy = false)
 @ActionReferences({
     @ActionReference(path = WorkspaceFactory.TSCONTEXTPATH, position = 1950)
 })
 @Messages("CTL_ExportSpecToWorkSpace=Copy spec. to workspace")
-public final class ExportSpecToWorkSpace extends AbstractViewAction<RegArimaTopComponent> {
+public final class ExportSpecToWorkSpace extends AbstractViewAction<WorkspaceTsTopComponent> {
 
     public ExportSpecToWorkSpace() {
-        super(RegArimaTopComponent.class);
+        super(WorkspaceTsTopComponent.class);
         refreshAction();
         putValue(NAME, Bundle.CTL_ExportSpecToWorkSpace());
     }
@@ -66,12 +63,12 @@ public final class ExportSpecToWorkSpace extends AbstractViewAction<RegArimaTopC
     }
 
     @Override
-    protected void process(RegArimaTopComponent ws) {
-        WorkspaceItem<RegArimaDocument> cur = ws.getDocument();
-        RegArimaDocument doc = cur.getElement();
-        RegArimaSpec spec = doc.getSpecification();
+    protected void process(WorkspaceTsTopComponent ws) {
+        WorkspaceItem cur = ws.getDocument();
+        TsDocument doc = (TsDocument) cur.getElement();
+        ProcSpecification spec = doc.getSpecification();
         WorkspaceItemManager wsMgr = WorkspaceFactory.getInstance().getManager(cur.getFamily());
-        WorkspaceItem<ProcSpecification> ndoc = WorkspaceItem.newItem(RegArimaSpecManager.ID, wsMgr.getNextItemName(null), spec);
+        WorkspaceItem ndoc = WorkspaceItem.newItem(wsMgr.getId(), wsMgr.getNextItemName(null), spec);
         ndoc.setComments(cur.getComments());
         WorkspaceFactory.getInstance().getActiveWorkspace().add(ndoc);
     }

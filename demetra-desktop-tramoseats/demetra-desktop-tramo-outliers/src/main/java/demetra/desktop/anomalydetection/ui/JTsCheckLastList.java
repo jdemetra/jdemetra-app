@@ -24,6 +24,7 @@ import demetra.desktop.anomalydetection.AnomalyItem;
 import demetra.desktop.util.ActionMaps;
 import demetra.desktop.util.InputMaps;
 import demetra.desktop.components.JTsTable;
+import demetra.desktop.components.JTsTable.Column;
 import demetra.desktop.components.TimeSeriesComponent;
 import ec.util.table.swing.JTables;
 import ec.util.various.swing.JCommand;
@@ -312,6 +313,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         fireTableStructureChanged();
     }
+    
 
     private void onColorValuesChange() {
         fireTableDataChanged();
@@ -451,7 +453,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         @Override
         public boolean isEnabled(JTsCheckLastList list) {
-            return list != null && list.getItems() != null && !list.map.isEmpty();
+            return !list.getMap().isEmpty();
         }
 
         @Override
@@ -463,7 +465,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
     private static Table<Object> toTable(JTsCheckLastList list) {
         int nback = list.getLastChecks();
         int cols = nback < 2 ? 5 : nback > 2 ? 9 : 7;
-        Table<Object> table = new Table<>(list.map.size() + 1, cols);
+        Table<Object> table = new Table<>(list.getMap().size() + 1, cols);
 
         table.set(0, 0, "Series name");
         table.set(0, 1, "Last Period");

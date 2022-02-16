@@ -20,6 +20,7 @@ import javax.xml.bind.Unmarshaller;
 /**
  *
  * @author Jean Palate
+ * @param <T>
  */
 public class TransferableXml<T, X extends IXmlConverter<T>> implements Transferable {
 

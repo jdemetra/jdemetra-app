@@ -5,7 +5,7 @@
 package demetra.desktop.regarima.descriptors;
 
 import demetra.desktop.descriptors.IPropertyDescriptors;
-import demetra.modelling.implementations.SarimaSpec;
+import demetra.arima.SarimaSpec;
 import demetra.regarima.OutlierSpec;
 import demetra.regarima.EstimateSpec;
 import demetra.regarima.AutoModelSpec;

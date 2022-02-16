@@ -8,7 +8,7 @@ import demetra.desktop.TsDynamicProvider;
 import demetra.information.BasicInformationExtractor;
 import demetra.modelling.ModellingDictionary;
 import demetra.modelling.SeriesInfo;
-import demetra.sa.SaDictionary;
+import demetra.sa.SaDictionaries;
 import demetra.util.Id;
 import demetra.util.LinearId;
 

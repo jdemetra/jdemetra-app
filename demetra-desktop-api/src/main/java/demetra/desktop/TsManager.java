@@ -62,6 +62,8 @@ public final class TsManager implements DataSourceFactory, Closeable {
         this.updateListeners = new ArrayList<>();
         this.listener = new DataSourceListenerImpl();
         this.executor = Executors.newCachedThreadPool();
+        
+        TsFactory.setDefault(this);
     }
 
     @Override

@@ -104,7 +104,7 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
     @Override
     protected boolean fill(JMenu menu) {
         if (doc != null) {
-            Menus.fillMenu(menu, getContextPath());
+            Menus.fillMenu(menu, WorkspaceFactory.TSCONTEXTPATH, getContextPath());
         }
         return true;
     }

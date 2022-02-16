@@ -69,13 +69,13 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
     private static final int MINDATES = 2;
     // PROPERTIES
     private final NumberFormat numberFormat;
-    private final DateFormat dateFormat;
+    private final DateTimeFormatter dateFormat;
     private final BeanConfigurator<InternalConfig, TxtDataTransfer> configurator;
     private InternalConfig config;
 
     public TxtDataTransfer() {
         this.numberFormat = NumberFormat.getNumberInstance();
-        this.dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        this.dateFormat = DateTimeFormatter.ISO_DATE;
         this.configurator = new BeanConfigurator<>(new InternalConfigHandler(), new InternalConfigConverter(), new InternalConfigEditor());
         this.config = new InternalConfig();
     }
@@ -211,8 +211,8 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
         if (value == null) {
             return "";
         }
-        if (value instanceof Date) {
-            return dateFormat.format((Date) value);
+        if (value instanceof LocalDate) {
+            return ((LocalDate) value).format(dateFormat);
         }
         if (value instanceof Number) {
             return numberFormat.format(value);

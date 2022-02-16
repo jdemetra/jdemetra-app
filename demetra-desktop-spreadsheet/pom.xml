@@ -126,6 +126,10 @@
                     <groupId>org.netbeans.api</groupId>
                     <artifactId>org-openide-util-lookup</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.github.nbbrd.java-io-util</groupId>
+                    <artifactId>java-io-xml</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -137,6 +141,10 @@
                     <groupId>org.netbeans.api</groupId>
                     <artifactId>org-openide-util-lookup</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.github.nbbrd.java-io-util</groupId>
+                    <artifactId>java-io-xml</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -147,6 +155,10 @@
                 <exclusion>
                     <groupId>org.netbeans.api</groupId>
                     <artifactId>org-openide-util-lookup</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.github.nbbrd.java-io-util</groupId>
+                    <artifactId>java-io-xml</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

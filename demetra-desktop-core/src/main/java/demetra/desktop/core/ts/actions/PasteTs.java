@@ -19,7 +19,7 @@ import demetra.desktop.workspace.ui.WorkspaceTsTopComponent;
 import java.util.Optional;
 
 @ActionID(category = "Processing",
-        id = "demetra.desktop.regarima.ui.doc.actions.PasteTs")
+        id = "demetra.desktop.core.ts.actions.PasteTs")
 @ActionRegistration(displayName = "#CTL_PasteTs", lazy = false)
 @ActionReferences({
     @ActionReference(path = WorkspaceFactory.TSCONTEXTPATH, position = 1310),
