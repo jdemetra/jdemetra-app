@@ -29,6 +29,7 @@ import demetra.desktop.ui.TsFrequencyTickUnit;
 import demetra.sa.DecompositionMode;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsData;
+import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.calendars.CalendarUtility;
 import ec.util.chart.ColorScheme.KnownColor;
@@ -97,7 +98,7 @@ public final class JSIView extends JComponent implements TimeSeriesComponent, Ha
     private Formatter<Number> numberFormat;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTsSupport.of(this::firePropertyChange);
+    private final HasTs m_ts = HasTsSupport.of(this::firePropertyChange, TsInformationType.Data);
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

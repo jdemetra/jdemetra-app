@@ -7,19 +7,19 @@ package demetra.desktop.ui.processing;
 import com.google.common.base.Throwables;
 import demetra.desktop.interfaces.Disposable;
 import demetra.desktop.ui.Disposables;
-import demetra.desktop.util.IPool;
 import demetra.desktop.util.Pools;
 
 import javax.swing.*;
 import java.awt.*;
+import demetra.desktop.util.Pool;
 
 /**
  * @author Philippe Charles
  */
-public abstract class PooledItemUI<D, C extends JComponent> implements ItemUI<D>, IPool.Factory<C> {
+public abstract class PooledItemUI<D, C extends JComponent> implements ItemUI<D>, Pool.Factory<C> {
 
     final Class<? extends C> clazz;
-    final IPool<C> pool;
+    final Pool<C> pool;
 
     public PooledItemUI(Class<? extends C> clazz) {
         this.clazz = clazz;

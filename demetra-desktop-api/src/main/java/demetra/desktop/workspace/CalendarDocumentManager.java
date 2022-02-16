@@ -37,7 +37,7 @@ public class CalendarDocumentManager extends AbstractWorkspaceItemManager<Calend
     }
 
     @Override
-    protected CalendarDefinition createNewObject() {
+    public CalendarDefinition createNewObject() {
         return Calendar.DEFAULT;
     }
 

@@ -78,7 +78,7 @@ public final class ProvidersNode extends AbstractNode {
 
     private ProvidersNode(InstanceContent abilities) {
         // 1. Children and lookup
-        super(Children.create(new ProvidersChildFactory(), true), new AbstractLookup(abilities));
+        super(Children.create(new ProvidersChildFactory(), false), new AbstractLookup(abilities));
         // 2. Abilities
         {
 //        abilities.add(DemetraUI.getInstance());// IConfigurable

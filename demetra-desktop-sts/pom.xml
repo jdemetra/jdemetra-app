@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>eu.europa.ec.joinup.sat</groupId>
+        <artifactId>demetra-desktop-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>demetra-desktop-sts</artifactId>
+    <packaging>pom</packaging>
+    <name>JD3 - Desktop - STS</name>
+    <modules>
+        <module>demetra-desktop-sts-api</module>
+        <module>demetra-desktop-sts-ui</module>
+    </modules>
+    <properties>
+        <jd3-sts.version>1.0.0-SNAPSHOT</jd3-sts.version>
+        <sts-desktop.version>3.0.0-SNAPSHOT</sts-desktop.version>
+        <sa-desktop.version>3.0.0-SNAPSHOT</sa-desktop.version>
+        <jd3-desktop.version>3.0.0-SNAPSHOT</jd3-desktop.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-sts-core</artifactId>
+                <version>${jd3-sts.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-sts-io</artifactId>
+                <version>${jd3-sts.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-desktop-sts-api</artifactId>
+                <version>${sts-desktop.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-desktop-sts-ui</artifactId>
+                <version>${sts-desktop.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-desktop-api</artifactId>
+                <version>${jd3-desktop.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-desktop-modelling</artifactId>
+                <version>${jd3-desktop.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-desktop-sa-api</artifactId>
+                <version>${sa-desktop.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-desktop-sa-ui</artifactId>
+                <version>${sa-desktop.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

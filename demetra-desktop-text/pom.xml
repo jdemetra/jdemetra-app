@@ -83,6 +83,10 @@
             <exclusions>
                 <exclusion>
                     <groupId>eu.europa.ec.joinup.sat</groupId>
+                    <artifactId>demetra-tsp-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>eu.europa.ec.joinup.sat</groupId>
                     <artifactId>demetra-tss</artifactId>
                 </exclusion>
                 <exclusion>

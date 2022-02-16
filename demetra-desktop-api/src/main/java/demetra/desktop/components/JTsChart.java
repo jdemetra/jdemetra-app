@@ -26,6 +26,7 @@ import demetra.desktop.beans.PropertyChangeSource;
 import demetra.desktop.components.parts.*;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
+import demetra.timeseries.TsInformationType;
 import internal.ui.components.DemoTsBuilder;
 import internal.ui.components.JTsChartConfig;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -83,7 +84,11 @@ public final class JTsChart extends JComponent implements TimeSeriesComponent, P
     private final TsSelectionBridge tsSelectionBridge;
 
     public JTsChart() {
-        this.collection = HasTsCollectionSupport.of(this::firePropertyChange);
+        this(TsInformationType.None);
+    }
+
+    public JTsChart(TsInformationType info) {
+        this.collection = HasTsCollectionSupport.of(this::firePropertyChange, info);
         this.tsAction = HasTsActionSupport.of(this::firePropertyChange);
         this.chart = HasChartSupport.of(this::firePropertyChange);
         this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

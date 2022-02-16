@@ -17,8 +17,8 @@ import java.util.Optional;
 public class HasTsSupport {
 
     @NonNull
-    public static HasTs of(@NonNull PropertyChangeBroadcaster broadcaster) {
-        return new HasTsImpl(broadcaster).register(TsManager.getDefault());
+    public static HasTs of(@NonNull PropertyChangeBroadcaster broadcaster, TsInformationType info) {
+        return new HasTsImpl(broadcaster, info).register(TsManager.getDefault());
     }
 
     @NonNull
@@ -52,7 +52,7 @@ public class HasTsSupport {
             Optional<Ts> ts = dataTransfer.toTs(support.getTransferable());
             if (ts.isPresent()) {
                 delegate.setTs(ts.get());
-                TsManager.getDefault().loadAsync(ts.get(), TsInformationType.All, delegate::updateTs);
+//                TsManager.getDefault().loadAsync(ts.get(), TsInformationType.All, delegate::updateTs);
                 return true;
             }
             return false;
@@ -67,9 +67,13 @@ public class HasTsSupport {
 
         @lombok.NonNull
         private final PropertyChangeBroadcaster broadcaster;
+        
+        @lombok.NonNull
+        private final TsInformationType info;
+      
 
         Ts ts = null;
-
+ 
         public HasTsImpl register(TsManager manager) {
             manager.addWeakListener(this);
             return this;
@@ -84,6 +88,13 @@ public class HasTsSupport {
         public void setTs(Ts ts) {
             Ts old = this.ts;
             this.ts = ts;
+            if (info != TsInformationType.None){
+                if (ts != null && ! ts.getType().encompass(info)){
+                    TsManager.getDefault().loadAsync(ts, info, this::setTs);
+                    // The broadcast is fired when the requested information is available
+                    return;
+                }
+            }
             broadcaster.firePropertyChange(TS_PROPERTY, old, this.ts);
         }
 

@@ -20,7 +20,8 @@ import org.openide.windows.TopComponent;
 public abstract class AbstractViewAction<T extends TopComponent> extends AbstractAction implements ContextAwareAction {
 
     private static <T extends TopComponent> T getUI(Class<T> tclass) {
-        return ActiveViewManager.getInstance().getLookup().lookup(tclass);
+        TopComponent activated = TopComponent.getRegistry().getActivated();
+        return tclass.isInstance(activated) ? (T) activated : null;
     }
     protected final Class<T> tclass;
 

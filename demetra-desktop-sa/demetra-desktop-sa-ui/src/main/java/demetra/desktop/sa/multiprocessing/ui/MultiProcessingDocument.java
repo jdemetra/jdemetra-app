@@ -1,0 +1,162 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package demetra.desktop.sa.multiprocessing.ui;
+
+import demetra.sa.EstimationPolicy;
+import demetra.sa.EstimationPolicyType;
+import demetra.sa.SaDefinition;
+import demetra.sa.SaItem;
+import demetra.sa.SaItems;
+import demetra.sa.SaSpecification;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsFactory;
+import demetra.timeseries.TsInformationType;
+import demetra.timeseries.TsMoniker;
+import demetra.util.Documented;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+/**
+ *
+ * @author Jean Palate
+ */
+public class MultiProcessingDocument implements Documented {
+
+    int curId = 0;
+
+
+    private Map<String, String> metadata = Collections.emptyMap();
+
+    private final List<SaNode> current = new ArrayList<>();
+    private final SaItems initial;
+
+    private MultiProcessingDocument(SaItems initial) {
+        this.initial = initial;
+        this.current.addAll(of(initial.getItems()));
+    }
+
+    private List<SaNode> of(List<SaItem> items) {
+        return items.stream().map(item -> SaNode.of(curId++, item)).collect(Collectors.<SaNode>toList());
+    }
+
+    public List<SaNode> getCurrent() {
+        return current;
+    }
+
+    public SaItems getInitial() {
+        return initial;
+    }
+
+    public static MultiProcessingDocument createNew() {
+        MultiProcessingDocument doc = new MultiProcessingDocument(SaItems.empty());
+        return doc;
+    }
+
+    public static MultiProcessingDocument open(SaItems initial) {
+        MultiProcessingDocument doc = new MultiProcessingDocument(initial);
+        return doc;
+    }
+
+    @Override
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public boolean isNew() {
+        return initial.isEmpty();
+    }
+
+    public void refresh(EstimationPolicy policy) {
+        current.clear();
+        current.addAll(of(initial.refresh(policy, TsInformationType.Data)));
+    }
+
+    public void refresh(EstimationPolicy policy, Predicate<SaNode> test) {
+        for (int i = 0; i < current.size(); ++i) {
+            SaNode cur = current.get(i);
+            if (test.test(cur)) {
+                SaNode n = SaNode.of(cur.getId(), cur.getOutput().refresh(policy, TsInformationType.Data));
+                current.set(i, n);
+            }
+        }
+    }
+
+    public SaItems current(Map<String, String> nmeta) {
+
+        current.forEach(cur -> cur.process());
+
+        return SaItems.builder()
+                .meta(nmeta)
+                .items(current.stream().map(node -> node.getOutput()).collect(Collectors.toList()))
+                .build();
+    }
+
+    public void add(@NonNull SaSpecification spec, Ts... nts) {
+
+        for (Ts ts : nts) {
+            current.add(SaNode.of(++curId, ts, spec));
+        }
+    }
+
+    public void add(SaItem... nitems) {
+        for (SaItem item : nitems) {
+            current.add(SaNode.of(++curId, item));
+        }
+    }
+
+    public SaNode search(int id) {
+        Optional<SaNode> found = current.stream().filter(node -> node.getId() == id).findFirst();
+        return found.isPresent() ? found.get() : null;
+    }
+
+    public void replace(int id, SaItem nitem) {
+        SaNode node = search(id);
+        if (node != null) {
+            node.setOutput(nitem);
+        }
+    }
+
+    public int positionOfId(int id) {
+        for (int i = 0; i < current.size(); ++i) {
+            if (id == current.get(i).getId()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public void removeId(int id) {
+        int pos = positionOfId(id);
+        if (pos >= 0) {
+            current.remove(pos);
+        }
+    }
+
+    public void remove(int pos) {
+        current.remove(pos);
+    }
+
+    public void remove(Collection<SaNode> nodes) {
+        current.removeAll(nodes);
+    }
+
+    public void reset() {
+        this.current.clear();
+        current.addAll(of(initial.getItems()));
+    }
+
+    public SaItem[] all() {
+        return current.stream().peek(o->o.process()).map(o->o.getOutput()).toArray(n->new SaItem[n]);
+    }
+}

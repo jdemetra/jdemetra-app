@@ -4,6 +4,7 @@
  */
 package demetra.desktop.tramo.ui;
 
+import demetra.desktop.ui.processing.DocumentUIServices;
 import jdplus.tramo.TramoDocument;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.workspace.WorkspaceFactory;
@@ -13,6 +14,8 @@ import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.ExplorerUtils;
 import org.openide.util.NbBundle;
 
 /**
@@ -34,25 +37,32 @@ persistenceType = TopComponent.PERSISTENCE_NEVER)
 })
 public final class TramoTopComponent extends WorkspaceTsTopComponent<TramoDocument> {
 
+    private final ExplorerManager mgr = new ExplorerManager();
+
     private static TramoDocumentManager manager() {
         return WorkspaceFactory.getInstance().getManager(TramoDocumentManager.class);
     }
 
     public TramoTopComponent() {
-        super(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
-        initDocument();
+        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
     }
 
     public TramoTopComponent(WorkspaceItem<TramoDocument> doc) {
         super(doc);
         initDocument();
+       associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return mgr;
+    }
+ 
     private void initDocument() {
         initComponents();
         setToolTipText(NbBundle.getMessage(TramoTopComponent.class, "HINT_TramoTopComponent"));
         setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), TramoDocumentManager.FACTORY);
+        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(TramoDocument.class));
         this.add(panel);
         panel.refreshHeader();
     }

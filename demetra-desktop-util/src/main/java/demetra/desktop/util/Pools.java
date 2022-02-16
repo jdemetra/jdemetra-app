@@ -32,16 +32,16 @@ public final class Pools {
     }
 
     @NonNull
-    public static <X> IPool<X> on(@NonNull Class<? extends X> clazz, int maxPoolSize) {
+    public static <X> Pool<X> on(@NonNull Class<? extends X> clazz, int maxPoolSize) {
         return on(new BasicFactory<>(clazz), maxPoolSize);
     }
 
     @NonNull
-    public static <X> IPool<X> on(IPool.@NonNull Factory<X> factory, int maxPoolSize) {
+    public static <X> Pool<X> on(Pool.@NonNull Factory<X> factory, int maxPoolSize) {
         return new BasicPool<>(factory, maxPoolSize);
     }
 
-    static class BasicPool<T> implements IPool<T> {
+    static class BasicPool<T> implements Pool<T> {
 
         final Factory<T> factory;
         final int maxPoolSize;
@@ -82,7 +82,7 @@ public final class Pools {
         }
     }
 
-    static class BasicFactory<T> implements IPool.Factory<T> {
+    static class BasicFactory<T> implements Pool.Factory<T> {
 
         final Class<? extends T> clazz;
 

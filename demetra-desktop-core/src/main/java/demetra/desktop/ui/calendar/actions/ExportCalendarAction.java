@@ -16,96 +16,96 @@
  */
 package demetra.desktop.ui.calendar.actions;
 
-//import demetra.desktop.Config;
-//import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
-//import demetra.desktop.interchange.Exportable;
-//import demetra.desktop.interchange.Interchange;
-//import ec.nbdemetra.ws.nodes.ItemWsNode;
-//import ec.tstoolkit.timeseries.calendars.GregorianCalendarManager;
-//import ec.tstoolkit.timeseries.calendars.IGregorianCalendarProvider;
-//import java.util.List;
-//import java.util.stream.Collectors;
-//import java.util.stream.Stream;
-//import javax.swing.JMenuItem;
-//import org.openide.awt.ActionID;
-//import org.openide.awt.ActionReference;
-//import org.openide.awt.ActionReferences;
-//import org.openide.awt.ActionRegistration;
-//import org.openide.nodes.Node;
-//import org.openide.util.HelpCtx;
-//import org.openide.util.NbBundle.Messages;
-//import org.openide.util.actions.NodeAction;
-//import org.openide.util.actions.Presenter;
-//import demetra.desktop.Converter;
-//
-///**
-// *
-// * @author Philippe Charles
-// */
-//@ActionID(category = "Edit", id = "ec.nbdemetra.ui.calendars.actions.ExportCalendarAction")
-//@ActionRegistration(displayName = "#CTL_ExportCalendarAction", lazy = false)
-//@ActionReferences({
-//    @ActionReference(path = CalendarDocumentManager.ITEMPATH, position = 1430)
-//})
-//@Messages("CTL_ExportCalendarAction=Export to")
-//public final class ExportCalendarAction extends NodeAction implements Presenter.Popup {
-//
-//    private static final Converter<IGregorianCalendarProvider, Config> CONVERTER = new CalendarConfig();
-//
-//    @Override
-//    public JMenuItem getPopupPresenter() {
-//        JMenuItem result = Interchange.getDefault().newExportMenu(getExportables(getActivatedNodes()));
-//        result.setText(Bundle.CTL_ExportCalendarAction());
-//        return result;
-//    }
-//
-//    @Override
-//    protected void performAction(Node[] activatedNodes) {
-//    }
-//
-//    @Override
-//    protected boolean enable(Node[] activatedNodes) {
-//        return Stream.of(activatedNodes).anyMatch(ExportCalendarAction::isExportable);
-//    }
-//
-//    @Override
-//    public String getName() {
-//        return null;
-//    }
-//
-//    @Override
-//    public HelpCtx getHelpCtx() {
-//        return null;
-//    }
-//
-//    private static boolean isExportable(Node o) {
-//        return o instanceof ItemWsNode && isExportable((ItemWsNode) o);
-//    }
-//
-//    private static boolean isExportable(ItemWsNode o) {
-//        return !o.getDisplayName().equals(GregorianCalendarManager.DEF);
-//    }
-//
-//    private static List<Exportable> getExportables(Node[] activatedNodes) {
-//        return Stream.of(activatedNodes)
-//                .filter(ExportCalendarAction::isExportable)
-//                .map(ItemWsNode.class::cast)
-//                .map(ExportableCalendar::new)
-//                .collect(Collectors.toList());
-//    }
-//
-//    private static final class ExportableCalendar implements Exportable {
-//
-//        private final ItemWsNode input;
-//
-//        public ExportableCalendar(ItemWsNode input) {
-//            this.input = input;
-//        }
-//
-//        @Override
-//        public Config exportConfig() {
-//            IGregorianCalendarProvider cal = AddCalendarAction.getProvider(input);
-//            return CONVERTER.doForward(cal);
-//        }
-//    }
-//}
+import demetra.desktop.Config;
+import demetra.desktop.interchange.Exportable;
+import demetra.desktop.interchange.Interchange;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.swing.JMenuItem;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.awt.ActionRegistration;
+import org.openide.nodes.Node;
+import org.openide.util.HelpCtx;
+import org.openide.util.NbBundle.Messages;
+import org.openide.util.actions.NodeAction;
+import org.openide.util.actions.Presenter;
+import demetra.desktop.Converter;
+import demetra.desktop.workspace.CalendarDocumentManager;
+import demetra.desktop.workspace.nodes.ItemWsNode;
+import demetra.timeseries.calendars.CalendarDefinition;
+import demetra.timeseries.calendars.CalendarManager;
+
+/**
+ *
+ * @author Philippe Charles
+ */
+@ActionID(category = "Edit", id = "demetra.descop.ui.calendars.actions.ExportCalendarAction")
+@ActionRegistration(displayName = "#CTL_ExportCalendarAction", lazy = false)
+@ActionReferences({
+    @ActionReference(path = CalendarDocumentManager.ITEMPATH, position = 1430)
+})
+@Messages("CTL_ExportCalendarAction=Export to")
+public final class ExportCalendarAction extends NodeAction implements Presenter.Popup {
+
+    private static final Converter<CalendarDefinition, Config> CONVERTER = new CalendarConfig();
+
+    @Override
+    public JMenuItem getPopupPresenter() {
+        JMenuItem result = Interchange.getDefault().newExportMenu(getExportables(getActivatedNodes()));
+        result.setText(Bundle.CTL_ExportCalendarAction());
+        return result;
+    }
+
+    @Override
+    protected void performAction(Node[] activatedNodes) {
+    }
+
+    @Override
+    protected boolean enable(Node[] activatedNodes) {
+        return Stream.of(activatedNodes).anyMatch(ExportCalendarAction::isExportable);
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        return null;
+    }
+
+    private static boolean isExportable(Node o) {
+        return o instanceof ItemWsNode && isExportable((ItemWsNode) o);
+    }
+
+    private static boolean isExportable(ItemWsNode o) {
+        return !o.getDisplayName().equals(CalendarManager.DEF);
+    }
+
+    private static List<Exportable> getExportables(Node[] activatedNodes) {
+        return Stream.of(activatedNodes)
+                .filter(ExportCalendarAction::isExportable)
+                .map(ItemWsNode.class::cast)
+                .map(ExportableCalendar::new)
+                .collect(Collectors.toList());
+    }
+
+    private static final class ExportableCalendar implements Exportable {
+
+        private final ItemWsNode input;
+
+        public ExportableCalendar(ItemWsNode input) {
+            this.input = input;
+        }
+
+        @Override
+        public Config exportConfig() {
+            CalendarDefinition cal = AddCalendarAction.getProvider(input);
+            return CONVERTER.doForward(cal);
+        }
+    }
+}

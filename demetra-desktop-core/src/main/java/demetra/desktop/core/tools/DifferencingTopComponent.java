@@ -33,8 +33,13 @@ import org.openide.windows.TopComponent;
 import javax.swing.*;
 import java.awt.*;
 import java.beans.BeanInfo;
+import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
+import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.ExplorerUtils;
+import org.openide.util.Exceptions;
+import org.openide.windows.WindowManager;
 
 /**
  * Top component which displays something.
@@ -54,8 +59,9 @@ import java.util.Optional;
         "CTL_DifferencingTopComponent=Differencing Window",
         "HINT_DifferencingTopComponent=This is a Differencing window"
 })
-public final class DifferencingTopComponent extends TsTopComponent  {
+public final class DifferencingTopComponent extends TopComponent  implements HasTs, ExplorerManager.Provider {
 
+    private final ExplorerManager mgr = new ExplorerManager();
     private final JToolBar toolBar;
     // CONSTANTS
     private static final Font DROP_DATA_FONT = new JLabel().getFont().deriveFont(Font.ITALIC);
@@ -115,10 +121,37 @@ public final class DifferencingTopComponent extends TsTopComponent  {
                     break;
             }
         });
-        
+        associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
-    //    @Override
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return mgr;
+    }
+
+    @Override
+    protected void componentOpened() {
+        Node node = new InternalNode();
+        try {
+            mgr.setRootContext(node);
+            mgr.setSelectedNodes(new Node[]{node});
+        } catch (PropertyVetoException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        SwingUtilities.invokeLater(() -> {
+            splitter2.setDividerLocation(.5);
+            splitter2.setResizeWeight(.5);
+            splitter1.setDividerLocation(.5);
+            splitter1.setResizeWeight(.5);
+        });
+    }
+
+    @Override
+    protected void componentClosed() {
+        mgr.setRootContext(Node.EMPTY);
+    }
+
+//    @Override
 //    public void open() {
 //        super.open();
 //        org.openide.windows.Mode mode = WindowManager.getDefault().findMode("output");
@@ -126,6 +159,7 @@ public final class DifferencingTopComponent extends TsTopComponent  {
 //            mode.dockInto(this);
 //        }
 //    }
+//    
     public void refreshHeader() {
         Ts ts=getTs();
         if (ts == null) {
@@ -155,22 +189,6 @@ public final class DifferencingTopComponent extends TsTopComponent  {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-    @Override
-    public void componentOpened() {
-        super.componentOpened();
-        SwingUtilities.invokeLater(() -> {
-            splitter2.setDividerLocation(.5);
-            splitter2.setResizeWeight(.5);
-            splitter1.setDividerLocation(.5);
-            splitter1.setResizeWeight(.5);
-        });
-    }
-
-    @Override
-    public void componentClosed() {
-        super.componentClosed();
-        //grid.dispose();
-    }
 
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
@@ -251,12 +269,7 @@ public final class DifferencingTopComponent extends TsTopComponent  {
         grid.setTsCollection(TsCollection.EMPTY);
     }
 
-    @Override
-    public Node getNode() {
-        return node;
-    }
-
-    class InternalNode extends AbstractNode {
+     class InternalNode extends AbstractNode {
 
         InternalNode() {
             super(Children.LEAF);

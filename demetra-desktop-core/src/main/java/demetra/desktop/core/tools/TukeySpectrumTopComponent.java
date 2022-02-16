@@ -7,16 +7,20 @@ package demetra.desktop.core.tools;
 import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.components.tools.TukeySpectrumView;
 import demetra.desktop.ui.processing.TsTopComponent;
+import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import jdplus.data.analysis.DiscreteWindowFunction;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.ExplorerUtils;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.nodes.Sheet;
 import org.openide.nodes.Sheet.Set;
+import org.openide.util.Exceptions;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.Mode;
@@ -39,11 +43,12 @@ import org.openide.windows.WindowManager;
     "CTL_TukeySpectrumTopComponent=Tukey Spectrum Window",
     "HINT_TukeySpectrumTopComponent=This is a Tukey Spectrum window"
 })
-public final class TukeySpectrumTopComponent extends TsTopComponent {
+public final class TukeySpectrumTopComponent extends TopComponent implements HasTs, ExplorerManager.Provider {
+
+    private final ExplorerManager mgr = new ExplorerManager();
 
     @lombok.experimental.Delegate(types=HasTs.class)
     private final TukeySpectrumView view;
-    private final Node internalNode;
 
     public TukeySpectrumTopComponent() {
         initComponents();
@@ -51,7 +56,28 @@ public final class TukeySpectrumTopComponent extends TsTopComponent {
         add(view);
         setName(Bundle.CTL_TukeySpectrumTopComponent());
         setToolTipText(Bundle.HINT_TukeySpectrumTopComponent());
-        internalNode = new InternalNode();
+        associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
+    }
+
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return mgr;
+    }
+
+    @Override
+    protected void componentOpened() {
+        Node node = new InternalNode();
+        try {
+            mgr.setRootContext(node);
+            mgr.setSelectedNodes(new Node[]{node});
+        } catch (PropertyVetoException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    @Override
+    protected void componentClosed() {
+        mgr.setRootContext(Node.EMPTY);
     }
 
     @Override
@@ -88,10 +114,6 @@ public final class TukeySpectrumTopComponent extends TsTopComponent {
         // TODO read your settings according to their version
     }
 
-    @Override
-    public Node getNode() {
-        return internalNode;
-    }
 
     @Override
     public demetra.timeseries.Ts getTs() {

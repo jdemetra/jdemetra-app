@@ -9,25 +9,28 @@ import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.SwingUtilities;
 import org.openide.explorer.ExplorerManager;
-import org.openide.explorer.ExplorerUtils;
-import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceFactory;
-import demetra.desktop.ui.ActiveView;
-import demetra.desktop.ui.ActiveViewManager;
 import demetra.desktop.ui.Menus;
+import java.awt.Frame;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import org.openide.windows.WindowManager;
 
 /**
  *
  * @author Jean Palate
+ * @param <T>
  */
-public abstract class WorkspaceTopComponent<T> extends TopComponent implements ExplorerManager.Provider, ActiveView, LookupListener {
+public abstract class WorkspaceTopComponent<T> extends TopComponent implements ExplorerManager.Provider, LookupListener {
 
-    private final WorkspaceItem<T> doc;
+    protected final WorkspaceItem<T> doc;
     protected Lookup.Result<WorkspaceFactory.Event> result;
 
     protected abstract String getContextPath();
@@ -35,26 +38,27 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements E
     protected WorkspaceTopComponent(WorkspaceItem<T> doc) {
         this.doc = doc;
         result = WorkspaceFactory.getInstance().getLookup().lookupResult(WorkspaceFactory.Event.class);
-        associateLookup(ExplorerUtils.createLookup(ActiveViewManager.getInstance().getExplorerManager(), getActionMap()));
     }
 
     public WorkspaceItem<T> getDocument() {
         return doc;
     }
-
+    
     @Override
     public String getName(){
         return doc == null ? super.getName() : doc.getDisplayName();
     }
 
     @Override
-    public boolean hasContextMenu() {
-        return true;
+    public void componentActivated() {
+        super.componentActivated();
+        updateMenu(true);
     }
 
     @Override
-    public Node getNode() {
-        return null;
+    public void componentDeactivated() {
+        updateMenu(false);
+        super.componentDeactivated();
     }
 
     @Override
@@ -62,34 +66,19 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements E
         return Menus.createActions(super.getActions(), getContextPath());
     }
 
-    @Override
-    public ExplorerManager getExplorerManager() {
-        return ActiveViewManager.getInstance().getExplorerManager();
-    }
-
-    @Override
-    public boolean fill(JMenu menu) {
-        if (doc != null) {
-            Menus.fillMenu(menu, getContextPath());
-        }
-        return true;
-    }
-
-    @Override
+   @Override
     public void componentOpened() {
+        super.componentOpened();
+        doc.setView(this);
         result.addLookupListener(this);
-        if (doc != null && doc.getView() == null) {
-            doc.setView(this);
-        }
         // TODO add custom code on component opening
     }
 
     @Override
     public void componentClosed() {
-        if (doc != null) {
-            doc.setView(null);
-        }
         result.removeLookupListener(this);
+        doc.setView(null);
+        super.componentClosed();
     }
 
     public void refresh() {
@@ -97,16 +86,13 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements E
 
     @Override
     public void resultChanged(LookupEvent le) {
-        if (doc == null) {
-            return;
-        }
         Collection<? extends WorkspaceFactory.Event> all = result.allInstances();
         if (!all.isEmpty()) {
             for (WorkspaceFactory.Event ev : all) {
                 if (ev.info == WorkspaceFactory.Event.REMOVINGITEM) {
                     WorkspaceItem<?> wdoc = ev.workspace.searchDocument(ev.id);
-                    if (wdoc == doc) {
-                        SwingUtilities.invokeLater(doc::closeView);
+                    if (wdoc.getElement() == doc) {
+                        SwingUtilities.invokeLater(this::close);
                     }
                 } else if (ev.info == WorkspaceFactory.Event.ITEMCHANGED) {
                     if (ev.source != this) {
@@ -120,17 +106,71 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements E
         }
     }
 
-    @Override
-    public void componentActivated() {
+    protected boolean fill(JMenu menu) {
         if (doc != null) {
-            ActiveViewManager.getInstance().set(this);
+            Menus.fillMenu(menu, getContextPath());
+        }
+        return true;
+    }
+
+    protected boolean hasContextMenu() {
+        return true;
+    }
+
+    private void updateMenu(boolean show) {
+        JMenu menu = activeMenu();
+        if (menu == null) {
+            return;
+        }
+        if (!show || !hasContextMenu()) {
+            menu.setVisible(false);
+        } else {
+            menu.removeAll();
+            menu.setVisible(true);
+            menu.setText(getName());
         }
     }
 
-    @Override
-    public void componentDeactivated() {
-        if (doc != null) {
-            ActiveViewManager.getInstance().set(null);
+    private JMenu activeMenu() {
+        Frame frame = WindowManager.getDefault().getMainWindow();
+        if (frame == null || !(frame instanceof JFrame)) {
+            return null;
         }
+        JFrame mainWindow = (JFrame) frame;
+        JMenuBar menuBar = mainWindow.getJMenuBar();
+        if (menuBar == null) {
+            return null;
+        }
+        for (int i = 0; i < menuBar.getMenuCount(); ++i) {
+            JMenu cur = menuBar.getMenu(i);
+            if (cur != null && ACTIVE.equals(cur.getName())) {
+                return cur;
+            }
+        }
+        final JMenu nmenu = new JMenu();
+        nmenu.setName(ACTIVE);
+        menuBar.add(nmenu, POS);
+        menuBar.validate();
+        nmenu.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                nmenu.removeAll();
+                if (hasContextMenu()) {
+                    fill(nmenu);
+                }
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent e) {
+            }
+
+            @Override
+            public void menuCanceled(MenuEvent e) {
+            }
+        });
+        return nmenu;
     }
+
+    private static final String ACTIVE = "_Active_View";
+    private static final int POS = 2;
 }

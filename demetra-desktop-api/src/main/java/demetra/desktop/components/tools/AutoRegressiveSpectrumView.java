@@ -63,6 +63,7 @@ public class AutoRegressiveSpectrumView extends ARPView {
     }
 
     private void initComponents() {
+        onColorSchemeChange();
         onComponentPopupMenuChange();
         enableProperties();
     }

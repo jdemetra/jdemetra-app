@@ -32,10 +32,10 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.JTabbedPane;
-import demetra.desktop.util.IPool;
 import demetra.desktop.util.Pools;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.util.MultiLineNameUtil;
+import demetra.desktop.util.Pool;
 
 
 /**
@@ -53,7 +53,7 @@ public final class SpreadSheetView extends javax.swing.JPanel implements HasColo
 
     private final HasColorSchemeResolver colorSchemeResolver = new HasColorSchemeResolver(colorScheme, this::onColorSchemeChange);
     
-    private final IPool<JGrid> gridPool;
+    private final Pool<JGrid> gridPool;
     private final ObsFormat dataFormat;
     private int zoomRatio;
     private boolean invertColors;
@@ -202,7 +202,7 @@ public final class SpreadSheetView extends javax.swing.JPanel implements HasColo
                 .map(JGrid.class::cast);
     }
 
-    private static final class GridPoolFactory implements IPool.Factory<JGrid> {
+    private static final class GridPoolFactory implements Pool.Factory<JGrid> {
 
         private final SheetGridCommand copy = SheetGridCommand.copySelection(false, false);
 

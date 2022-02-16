@@ -52,7 +52,6 @@ import java.util.function.Predicate;
 @SwingComponent
 public final class JSpecSelectionComponent extends JComponent implements ExplorerManager.Provider, IDialogDescriptorProvider {
 
-    public static final Id SPECS_ID = new LinearId(WorkspaceFactory.SPECIFICATIONS);
 
     @SwingProperty
     public static final String SPECIFICATION_PROPERTY = "specification";
@@ -66,12 +65,14 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
 
     private ProcSpecification specification;
     private Image icon;
+    private boolean systemOnly;
 
     public JSpecSelectionComponent() {
         this(false);
     }
 
     public JSpecSelectionComponent(boolean showSystemOnly) {
+        this.systemOnly=showSystemOnly;
         this.tree = new BeanTreeView();
         this.em = new ExplorerManager();
         this.selectionListener = new SelectionListener();
@@ -81,10 +82,6 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
         tree.setRootVisible(false);
         tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
-        DecoratedNode root = new DecoratedNode(new DummyWsNode(WorkspaceFactory.getInstance().getActiveWorkspace(), SPECS_ID), showSystemOnly ? ItemWsNodeFilter.SYSTEM_ONLY : (o -> true));
-        root.breadthFirstStream().forEach(o -> o.setPreferredActionDecorator(DecoratedNode.PreferredAction.DO_NOTHING));
-
-        em.setRootContext(root);
 
         setLayout(new BorderLayout());
         add(tree, BorderLayout.CENTER);
@@ -97,6 +94,12 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
                 onSpecificationChange();
             }
         });
+    }
+    
+    public void setFamily(String family){
+         DecoratedNode root = new DecoratedNode(new DummyWsNode(WorkspaceFactory.getInstance().getActiveWorkspace(), new LinearId(family, WorkspaceFactory.SPECIFICATIONS)), systemOnly ? ItemWsNodeFilter.SYSTEM_ONLY : (o -> true));
+        root.breadthFirstStream().forEach(o -> o.setPreferredActionDecorator(DecoratedNode.PreferredAction.DO_NOTHING));
+        em.setRootContext(root);
     }
 
     boolean isCurrentSpecificationNode(Node o) {

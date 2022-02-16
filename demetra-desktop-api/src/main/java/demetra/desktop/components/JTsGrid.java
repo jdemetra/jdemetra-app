@@ -21,6 +21,7 @@ import demetra.desktop.components.parts.*;
 import demetra.desktop.design.SwingAction;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
+import demetra.timeseries.TsInformationType;
 import internal.ui.components.DemoTsBuilder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -162,8 +163,12 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
 
     private final TsSelectionBridge tsSelectionBridge;
 
-    public JTsGrid() {
-        this.collection = HasTsCollectionSupport.of(this::firePropertyChange);
+    public JTsGrid(){
+            this(TsInformationType.None);
+    }
+    
+    public JTsGrid(TsInformationType info) {
+        this.collection = HasTsCollectionSupport.of(this::firePropertyChange, info);
         this.crosshair = HasCrosshairSupport.of(this::firePropertyChange);
         this.tsAction = HasTsActionSupport.of(this::firePropertyChange);
         this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

@@ -59,8 +59,8 @@ public final class JCalendarView extends JComponent {
     private TsDomain domain;
     private TradingDaysType dtype;
     private LengthOfPeriodType ltype;
-    private boolean contrast=true, mean=true;
-    
+    private boolean contrast = true, mean = true;
+
     // visual controls
     private final PropertySheet propertySheet;
     private final PeriodogramView pView;
@@ -108,20 +108,20 @@ public final class JCalendarView extends JComponent {
         if (nx == 0) {
             return;
         }
-        
+
         DayClustering clustering = DayClustering.of(dtype);
-        List<ITsVariable> vars=new ArrayList<>();
+        List<ITsVariable> vars = new ArrayList<>();
         GenericTradingDays td = contrast ? GenericTradingDays.contrasts(clustering)
                 : mean ? GenericTradingDays.meanCorrected(clustering) : GenericTradingDays.raw(clustering);
-        
-        HolidaysCorrectedTradingDays htd=new HolidaysCorrectedTradingDays(td, HolidaysCorrectionFactory.corrector(calendar, 
+
+        HolidaysCorrectedTradingDays htd = new HolidaysCorrectedTradingDays(td, HolidaysCorrectionFactory.corrector(calendar,
                 ModellingContext.getActiveContext().getCalendars(), DayOfWeek.SUNDAY, mean));
         vars.add(htd);
         if (ltype != LengthOfPeriodType.None) {
             vars.add(new LengthOfPeriod(ltype));
         }
         FastMatrix matrix = Regression.matrix(domain, vars.toArray(new ITsVariable[vars.size()]));
-        
+
         TsPeriod domainStart = domain.getStartPeriod();
         TsCollection tss = IntStream
                 .range(0, nx)
@@ -139,19 +139,26 @@ public final class JCalendarView extends JComponent {
     }
 
     private String getCmpName(int idx) {
-            int ntd=dtype.getVariablesCount();
-        if (contrast){
+        int ntd = dtype.getVariablesCount();
+        if (contrast) {
             --ntd;
         }
-        if (idx < ntd){
-            return GenericTradingDaysVariable.description(DayClustering.of(dtype), idx);
-        }else{
+        if (idx < ntd) {
+            if (contrast) {
+                return GenericTradingDaysVariable.description(DayClustering.of(dtype), idx);
+            } else {
+                return GenericTradingDaysVariable.description(DayClustering.of(dtype), idx == 0 ? ntd - 1 : idx - 1);
+            }
+        } else {
             return ltype.name();
         }
     }
 
     private int getCmpsCount() {
         int n = dtype.getVariablesCount();
+        if (contrast) {
+            --n;
+        }
         if (ltype != LengthOfPeriodType.None) {
             ++n;
         }
@@ -241,12 +248,12 @@ public final class JCalendarView extends JComponent {
         }
 
         public void setFreq(RegularFrequency freq) {
-            setDomain(newDomain(freq.intValue(), domain.getStartPeriod().year(), domain.getLength()/domain.getAnnualFrequency()));
+            setDomain(newDomain(freq.intValue(), domain.getStartPeriod().year(), domain.getLength() / domain.getAnnualFrequency()));
         }
 
         public int getLength() {
-            
-            return domain.getLength()/domain.getAnnualFrequency();
+
+            return domain.getLength() / domain.getAnnualFrequency();
         }
 
         public void setLength(int length) {
@@ -258,7 +265,7 @@ public final class JCalendarView extends JComponent {
         }
 
         public void setStart(int start) {
-            setDomain(newDomain(domain.getAnnualFrequency(), start, domain.getLength()/domain.getAnnualFrequency()));
+            setDomain(newDomain(domain.getAnnualFrequency(), start, domain.getLength() / domain.getAnnualFrequency()));
         }
 
         public TradingDaysType getType() {
@@ -268,24 +275,24 @@ public final class JCalendarView extends JComponent {
         public void setType(TradingDaysType type) {
             setDType(type);
         }
-        
-        public boolean isContrast(){
+
+        public boolean isContrast() {
             return contrast;
         }
 
-        public void setContrast(boolean contrast){
-            JCalendarView.this.contrast=contrast;
+        public void setContrast(boolean contrast) {
+            JCalendarView.this.contrast = contrast;
             onConfigChange();
         }
 
-        public boolean isMean(){
+        public boolean isMean() {
             return mean;
         }
-        
-        public void setMean(boolean mean){
-            JCalendarView.this.mean=mean;
+
+        public void setMean(boolean mean) {
+            JCalendarView.this.mean = mean;
             onConfigChange();
-      }
-        
-     }
+        }
+
+    }
 }

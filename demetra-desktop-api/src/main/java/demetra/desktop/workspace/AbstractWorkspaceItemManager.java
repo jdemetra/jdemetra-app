@@ -4,6 +4,7 @@
  */
 package demetra.desktop.workspace;
 
+import java.util.Collections;
 import java.util.List;
 import javax.swing.Icon;
 
@@ -43,8 +44,6 @@ public abstract class AbstractWorkspaceItemManager<D> implements WorkspaceItemMa
         return name;
     }
 
-    protected abstract D createNewObject();
-
     @Override
     public WorkspaceItem<D> create(Workspace ws) {
         D newObject = createNewObject();
@@ -59,7 +58,7 @@ public abstract class AbstractWorkspaceItemManager<D> implements WorkspaceItemMa
 
     @Override
     public List<WorkspaceItem<D>> getDefaultItems() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

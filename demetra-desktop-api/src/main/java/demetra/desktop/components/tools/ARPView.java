@@ -17,6 +17,7 @@
 package demetra.desktop.components.tools;
 
 import demetra.data.DoubleSeq;
+import demetra.desktop.TsManager;
 import demetra.desktop.components.TimeSeriesComponent;
 import demetra.desktop.components.parts.*;
 import demetra.desktop.jfreechart.TsCharts;
@@ -27,11 +28,9 @@ import ec.util.chart.swing.SwingColorSchemeSupport;
 import demetra.desktop.jfreechart.MatrixChartCommand;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsData;
-import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsInformationType;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -66,7 +65,7 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
     protected ARPData data;
 
     @lombok.experimental.Delegate
-    private final HasTs m_ts = HasTsSupport.of(this::firePropertyChange);
+    private final HasTs tsSupport = HasTsSupport.of(this::firePropertyChange, TsInformationType.Data);
 
     @lombok.experimental.Delegate
     private final HasColorScheme colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);
@@ -121,17 +120,12 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
         onColorSchemeChange();
     }
 
-    private TsData requestData() {
+    public TsData requestData() {
         Ts ts = getTs();
         if (ts == null) {
             return null;
         }
-        if (ts.getType().encompass(TsInformationType.Data)) {
-            return ts.getData();
-        } else {
-            loadAsync(TsInformationType.Data);
-            return null;
-        }
+        return ts.getData();
     }
 
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">

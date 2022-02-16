@@ -24,6 +24,7 @@ import demetra.desktop.design.SwingProperty;
 import demetra.desktop.jfreechart.TsSparklineCellRenderer;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import demetra.timeseries.TsData;
+import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.util.MultiLineNameUtil;
 import ec.util.table.swing.JTables;
@@ -155,8 +156,12 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
 
     private final TsSelectionBridge tsSelectionBridge;
 
-    public JTsTable() {
-        this.collection = HasTsCollectionSupport.of(this::firePropertyChange);
+    public JTsTable(){
+        this(TsInformationType.None);
+    }
+    
+    public JTsTable(TsInformationType info) {
+        this.collection = HasTsCollectionSupport.of(this::firePropertyChange, info);
         this.tsAction = HasTsActionSupport.of(this::firePropertyChange);
         this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
         this.showHeader = DEFAULT_SHOW_HEADER;

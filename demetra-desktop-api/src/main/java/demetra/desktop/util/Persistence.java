@@ -1,7 +1,6 @@
 package demetra.desktop.util;
 
 import demetra.desktop.Config;
-import nbbrd.io.text.*;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -44,32 +43,32 @@ public class Persistence<T> {
     public static final class Builder<T> {
 
         public Builder<T> onBoolean(String key, boolean defaultValue, Function<T, Boolean> getter, BiConsumer<T, Boolean> setter) {
-            BooleanProperty property = BooleanProperty.of(key, defaultValue);
+            nbbrd.io.text.BooleanProperty property = nbbrd.io.text.BooleanProperty.of(key, defaultValue);
             getter((target, config) -> property.set(config::parameter, getter.apply(target)));
             setter((target, config) -> setter.accept(target, property.get(config::getParameter)));
             return this;
         }
 
         public Builder<T> onInt(String key, int defaultValue, Function<T, Integer> getter, BiConsumer<T, Integer> setter) {
-            IntProperty property = IntProperty.of(key, defaultValue);
+            nbbrd.io.text.IntProperty property = nbbrd.io.text.IntProperty.of(key, defaultValue);
             getter((target, config) -> property.set(config::parameter, getter.apply(target)));
             setter((target, config) -> setter.accept(target, property.get(config::getParameter)));
             return this;
         }
 
-        private <X> Builder<T> onProperty(Property<X> p, Function<T, X> getter, BiConsumer<T, X> setter) {
+        private <X> Builder<T> onProperty(nbbrd.io.text.Property<X> p, Function<T, X> getter, BiConsumer<T, X> setter) {
             getter((target, config) -> p.set(config::parameter, getter.apply(target)));
             setter((target, config) -> setter.accept(target, p.get(config::getParameter)));
             return this;
         }
 
         public Builder<T> onString(String key, String defaultValue, Function<T, String> getter, BiConsumer<T, String> setter) {
-            Property<String> property = Property.of(key, defaultValue, Parser.onString(), Formatter.onString());
+            nbbrd.io.text.Property<String> property = nbbrd.io.text.Property.of(key, defaultValue, nbbrd.io.text.Parser.onString(), nbbrd.io.text.Formatter.onString());
             return onProperty(property, getter, setter);
         }
 
         public <X extends Enum<X>> Builder<T> onEnum(String key, X defaultValue, Function<T, X> getter, BiConsumer<T, X> setter) {
-            Property<X> property = Property.of(key, defaultValue, Parser.onEnum((Class<X>) defaultValue.getClass()), Formatter.onEnum());
+            nbbrd.io.text.Property<X> property = nbbrd.io.text.Property.of(key, defaultValue, nbbrd.io.text.Parser.onEnum((Class<X>) defaultValue.getClass()), nbbrd.io.text.Formatter.onEnum());
             return onProperty(property, getter, setter);
         }
 

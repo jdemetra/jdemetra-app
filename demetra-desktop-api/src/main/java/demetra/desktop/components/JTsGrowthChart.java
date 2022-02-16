@@ -91,8 +91,12 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
 
     private final TsSelectionBridge tsSelectionBridge;
 
-    public JTsGrowthChart() {
-        this.collection = HasTsCollectionSupport.of(this::firePropertyChange);
+    public JTsGrowthChart(){
+            this(TsInformationType.None);
+    }
+    
+    public JTsGrowthChart(TsInformationType info) {
+        this.collection = HasTsCollectionSupport.of(this::firePropertyChange, info);
         this.tsAction = HasTsActionSupport.of(this::firePropertyChange);
         this.chart = HasChartSupport.of(this::firePropertyChange);
         this.colorScheme = HasColorSchemeSupport.of(this::firePropertyChange);

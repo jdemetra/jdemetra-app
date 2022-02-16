@@ -23,6 +23,7 @@ import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsInformationType;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 import jdplus.regsarima.regular.CheckLast;
 
 /**
@@ -34,6 +35,8 @@ import jdplus.regsarima.regular.CheckLast;
  */
 public class AnomalyItem {
 
+    private static final AtomicInteger ID = new AtomicInteger(0);
+
     public enum Status {
 
         Unprocessed("Unprocessed"),
@@ -41,9 +44,9 @@ public class AnomalyItem {
         Processed("Processed"),
         Invalid("Invalid"),
         NotProcessable("NotProcessable");
-        
+
         Status(String name) {
-            
+
         }
 
         public boolean isProcessed() {
@@ -53,112 +56,93 @@ public class AnomalyItem {
         public boolean isInvalid() {
             return this == Invalid;
         }
-        
+
         public boolean isNotProcessable() {
             return this == NotProcessable;
         }
     }
-    private Integer id_ = 0;
-    private Ts ts_;
+
+    private final String name;
+    private final Integer id;
+    private final TsData data;
     private int backCount;
-    private Double[] absoluteError, relativeError;
-    private Status status_ = Status.Unprocessed;
+    private double[] absoluteError, relativeError;
+    private Status status = Status.Unprocessed;
 
-    public AnomalyItem() {
-    }
-
-    public AnomalyItem(Ts s) {
-        this(s, 1);
-    }
-
-    public AnomalyItem(Ts s, int backCount) {
-        ts_ = s;
+    public AnomalyItem(String name, TsData s, int backCount) {
+        id = ID.getAndIncrement();
+        this.name = name;
+        this.data = s;
         this.backCount = backCount;
-        absoluteError = new Double[backCount];
-        relativeError = new Double[backCount];
     }
 
     public Integer getId() {
-        return id_;
-    }
-
-    public void setId(Integer id_) {
-        this.id_ = id_;
+        return id;
     }
 
     public int getBackCount() {
         return backCount;
     }
 
-    public void setBackCount(int backCount) {
-        this.backCount = backCount;
-        absoluteError = new Double[backCount];
-        relativeError = new Double[backCount];
+    public void reset(int backCount) {
+        synchronized (id) {
+            this.backCount = backCount;
+            absoluteError = null;
+            relativeError = null;
+            status = Status.Unprocessed;
+        }
     }
 
-    public Double[] getAbsoluteError() {
+    public double[] getAbsoluteError() {
         return absoluteError;
     }
 
-    public void setAbsoluteError(Double[] absoluteError) {
-        this.absoluteError = absoluteError;
-    }
-
-    public Double[] getRelativeError() {
+    public double[] getRelativeError() {
         return relativeError;
     }
 
-    public void setRelativeError(Double[] relativeError) {
-        this.relativeError = relativeError;
-    }
-
     public void clearValues() {
-        absoluteError = new Double[backCount];
-        relativeError = new Double[backCount];
-        status_ = Status.Unprocessed;
+        absoluteError = null;
+        relativeError = null;
+        status = Status.Unprocessed;
     }
 
-    public Ts getTs() {
-        return ts_;
-    }
-
-    public void setTs(Ts ts_) {
-        this.ts_ = ts_;
-    }
-
-    public TsData getTsData() {
-//        if (ts_.getData().isEmpty()){
-//            ts_ = ts_.load(TsInformationType.Data, TsFactory.getDefault());
-//        }
-        return ts_.getData();
+    public TsData getData() {
+        return data;
     }
 
     public Status getStatus() {
-        synchronized (id_) {
-            return status_;
+        synchronized (id) {
+            return status;
         }
     }
 
     public boolean isProcessed() {
-        return status_.isProcessed();
+        synchronized (id) {
+            return status.isProcessed();
+        }
     }
 
     public boolean isInvalid() {
-        return status_.isInvalid();
-    }
-    
-    public boolean isNotProcessable() {
-        return status_.isNotProcessable();
+        synchronized (id) {
+            return status.isInvalid();
+        }
     }
 
-    public Double getAbsoluteError(int index) {
+    public boolean isNotProcessable() {
+        synchronized (id) {
+            return status.isNotProcessable();
+        }
+    }
+
+    public double getAbsoluteError(int index) {
         if (index < 0 || index > backCount - 1) {
             throw new IllegalArgumentException("Given index for absolute error is incorrect");
         }
         return absoluteError[index];
     }
 
-    public Double getRelativeError(int index) {
+    public double getRelativeError(int index) {
         if (index < 0 || index > backCount - 1) {
             throw new IllegalArgumentException("Given index for relative error is incorrect");
         }
@@ -166,45 +150,42 @@ public class AnomalyItem {
     }
 
     public void process(CheckLast check) {
-        synchronized (id_) {
-            if (status_ == Status.Pending) {
+        synchronized (id) {
+            if (status == Status.Pending) {
                 return;
             }
-            status_ = Status.Pending;
+            status = Status.Pending;
         }
 
-        TsData d = ts_.getData();
-        if (d.length() > 0) {
-            boolean ok = check.check(d);
-
+        if (data.length() > 0) {
+            boolean ok = check.check(data);
             if (ok) {
+                relativeError = new double[backCount];
+                absoluteError = new double[backCount];
                 DoubleSeqCursor acursor = check.getAbsoluteErrors().cursor();
                 for (int i = 0; i < check.getBackCount(); i++) {
                     relativeError[i] = check.getRelativeError(i);
                     absoluteError[i] = acursor.getAndNext();
                 }
 
-                status_ = Status.Processed;
+                status = Status.Processed;
             } else {
-                status_ = Status.NotProcessable;
+                status = Status.NotProcessable;
             }
         } else {
-            status_ = Status.Invalid;
+            status = Status.Invalid;
         }
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        if (ts_ != null) {
-            String item = ts_.getName();
-            if (item != null) {
-                builder.append(" - ").append(item);
-            }
-        }
-        return builder.toString();
+        return name;
     }
-    
+
+    public String getName() {
+        return name;
+    }
+
     public static Collection createBeanCollection() {
         return new ArrayList<>();
     }

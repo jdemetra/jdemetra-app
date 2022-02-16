@@ -4,11 +4,6 @@
  */
 package demetra.desktop.tramoseats.ui;
 
-import demetra.desktop.descriptors.IObjectDescriptor;
-import demetra.desktop.tramoseats.descriptors.TramoSeatsSpecUI;
-import demetra.desktop.ui.processing.DocumentUIServices;
-import demetra.desktop.ui.processing.DocumentUIServices.UIFactory;
-import demetra.desktop.ui.processing.IProcDocumentView;
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
@@ -26,18 +21,7 @@ import org.openide.util.lookup.ServiceProvider;
         position = 500)
 public class TramoSeatsDocumentManager extends AbstractWorkspaceTsItemManager<TramoSeatsSpec, TramoSeatsDocument> {
 
-    public static final UIFactory<TramoSeatsSpec, TramoSeatsDocument> FACTORY=new DocumentUIServices.UIFactory<TramoSeatsSpec, TramoSeatsDocument>() {
-            @Override
-            public IProcDocumentView<TramoSeatsDocument> getDocumentView(TramoSeatsDocument document) {
-                return TramoSeatsViewFactory.getDefault().create(document);
-            }
 
-            @Override
-            public IObjectDescriptor<TramoSeatsSpec> getSpecificationDescriptor(TramoSeatsDocument doc) {
-                return new TramoSeatsSpecUI(doc.getSpecification(), false);
-            }
-        };
- 
     public static final LinearId ID = new LinearId(TramoSeatsSpec.FAMILY, "documents", TramoSeatsSpec.METHOD);
     public static final String PATH = "tramoseats.doc";
     public static final String ITEMPATH = "tramoseats.doc.item";
@@ -54,7 +38,7 @@ public class TramoSeatsDocumentManager extends AbstractWorkspaceTsItemManager<Tr
     }
 
     @Override
-    protected TramoSeatsDocument createNewObject() {
+    public TramoSeatsDocument createNewObject() {
         return new TramoSeatsDocument();
     }
 

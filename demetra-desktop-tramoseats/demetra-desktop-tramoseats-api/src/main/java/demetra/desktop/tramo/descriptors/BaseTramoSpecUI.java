@@ -5,7 +5,7 @@
 package demetra.desktop.tramo.descriptors;
 
 import demetra.desktop.descriptors.IPropertyDescriptors;
-import demetra.modelling.implementations.SarimaSpec;
+import demetra.arima.SarimaSpec;
 import demetra.tramo.AutoModelSpec;
 import demetra.tramo.CalendarSpec;
 import demetra.tramo.EasterSpec;

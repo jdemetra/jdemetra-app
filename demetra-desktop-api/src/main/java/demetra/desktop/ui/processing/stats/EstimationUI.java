@@ -7,13 +7,13 @@ package demetra.desktop.ui.processing.stats;
 import demetra.desktop.interfaces.Disposable;
 import demetra.desktop.ui.JMarginView;
 import demetra.desktop.ui.processing.ItemUI;
-import demetra.desktop.util.IPool;
 import demetra.desktop.util.Pools;
 import demetra.timeseries.TsData;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.Date;
 import javax.swing.JComponent;
+import demetra.desktop.util.Pool;
 
 /**
  *
@@ -22,7 +22,7 @@ import javax.swing.JComponent;
  */
 public class EstimationUI implements ItemUI<EstimationUI.Information> {
 
-    private final IPool<JMarginView> pool = Pools.on(JMarginView.class, 10);
+    private final Pool<JMarginView> pool = Pools.on(JMarginView.class, 10);
 
     @Override
     public JComponent getView(Information information) {

@@ -4,6 +4,7 @@
  */
 package demetra.desktop.tramoseats.ui;
 
+import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
@@ -12,6 +13,8 @@ import jdplus.tramoseats.TramoSeatsDocument;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.ExplorerUtils;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -34,25 +37,32 @@ persistenceType = TopComponent.PERSISTENCE_NEVER)
 })
 public final class TramoSeatsTopComponent extends WorkspaceTsTopComponent<TramoSeatsDocument> {
 
+    private final ExplorerManager mgr = new ExplorerManager();
+
     private static TramoSeatsDocumentManager manager() {
         return WorkspaceFactory.getInstance().getManager(TramoSeatsDocumentManager.class);
     }
 
     public TramoSeatsTopComponent() {
-        super(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
-        initDocument();
+        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
     }
 
     public TramoSeatsTopComponent(WorkspaceItem<TramoSeatsDocument> doc) {
         super(doc);
         initDocument();
+       associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
+    }
+
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return mgr;
     }
 
     private void initDocument() {
         initComponents();
         setToolTipText(NbBundle.getMessage(TramoSeatsTopComponent.class, "HINT_TramoSeatsTopComponent"));
         setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), TramoSeatsDocumentManager.FACTORY);
+        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(TramoSeatsDocument.class));
         this.add(panel);
         panel.refreshHeader();
     }

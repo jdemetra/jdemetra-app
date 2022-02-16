@@ -6,7 +6,7 @@ package demetra.desktop.tramo.descriptors;
 
 import demetra.data.Parameter;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
-import demetra.modelling.implementations.SarimaSpec;
+import demetra.arima.SarimaSpec;
 import demetra.tramo.AutoModelSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;

@@ -115,7 +115,7 @@ public final class FileBroker implements InterchangeSpi {
     public static void store(@NonNull Path file, @NonNull Configs configs) throws IOException {
         try (OutputStream stream = Files.newOutputStream(file, StandardOpenOption.CREATE)) {
             try (GZIPOutputStream gz = new GZIPOutputStream(stream)) {
-                Configs.xmlFormatter(true).formatStream(configs, stream, StandardCharsets.UTF_8);
+                Configs.xmlFormatter(true).formatStream(configs, gz, StandardCharsets.UTF_8);
             }
         }
     }

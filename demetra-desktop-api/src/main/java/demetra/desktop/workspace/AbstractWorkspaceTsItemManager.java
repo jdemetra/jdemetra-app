@@ -33,6 +33,9 @@ public abstract class AbstractWorkspaceTsItemManager<S extends ProcSpecification
         };
     }
   
+    @Override
+    public abstract D createNewObject();
+
     public abstract void openDocument(WorkspaceItem<D> doc);
     
     @Override

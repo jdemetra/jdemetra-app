@@ -10,12 +10,12 @@ import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.components.JHtmlView;
 import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.components.parts.HasTsSupport;
-import demetra.desktop.ui.processing.TsTopComponent;
 import demetra.html.HtmlUtil;
 import demetra.sa.html.HtmlSeasonalityDiagnostics;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsInformationType;
+import java.beans.PropertyVetoException;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -30,6 +30,9 @@ import org.openide.windows.TopComponent;
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import jdplus.sa.tests.SeasonalityTests;
+import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.ExplorerUtils;
+import org.openide.util.Exceptions;
 
 /**
  * Top component which displays something.
@@ -49,9 +52,9 @@ import jdplus.sa.tests.SeasonalityTests;
     "CTL_SeasonalityTestTopComponent=Seasonality Tests Window",
     "HINT_SeasonalityTestTopComponent=This is a Seasonality Tests window"
 })
-public final class SeasonalityTestTopComponent extends TsTopComponent {
+public final class SeasonalityTestTopComponent extends TopComponent implements HasTs, ExplorerManager.Provider {
 
-    private final Node node;
+    private final ExplorerManager mgr = new ExplorerManager();
     private boolean isLog = false;
     private int diffOrder = 1;
     private int lastYears = 0;
@@ -65,13 +68,12 @@ public final class SeasonalityTestTopComponent extends TsTopComponent {
         initComponents();
         setName(Bundle.CTL_SeasonalityTestTopComponent());
         setToolTipText(Bundle.HINT_SeasonalityTestTopComponent());
-        jTsChart1 = new JTsChart();
+        jTsChart1 = new JTsChart(TsInformationType.Data);
         jTsChart1.setTsUpdateMode(TsUpdateMode.Single);
         proxy=HasTsSupport.of(jTsChart1);
 
         jEditorPane1 = new JHtmlView();
 
-        node = new InternalNode();
         jTsChart1.addPropertyChangeListener(HasTsCollection.TS_COLLECTION_PROPERTY, evt -> showTests());
 
         jSplitPane1.setTopComponent(jTsChart1);
@@ -84,15 +86,32 @@ public final class SeasonalityTestTopComponent extends TsTopComponent {
                     break;
             }
         });
-   }
+        associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
+    }
 
     @Override
-    public void componentOpened() {
-        super.componentOpened();
+    public ExplorerManager getExplorerManager() {
+        return mgr;
+    }
+
+    @Override
+    protected void componentOpened() {
+        Node node = new InternalNode();
+        try {
+            mgr.setRootContext(node);
+            mgr.setSelectedNodes(new Node[]{node});
+        } catch (PropertyVetoException ex) {
+            Exceptions.printStackTrace(ex);
+        }
         SwingUtilities.invokeLater(() -> {
             jSplitPane1.setDividerLocation(.3);
             jSplitPane1.setResizeWeight(.3);
         });
+    }
+
+    @Override
+    protected void componentClosed() {
+        mgr.setRootContext(Node.EMPTY);
     }
 
     /**
@@ -179,11 +198,6 @@ public final class SeasonalityTestTopComponent extends TsTopComponent {
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
-    }
-
-    @Override
-    public Node getNode() {
-        return node;
     }
 
     class InternalNode extends AbstractNode {
