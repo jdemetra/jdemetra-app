@@ -579,7 +579,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
         public ETablesFactory() {
             super(X13Document.class, E_TABLES, source -> source, new GenericTableUI(false,
-                    BasicInformationExtractor.prefix(X11Dictionaries.E_TABLE, SaDictionaries.DECOMPOSITION)));
+                    BasicInformationExtractor.prefix(X13Dictionaries.E_TABLE, SaDictionaries.DECOMPOSITION)));
         }
 
         @Override
