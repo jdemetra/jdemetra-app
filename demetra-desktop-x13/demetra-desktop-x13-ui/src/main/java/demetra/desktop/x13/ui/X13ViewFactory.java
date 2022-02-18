@@ -44,8 +44,9 @@ import demetra.timeseries.TsDocument;
 import demetra.util.Id;
 import demetra.util.LinearId;
 import demetra.x11.SeasonalFilterOption;
+import demetra.x11.X11Dictionaries;
 import jdplus.x11.X11Results;
-import demetra.x13.X13Dictionary;
+import demetra.x13.X13Dictionaries;
 import demetra.x13.io.information.X13SpecMapping;
 import jdplus.x13.X13Results;
 import jdplus.x13.X13Document;
@@ -522,7 +523,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
         public ATablesFactory() {
             super(X13Document.class, A_TABLES, source -> source, new GenericTableUI(false,
-                    BasicInformationExtractor.prefix(X13Dictionary.A_TABLE, X13Dictionary.PREADJUST)));
+                    BasicInformationExtractor.prefix(X13Dictionaries.A_TABLE, X13Dictionaries.PREADJUST)));
         }
 
         @Override
@@ -536,7 +537,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
         public BTablesFactory() {
             super(X13Document.class, B_TABLES, source -> source, new GenericTableUI(false,
-                    BasicInformationExtractor.prefix(X13Dictionary.B_TABLE, SaDictionaries.DECOMPOSITION)));
+                    BasicInformationExtractor.prefix(X11Dictionaries.B_TABLE, SaDictionaries.DECOMPOSITION)));
         }
 
         @Override
@@ -550,7 +551,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
         public CTablesFactory() {
             super(X13Document.class, C_TABLES, source -> source, new GenericTableUI(false,
-                    BasicInformationExtractor.prefix(X13Dictionary.C_TABLE, SaDictionaries.DECOMPOSITION)));
+                    BasicInformationExtractor.prefix(X11Dictionaries.C_TABLE, SaDictionaries.DECOMPOSITION)));
         }
 
         @Override
@@ -564,7 +565,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
         public DTablesFactory() {
             super(X13Document.class, D_TABLES, source -> source, new GenericTableUI(false,
-                    BasicInformationExtractor.prefix(X13Dictionary.D_TABLE, SaDictionaries.DECOMPOSITION)));
+                    BasicInformationExtractor.prefix(X11Dictionaries.D_TABLE, SaDictionaries.DECOMPOSITION)));
         }
 
         @Override
@@ -578,7 +579,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
         public ETablesFactory() {
             super(X13Document.class, E_TABLES, source -> source, new GenericTableUI(false,
-                    BasicInformationExtractor.prefix(X13Dictionary.E_TABLE, SaDictionaries.DECOMPOSITION)));
+                    BasicInformationExtractor.prefix(X11Dictionaries.E_TABLE, SaDictionaries.DECOMPOSITION)));
         }
 
         @Override
