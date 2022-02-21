@@ -28,7 +28,7 @@ import org.openide.util.NbBundle;
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Modelling", id = "demetra.desktop.regarima.ui.RegArimaTopComponent")
-@ActionReference(path = "Menu/Statistical methods/Modelling/Single Analysis", position = 1000)
+@ActionReference(path = "Menu/Statistical methods/Modelling/Single Analysis", position = 1010)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_RegArimaAction")
 @NbBundle.Messages({
     "CTL_RegArimaAction=RegArima",
