@@ -24,7 +24,7 @@ import org.openide.windows.TopComponent;
  * @author Jean Palate
  */
 @ServiceProvider(service = WorkspaceItemManager.class,
-position = 1900)
+        position = 1900)
 public class MultiProcessingManager extends AbstractWorkspaceItemManager<MultiProcessingDocument> {
 
     public static final LinearId ID = new LinearId(SaSpecification.FAMILY, WorkspaceFactory.MULTIDOCUMENTS);
@@ -95,13 +95,16 @@ public class MultiProcessingManager extends AbstractWorkspaceItemManager<MultiPr
 
     public void openDocument(final WorkspaceItem<MultiProcessingDocument> doc) {
 
-        if (doc == null||doc.getElement() == null) {
+        if (doc == null || doc.getElement() == null) {
             return;
         }
-
-        TopComponent view = MultiAnalysisAction.createView(doc);
-        view.open();
-        view.requestActive();
+        if (doc.isOpen()) {
+            doc.getView().requestActive();
+        } else {
+            TopComponent view = MultiAnalysisAction.createView(doc);
+            view.open();
+            view.requestActive();
+        }
     }
 
     @Override

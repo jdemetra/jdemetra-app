@@ -124,16 +124,19 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>demetra-tramoseats-information</artifactId>
+            <artifactId>demetra-tramoseats-workspace</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>demetra-sa-information</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>demetra-toolkit-workspace</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>

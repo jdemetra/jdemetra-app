@@ -51,6 +51,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-x13-workspace</artifactId>
+                <version>${jd3-x13.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-x13-api</artifactId>
                 <version>${x13-desktop.version}</version>
             </dependency>

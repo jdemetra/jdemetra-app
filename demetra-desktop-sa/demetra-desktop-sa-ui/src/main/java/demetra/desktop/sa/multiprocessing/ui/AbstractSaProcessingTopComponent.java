@@ -25,26 +25,27 @@ import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
+import org.openide.windows.TopComponent;
 
 /**
  *
  * @author Jean Palate
  */
-public abstract class AbstractSaProcessingTopComponent extends WorkspaceTopComponent<MultiProcessingDocument> implements MultiViewElement, MultiViewDescription {
+public abstract class AbstractSaProcessingTopComponent extends TopComponent implements  MultiViewElement, MultiViewDescription {
 
     protected MultiProcessingController controller;
 
     public AbstractSaProcessingTopComponent() {
-        this(null, new MultiProcessingController());
+        this(new MultiProcessingController(null));
     }
 
-    AbstractSaProcessingTopComponent(WorkspaceItem<MultiProcessingDocument> document, MultiProcessingController controller) {
-        super(document);
-        String txt = document == null ? "" : document.getDisplayName();
+    AbstractSaProcessingTopComponent(MultiProcessingController controller) {
+        WorkspaceItem<MultiProcessingDocument> document = controller.getDocument();
+        String txt = document.getDisplayName();
         setName(txt);
         setToolTipText(txt + " view");
         this.controller = controller;
-        controller.addPropertyChangeListener(MultiProcessingController.SA_PROCESSING_STATE_PROPERTY, evt -> {
+        this.controller.addWeakPropertyChangeListener(MultiProcessingController.SA_PROCESSING_STATE_PROPERTY, evt -> {
             firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
             onSaProcessingStateChange();
         });
@@ -55,11 +56,11 @@ public abstract class AbstractSaProcessingTopComponent extends WorkspaceTopCompo
     }
 
     public SaItem[] current() {
-        return getDocument().getElement().all();
+        return controller.getDocument().getElement().all();
     }
 
     public SaItems getInitialProcessing() {
-        return getDocument().getElement().getInitial();
+        return controller.getDocument().getElement().getInitial();
     }
 
     public MultiProcessingController.SaProcessingState getState() {
@@ -131,10 +132,5 @@ public abstract class AbstractSaProcessingTopComponent extends WorkspaceTopCompo
         return super.preferredID();
     }
     //</editor-fold>    
-
-    @Override
-    protected String getContextPath() {
-        return MultiProcessingManager.CONTEXTPATH;
-    }
 
 }

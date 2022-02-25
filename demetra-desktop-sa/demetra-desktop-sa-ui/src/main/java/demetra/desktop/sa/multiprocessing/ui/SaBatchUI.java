@@ -29,7 +29,6 @@ import demetra.desktop.util.PopupMenuAdapter;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.JSpecSelectionComponent;
 import demetra.sa.EstimationPolicy;
-import demetra.sa.SaDocument;
 import demetra.sa.SaItem;
 import demetra.desktop.sa.multiprocessing.ui.MultiProcessingController.SaProcessingState;
 import demetra.desktop.sa.ui.DemetraSaUI;
@@ -39,8 +38,10 @@ import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.processing.ProcQuality;
 import demetra.processing.ProcessingLog.InformationType;
 import demetra.sa.EstimationPolicyType;
+import demetra.sa.HasSaEstimation;
 import demetra.sa.SaDefinition;
 import demetra.sa.SaEstimation;
+import demetra.sa.SaManager;
 import demetra.sa.SaSpecification;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
@@ -100,7 +101,6 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     private static final String DELETE_LOCAL_MESSAGE = "Are you sure you want to delete the selected items?";
     private static final String PASTE_FAILED_MESSAGE = "Unable to paste data?";
 
-    @Override
     public ExplorerManager getExplorerManager() {
         return mgr;
     }
@@ -173,10 +173,10 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 //        }
 //    }
 
-    @Override
-    public boolean hasContextMenu() {
-        return true;
-    }
+//    @Override
+//    public boolean hasContextMenu() {
+//        return true;
+//    }
 
     public int getSelectionCount() {
         return selection.length;
@@ -221,13 +221,13 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     private final DeleteActionPanel deleteActionPanel;
 
-    public SaBatchUI(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
-        super(doc, controller);
+    public SaBatchUI(MultiProcessingController controller) {
+        super(controller);
         this.collection = HasTsCollectionSupport.of(this::firePropertyChange, TsInformationType.None);
         this.collection.setTsUpdateMode(TsUpdateMode.Append);
         this.defaultSpecification= DemetraSaUI.getDefault().getDefaultSaSpec();
 
-        setName(doc.getDisplayName());
+        setName(controller.getDocument().getDisplayName());
         toolBarRepresentation = NbComponents.newInnerToolbar();
         toolBarRepresentation.setFloatable(false);
         toolBarRepresentation.addSeparator();
@@ -283,7 +283,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         // TODO
         detail = new TsProcessingViewer(null, TsProcessingViewer.Type.APPLY_RESTORE_SAVE);
         detail.setHeaderVisible(false);
-        detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_SAVE, evt -> save((SaDocument) detail.getDocument()));
+        detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_SAVE, evt -> save((TsDocument) detail.getDocument()));
         detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_RESTORE, evt -> {
             if (selection.length > 0) {
                 showDetails(selection[0]);
@@ -385,7 +385,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 break;
             case STARTED:
                 runButton.setEnabled(false);
-                progressHandle = ProgressHandle.createHandle(getDocument().getDisplayName(), () -> worker.cancel(true));
+                progressHandle = ProgressHandle.createHandle(controller.getDocument().getDisplayName(), () -> worker.cancel(true));
                 progressHandle.start(getElement().getCurrent().size());
                 break;
         }
@@ -421,7 +421,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
     
     public MultiProcessingDocument getElement(){
-        return this.getDocument().getElement();
+        return controller.getDocument().getElement();
     }
 
     public void setDefaultSpecification(SaSpecification defaultSpecification) {
@@ -487,7 +487,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 return;
             }
         }
-        getDocument().getElement().refresh(policy);
+        controller.getDocument().getElement().refresh(policy);
         start(false);
     }
    
@@ -500,7 +500,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         }
         Set<SaNode> sel=Arrays.stream(selection).collect(Collectors.toSet());
        
-        getDocument().getElement().refresh(policy, item->sel.contains(item));
+        controller.getDocument().getElement().refresh(policy, item->sel.contains(item));
         start(true);
     }
 
@@ -578,7 +578,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         for (int index : indexToDelete) {
             itemsToDelete.add(items[index]);
         }
-        getDocument().getElement().remove(itemsToDelete);
+        controller.getDocument().getElement().remove(itemsToDelete);
 
         redrawAll();
         controller.setSaProcessingState(SaProcessingState.READY);
@@ -756,35 +756,30 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         }
     }
 
-    void save(SaDocument doc) {
+    void save(TsDocument doc) {
         if (selection.length == 0) {
             return;
         }
-        SaNode item = selection[0];
+        SaNode node = selection[0];
+        SaItem item=node.getOutput();
+        SaSpecification spec=(SaSpecification) doc.getSpecification();
         SaDefinition def=SaDefinition.builder()
-                .domainSpec(doc.getSpecification())
-                .ts(doc.getSeries())
+                .domainSpec(spec)
+                .ts(doc.getInput())
                 .policy(EstimationPolicyType.Interactive)
                 .build();
-        SaEstimation estimation=SaEstimation.builder()
-                .diagnostics(doc.getDiagnostics())
-                .quality(doc.getQuality())
-                .results(doc.getResults())
+         
+        SaEstimation estimation=doc instanceof HasSaEstimation ? ((HasSaEstimation) doc).getEstimation() : null;
+//        
+        SaItem nitem = SaItem.builder()
+                .name(item.getName())
+                .comment(item.getComment())
+                .meta(item.getMeta())
+                .definition(def)
+                .estimation(estimation)
                 .build();
         
-//        
-//        SaItem nitem = SaItem.builder()
-//                .name(item.getName())
-//                .comment(item.getComment())
-//                .meta(item.getMeta())
-//                .definition(def)
-//                .estimation(estimation)
-//                .build();
-// 
-//        getElement().replace(item, nitem);
-//        int idx = getElement().getCurrent().indexOf(nitem);
-//        model.fireTableRowsUpdated(idx, idx);
-//        refreshInfo();
+        node.setOutput(nitem);
     }
 
     public void clearPriority(List<SaItem> items) {
@@ -893,7 +888,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                     NotifyDescriptor nd = new NotifyDescriptor.Confirmation("There are unsaved changes in the previously selected item's spec."
                             + "\nDo you want to save them ?", "Unsaved changes", NotifyDescriptor.YES_NO_OPTION);
                     if (DialogDisplayer.getDefault().notify(nd) == NotifyDescriptor.YES_OPTION) {
-                        save((SaDocument) detail.getDocument());
+                        save((TsDocument) detail.getDocument());
                     }
                     detail.setDirty(false);
                 }
@@ -963,7 +958,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             SaSpecification currentDomainSpec = item.getSpec();
             List<WorkspaceItem<SaSpecification>> x = WorkspaceFactory.getInstance().getActiveWorkspace().searchDocuments(SaSpecification.class);
             Optional<WorkspaceItem<SaSpecification>> y = x.stream().filter(workspaceItem -> workspaceItem.getElement().equals(currentDomainSpec)).findFirst();
-            return y.isPresent() ? y.get().getDisplayName() : currentDomainSpec.toString();
+            return y.isPresent() ? y.get().getDisplayName() : currentDomainSpec.display();
         }
 
         @Override
@@ -1033,7 +1028,10 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         protected String getText(SaNode item) {
-            return item.isProcessed() ? item.results().getQuality().name() : null;
+            if (! item.isProcessed())
+                return null;
+            ProcQuality quality = item.results().getQuality();
+            return quality != null ? quality.name() : null;
         }
 
         @Override

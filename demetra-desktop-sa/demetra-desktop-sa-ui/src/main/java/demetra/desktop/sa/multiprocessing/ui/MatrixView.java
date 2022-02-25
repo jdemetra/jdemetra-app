@@ -61,8 +61,8 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
     private List<String> selectedComponents;
     private final PropertyChangeListener listener;
 
-    public MatrixView(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
-        super(doc, controller);
+    public MatrixView(MultiProcessingController controller) {
+        super(controller);
          this.comboBox = new JComboBox<>();
         // TODO
         this.selectedComponents = Collections.emptyList(); // DemetraUI.getDefault().getSelectedDiagFields();
@@ -107,11 +107,6 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         add(toolBarRepresentation, BorderLayout.NORTH);
         add(visualRepresentation, BorderLayout.CENTER);
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
-    }
-
-    @Override
-    public ExplorerManager getExplorerManager() {
-        return mgr;
     }
 
     @Override

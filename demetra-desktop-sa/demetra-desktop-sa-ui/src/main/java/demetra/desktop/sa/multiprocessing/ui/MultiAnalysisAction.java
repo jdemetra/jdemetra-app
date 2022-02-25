@@ -39,13 +39,10 @@ public final class MultiAnalysisAction implements ActionListener {
     }
 
     public static TopComponent createView(final WorkspaceItem<MultiProcessingDocument> doc) {
-        if (doc.isOpen()) {
-            return doc.getView();
-        }
-        final MultiProcessingController controller = new MultiProcessingController();
-        SaBatchUI processingView = new SaBatchUI(doc, controller);
-        SummaryView summaryView = new SummaryView(doc, controller);
-        MatrixView matrixView = new MatrixView(doc, controller);
+        final MultiProcessingController controller = new MultiProcessingController(doc);
+        SaBatchUI processingView = new SaBatchUI(controller);
+        SummaryView summaryView = new SummaryView(controller);
+        MatrixView matrixView = new MatrixView(controller);
 
         MultiViewDescription[] descriptions = {
             new QuickAndDirtyDescription("Processing", processingView),

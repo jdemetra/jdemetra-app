@@ -22,10 +22,10 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//demetra.desktop.tramoseats.ui//TramoSeats//EN",
-autostore = false)
+        autostore = false)
 @TopComponent.Description(preferredID = "TramoSeatsTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_NEVER)
+        //iconBase="SET/PATH/TO/ICON/HERE", 
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Seasonal Adjustment", id = "demetra.desktop.tramoseats.ui.TramoSeatsTopComponent")
 @ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Single Analysis", position = 1000)
@@ -50,7 +50,7 @@ public final class TramoSeatsTopComponent extends WorkspaceTsTopComponent<TramoS
     public TramoSeatsTopComponent(WorkspaceItem<TramoSeatsDocument> doc) {
         super(doc);
         initDocument();
-       associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
+        associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
     @Override

@@ -120,11 +120,15 @@
        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>demetra-x13-information</artifactId>
+            <artifactId>demetra-x13-workspace</artifactId>
             <exclusions>
                  <exclusion>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>demetra-sa-information</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>demetra-toolkit-workspace</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

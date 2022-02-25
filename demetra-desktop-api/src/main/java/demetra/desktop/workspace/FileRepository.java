@@ -19,6 +19,7 @@ package demetra.desktop.workspace;
 import com.google.common.base.StandardSystemProperty;
 import demetra.timeseries.calendars.CalendarDefinition;
 import demetra.timeseries.calendars.CalendarManager;
+import demetra.timeseries.regression.ModellingContext;
 import demetra.tsprovider.DataSource;
 import demetra.util.LinearId;
 import demetra.util.Paths;
@@ -174,11 +175,13 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         if (file == null || !file.exists()) {
             return false;
         }
-
+        
+ 
         try (demetra.workspace.file.FileWorkspace storage = demetra.workspace.file.FileWorkspace.open(file.toPath())) {
             ws.setName(storage.getName());
             loadCalendars(storage, ws);
             loadItems(storage.getItems(), ws);
+            WorkspaceRepository.updateModellingContext(ws);
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
             return false;
@@ -215,13 +218,13 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
 
     private static void loadCalendars(FileWorkspace storage, Workspace ws) throws IOException {
         CalendarManager source = (CalendarManager) storage.load(CAL_ID.getKey());
-        CalendarManager target = ws.getContext().getCalendars();
+//        CalendarManager target = ws.getContext().getCalendars();
         for (String name : source.getNames()) {
             CalendarDefinition cal = source.get(name);
-            target.set(name, cal);
+//            target.set(name, cal);
             if (ws.searchDocumentByElement(cal) == null) {
-                WorkspaceItem<CalendarDefinition> item = WorkspaceItem.system(CalendarDocumentManager.ID, name, cal);
-                ws.add(item);
+                WorkspaceItem<CalendarDefinition> item = WorkspaceItem.loadedItem(CalendarDocumentManager.ID, name, cal);
+                ws.quietAdd(item);
             }
         }
     }

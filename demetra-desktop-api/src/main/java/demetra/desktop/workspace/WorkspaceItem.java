@@ -92,6 +92,13 @@ public class WorkspaceItem<T> implements Modifiable, Comparable<WorkspaceItem> {
         return item;
     }
 
+    public static <T> WorkspaceItem<T> loadedItem(Id family, String name, T element) {
+        WorkspaceItem<T> item = new WorkspaceItem(family, name, element);
+        item.status_ = Status.Valid;
+        item.dirty_ = true;
+        return item;
+    }
+
     public static <T> WorkspaceItem<T> item(Id family, String name, String id) {
         WorkspaceItem<T> item = new WorkspaceItem(family, name, id);
         item.status_ = Status.Undefined;
