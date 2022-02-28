@@ -14,29 +14,21 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.tramo.ui.actions;
+package demetra.desktop.workspace.nodes;
 
 import demetra.desktop.nodes.SingleNodeAction;
-import demetra.desktop.tramo.ui.TramoSpecManager;
 import demetra.desktop.workspace.WorkspaceItem;
-import demetra.desktop.workspace.nodes.ItemWsNode;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "Edit",
-id = "demetra.desktop.tramo.ui.actions.DeleteAction")
+id = "demetra.desktop.workspace.nodes.DeleteAction")
 @ActionRegistration(
         displayName = "#CTL_DeleteAction", lazy=false)
-@ActionReferences({
-    //    @ActionReference(path = "Menu/Edit"),
-    @ActionReference(path = TramoSpecManager.ITEMPATH, position = 1100),
-})
 @Messages("CTL_DeleteAction=Delete")
 public final class DeleteAction extends SingleNodeAction<ItemWsNode> {
     
@@ -54,6 +46,7 @@ public final class DeleteAction extends SingleNodeAction<ItemWsNode> {
             if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
                 return;
             }
+            cur.closeView();
             context.getWorkspace().remove(cur);
         }
     }

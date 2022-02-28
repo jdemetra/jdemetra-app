@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.regarima.ui.spec.actions;
+package demetra.desktop.regarima.ui.actions;
 
 import demetra.desktop.Config;
 import demetra.desktop.interchange.Exportable;
@@ -46,7 +46,7 @@ import org.openide.util.actions.Presenter;
  * @author Mats Maggi
  */
 @ActionID(category = "Tools",
-        id = "demetra.desktop.regarima.ui.spec.actions.ExportRegArimaSpec")
+        id = "demetra.desktop.regarima.ui.actions.ExportRegArimaSpec")
 @ActionRegistration(displayName = "#CTL_ExportRegArimaSpec", lazy = false)
 @ActionReferences({
     @ActionReference(path = RegArimaSpecManager.ITEMPATH, position = 1000, separatorAfter = 1090)

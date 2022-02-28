@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
-package demetra.desktop.regarima.ui.spec.actions;
+package demetra.desktop.regarima.ui.actions;
 
 import demetra.desktop.regarima.ui.RegArimaSpecManager;
 import demetra.desktop.workspace.WorkspaceFactory;

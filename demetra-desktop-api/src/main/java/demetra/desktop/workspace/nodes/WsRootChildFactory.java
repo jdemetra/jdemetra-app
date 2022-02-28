@@ -18,18 +18,18 @@ import org.openide.nodes.Node;
  */
 public class WsRootChildFactory extends ChildFactory<Id> {
 
-    private final Workspace workspace_;
+    private final Workspace workspace;
 
     public WsRootChildFactory(Workspace ws) {
-        workspace_ = ws;
+        workspace = ws;
     }
 
     @Override
     protected Node createNodeForKey(Id id) {
         if (ManagerWsNode.isManager(id)) {
-            return new ManagerWsNode(workspace_, id);
+            return new ManagerWsNode(workspace, id);
         } else {
-            return new DummyWsNode(workspace_, id);
+            return new DummyWsNode(workspace, id);
         }
     }
 

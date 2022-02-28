@@ -17,27 +17,26 @@ import org.openide.nodes.Sheet;
  */
 public class WsRootNode extends AbstractNode {
 
-    Workspace ws_;
+    Workspace workspace;
 
     public WsRootNode(Workspace ws) {
         super(Children.create(new WsRootChildFactory(ws), false));
-        ws_ = ws;
+        workspace = ws;
     }
 
     @Override
     public String getDisplayName() {
-        return ws_.getName();
+        return workspace.getName();
 
     }
 
     @Override
     public Sheet createSheet() {
         Sheet sheet = super.createSheet();
-        Sheet.Set identification = Sheet.createPropertiesSet();
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("Active workspace");
-        b.with(String.class).selectConst("Name", ws_.getName()).add();
+        b.with(String.class).selectConst("Name", workspace.getName()).add();
         sheet.put(b.build());
-        sheet.put(NbUtilities.creatDataSourcePropertiesSet(ws_.getDataSource()));
+        sheet.put(NbUtilities.creatDataSourcePropertiesSet(workspace.getDataSource()));
         return sheet;
     }
 }

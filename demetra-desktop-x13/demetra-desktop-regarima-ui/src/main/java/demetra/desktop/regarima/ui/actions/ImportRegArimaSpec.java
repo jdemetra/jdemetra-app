@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.regarima.ui.spec.actions;
+package demetra.desktop.regarima.ui.actions;
 
 import demetra.desktop.Config;
 import demetra.desktop.interchange.Importable;
@@ -44,7 +44,7 @@ import org.openide.util.actions.Presenter;
  *
  * @author Mats Maggi
  */
-@ActionID(category = "Edit", id = "demetra.desktop.regarima.ui.spec.actions.ImportRegArimaSpec")
+@ActionID(category = "Edit", id = "demetra.desktop.regarima.ui.actions.ImportRegArimaSpec")
 @ActionRegistration(displayName = "#CTL_ImportRegArimaSpec", lazy = false)
 @ActionReferences({
     @ActionReference(path = RegArimaSpecManager.PATH, position = 1000)

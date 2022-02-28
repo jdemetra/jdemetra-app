@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.regarima.ui.spec.actions;
+package demetra.desktop.regarima.ui.actions;
 
 import demetra.desktop.regarima.ui.RegArimaSpecManager;
 import demetra.desktop.workspace.WorkspaceFactory;
