@@ -17,6 +17,7 @@
 package demetra.desktop.workspace.nodes;
 
 import demetra.desktop.nodes.SingleNodeAction;
+import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -46,7 +47,6 @@ public final class DeleteAction extends SingleNodeAction<ItemWsNode> {
             if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
                 return;
             }
-            cur.closeView();
             context.getWorkspace().remove(cur);
         }
     }

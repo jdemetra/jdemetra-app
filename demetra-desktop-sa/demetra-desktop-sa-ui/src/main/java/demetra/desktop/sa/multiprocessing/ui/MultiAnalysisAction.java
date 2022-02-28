@@ -47,9 +47,12 @@ public final class MultiAnalysisAction implements ActionListener {
         MultiViewDescription[] descriptions = {
             new QuickAndDirtyDescription("Processing", processingView),
             new QuickAndDirtyDescription("Summary", summaryView),
-            new QuickAndDirtyDescription("Matrix", matrixView),};
+            new QuickAndDirtyDescription("Matrix", matrixView)};
 
-        final TopComponent result = MultiViewFactory.createMultiView(descriptions, descriptions[0]);
+        final TopComponent result = MultiViewFactory.createMultiView(descriptions, descriptions[0], states->{
+            controller.dispose();
+            return true;
+                });
         result.setName(doc.getDisplayName());
         doc.setView(result);
 

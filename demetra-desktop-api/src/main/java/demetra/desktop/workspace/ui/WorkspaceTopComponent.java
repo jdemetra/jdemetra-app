@@ -31,21 +31,21 @@ import org.openide.windows.WindowManager;
 public abstract class WorkspaceTopComponent<T> extends TopComponent implements ExplorerManager.Provider, LookupListener {
 
     protected final WorkspaceItem<T> doc;
-    protected Lookup.Result<WorkspaceFactory.Event> result;
+    private final Lookup.Result<WorkspaceFactory.Event> wsevent;
 
     protected abstract String getContextPath();
 
     protected WorkspaceTopComponent(WorkspaceItem<T> doc) {
         this.doc = doc;
-        result = WorkspaceFactory.getInstance().getLookup().lookupResult(WorkspaceFactory.Event.class);
+        this.wsevent = WorkspaceFactory.getInstance().getLookup().lookupResult(WorkspaceFactory.Event.class);
     }
 
     public WorkspaceItem<T> getDocument() {
         return doc;
     }
-    
+
     @Override
-    public String getName(){
+    public String getName() {
         return doc == null ? super.getName() : doc.getDisplayName();
     }
 
@@ -66,17 +66,17 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements E
         return Menus.createActions(super.getActions(), getContextPath());
     }
 
-   @Override
+    @Override
     public void componentOpened() {
         super.componentOpened();
         doc.setView(this);
-        result.addLookupListener(this);
+        wsevent.addLookupListener(this);
         // TODO add custom code on component opening
     }
 
     @Override
     public void componentClosed() {
-        result.removeLookupListener(this);
+        wsevent.removeLookupListener(this);
         doc.setView(null);
         super.componentClosed();
     }
@@ -86,21 +86,25 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements E
 
     @Override
     public void resultChanged(LookupEvent le) {
-        Collection<? extends WorkspaceFactory.Event> all = result.allInstances();
-        if (!all.isEmpty()) {
-            for (WorkspaceFactory.Event ev : all) {
-                if (ev.info == WorkspaceFactory.Event.REMOVINGITEM) {
-                    WorkspaceItem<?> wdoc = ev.workspace.searchDocument(ev.id);
-                    if (wdoc.getElement() == doc) {
+        Collection<? extends WorkspaceFactory.Event> all = wsevent.allInstances();
+        for (WorkspaceFactory.Event ev : all) {
+            if (ev.id.equals(doc.getId())) {
+                switch (ev.info) {
+                    case WorkspaceFactory.Event.REMOVINGITEM:
                         SwingUtilities.invokeLater(this::close);
-                    }
-                } else if (ev.info == WorkspaceFactory.Event.ITEMCHANGED) {
-                    if (ev.source != this) {
-                        WorkspaceItem<?> wdoc = ev.workspace.searchDocument(ev.id);
-                        if (wdoc == doc) {
+                        break;
+                    case WorkspaceFactory.Event.ITEMCHANGED:
+                        if (ev.source != this) {
                             SwingUtilities.invokeLater(this::refresh);
+
                         }
-                    }
+                        break;
+                    case WorkspaceFactory.Event.ITEMRENAMED:
+                        if (ev.source != this) {
+                            SwingUtilities.invokeLater(()->
+                            this.setDisplayName(doc.getDisplayName()));
+                        }
+                        break;
                 }
             }
         }

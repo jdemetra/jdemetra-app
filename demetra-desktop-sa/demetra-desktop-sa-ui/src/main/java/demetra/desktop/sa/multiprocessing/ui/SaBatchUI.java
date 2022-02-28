@@ -41,7 +41,6 @@ import demetra.sa.EstimationPolicyType;
 import demetra.sa.HasSaEstimation;
 import demetra.sa.SaDefinition;
 import demetra.sa.SaEstimation;
-import demetra.sa.SaManager;
 import demetra.sa.SaSpecification;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
@@ -86,7 +85,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import org.openide.explorer.ExplorerManager;
 
 /**
  * @author Philippe Charles
@@ -94,17 +92,12 @@ import org.openide.explorer.ExplorerManager;
  */
 public class SaBatchUI extends AbstractSaProcessingTopComponent implements MultiViewElement, HasTsCollection {
 
-    private final ExplorerManager mgr = new ExplorerManager();
 
     private static final String REFRESH_MESSAGE = "Are you sure you want to refresh the data?";
     private static final String REFRESH_LOCAL_MESSAGE = "Are you sure you want to refresh the selected items?";
     private static final String DELETE_LOCAL_MESSAGE = "Are you sure you want to delete the selected items?";
     private static final String PASTE_FAILED_MESSAGE = "Unable to paste data?";
 
-    public ExplorerManager getExplorerManager() {
-        return mgr;
-    }
- 
     // MultiViewElement >
     @Override
     public JComponent getVisualRepresentation() {

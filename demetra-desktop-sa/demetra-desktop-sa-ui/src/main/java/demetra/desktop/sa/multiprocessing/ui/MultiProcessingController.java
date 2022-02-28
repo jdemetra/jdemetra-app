@@ -81,5 +81,6 @@ public final class MultiProcessingController implements PropertyChangeSource.Wit
                 broadcaster.removePropertyChangeListener(l);
             }
         }
+        this.document.setView(null);
     }
 }

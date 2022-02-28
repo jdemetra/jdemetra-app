@@ -27,6 +27,7 @@ import java.util.Optional;
  * @param <D>
  */
 public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocument<S, ?>> extends DefaultProcessingViewer<S, D> {
+    
 
     // FACTORY METHODS >
     public static <S extends ProcSpecification, D extends TsDocument<S, ?>> TsProcessingViewer create(D doc, DocumentUIServices<S, D> uifac) {
@@ -104,8 +105,10 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
             Optional<Ts> ts = DataTransfer.getDefault().toTs(support.getTransferable());
             if (ts.isPresent()) {
                 Ts input = ts.get().load(TsInformationType.All, TsManager.getDefault()).freeze();
+                Ts old=getDocument().getInput();
                 getDocument().set(input);
                 refreshAll();
+                TsProcessingViewer.this.firePropertyChange(INPUT_CHANGED, old, input);
                 return true;
             }
             return false;

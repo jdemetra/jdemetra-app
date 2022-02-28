@@ -13,6 +13,7 @@ import demetra.util.Arrays2;
 import demetra.util.Id;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import javax.swing.*;
 import javax.swing.tree.TreeSelectionModel;
@@ -20,6 +21,7 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.InstanceContent;
 
 /**
  *
@@ -27,10 +29,14 @@ import org.openide.util.Exceptions;
  * @param <S>
  * @param <D>
  */
-public class DefaultProcessingViewer<S extends ProcSpecification, D extends ProcDocument<S, ?, ?>> extends JComponent implements Disposable, ExplorerManager.Provider {
+public class DefaultProcessingViewer<S extends ProcSpecification, D extends ProcDocument<S, ?, ?>> extends JComponent implements Disposable {
+    
+    private final InstanceContent content = new InstanceContent();
 
     public static final String BUTTONS = "Buttons", BUTTON_APPLY = "Apply", BUTTON_RESTORE = "Restore", BUTTON_SAVE = "Save",
             DIRTY_SPEC_PROPERTY = "dirtySpecProperty";
+
+    public static final String SPEC_CHANGED="spec_changed", INPUT_CHANGED="input_changed", DOC_CHANGED="doc_changed";
 
     public enum Type {
 
@@ -43,7 +49,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     protected final JSplitPane splitter;
     protected final JPanel specPanel;
     protected final BeanTreeView tree;
-    protected final ExplorerManager em;
+    protected final ExplorerManager internalExplorerManager;
     protected final JToolBar toolBar;
     protected final JComponent emptyView;
     // document-related data
@@ -66,9 +72,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         this.tree = new BeanTreeView();
         tree.setRootVisible(false);
         tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-        this.em = new ExplorerManager();
-        em.addPropertyChangeListener(evt -> {
+        this.internalExplorerManager = new ExplorerManager();
+        internalExplorerManager.addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
                 case ExplorerManager.PROP_SELECTED_NODES:
                     Node[] nodes = (Node[]) evt.getNewValue();
@@ -103,11 +108,6 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     }
 
     // GETTERS/SETTERS >
-    @Override
-    public ExplorerManager getExplorerManager() {
-        return em;
-    }
-
     public int getSpecWidth() {
         return specWidth_;
     }
@@ -230,12 +230,13 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     S pspec = specDescriptor.getCore();
+                    S ospec=doc.getSpecification();
                     doc.set(pspec);
                     setDirty(BUTTON_APPLY);
-                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
+                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, pspec);
                     refreshAll();
                     updateDocument();
-                }
+                 }
             }};
         PropertySheetPanel specView = factory.getSpecView(specDescriptor);
         setPropertiesPanel(commands, specView, specWidth_);
@@ -251,7 +252,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     S pspec = specDescriptor.getCore();
                     doc.set(pspec);
                     setDirty(BUTTON_APPLY);
-                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
+//                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
                     refreshAll();
                     updateDocument();
                 }
@@ -263,7 +264,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     setDirty(BUTTON_RESTORE);
                     refreshAll();
                     updateDocument();
-                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_RESTORE, null, null);
+//                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_RESTORE, null, null);
+//                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, null, null);
                 }
             },
             new AbstractAction(BUTTON_SAVE) {
@@ -272,7 +274,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     // Apply & Save
                     setDirty(BUTTON_SAVE);
                     refreshAll();
-                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_SAVE, null, null);
+                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, null, null);
                 }
             }};
         PropertySheetPanel specView = factory.getSpecView(specDescriptor);
@@ -320,7 +322,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
      */
     public void refreshView() {
         m_procView.refresh();
-        Node[] sel = em.getSelectedNodes();
+        Node[] sel = internalExplorerManager.getSelectedNodes();
         if (!Arrays2.isNullOrEmpty(sel)) {
             Id curid = sel[0].getLookup().lookup(Id.class);
             if (curid != null) {
@@ -337,10 +339,10 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
     private void buildTree() {
         if (m_procView != null) {
-            em.setRootContext(new DecoratedNode(IdNodes.getRootNode(m_procView.getItems())));
+            internalExplorerManager.setRootContext(new DecoratedNode(IdNodes.getRootNode(m_procView.getItems())));
             selectPreferredView();
         } else {
-            em.setRootContext(Node.EMPTY);
+            internalExplorerManager.setRootContext(Node.EMPTY);
             showComponent(null);
         }
     }
@@ -367,10 +369,10 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         Id pview = m_procView.getPreferredView();
         if (pview != null) {
             showComponent(pview);
-            Node node = IdNodes.findNode(em.getRootContext(), pview);
+            Node node = IdNodes.findNode(internalExplorerManager.getRootContext(), pview);
             try {
                 if (node != null) {
-                    em.setSelectedNodes(new Node[]{node});
+                    internalExplorerManager.setSelectedNodes(new Node[]{node});
                     ((DecoratedNode) node).setHtmlDecorator(DecoratedNode.Html.BOLD);
                 }
             } catch (PropertyVetoException ex) {
@@ -391,6 +393,14 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         }
         splitter.setBottomComponent(emptyView);
         removeAll();
+    }
+    
+    public void removeListeners(){
+        PropertyChangeListener[] listeners = this.getPropertyChangeListeners();
+        if (listeners != null){
+            for (int i=0; i<listeners.length; ++i)
+                this.removePropertyChangeListener(listeners[i]);
+        }
     }
 
     public void setDirty(String sourceButton) {

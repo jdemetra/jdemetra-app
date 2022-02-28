@@ -8,6 +8,7 @@ import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.ui.Menus;
+import demetra.desktop.ui.processing.DefaultProcessingViewer;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.ui.properties.l2fprod.UserInterfaceContext;
 import demetra.timeseries.TsDocument;
@@ -16,6 +17,8 @@ import javax.swing.Action;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsInformationType;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.JMenu;
 
 /**
@@ -54,7 +57,6 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
         updateUserInterfaceContext();
     }
 
- 
     @Override
     public Action[] getActions() {
         return Menus.createActions(super.getActions(), WorkspaceFactory.TSCONTEXTPATH, getContextPath());
@@ -68,13 +70,27 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
     @Override
     public void componentOpened() {
         super.componentOpened();
-         TsDynamicProvider.OnDocumentOpened(panel.getDocument());
+        panel.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent arg0) {
+                switch (arg0.getPropertyName()) {
+                    case DefaultProcessingViewer.SPEC_CHANGED:
+                    case DefaultProcessingViewer.INPUT_CHANGED:
+                        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
+                        WorkspaceFactory.getInstance().notifyEvent(ev);
+
+                }
+            }
+        });
+
+        TsDynamicProvider.OnDocumentOpened(panel.getDocument());
         // TODO add custom code on component opening
     }
 
     @Override
     public void componentClosed() {
         if (panel != null) {
+            panel.removeListeners();
             panel.dispose();
         }
         TsDynamicProvider.OnDocumentClosing(panel.getDocument());
@@ -89,16 +105,20 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
 
     @Override
     public void setTs(demetra.timeseries.Ts ts) {
-        Ts cts=null;
-        if (TsManager.isDynamic(ts)){
-            cts=ts.freeze();
-        }else{
-            cts=ts.load(TsInformationType.All, TsManager.getDefault());
+        Ts cts = null;
+        if (TsManager.isDynamic(ts)) {
+            cts = ts.freeze();
+        } else {
+            cts = ts.load(TsInformationType.All, TsManager.getDefault());
         }
         panel.getDocument().set(cts);
         panel.initSpecView();
         panel.refreshAll();
         panel.updateDocument();
+
+        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
+        WorkspaceFactory.getInstance().notifyEvent(ev);
+
     }
 
     @Override

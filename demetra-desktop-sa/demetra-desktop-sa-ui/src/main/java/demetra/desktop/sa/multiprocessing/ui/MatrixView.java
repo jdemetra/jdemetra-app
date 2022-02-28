@@ -11,9 +11,15 @@ import demetra.information.Explorable;
 import demetra.information.InformationSet;
 import demetra.information.formatters.TableFormatter;
 import demetra.processing.AlgorithmDescriptor;
+import demetra.sa.SaDictionaries;
 import demetra.sa.SaItem;
 import demetra.sa.SaItems;
 import demetra.timeseries.TsData;
+import demetra.toolkit.dictionaries.ArimaDictionaries;
+import demetra.toolkit.dictionaries.LikelihoodDictionaries;
+import demetra.toolkit.dictionaries.RegArimaDictionaries;
+import demetra.toolkit.dictionaries.RegressionDictionaries;
+import demetra.toolkit.dictionaries.ResidualsDictionaries;
 import demetra.util.Table;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.JGrid;
@@ -63,7 +69,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
     public MatrixView(MultiProcessingController controller) {
         super(controller);
-         this.comboBox = new JComboBox<>();
+        this.comboBox = new JComboBox<>();
         // TODO
         this.selectedComponents = Collections.emptyList(); // DemetraUI.getDefault().getSelectedDiagFields();
 
@@ -183,20 +189,21 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         }
         return result;
     }
-    
-    private static Map<Integer, List<AlgorithmDescriptor>> methods(SaItem[] items){
-        Map<Integer, List<AlgorithmDescriptor>> map=new HashMap<>();
-        for (SaItem item : items){
+
+    private static Map<Integer, List<AlgorithmDescriptor>> methods(SaItem[] items) {
+        Map<Integer, List<AlgorithmDescriptor>> map = new HashMap<>();
+        for (SaItem item : items) {
             AlgorithmDescriptor alg = item.getDefinition().getDomainSpec().getAlgorithmDescriptor();
-            int period=item.getDefinition().getTs().getData().getAnnualFrequency();
-            if (period > 0){
+            int period = item.getDefinition().getTs().getData().getAnnualFrequency();
+            if (period > 0) {
                 List<AlgorithmDescriptor> list = map.get(period);
-                if (list == null){
+                if (list == null) {
                     list = new ArrayList<>();
                     map.put(period, list);
                 }
-                if (! list.contains(alg))
+                if (!list.contains(alg)) {
                     list.add(alg);
+                }
             }
         }
         return map;
@@ -232,8 +239,38 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         customMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, selectedComponents, selectedComponents)));
     }
 
-    private static final String[] MAIN = {"espan.n", "decomposition.seasonality", "adjust", "log", "arima.mean", "arima.p", "arima.d", "arima.q", "arima.bp", "arima.bd", "arima.bq", "likelihood.bicc", "residuals.ser", "residuals.lb", "decomposition.seasfilter", "decomposition.trendfilter"};
-    private static final String[] MAIN_TITLE = {"N", "Seasonal", "Adjust", "Log", "Mean", "P", "D", "Q", "BP", "BD", "BQ", "BIC", "SE(res)", "Q-val", "Seas filter", "Trend filter"};
+    private static String arimaItem(String key) {
+        return demetra.toolkit.dictionaries.Dictionary.concatenate(RegArimaDictionaries.ARIMA, key);
+    }
+
+    private static String regressionItem(String key) {
+        return demetra.toolkit.dictionaries.Dictionary.concatenate(RegArimaDictionaries.REGRESSION, key);
+    }
+
+    private static String residualsItem(String key) {
+        return demetra.toolkit.dictionaries.Dictionary.concatenate(RegArimaDictionaries.RESIDUALS, key);
+    }
+
+    private static String advancedItem(String key) {
+        return demetra.toolkit.dictionaries.Dictionary.concatenate(RegArimaDictionaries.ADVANCED, key);
+    }
+
+    private static String mlItem(String key) {
+        return demetra.toolkit.dictionaries.Dictionary.concatenate(RegArimaDictionaries.MAX, key);
+    }
+
+    private static String llItem(String key) {
+        return demetra.toolkit.dictionaries.Dictionary.concatenate(RegArimaDictionaries.LIKELIHOOD, key);
+    }
+
+    private static final String[] MAIN = {
+        regressionItem(RegressionDictionaries.ESPAN_N), SaDictionaries.SEASONAL, RegArimaDictionaries.ADJUST, RegArimaDictionaries.LOG,
+        regressionItem(RegArimaDictionaries.MEAN),
+        arimaItem(ArimaDictionaries.P), arimaItem(ArimaDictionaries.D), arimaItem(ArimaDictionaries.Q),
+        arimaItem(ArimaDictionaries.BP), arimaItem(ArimaDictionaries.BD), arimaItem(ArimaDictionaries.BQ),
+        llItem(LikelihoodDictionaries.BICC), residualsItem(ResidualsDictionaries.SER)};
+    
+    private static final String[] MAIN_TITLE = {"N", "Seasonal", "Adjust", "Log", "Mean", "P", "D", "Q", "BP", "BD", "BQ", "BIC", "SE(res)"};
 
     private TableModel createTableModel(AlgorithmDescriptor method, int freq, List<String> titles, List<String> items) {
         DefaultTableModel rslt = new DefaultTableModel();
@@ -241,7 +278,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         List<Explorable> rslts = new ArrayList<>();
         for (SaItem sa : this.saItems) {
             AlgorithmDescriptor alg = sa.getDefinition().getDomainSpec().getAlgorithmDescriptor();
-            TsData ts=sa.getDefinition().getTs().getData();
+            TsData ts = sa.getDefinition().getTs().getData();
             if (alg.equals(method) && ts.getAnnualFrequency() == freq && sa.isProcessed()) {
                 rslts.add(sa.getEstimation().getResults());
                 names.add(sa.getName());
@@ -284,6 +321,8 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
     private static final String[] CALENDAR = {"adjust", "regression.lp:2", "regression.td(1):2", "regression.td(2):2",
         "regression.td(3):2", "regression.td(4):2", "regression.td(5):2", "regression.td(6):2", "regression.td(7):2", "regression.easter:2"};
+    
+    
     private static final String[] CALENDAR_TITLE = {"Adjust", "Leap Year", "T-Stat", "TD(1)", "T-Stat", "TD(2)", "T-Stat", "TD(3)", "T-Stat", "TD(4)", "T-Stat", "TD(5)", "T-Stat", "TD(6)", "T-Stat", "TD(7)", "T-Stat", "Easter", "T-Stat"
     };
 

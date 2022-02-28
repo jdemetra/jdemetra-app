@@ -45,7 +45,7 @@ public abstract class AbstractSaProcessingTopComponent extends TopComponent impl
         setName(txt);
         setToolTipText(txt + " view");
         this.controller = controller;
-        this.controller.addWeakPropertyChangeListener(MultiProcessingController.SA_PROCESSING_STATE_PROPERTY, evt -> {
+        this.controller.addPropertyChangeListener(MultiProcessingController.SA_PROCESSING_STATE_PROPERTY, evt -> {
             firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
             onSaProcessingStateChange();
         });
