@@ -10,6 +10,9 @@ import demetra.desktop.workspace.CalendarDocumentManager;
 import demetra.desktop.ui.calendar.ChainedGregorianCalendarPanel;
 import demetra.desktop.ui.calendar.CompositeGregorianCalendarPanel;
 import demetra.desktop.ui.calendar.NationalCalendarPanel;
+import demetra.desktop.workspace.Workspace;
+import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.ItemWsNode;
 import demetra.timeseries.calendars.Calendar;
 import demetra.timeseries.calendars.CalendarDefinition;
@@ -71,8 +74,16 @@ public final class EditCalendarAction extends SingleNodeAction<ItemWsNode> {
     static void replace(CalendarManager manager, String oldName, String newName, CalendarDefinition newObj, ItemWsNode node) {
         manager.remove(oldName);
         manager.set(newName, newObj);
-        node.getWorkspace().remove(node.getItem());
-        node.getWorkspace().add(CalendarDocumentManager.systemItem(newName, newObj));
+        WorkspaceItem<CalendarDefinition> item = (WorkspaceItem<CalendarDefinition>) node.getItem();
+        item.setElement(newObj);
+        Workspace workspace = node.getWorkspace();
+        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(workspace, item.getId(), WorkspaceFactory.Event.ITEMCHANGED, null);
+        WorkspaceFactory.getInstance().notifyEvent(ev);
+        if (oldName != newName) {
+            item.setDisplayName(newName);
+            WorkspaceFactory.Event nev = new WorkspaceFactory.Event(workspace, item.getId(), WorkspaceFactory.Event.ITEMRENAMED, null);
+            WorkspaceFactory.getInstance().notifyEvent(nev);
+        }
     }
 
     @Messages({
@@ -81,10 +92,9 @@ public final class EditCalendarAction extends SingleNodeAction<ItemWsNode> {
     static void editNationalCalendar(CalendarManager manager, Calendar p, ItemWsNode node) {
         String oldName = manager.get(p);
 
-
         NationalCalendarPanel panel = new NationalCalendarPanel();
         panel.setCalendarName(oldName);
-         panel.setHolidays(ImmutableList.copyOf(p.getHolidays()));
+        panel.setHolidays(ImmutableList.copyOf(p.getHolidays()));
 
         DialogDescriptor dd = panel.createDialogDescriptor(Bundle.editNationalCalendar_dialog_title());
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {

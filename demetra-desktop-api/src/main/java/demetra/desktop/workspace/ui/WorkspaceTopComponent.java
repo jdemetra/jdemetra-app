@@ -4,6 +4,8 @@
  */
 package demetra.desktop.workspace.ui;
 
+import demetra.desktop.ui.ActiveView;
+import demetra.desktop.ui.ActiveViewManager;
 import java.util.Collection;
 import javax.swing.Action;
 import javax.swing.JMenu;
@@ -16,48 +18,53 @@ import org.openide.windows.TopComponent;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.ui.Menus;
-import java.awt.Frame;
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
-import org.openide.windows.WindowManager;
+import org.openide.nodes.Node;
 
 /**
  *
  * @author Jean Palate
  * @param <T>
  */
-public abstract class WorkspaceTopComponent<T> extends TopComponent implements ExplorerManager.Provider, LookupListener {
+public abstract class WorkspaceTopComponent<T> extends TopComponent implements ActiveView, ExplorerManager.Provider, LookupListener {
 
     protected final WorkspaceItem<T> doc;
     private final Lookup.Result<WorkspaceFactory.Event> wsevent;
 
-    protected abstract String getContextPath();
 
     protected WorkspaceTopComponent(WorkspaceItem<T> doc) {
         this.doc = doc;
         this.wsevent = WorkspaceFactory.getInstance().getLookup().lookupResult(WorkspaceFactory.Event.class);
+        setDisplayName(doc.getDisplayName());
     }
 
     public WorkspaceItem<T> getDocument() {
         return doc;
     }
+    
+    @Override
+    public boolean hasContextMenu(){
+        return true;
+    }
+    
+    protected String getContextPath(){
+        return null;
+    }
 
     @Override
-    public String getName() {
-        return doc == null ? super.getName() : doc.getDisplayName();
+    public boolean fill(JMenu menu) {
+        Menus.fillMenu(menu, getContextPath());
+        return true;
     }
 
     @Override
     public void componentActivated() {
         super.componentActivated();
-        updateMenu(true);
+        ActiveViewManager.getInstance().set(this);
     }
 
     @Override
     public void componentDeactivated() {
-        updateMenu(false);
+        ActiveViewManager.getInstance().set(null);
         super.componentDeactivated();
     }
 
@@ -96,13 +103,12 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements E
                     case WorkspaceFactory.Event.ITEMCHANGED:
                         if (ev.source != this) {
                             SwingUtilities.invokeLater(this::refresh);
-
                         }
                         break;
                     case WorkspaceFactory.Event.ITEMRENAMED:
                         if (ev.source != this) {
-                            SwingUtilities.invokeLater(()->
-                            this.setDisplayName(doc.getDisplayName()));
+                            SwingUtilities.invokeLater(()
+                                    -> this.setDisplayName(doc.getDisplayName()));
                         }
                         break;
                 }
@@ -110,71 +116,4 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements E
         }
     }
 
-    protected boolean fill(JMenu menu) {
-        if (doc != null) {
-            Menus.fillMenu(menu, getContextPath());
-        }
-        return true;
-    }
-
-    protected boolean hasContextMenu() {
-        return true;
-    }
-
-    private void updateMenu(boolean show) {
-        JMenu menu = activeMenu();
-        if (menu == null) {
-            return;
-        }
-        if (!show || !hasContextMenu()) {
-            menu.setVisible(false);
-        } else {
-            menu.removeAll();
-            menu.setVisible(true);
-            menu.setText(getName());
-        }
-    }
-
-    private JMenu activeMenu() {
-        Frame frame = WindowManager.getDefault().getMainWindow();
-        if (frame == null || !(frame instanceof JFrame)) {
-            return null;
-        }
-        JFrame mainWindow = (JFrame) frame;
-        JMenuBar menuBar = mainWindow.getJMenuBar();
-        if (menuBar == null) {
-            return null;
-        }
-        for (int i = 0; i < menuBar.getMenuCount(); ++i) {
-            JMenu cur = menuBar.getMenu(i);
-            if (cur != null && ACTIVE.equals(cur.getName())) {
-                return cur;
-            }
-        }
-        final JMenu nmenu = new JMenu();
-        nmenu.setName(ACTIVE);
-        menuBar.add(nmenu, POS);
-        menuBar.validate();
-        nmenu.addMenuListener(new MenuListener() {
-            @Override
-            public void menuSelected(MenuEvent e) {
-                nmenu.removeAll();
-                if (hasContextMenu()) {
-                    fill(nmenu);
-                }
-            }
-
-            @Override
-            public void menuDeselected(MenuEvent e) {
-            }
-
-            @Override
-            public void menuCanceled(MenuEvent e) {
-            }
-        });
-        return nmenu;
-    }
-
-    private static final String ACTIVE = "_Active_View";
-    private static final int POS = 2;
 }

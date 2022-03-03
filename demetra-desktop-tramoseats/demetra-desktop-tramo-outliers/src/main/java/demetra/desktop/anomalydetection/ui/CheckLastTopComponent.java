@@ -118,7 +118,6 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
     // Thread Stuff
     private ProgressHandle progressHandle;
     private SwingWorker<Void, AnomalyItem> worker;
-    private boolean active;
     // Properties
     private Node n;
     private final ExplorerManager mgr = new ExplorerManager();
@@ -322,14 +321,12 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
     public void componentDeactivated() {
         super.componentDeactivated();
         ActiveViewManager.getInstance().set(null);
-        active = false;
     }
 
     @Override
     public void componentActivated() {
         super.componentActivated();
         ActiveViewManager.getInstance().set(this);
-        active = true;
     }
 
     @Override
@@ -342,26 +339,11 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
         super.componentShowing();
     }
     // </editor-fold>
-
+    
     // <editor-fold defaultstate="collapsed" desc="Getters / Setters">
-    @Override
-    public Node getNode() {
-        return n;
-    }
-
     @Override
     public ExplorerManager getExplorerManager() {
         return mgr;
-    }
-
-    @Override
-    public boolean fill(JMenu menu) {
-        return false;
-    }
-
-    @Override
-    public boolean hasContextMenu() {
-        return false;
     }
 
     @Override
@@ -420,7 +402,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
 
             if (tasks.size() > 0) {
                 NotifyUtil.show("Check Last done !", "Processed " + tasks.size() + " items in " + stopwatch.stop(), MessageType.SUCCESS, null, null, null);
-                if (!active) {
+                if (! ActiveViewManager.getInstance().isActive(CheckLastTopComponent.this)) {
                     requestAttention(false);
                 }
             }

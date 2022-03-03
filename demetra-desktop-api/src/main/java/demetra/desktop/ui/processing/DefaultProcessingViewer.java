@@ -29,10 +29,8 @@ import org.openide.util.lookup.InstanceContent;
  * @param <S>
  * @param <D>
  */
-public class DefaultProcessingViewer<S extends ProcSpecification, D extends ProcDocument<S, ?, ?>> extends JComponent implements Disposable {
+public class DefaultProcessingViewer<S extends ProcSpecification, D extends ProcDocument<S, ?, ?>> extends JComponent implements Disposable, ExplorerManager.Provider {
     
-    private final InstanceContent content = new InstanceContent();
-
     public static final String BUTTONS = "Buttons", BUTTON_APPLY = "Apply", BUTTON_RESTORE = "Restore", BUTTON_SAVE = "Save",
             DIRTY_SPEC_PROPERTY = "dirtySpecProperty";
 
@@ -44,20 +42,20 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     }
 
     private DocumentUIServices<S, D> factory;
-    protected final Type type_;
+    private final Type type_;
     // visual components
-    protected final JSplitPane splitter;
-    protected final JPanel specPanel;
-    protected final BeanTreeView tree;
-    protected final ExplorerManager internalExplorerManager;
+    private final JSplitPane splitter;
+    private final JPanel specPanel;
+    private final BeanTreeView tree;
+    private final transient ExplorerManager explorerManager;
     protected final JToolBar toolBar;
     protected final JComponent emptyView;
     // document-related data
-    protected IProcDocumentView<D> m_procView;
-    protected IObjectDescriptor<S> specDescriptor;
-    protected S originalSpec;
+    private IProcDocumentView<D> procView;
+    private IObjectDescriptor<S> specDescriptor;
+    private S originalSpec;
     // other
-    protected int specWidth_ = 300;
+    private int specWidth = 300;
     private boolean dirty;
 
     protected DefaultProcessingViewer(DocumentUIServices<S, D> factory, Type type) {
@@ -72,8 +70,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         this.tree = new BeanTreeView();
         tree.setRootVisible(false);
         tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        this.internalExplorerManager = new ExplorerManager();
-        internalExplorerManager.addPropertyChangeListener(evt -> {
+        this.explorerManager = new ExplorerManager();
+        explorerManager.addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
                 case ExplorerManager.PROP_SELECTED_NODES:
                     Node[] nodes = (Node[]) evt.getNewValue();
@@ -108,25 +106,30 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     }
 
     // GETTERS/SETTERS >
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return this.explorerManager;
+    }
+
     public int getSpecWidth() {
-        return specWidth_;
+        return specWidth;
     }
 
     public void setSpecWidth(int value) {
-        specWidth_ = value;
+        specWidth = value;
     }
 
     public D getDocument() {
-        return m_procView == null ? null : m_procView.getDocument();
+        return procView == null ? null : procView.getDocument();
     }
 
     public void setDocument(D doc) {
         dirty = false;
 
         try {
-            if (m_procView != null) {
-                m_procView.dispose();
-                m_procView = null;
+            if (procView != null) {
+                procView.dispose();
+                procView = null;
             }
             if (doc == null) {
                 originalSpec = null;
@@ -134,7 +137,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
             }
             originalSpec = doc.getSpecification();
             // initialize all items
-            m_procView = factory.getDocumentView(doc);
+            procView = factory.getDocumentView(doc);
             initSpecView(doc);
         } finally {
             buildTree();
@@ -152,9 +155,9 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
         try {
             this.factory=factory;
-            if (m_procView != null) {
-                m_procView.dispose();
-                m_procView = null;
+            if (procView != null) {
+                procView.dispose();
+                procView = null;
             }
             if (doc == null) {
                 originalSpec = null;
@@ -162,7 +165,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
             }
             originalSpec = doc.getSpecification();
             // initialize all items
-            m_procView = factory.getDocumentView(doc);
+            procView = factory.getDocumentView(doc);
             initSpecView(doc);
         } finally {
             buildTree();
@@ -239,7 +242,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                  }
             }};
         PropertySheetPanel specView = factory.getSpecView(specDescriptor);
-        setPropertiesPanel(commands, specView, specWidth_);
+        setPropertiesPanel(commands, specView, specWidth);
     }
 
     private void initAllSpecView() {
@@ -278,7 +281,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 }
             }};
         PropertySheetPanel specView = factory.getSpecView(specDescriptor);
-        setPropertiesPanel(commands, specView, specWidth_);
+        setPropertiesPanel(commands, specView, specWidth);
     }
 
     private void setPropertiesPanel(final Action[] commands, final JComponent pane, int width) {
@@ -321,8 +324,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
      * Refresh the views panel
      */
     public void refreshView() {
-        m_procView.refresh();
-        Node[] sel = internalExplorerManager.getSelectedNodes();
+        procView.refresh();
+        Node[] sel = explorerManager.getSelectedNodes();
         if (!Arrays2.isNullOrEmpty(sel)) {
             Id curid = sel[0].getLookup().lookup(Id.class);
             if (curid != null) {
@@ -338,11 +341,11 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     }
 
     private void buildTree() {
-        if (m_procView != null) {
-            internalExplorerManager.setRootContext(new DecoratedNode(IdNodes.getRootNode(m_procView.getItems())));
+        if (procView != null) {
+            explorerManager.setRootContext(new DecoratedNode(IdNodes.getRootNode(procView.getItems())));
             selectPreferredView();
         } else {
-            internalExplorerManager.setRootContext(Node.EMPTY);
+            explorerManager.setRootContext(Node.EMPTY);
             showComponent(null);
         }
     }
@@ -355,7 +358,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
         JComponent newView;
         try {
-            newView = id == null ? emptyView : m_procView.getView(id);
+            newView = id == null ? emptyView : procView.getView(id);
         } catch (RuntimeException ex) {
             newView = JExceptionPanel.create(ex);
         }
@@ -366,13 +369,13 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     }
 
     private void selectPreferredView() {
-        Id pview = m_procView.getPreferredView();
+        Id pview = procView.getPreferredView();
         if (pview != null) {
             showComponent(pview);
-            Node node = IdNodes.findNode(internalExplorerManager.getRootContext(), pview);
+            Node node = IdNodes.findNode(explorerManager.getRootContext(), pview);
             try {
                 if (node != null) {
-                    internalExplorerManager.setSelectedNodes(new Node[]{node});
+                    explorerManager.setSelectedNodes(new Node[]{node});
                     ((DecoratedNode) node).setHtmlDecorator(DecoratedNode.Html.BOLD);
                 }
             } catch (PropertyVetoException ex) {
@@ -383,8 +386,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
     @Override
     public void dispose() {
-        if (m_procView != null) {
-            m_procView.dispose();
+        if (procView != null) {
+            procView.dispose();
         }
         tree.setTransferHandler(null);
         Component old = splitter.getBottomComponent();

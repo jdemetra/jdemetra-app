@@ -99,13 +99,24 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
     }
 
     @Override
+    public boolean hasContextMenu(){
+        return true;
+    }
+
+    @Override
+    public boolean fill(JMenu menu) {
+        Menus.fillMenu(menu, WorkspaceFactory.TSCONTEXTPATH, getContextPath());
+        return true;
+    }
+
+    @Override
     public demetra.timeseries.Ts getTs() {
         return panel.getDocument().getInput();
     }
 
     @Override
     public void setTs(demetra.timeseries.Ts ts) {
-        Ts cts = null;
+        Ts cts;
         if (TsManager.isDynamic(ts)) {
             cts = ts.freeze();
         } else {
@@ -121,12 +132,5 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
 
     }
 
-    @Override
-    protected boolean fill(JMenu menu) {
-        if (doc != null) {
-            Menus.fillMenu(menu, WorkspaceFactory.TSCONTEXTPATH, getContextPath());
-        }
-        return true;
-    }
-
+ 
 }

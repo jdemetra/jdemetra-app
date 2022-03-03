@@ -12,19 +12,20 @@ import demetra.timeseries.calendars.CalendarManager;
 import java.awt.BorderLayout;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
+import org.openide.explorer.ExplorerManager;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//ec.nbdemetra.ui.calendars//Calendar//EN",
+@ConvertAsProperties(dtd = "-//demetra.desktop.workspace.ui//Calendar//EN",
 autostore = false)
 @TopComponent.Description(preferredID = "CalendarTopComponent",
 //iconBase="SET/PATH/TO/ICON/HERE", 
 persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Window", id = "ec.nbdemetra.ui.calendars.CalendarTopComponent")
+@ActionID(category = "Window", id = "demetra.desktop.workspace.ui.CalendarTopComponent")
 @TopComponent.OpenActionRegistration(displayName = "#CTL_CalendarAction",
 preferredID = "CalendarTopComponent")
 @Messages({
@@ -32,9 +33,10 @@ preferredID = "CalendarTopComponent")
     "CTL_CalendarTopComponent=Calendar Window",
     "HINT_CalendarTopComponent=This is a Calendar window"
 })
-public final class CalendarTopComponent extends TopComponent {
+public final class CalendarTopComponent extends WorkspaceTopComponent<CalendarDefinition>{
 
-    private final WorkspaceItem<CalendarDefinition> calendar;
+    private final transient ExplorerManager explorerManager=new ExplorerManager();
+    private final JCalendarView view = new JCalendarView();
 
     public CalendarTopComponent() {
         this((WorkspaceItem<CalendarDefinition>) WorkspaceFactory.getInstance().getActiveWorkspace().
@@ -42,16 +44,19 @@ public final class CalendarTopComponent extends TopComponent {
     }
 
     public CalendarTopComponent(WorkspaceItem<CalendarDefinition> calendar) {
-        this.calendar = calendar;
-        initComponents();
+        super(calendar);
+         initComponents();
         setName(calendar.getId().toString());
         setDisplayName(calendar.getDisplayName());
         setToolTipText(Bundle.HINT_CalendarTopComponent());
-        JCalendarView view = new JCalendarView();
         view.setCalendar(calendar.getElement());
         add(view, BorderLayout.CENTER);
     }
 
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return explorerManager;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -65,18 +70,6 @@ public final class CalendarTopComponent extends TopComponent {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-    @Override
-    public void componentOpened() {
-         calendar.setView(this);
-       // TODO add custom code on component opening
-    }
-
-    @Override
-    public void componentClosed() {
-        calendar.setView(null);
-        // TODO add custom code on component closing
-    }
-
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
@@ -88,4 +81,11 @@ public final class CalendarTopComponent extends TopComponent {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
+
+    @Override
+    public void refresh(){
+        view.setCalendar(getDocument().getElement());
+    }
+    
+    
 }

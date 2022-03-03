@@ -62,7 +62,7 @@ public class WorkspaceItem<T> implements Modifiable, Comparable<WorkspaceItem> {
             return this == Valid || this == Undefined || this == Invalid;
         }
     }
-    
+
     private Workspace owner_;
     private final Id family_;
     private T element_;
@@ -104,10 +104,10 @@ public class WorkspaceItem<T> implements Modifiable, Comparable<WorkspaceItem> {
         item.status_ = Status.Undefined;
         return item;
     }
-    
+
     public static <T> WorkspaceItem<T> item(Id family, String name, String id, String comments) {
         WorkspaceItem<T> item = new WorkspaceItem(family, name, id);
-        item.comments_=comments;
+        item.comments_ = comments;
         item.status_ = Status.Undefined;
         return item;
     }
@@ -158,11 +158,13 @@ public class WorkspaceItem<T> implements Modifiable, Comparable<WorkspaceItem> {
     }
 
     public void setComments(String comments) {
-        if (comments == null && comments_ == null)
+        if (comments == null && comments_ == null) {
             return;
-        if (comments != null && comments.equals(comments_))
+        }
+        if (comments != null && comments.equals(comments_)) {
             return;
-            
+        }
+
         this.comments_ = comments;
         dirty_ = true;
         status_ = Status.Undefined;
@@ -195,7 +197,7 @@ public class WorkspaceItem<T> implements Modifiable, Comparable<WorkspaceItem> {
             return false;
         }
     }
-    
+
     public boolean reload() {
         if (!status_.hasStorage()) {
             return false;
@@ -252,22 +254,16 @@ public class WorkspaceItem<T> implements Modifiable, Comparable<WorkspaceItem> {
 
     @Override
     public boolean isDirty() {
-        if (dirty_) {
-            return true;
-        }
-        if (element_ != null && element_ instanceof Modifiable) {
-            return ((Modifiable) element_).isDirty();
-        } else {
-            return false;
-        }
+        return dirty_;
     }
 
     @Override
     public void resetDirty() {
-        if (element_ != null && element_ instanceof Modifiable) {
-            ((Modifiable) element_).resetDirty();
-        }
         dirty_ = false;
+    }
+
+    public void setDirty() {
+        dirty_ = true;
     }
 
     public boolean isOpen() {
@@ -297,22 +293,22 @@ public class WorkspaceItem<T> implements Modifiable, Comparable<WorkspaceItem> {
             return true;
         }
     }
-    
-    public void notify(int event, Object source){
+
+    public void notify(int event, Object source) {
         WorkspaceFactory.getInstance().notifyEvent(new WorkspaceFactory.Event(owner_, getId(), event, source));
     }
 
     public static class InnerComparator implements Comparator<WorkspaceItem<?>> {
 
         private final Id family_;
-        
-        public InnerComparator(Id family){
-            family_=family;            
+
+        public InnerComparator(Id family) {
+            family_ = family;
         }
-        
+
         @Override
         public int compare(WorkspaceItem<?> o1, WorkspaceItem<?> o2) {
-            if (o1.family_.equals(family_) 
+            if (o1.family_.equals(family_)
                     && o1.family_.equals(family_)) {
                 return o1.compareTo(o2);
             } else {

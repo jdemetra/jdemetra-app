@@ -22,10 +22,10 @@ import org.openide.util.NbBundle;
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//demetra.desktop.tramo.ui//Tramo//EN",
-autostore = false)
+        autostore = false)
 @TopComponent.Description(preferredID = "TramoTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_NEVER)
+        //iconBase="SET/PATH/TO/ICON/HERE", 
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Modelling", id = "demetra.desktop.tramo.ui.TramoTopComponent")
 @ActionReference(path = "Menu/Statistical methods/Modelling/Single Analysis", position = 1000)
@@ -50,14 +50,14 @@ public final class TramoTopComponent extends WorkspaceTsTopComponent<TramoDocume
     public TramoTopComponent(WorkspaceItem<TramoDocument> doc) {
         super(doc);
         initDocument();
-       associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
+        associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
     @Override
     public ExplorerManager getExplorerManager() {
         return mgr;
     }
- 
+
     private void initDocument() {
         initComponents();
         setToolTipText(NbBundle.getMessage(TramoTopComponent.class, "HINT_TramoTopComponent"));

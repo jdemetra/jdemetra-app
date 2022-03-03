@@ -5,7 +5,6 @@
 package demetra.desktop.ui;
 
 import java.awt.Frame;
-import java.beans.PropertyVetoException;
 import java.util.Collections;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -14,7 +13,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
-import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
@@ -22,11 +20,11 @@ import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 /**
- * A hack simulating MDI documents that should be changed
+ * A hack simulating MDI documents (to be changed ?)
  *
  * @author Jean Palate
  */
-public class ActiveViewManager implements Lookup.Provider, ExplorerManager.Provider {
+public class ActiveViewManager implements Lookup.Provider {
 
     public static ActiveViewManager getInstance() {
         return INSTANCE;
@@ -37,79 +35,24 @@ public class ActiveViewManager implements Lookup.Provider, ExplorerManager.Provi
     private boolean updating = false;
     private final InstanceContent content = new InstanceContent();
     private final Lookup lookup;
-    private final ExplorerManager mgr = new ExplorerManager();
-
-    @Override
-    public ExplorerManager getExplorerManager() {
-        return mgr;
-    }
 
     private ActiveViewManager() {
         lookup = new AbstractLookup(content);
-        mgr.setRootContext(Node.EMPTY);
+     }
+    
+    public boolean isActive(ActiveView view){
+        return lookup.lookup(view.getClass()) == view;
     }
 
     public void set(ActiveView view) {
         if (view == null) {
             content.set(Collections.emptySet(), null);
-            //mgr.setRootContext(Node.EMPTY);
         } else {
             content.set(Collections.singleton(view), null);
-            Node node = view.getNode();
-            if (node != null) {
-                mgr.setRootContext(node);
-                try {
-                    mgr.setSelectedNodes(new Node[]{node});
-                } catch (PropertyVetoException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            } else {
-                mgr.setRootContext(Node.EMPTY);
-            }
         }
         updateMenu(view);
     }
 
-//    void initialize() {
-//        WindowManager.getDefault().getRegistry().addPropertyChangeListener(new PropertyChangeListener() {
-//
-//            @Override
-//            public void propertyChange(PropertyChangeEvent evt) {
-//                JMenu current = activeMenu();
-//                if (current == null) {
-//                    return;
-//                }
-//                if (evt.getPropertyName().equals(TopComponent.Registry.PROP_ACTIVATED)) {
-//                    TopComponent activated = WindowManager.getDefault().getRegistry().getActivated();
-//                    if (activated != null) {
-//                        content.set(Collections.singleton(activated), null);
-//                        ActiveView view = currentView();
-//                        if (view != null) {
-//                            Node node = view.getNode();
-//                            if (node != null) {
-//                                try {
-//                                    mgr.setRootContext(node);
-//                                    mgr.setSelectedNodes(new Node[]{node});
-//                                }
-//                                catch (PropertyVetoException ex) {
-//                                    Exceptions.printStackTrace(ex);
-//                                }
-//                            }
-////                            else {
-////                                mgr.setRootContext(Node.EMPTY);
-////                            }
-//                        }
-//                    }
-//                    else {
-//                        content.set(null, null);
-////                        mgr.setRootContext(Node.EMPTY);
-//                    }
-//
-//                    fill(current);
-//                }
-//            }
-//        });
-//    }
     private void updateMenu(ActiveView view) {
         JMenu menu = activeMenu();
         if (menu == null) {
@@ -193,42 +136,6 @@ public class ActiveViewManager implements Lookup.Provider, ExplorerManager.Provi
         return lookup.lookup(ActiveView.class);
     }
 
-//    public void register(Id id, TopComponent view) {
-//        views.add(new IdView(id, view));
-//    }
-//
-//    public void unregister(TopComponent view) {
-//        int pos = 0, toremove = -1;
-//        for (IdView idview : views) {
-//            if (idview.view == view) {
-//                toremove = pos;
-//                break;
-//            }
-//            ++pos;
-//        }
-//        if (toremove >= 0) {
-//            views.remove(toremove);
-//        }
-//    }
-//
-//    public <T extends TopComponent> T search(Id id, Class<T> tclass) {
-//        for (IdView idview : views) {
-//            if (idview.id.equals(id) && tclass.isInstance(idview.view)) {
-//                return (T) idview.view;
-//            }
-//        }
-//        return null;
-//    }
-//
-//    public TopComponent search(Id id) {
-//        for (IdView idview : views) {
-//            if (idview.id.equals(id)) {
-//                return idview.view;
-//            }
-//        }
-//        return null;
-//    }
-//
     @Override
     public Lookup getLookup() {
         return lookup;

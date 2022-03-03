@@ -14,14 +14,17 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package ec.nbdemetra.sa.actions;
+package demetra.desktop.sa.multiprocessing.actions;
 
-import ec.nbdemetra.sa.MultiProcessingManager;
-import ec.nbdemetra.sa.SaBatchUI;
-import ec.nbdemetra.ws.actions.AbstractViewAction;
-import ec.nbdemetra.ws.ui.JSpecSelectionComponent;
-import ec.satoolkit.ISaSpecification;
-import ec.tss.sa.SaItem;
+import demetra.desktop.sa.multiprocessing.ui.MultiProcessingController;
+import demetra.desktop.sa.multiprocessing.ui.MultiProcessingDocument;
+import demetra.desktop.sa.multiprocessing.ui.MultiProcessingManager;
+import demetra.desktop.sa.multiprocessing.ui.SaBatchUI;
+import demetra.desktop.sa.multiprocessing.ui.SaNode;
+import demetra.desktop.workspace.WorkspaceItem;
+import demetra.desktop.ui.ActiveViewAction;
+import demetra.desktop.workspace.ui.JSpecSelectionComponent;
+import demetra.sa.SaSpecification;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -32,14 +35,14 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-        id = "ec.nbdemetra.sa.actions.ChangeSpecification")
+        id = "demetra.sa.multiprocessing.actions.ChangeSpecification")
 @ActionRegistration(displayName = "#CTL_ChangeSpecification", lazy = false)
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Specification.PATH, position = 1410),
     @ActionReference(path = MultiProcessingManager.LOCALPATH + Specification.PATH, position = 1410)
 })
 @Messages("CTL_ChangeSpecification=Select...")
-public final class ChangeSpecification extends AbstractViewAction<SaBatchUI> {
+public final class ChangeSpecification extends ActiveViewAction<SaBatchUI> {
 
     public ChangeSpecification() {
         super(SaBatchUI.class);
@@ -56,28 +59,32 @@ public final class ChangeSpecification extends AbstractViewAction<SaBatchUI> {
     @Override
     protected void process(SaBatchUI cur) {
         cur.stop();
-        SaItem[] selection = cur.getSelection();
-        ISaSpecification spec = null;
+        SaNode[] selection = cur.getSelection();
+        SaSpecification spec = null;
         // find unique spec
-        for (SaItem o : selection) {
+        for (SaNode o : selection) {
+            SaSpecification dspec = o.domainSpec();
+                    
             if (spec == null) {
-                spec = o.getDomainSpecification();
-            } else if (!spec.equals(o.getDomainSpecification())) {
+                spec = dspec;
+            } else if (!spec.equals(dspec)) {
                 spec = null;
                 break;
             }
         }
         JSpecSelectionComponent c = new JSpecSelectionComponent();
-        c.setSpecification(cur.getDefaultSpecification());
+        c.setFamily(SaSpecification.FAMILY);
         DialogDescriptor dd = c.createDialogDescriptor("Choose active specification");
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
-            for (SaItem o : selection) {
-                SaItem n = new SaItem(c.getSpecification(), o.getTs());
-                n.setMetaData(o.getMetaData());
-                n.setName(o.getRawName());
-                cur.getCurrentProcessing().replace(o, n);
+            MultiProcessingController controller = cur.getController();
+            WorkspaceItem<MultiProcessingDocument> document = controller.getDocument();
+            for (SaNode o : selection) {
+                SaNode n= o.with((SaSpecification) c.getSpecification());
+                document.getElement().replace(o.getId(), n);
             }
             cur.redrawAll();
+            document.setDirty();
+            controller.setSaProcessingState(MultiProcessingController.SaProcessingState.READY);
         }
     }
 }

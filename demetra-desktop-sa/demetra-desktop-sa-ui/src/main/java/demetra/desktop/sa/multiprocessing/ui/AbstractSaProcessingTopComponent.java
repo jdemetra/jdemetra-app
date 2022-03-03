@@ -16,6 +16,8 @@
  */
 package demetra.desktop.sa.multiprocessing.ui;
 
+import demetra.desktop.ui.ActiveView;
+import demetra.desktop.ui.ActiveViewManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.WorkspaceTopComponent;
 import demetra.sa.SaItem;
@@ -25,13 +27,14 @@ import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
+import org.openide.nodes.Node;
 import org.openide.windows.TopComponent;
 
 /**
  *
  * @author Jean Palate
  */
-public abstract class AbstractSaProcessingTopComponent extends TopComponent implements  MultiViewElement, MultiViewDescription {
+public abstract class AbstractSaProcessingTopComponent extends TopComponent implements  ActiveView, MultiViewElement, MultiViewDescription  {
 
     protected MultiProcessingController controller;
 
@@ -103,10 +106,12 @@ public abstract class AbstractSaProcessingTopComponent extends TopComponent impl
     @Override
     public void componentActivated() {
         super.componentActivated();
+        ActiveViewManager.getInstance().set(this);
     }
 
     @Override
     public void componentDeactivated() {
+        ActiveViewManager.getInstance().set(null);
         super.componentDeactivated();
     }
 

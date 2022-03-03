@@ -2,9 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.workspace.actions;
+package demetra.desktop.ui;
 
-import demetra.desktop.ui.ActiveViewManager;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -15,17 +14,17 @@ import org.openide.windows.TopComponent;
 /**
  *
  * @author Jean Palate
- * @param <T>
+ * @param <T> ActiveView
  */
-public abstract class AbstractViewAction<T extends TopComponent> extends AbstractAction implements ContextAwareAction {
+public abstract class ActiveViewAction<T extends ActiveView> extends AbstractAction implements ContextAwareAction {
 
-    private static <T extends TopComponent> T getUI(Class<T> tclass) {
-        TopComponent activated = TopComponent.getRegistry().getActivated();
-        return tclass.isInstance(activated) ? (T) activated : null;
+    private static <T extends ActiveView> T getUI(Class<T> tclass) {
+        return ActiveViewManager.getInstance().getLookup().lookup(tclass);
     }
+    
     protected final Class<T> tclass;
 
-    public AbstractViewAction(Class<T> tclass) {
+    public ActiveViewAction(Class<T> tclass) {
         this.tclass = tclass;
     }
 

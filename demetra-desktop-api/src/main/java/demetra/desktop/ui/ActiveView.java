@@ -5,7 +5,6 @@
 package demetra.desktop.ui;
 
 import javax.swing.JMenu;
-import org.openide.nodes.Node;
 
 /**
  *
@@ -21,6 +20,4 @@ public interface ActiveView {
     default boolean hasContextMenu(){
         return false;
     }
-    
-    Node getNode();
 }
