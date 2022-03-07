@@ -17,6 +17,7 @@ import demetra.toolkit.dictionaries.LikelihoodDictionaries;
 import demetra.toolkit.dictionaries.RegArimaDictionaries;
 import demetra.toolkit.dictionaries.RegressionDictionaries;
 import demetra.toolkit.dictionaries.ResidualsDictionaries;
+import demetra.util.MultiLineNameUtil;
 import demetra.util.Table;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.JGrid;
@@ -288,7 +289,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
             TsData ts = sa.getDefinition().getTs().getData();
             if (alg.equals(method) && ts.getAnnualFrequency() == freq && sa.isProcessed()) {
                 rslts.add(sa.getEstimation().getResults());
-                names.add(sa.getName());
+                names.add(MultiLineNameUtil.join(sa.getName()));
             }
         }
 

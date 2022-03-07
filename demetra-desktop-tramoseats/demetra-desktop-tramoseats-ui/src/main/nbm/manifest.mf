@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-OpenIDE-Module-Localizing-Bundle: /demetra/desktop/tramoseats/ui/Bundle.properties
-OpenIDE-Module-Layer: /demetra/desktop/tramoseats/ui/layer.xml
+OpenIDE-Module-Localizing-Bundle: demetra/desktop/tramoseats/ui/Bundle.properties
+OpenIDE-Module-Layer: demetra/desktop/tramoseats/ui/layer.xml
 
