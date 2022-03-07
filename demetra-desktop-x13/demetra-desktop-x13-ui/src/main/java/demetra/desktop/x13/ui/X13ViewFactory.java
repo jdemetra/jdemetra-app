@@ -41,11 +41,14 @@ import demetra.sa.SaProcessingFactory;
 import demetra.sa.SeriesDecomposition;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDocument;
+import demetra.toolkit.dictionaries.Dictionary;
+import demetra.toolkit.dictionaries.RegressionDictionaries;
 import demetra.util.Id;
 import demetra.util.LinearId;
 import demetra.x11.SeasonalFilterOption;
+import demetra.x11.X11Dictionaries;
 import jdplus.x11.X11Results;
-import demetra.x13.X13Dictionary;
+import demetra.x13.X13Dictionaries;
 import demetra.x13.io.information.X13SpecMapping;
 import jdplus.x13.X13Results;
 import jdplus.x13.X13Document;
@@ -56,7 +59,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
 import org.openide.util.lookup.ServiceProvider;
-
 
 /**
  *
@@ -161,6 +163,24 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
                 .build().toString();
     }
 
+//    private static String generateId2(String name, String id) {
+//        return TsDynamicProvider.CompositeTs.builder()
+//                .name(name)
+//                .back(id + "_b(?)")
+//                .now(id)
+//                .fore(id + "_f(?)")
+//                .build().toString();
+//    }
+//
+//    private static String generateStdErrorId2(String name, String id) {
+//        return TsDynamicProvider.CompositeTs.builder()
+//                .name(name)
+//                .back(id + "_eb(?)")
+//                .now(id + SeriesInfo.E_SUFFIX)
+//                .fore(id  + "_ef(?)")
+//                .build().toString();
+//    }
+//
     public static String[] lowSeries() {
         return new String[]{
             generateId("Series", SaDictionaries.Y),
@@ -367,7 +387,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
         }
 
         private static String[] generateItems() {
-            return new String[]{ModellingDictionary.Y + SeriesInfo.F_SUFFIX, ModellingDictionary.Y + SeriesInfo.EF_SUFFIX};
+            return new String[]{RegressionDictionaries.Y_F, RegressionDictionaries.Y_EF};
         }
     }
 
@@ -522,7 +542,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
         public ATablesFactory() {
             super(X13Document.class, A_TABLES, source -> source, new GenericTableUI(false,
-                    BasicInformationExtractor.prefix(X13Dictionary.A_TABLE, X13Dictionary.PREADJUST)));
+                    BasicInformationExtractor.prefix(X13Dictionaries.A_TABLE, X13Dictionaries.PREADJUST)));
         }
 
         @Override
@@ -536,7 +556,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
         public BTablesFactory() {
             super(X13Document.class, B_TABLES, source -> source, new GenericTableUI(false,
-                    BasicInformationExtractor.prefix(X13Dictionary.B_TABLE, SaDictionaries.DECOMPOSITION)));
+                    BasicInformationExtractor.prefix(X11Dictionaries.B_TABLE, X13Dictionaries.X11)));
         }
 
         @Override
@@ -550,7 +570,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
         public CTablesFactory() {
             super(X13Document.class, C_TABLES, source -> source, new GenericTableUI(false,
-                    BasicInformationExtractor.prefix(X13Dictionary.C_TABLE, SaDictionaries.DECOMPOSITION)));
+                    BasicInformationExtractor.prefix(X11Dictionaries.C_TABLE, X13Dictionaries.X11)));
         }
 
         @Override
@@ -562,9 +582,28 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4040)
     public static class DTablesFactory extends ProcDocumentItemFactory<X13Document, TsDocument> {
 
+        static final String[] items = new String[]{
+            Dictionary.concatenate(X13Dictionaries.X11, X11Dictionaries.D1),
+            Dictionary.concatenate(X13Dictionaries.X11, X11Dictionaries.D4),
+            Dictionary.concatenate(X13Dictionaries.X11, X11Dictionaries.D5),
+            Dictionary.concatenate(X13Dictionaries.X11, X11Dictionaries.D6),
+            Dictionary.concatenate(X13Dictionaries.X11, X11Dictionaries.D7),
+            Dictionary.concatenate(X13Dictionaries.X11, X11Dictionaries.D8),
+            Dictionary.concatenate(X13Dictionaries.X11, X11Dictionaries.D9),
+            Dictionary.concatenate(X13Dictionaries.X11, X11Dictionaries.D10),
+            Dictionary.concatenate(X13Dictionaries.X11, X11Dictionaries.D10A),
+            Dictionary.concatenate(X13Dictionaries.FINAL, X13Dictionaries.D11),
+            Dictionary.concatenate(X13Dictionaries.FINAL, X13Dictionaries.D11A),
+            Dictionary.concatenate(X13Dictionaries.FINAL, X13Dictionaries.D12),
+            Dictionary.concatenate(X13Dictionaries.FINAL, X13Dictionaries.D12A),
+            Dictionary.concatenate(X13Dictionaries.FINAL, X13Dictionaries.D13),
+            Dictionary.concatenate(X13Dictionaries.FINAL, X13Dictionaries.D16),
+            Dictionary.concatenate(X13Dictionaries.FINAL, X13Dictionaries.D16A),
+            Dictionary.concatenate(X13Dictionaries.FINAL, X13Dictionaries.D18),
+            Dictionary.concatenate(X13Dictionaries.FINAL, X13Dictionaries.D18A)};
+
         public DTablesFactory() {
-            super(X13Document.class, D_TABLES, source -> source, new GenericTableUI(false,
-                    BasicInformationExtractor.prefix(X13Dictionary.D_TABLE, SaDictionaries.DECOMPOSITION)));
+            super(X13Document.class, D_TABLES, source -> source, new GenericTableUI(false, items));
         }
 
         @Override
@@ -573,21 +612,21 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
         }
     }
 
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4050)
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4060)
     public static class ETablesFactory extends ProcDocumentItemFactory<X13Document, TsDocument> {
 
         public ETablesFactory() {
             super(X13Document.class, E_TABLES, source -> source, new GenericTableUI(false,
-                    BasicInformationExtractor.prefix(X13Dictionary.E_TABLE, SaDictionaries.DECOMPOSITION)));
+                    BasicInformationExtractor.prefix(X13Dictionaries.E_TABLE, X13Dictionaries.FINAL)));
         }
 
         @Override
         public int getPosition() {
-            return 4050;
+            return 4060;
         }
     }
 
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4060)
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4070)
     public static class X11FiltersFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
 
         public X11FiltersFactory() {
@@ -625,16 +664,18 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
             return 4060;
         }
     }
+
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4200)
     public static class MStatisticsSummaryFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
 
         public MStatisticsSummaryFactory() {
             super(X13Document.class, M_STATISTICS_SUMMARY, (X13Document doc) -> {
                 X13Results rslt = doc.getResult();
-                if (rslt == null)
+                if (rslt == null) {
                     return null;
+                }
                 return new demetra.x13.html.HtmlMstatistics(rslt.getDiagnostics().getMstatistics());
-                    }, new HtmlItemUI());
+            }, new HtmlItemUI());
         }
 
         @Override
@@ -642,17 +683,18 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
             return 4200;
         }
     }
-    
+
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4300)
-    public static class MStatisticsDetailsFactory extends ProcDocumentItemFactory<X13Document, HtmlElement>  {
+    public static class MStatisticsDetailsFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
 
         public MStatisticsDetailsFactory() {
-            super(X13Document.class, M_STATISTICS_DETAILS, (X13Document doc) ->  {
+            super(X13Document.class, M_STATISTICS_DETAILS, (X13Document doc) -> {
                 X13Results rslt = doc.getResult();
-                if (rslt == null)
+                if (rslt == null) {
                     return null;
+                }
                 return new demetra.x13.html.HtmlX11Diagnostics(rslt.getDiagnostics().getMstatistics());
-                    }, new HtmlItemUI());
+            }, new HtmlItemUI());
         }
 
         @Override
@@ -667,15 +709,16 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
     public static class DiagnosticsSummaryFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
 
         public DiagnosticsSummaryFactory() {
-            super(X13Document.class, SaViews.DIAGNOSTICS_SUMMARY, (X13Document doc)->{
+            super(X13Document.class, SaViews.DIAGNOSTICS_SUMMARY, (X13Document doc) -> {
                 jdplus.x13.X13Results rslt = doc.getResult();
-                if (rslt == null)
+                if (rslt == null) {
                     return null;
+                }
                 SaProcessingFactory factory = SaManager.factoryFor(doc.getSpecification());
-                List<ProcDiagnostic> diags=new ArrayList<>();
+                List<ProcDiagnostic> diags = new ArrayList<>();
                 factory.fillDiagnostics(diags, rslt);
                 return new HtmlDiagnosticsSummary(diags);
-                    }, new HtmlItemUI());
+            }, new HtmlItemUI());
         }
 
         @Override
@@ -683,7 +726,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
             return 5000;
         }
     }
-    
+
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5310)
     public static class ModelResSpectrum extends ProcDocumentItemFactory<X13Document, TsData> {
 

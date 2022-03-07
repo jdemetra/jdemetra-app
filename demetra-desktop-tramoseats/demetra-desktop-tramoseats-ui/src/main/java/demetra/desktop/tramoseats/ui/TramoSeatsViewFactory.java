@@ -36,6 +36,7 @@ import demetra.sa.SaManager;
 import demetra.sa.SaProcessingFactory;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDocument;
+import demetra.toolkit.dictionaries.RegressionDictionaries;
 import demetra.tramoseats.io.information.TramoSeatsSpecMapping;
 import demetra.util.Id;
 import demetra.util.LinearId;
@@ -169,6 +170,24 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
                 .build().toString();
     }
     
+//    private static String generateId2(String name, String id) {
+//        return TsDynamicProvider.CompositeTs.builder()
+//                .name(name)
+//                .back(id + "_b(?)")
+//                .now(id)
+//                .fore(id + "_f(-2)")
+//                .build().toString();
+//    }
+//
+//    private static String generateStdErrorId2(String name, String id) {
+//        return TsDynamicProvider.CompositeTs.builder()
+//                .name(name)
+//                .back(id + "_eb(?)")
+//                .now(id + SeriesInfo.E_SUFFIX)
+//                .fore(id  + "_ef(?)")
+//                .build().toString();
+//    }
+
     public static String[] lowSeries(){
         return new String[]{
             generateId("Series", SaDictionaries.Y),
@@ -369,7 +388,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         }
 
         private static String[] generateItems() {
-            return new String[]{ModellingDictionary.Y + SeriesInfo.F_SUFFIX, ModellingDictionary.Y + SeriesInfo.EF_SUFFIX};
+            return new String[]{RegressionDictionaries.Y_F, RegressionDictionaries.Y_EF};
         }
     }
 

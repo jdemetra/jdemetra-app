@@ -13,6 +13,7 @@ import demetra.util.Arrays2;
 import demetra.util.Id;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import javax.swing.*;
 import javax.swing.tree.TreeSelectionModel;
@@ -20,6 +21,7 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.InstanceContent;
 
 /**
  *
@@ -28,9 +30,11 @@ import org.openide.util.Exceptions;
  * @param <D>
  */
 public class DefaultProcessingViewer<S extends ProcSpecification, D extends ProcDocument<S, ?, ?>> extends JComponent implements Disposable, ExplorerManager.Provider {
-
+    
     public static final String BUTTONS = "Buttons", BUTTON_APPLY = "Apply", BUTTON_RESTORE = "Restore", BUTTON_SAVE = "Save",
             DIRTY_SPEC_PROPERTY = "dirtySpecProperty";
+
+    public static final String SPEC_CHANGED="spec_changed", INPUT_CHANGED="input_changed", DOC_CHANGED="doc_changed";
 
     public enum Type {
 
@@ -38,20 +42,20 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     }
 
     private DocumentUIServices<S, D> factory;
-    protected final Type type_;
+    private final Type type_;
     // visual components
-    protected final JSplitPane splitter;
-    protected final JPanel specPanel;
-    protected final BeanTreeView tree;
-    protected final ExplorerManager em;
+    private final JSplitPane splitter;
+    private final JPanel specPanel;
+    private final BeanTreeView tree;
+    private final transient ExplorerManager explorerManager;
     protected final JToolBar toolBar;
     protected final JComponent emptyView;
     // document-related data
-    protected IProcDocumentView<D> m_procView;
-    protected IObjectDescriptor<S> specDescriptor;
-    protected S originalSpec;
+    private IProcDocumentView<D> procView;
+    private IObjectDescriptor<S> specDescriptor;
+    private S originalSpec;
     // other
-    protected int specWidth_ = 300;
+    private int specWidth = 300;
     private boolean dirty;
 
     protected DefaultProcessingViewer(DocumentUIServices<S, D> factory, Type type) {
@@ -66,9 +70,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         this.tree = new BeanTreeView();
         tree.setRootVisible(false);
         tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-        this.em = new ExplorerManager();
-        em.addPropertyChangeListener(evt -> {
+        this.explorerManager = new ExplorerManager();
+        explorerManager.addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
                 case ExplorerManager.PROP_SELECTED_NODES:
                     Node[] nodes = (Node[]) evt.getNewValue();
@@ -105,28 +108,28 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     // GETTERS/SETTERS >
     @Override
     public ExplorerManager getExplorerManager() {
-        return em;
+        return this.explorerManager;
     }
 
     public int getSpecWidth() {
-        return specWidth_;
+        return specWidth;
     }
 
     public void setSpecWidth(int value) {
-        specWidth_ = value;
+        specWidth = value;
     }
 
     public D getDocument() {
-        return m_procView == null ? null : m_procView.getDocument();
+        return procView == null ? null : procView.getDocument();
     }
 
     public void setDocument(D doc) {
         dirty = false;
 
         try {
-            if (m_procView != null) {
-                m_procView.dispose();
-                m_procView = null;
+            if (procView != null) {
+                procView.dispose();
+                procView = null;
             }
             if (doc == null) {
                 originalSpec = null;
@@ -134,7 +137,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
             }
             originalSpec = doc.getSpecification();
             // initialize all items
-            m_procView = factory.getDocumentView(doc);
+            procView = factory.getDocumentView(doc);
             initSpecView(doc);
         } finally {
             buildTree();
@@ -152,9 +155,9 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
         try {
             this.factory=factory;
-            if (m_procView != null) {
-                m_procView.dispose();
-                m_procView = null;
+            if (procView != null) {
+                procView.dispose();
+                procView = null;
             }
             if (doc == null) {
                 originalSpec = null;
@@ -162,7 +165,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
             }
             originalSpec = doc.getSpecification();
             // initialize all items
-            m_procView = factory.getDocumentView(doc);
+            procView = factory.getDocumentView(doc);
             initSpecView(doc);
         } finally {
             buildTree();
@@ -230,15 +233,16 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     S pspec = specDescriptor.getCore();
+                    S ospec=doc.getSpecification();
                     doc.set(pspec);
                     setDirty(BUTTON_APPLY);
-                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
+                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, pspec);
                     refreshAll();
                     updateDocument();
-                }
+                 }
             }};
         PropertySheetPanel specView = factory.getSpecView(specDescriptor);
-        setPropertiesPanel(commands, specView, specWidth_);
+        setPropertiesPanel(commands, specView, specWidth);
     }
 
     private void initAllSpecView() {
@@ -251,7 +255,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     S pspec = specDescriptor.getCore();
                     doc.set(pspec);
                     setDirty(BUTTON_APPLY);
-                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
+//                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
                     refreshAll();
                     updateDocument();
                 }
@@ -263,7 +267,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     setDirty(BUTTON_RESTORE);
                     refreshAll();
                     updateDocument();
-                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_RESTORE, null, null);
+//                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_RESTORE, null, null);
+//                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, null, null);
                 }
             },
             new AbstractAction(BUTTON_SAVE) {
@@ -272,11 +277,11 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     // Apply & Save
                     setDirty(BUTTON_SAVE);
                     refreshAll();
-                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_SAVE, null, null);
+                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, null, null);
                 }
             }};
         PropertySheetPanel specView = factory.getSpecView(specDescriptor);
-        setPropertiesPanel(commands, specView, specWidth_);
+        setPropertiesPanel(commands, specView, specWidth);
     }
 
     private void setPropertiesPanel(final Action[] commands, final JComponent pane, int width) {
@@ -319,8 +324,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
      * Refresh the views panel
      */
     public void refreshView() {
-        m_procView.refresh();
-        Node[] sel = em.getSelectedNodes();
+        procView.refresh();
+        Node[] sel = explorerManager.getSelectedNodes();
         if (!Arrays2.isNullOrEmpty(sel)) {
             Id curid = sel[0].getLookup().lookup(Id.class);
             if (curid != null) {
@@ -336,11 +341,11 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     }
 
     private void buildTree() {
-        if (m_procView != null) {
-            em.setRootContext(new DecoratedNode(IdNodes.getRootNode(m_procView.getItems())));
+        if (procView != null) {
+            explorerManager.setRootContext(new DecoratedNode(IdNodes.getRootNode(procView.getItems())));
             selectPreferredView();
         } else {
-            em.setRootContext(Node.EMPTY);
+            explorerManager.setRootContext(Node.EMPTY);
             showComponent(null);
         }
     }
@@ -353,7 +358,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
         JComponent newView;
         try {
-            newView = id == null ? emptyView : m_procView.getView(id);
+            newView = id == null ? emptyView : procView.getView(id);
         } catch (RuntimeException ex) {
             newView = JExceptionPanel.create(ex);
         }
@@ -364,13 +369,13 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     }
 
     private void selectPreferredView() {
-        Id pview = m_procView.getPreferredView();
+        Id pview = procView.getPreferredView();
         if (pview != null) {
             showComponent(pview);
-            Node node = IdNodes.findNode(em.getRootContext(), pview);
+            Node node = IdNodes.findNode(explorerManager.getRootContext(), pview);
             try {
                 if (node != null) {
-                    em.setSelectedNodes(new Node[]{node});
+                    explorerManager.setSelectedNodes(new Node[]{node});
                     ((DecoratedNode) node).setHtmlDecorator(DecoratedNode.Html.BOLD);
                 }
             } catch (PropertyVetoException ex) {
@@ -381,8 +386,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
     @Override
     public void dispose() {
-        if (m_procView != null) {
-            m_procView.dispose();
+        if (procView != null) {
+            procView.dispose();
         }
         tree.setTransferHandler(null);
         Component old = splitter.getBottomComponent();
@@ -391,6 +396,14 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         }
         splitter.setBottomComponent(emptyView);
         removeAll();
+    }
+    
+    public void removeListeners(){
+        PropertyChangeListener[] listeners = this.getPropertyChangeListeners();
+        if (listeners != null){
+            for (int i=0; i<listeners.length; ++i)
+                this.removePropertyChangeListener(listeners[i]);
+        }
     }
 
     public void setDirty(String sourceButton) {

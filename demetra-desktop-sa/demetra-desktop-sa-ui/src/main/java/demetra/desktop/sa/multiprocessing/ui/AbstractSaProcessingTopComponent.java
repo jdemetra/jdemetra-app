@@ -16,6 +16,8 @@
  */
 package demetra.desktop.sa.multiprocessing.ui;
 
+import demetra.desktop.ui.ActiveView;
+import demetra.desktop.ui.ActiveViewManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.WorkspaceTopComponent;
 import demetra.sa.SaItem;
@@ -25,26 +27,28 @@ import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
+import org.openide.nodes.Node;
+import org.openide.windows.TopComponent;
 
 /**
  *
  * @author Jean Palate
  */
-public abstract class AbstractSaProcessingTopComponent extends WorkspaceTopComponent<MultiProcessingDocument> implements MultiViewElement, MultiViewDescription {
+public abstract class AbstractSaProcessingTopComponent extends TopComponent implements  ActiveView, MultiViewElement, MultiViewDescription  {
 
     protected MultiProcessingController controller;
 
     public AbstractSaProcessingTopComponent() {
-        this(null, new MultiProcessingController());
+        this(new MultiProcessingController(null));
     }
 
-    AbstractSaProcessingTopComponent(WorkspaceItem<MultiProcessingDocument> document, MultiProcessingController controller) {
-        super(document);
-        String txt = document == null ? "" : document.getDisplayName();
+    AbstractSaProcessingTopComponent(MultiProcessingController controller) {
+        WorkspaceItem<MultiProcessingDocument> document = controller.getDocument();
+        String txt = document.getDisplayName();
         setName(txt);
         setToolTipText(txt + " view");
         this.controller = controller;
-        controller.addPropertyChangeListener(MultiProcessingController.SA_PROCESSING_STATE_PROPERTY, evt -> {
+        this.controller.addPropertyChangeListener(MultiProcessingController.SA_PROCESSING_STATE_PROPERTY, evt -> {
             firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
             onSaProcessingStateChange();
         });
@@ -55,11 +59,11 @@ public abstract class AbstractSaProcessingTopComponent extends WorkspaceTopCompo
     }
 
     public SaItem[] current() {
-        return getDocument().getElement().all();
+        return controller.getDocument().getElement().all();
     }
 
     public SaItems getInitialProcessing() {
-        return getDocument().getElement().getInitial();
+        return controller.getDocument().getElement().getInitial();
     }
 
     public MultiProcessingController.SaProcessingState getState() {
@@ -102,10 +106,12 @@ public abstract class AbstractSaProcessingTopComponent extends WorkspaceTopCompo
     @Override
     public void componentActivated() {
         super.componentActivated();
+        ActiveViewManager.getInstance().set(this);
     }
 
     @Override
     public void componentDeactivated() {
+        ActiveViewManager.getInstance().set(null);
         super.componentDeactivated();
     }
 
@@ -131,10 +137,5 @@ public abstract class AbstractSaProcessingTopComponent extends WorkspaceTopCompo
         return super.preferredID();
     }
     //</editor-fold>    
-
-    @Override
-    protected String getContextPath() {
-        return MultiProcessingManager.CONTEXTPATH;
-    }
 
 }

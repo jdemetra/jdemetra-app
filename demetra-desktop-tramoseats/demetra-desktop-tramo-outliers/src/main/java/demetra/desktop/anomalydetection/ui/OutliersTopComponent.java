@@ -92,7 +92,6 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
     private JLabel itemsLabel;
     private JButton prefButton;
     private Stopwatch stopwatch;
-    private boolean active;
     private int nbElements = 0;
 
     private void calculateNbItems() {
@@ -152,7 +151,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
                     if (obs == -1 || model == null) {
                         grid.setHoveredObs(ObsIndex.NULL);
                     } else {
-                        grid.setHoveredObs(ObsIndex.valueOf(grid.getTsCollection().indexOf(s->s == model.getTs()), obs));
+                        grid.setHoveredObs(ObsIndex.valueOf(grid.getTsCollection().indexOf(s -> s == model.getTs()), obs));
                     }
                     break;
             }
@@ -214,7 +213,7 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
                 } catch (IllegalStateException e) {
                 }
 
-                if (!active) {
+                if (ActiveViewManager.getInstance().isActive(this)) {
                     requestAttention(false);
                 }
                 break;
@@ -333,10 +332,6 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
         return false;
     }
 
-    @Override
-    public Node getNode() {
-        return node;
-    }
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Component States">
@@ -354,14 +349,12 @@ public final class OutliersTopComponent extends TopComponent implements Explorer
     public void componentDeactivated() {
         super.componentDeactivated();
         ActiveViewManager.getInstance().set(null);
-        active = false;
-    }
+     }
 
     @Override
     public void componentActivated() {
         super.componentActivated();
         ActiveViewManager.getInstance().set(this);
-        active = true;
     }
 
     @Override

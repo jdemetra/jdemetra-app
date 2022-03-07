@@ -6,14 +6,18 @@ package demetra.desktop.sa.multiprocessing.ui;
 
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.components.GridCommands;
-import demetra.desktop.workspace.WorkspaceItem;
 import demetra.information.Explorable;
-import demetra.information.InformationSet;
 import demetra.information.formatters.TableFormatter;
 import demetra.processing.AlgorithmDescriptor;
+import demetra.sa.SaDictionaries;
 import demetra.sa.SaItem;
-import demetra.sa.SaItems;
 import demetra.timeseries.TsData;
+import demetra.toolkit.dictionaries.ArimaDictionaries;
+import demetra.toolkit.dictionaries.LikelihoodDictionaries;
+import demetra.toolkit.dictionaries.RegArimaDictionaries;
+import demetra.toolkit.dictionaries.RegressionDictionaries;
+import demetra.toolkit.dictionaries.ResidualsDictionaries;
+import demetra.util.MultiLineNameUtil;
 import demetra.util.Table;
 import ec.util.grid.swing.AbstractGridModel;
 import ec.util.grid.swing.JGrid;
@@ -30,8 +34,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-import jdplus.regarima.diagnostics.ResidualsDiagnosticsFactory;
-import jdplus.sa.diagnostics.CoherenceDiagnosticsFactory;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.openide.explorer.ExplorerManager;
@@ -61,9 +63,9 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
     private List<String> selectedComponents;
     private final PropertyChangeListener listener;
 
-    public MatrixView(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
-        super(doc, controller);
-         this.comboBox = new JComboBox<>();
+    public MatrixView(MultiProcessingController controller) {
+        super(controller);
+        this.comboBox = new JComboBox<>();
         // TODO
         this.selectedComponents = Collections.emptyList(); // DemetraUI.getDefault().getSelectedDiagFields();
 
@@ -107,11 +109,6 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         add(toolBarRepresentation, BorderLayout.NORTH);
         add(visualRepresentation, BorderLayout.CENTER);
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
-    }
-
-    @Override
-    public ExplorerManager getExplorerManager() {
-        return mgr;
     }
 
     @Override
@@ -188,20 +185,21 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         }
         return result;
     }
-    
-    private static Map<Integer, List<AlgorithmDescriptor>> methods(SaItem[] items){
-        Map<Integer, List<AlgorithmDescriptor>> map=new HashMap<>();
-        for (SaItem item : items){
+
+    private static Map<Integer, List<AlgorithmDescriptor>> methods(SaItem[] items) {
+        Map<Integer, List<AlgorithmDescriptor>> map = new HashMap<>();
+        for (SaItem item : items) {
             AlgorithmDescriptor alg = item.getDefinition().getDomainSpec().getAlgorithmDescriptor();
-            int period=item.getDefinition().getTs().getData().getAnnualFrequency();
-            if (period > 0){
+            int period = item.getDefinition().getTs().getData().getAnnualFrequency();
+            if (period > 0) {
                 List<AlgorithmDescriptor> list = map.get(period);
-                if (list == null){
+                if (list == null) {
                     list = new ArrayList<>();
                     map.put(period, list);
                 }
-                if (! list.contains(alg))
+                if (!list.contains(alg)) {
                     list.add(alg);
+                }
             }
         }
         return map;
@@ -237,8 +235,50 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         customMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, selectedComponents, selectedComponents)));
     }
 
-    private static final String[] MAIN = {"espan.n", "decomposition.seasonality", "adjust", "log", "arima.mean", "arima.p", "arima.d", "arima.q", "arima.bp", "arima.bd", "arima.bq", "likelihood.bicc", "residuals.ser", "residuals.lb", "decomposition.seasfilter", "decomposition.trendfilter"};
-    private static final String[] MAIN_TITLE = {"N", "Seasonal", "Adjust", "Log", "Mean", "P", "D", "Q", "BP", "BD", "BQ", "BIC", "SE(res)", "Q-val", "Seas filter", "Trend filter"};
+    private static String arimaItem(String key) {
+        return demetra.toolkit.dictionaries.Dictionary.concatenate(RegArimaDictionaries.ARIMA, key);
+    }
+
+    private static String regressionItem(String key) {
+        return demetra.toolkit.dictionaries.Dictionary.concatenate(RegArimaDictionaries.REGRESSION, key);
+    }
+
+    private static String parameterItem(String str, int pos, int n) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(str);
+        if (pos != 0) {
+            builder.append('(').append(pos).append(')');
+        }
+        if (n != 0) {
+            builder.append(':').append(n);
+        }
+        return builder.toString();
+    }
+
+    private static String residualsItem(String key) {
+        return demetra.toolkit.dictionaries.Dictionary.concatenate(RegArimaDictionaries.RESIDUALS, key);
+    }
+
+    private static String advancedItem(String key) {
+        return demetra.toolkit.dictionaries.Dictionary.concatenate(RegArimaDictionaries.ADVANCED, key);
+    }
+
+    private static String mlItem(String key) {
+        return demetra.toolkit.dictionaries.Dictionary.concatenate(RegArimaDictionaries.MAX, key);
+    }
+
+    private static String llItem(String key) {
+        return demetra.toolkit.dictionaries.Dictionary.concatenate(RegArimaDictionaries.LIKELIHOOD, key);
+    }
+
+    private static final String[] MAIN = {
+        regressionItem(RegressionDictionaries.ESPAN_N), SaDictionaries.SEASONAL, RegArimaDictionaries.LOG,
+        regressionItem(RegArimaDictionaries.MEAN),
+        arimaItem(ArimaDictionaries.P), arimaItem(ArimaDictionaries.D), arimaItem(ArimaDictionaries.Q),
+        arimaItem(ArimaDictionaries.BP), arimaItem(ArimaDictionaries.BD), arimaItem(ArimaDictionaries.BQ),
+        llItem(LikelihoodDictionaries.BICC), residualsItem(ResidualsDictionaries.SER)};
+
+    private static final String[] MAIN_TITLE = {"N", "Seasonal", "Log", "Mean", "P", "D", "Q", "BP", "BD", "BQ", "BIC", "SE(res)"};
 
     private TableModel createTableModel(AlgorithmDescriptor method, int freq, List<String> titles, List<String> items) {
         DefaultTableModel rslt = new DefaultTableModel();
@@ -246,10 +286,10 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         List<Explorable> rslts = new ArrayList<>();
         for (SaItem sa : this.saItems) {
             AlgorithmDescriptor alg = sa.getDefinition().getDomainSpec().getAlgorithmDescriptor();
-            TsData ts=sa.getDefinition().getTs().getData();
+            TsData ts = sa.getDefinition().getTs().getData();
             if (alg.equals(method) && ts.getAnnualFrequency() == freq && sa.isProcessed()) {
                 rslts.add(sa.getEstimation().getResults());
-                names.add(sa.getName());
+                names.add(MultiLineNameUtil.join(sa.getName()));
             }
         }
 
@@ -287,50 +327,65 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         return rslt;
     }
 
-    private static final String[] CALENDAR = {"adjust", "regression.lp:2", "regression.td(1):2", "regression.td(2):2",
-        "regression.td(3):2", "regression.td(4):2", "regression.td(5):2", "regression.td(6):2", "regression.td(7):2", "regression.easter:2"};
+    private static final String[] CALENDAR = {
+        RegArimaDictionaries.ADJUST,
+        parameterItem(regressionItem(RegressionDictionaries.LP), 0, 2),
+        parameterItem(regressionItem(RegressionDictionaries.TD), 1, 2),
+        parameterItem(regressionItem(RegressionDictionaries.TD), 2, 2),
+        parameterItem(regressionItem(RegressionDictionaries.TD), 3, 2),
+        parameterItem(regressionItem(RegressionDictionaries.TD), 4, 2),
+        parameterItem(regressionItem(RegressionDictionaries.TD), 5, 2),
+        parameterItem(regressionItem(RegressionDictionaries.TD), 6, 2),
+        parameterItem(regressionItem(RegressionDictionaries.TD), 7, 2),
+        parameterItem(regressionItem(RegressionDictionaries.EASTER), 0, 2)};
+
     private static final String[] CALENDAR_TITLE = {"Adjust", "Leap Year", "T-Stat", "TD(1)", "T-Stat", "TD(2)", "T-Stat", "TD(3)", "T-Stat", "TD(4)", "T-Stat", "TD(5)", "T-Stat", "TD(6)", "T-Stat", "TD(7)", "T-Stat", "Easter", "T-Stat"
     };
 
-    private static final String[] ARMA = {"arima.phi(1):2", "arima.phi(2):2", "arima.phi(3):2", "arima.phi(4):2", "arima.th(1):2", "arima.th(2):2", "arima.th(3):2", "arima.th(4):2", "arima.bphi(1):2", "arima.bth(1):2"};
-    private static final String[] ARMA_TITLE = {"phi(1)", "t-stat", "phi(2)", "t-stat", "phi(3)", "t-stat", "phi(4)", "t-stat",
-        "th(1)", "t-stat", "th(2)", "t-stat", "th(3)", "t-stat", "th(4)", "t-stat",
-        "bphi(1)", "t-stat", "bth(1)", "t-stat"
+    private static final String[] ARMA = {
+        parameterItem(arimaItem(ArimaDictionaries.PHI), 1, 2),
+        parameterItem(arimaItem(ArimaDictionaries.PHI), 2, 2),
+        parameterItem(arimaItem(ArimaDictionaries.PHI), 3, 2),
+        parameterItem(arimaItem(ArimaDictionaries.PHI), 4, 2),
+        parameterItem(arimaItem(ArimaDictionaries.THETA), 1, 2),
+        parameterItem(arimaItem(ArimaDictionaries.THETA), 2, 2),
+        parameterItem(arimaItem(ArimaDictionaries.THETA), 3, 2),
+        parameterItem(arimaItem(ArimaDictionaries.THETA), 4, 2),
+        parameterItem(arimaItem(ArimaDictionaries.BPHI), 1, 2),
+        parameterItem(arimaItem(ArimaDictionaries.BTHETA), 1, 2)};
+
+    private static final String[] ARMA_TITLE = {"phi(1)", "T-stat", "phi(2)", "T-stat", "phi(3)", "T-stat", "phi(4)", "T-stat",
+        "th(1)", "T-stat", "th(2)", "T-stat", "th(3)", "T-stat", "th(4)", "T-stat",
+        "bphi(1)", "T-stat", "bth(1)", "T-stat"
     };
 
     private static final String[] OUTLIERS = {
-        "regression.out(1)", "regression.out(2)", "regression.out(3)", "regression.out(4)", "regression.out(5)", "regression.out(6)", "regression.out(7)", "regression.out(8)", "regression.out(9)", "regression.out(10)"};
+        parameterItem(regressionItem(RegressionDictionaries.OUT), 1, 2),
+        parameterItem(regressionItem(RegressionDictionaries.OUT), 2, 2),
+        parameterItem(regressionItem(RegressionDictionaries.OUT), 3, 2),
+        parameterItem(regressionItem(RegressionDictionaries.OUT), 4, 2),
+        parameterItem(regressionItem(RegressionDictionaries.OUT), 5, 2),
+        parameterItem(regressionItem(RegressionDictionaries.OUT), 6, 2),
+        parameterItem(regressionItem(RegressionDictionaries.OUT), 7, 2),
+        parameterItem(regressionItem(RegressionDictionaries.OUT), 8, 2),
+        parameterItem(regressionItem(RegressionDictionaries.OUT), 9, 2),
+        parameterItem(regressionItem(RegressionDictionaries.OUT), 10, 2)
+    };
     private static final String[] OUTLIERS_TITLE = {
-        "OUT(1)", "OUT(2)", "OUT(3)", "OUT(4)", "OUT(5)", "OUT(6)", "OUT(7)", "OUT(8)", "OUT(9)", "OUT(10)"
+        "OUT(1)", "T-stat", "OUT(2)", "T-stat", "OUT(3)", "T-stat", "OUT(4)", "T-stat", "OUT(5)", "T-stat", "OUT(6)", "T-stat", "OUT(7)", "T-stat", "OUT(8)", "T-stat", "OUT(9)", "T-stat", "OUT(10)", "T-stat"
     };
 
     private static final String[] TESTS_TITLE = new String[]{
-        "Skewness", "Kurtosis", "Ljung-Box", "LB. on Seas", "LB on sq.",
-        "Bias", "TD peak", "Seas peak", "Visual TD peak", "Visual Seas peak",
-        "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", "M11",
-        "Q", "Q-M2"
+        "Skewness", "Kurtosis", "Ljung-Box", "LB. on Seas", "LB on sq."
     };
 
     private static final String[] TESTS = new String[]{
-        "residuals.skewness:-3", "residuals.kurtosis:-3", "residuals.lb:-3", "residuals.seaslb:-3", "residuals.lb2:-3",
-        InformationSet.item(CoherenceDiagnosticsFactory.NAME, CoherenceDiagnosticsFactory.BIAS) + ":-2",
-        InformationSet.item(ResidualsDiagnosticsFactory.NAME, ResidualsDiagnosticsFactory.TD_PEAK) + ":-2",
-        InformationSet.item(ResidualsDiagnosticsFactory.NAME, ResidualsDiagnosticsFactory.S_PEAK) + ":-2"};
-//        InformationSet.item(SpectralDiagnosticsFactory.NAME, SpectralDiagnosticsFactory.TD),
-//        InformationSet.item(SpectralDiagnosticsFactory.NAME, SpectralDiagnosticsFactory.SEAS),
-//        InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M1),
-//        InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M2),
-//        InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M3),
-//        InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M4),
-//        InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M5),
-//        InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M6),
-//        InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M7),
-//        InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M8),
-//        InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M9),
-//        InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M10),
-//        InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.M11),
-//        InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.Q),
-//        InformationSet.item(X13ProcessingFactory.MSTATISTICS, Mstatistics.Q2)};
+        parameterItem(residualsItem(ResidualsDictionaries.SKEW), 0, -4),
+        parameterItem(residualsItem(ResidualsDictionaries.KURT), 0, -4),
+        parameterItem(residualsItem(ResidualsDictionaries.LB), 0, -4),
+        parameterItem(residualsItem(ResidualsDictionaries.LB2), 0, -4),
+        parameterItem(residualsItem(ResidualsDictionaries.SEASLB), 0, -4)
+    };
 
     private static final class TableModelAdapter extends AbstractGridModel {
 

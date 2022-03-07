@@ -17,7 +17,7 @@
 package demetra.desktop.regarima.ui;
 
 import demetra.desktop.regarima.descriptors.RegArimaSpecUI;
-import demetra.desktop.regarima.ui.spec.actions.EditRegArimaSpec;
+import demetra.desktop.regarima.ui.actions.EditRegArimaSpec;
 import demetra.desktop.ui.properties.l2fprod.PropertiesDialog;
 import demetra.desktop.workspace.AbstractWorkspaceItemManager;
 import demetra.desktop.workspace.Workspace;

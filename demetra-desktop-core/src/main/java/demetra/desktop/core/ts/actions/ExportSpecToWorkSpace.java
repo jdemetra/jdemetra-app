@@ -19,7 +19,7 @@ package demetra.desktop.core.ts.actions;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
-import demetra.desktop.workspace.actions.AbstractViewAction;
+import demetra.desktop.ui.ActiveViewAction;
 import demetra.desktop.workspace.ui.WorkspaceTsTopComponent;
 import demetra.processing.ProcSpecification;
 import demetra.timeseries.TsDocument;
@@ -44,7 +44,7 @@ import org.openide.util.NbBundle.Messages;
     @ActionReference(path = WorkspaceFactory.TSCONTEXTPATH, position = 1950)
 })
 @Messages("CTL_ExportSpecToWorkSpace=Copy spec. to workspace")
-public final class ExportSpecToWorkSpace extends AbstractViewAction<WorkspaceTsTopComponent> {
+public final class ExportSpecToWorkSpace extends ActiveViewAction<WorkspaceTsTopComponent> {
 
     public ExportSpecToWorkSpace() {
         super(WorkspaceTsTopComponent.class);

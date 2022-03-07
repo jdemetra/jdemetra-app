@@ -13,6 +13,7 @@ import demetra.desktop.workspace.WorkspaceItem;
 import demetra.util.Id;
 import java.awt.Image;
 import java.util.List;
+import javax.swing.Action;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
@@ -90,16 +91,16 @@ public abstract class WsNode extends BasicNode<Id> {
         return nodes;
     }
 
-    protected final Workspace workspace_;
+    protected final Workspace workspace;
 
     public WsNode(Children children, Workspace ws, Id id) {
         super(children, id, WorkspaceFactory.getInstance().getActionsPath(id));
-        workspace_ = ws;
+        workspace = ws;
     }
 
     public WsNode(BasicChildFactory<?> factory, Workspace ws, Id id) {
         super(factory, id, WorkspaceFactory.getInstance().getActionsPath(id));
-        workspace_ = ws;
+        workspace = ws;
     }
 
     public void updateUI() {
@@ -124,8 +125,13 @@ public abstract class WsNode extends BasicNode<Id> {
     public Image getOpenedIcon(int type) {
         return getIcon(type);
     }
+    
+//    @Override
+//    public Action[] getActions(boolean popup){
+//        return new Action[]{new DeleteAction()};
+//    }
 
     public Workspace getWorkspace() {
-        return workspace_;
+        return workspace;
     }
 }

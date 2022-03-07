@@ -48,6 +48,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-tramoseats-workspace</artifactId>
+                <version>${jd3-tramoseats.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-tramoseats-api</artifactId>
                 <version>${tramoseats-desktop.version}</version>
             </dependency>

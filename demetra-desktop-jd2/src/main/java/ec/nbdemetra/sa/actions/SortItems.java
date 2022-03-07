@@ -24,9 +24,14 @@ import ec.nbdemetra.sa.MultiProcessingManager;
 import ec.nbdemetra.tramoseats.TramoDocumentManager;
 import ec.nbdemetra.tramoseats.TramoSeatsDocumentManager;
 import ec.nbdemetra.ui.actions.AbstractSortItems;
+import ec.nbdemetra.ws.IWorkspaceItemManager;
+import ec.nbdemetra.ws.Workspace;
+import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.nodes.WsNode;
 import ec.nbdemetra.x13.RegArimaDocumentManager;
 import ec.nbdemetra.x13.X13DocumentManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -47,8 +52,19 @@ import org.openide.util.NbBundle.Messages;
     @ActionReference(path = MultiProcessingManager.PATH, position = 1100)
 })
 @Messages("CTL_SortItems=Sort")
-public final class SortItems extends AbstractSortItems {
-    public SortItems(WsNode context) {
-        super(context);
+public final class SortItems implements ActionListener {
+    private final WsNode context;
+
+    protected AbstractSortItems(WsNode context) {
+        this.context = context;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent ev) {
+        IWorkspaceItemManager mgr = WorkspaceFactory.getInstance().getManager(context.lookup());
+        if (mgr != null) {
+             Workspace ws = context.getWorkspace();
+             ws.sortFamily(context.lookup());
+         }
     }
 }

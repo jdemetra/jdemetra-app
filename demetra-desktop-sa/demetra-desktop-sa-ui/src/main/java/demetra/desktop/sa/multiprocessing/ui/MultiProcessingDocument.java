@@ -10,7 +10,9 @@ import demetra.sa.SaDefinition;
 import demetra.sa.SaItem;
 import demetra.sa.SaItems;
 import demetra.sa.SaSpecification;
+import demetra.timeseries.TimeSelector;
 import demetra.timeseries.Ts;
+import demetra.timeseries.TsDomain;
 import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsMoniker;
@@ -34,7 +36,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public class MultiProcessingDocument implements Documented {
 
     int curId = 0;
-
 
     private Map<String, String> metadata = Collections.emptyMap();
 
@@ -76,7 +77,7 @@ public class MultiProcessingDocument implements Documented {
     public boolean isNew() {
         return initial.isEmpty();
     }
-
+    
     public void refresh(EstimationPolicy policy) {
         current.clear();
         current.addAll(of(initial.refresh(policy, TsInformationType.Data)));
@@ -87,6 +88,38 @@ public class MultiProcessingDocument implements Documented {
             SaNode cur = current.get(i);
             if (test.test(cur)) {
                 SaNode n = SaNode.of(cur.getId(), cur.getOutput().refresh(policy, TsInformationType.Data));
+                current.set(i, n);
+            }
+        }
+    }
+
+    public void refresh(EstimationPolicyType policy, TimeSelector span, Predicate<SaNode> test) {
+        for (int i = 0; i < current.size(); ++i) {
+            SaNode cur = current.get(i);
+            if (test.test(cur)) {
+                Ts ts = cur.getOutput().getDefinition().getTs();
+                TsDomain domain = ts.getData().getDomain().select(span);
+                SaNode n = SaNode.of(cur.getId(), cur.getOutput().refresh(new EstimationPolicy(policy, domain), TsInformationType.Data));
+                current.set(i, n);
+            }
+        }
+    }
+
+    public void refresh(EstimationPolicyType policy, int nback, Predicate<SaNode> test) {
+        for (int i = 0; i < current.size(); ++i) {
+            SaNode cur = current.get(i);
+            if (test.test(cur)) {
+                TsDomain domain = null;
+                if (nback != 0) {
+                    Ts ts = cur.getOutput().getDefinition().getTs();
+                    domain = ts.getData().getDomain();
+                    if (nback < 0) {
+                        nback = -nback * domain.getAnnualFrequency();
+                    }
+                    domain=domain.drop(0, nback);
+                }
+
+                SaNode n = SaNode.of(cur.getId(), cur.getOutput().refresh(new EstimationPolicy(policy, domain), TsInformationType.Data));
                 current.set(i, n);
             }
         }
@@ -143,6 +176,11 @@ public class MultiProcessingDocument implements Documented {
         }
     }
 
+    public void replace(int id, SaNode nitem) {
+        int pos = positionOfId(id);
+        current.set(pos, nitem);
+    }
+
     public void remove(int pos) {
         current.remove(pos);
     }
@@ -157,6 +195,6 @@ public class MultiProcessingDocument implements Documented {
     }
 
     public SaItem[] all() {
-        return current.stream().peek(o->o.process()).map(o->o.getOutput()).toArray(n->new SaItem[n]);
+        return current.stream().peek(o -> o.process()).map(o -> o.getOutput()).toArray(n -> new SaItem[n]);
     }
 }

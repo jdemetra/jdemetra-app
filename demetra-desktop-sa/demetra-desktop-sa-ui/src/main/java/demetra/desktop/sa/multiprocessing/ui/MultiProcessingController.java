@@ -18,6 +18,8 @@ package demetra.desktop.sa.multiprocessing.ui;
 
 import demetra.desktop.design.SwingProperty;
 import demetra.desktop.beans.PropertyChangeSource;
+import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.desktop.workspace.WorkspaceItem;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
@@ -36,6 +38,10 @@ public final class MultiProcessingController implements PropertyChangeSource.Wit
         }
     }
 
+    private static MultiProcessingManager manager() {
+        return WorkspaceFactory.getInstance().getManager(MultiProcessingManager.class);
+    }
+
     @SwingProperty
     public static final String SA_PROCESSING_STATE_PROPERTY = "saProcessingState";
 
@@ -43,13 +49,23 @@ public final class MultiProcessingController implements PropertyChangeSource.Wit
     private final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
 
     private SaProcessingState saProcessingState;
+    private final WorkspaceItem<MultiProcessingDocument> document;
 
     public MultiProcessingController() {
+        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
+    }
+
+    public MultiProcessingController(WorkspaceItem<MultiProcessingDocument> processing) {
+        this.document = processing;
         this.saProcessingState = SaProcessingState.READY;
     }
 
     public SaProcessingState getSaProcessingState() {
         return saProcessingState;
+    }
+
+    public WorkspaceItem<MultiProcessingDocument> getDocument() {
+        return document;
     }
 
     public void setSaProcessingState(SaProcessingState state) {
@@ -65,5 +81,6 @@ public final class MultiProcessingController implements PropertyChangeSource.Wit
                 broadcaster.removePropertyChangeListener(l);
             }
         }
+        this.document.setView(null);
     }
 }

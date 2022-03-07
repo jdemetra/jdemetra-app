@@ -28,8 +28,6 @@ import demetra.desktop.util.NbComponents;
 import demetra.desktop.util.PopupMenuAdapter;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.JSpecSelectionComponent;
-import demetra.sa.EstimationPolicy;
-import demetra.sa.SaDocument;
 import demetra.sa.SaItem;
 import demetra.desktop.sa.multiprocessing.ui.MultiProcessingController.SaProcessingState;
 import demetra.desktop.sa.ui.DemetraSaUI;
@@ -39,6 +37,7 @@ import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.processing.ProcQuality;
 import demetra.processing.ProcessingLog.InformationType;
 import demetra.sa.EstimationPolicyType;
+import demetra.sa.HasSaEstimation;
 import demetra.sa.SaDefinition;
 import demetra.sa.SaEstimation;
 import demetra.sa.SaSpecification;
@@ -84,27 +83,23 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-
 import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.ExplorerUtils;
+import org.openide.util.NbBundle;
+
 
 /**
  * @author Philippe Charles
  * @author Mats Maggi
  */
-public class SaBatchUI extends AbstractSaProcessingTopComponent implements MultiViewElement, HasTsCollection {
+public class SaBatchUI extends AbstractSaProcessingTopComponent implements MultiViewElement, HasTsCollection, ExplorerManager.Provider {
 
-    private final ExplorerManager mgr = new ExplorerManager();
 
     private static final String REFRESH_MESSAGE = "Are you sure you want to refresh the data?";
     private static final String REFRESH_LOCAL_MESSAGE = "Are you sure you want to refresh the selected items?";
     private static final String DELETE_LOCAL_MESSAGE = "Are you sure you want to delete the selected items?";
     private static final String PASTE_FAILED_MESSAGE = "Unable to paste data?";
 
-    @Override
-    public ExplorerManager getExplorerManager() {
-        return mgr;
-    }
- 
     // MultiViewElement >
     @Override
     public JComponent getVisualRepresentation() {
@@ -164,20 +159,6 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
     // < MultiViewElement
 
-//    @Override
-//    public Node getNode() {
-//        if (selection.length == 0) {
-//            return null;
-//        } else {
-//            return new SaItemNode(selection[0]);
-//        }
-//    }
-
-    @Override
-    public boolean hasContextMenu() {
-        return true;
-    }
-
     public int getSelectionCount() {
         return selection.length;
     }
@@ -186,6 +167,22 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         Log,
         Level
+    }
+    
+    @Override
+    public Action[] getActions() {
+        return Menus.createActions(super.getActions(), MultiProcessingManager.CONTEXTPATH);
+    }
+
+    @Override
+    public boolean  hasContextMenu(){
+        return true;
+    }
+    
+    @Override
+    public boolean fill(JMenu menu){
+        Menus.fillMenu(menu, MultiProcessingManager.CONTEXTPATH);
+        return true;
     }
     
     // CONSTANTS
@@ -221,13 +218,16 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     private final DeleteActionPanel deleteActionPanel;
 
-    public SaBatchUI(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
-        super(doc, controller);
+    private final ExplorerManager mgr = new ExplorerManager();
+    
+    public SaBatchUI(MultiProcessingController controller) {
+        super(controller);
         this.collection = HasTsCollectionSupport.of(this::firePropertyChange, TsInformationType.None);
         this.collection.setTsUpdateMode(TsUpdateMode.Append);
         this.defaultSpecification= DemetraSaUI.getDefault().getDefaultSaSpec();
 
-        setName(doc.getDisplayName());
+        setName(controller.getDocument().getDisplayName());
+        setDisplayName(controller.getDocument().getDisplayName());
         toolBarRepresentation = NbComponents.newInnerToolbar();
         toolBarRepresentation.setFloatable(false);
         toolBarRepresentation.addSeparator();
@@ -283,7 +283,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         // TODO
         detail = new TsProcessingViewer(null, TsProcessingViewer.Type.APPLY_RESTORE_SAVE);
         detail.setHeaderVisible(false);
-        detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_SAVE, evt -> save((SaDocument) detail.getDocument()));
+        detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_SAVE, evt -> save((TsDocument) detail.getDocument()));
         detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_RESTORE, evt -> {
             if (selection.length > 0) {
                 showDetails(selection[0]);
@@ -321,18 +321,28 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         master.setTransferHandler(HasTsCollectionSupport.newTransferHandler(collection));
         collection.setTsUpdateMode(TsUpdateMode.Replace);
         deleteActionPanel = new DeleteActionPanel();
+        associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return mgr;
+    }
+    
+    @NbBundle.Messages({
+        "undefinedspec.dialog.title=Undefined specification"
+    })
     private void onCollectionChange(){
         TsCollection coll = getTsCollection();
         if (coll == null) {
             return;
         }
-        if (defaultSpecification == null){
-            // TODO: Warning
+        Ts[] all=coll.stream().filter(s->s.getType().encompass(TsInformationType.Data)).toArray(n->new Ts[n]);
+        if (all.length>0 && defaultSpecification == null){
+            NotifyDescriptor nd = new NotifyDescriptor.Message(Bundle.undefinedspec_dialog_title(), NotifyDescriptor.INFORMATION_MESSAGE);
+            DialogDisplayer.getDefault().notify(nd);        
             return;
         }
-        Ts[] all=coll.stream().filter(s->s.getType().encompass(TsInformationType.Data)).toArray(n->new Ts[n]);
         getElement().add(defaultSpecification, all);
         redrawAll();
         
@@ -355,11 +365,6 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
             setDefaultSpecification((SaSpecification) c.getSpecification());
         }
-    }
-
-    @Override
-    public Action[] getActions() {
-        return Menus.createActions(super.getActions(), MultiProcessingManager.CONTEXTPATH);
     }
 
     protected void onProcessingChange() {
@@ -385,7 +390,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 break;
             case STARTED:
                 runButton.setEnabled(false);
-                progressHandle = ProgressHandle.createHandle(getDocument().getDisplayName(), () -> worker.cancel(true));
+                progressHandle = ProgressHandle.createHandle(controller.getDocument().getDisplayName(), () -> worker.cancel(true));
                 progressHandle.start(getElement().getCurrent().size());
                 break;
         }
@@ -421,7 +426,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
     
     public MultiProcessingDocument getElement(){
-        return this.getDocument().getElement();
+        return controller.getDocument().getElement();
     }
 
     public void setDefaultSpecification(SaSpecification defaultSpecification) {
@@ -480,27 +485,23 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         master.setRowSorter(sorter);
     }
 
-    public void refresh(EstimationPolicy policy, boolean interactive) {
-        if (interactive) {
-            NotifyDescriptor nd = new NotifyDescriptor.Confirmation(REFRESH_MESSAGE, NotifyDescriptor.OK_CANCEL_OPTION);
-            if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
-                return;
-            }
-        }
-        getDocument().getElement().refresh(policy);
-        start(false);
+    public void refresh(EstimationPolicyType policy, boolean interactive, boolean all) {
+        refresh(policy, 0, interactive, all);
     }
-   
-    public void refreshSelection(EstimationPolicy policy, boolean interactive) {
+    
+    public void refresh(EstimationPolicyType policy, int nback, boolean interactive, boolean all) {
         if (interactive) {
             NotifyDescriptor nd = new NotifyDescriptor.Confirmation(REFRESH_LOCAL_MESSAGE, NotifyDescriptor.OK_CANCEL_OPTION);
             if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
                 return;
             }
         }
-        Set<SaNode> sel=Arrays.stream(selection).collect(Collectors.toSet());
-       
-        getDocument().getElement().refresh(policy, item->sel.contains(item));
+        if (all){
+            controller.getDocument().getElement().refresh(policy, nback, item->true);
+        }else{
+            Set<SaNode> sel=Arrays.stream(selection).collect(Collectors.toSet());
+            controller.getDocument().getElement().refresh(policy, nback, item->sel.contains(item));
+        }
         start(true);
     }
 
@@ -578,7 +579,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         for (int index : indexToDelete) {
             itemsToDelete.add(items[index]);
         }
-        getDocument().getElement().remove(itemsToDelete);
+        controller.getDocument().getElement().remove(itemsToDelete);
 
         redrawAll();
         controller.setSaProcessingState(SaProcessingState.READY);
@@ -756,35 +757,30 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         }
     }
 
-    void save(SaDocument doc) {
+    void save(TsDocument doc) {
         if (selection.length == 0) {
             return;
         }
-        SaNode item = selection[0];
+        SaNode node = selection[0];
+        SaItem item=node.getOutput();
+        SaSpecification spec=(SaSpecification) doc.getSpecification();
         SaDefinition def=SaDefinition.builder()
-                .domainSpec(doc.getSpecification())
-                .ts(doc.getSeries())
+                .domainSpec(spec)
+                .ts(doc.getInput())
                 .policy(EstimationPolicyType.Interactive)
                 .build();
-        SaEstimation estimation=SaEstimation.builder()
-                .diagnostics(doc.getDiagnostics())
-                .quality(doc.getQuality())
-                .results(doc.getResults())
+         
+        SaEstimation estimation=doc instanceof HasSaEstimation ? ((HasSaEstimation) doc).getEstimation() : null;
+//        
+        SaItem nitem = SaItem.builder()
+                .name(item.getName())
+                .comment(item.getComment())
+                .meta(item.getMeta())
+                .definition(def)
+                .estimation(estimation)
                 .build();
         
-//        
-//        SaItem nitem = SaItem.builder()
-//                .name(item.getName())
-//                .comment(item.getComment())
-//                .meta(item.getMeta())
-//                .definition(def)
-//                .estimation(estimation)
-//                .build();
-// 
-//        getElement().replace(item, nitem);
-//        int idx = getElement().getCurrent().indexOf(nitem);
-//        model.fireTableRowsUpdated(idx, idx);
-//        refreshInfo();
+        node.setOutput(nitem);
     }
 
     public void clearPriority(List<SaItem> items) {
@@ -893,7 +889,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                     NotifyDescriptor nd = new NotifyDescriptor.Confirmation("There are unsaved changes in the previously selected item's spec."
                             + "\nDo you want to save them ?", "Unsaved changes", NotifyDescriptor.YES_NO_OPTION);
                     if (DialogDisplayer.getDefault().notify(nd) == NotifyDescriptor.YES_OPTION) {
-                        save((SaDocument) detail.getDocument());
+                        save((TsDocument) detail.getDocument());
                     }
                     detail.setDirty(false);
                 }
@@ -963,7 +959,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             SaSpecification currentDomainSpec = item.getSpec();
             List<WorkspaceItem<SaSpecification>> x = WorkspaceFactory.getInstance().getActiveWorkspace().searchDocuments(SaSpecification.class);
             Optional<WorkspaceItem<SaSpecification>> y = x.stream().filter(workspaceItem -> workspaceItem.getElement().equals(currentDomainSpec)).findFirst();
-            return y.isPresent() ? y.get().getDisplayName() : currentDomainSpec.toString();
+            return y.isPresent() ? y.get().getDisplayName() : currentDomainSpec.display();
         }
 
         @Override
@@ -980,7 +976,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         protected String getText(SaNode item) {
             if (item.getOutput() == null)
                 return "";
-            switch (item.getOutput().getDefinition().getPolicy()) {
+            EstimationPolicyType policy = item.getOutput().getDefinition().getPolicy();
+            switch (policy) {
                 case Fixed:
                     return "Fixed model";
                 case FixedParameters:
@@ -996,7 +993,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 case Complete:
                     return "Concurrent";
                 default:
-                    return null;
+                    return policy.name();
             }
         }
     }
@@ -1033,7 +1030,10 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         protected String getText(SaNode item) {
-            return item.isProcessed() ? item.results().getQuality().name() : null;
+            if (! item.isProcessed())
+                return null;
+            ProcQuality quality = item.results().getQuality();
+            return quality != null ? quality.name() : null;
         }
 
         @Override
@@ -1224,6 +1224,5 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             }
         }
     }
-    
 
 }

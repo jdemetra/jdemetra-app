@@ -4,7 +4,7 @@
  */
 package demetra.desktop.sa.multiprocessing.ui;
 
-import demetra.information.Explorable;
+import demetra.sa.EstimationPolicyType;
 import demetra.sa.SaDefinition;
 import demetra.sa.SaEstimation;
 import demetra.sa.SaItem;
@@ -28,7 +28,7 @@ public class SaNode {
 
     volatile SaItem output;
 
-    static SaNode of(int id, Ts ts, SaSpecification spec) {
+    public static SaNode of(int id, Ts ts, SaSpecification spec) {
         SaNode node = new SaNode(id, ts.getName(), ts.getMoniker(), spec);
         if (ts.getType().encompass(TsInformationType.Data)) {
             node.setOutput(SaItem.of(ts, spec));
@@ -36,26 +36,56 @@ public class SaNode {
         return node;
     }
 
-    static SaNode of(int id, SaItem item) {
+    public static SaNode of(int id, SaItem item) {
         SaDefinition definition = item.getDefinition();
-        SaNode node = new SaNode(id, item.getName(), definition.getTs().getMoniker(), definition.getDomainSpec());
+        SaNode node = new SaNode(id, item.getName(), definition.getTs().getMoniker(), definition.activeSpecification());
         node.output = item;
         return node;
     }
 
-    void process() {
+    public SaNode with(SaSpecification nspec) {
+        SaItem item = output;
+        if (item == null) {
+            return new SaNode(id, name, moniker, nspec);
+        } else {
+            SaDefinition definition = item.getDefinition();
+            SaDefinition ndefinition = definition.toBuilder()
+                    .domainSpec(definition.getDomainSpec())
+                    .estimationSpec(nspec)
+                    .policy(EstimationPolicyType.Interactive)
+                    .build();
+            SaItem nitem=SaItem.builder()
+                    .definition(ndefinition)
+                    .comment(item.getComment())
+                    .name(item.getName())
+                    .meta(item.getMeta())
+                    .priority(item.getPriority())
+                    .build();
+            return SaNode.of(id, nitem);
+        }
+    }
+
+    public void process() {
         if (output == null) {
             Ts ts = TsFactory.getDefault().makeTs(moniker, TsInformationType.Data);
             output = SaItem.of(ts, spec);
         }
     }
-    
-    SaEstimation results(){
+
+    public SaEstimation results() {
         return output == null ? null : output.getEstimation();
     }
-    
-    boolean isProcessed(){
-        SaItem o=output;
+
+    public boolean isProcessed() {
+        SaItem o = output;
         return o != null && o.isProcessed();
+    }
+
+    public SaSpecification domainSpec() {
+        if (output != null) {
+            return output.getDefinition().getDomainSpec();
+        } else {
+            return spec;
+        }
     }
 }

@@ -16,8 +16,14 @@
  */
 package demetra.desktop.workspace;
 
+import demetra.timeseries.calendars.CalendarDefinition;
+import demetra.timeseries.calendars.CalendarManager;
+import demetra.timeseries.regression.ModellingContext;
+import demetra.timeseries.regression.TsDataSuppliers;
 import demetra.tsprovider.DataSource;
+import demetra.util.NameManager;
 import java.util.Collection;
+import java.util.List;
 import nbbrd.service.ServiceDefinition;
 
 /**
@@ -62,4 +68,24 @@ public interface WorkspaceRepository {
     void close(Workspace ws_);
 
     DataSource getDefaultDataSource();
+    
+    public static void updateModellingContext(Workspace ws){
+        ModellingContext ncontext=ws.getContext();
+        CalendarManager cm = ncontext.getCalendars();
+        NameManager<TsDataSuppliers> vm = ncontext.getTsVariableManagers();
+        List<WorkspaceItem<CalendarDefinition>> cals = ws.searchDocuments(CalendarDefinition.class);
+        for (WorkspaceItem<CalendarDefinition> item : cals){
+            if (item.getStatus() != WorkspaceItem.Status.System){
+                cm.set(item.getDisplayName(), item.getElement());
+            }
+        }
+        cm.resetDirty();
+        List<WorkspaceItem<TsDataSuppliers>> vars = ws.searchDocuments(TsDataSuppliers.class);
+        for (WorkspaceItem<TsDataSuppliers> item : vars){
+            if (item.getStatus() != WorkspaceItem.Status.System){
+                vm.set(item.getDisplayName(), item.getElement());
+             }
+        }
+        vm.resetDirty();
+    }
 }

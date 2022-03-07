@@ -35,8 +35,6 @@ import org.openide.explorer.ExplorerUtils;
  */
 public class SummaryView extends AbstractSaProcessingTopComponent implements MultiViewElement {
 
-    private final ExplorerManager mgr = new ExplorerManager();
-
     // main components
     private final JComponent visualRepresentation;
     private final JToolBar toolBarRepresentation;
@@ -46,8 +44,8 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
     private final JComboBox<Map.Entry<Integer, AlgorithmDescriptor>> comboBox;
     private final JHtmlView reportTB_;
 
-    public SummaryView(WorkspaceItem<MultiProcessingDocument> doc, MultiProcessingController controller) {
-        super(doc, controller);
+    public SummaryView(MultiProcessingController controller) {
+        super(controller);
         this.reports = new HashMap<>();
         this.reportTB_ = new JHtmlView();
 
@@ -78,12 +76,6 @@ public class SummaryView extends AbstractSaProcessingTopComponent implements Mul
         setLayout(new BorderLayout());
         add(toolBarRepresentation, BorderLayout.NORTH);
         add(visualRepresentation, BorderLayout.CENTER);
-        associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
-    }
-
-    @Override
-    public ExplorerManager getExplorerManager() {
-        return mgr;
     }
 
     @Override

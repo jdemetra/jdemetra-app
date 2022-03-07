@@ -14,7 +14,7 @@ import org.openide.util.NbBundle.Messages;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.datatransfer.DataTransfers;
 import demetra.desktop.workspace.WorkspaceFactory;
-import demetra.desktop.workspace.actions.AbstractViewAction;
+import demetra.desktop.ui.ActiveViewAction;
 import demetra.desktop.workspace.ui.WorkspaceTsTopComponent;
 import java.util.Optional;
 
@@ -26,7 +26,7 @@ import java.util.Optional;
     @ActionReference(path = "Shortcuts", name = "P")
 })
 @Messages("CTL_PasteTs=Paste")
-public final class PasteTs extends AbstractViewAction<WorkspaceTsTopComponent> {
+public final class PasteTs extends ActiveViewAction<WorkspaceTsTopComponent> {
 
     public PasteTs() {
         super(WorkspaceTsTopComponent.class);

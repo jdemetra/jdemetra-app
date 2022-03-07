@@ -39,7 +39,7 @@ public class OutlierEstimation {
     }
 
     public static OutlierEstimation[] of(RegSarimaModel model) {
-        TsDomain estimationDomain = model.getDetails().getEstimationDomain();
+        TsDomain estimationDomain = model.getEstimation().getDomain();
         return model.getDetails().getRegressionItems().stream()
                 .filter(desc->desc.getCore() instanceof IOutlier)
                 .map(desc->of(desc, estimationDomain))

@@ -68,7 +68,7 @@ public final class ChangeSpecification extends AbstractViewAction<SaBatchUI> {
             }
         }
         JSpecSelectionComponent c = new JSpecSelectionComponent();
-        c.setSpecification(spec);
+        c.setSpecification(cur.getDefaultSpecification());
         DialogDescriptor dd = c.createDialogDescriptor("Choose active specification");
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
             for (SaItem o : selection) {

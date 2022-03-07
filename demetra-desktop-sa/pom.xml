@@ -50,6 +50,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-sa-workspace</artifactId>
+                <version>${jd3-sa.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-sa-api</artifactId>
                 <version>${sa-desktop.version}</version>
             </dependency>

@@ -22,7 +22,6 @@ import demetra.desktop.util.IDialogDescriptorProvider;
 import demetra.desktop.nodes.DecoratedNode;
 import demetra.desktop.ui.CustomDialogDescriptor;
 import demetra.util.Constraint;
-import demetra.util.Id;
 import demetra.util.LinearId;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
@@ -97,7 +96,7 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
     }
     
     public void setFamily(String family){
-         DecoratedNode root = new DecoratedNode(new DummyWsNode(WorkspaceFactory.getInstance().getActiveWorkspace(), new LinearId(family, WorkspaceFactory.SPECIFICATIONS)), systemOnly ? ItemWsNodeFilter.SYSTEM_ONLY : (o -> true));
+        DecoratedNode root = new DecoratedNode(new DummyWsNode(WorkspaceFactory.getInstance().getActiveWorkspace(), new LinearId(family, WorkspaceFactory.SPECIFICATIONS)), systemOnly ? ItemWsNodeFilter.SYSTEM_ONLY : (o -> true));
         root.breadthFirstStream().forEach(o -> o.setPreferredActionDecorator(DecoratedNode.PreferredAction.DO_NOTHING));
         em.setRootContext(root);
     }

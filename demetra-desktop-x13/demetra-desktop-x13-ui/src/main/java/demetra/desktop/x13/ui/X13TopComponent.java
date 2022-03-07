@@ -28,7 +28,7 @@ autostore = false)
 persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Seasonal Adjustment", id = "demetra.desktop.x13.ui.X13TopComponent")
-@ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Single Analysis", position = 1000)
+@ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Single Analysis", position = 1010)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_X13Action")
 @NbBundle.Messages({
     "CTL_X13Action=X13",

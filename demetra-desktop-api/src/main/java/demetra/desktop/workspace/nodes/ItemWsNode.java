@@ -36,11 +36,11 @@ public class ItemWsNode extends WsNode {
     }
 
     public WorkspaceItem<?> getItem() {
-        return workspace_.searchDocument(lookup());
+        return workspace.searchDocument(lookup());
     }
 
     public <T> WorkspaceItem<T> getItem(Class<T> tclass) {
-        return workspace_.searchDocument(lookup(), tclass);
+        return workspace.searchDocument(lookup(), tclass);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class ItemWsNode extends WsNode {
     public void destroy() {
         WorkspaceItem<?> item = getItem();
         if (item != null) {
-            workspace_.remove(item);
+            workspace.remove(item);
         }
     }
 
@@ -89,7 +89,7 @@ public class ItemWsNode extends WsNode {
     @Override
     public Sheet createSheet() {
         Sheet sheet = super.createSheet();
-        WorkspaceItem<Documented> doc = workspace_.searchDocument(lookup(), Documented.class);
+        WorkspaceItem<Documented> doc = workspace.searchDocument(lookup(), Documented.class);
         if (doc == null) {
             return sheet;
         }
