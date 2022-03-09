@@ -14,7 +14,6 @@ import demetra.timeseries.Ts;
 import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsMoniker;
 import demetra.desktop.util.XmlConfig;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -106,12 +105,8 @@ public final class ToolsPersistence {
     private static final Xml.Parser<Content> CONTENT_PARSER;
 
     static {
-        try {
-            CONTENT_FORMATTER = Jaxb.Formatter.of(ContentBean.class).compose(Content::toBean);
-            CONTENT_PARSER = Jaxb.Parser.of(ContentBean.class).andThen(Content::fromBean);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        CONTENT_FORMATTER = Jaxb.Formatter.of(ContentBean.class).compose(Content::toBean);
+        CONTENT_PARSER = Jaxb.Parser.of(ContentBean.class).andThen(Content::fromBean);
     }
 
     private static String escape(String value) {

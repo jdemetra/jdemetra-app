@@ -40,7 +40,7 @@
         <jd2.version>2.2.4-SNAPSHOT</jd2.version>
         <jd3.version>${project.version}</jd3.version>
         <jd3-basic.version>1.0.0-SNAPSHOT</jd3-basic.version>
-        <java-io-util.version>0.0.14</java-io-util.version>
+        <java-io-util.version>0.0.17</java-io-util.version>
         <java-design-util.version>1.1.3</java-design-util.version>
         <jd3-workspace.version>3.0.0-SNAPSHOT</jd3-workspace.version>
     </properties>
@@ -53,6 +53,7 @@
         <module>demetra-desktop-spreadsheet</module>
         <module>demetra-desktop-sql</module>
         <module>demetra-desktop-text</module>
+        <module>demetra-desktop-extra</module>
         <module>demetra-desktop-tramoseats</module>
         <!--module>demetra-desktop-jd2</module-->
         <module>demetra-desktop-branding</module>
@@ -293,6 +294,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-spreadsheet</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>demetra-desktop-extra</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- < nbdemetra modules -->
