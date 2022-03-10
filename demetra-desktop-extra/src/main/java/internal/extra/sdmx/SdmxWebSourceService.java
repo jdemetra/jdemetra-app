@@ -14,18 +14,15 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package internal.extra.sdmx.web;
+package internal.extra.sdmx;
 
+import demetra.desktop.TsManager;
 import demetra.desktop.completion.AutoCompletionSpi;
 import demetra.tsp.extra.sdmx.web.SdmxWebProvider;
-import sdmxdl.web.SdmxWebManager;
 import ec.util.completion.swing.JAutoCompletion;
-import internal.extra.sdmx.SdmxAutoCompletion;
-import java.util.Optional;
 import javax.swing.text.JTextComponent;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
-import org.openide.util.Lookup;
 import sdmxdl.web.SdmxWebSource;
 
 /**
@@ -34,7 +31,7 @@ import sdmxdl.web.SdmxWebSource;
  */
 @DirectImpl
 @ServiceProvider
-public final class SdmxWebSourceAutoCompletionService implements AutoCompletionSpi {
+public final class SdmxWebSourceService implements AutoCompletionSpi {
 
     @Override
     public String getPath() {
@@ -45,15 +42,13 @@ public final class SdmxWebSourceAutoCompletionService implements AutoCompletionS
     public JAutoCompletion bind(JTextComponent textComponent) {
         JAutoCompletion result = new JAutoCompletion(textComponent);
         result.setMinLength(0);
-        lookupManager().ifPresent(manager -> {
-            result.setSource(SdmxAutoCompletion.onSources(manager));
-            result.getList().setCellRenderer(SdmxAutoCompletion.getSourceRenderer(manager));
-        });
+        TsManager.getDefault()
+                .getProvider(SdmxWebProvider.class)
+                .ifPresent(provider -> {
+                    SdmxAutoCompletion c = SdmxAutoCompletion.onWebSource(provider.getSdmxManager());
+                    result.setSource(c.getSource());
+                    result.getList().setCellRenderer(c.getRenderer());
+                });
         return result;
-    }
-
-    private Optional<SdmxWebManager> lookupManager() {
-        return Optional.ofNullable(Lookup.getDefault().lookup(SdmxWebProvider.class))
-                .map(SdmxWebProvider::getSdmxManager);
     }
 }

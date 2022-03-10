@@ -18,6 +18,7 @@ package demetra.desktop.extra.sdmx.web;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import demetra.desktop.TsManager;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import demetra.desktop.tsproviders.DataSourceProviderBuddy;
 import demetra.desktop.tsproviders.TsProviderProperties;
@@ -28,24 +29,27 @@ import demetra.tsp.extra.sdmx.web.SdmxWebProvider;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
 import internal.extra.sdmx.SdmxAutoCompletion;
-import internal.extra.sdmx.web.SdmxWebFactory;
+import internal.extra.sdmx.SdmxManagerFactory;
 import java.awt.Image;
-import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import nbbrd.service.ServiceProvider;
 import nbbrd.design.DirectImpl;
 import nbbrd.io.function.IORunnable;
 import org.openide.awt.StatusDisplayer;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
+import sdmxdl.DataflowRef;
+import sdmxdl.Dimension;
 import sdmxdl.web.SdmxWebManager;
 import sdmxdl.web.SdmxWebSource;
 import sdmxdl.xml.XmlWebSource;
@@ -68,8 +72,12 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy {
     public SdmxWebProviderBuddy() {
         this.autoCompletionCache = Caches.ttlCacheAsMap(Duration.ofMinutes(1));
         this.customSources = new File("");
-        this.webManager = SdmxWebFactory.createManager();
+        this.webManager = SdmxManagerFactory.newWebManager();
         lookupProvider().ifPresent(o -> o.setSdmxManager(webManager));
+    }
+
+    private static Optional<SdmxWebProvider> lookupProvider() {
+        return TsManager.getDefault().getProvider(SdmxWebProvider.class);
     }
 
     @Override
@@ -113,19 +121,12 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy {
     }
 
     @Override
-    public Sheet getSheetOfBeanOrNull(Object bean) throws IntrospectionException {
-        return bean instanceof SdmxWebBean
-                ? createSheetSets((SdmxWebBean) bean)
-                : DataSourceProviderBuddy.super.getSheetOfBeanOrNull(bean);
+    public Sheet getSheetOfBeanOrNull(Object bean) {
+        return bean instanceof SdmxWebBean ? getSheetOrNull((SdmxWebBean) bean) : null;
     }
 
-    private Sheet createSheetSets(SdmxWebBean bean) {
-        Optional<SdmxWebProvider> provider = lookupProvider();
-        if (provider.isPresent()) {
-            SdmxWebProvider o = provider.get();
-            return createSheet(bean, o.getSdmxManager(), autoCompletionCache);
-        }
-        return null;
+    private Sheet getSheetOrNull(SdmxWebBean bean) {
+        return lookupProvider().map(provider -> newSheet(bean, provider)).orElse(null);
     }
 
     private Image getIcon(SdmxWebBean bean) {
@@ -133,10 +134,6 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy {
         return source != null
                 ? ImageUtilities.icon2Image(SdmxAutoCompletion.FAVICONS.get(source.getWebsite(), IORunnable.noOp().asUnchecked()))
                 : null;
-    }
-
-    private static Optional<SdmxWebProvider> lookupProvider() {
-        return Optional.ofNullable(Lookup.getDefault().lookup(SdmxWebProvider.class));
     }
 
     private static List<SdmxWebSource> loadSources(File file) {
@@ -152,11 +149,11 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy {
 
     @NbBundle.Messages({
         "bean.cache.description=Mechanism used to improve performance."})
-    private static Sheet createSheet(SdmxWebBean bean, SdmxWebManager manager, ConcurrentMap cache) {
+    private Sheet newSheet(SdmxWebBean bean, SdmxWebProvider provider) {
         Sheet result = new Sheet();
         NodePropertySetBuilder b = new NodePropertySetBuilder();
-        result.put(withSource(b.reset("Source"), bean, manager, cache).build());
-        result.put(withOptions(b.reset("Options"), bean, manager, cache).build());
+        result.put(withSource(b.reset("Source"), bean, provider).build());
+        result.put(withOptions(b.reset("Options"), bean, provider).build());
         result.put(withCache(b.reset("Cache").description(Bundle.bean_cache_description()), bean).build());
         return result;
     }
@@ -166,20 +163,26 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy {
         "bean.source.description=The identifier of the service that provides data.",
         "bean.flow.display=Dataflow",
         "bean.flow.description=The identifier of a specific dataflow.",})
-    private static NodePropertySetBuilder withSource(NodePropertySetBuilder b, SdmxWebBean bean, SdmxWebManager manager, ConcurrentMap cache) {
+    private NodePropertySetBuilder withSource(NodePropertySetBuilder b, SdmxWebBean bean, SdmxWebProvider provider) {
         b.withAutoCompletion()
                 .select("source", bean::getSource, bean::setSource)
                 .servicePath(SdmxWebSource.class.getName())
                 .display(Bundle.bean_source_display())
                 .description(Bundle.bean_source_description())
                 .add();
+
+        Supplier<SdmxWebSource> toSource = () -> getWebSourceOrNull(bean, provider);
+
+        SdmxAutoCompletion dataflow = SdmxAutoCompletion.onDataflow(provider.getSdmxManager(), toSource, autoCompletionCache);
+
         b.withAutoCompletion()
                 .select("flow", bean::getFlow, bean::setFlow)
-                .source(SdmxAutoCompletion.onFlows(manager, bean::getSource, cache))
-                .cellRenderer(SdmxAutoCompletion.getFlowsRenderer())
+                .source(dataflow.getSource())
+                .cellRenderer(dataflow.getRenderer())
                 .display(Bundle.bean_flow_display())
                 .description(Bundle.bean_flow_description())
                 .add();
+
         return b;
     }
 
@@ -189,27 +192,50 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy {
         "bean.labelAttribute.display=Series label attribute",
         "bean.labelAttribute.description=An optional attribute that carries the label of time series."
     })
-    private static NodePropertySetBuilder withOptions(NodePropertySetBuilder b, SdmxWebBean bean, SdmxWebManager manager, ConcurrentMap cache) {
+    private NodePropertySetBuilder withOptions(NodePropertySetBuilder b, SdmxWebBean bean, SdmxWebProvider provider) {
+        Supplier<SdmxWebSource> toSource = () -> getWebSourceOrNull(bean, provider);
+        Supplier<DataflowRef> toFlow = () -> getDataflowRefOrNull(bean);
+
+        SdmxAutoCompletion dimension = SdmxAutoCompletion.onDimension(provider.getSdmxManager(), toSource, toFlow, autoCompletionCache);
+
         b.withAutoCompletion()
                 .select(bean, "dimensions", List.class,
                         Joiner.on(',')::join, Splitter.on(',').trimResults().omitEmptyStrings()::splitToList)
-                .source(SdmxAutoCompletion.onDimensions(manager, bean::getSource, bean::getFlow, cache))
+                .source(dimension.getSource())
+                .cellRenderer(dimension.getRenderer())
                 .separator(",")
-                .defaultValueSupplier(() -> SdmxAutoCompletion.getDefaultDimensionsAsString(manager, bean::getSource, bean::getFlow, cache, ","))
-                .cellRenderer(SdmxAutoCompletion.getDimensionsRenderer())
+                .defaultValueSupplier(() -> dimension.getSource().getValues("").stream().map(Dimension.class::cast).sorted(Comparator.comparingInt(Dimension::getPosition)).map(Dimension::getId).collect(Collectors.joining(",")))
                 .display(Bundle.bean_dimensions_display())
                 .description(Bundle.bean_dimensions_description())
                 .add();
+
+        SdmxAutoCompletion attribute = SdmxAutoCompletion.onAttribute(provider.getSdmxManager(), toSource, toFlow, autoCompletionCache);
+        
         b.withAutoCompletion()
                 .select("labelAttribute", bean::getLabelAttribute, bean::setLabelAttribute)
+                .source(attribute.getSource())
+                .cellRenderer(attribute.getRenderer())
                 .display(Bundle.bean_labelAttribute_display())
                 .description(Bundle.bean_labelAttribute_description())
                 .add();
+
         return b;
     }
 
-    private static NodePropertySetBuilder withCache(NodePropertySetBuilder b, SdmxWebBean bean) {
+    private NodePropertySetBuilder withCache(NodePropertySetBuilder b, SdmxWebBean bean) {
         TsProviderProperties.addBulkCube(b, bean::getCacheConfig, bean::setCacheConfig);
         return b;
+    }
+
+    private static SdmxWebSource getWebSourceOrNull(SdmxWebBean bean, SdmxWebProvider provider) {
+        return provider.getSdmxManager().getSources().get(bean.getSource());
+    }
+
+    private static DataflowRef getDataflowRefOrNull(SdmxWebBean bean) {
+        try {
+            return DataflowRef.parse(bean.getFlow());
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 }

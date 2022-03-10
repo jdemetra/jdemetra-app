@@ -16,8 +16,9 @@
  */
 package demetra.desktop.extra.sdmx.file;
 
-import nbbrd.io.function.IOFunction;
-import sdmxdl.file.SdmxFileManager;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import demetra.desktop.TsManager;
 import sdmxdl.file.SdmxFileSource;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import demetra.desktop.tsproviders.DataSourceProviderBuddy;
@@ -25,26 +26,25 @@ import demetra.desktop.ui.properties.FileLoaderFileFilter;
 import demetra.desktop.util.Caches;
 import demetra.tsp.extra.sdmx.file.SdmxFileBean;
 import demetra.tsp.extra.sdmx.file.SdmxFileProvider;
-import demetra.tsprovider.FileLoader;
-import demetra.tsprovider.HasFilePaths;
 import internal.extra.sdmx.SdmxAutoCompletion;
+import internal.extra.sdmx.SdmxManagerFactory;
 import static internal.tsp.extra.sdmx.SdmxCubeItems.resolveFileSet;
 import java.awt.Image;
-import java.beans.IntrospectionException;
 import java.io.FileNotFoundException;
-import java.time.Clock;
 import java.time.Duration;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
-import org.openide.awt.StatusDisplayer;
 import org.openide.nodes.Sheet;
 import org.openide.util.NbBundle;
-import org.openide.util.Lookup;
-import sdmxdl.util.ext.MapCache;
-import sdmxdl.xml.XmlFileSource;
+import sdmxdl.DataflowRef;
+import sdmxdl.Dimension;
+import sdmxdl.ext.Registry;
 
 /**
  *
@@ -58,7 +58,11 @@ public final class SdmxFileProviderBuddy implements DataSourceProviderBuddy {
 
     public SdmxFileProviderBuddy() {
         this.autoCompletionCache = Caches.ttlCacheAsMap(Duration.ofMinutes(1));
-        lookupProvider().ifPresent(o -> o.setSdmxManager(createManager()));
+        lookupProvider().ifPresent(o -> o.setSdmxManager(SdmxManagerFactory.newFileManager()));
+    }
+
+    private static Optional<SdmxFileProvider> lookupProvider() {
+        return TsManager.getDefault().getProvider(SdmxFileProvider.class);
     }
 
     @Override
@@ -72,61 +76,34 @@ public final class SdmxFileProviderBuddy implements DataSourceProviderBuddy {
     }
 
     @Override
-    public Sheet getSheetOfBeanOrNull(Object bean) throws IntrospectionException {
-        return bean instanceof SdmxFileBean
-                ? createSheetSets((SdmxFileBean) bean)
-                : DataSourceProviderBuddy.super.getSheetOfBeanOrNull(bean);
+    public Sheet getSheetOfBeanOrNull(Object bean) {
+        return bean instanceof SdmxFileBean ? getSheetOrNull((SdmxFileBean) bean) : null;
     }
 
-    private Sheet createSheetSets(SdmxFileBean bean) {
-        Optional<SdmxFileProvider> provider = lookupProvider();
-        if (provider.isPresent()) {
-            SdmxFileProvider o = provider.get();
-            return createSheet(bean, o, o.getSdmxManager());
-        }
-        return null;
-    }
-
-    private static SdmxFileManager createManager() {
-        return SdmxFileManager.ofServiceLoader()
-                .toBuilder()
-                .eventListener((src, msg) -> StatusDisplayer.getDefault().setStatusText(msg))
-                .cache(getCache())
-                .build();
-    }
-
-    private static MapCache getCache() {
-        return MapCache.of(
-                Caches.softValuesCacheAsMap(),
-                Caches.softValuesCacheAsMap(),
-                Clock.systemDefaultZone()
-        );
-    }
-
-    private static Optional<SdmxFileProvider> lookupProvider() {
-        return Optional.ofNullable(Lookup.getDefault().lookup(SdmxFileProvider.class));
+    private Sheet getSheetOrNull(SdmxFileBean bean) {
+        return lookupProvider().map(provider -> newSheet(bean, provider)).orElse(null);
     }
 
     @NbBundle.Messages({
         "bean.cache.description=Mechanism used to improve performance."})
-    private Sheet createSheet(SdmxFileBean bean, FileLoader loader, SdmxFileManager manager) {
+    private Sheet newSheet(SdmxFileBean bean, SdmxFileProvider provider) {
         Sheet result = new Sheet();
         NodePropertySetBuilder b = new NodePropertySetBuilder();
-        result.put(withSource(b.reset("Source"), bean, loader).build());
-        result.put(withOptions(b.reset("Options"), bean, loader, manager).build());
+        result.put(withSource(b.reset("Source"), bean, provider).build());
+        result.put(withOptions(b.reset("Options"), bean, provider).build());
         return result;
     }
 
     @NbBundle.Messages({
         "bean.file.display=Data file",
         "bean.file.description=The path to the sdmx data file.",})
-    private NodePropertySetBuilder withSource(NodePropertySetBuilder b, SdmxFileBean bean, FileLoader loader) {
+    private NodePropertySetBuilder withSource(NodePropertySetBuilder b, SdmxFileBean bean, SdmxFileProvider provider) {
         b.withFile()
-                .select(bean, "file")
+                .select("file", bean::getFile, bean::setFile)
                 .display(Bundle.bean_file_display())
                 .description(Bundle.bean_file_description())
-                .filterForSwing(new FileLoaderFileFilter(loader))
-                .paths(loader.getPaths())
+                .filterForSwing(new FileLoaderFileFilter(provider))
+                .paths(provider.getPaths())
                 .directories(false)
                 .add();
         return b;
@@ -142,47 +119,57 @@ public final class SdmxFileProviderBuddy implements DataSourceProviderBuddy {
         "bean.labelAttribute.display=Series label attribute",
         "bean.labelAttribute.description=An optional attribute that carries the label of time series."
     })
-    private NodePropertySetBuilder withOptions(NodePropertySetBuilder b, SdmxFileBean bean, FileLoader loader, SdmxFileManager manager) {
+    private NodePropertySetBuilder withOptions(NodePropertySetBuilder b, SdmxFileBean bean, SdmxFileProvider provider) {
         b.withFile()
-                .select(bean, "structureFile")
+                .select("structureFile", bean::getStructureFile, bean::setStructureFile)
                 .display(Bundle.bean_structureFile_display())
                 .description(Bundle.bean_structureFile_description())
-                .filterForSwing(new FileLoaderFileFilter(loader))
-                .paths(loader.getPaths())
+                .filterForSwing(new FileLoaderFileFilter(provider))
+                .paths(provider.getPaths())
                 .directories(false)
                 .add();
 
+        SdmxAutoCompletion dialect = SdmxAutoCompletion.onDialect(Registry.ofServiceLoader());
+
         b.withAutoCompletion()
-                .select(bean, "dialect")
-                .source(SdmxAutoCompletion.onDialects())
-                .cellRenderer(SdmxAutoCompletion.getDialectRenderer())
+                .select("dialect", bean::getDialect, bean::setDialect)
+                .source(dialect.getSource())
+                .cellRenderer(dialect.getRenderer())
                 .display(Bundle.bean_dialect_display())
                 .description(Bundle.bean_dialect_description())
                 .add();
 
-        Supplier<String> toSource = () -> tryResolveFileSet(loader, bean).map(IOFunction.unchecked(XmlFileSource.getFormatter()::formatToString)).orElse("");
-        Supplier<String> toFlow = () -> tryResolveFileSet(loader, bean).map(SdmxFileSource::asDataflowRef).map(Object::toString).orElse("");
+        Supplier<SdmxFileSource> toSource = () -> getFileSource(bean, provider).orElse(null);
+        Supplier<DataflowRef> toFlow = () -> getFileSource(bean, provider).map(SdmxFileSource::asDataflowRef).orElse(null);
 
-//        b.withAutoCompletion()
-//                .select(bean, "dimensions", List.class, Joiner.on(',')::join, Splitter.on(',').trimResults().omitEmptyStrings()::splitToList)
-//                .source(SdmxAutoCompletion.onDimensions(manager, toSource, toFlow, autoCompletionCache))
-//                .separator(",")
-//                .defaultValueSupplier(() -> SdmxAutoCompletion.getDefaultDimensionsAsString(manager, toSource, toFlow, autoCompletionCache, ","))
-//                .cellRenderer(SdmxAutoCompletion.getDimensionsRenderer())
-//                .display(Bundle.bean_dimensions_display())
-//                .description(Bundle.bean_dimensions_description())
-//                .add();
+        SdmxAutoCompletion dimension = SdmxAutoCompletion.onDimension(provider.getSdmxManager(), toSource, toFlow, autoCompletionCache);
+
         b.withAutoCompletion()
-                .select(bean, "labelAttribute")
+                .select(bean, "dimensions", List.class,
+                        Joiner.on(',')::join, Splitter.on(',').trimResults().omitEmptyStrings()::splitToList)
+                .source(dimension.getSource())
+                .cellRenderer(dimension.getRenderer())
+                .separator(",")
+                .defaultValueSupplier(() -> dimension.getSource().getValues("").stream().map(Dimension.class::cast).sorted(Comparator.comparingInt(Dimension::getPosition)).map(Dimension::getId).collect(Collectors.joining(",")))
+                .display(Bundle.bean_dimensions_display())
+                .description(Bundle.bean_dimensions_description())
+                .add();
+
+        SdmxAutoCompletion attribute = SdmxAutoCompletion.onAttribute(provider.getSdmxManager(), toSource, toFlow, autoCompletionCache);
+
+        b.withAutoCompletion()
+                .select("labelAttribute", bean::getLabelAttribute, bean::setLabelAttribute)
+                .source(attribute.getSource())
+                .cellRenderer(attribute.getRenderer())
                 .display(Bundle.bean_labelAttribute_display())
                 .description(Bundle.bean_labelAttribute_description())
                 .add();
         return b;
     }
 
-    public static Optional<SdmxFileSource> tryResolveFileSet(HasFilePaths paths, SdmxFileBean bean) {
+    private static Optional<SdmxFileSource> getFileSource(SdmxFileBean bean, SdmxFileProvider provider) {
         try {
-            return Optional.of(resolveFileSet(paths, bean));
+            return Optional.of(resolveFileSet(provider, bean));
         } catch (FileNotFoundException ex) {
             return Optional.empty();
         }
