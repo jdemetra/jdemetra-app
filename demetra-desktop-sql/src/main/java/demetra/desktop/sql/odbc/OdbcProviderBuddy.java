@@ -93,10 +93,10 @@ public final class OdbcProviderBuddy implements DataSourceProviderBuddy, Configu
     }
 
     @Override
-    public Sheet createSheetOfBean(Object bean) throws IntrospectionException {
+    public Sheet getSheetOfBeanOrNull(Object bean) throws IntrospectionException {
         return bean instanceof OdbcBean
                 ? createSheetSets((OdbcBean) bean)
-                : DataSourceProviderBuddy.super.createSheetOfBean(bean);
+                : DataSourceProviderBuddy.super.getSheetOfBeanOrNull(bean);
     }
 
     private Sheet createSheetSets(OdbcBean bean) {

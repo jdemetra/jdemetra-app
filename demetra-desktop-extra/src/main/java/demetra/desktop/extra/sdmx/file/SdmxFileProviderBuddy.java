@@ -20,22 +20,18 @@ import nbbrd.io.function.IOFunction;
 import sdmxdl.file.SdmxFileManager;
 import sdmxdl.file.SdmxFileSource;
 import demetra.desktop.properties.NodePropertySetBuilder;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.tsproviders.DataSourceProviderBuddy;
 import demetra.desktop.ui.properties.FileLoaderFileFilter;
 import demetra.desktop.util.Caches;
 import demetra.tsp.extra.sdmx.file.SdmxFileBean;
 import demetra.tsp.extra.sdmx.file.SdmxFileProvider;
-import demetra.tsprovider.DataSet;
 import demetra.tsprovider.FileLoader;
 import demetra.tsprovider.HasFilePaths;
 import internal.extra.sdmx.SdmxAutoCompletion;
 import static internal.tsp.extra.sdmx.SdmxCubeItems.resolveFileSet;
 import java.awt.Image;
-import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.Optional;
@@ -45,7 +41,6 @@ import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.openide.awt.StatusDisplayer;
 import org.openide.nodes.Sheet;
-import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 import org.openide.util.Lookup;
 import sdmxdl.util.ext.MapCache;
@@ -77,32 +72,19 @@ public final class SdmxFileProviderBuddy implements DataSourceProviderBuddy {
     }
 
     @Override
-    public Image getIconOrNull(DataSet dataSet, int type, boolean opened) {
-        switch (dataSet.getKind()) {
-            case COLLECTION:
-                return ImageUtilities.loadImage("ec/nbdemetra/ui/nodes/folder.png", true);
-            case SERIES:
-                return ImageUtilities.loadImage("ec/nbdemetra/ui/nodes/chart_line.png", true);
-            case DUMMY:
-                return null;
-        }
-        return DataSourceProviderBuddy.super.getIconOrNull(dataSet, type, opened);
+    public Sheet getSheetOfBeanOrNull(Object bean) throws IntrospectionException {
+        return bean instanceof SdmxFileBean
+                ? createSheetSets((SdmxFileBean) bean)
+                : DataSourceProviderBuddy.super.getSheetOfBeanOrNull(bean);
     }
 
-    @Override
-    public Image getIconOrNull(IOException ex, int type, boolean opened) {
-        return ImageUtilities.loadImage("ec/nbdemetra/ui/nodes/exclamation-red.png", true);
-    }
-
-    @Override
-    public boolean editBean(String title, Object bean) throws IntrospectionException {
-        if (bean instanceof SdmxFileBean) {
-            Optional<SdmxFileProvider> provider = lookupProvider();
-            if (provider.isPresent()) {
-                return editBean(title, (SdmxFileBean) bean, provider.get());
-            }
+    private Sheet createSheetSets(SdmxFileBean bean) {
+        Optional<SdmxFileProvider> provider = lookupProvider();
+        if (provider.isPresent()) {
+            SdmxFileProvider o = provider.get();
+            return createSheet(bean, o, o.getSdmxManager());
         }
-        return DataSourceProviderBuddy.super.editBean(title, bean);
+        return null;
     }
 
     private static SdmxFileManager createManager() {
@@ -123,13 +105,6 @@ public final class SdmxFileProviderBuddy implements DataSourceProviderBuddy {
 
     private static Optional<SdmxFileProvider> lookupProvider() {
         return Optional.ofNullable(Lookup.getDefault().lookup(SdmxFileProvider.class));
-    }
-
-    private boolean editBean(String title, SdmxFileBean bean, SdmxFileProvider o) {
-        return new PropertySheetDialogBuilder()
-                .title(title)
-                .icon(getIconOrNull(BeanInfo.ICON_COLOR_16x16, false))
-                .editSheet(createSheet(bean, o, o.getSdmxManager()));
     }
 
     @NbBundle.Messages({

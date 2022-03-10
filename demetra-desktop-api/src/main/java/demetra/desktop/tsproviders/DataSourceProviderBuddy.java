@@ -16,7 +16,7 @@
  */
 package demetra.desktop.tsproviders;
 
-import demetra.desktop.properties.PropertySheetDialogBuilder;
+import demetra.desktop.beans.BeanEditor;
 import demetra.desktop.util.NetBeansServiceBackend;
 import demetra.timeseries.TsMoniker;
 import demetra.tsprovider.DataSet;
@@ -28,10 +28,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.nodes.Sheet;
 
 import java.awt.*;
-import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author Philippe Charles
@@ -54,12 +52,12 @@ public interface DataSourceProviderBuddy {
 
     @Nullable
     default Image getIconOrNull(@NonNull DataSource dataSource, int type, boolean opened) {
-        return getIconOrNull(type, opened);
+        return null;
     }
 
     @Nullable
     default Image getIconOrNull(@NonNull DataSet dataSet, int type, boolean opened) {
-        return getIconOrNull(dataSet.getDataSource(), type, opened);
+        return null;
     }
 
     @Nullable
@@ -69,42 +67,36 @@ public interface DataSourceProviderBuddy {
 
     @Nullable
     default Image getIconOrNull(@NonNull TsMoniker moniker, int type, boolean opened) {
-        return getIconOrNull(type, opened);
+        return null;
     }
 
-    @NonNull
-    default Sheet createSheet() {
-        List<Sheet.Set> result = DataSourceProviderBuddyUtil.sheetSetsOfProvider(getProviderName());
-        return DataSourceProviderBuddyUtil.sheetOf(result);
+    @Nullable
+    default Sheet getSheetOrNull() {
+        return null;
     }
 
-    @NonNull
-    default Sheet createSheet(@NonNull DataSource dataSource) {
-        List<Sheet.Set> result = DataSourceProviderBuddyUtil.sheetSetsOfDataSource(dataSource);
-        return DataSourceProviderBuddyUtil.sheetOf(result);
+    @Nullable
+    default Sheet getSheetOrNull(@NonNull DataSource dataSource) {
+        return null;
     }
 
-    @NonNull
-    default Sheet createSheet(@NonNull DataSet dataSet) {
-        List<Sheet.Set> result = DataSourceProviderBuddyUtil.sheetSetsOfDataSet(dataSet);
-        return DataSourceProviderBuddyUtil.sheetOf(result);
+    @Nullable
+    default Sheet getSheetOrNull(@NonNull DataSet dataSet) {
+        return null;
     }
 
-    @NonNull
-    default Sheet createSheet(@NonNull IOException ex) {
-        List<Sheet.Set> result = DataSourceProviderBuddyUtil.sheetSetsOfException(ex);
-        return DataSourceProviderBuddyUtil.sheetOf(result);
+    @Nullable
+    default Sheet getSheetOrNull(@NonNull IOException ex) {
+        return null;
     }
 
-    @NonNull
-    default Sheet createSheetOfBean(@NonNull Object bean) throws IntrospectionException {
-        List<Sheet.Set> result = DataSourceProviderBuddyUtil.sheetSetsOfBean(bean);
-        return DataSourceProviderBuddyUtil.sheetOf(result);
+    @Nullable
+    default Sheet getSheetOfBeanOrNull(@NonNull Object bean) throws IntrospectionException {
+        return null;
     }
 
-    default boolean editBean(@NonNull String title, @NonNull Object bean) throws IntrospectionException {
-        Sheet sheet = createSheetOfBean(bean);
-        Image image = getIconOrNull(BeanInfo.ICON_COLOR_16x16, false);
-        return new PropertySheetDialogBuilder().title(title).icon(image).editSheet(sheet);
+    @Nullable
+    default BeanEditor getBeanEditorOrNull(@NonNull String title) {
+        return null;
     }
 }

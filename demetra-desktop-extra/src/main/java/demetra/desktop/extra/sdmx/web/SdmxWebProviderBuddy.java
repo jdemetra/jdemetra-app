@@ -19,7 +19,6 @@ package demetra.desktop.extra.sdmx.web;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import demetra.desktop.properties.NodePropertySetBuilder;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.tsproviders.DataSourceProviderBuddy;
 import demetra.desktop.tsproviders.TsProviderProperties;
 import demetra.desktop.util.Caches;
@@ -31,7 +30,6 @@ import demetra.tsprovider.DataSource;
 import internal.extra.sdmx.SdmxAutoCompletion;
 import internal.extra.sdmx.web.SdmxWebFactory;
 import java.awt.Image;
-import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.IOException;
@@ -98,31 +96,7 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy {
     }
 
     @Override
-    public Image getIconOrNull(DataSet dataSet, int type, boolean opened) {
-        switch (dataSet.getKind()) {
-            case COLLECTION:
-                return ImageUtilities.loadImage("demetra/desktop/icons/folder.png", true);
-            case SERIES:
-                return ImageUtilities.loadImage("demetra/desktop/icons/chart_line.png", true);
-            case DUMMY:
-                return null;
-        }
-        return DataSourceProviderBuddy.super.getIconOrNull(dataSet, type, opened);
-    }
-
-    @Override
-    public Image getIconOrNull(IOException ex, int type, boolean opened) {
-        return ImageUtilities.loadImage("demetra/desktop/icons/exclamation-red.png", true);
-    }
-
-    @Override
     public Image getIconOrNull(TsMoniker moniker, int type, boolean opened) {
-        // Fix Demetra v2 bug -->
-        if (!SOURCE.equals(moniker.getSource())) {
-            return DataSourceProviderBuddy.super.getIconOrNull(moniker, type, opened);
-        }
-        // <--
-
         Optional<SdmxWebProvider> lookupProvider = lookupProvider();
         if (lookupProvider.isPresent()) {
             SdmxWebProvider provider = lookupProvider.get();
@@ -139,18 +113,19 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy {
     }
 
     @Override
-    public boolean editBean(String title, Object bean) throws IntrospectionException {
-        if (bean instanceof SdmxWebBean) {
-            Optional<SdmxWebProvider> provider = lookupProvider();
-            if (provider.isPresent()) {
-                SdmxWebProvider o = provider.get();
-                return new PropertySheetDialogBuilder()
-                        .title(title)
-                        .icon(getIconOrNull(BeanInfo.ICON_COLOR_16x16, false))
-                        .editSheet(createSheet((SdmxWebBean) bean, o.getSdmxManager(), autoCompletionCache));
-            }
+    public Sheet getSheetOfBeanOrNull(Object bean) throws IntrospectionException {
+        return bean instanceof SdmxWebBean
+                ? createSheetSets((SdmxWebBean) bean)
+                : DataSourceProviderBuddy.super.getSheetOfBeanOrNull(bean);
+    }
+
+    private Sheet createSheetSets(SdmxWebBean bean) {
+        Optional<SdmxWebProvider> provider = lookupProvider();
+        if (provider.isPresent()) {
+            SdmxWebProvider o = provider.get();
+            return createSheet(bean, o.getSdmxManager(), autoCompletionCache);
         }
-        return DataSourceProviderBuddy.super.editBean(title, bean);
+        return null;
     }
 
     private Image getIcon(SdmxWebBean bean) {

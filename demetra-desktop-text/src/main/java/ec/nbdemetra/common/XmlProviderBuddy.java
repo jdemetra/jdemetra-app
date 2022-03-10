@@ -52,10 +52,10 @@ public final class XmlProviderBuddy implements DataSourceProviderBuddy {
     }
 
     @Override
-    public Sheet createSheetOfBean(Object bean) throws IntrospectionException {
+    public Sheet getSheetOfBeanOrNull(Object bean) throws IntrospectionException {
         return bean instanceof XmlBean
                 ? createSheetSets((XmlBean) bean)
-                : DataSourceProviderBuddy.super.createSheetOfBean(bean);
+                : DataSourceProviderBuddy.super.getSheetOfBeanOrNull(bean);
     }
 
     private Sheet createSheetSets(XmlBean bean) {

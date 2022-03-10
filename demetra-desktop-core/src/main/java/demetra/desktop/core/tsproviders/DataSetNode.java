@@ -122,7 +122,7 @@ abstract public class DataSetNode extends AbstractNode {
     @Override
     protected Sheet createSheet() {
         DataSet o = getLookup().lookup(DataSet.class);
-        return DataSourceProviderBuddySupport.getDefault().createSheet(o);
+        return DataSourceProviderBuddySupport.getDefault().getSheet(o);
     }
 
     @Override

@@ -66,6 +66,6 @@ final class ProviderExceptionNode extends ExceptionNode {
     @Override
     protected Sheet createSheet() {
         IOException ex = getLookup().lookup(IOException.class);
-        return DataSourceProviderBuddySupport.getDefault().createSheet(providerName, ex);
+        return DataSourceProviderBuddySupport.getDefault().getSheet(providerName, ex);
     }
 }

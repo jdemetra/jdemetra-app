@@ -128,7 +128,7 @@ public final class JdbcProviderBuddy implements DataSourceProviderBuddy, Configu
 
     @Override
     public Image getIconOrNull(DataSource dataSource, int type, boolean opened) {
-        Image image = DataSourceProviderBuddy.super.getIconOrNull(dataSource, type, opened);
+        Image image = getIconOrNull(type, opened);
         switch (getStatus(dataSource)) {
             case DISCONNECTED:
                 return ImageUtilities.mergeImages(image, warningBadge, 8, 8);
@@ -147,8 +147,8 @@ public final class JdbcProviderBuddy implements DataSourceProviderBuddy, Configu
     }
 
     @Override
-    public Sheet createSheet(DataSource dataSource) {
-        Sheet result = DataSourceProviderBuddy.super.createSheet(dataSource);
+    public Sheet getSheetOrNull(DataSource dataSource) {
+        Sheet result = DataSourceProviderBuddy.super.getSheetOrNull(dataSource);
         NodePropertySetBuilder b = new NodePropertySetBuilder().name("Connection");
 
         getProvider()
@@ -161,10 +161,10 @@ public final class JdbcProviderBuddy implements DataSourceProviderBuddy, Configu
     }
 
     @Override
-    public Sheet createSheetOfBean(Object bean) throws IntrospectionException {
+    public Sheet getSheetOfBeanOrNull(Object bean) throws IntrospectionException {
         return bean instanceof JdbcBean
                 ? createSheetSets((JdbcBean) bean)
-                : DataSourceProviderBuddy.super.createSheetOfBean(bean);
+                : DataSourceProviderBuddy.super.getSheetOfBeanOrNull(bean);
     }
 
     private Sheet createSheetSets(JdbcBean bean) {

@@ -143,7 +143,7 @@ public final class DataSourceNode extends AbstractNode {
     @Override
     protected Sheet createSheet() {
         DataSource o = getLookup().lookup(DataSource.class);
-        return DataSourceProviderBuddySupport.getDefault().createSheet(o);
+        return DataSourceProviderBuddySupport.getDefault().getSheet(o);
     }
 
     @Override

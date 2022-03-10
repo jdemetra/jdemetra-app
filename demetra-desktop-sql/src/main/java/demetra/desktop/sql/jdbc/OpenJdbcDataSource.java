@@ -16,9 +16,11 @@
  */
 package demetra.desktop.sql.jdbc;
 
+import demetra.desktop.beans.BeanEditor;
 import static demetra.desktop.sql.jdbc.DbExplorerUtil.findConnection;
 import static demetra.desktop.sql.jdbc.DbExplorerUtil.isTableOrView;
 import demetra.desktop.nodes.SingleNodeAction;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
 import demetra.sql.jdbc.JdbcBean;
 import demetra.sql.jdbc.JdbcProvider;
 import java.beans.IntrospectionException;
@@ -42,20 +44,19 @@ import org.slf4j.LoggerFactory;
 public final class OpenJdbcDataSource extends SingleNodeAction<Node> {
 
     private final JdbcProvider provider;
-    private final JdbcProviderBuddy buddy;
 
     public OpenJdbcDataSource() {
         super(Node.class);
         this.provider = Lookup.getDefault().lookup(JdbcProvider.class);
-        this.buddy = Lookup.getDefault().lookup(JdbcProviderBuddy.class);
     }
 
     @Override
     protected void performAction(Node activatedNode) {
         JdbcBean bean = provider.newBean();
         preFillBean(bean, activatedNode);
+        BeanEditor editor = DataSourceProviderBuddySupport.getDefault().getBeanEditor(provider.getSource(), "Open data source");
         try {
-            if (buddy.editBean("Open data source", bean)) {
+            if (editor.editBean(bean)) {
                 provider.open(provider.encodeBean(bean));
             }
         } catch (IntrospectionException ex) {

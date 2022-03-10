@@ -111,7 +111,7 @@ public final class ProviderNode extends AbstractNode {
     @Override
     protected Sheet createSheet() {
         DataSourceProvider o = getLookup().lookup(DataSourceProvider.class);
-        return DataSourceProviderBuddySupport.getDefault().createSheet(o.getSource());
+        return DataSourceProviderBuddySupport.getDefault().getSheet(o.getSource());
     }
 
     @Override
