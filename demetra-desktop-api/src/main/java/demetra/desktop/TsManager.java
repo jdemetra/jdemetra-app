@@ -62,7 +62,7 @@ public final class TsManager implements DataSourceFactory, Closeable {
         this.updateListeners = new ArrayList<>();
         this.listener = new DataSourceListenerImpl();
         this.executor = Executors.newCachedThreadPool();
-        
+
         TsFactory.setDefault(this);
     }
 
@@ -107,6 +107,13 @@ public final class TsManager implements DataSourceFactory, Closeable {
     @Override
     public Optional<TsProvider> getProvider(String name) {
         return Optional.ofNullable(providers.get(name));
+    }
+
+    public <T extends DataSourceProvider> @NonNull Optional<T> getProvider(@NonNull Class<T> type) {
+        return getProviders()
+                .filter(type::isInstance)
+                .map(type::cast)
+                .findFirst();
     }
 
     @OnEDT

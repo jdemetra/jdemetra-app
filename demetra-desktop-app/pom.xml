@@ -106,6 +106,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-extra</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-tramoseats-api</artifactId>
             <version>${tramoseats.version}</version>
         </dependency>

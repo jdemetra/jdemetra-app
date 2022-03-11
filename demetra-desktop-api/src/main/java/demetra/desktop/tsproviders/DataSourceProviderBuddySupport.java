@@ -17,24 +17,43 @@
 package demetra.desktop.tsproviders;
 
 import demetra.desktop.DemetraIcons;
+import demetra.desktop.TsManager;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.beans.BeanEditor;
 import demetra.desktop.design.GlobalService;
+import demetra.desktop.properties.ForwardingNodeProperty;
+import demetra.desktop.properties.NodePropertySetBuilder;
+import demetra.desktop.properties.PropertySheetDialogBuilder;
+import static demetra.desktop.tsproviders.DataSourceProviderBuddyUtil.sheetOf;
 import demetra.desktop.util.CollectionSupplier;
 import demetra.desktop.util.FrozenTsHelper;
 import demetra.desktop.util.LazyGlobalService;
 import demetra.timeseries.TsMoniker;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
+import demetra.tsprovider.DataSourceLoader;
+import demetra.tsprovider.DataSourceProvider;
+import demetra.tsprovider.FileLoader;
+import java.awt.Image;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 
-import javax.swing.*;
-import java.awt.*;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.swing.Icon;
+import nbbrd.design.MightBePromoted;
+import org.openide.nodes.BeanNode;
+import org.openide.nodes.Node;
 
 /**
  * @author Philippe Charles
@@ -48,35 +67,22 @@ public final class DataSourceProviderBuddySupport {
     }
 
     private final CollectionSupplier<DataSourceProviderBuddy> providers;
-    private final DataSourceProviderBuddy fallback;
-    private final Image docImage;
-    private final Image errorImage;
+    private final ImageStrategy images;
+    private final SheetStrategy sheets;
 
     private DataSourceProviderBuddySupport() {
         this.providers = DataSourceProviderBuddyLoader::get;
-        this.fallback = new DataSourceProviderBuddy() {
-            @Override
-            public @NonNull
-            String getProviderName() {
-                return "fallback";
-            }
-        };
-        this.docImage = DemetraIcons.DOCUMENT_16.getImageIcon().getImage();
-        this.errorImage = DemetraIcons.EXCLAMATION_MARK_16.getImageIcon().getImage();
+        this.images = new DefaultImageStrategy();
+        this.sheets = new DefaultSheetStrategy();
     }
 
-    private Image getOrDefault(Image result, Image defaultImage) {
-        return result != null ? result : defaultImage;
-    }
-
-    @NonNull
-    private DataSourceProviderBuddy getByName(@Nullable String providerName) {
-        String tmp = providerName == null ? "" : providerName;
-        return providers.stream()
-                .filter(o -> o.getProviderName().equals(tmp))
+    private DataSourceProviderBuddy get(String providerName) {
+        return providers
+                .stream()
+                .filter(o -> o.getProviderName().equals(providerName))
                 .map(DataSourceProviderBuddy.class::cast)
                 .findFirst()
-                .orElse(fallback);
+                .orElse(NoOpDataSourceProviderBuddy.INSTANCE);
     }
 
     /**
@@ -90,8 +96,7 @@ public final class DataSourceProviderBuddySupport {
      */
     @NonNull
     public Image getImage(@NonNull String providerName, int type, boolean opened) {
-        DataSourceProviderBuddy buddy = getByName(providerName);
-        return getOrDefault(buddy.getIconOrNull(type, opened), docImage);
+        return images.getProviderImage(get(providerName), providerName, type, opened);
     }
 
     @NonNull
@@ -100,15 +105,21 @@ public final class DataSourceProviderBuddySupport {
     }
 
     @NonNull
-    public Sheet createSheet(@NonNull String providerName) {
-        DataSourceProviderBuddy buddy = getByName(providerName);
-        return buddy.createSheet();
+    public Sheet getSheet(@NonNull String providerName) {
+        return sheets.getProviderSheet(get(providerName), providerName);
     }
 
     @NonNull
     public BeanEditor getBeanEditor(@NonNull String providerName, @NonNull String title) {
-        DataSourceProviderBuddy buddy = getByName(providerName);
-        return bean -> buddy.editBean(title, bean);
+        DataSourceProviderBuddy buddy = get(providerName);
+        BeanEditor result = buddy.getBeanEditorOrNull(title);
+        if (result != null) {
+            return result;
+        }
+        return bean -> new PropertySheetDialogBuilder()
+                .title(title)
+                .icon(images.getProviderImage(buddy, providerName, BeanInfo.ICON_COLOR_16x16, false))
+                .editSheet(sheets.getBeanSheet(buddy, providerName, bean));
     }
 
     /**
@@ -120,8 +131,9 @@ public final class DataSourceProviderBuddySupport {
      */
     @NonNull
     public Optional<Configurable> getConfigurable(@NonNull String providerName) {
-        DataSourceProviderBuddy buddy = getByName(providerName);
-        return buddy instanceof Configurable ? Optional.of((Configurable) buddy) : Optional.empty();
+        return Optional.of(get(providerName))
+                .filter(Configurable.class::isInstance)
+                .map(Configurable.class::cast);
     }
 
     /**
@@ -135,8 +147,7 @@ public final class DataSourceProviderBuddySupport {
      */
     @NonNull
     public Image getImage(@NonNull DataSource dataSource, int type, boolean opened) {
-        DataSourceProviderBuddy buddy = getByName(dataSource.getProviderName());
-        return getOrDefault(buddy.getIconOrNull(dataSource, type, opened), docImage);
+        return images.getDataSourceImage(get(dataSource.getProviderName()), dataSource, type, opened);
     }
 
     @NonNull
@@ -145,9 +156,8 @@ public final class DataSourceProviderBuddySupport {
     }
 
     @NonNull
-    public Sheet createSheet(@NonNull DataSource dataSource) {
-        DataSourceProviderBuddy buddy = getByName(dataSource.getProviderName());
-        return buddy.createSheet(dataSource);
+    public Sheet getSheet(@NonNull DataSource dataSource) {
+        return sheets.getDataSourceSheet(get(dataSource.getProviderName()), dataSource);
     }
 
     /**
@@ -161,8 +171,7 @@ public final class DataSourceProviderBuddySupport {
      */
     @NonNull
     public Image getImage(@NonNull DataSet dataSet, int type, boolean opened) {
-        DataSourceProviderBuddy buddy = getByName(dataSet.getDataSource().getProviderName());
-        return getOrDefault(buddy.getIconOrNull(dataSet, type, opened), docImage);
+        return images.getDataSetImage(get(dataSet.getDataSource().getProviderName()), dataSet, type, opened);
     }
 
     @NonNull
@@ -171,9 +180,8 @@ public final class DataSourceProviderBuddySupport {
     }
 
     @NonNull
-    public Sheet createSheet(@NonNull DataSet dataSet) {
-        DataSourceProviderBuddy buddy = getByName(dataSet.getDataSource().getProviderName());
-        return buddy.createSheet(dataSet);
+    public Sheet getSheet(@NonNull DataSet dataSet) {
+        return sheets.getDataSetSheet(get(dataSet.getDataSource().getProviderName()), dataSet);
     }
 
     /**
@@ -188,8 +196,7 @@ public final class DataSourceProviderBuddySupport {
      */
     @NonNull
     public Image getImage(@NonNull String providerName, @NonNull IOException ex, int type, boolean opened) {
-        DataSourceProviderBuddy buddy = getByName(providerName);
-        return getOrDefault(buddy.getIconOrNull(ex, type, opened), errorImage);
+        return images.getErrorImage(get(providerName), providerName, ex, type, opened);
     }
 
     @NonNull
@@ -198,9 +205,8 @@ public final class DataSourceProviderBuddySupport {
     }
 
     @NonNull
-    public Sheet createSheet(@NonNull String providerName, @NonNull IOException ex) {
-        DataSourceProviderBuddy buddy = getByName(providerName);
-        return buddy.createSheet(ex);
+    public Sheet getSheet(@NonNull String providerName, @NonNull IOException ex) {
+        return sheets.getErrorSheet(get(providerName), providerName, ex);
     }
 
     /**
@@ -216,15 +222,214 @@ public final class DataSourceProviderBuddySupport {
     public Image getImage(@NonNull TsMoniker moniker, int type, boolean opened) {
         TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
         if (original != null) {
-            DataSourceProviderBuddy buddy = getByName(original.getSource());
-            return getOrDefault(buddy.getIconOrNull(moniker, type, opened), docImage);
+            return images.getMonikerImage(get(original.getSource()), original, type, opened);
         } else {
-            return docImage;
+            return images.getMonikerImage(get(moniker.getSource()), moniker, type, opened);
         }
     }
 
     @NonNull
     public Icon getIcon(@NonNull TsMoniker moniker, int type, boolean opened) {
         return ImageUtilities.image2Icon(getImage(moniker, type, opened));
+    }
+
+    @MightBePromoted
+    private interface ImageStrategy {
+
+        Image getProviderImage(DataSourceProviderBuddy buddy, String providerName, int type, boolean opened);
+
+        Image getDataSourceImage(DataSourceProviderBuddy buddy, DataSource dataSource, int type, boolean opened);
+
+        Image getDataSetImage(DataSourceProviderBuddy buddy, DataSet dataSet, int type, boolean opened);
+
+        Image getErrorImage(DataSourceProviderBuddy buddy, String providerName, IOException ex, int type, boolean opened);
+
+        Image getMonikerImage(DataSourceProviderBuddy buddy, TsMoniker moniker, int type, boolean opened);
+    }
+
+    @MightBePromoted
+    private interface SheetStrategy {
+
+        Sheet getProviderSheet(DataSourceProviderBuddy buddy, String providerName);
+
+        Sheet getDataSourceSheet(DataSourceProviderBuddy buddy, DataSource dataSource);
+
+        Sheet getDataSetSheet(DataSourceProviderBuddy buddy, DataSet dataSet);
+
+        Sheet getErrorSheet(DataSourceProviderBuddy buddy, String providerName, IOException ex);
+
+        Sheet getBeanSheet(DataSourceProviderBuddy buddy, String providerName, Object bean) throws IntrospectionException;
+    }
+
+    private static final class DefaultImageStrategy implements ImageStrategy {
+
+        @Override
+        public Image getProviderImage(DataSourceProviderBuddy buddy, String providerName, int type, boolean opened) {
+            Image result = buddy.getIconOrNull(type, opened);
+            return result != null ? result : DemetraIcons.DOCUMENT_16.getImageIcon().getImage();
+        }
+
+        @Override
+        public Image getDataSourceImage(DataSourceProviderBuddy buddy, DataSource dataSource, int type, boolean opened) {
+            Image result = buddy.getIconOrNull(dataSource, type, opened);
+            return result != null ? result : getProviderImage(buddy, dataSource.getProviderName(), type, opened);
+        }
+
+        @Override
+        public Image getDataSetImage(DataSourceProviderBuddy buddy, DataSet dataSet, int type, boolean opened) {
+            Image result = buddy.getIconOrNull(dataSet, type, opened);
+            if (result != null) {
+                return result;
+            }
+            switch (dataSet.getKind()) {
+                case COLLECTION:
+                    return ImageUtilities.loadImage("demetra/desktop/icons/folder.png", true);
+                case SERIES:
+                    return ImageUtilities.loadImage("demetra/desktop/icons/chart_line.png", true);
+                default:
+                    return getDataSourceImage(buddy, dataSet.getDataSource(), type, opened);
+            }
+        }
+
+        @Override
+        public Image getErrorImage(DataSourceProviderBuddy buddy, String providerName, IOException ex, int type, boolean opened) {
+            Image result = buddy.getIconOrNull(ex, type, opened);
+            return result != null ? result : DemetraIcons.EXCLAMATION_MARK_16.getImageIcon().getImage();
+        }
+
+        @Override
+        public Image getMonikerImage(DataSourceProviderBuddy buddy, TsMoniker moniker, int type, boolean opened) {
+            Image result = buddy.getIconOrNull(moniker, type, opened);
+            return result != null ? result : getProviderImage(buddy, moniker.getSource(), type, opened);
+        }
+    }
+
+    private static final class DefaultSheetStrategy implements SheetStrategy {
+
+        @Override
+        public Sheet getProviderSheet(DataSourceProviderBuddy buddy, String providerName) {
+            Sheet result = buddy.getSheetOrNull();
+            return result != null ? result : sheetOf(sheetSetsOfProvider(providerName));
+        }
+
+        @Override
+        public Sheet getDataSourceSheet(DataSourceProviderBuddy buddy, DataSource dataSource) {
+            Sheet result = buddy.getSheetOrNull(dataSource);
+            return result != null ? result : sheetOf(sheetSetsOfDataSource(dataSource));
+        }
+
+        @Override
+        public Sheet getDataSetSheet(DataSourceProviderBuddy buddy, DataSet dataSet) {
+            Sheet result = buddy.getSheetOrNull(dataSet);
+            return result != null ? result : sheetOf(sheetSetsOfDataSet(dataSet));
+        }
+
+        @Override
+        public Sheet getErrorSheet(DataSourceProviderBuddy buddy, String providerName, IOException ex) {
+            Sheet result = buddy.getSheetOrNull(ex);
+            return result != null ? result : sheetOf(sheetSetsOfException(ex));
+        }
+
+        @Override
+        public Sheet getBeanSheet(DataSourceProviderBuddy buddy, String providerName, Object bean) throws IntrospectionException {
+            Sheet result = buddy.getSheetOfBeanOrNull(bean);
+            return result != null ? result : sheetOf(sheetSetsOfBean(bean));
+        }
+
+        private static List<Sheet.Set> sheetSetsOfProvider(String providerName) {
+            return TsManager.getDefault()
+                    .getProvider(DataSourceProvider.class, providerName)
+                    .map(DefaultSheetStrategy::sheetSetsOfProvider)
+                    .orElseGet(Collections::emptyList);
+        }
+
+        private static List<Sheet.Set> sheetSetsOfProvider(DataSourceProvider provider) {
+            List<Sheet.Set> result = new ArrayList<>();
+            NodePropertySetBuilder b = new NodePropertySetBuilder();
+            b.with(String.class).select(provider, "getSource", null).display("Source").add();
+            b.with(Boolean.class).select(provider, "isAvailable", null).display("Available").add();
+            b.withBoolean().selectConst("Loadable", provider instanceof DataSourceLoader).add();
+            b.withBoolean().selectConst("Files as source", provider instanceof FileLoader).add();
+            result.add(b.build());
+            return result;
+        }
+
+        private static List<Sheet.Set> sheetSetsOfBean(Object bean) throws IntrospectionException {
+            return Stream.of(new BeanNode<>(bean).getPropertySets())
+                    .map(DefaultSheetStrategy::sheetSetOfPropertySet)
+                    .collect(Collectors.toList());
+        }
+
+        private static Sheet.Set sheetSetOfPropertySet(Node.PropertySet o) {
+            Sheet.Set set = Sheet.createPropertiesSet();
+            set.put(o.getProperties());
+            return set;
+        }
+
+        private static List<Sheet.Set> sheetSetsOfException(IOException ex) {
+            List<Sheet.Set> result = new ArrayList<>();
+            NodePropertySetBuilder b = new NodePropertySetBuilder().name("IOException");
+
+            int i = 0;
+            Throwable current = ex;
+            while (current != null) {
+                b.reset("throwable" + i++).display(current.getClass().getSimpleName());
+                b.with(String.class).selectConst("Type", current.getClass().getName()).add();
+                b.with(String.class).selectConst("Message", current.getMessage()).add();
+                result.add(b.build());
+                current = current.getCause();
+            }
+
+            return result;
+        }
+
+        private static List<Sheet.Set> sheetSetsOfDataSource(DataSource dataSource) {
+            return sheetSetsOfDataSource(dataSource, DataSourceProviderBuddyUtil.usingErrorManager(DefaultSheetStrategy::sheetSetsOfBean, Collections::emptyList));
+        }
+
+        private static List<Sheet.Set> sheetSetsOfDataSource(DataSource dataSource, Function<Object, List<Sheet.Set>> beanFunc) {
+            List<Sheet.Set> result = new ArrayList<>();
+            NodePropertySetBuilder b = new NodePropertySetBuilder().name("DataSource");
+            b.with(String.class).select(dataSource, "getProviderName", null).display("Source").add();
+            b.with(String.class).select(dataSource, "getVersion", null).display("Version").add();
+            Optional<DataSourceLoader> loader = TsManager.getDefault().getProvider(DataSourceLoader.class, dataSource);
+            if (loader.isPresent()) {
+                Object bean = loader.get().decodeBean(dataSource);
+                beanFunc.apply(bean).stream()
+                        .flatMap(set -> Stream.of(set.getProperties()))
+                        .map(ForwardingNodeProperty::readOnly)
+                        .forEach(b::add);
+            }
+            result.add(b.build());
+            return result;
+        }
+
+        private static List<Sheet.Set> sheetSetsOfDataSet(DataSet dataSet) {
+            return sheetSetsOfDataSet(dataSet, DefaultSheetStrategy::sheetSetsOfDataSource, DefaultSheetStrategy::fillParamProperties);
+        }
+
+        private static void fillParamProperties(NodePropertySetBuilder b, DataSet dataSet) {
+            dataSet.getParameters().forEach((k, v) -> b.with(String.class).selectConst(k, v).add());
+        }
+
+        private static List<Sheet.Set> sheetSetsOfDataSet(DataSet dataSet,
+                Function<DataSource, List<Sheet.Set>> sourceFunc,
+                BiConsumer<NodePropertySetBuilder, DataSet> paramFiller) {
+            List<Sheet.Set> result = new ArrayList<>(sourceFunc.apply(dataSet.getDataSource()));
+            NodePropertySetBuilder b = new NodePropertySetBuilder().name("DataSet");
+            b.withEnum(DataSet.Kind.class).select(dataSet, "getKind", null).display("Kind").add();
+            paramFiller.accept(b, dataSet);
+            result.add(b.build());
+            return result;
+        }
+    }
+
+    private enum NoOpDataSourceProviderBuddy implements DataSourceProviderBuddy {
+        INSTANCE;
+
+        @Override
+        public String getProviderName() {
+            return "NoOp";
+        }
     }
 }

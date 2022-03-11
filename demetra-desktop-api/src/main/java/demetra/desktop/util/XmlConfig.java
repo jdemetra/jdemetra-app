@@ -1,7 +1,6 @@
 package demetra.desktop.util;
 
 import demetra.desktop.Config;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.SortedMap;
@@ -102,13 +101,9 @@ public class XmlConfig {
     private static final Formatter<Config> formattedOutputFormatter;
 
     static {
-        try {
-            defaultParser = asParser(Jaxb.Parser.of(ConfigBean.class).andThen(ConfigBean::toId));
-            defaultFormatter = asFormatter(Jaxb.Formatter.of(ConfigBean.class).withFormatted(false).compose(ConfigBean::of));
-            formattedOutputFormatter = asFormatter(Jaxb.Formatter.of(ConfigBean.class).withFormatted(true).compose(ConfigBean::of));
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        defaultParser = asParser(Jaxb.Parser.of(ConfigBean.class).andThen(ConfigBean::toId));
+        defaultFormatter = asFormatter(Jaxb.Formatter.of(ConfigBean.class).withFormatted(false).compose(ConfigBean::of));
+        formattedOutputFormatter = asFormatter(Jaxb.Formatter.of(ConfigBean.class).withFormatted(true).compose(ConfigBean::of));
     }
 
     @MightBePromoted
