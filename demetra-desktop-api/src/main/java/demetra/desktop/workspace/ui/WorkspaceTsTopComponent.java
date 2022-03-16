@@ -127,6 +127,7 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
         panel.refreshAll();
         panel.updateDocument();
 
+        getDocument().setDirty();
         WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
         WorkspaceFactory.getInstance().notifyEvent(ev);
 

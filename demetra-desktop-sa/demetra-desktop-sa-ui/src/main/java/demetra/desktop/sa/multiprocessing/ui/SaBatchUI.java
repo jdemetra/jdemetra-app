@@ -120,9 +120,9 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     public void componentClosed() {
         if (detail.getDocument() != null)
             TsDynamicProvider.OnDocumentClosing((TsDocument)detail.getDocument());
-        controller.dispose();
         stop();
         detail.dispose();
+        controller.dispose();
         for (PropertyChangeListener listener : this.getPropertyChangeListeners()) {
             this.removePropertyChangeListener(listener);
         }
@@ -283,12 +283,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         // TODO
         detail = new TsProcessingViewer(null, TsProcessingViewer.Type.APPLY_RESTORE_SAVE);
         detail.setHeaderVisible(false);
-        detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_SAVE, evt -> save((TsDocument) detail.getDocument()));
-        detail.addPropertyChangeListener(DefaultProcessingViewer.BUTTON_RESTORE, evt -> {
-            if (selection.length > 0) {
-                showDetails(selection[0]);
-            }
-        });
+        detail.addPropertyChangeListener(DefaultProcessingViewer.SPEC_CHANGED, evt -> save((TsDocument) detail.getDocument()));
         visualRepresentation = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, NbComponents.newJScrollPane(master), detail);
         visualRepresentation.setResizeWeight(.60d);
         visualRepresentation.setOneTouchExpandable(true);
@@ -323,7 +318,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         deleteActionPanel = new DeleteActionPanel();
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
-
+    
     @Override
     public ExplorerManager getExplorerManager() {
         return mgr;
@@ -344,6 +339,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             return;
         }
         getElement().add(defaultSpecification, all);
+        controller.getDocument().setDirty();
         redrawAll();
         
     }
@@ -426,6 +422,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
     
     public MultiProcessingDocument getElement(){
+        if (controller == null)
+            return null;
         return controller.getDocument().getElement();
     }
 
@@ -502,6 +500,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             Set<SaNode> sel=Arrays.stream(selection).collect(Collectors.toSet());
             controller.getDocument().getElement().refresh(policy, nback, item->sel.contains(item));
         }
+        controller.getDocument().setDirty();
         start(true);
     }
 
@@ -583,6 +582,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         redrawAll();
         controller.setSaProcessingState(SaProcessingState.READY);
+        controller.getDocument().setDirty();
     }
 
     public void copy() {
@@ -731,6 +731,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             if (doc != null && cspec.getClass().isInstance(doc.getSpecification())){
                 // same document. To be updated
                 doc.setAll(cspec, ts, output.getEstimation().getResults());
+                detail.updateDocument();
                 TsDynamicProvider.OnDocumentChanged(doc);
             }else{
                 DocumentUIServices ui = DocumentUIServices.forSpec(cspec.getClass());
@@ -763,6 +764,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         }
         SaNode node = selection[0];
         SaItem item=node.getOutput();
+        
         SaSpecification spec=(SaSpecification) doc.getSpecification();
         SaDefinition def=SaDefinition.builder()
                 .domainSpec(spec)
@@ -781,6 +783,10 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 .build();
         
         node.setOutput(nitem);
+        model.fireTableDataChanged();
+        
+        controller.getDocument().setDirty();
+        setSelection(new SaNode[]{node});
     }
 
     public void clearPriority(List<SaItem> items) {
@@ -956,7 +962,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         protected String getText(SaNode item) {
-            SaSpecification currentDomainSpec = item.getSpec();
+            SaSpecification currentDomainSpec = item.domainSpec();
             List<WorkspaceItem<SaSpecification>> x = WorkspaceFactory.getInstance().getActiveWorkspace().searchDocuments(SaSpecification.class);
             Optional<WorkspaceItem<SaSpecification>> y = x.stream().filter(workspaceItem -> workspaceItem.getElement().equals(currentDomainSpec)).findFirst();
             return y.isPresent() ? y.get().getDisplayName() : currentDomainSpec.display();
@@ -1022,7 +1028,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         @Override
         protected String getText(SaNode item) {
             int priority = item.getOutput() == null ? 0 : item.getOutput().getPriority();
-            return priority >= 0 ? Integer.toString(priority) : null;
+            return priority > 0 ? Integer.toString(priority) : null;
         }
     }
 
@@ -1136,7 +1142,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         protected List<SaNode> getValues() {
-            return getElement().getCurrent();
+            MultiProcessingDocument element = getElement();
+            return element == null ? Collections.emptyList() : element.getCurrent();
         }
 
         @Override

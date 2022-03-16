@@ -30,11 +30,11 @@ import org.openide.util.lookup.InstanceContent;
  * @param <D>
  */
 public class DefaultProcessingViewer<S extends ProcSpecification, D extends ProcDocument<S, ?, ?>> extends JComponent implements Disposable, ExplorerManager.Provider {
-    
+
     public static final String BUTTONS = "Buttons", BUTTON_APPLY = "Apply", BUTTON_RESTORE = "Restore", BUTTON_SAVE = "Save",
             DIRTY_SPEC_PROPERTY = "dirtySpecProperty";
 
-    public static final String SPEC_CHANGED="spec_changed", INPUT_CHANGED="input_changed", DOC_CHANGED="doc_changed";
+    public static final String SPEC_CHANGED = "spec_changed", INPUT_CHANGED = "input_changed", DOC_CHANGED = "doc_changed";
 
     public enum Type {
 
@@ -61,7 +61,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     protected DefaultProcessingViewer(DocumentUIServices<S, D> factory, Type type) {
         this.factory = factory;
         this.type_ = type;
- 
+
         this.dirty = false;
 
         this.specPanel = new JPanel(new BorderLayout());
@@ -123,6 +123,13 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         return procView == null ? null : procView.getDocument();
     }
 
+    public void updateDocument() {
+        D doc = getDocument();
+        originalSpec = doc.getSpecification();
+        initSpecView(doc);
+        refreshHeader();
+    }
+
     public void setDocument(D doc) {
         dirty = false;
 
@@ -146,15 +153,15 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     }
 
     public void setDocument(D doc, DocumentUIServices<S, D> factory) {
-        boolean newlayout=this.factory != factory;
-        if (! newlayout){
+        boolean newlayout = this.factory != factory;
+        if (!newlayout) {
             setDocument(doc);
             return;
         }
         dirty = false;
 
         try {
-            this.factory=factory;
+            this.factory = factory;
             if (procView != null) {
                 procView.dispose();
                 procView = null;
@@ -172,10 +179,6 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
             refreshHeader();
         }
     }
-
-    public void updateDocument() {
-        dirty = true;
-     }
 
     public boolean isHeaderVisible() {
         return toolBar.isVisible();
@@ -233,13 +236,12 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     S pspec = specDescriptor.getCore();
-                    S ospec=doc.getSpecification();
+                    S ospec = doc.getSpecification();
                     doc.set(pspec);
-                    setDirty(BUTTON_APPLY);
+                    updateButtons(BUTTON_APPLY);
                     DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, pspec);
                     refreshAll();
-                    updateDocument();
-                 }
+                }
             }};
         PropertySheetPanel specView = factory.getSpecView(specDescriptor);
         setPropertiesPanel(commands, specView, specWidth);
@@ -254,28 +256,28 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 public void actionPerformed(ActionEvent e) {
                     S pspec = specDescriptor.getCore();
                     doc.set(pspec);
-                    setDirty(BUTTON_APPLY);
-//                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_APPLY, null, null);
+                    updateButtons(BUTTON_APPLY);
+                    dirty = true;
                     refreshAll();
-                    updateDocument();
                 }
             },
             new AbstractAction(BUTTON_RESTORE) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     doc.set(originalSpec);
-                    setDirty(BUTTON_RESTORE);
+                    initSpecView(doc);
+                    updateButtons(BUTTON_RESTORE);
+                    dirty = false;
                     refreshAll();
-                    updateDocument();
-//                    DefaultProcessingViewer.this.firePropertyChange(BUTTON_RESTORE, null, null);
-//                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, null, null);
                 }
             },
             new AbstractAction(BUTTON_SAVE) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     // Apply & Save
-                    setDirty(BUTTON_SAVE);
+                    updateButtons(BUTTON_SAVE);
+                    dirty = false;
+                    originalSpec = doc.getSpecification();
                     refreshAll();
                     DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, null, null);
                 }
@@ -288,7 +290,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
         specPanel.removeAll();
         specPanel.add(pane, BorderLayout.CENTER);
-        pane.addPropertyChangeListener(DocumentUIServices.SPEC_PROPERTY, evt -> setDirty(null));
+        pane.addPropertyChangeListener(DocumentUIServices.SPEC_PROPERTY, evt -> updateButtons(null));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setName(BUTTONS);
@@ -305,7 +307,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         specPanel.setPreferredSize(new Dimension(width, 100));
         specPanel.validate();
     }
-    
+
     /**
      * Refresh all parts of the view
      */
@@ -397,43 +399,42 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         splitter.setBottomComponent(emptyView);
         removeAll();
     }
-    
-    public void removeListeners(){
+
+    public void removeListeners() {
         PropertyChangeListener[] listeners = this.getPropertyChangeListeners();
-        if (listeners != null){
-            for (int i=0; i<listeners.length; ++i)
+        if (listeners != null) {
+            for (int i = 0; i < listeners.length; ++i) {
                 this.removePropertyChangeListener(listeners[i]);
+            }
         }
     }
 
-    public void setDirty(String sourceButton) {
-        setDirty(specPanel, sourceButton);
+    public void updateButtons(String sourceButton) {
+        updateButtons(specPanel, sourceButton);
     }
 
-    private void setDirty(Container c, String sourceButton) {
+    private void updateButtons(Container c, String sourceButton) {
         for (Component o : c.getComponents()) {
             if (o instanceof JButton) {
                 JButton button = (JButton) o;
                 String command = button.getActionCommand();
                 if (sourceButton == null) {
-                    // In case of change
-                    button.setEnabled(true);
+                    // Internal change
+                    button.setEnabled(command.equals(BUTTON_APPLY) || command.equals(BUTTON_RESTORE));
                 } else {
                     switch (sourceButton) {
                         case BUTTON_APPLY:
                             button.setEnabled(command.equals(BUTTON_RESTORE) || command.equals(BUTTON_SAVE));
-                            dirty = true;
                             break;
                         case BUTTON_RESTORE:
                         case BUTTON_SAVE:
                             button.setEnabled(false);
-                            dirty = false;
                             break;
                     }
                 }
             } else if (o instanceof Container && BUTTONS.equals(o.getName())) {
-                setDirty((Container) o, sourceButton);
-            }
+                updateButtons((Container) o, sourceButton);
+             }
         }
     }
 }

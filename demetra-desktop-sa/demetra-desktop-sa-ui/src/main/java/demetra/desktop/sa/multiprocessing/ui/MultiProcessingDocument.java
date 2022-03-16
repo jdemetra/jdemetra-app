@@ -37,7 +37,7 @@ public class MultiProcessingDocument implements Documented {
 
     int curId = 0;
 
-    private Map<String, String> metadata = Collections.emptyMap();
+    private final Map<String, String> metadata = Collections.emptyMap();
 
     private final List<SaNode> current = new ArrayList<>();
     private final SaItems initial;
