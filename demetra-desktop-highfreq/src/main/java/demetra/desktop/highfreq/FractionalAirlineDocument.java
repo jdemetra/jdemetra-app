@@ -39,13 +39,12 @@ public class FractionalAirlineDocument extends AbstractTsDocument<FractionalAirl
         int freq = domain.getTsUnit().getAnnualFrequency();
         if (freq > 0) {
             spec = spec.toBuilder()
-                    .periodicities(new double[freq])
+                    .periodicities(new double[]{freq})
                     .adjustToInt(true)
                     .build();
         } else if (domain.getTsUnit().equals(TsUnit.WEEK)) {
             spec = spec.toBuilder()
-                    .periodicities(new double[]{365.25 / 52})
-                    .adjustToInt(true)
+                    .periodicities(new double[]{365.25 / 7})
                     .build();
         } else if (!domain.getTsUnit().getChronoUnit().equals(ChronoUnit.DAYS)) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
