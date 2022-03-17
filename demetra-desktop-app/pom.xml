@@ -21,6 +21,9 @@
         <project.x.zipname>jdemetra-${project.version}-bin</project.x.zipname>
         <tramoseats.version>3.0.0-SNAPSHOT</tramoseats.version>
         <x13.version>3.0.0-SNAPSHOT</x13.version>
+        <sts.version>3.0.0-SNAPSHOT</sts.version>
+        <stl.version>3.0.0-SNAPSHOT</stl.version>
+        <hf.version>3.0.0-SNAPSHOT</hf.version>
     </properties>
 
     <dependencies>
@@ -142,6 +145,21 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-x13-ui</artifactId>
             <version>${x13.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-sts-api</artifactId>
+            <version>${sts.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-stl</artifactId>
+            <version>${stl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-highfreq</artifactId>
+            <version>${hf.version}</version>
         </dependency>
     </dependencies>
 
