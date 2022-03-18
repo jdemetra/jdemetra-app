@@ -42,7 +42,7 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author Jean Palate
  */
-public class FractionalAirlineViewFactory extends ProcDocumentViewFactory<FractionalAirlineDocument> {
+public class FractionalAirlineDecompositionViewFactory extends ProcDocumentViewFactory<FractionalAirlineDocument> {
 
     private static final AtomicReference<IProcDocumentViewFactory<FractionalAirlineDocument>> INSTANCE = new AtomicReference();
 
@@ -55,7 +55,7 @@ public class FractionalAirlineViewFactory extends ProcDocumentViewFactory<Fracti
     public static IProcDocumentViewFactory<FractionalAirlineDocument> getDefault() {
         IProcDocumentViewFactory<FractionalAirlineDocument> fac = INSTANCE.get();
         if (fac == null) {
-            fac = new FractionalAirlineViewFactory();
+            fac = new FractionalAirlineDecompositionViewFactory();
             INSTANCE.lazySet(fac);
         }
         return fac;
@@ -65,7 +65,7 @@ public class FractionalAirlineViewFactory extends ProcDocumentViewFactory<Fracti
         INSTANCE.set(factory);
     }
 
-    public FractionalAirlineViewFactory() {
+    public FractionalAirlineDecompositionViewFactory() {
         registerFromLookup(FractionalAirlineDocument.class);
     }
 

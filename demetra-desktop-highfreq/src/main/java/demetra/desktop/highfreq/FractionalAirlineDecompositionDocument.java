@@ -24,16 +24,16 @@ import jdplus.timeseries.calendars.HolidaysUtility;
  *
  * @author PALATEJ
  */
-public class FractionalAirlineDocument extends AbstractTsDocument<FractionalAirlineSpec, FractionalAirlineEstimation> {
+public class FractionalAirlineDecompositionDocument extends AbstractTsDocument<FractionalAirlineSpec, FractionalAirlineEstimation> {
 
     private final ModellingContext context;
 
-    public FractionalAirlineDocument() {
+    public FractionalAirlineDecompositionDocument() {
         super(FractionalAirlineSpec.DEFAULT_Y);
         context = ModellingContext.getActiveContext();
     }
 
-    public FractionalAirlineDocument(ModellingContext context) {
+    public FractionalAirlineDecompositionDocument(ModellingContext context) {
         super(FractionalAirlineSpec.DEFAULT_Y);
         this.context = context;
     }

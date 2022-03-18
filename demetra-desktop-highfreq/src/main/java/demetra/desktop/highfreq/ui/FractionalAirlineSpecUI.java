@@ -8,6 +8,7 @@ import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.ui.properties.l2fprod.Holidays;
 import demetra.highfreq.FractionalAirlineSpec;
+import demetra.timeseries.calendars.HolidaysOption;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -48,7 +49,11 @@ public class FractionalAirlineSpecUI implements IObjectDescriptor<FractionalAirl
         if (desc != null) {
             descs.add(desc);
         }
-        desc = skipDesc();
+        desc = hoptionDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = singleDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -100,11 +105,11 @@ public class FractionalAirlineSpecUI implements IObjectDescriptor<FractionalAirl
     }
     ///////////////////////////////////////////////////////////////////////////
     private static final int LOG_ID = 1, MEAN_ID = 2,
-            CALENDAR_ID = 3, SKIP_ID = 4,
-            Y_ID = 5, W_ID = 6, DIFF_ID = 7, AR_ID = 8, INT_ID = 9,
-            AO_ID = 10, LS_ID = 11, WO_ID = 12, CV_ID = 13,
-            PRECISION_ID = 14,
-            APPHESSIAN_ID = 15;
+            CALENDAR_ID = 3, HOPTION_ID=4, SINGLE_ID = 5,
+            Y_ID = 10, W_ID = 11, DIFF_ID = 12, AR_ID = 13, INT_ID = 14,
+            AO_ID = 20, LS_ID = 21, WO_ID = 22, CV_ID = 23,
+            PRECISION_ID = 30,
+            APPHESSIAN_ID = 31;
 
     public boolean isLog() {
         return root.isLog();
@@ -178,24 +183,50 @@ public class FractionalAirlineSpecUI implements IObjectDescriptor<FractionalAirl
         }
     }
 
-    public boolean isSkip() {
-        return root.isSkip();
+    public HolidaysOption getHolidaysOption() {
+        return root.getHolidaysOption();
     }
 
-    public void setSkip(boolean skip) {
-        if (skip != root.isSkip()) {
+    public void setHolidaysOption(HolidaysOption option) {
+        if (option != root.getHolidaysOption()) {
             root = root.toBuilder()
-                    .skip(skip)
+                    .holidaysOption(option)
                     .build();
         }
     }
 
-    private EnhancedPropertyDescriptor skipDesc() {
+    private EnhancedPropertyDescriptor hoptionDesc() {
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("Skip", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SKIP_ID);
-            desc.setDisplayName("skip");
-            desc.setShortDescription("skip non working days");
+            PropertyDescriptor desc = new PropertyDescriptor("HolidaysOption", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, HOPTION_ID);
+            desc.setDisplayName("option");
+            desc.setShortDescription("Holiday option");
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            edesc.setReadOnly(ro);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+    
+    public boolean isSingle() {
+        return root.isSingle();
+    }
+
+    public void setSingle(boolean single) {
+        if (single != root.isSingle()) {
+            root = root.toBuilder()
+                    .single(single)
+                    .build();
+        }
+    }
+
+    private EnhancedPropertyDescriptor singleDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("Single", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SINGLE_ID);
+            desc.setDisplayName("single");
+            desc.setShortDescription("single holiday variable");
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(ro);
             return edesc;
