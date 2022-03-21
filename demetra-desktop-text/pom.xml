@@ -14,23 +14,6 @@
     <description>This module provides IO to Demetra for the following formats: TSW, TXT, CSV, USCB and XML files.</description>
 
     <dependencies>
-        <!-- compile only -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.java-service-util</groupId>
-            <artifactId>java-service-processor</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- NetBeans -->
         <dependency>
             <groupId>org.netbeans.api</groupId>

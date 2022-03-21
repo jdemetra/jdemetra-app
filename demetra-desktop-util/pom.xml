@@ -47,10 +47,6 @@
             <version>${slf4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-        </dependency>        
-        <dependency>
             <groupId>com.github.nbbrd.java-io-util</groupId>
             <artifactId>java-io-base</artifactId>
         </dependency>
@@ -63,14 +59,12 @@
             <artifactId>java-io-xml</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.4.0-b180830.0359</version>
+            <groupId>com.github.nbbrd.java-io-util</groupId>
+            <artifactId>java-io-xml-bind</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>2.4.0-b180830.0438</version>
         </dependency>
     </dependencies>
     <build>
