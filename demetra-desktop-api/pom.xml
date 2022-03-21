@@ -49,41 +49,12 @@
     <dependencies>
         <!-- compile only -->
         <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-            <scope>compile</scope>
-        </dependency>        
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.java-design-util</groupId>
-            <artifactId>java-design-processor</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.java-service-util</groupId>
-            <artifactId>java-service-processor</artifactId>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-design</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-util</artifactId>
-        </dependency>
-
-        <!-- test only -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <!-- compile and runtime -->
@@ -143,17 +114,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency> 
-            <groupId>org.jsr107.ri</groupId> 
-            <artifactId>cache-ri-impl</artifactId> 
-            <version>1.1.1</version> 
-             <exclusions>
-                <exclusion>
-                    <groupId>javax.enterprise</groupId>
-                    <artifactId>cdi-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency> 
         <dependency>
             <groupId>com.github.nbbrd.java-desktop-util</groupId>
             <artifactId>java-desktop-util-swing</artifactId>
@@ -321,7 +281,6 @@
                         <publicPackage>org.jdesktop.layout.*</publicPackage>
                         <publicPackage>nbbrd.*</publicPackage>
                         <publicPackage>javax.*</publicPackage>
-                        <publicPackage>org.jsr107.ri.*</publicPackage>
                         <!-- TO FIX -->
                         <publicPackage>internal.*</publicPackage>
                     </publicPackages>
