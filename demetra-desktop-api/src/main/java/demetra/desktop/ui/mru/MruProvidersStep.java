@@ -38,7 +38,7 @@ public class MruProvidersStep extends InstallerStep.LookupStep<DataSourceProvide
 
     @Override
     protected void onRestore(Lookup.Result<DataSourceProvider> lookup) {
-//        MruPreferences.INSTANCE.load(prefs, MruList.getProvidersInstance());
+        MruPreferences.INSTANCE.load(prefs, MruList.getProvidersInstance());
         TsManager.getDefault().getProviders()
                 .filter(DataSourceLoader.class::isInstance)
                 .map(DataSourceLoader.class::cast)
@@ -51,7 +51,7 @@ public class MruProvidersStep extends InstallerStep.LookupStep<DataSourceProvide
                 .filter(DataSourceLoader.class::isInstance)
                 .map(DataSourceLoader.class::cast)
                 .forEach(o -> o.removeDataSourceListener(listener));
-//        MruPreferences.INSTANCE.store(prefs, MruList.getProvidersInstance());
+        MruPreferences.INSTANCE.store(prefs, MruList.getProvidersInstance());
     }
 
     static class Listener implements DataSourceListener {
