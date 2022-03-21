@@ -33,11 +33,10 @@ import ec.util.chart.swing.SwingColorSchemeSupport;
 import demetra.desktop.components.parts.HasObsFormatSupport;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
-import demetra.desktop.util.Formatters;
+import demetra.desktop.util.DateFormatAdapter;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDomain;
-import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;
 import demetra.timeseries.calendars.CalendarUtility;
@@ -56,7 +55,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Ellipse2D;
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Collection;
@@ -186,12 +184,7 @@ public final class JMarginView extends JComponent implements TimeSeriesComponent
     //<editor-fold defaultstate="collapsed" desc="EVENT HANDLERS">
     private void onDataFormatChange() {
         DateAxis domainAxis = (DateAxis) chartPanel.getChart().getXYPlot().getDomainAxis();
-        try {
-            DateFormat dfmt = Formatters.dateFormatOf(obsFormatResolver.resolve());
-            domainAxis.setDateFormatOverride(dfmt);
-        } catch (IllegalArgumentException ex) {
-            // do nothing?
-        }
+        domainAxis.setDateFormatOverride(new DateFormatAdapter(obsFormatResolver.resolve()));
     }
 
     private void onColorSchemeChange() {
@@ -213,7 +206,7 @@ public final class JMarginView extends JComponent implements TimeSeriesComponent
         difference.setBasePaint(themeSupport.getLineColor(DIFFERENCE_COLOR));
 
         Collection<Marker> markers = (Collection<Marker>) plot.getDomainMarkers(Layer.FOREGROUND);
-        if (markers != null && ! markers.isEmpty()) {
+        if (markers != null && !markers.isEmpty()) {
             Color markerColor = themeSupport.getLineColor(DATE_MARKER_COLOR);
             for (Marker o : markers) {
                 o.setPaint(markerColor);
@@ -221,7 +214,7 @@ public final class JMarginView extends JComponent implements TimeSeriesComponent
         }
 
         Collection<Marker> intervalMarkers = (Collection<Marker>) plot.getDomainMarkers(Layer.BACKGROUND);
-        if (intervalMarkers != null && ! intervalMarkers.isEmpty()) {
+        if (intervalMarkers != null && !intervalMarkers.isEmpty()) {
             Color markerColor = themeSupport.getLineColor(KnownColor.ORANGE);
             for (Marker o : intervalMarkers) {
                 o.setPaint(markerColor);
@@ -520,9 +513,9 @@ public final class JMarginView extends JComponent implements TimeSeriesComponent
         }
 
         private String generateLabel() {
-            Date date= new Date(highlight.getDataset().getX(0, highlight.getItem()).longValue());
+            Date date = new Date(highlight.getDataset().getX(0, highlight.getItem()).longValue());
             LocalDate ldate = CalendarUtility.toLocalDate(date);
-            TsUnit unit=TsUnit.ofAnnualFrequency(data.series.getAnnualFrequency());
+            TsUnit unit = TsUnit.ofAnnualFrequency(data.series.getAnnualFrequency());
             TsPeriod p = TsPeriod.of(unit, ldate);
             String label = "Period : " + p + "\nValue : ";
             label += obsFormatResolver.resolve().numberFormatter().formatAsString(data.series.getDoubleValue(p));

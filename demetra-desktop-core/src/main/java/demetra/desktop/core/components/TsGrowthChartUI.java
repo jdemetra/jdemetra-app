@@ -16,6 +16,7 @@
  */
 package demetra.desktop.core.components;
 
+import demetra.desktop.util.DateFormatAdapter;
 import demetra.desktop.actions.Actions;
 import demetra.desktop.components.JTsGrowthChart;
 import demetra.desktop.components.TsSelectionBridge;
@@ -206,7 +207,7 @@ public final class TsGrowthChartUI implements InternalUI<JTsGrowthChart> {
     //<editor-fold defaultstate="collapsed" desc="Event handlers">
     private void onDataFormatChange() {
         ObsFormat obsFormat = obsFormatResolver.resolve();
-        chartPanel.setPeriodFormat(new InternalComponents.DateFormatAdapter(obsFormat));
+        chartPanel.setPeriodFormat(new DateFormatAdapter(obsFormat));
     }
 
     private void onColorSchemeChange() {

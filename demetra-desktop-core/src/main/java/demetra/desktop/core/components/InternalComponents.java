@@ -29,11 +29,9 @@ import nbbrd.io.text.Formatter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.swing.*;
-import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
-import java.util.Date;
 
 import static demetra.desktop.actions.ResetableZoom.RESET_ZOOM_ACTION;
 
@@ -109,25 +107,6 @@ public class InternalComponents {
                     return "Loading " + count + " series";
                 }
                 return "Nothing to display";
-        }
-    }
-
-    static class DateFormatAdapter extends DateFormat {
-
-        final Formatter<Date> dateFormatter;
-
-        public DateFormatAdapter(ObsFormat obsFormat) {
-            dateFormatter = obsFormat.calendarFormatter();
-        }
-
-        @Override
-        public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {
-            return toAppendTo.append(dateFormatter.format(date));
-        }
-
-        @Override
-        public Date parse(String source, ParsePosition pos) {
-            return null;
         }
     }
 

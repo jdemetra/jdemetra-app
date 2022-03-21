@@ -21,9 +21,10 @@ import demetra.desktop.interchange.Importable;
 import demetra.desktop.interchange.Interchange;
 import demetra.desktop.nodes.SingleNodeAction;
 import demetra.desktop.tramoseats.ui.TramoSeatsSpecManager;
-import demetra.desktop.util.Parsers;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
+import demetra.information.InformationSet;
+import demetra.toolkit.io.xml.information.XmlInformationSet;
 import demetra.tramoseats.TramoSeatsSpec;
 import demetra.tramoseats.io.information.TramoSeatsSpecMapping;
 import java.util.Collections;
@@ -31,6 +32,8 @@ import java.util.List;
 import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.JMenuItem;
+import nbbrd.io.text.Parser;
+import nbbrd.io.xml.bind.Jaxb;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -102,8 +105,10 @@ public class ImportTramoSeatsSpec extends SingleNodeAction<Node> implements Pres
             throw new IllegalArgumentException("Invalid config");
         }
         return Optional.ofNullable(config.getParameter("specification"))
-                .map(Parsers::parseAsInformationSet)
+                .map(INFORMATIONPARSER::parse)
                 .map(TramoSeatsSpecMapping.SERIALIZER_V3::read)
                 .orElse(null);
     }
+
+    private static final Parser<InformationSet> INFORMATIONPARSER = Jaxb.Parser.of(XmlInformationSet.class).asParser().andThen(XmlInformationSet::create);
 }
