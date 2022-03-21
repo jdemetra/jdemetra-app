@@ -17,18 +17,6 @@
         <spreadsheet4j.version>2.2.5</spreadsheet4j.version>
     </properties>
     <dependencies>
-        <!-- compile only -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.java-service-util</groupId>
-            <artifactId>java-service-processor</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        
         <!-- NetBeans -->
         <dependency>
             <groupId>org.netbeans.api</groupId>

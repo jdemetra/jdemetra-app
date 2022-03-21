@@ -18,9 +18,6 @@ package demetra.desktop.ui.calendar.actions;
 
 import demetra.desktop.Config;
 import demetra.desktop.Converter;
-import demetra.desktop.util.Formatters;
-import demetra.desktop.util.Parser;
-import demetra.desktop.util.Parsers;
 import demetra.timeseries.calendars.Calendar;
 import demetra.timeseries.calendars.CalendarDefinition;
 import demetra.timeseries.calendars.CalendarManager;
@@ -31,8 +28,9 @@ import internal.workspace.file.xml.util.AbstractXmlCalendar;
 import internal.workspace.file.xml.util.XmlChainedCalendar;
 import internal.workspace.file.xml.util.XmlCompositeCalendar;
 import internal.workspace.file.xml.util.XmlNationalCalendar;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
 import nbbrd.io.xml.bind.Jaxb;
-import demetra.desktop.util.Formatter;
 
 /**
  *
@@ -42,13 +40,13 @@ final class CalendarConfig implements Converter<CalendarDefinition, Config> {
 
     public static final String DOMAIN = AbstractXmlCalendar.class.getName();
 
-    private final Formatter<XmlNationalCalendar> nationalFormatter = Formatters.onJAXB(XmlNationalCalendar.class, false);
-    private final Formatter<XmlChainedCalendar> chainedFormatter = Formatters.onJAXB(XmlChainedCalendar.class, false);
-    private final Formatter<XmlCompositeCalendar> compositeFormatter = Formatters.onJAXB(XmlCompositeCalendar.class, false);
+    private final Formatter<XmlNationalCalendar> nationalFormatter = Jaxb.Formatter.of(XmlNationalCalendar.class).asFormatter();
+    private final Formatter<XmlChainedCalendar> chainedFormatter = Jaxb.Formatter.of(XmlChainedCalendar.class).asFormatter();
+    private final Formatter<XmlCompositeCalendar> compositeFormatter = Jaxb.Formatter.of(XmlCompositeCalendar.class).asFormatter();
 
-    private final Parser<XmlNationalCalendar> nationalParser = Parsers.onJAXB(XmlNationalCalendar.class);
-    private final Parser<XmlChainedCalendar> chainedParser = Parsers.onJAXB(XmlChainedCalendar.class);
-    private final Parser<XmlCompositeCalendar> compositeParser = Parsers.onJAXB(XmlCompositeCalendar.class);
+    private final Parser<XmlNationalCalendar> nationalParser = Jaxb.Parser.of(XmlNationalCalendar.class).asParser();
+    private final Parser<XmlChainedCalendar> chainedParser = Jaxb.Parser.of(XmlChainedCalendar.class).asParser();
+    private final Parser<XmlCompositeCalendar> compositeParser = Jaxb.Parser.of(XmlCompositeCalendar.class).asParser();
 
     @Override
     public Config doForward(CalendarDefinition cal) {

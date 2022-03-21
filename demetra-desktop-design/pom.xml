@@ -14,15 +14,5 @@
     <name>JD3 - Desktop - Design</name>
     
     <dependencies>
-        <dependency>
-            <groupId>com.github.nbbrd.java-service-util</groupId>
-            <artifactId>java-service-processor</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.java-design-util</groupId>
-            <artifactId>java-design-processor</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 </project>

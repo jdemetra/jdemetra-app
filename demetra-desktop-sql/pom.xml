@@ -14,23 +14,6 @@
     <description>This module provides JDBC IO to Demetra.</description>
 
     <dependencies>
-        <!-- compile only -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.java-service-util</groupId>
-            <artifactId>java-service-processor</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- NetBeans -->
         <dependency>
             <groupId>org.netbeans.api</groupId>

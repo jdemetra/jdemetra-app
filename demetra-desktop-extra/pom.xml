@@ -12,24 +12,19 @@
 
     <name>JD3 - Desktop - Extra</name>
     
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.github.nbbrd.sdmx-dl</groupId>
+                <artifactId>sdmx-dl-bom</artifactId>
+                <version>3.0.0-beta.6-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
     <dependencies>
-        <!-- compile only -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.java-service-util</groupId>
-            <artifactId>java-service-processor</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.nbbrd.java-design-util</groupId>
-            <artifactId>java-design-processor</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        
         <!-- NetBeans -->
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -105,12 +100,10 @@
         <dependency>
             <groupId>com.github.nbbrd.sdmx-dl</groupId>
             <artifactId>sdmx-dl-provider-ri</artifactId>
-            <version>3.0.0-beta.6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.nbbrd.sdmx-dl</groupId>
             <artifactId>sdmx-dl-format-kryo</artifactId>
-            <version>3.0.0-beta.6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.nbbrd.java-net-proxy</groupId>

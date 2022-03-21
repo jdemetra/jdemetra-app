@@ -20,16 +20,18 @@ import demetra.desktop.Config;
 import demetra.desktop.interchange.Exportable;
 import demetra.desktop.interchange.Interchange;
 import demetra.desktop.tramoseats.ui.TramoSeatsSpecManager;
-import demetra.desktop.util.Formatters;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.ItemWsNode;
 import demetra.information.InformationSet;
+import demetra.toolkit.io.xml.information.XmlInformationSet;
 import demetra.tramoseats.TramoSeatsSpec;
 import demetra.tramoseats.io.information.TramoSeatsSpecMapping;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.JMenuItem;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.xml.bind.Jaxb;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -114,8 +116,15 @@ public class ExportTramoSeatsSpec extends NodeAction implements Presenter.Popup 
             final WorkspaceItem<TramoSeatsSpec> xdoc = input.getWorkspace().searchDocument(input.lookup(), TramoSeatsSpec.class);
             InformationSet set = TramoSeatsSpecMapping.SERIALIZER_V3.write(xdoc.getElement(), true);
             Config.Builder b = Config.builder(TramoSeatsSpec.class.getName(), input.getDisplayName(), "3.0.0")
-                    .parameter("specification", Formatters.formatAsString(set));
+                    .parameter("specification", INFORMATIONFORMATTER.formatAsString(set));
             return b.build();
         }
     }
+
+    private static final Formatter<InformationSet> INFORMATIONFORMATTER = Jaxb.Formatter.of(XmlInformationSet.class).asFormatter()
+            .compose(o -> {
+                XmlInformationSet result = new XmlInformationSet();
+                result.copy(o);
+                return result;
+            });
 }

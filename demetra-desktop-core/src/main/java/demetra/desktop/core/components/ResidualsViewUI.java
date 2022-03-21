@@ -16,6 +16,7 @@
  */
 package demetra.desktop.core.components;
 
+import demetra.desktop.util.DateFormatAdapter;
 import demetra.desktop.components.parts.*;
 import demetra.timeseries.TsCollection;
 import demetra.desktop.components.ComponentBackendSpi;
@@ -149,7 +150,7 @@ public final class ResidualsViewUI implements InternalUI<JResidualsView> {
     private void onDataFormatChange(JResidualsView view) {
         grid.setObsFormat(view.getObsFormat());
         ObsFormat obsFormat = obsFormatResolver.resolve();
-        ((DateAxis) chartPanel.getChart().getXYPlot().getDomainAxis()).setDateFormatOverride(new InternalComponents.DateFormatAdapter(obsFormat));
+        ((DateAxis) chartPanel.getChart().getXYPlot().getDomainAxis()).setDateFormatOverride(new DateFormatAdapter(obsFormat));
     }
 
     private void onColorSchemeChange() {

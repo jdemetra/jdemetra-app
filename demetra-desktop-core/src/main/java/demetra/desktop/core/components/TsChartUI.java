@@ -16,6 +16,7 @@
  */
 package demetra.desktop.core.components;
 
+import demetra.desktop.util.DateFormatAdapter;
 import demetra.desktop.DemetraIcons;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.components.JTsChart;
@@ -223,7 +224,7 @@ public final class TsChartUI implements InternalUI<JTsChart> {
     //<editor-fold defaultstate="collapsed" desc="Event Handlers">
     private void onDataFormatChange() {
         ObsFormat obsFormat = obsFormatResolver.resolve();
-        chartPanel.setPeriodFormat(new InternalComponents.DateFormatAdapter(obsFormat));
+        chartPanel.setPeriodFormat(new DateFormatAdapter(obsFormat));
         chartPanel.setValueFormat(new InternalComponents.NumberFormatAdapter(obsFormat));
     }
 
