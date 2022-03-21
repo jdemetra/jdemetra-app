@@ -19,10 +19,13 @@ package demetra.desktop.util;
 import demetra.timeseries.TsProvider;
 import demetra.desktop.TsManager;
 import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.tsprovider.FileLoader;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.openide.modules.ModuleInstall;
@@ -73,7 +76,7 @@ public final class Installer extends ModuleInstall{
 
     private static final class ProvidersV3Step extends InstallerStep.LookupStep<TsProvider> {
 
-//        final Preferences prefs = prefs();
+        final Preferences prefs = prefs();
 //        final Parser<File[]> pathsParser = Parsers.onJAXB(PathsBean.class).andThen(o -> o.paths != null ? o.paths : new File[0])::parse;
 //        final Formatter<File[]> pathsFormatter = Formatters.onJAXB(PathsBean.class, false).compose(PathsBean::create)::format;
 
@@ -82,13 +85,13 @@ public final class Installer extends ModuleInstall{
         }
 
         private void register(Iterable<? extends TsProvider> providers) {
-//            Preferences pathsNode = prefs.node("paths");
+            Preferences pathsNode = prefs.node("paths");
             for (TsProvider o : providers) {
                 TsManager.getDefault().register(o);
-//                if (o instanceof FileLoader) {
+                if (o instanceof FileLoader) {
 //                    tryGet(pathsNode, o.getSource(), pathsParser)
 //                            .ifPresent(((FileLoader) o)::setPaths);
-//                }
+                }
             }
 //            TsManager.getDefault().register(new PocProvider());
         }
