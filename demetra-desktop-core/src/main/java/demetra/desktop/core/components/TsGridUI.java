@@ -565,7 +565,7 @@ public final class TsGridUI implements InternalUI<JTsGrid> {
             this.delegate = delegate;
             this.periodFormatter = TsPeriod::toString;
             this.toolTip = super.createToolTip();
-            this.valueFormatter = ObsFormat.DEFAULT.numberFormatter();
+            this.valueFormatter = ObsFormat.getSystemDefault().numberFormatter();
             this.colorSchemeSupport = null;
             this.showBars = false;
             this.tsFeatures = () -> TsFeatureHelper.EMPTY;

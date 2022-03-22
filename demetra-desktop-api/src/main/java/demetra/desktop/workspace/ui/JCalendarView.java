@@ -244,11 +244,11 @@ public final class JCalendarView extends JComponent {
         }
 
         public RegularFrequency getFreq() {
-            return RegularFrequency.valueOf(domain.getAnnualFrequency());
+            return RegularFrequency.parse(domain.getAnnualFrequency());
         }
 
         public void setFreq(RegularFrequency freq) {
-            setDomain(newDomain(freq.intValue(), domain.getStartPeriod().year(), domain.getLength() / domain.getAnnualFrequency()));
+            setDomain(newDomain(freq.toInt(), domain.getStartPeriod().year(), domain.getLength() / domain.getAnnualFrequency()));
         }
 
         public int getLength() {

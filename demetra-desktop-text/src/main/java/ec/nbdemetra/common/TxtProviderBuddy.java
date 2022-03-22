@@ -78,8 +78,8 @@ public final class TxtProviderBuddy implements DataSourceProviderBuddy {
 
     private Sheet.Set createContent(NodePropertySetBuilder b, TxtBean bean) {
         b.reset("Content");
-        TsProviderProperties.addObsFormat(b, bean::getObsFormat, bean::setObsFormat);
-        TsProviderProperties.addObsGathering(b, bean::getObsGathering, bean::setObsGathering);
+        TsProviderProperties.addObsFormat(b, bean::getFormat, bean::setFormat);
+        TsProviderProperties.addObsGathering(b, bean::getGathering, bean::setGathering);
         return b.build();
     }
 
