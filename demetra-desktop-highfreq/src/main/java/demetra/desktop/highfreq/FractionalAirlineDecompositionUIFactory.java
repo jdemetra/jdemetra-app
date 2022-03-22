@@ -18,23 +18,23 @@ import org.openide.util.lookup.ServiceProvider;
  * @author PALATEJ
  */
 @ServiceProvider(service = DocumentUIServices.class)
-public class FractionalAirlineDecompositionUIFactory implements DocumentUIServices<FractionalAirlineSpec, FractionalAirlineDocument> {
+public class FractionalAirlineDecompositionUIFactory implements DocumentUIServices<FractionalAirlineSpec, FractionalAirlineDecompositionDocument> {
     
 //    public static FractionalAirlineUIFactory INSTANCE=new FractionalAirlineUIFactory();
 
     @Override
-    public IProcDocumentView<FractionalAirlineDocument> getDocumentView(FractionalAirlineDocument document) {
-        return FractionalAirlineViewFactory.getDefault().create(document);
+    public IProcDocumentView<FractionalAirlineDecompositionDocument> getDocumentView(FractionalAirlineDecompositionDocument document) {
+        return FractionalAirlineDecompositionViewFactory.getDefault().create(document);
     }
 
     @Override
-    public IObjectDescriptor<FractionalAirlineSpec> getSpecificationDescriptor(FractionalAirlineDocument doc) {
+    public IObjectDescriptor<FractionalAirlineSpec> getSpecificationDescriptor(FractionalAirlineDecompositionDocument doc) {
         return new FractionalAirlineSpecUI(doc.getSpecification(), false);
     }
 
     @Override
-    public Class<FractionalAirlineDocument> getDocumentType() {
-        return FractionalAirlineDocument.class; 
+    public Class<FractionalAirlineDecompositionDocument> getDocumentType() {
+        return FractionalAirlineDecompositionDocument.class; 
     }
 
     @Override

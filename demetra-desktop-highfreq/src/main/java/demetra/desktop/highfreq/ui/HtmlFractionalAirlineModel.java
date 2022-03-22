@@ -8,6 +8,7 @@ import demetra.arima.SarimaSpec;
 import demetra.data.DoubleSeq;
 import demetra.data.DoubleSeqCursor;
 import demetra.data.Parameter;
+import demetra.desktop.highfreq.FractionalAirlineDecompositionDocument;
 import demetra.desktop.highfreq.FractionalAirlineDocument;
 import demetra.highfreq.FractionalAirlineSpec;
 import demetra.html.AbstractHtmlElement;
@@ -51,6 +52,13 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
     private final boolean summary;
 
     public HtmlFractionalAirlineModel(final FractionalAirlineDocument document, boolean summary) {
+        this.series = document.getInput();
+        this.estimation = document.getResult();
+        this.spec = document.getSpecification();
+        this.summary = summary;
+    }
+
+    public HtmlFractionalAirlineModel(final FractionalAirlineDecompositionDocument document, boolean summary) {
         this.series = document.getInput();
         this.estimation = document.getResult();
         this.spec = document.getSpecification();

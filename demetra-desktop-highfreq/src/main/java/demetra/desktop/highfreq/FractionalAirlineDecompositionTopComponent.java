@@ -59,9 +59,9 @@ public final class FractionalAirlineDecompositionTopComponent extends WorkspaceT
 
     private void initDocument() {
         initComponents();
-        setToolTipText(NbBundle.getMessage(FractionalAirlineDecompositionTopComponent.class, "HINT_FractionalAirlineTopComponent"));
+        setToolTipText(NbBundle.getMessage(FractionalAirlineDecompositionTopComponent.class, "HINT_FractionalAirlineDecompositionTopComponent"));
         setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(FractionalAirlineDocument.class));
+        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(FractionalAirlineDecompositionDocument.class));
         this.add(panel);
         panel.refreshHeader();
     }
@@ -91,6 +91,6 @@ public final class FractionalAirlineDecompositionTopComponent extends WorkspaceT
 
     @Override
     protected String getContextPath() {
-        return FractionalAirlineDocumentManager.CONTEXTPATH;
+        return FractionalAirlineDecompositionDocumentManager.CONTEXTPATH;
     }
 }

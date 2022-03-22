@@ -13,6 +13,16 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-sa-csv</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>demetra-sa-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-design</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -47,22 +57,18 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-awt</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-lookup</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-ui</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -71,7 +77,6 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-options-api</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -89,7 +94,7 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-core-multiview</artifactId>
         </dependency>
-   </dependencies>
+    </dependencies>
 
     <build>
         <plugins>
@@ -101,7 +106,7 @@
                     <publicPackages>
                         <publicPackage>demetra.desktop.sa.*</publicPackage>
                         <publicPackage>demetra.desktop.processing.ui.sa.*</publicPackage>
-                     </publicPackages>
+                    </publicPackages>
                 </configuration>
             </plugin>
             <plugin>
