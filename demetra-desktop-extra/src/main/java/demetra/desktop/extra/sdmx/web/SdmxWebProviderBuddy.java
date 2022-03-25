@@ -223,7 +223,7 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy {
     }
 
     private NodePropertySetBuilder withCache(NodePropertySetBuilder b, SdmxWebBean bean) {
-        TsProviderProperties.addBulkCube(b, bean::getCacheConfig, bean::setCacheConfig);
+        TsProviderProperties.addBulkCube(b, bean::getCache, bean::setCache);
         return b;
     }
 

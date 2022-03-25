@@ -66,7 +66,7 @@ public final class SpreadSheetView extends javax.swing.JPanel implements HasColo
         initComponents();
 
         this.gridPool = Pools.on(new GridPoolFactory(), 100);
-        this.dataFormat = ObsFormat.DEFAULT;
+        this.dataFormat = ObsFormat.getSystemDefault();
         this.zoomRatio = 100;
         this.invertColors = false;
         this.model = ArrayBook.builder().build();

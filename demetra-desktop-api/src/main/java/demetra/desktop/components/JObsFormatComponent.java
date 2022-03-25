@@ -51,7 +51,7 @@ public final class JObsFormatComponent extends JComponent {
     @SwingProperty
     public static final String PREVIEW_VISIBLE_PROPERTY = "previewVisible";
 
-    private static final ObsFormat DEFAULT_OBS_FORMAT = ObsFormat.DEFAULT;
+    private static final ObsFormat DEFAULT_OBS_FORMAT = ObsFormat.getSystemDefault();
     private static final boolean DEFAULT_PREVIEW_VISIBLE = true;
 
     private final JTextComponent locale;
@@ -202,7 +202,12 @@ public final class JObsFormatComponent extends JComponent {
         public void changedUpdate(DocumentEvent e) {
             if (enabled) {
                 enabled = false;
-                setObsFormat(ObsFormat.of(Parser.onLocale().parse(locale.getText()), datePattern.getText(), numberPattern.getText()));
+                setObsFormat(ObsFormat
+                        .builder()
+                        .locale(Parser.onLocale().parse(locale.getText()))
+                        .dateTimePattern(datePattern.getText())
+                        .numberPattern(numberPattern.getText())
+                        .build());
                 enabled = true;
             }
         }

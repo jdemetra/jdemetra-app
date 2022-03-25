@@ -108,8 +108,8 @@ public final class SpreadsheetProviderBuddy implements DataSourceProviderBuddy {
         b.reset("options")
                 .display(Bundle.bean_options_display())
                 .description(Bundle.bean_options_description());
-        addObsFormat(b, bean::getObsFormat, bean::setObsFormat);
-        addObsGathering(b, bean::getObsGathering, bean::setObsGathering);
+        addObsFormat(b, bean::getFormat, bean::setFormat);
+        addObsGathering(b, bean::getGathering, bean::setGathering);
         return b.build();
     }
 }
