@@ -88,8 +88,8 @@ public class TsProviderProperties {
     public static void addObsGathering(@NonNull NodePropertySetBuilder b, @NonNull Supplier<ObsGathering> loader, @NonNull Consumer<ObsGathering> storer) {
         b.withEnum(RegularFrequency.class)
                 .select("frequency",
-                        () -> RegularFrequency.valueOf(loader.get().getUnit().getAnnualFrequency()),
-                        o -> storer.accept(loader.get().toBuilder().unit(o.intValue() == 0 ? TsUnit.UNDEFINED : TsUnit.ofAnnualFrequency(o.intValue())).build())
+                        () -> RegularFrequency.parse(loader.get().getUnit().getAnnualFrequency()),
+                        o -> storer.accept(loader.get().toBuilder().unit(o.toTsUnit()).build())
                 )
                 .display(Bundle.bean_frequency_display())
                 .description(Bundle.bean_frequency_description())
@@ -188,8 +188,8 @@ public class TsProviderProperties {
             @NonNull Supplier<TableAsCube> loader,
             @NonNull Consumer<TableAsCube> storer
     ) {
-        addObsFormat(b, () -> loader.get().getObsFormat(), o -> storer.accept(loader.get().toBuilder().obsFormat(o).build()));
-        addObsGathering(b, () -> loader.get().getObsGathering(), o -> storer.accept(loader.get().toBuilder().obsGathering(o).build()));
+        addObsFormat(b, () -> loader.get().getFormat(), o -> storer.accept(loader.get().toBuilder().format(o).build()));
+        addObsGathering(b, () -> loader.get().getGathering(), o -> storer.accept(loader.get().toBuilder().gathering(o).build()));
     }
 
     @MightBePromoted

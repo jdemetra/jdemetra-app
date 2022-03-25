@@ -38,7 +38,7 @@ public final class SplitIntoYearlyComponentsCommand extends ComponentCommand<Has
         Ts ts = (component.getTsCollection().get(component.getTsSelectionModel().getMinSelectionIndex()));
         JTsChartTopComponent c = new JTsChartTopComponent();
         c.getChart().setTitle(ts.getName());
-        c.getChart().setObsFormat(ObsFormat.of(null, "MMM", null));
+        c.getChart().setObsFormat(ObsFormat.builder().locale(null).dateTimePattern("MMM").build());
         c.getChart().setTsUpdateMode(HasTsCollection.TsUpdateMode.None);
         c.getChart().setTsCollection(split(ts));
         c.setIcon(DataSourceProviderBuddySupport.getDefault().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));

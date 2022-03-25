@@ -181,7 +181,7 @@ public final class DemetraOptions implements PropertyChangeSource.WithWeakListen
 
     @SwingProperty
     public static final String OBS_FORMAT_PROPERTY = "obsFormat";
-    private static final ObsFormat DEFAULT_OBS_FORMAT = ObsFormat.DEFAULT;
+    private static final ObsFormat DEFAULT_OBS_FORMAT = ObsFormat.getSystemDefault();
     private ObsFormat obsFormat = DEFAULT_OBS_FORMAT;
 
     public ObsFormat getObsFormat() {
