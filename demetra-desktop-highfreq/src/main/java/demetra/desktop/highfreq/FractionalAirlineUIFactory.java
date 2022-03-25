@@ -8,7 +8,8 @@ import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.highfreq.ui.FractionalAirlineSpecUI;
 import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.IProcDocumentView;
-import demetra.highfreq.FractionalAirlineSpec;
+import demetra.highfreq.ExtendedAirlineModellingSpec;
+import demetra.highfreq.ExtendedAirlineSpec;
 import java.awt.Color;
 import javax.swing.Icon;
 import org.openide.util.lookup.ServiceProvider;
@@ -18,7 +19,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author PALATEJ
  */
 @ServiceProvider(service = DocumentUIServices.class)
-public class FractionalAirlineUIFactory implements DocumentUIServices<FractionalAirlineSpec, FractionalAirlineDocument> {
+public class FractionalAirlineUIFactory implements DocumentUIServices<ExtendedAirlineModellingSpec, FractionalAirlineDocument> {
     
 //    public static FractionalAirlineUIFactory INSTANCE=new FractionalAirlineUIFactory();
 
@@ -28,7 +29,7 @@ public class FractionalAirlineUIFactory implements DocumentUIServices<Fractional
     }
 
     @Override
-    public IObjectDescriptor<FractionalAirlineSpec> getSpecificationDescriptor(FractionalAirlineDocument doc) {
+    public IObjectDescriptor<ExtendedAirlineModellingSpec> getSpecificationDescriptor(FractionalAirlineDocument doc) {
         return new FractionalAirlineSpecUI(doc.getSpecification(), false);
     }
 
@@ -38,8 +39,8 @@ public class FractionalAirlineUIFactory implements DocumentUIServices<Fractional
     }
 
     @Override
-    public Class<FractionalAirlineSpec> getSpecType() {
-        return FractionalAirlineSpec.class; 
+    public Class<ExtendedAirlineModellingSpec> getSpecType() {
+        return ExtendedAirlineModellingSpec.class; 
     }
 
     @Override

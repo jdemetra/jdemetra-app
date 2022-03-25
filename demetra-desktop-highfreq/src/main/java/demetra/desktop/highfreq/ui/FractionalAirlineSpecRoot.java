@@ -4,7 +4,7 @@
  */
 package demetra.desktop.highfreq.ui;
 
-import demetra.highfreq.FractionalAirlineSpec;
+import demetra.highfreq.ExtendedAirlineModellingSpec;
 
 
 /**
@@ -15,6 +15,6 @@ import demetra.highfreq.FractionalAirlineSpec;
 @lombok.AllArgsConstructor
 public class FractionalAirlineSpecRoot  {
     
-    FractionalAirlineSpec core;
+    ExtendedAirlineModellingSpec core;
     boolean ro;
 }

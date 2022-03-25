@@ -4,13 +4,9 @@
  */
 package demetra.desktop.highfreq.ui;
 
-import demetra.arima.SarimaSpec;
 import demetra.data.DoubleSeq;
 import demetra.data.DoubleSeqCursor;
-import demetra.data.Parameter;
-import demetra.desktop.highfreq.FractionalAirlineDecompositionDocument;
-import demetra.desktop.highfreq.FractionalAirlineDocument;
-import demetra.highfreq.FractionalAirlineSpec;
+import demetra.highfreq.ExtendedAirlineSpec;
 import demetra.html.AbstractHtmlElement;
 import demetra.html.Bootstrap4;
 import demetra.html.HtmlStream;
@@ -20,12 +16,10 @@ import demetra.html.HtmlTag;
 import demetra.html.modelling.HtmlLikelihood;
 import demetra.math.matrices.Matrix;
 import demetra.modelling.OutlierDescriptor;
-import demetra.timeseries.Ts;
-import demetra.timeseries.TsData;
 import demetra.timeseries.TsDomain;
+import demetra.timeseries.regression.HolidaysVariable;
 import demetra.timeseries.regression.IOutlier;
 import demetra.timeseries.regression.ITsVariable;
-import demetra.timeseries.regression.MissingValueEstimation;
 import demetra.timeseries.regression.ModellingUtility;
 import demetra.timeseries.regression.Variable;
 import java.io.IOException;
@@ -35,8 +29,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import jdplus.dstats.T;
-import jdplus.highfreq.FractionalAirlineEstimation;
+import jdplus.highfreq.ExtendedRegAirlineModel;
 import jdplus.modelling.GeneralLinearModel;
+import jdplus.modelling.regression.RegressionDesc;
 import jdplus.regsarima.regular.RegSarimaModel;
 import jdplus.stats.likelihood.LikelihoodStatistics;
 
@@ -46,29 +41,11 @@ import jdplus.stats.likelihood.LikelihoodStatistics;
  */
 public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
 
-    private final Ts series;
-    private final FractionalAirlineEstimation estimation;
-    private final FractionalAirlineSpec spec;
+    private final ExtendedRegAirlineModel model;
     private final boolean summary;
 
-    public HtmlFractionalAirlineModel(final FractionalAirlineDocument document, boolean summary) {
-        this.series = document.getInput();
-        this.estimation = document.getResult();
-        this.spec = document.getSpecification();
-        this.summary = summary;
-    }
-
-    public HtmlFractionalAirlineModel(final FractionalAirlineDecompositionDocument document, boolean summary) {
-        this.series = document.getInput();
-        this.estimation = document.getResult();
-        this.spec = document.getSpecification();
-        this.summary = summary;
-    }
-
-    public HtmlFractionalAirlineModel(final Ts series, final FractionalAirlineEstimation estimation, FractionalAirlineSpec spec, boolean summary) {
-        this.series = series;
-        this.estimation = estimation;
-        this.spec = spec;
+    public HtmlFractionalAirlineModel(final ExtendedRegAirlineModel model, boolean summary) {
+        this.model = model;
         this.summary = summary;
     }
 
@@ -82,15 +59,15 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
     }
 
     private void writeSummary(HtmlStream stream) throws IOException {
-        TsDomain edom = series.getData().getDomain();
+        TsDomain edom = model.getEstimation().getDomain();
         stream.write(HtmlTag.HEADER1, "Summary").newLine();
         stream.write("Estimation span: [").write(edom.getStartPeriod().display());
         stream.write(" - ").write(edom.getLastPeriod().display()).write(']').newLine();
-        if (spec.isLog()) {
+        if (model.getDescription().isLogTransformation()) {
             stream.write("Series has been log-transformed").newLine();
         }
-
-        int no = estimation.getOutliers().length;
+        model.getDescription().getVariables();
+        int no = countVariables(IOutlier.class, false);
         if (no > 1) {
             stream.write(Integer.toString(no)).write(" detected outliers").newLine();
         } else if (no == 1) {
@@ -99,10 +76,13 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
     }
 
     private void writeDetails(HtmlStream stream) throws IOException {
+
+        GeneralLinearModel.Estimation estimation = model.getEstimation();
+
         stream.write(HtmlTag.HEADER1, "Final model");
         stream.newLine();
         stream.write(HtmlTag.HEADER2, "Likelihood statistics");
-        stream.write(new HtmlLikelihood(estimation.getLikelihood()));
+        stream.write(new HtmlLikelihood(estimation.getStatistics()));
         writeScore(stream);
         stream.write(HtmlTag.LINEBREAK);
         stream.write(HtmlTag.HEADER2, "Extended airline model");
@@ -114,8 +94,10 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
     }
 
     public void writeModel(HtmlStream stream) throws IOException {
-        LikelihoodStatistics ll = estimation.getLikelihood();
-        int nhp = estimation.getParameters().length();
+        GeneralLinearModel.Estimation estimation = model.getEstimation();
+        GeneralLinearModel.Description<ExtendedAirlineSpec> description = model.getDescription();
+        LikelihoodStatistics ll = estimation.getStatistics();
+        int nhp = estimation.getParameters().getValues().length();
 
         if (nhp == 0) {
             return;
@@ -128,15 +110,15 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
         stream.write(new HtmlTableCell("P[|T| &gt t]").withWidth(100).withClass(Bootstrap4.FONT_WEIGHT_BOLD));
         stream.close(HtmlTag.TABLEROW);
         int nobs = ll.getEffectiveObservationsCount(), nparams = ll.getEstimatedParametersCount();
-        DoubleSeqCursor p = estimation.getParameters().cursor();
-        DoubleSeqCursor vars = estimation.getParametersCovariance().diagonal().cursor();
+        DoubleSeqCursor p = estimation.getParameters().getValues().cursor();
+        DoubleSeqCursor vars = estimation.getParameters().getCovariance().diagonal().cursor();
         double ndf = nobs - nparams;
         T t = new T(ndf - nhp);
         double vcorr = (ndf - nhp) / ndf;
         List<String> headers = new ArrayList<>();
         String header;
         stream.open(HtmlTag.TABLEROW);
-        if (spec.isAr()) {
+        if (description.getStochasticComponent().hasAr()) {
             header = "Phi(1)";
         } else {
             header = "Theta(1)";
@@ -152,10 +134,10 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
         stream.write(new HtmlTableCell(df4.format(prob)).withWidth(100));
         stream.close(HtmlTag.TABLEROW);
 
-        double[] f = estimation.getModel().getPeriodicities();
+        double[] f = description.getStochasticComponent().getPeriodicities();
         for (int j = 1, k = 0; j < nhp; ++j) {
             stream.open(HtmlTag.TABLEROW);
-            if (spec.isAdjustToInt()) {
+            if (description.getStochasticComponent().isAdjustToInt()) {
                 header = "Theta(" + ((int) f[k++]) + ")";
             } else {
                 header = "Theta(" + df2.format(f[k++]) + ")";
@@ -174,7 +156,7 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
         }
         stream.close(HtmlTag.TABLE);
 
-        Matrix pcov = estimation.getParametersCovariance();
+        Matrix pcov = estimation.getParameters().getCovariance();
         if (!pcov.isEmpty()) {
             int size = pcov.getColumnsCount();
             stream.newLines(2);
@@ -203,14 +185,13 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
                 }
                 stream.close(HtmlTag.TABLEROW);
             }
-
             stream.close(HtmlTag.TABLE);
             stream.newLine();
         }
     }
 
     private void writeScore(HtmlStream stream) throws IOException {
-        DoubleSeq score = estimation.getScore();
+        DoubleSeq score = model.getEstimation().getParameters().getScores();
         if (score.isEmpty()) {
             return;
         }
@@ -220,69 +201,47 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
     }
 
     private void writeOutliers(HtmlStream stream) throws IOException {
-        OutlierDescriptor[] outliers = estimation.getOutliers();
-        if (outliers.length == 0) {
+        GeneralLinearModel.Description<ExtendedAirlineSpec> description = model.getDescription();
+        Set<ITsVariable> outliers = Arrays.stream(description.getVariables())
+                .filter(var -> var.getCore() instanceof IOutlier)
+                .map(var -> var.getCore()).collect(Collectors.toSet());
+        if (outliers.isEmpty()) {
             return;
         }
 
         String header = "Outliers";
 
-        DoubleSeq c = estimation.getCoefficients();
-        DoubleSeq var = estimation.getCoefficientsCovariance().diagonal();
-
-        TsDomain domain = series.getData().getDomain();
+        TsDomain edom = model.getEstimation().getDomain();
         stream.write(HtmlTag.HEADER3, header);
-
-        int start = spec.isMeanCorrection() ? 1 : 0;
-        if (spec.getX() != null) {
-            start += spec.getX().getColumnsCount();
-        }
-
-        LikelihoodStatistics ll = estimation.getLikelihood();
-        int nhp = estimation.getParameters().length();
-        int nobs = ll.getEffectiveObservationsCount(), nparams = ll.getEstimatedParametersCount();
-        T t = new T(nobs - nparams - nhp);
-
-        stream.open(new HtmlTable().withWidth(400));
-        stream.open(HtmlTag.TABLEROW);
-        stream.write(new HtmlTableCell("").withWidth(100));
-        stream.write(new HtmlTableCell("Coefficients").withWidth(100).withClass(Bootstrap4.FONT_WEIGHT_BOLD));
-        stream.write(new HtmlTableCell("T-Stat").withWidth(100).withClass(Bootstrap4.FONT_WEIGHT_BOLD));
-        stream.write(new HtmlTableCell("P[|T| &gt t]").withWidth(100).withClass(Bootstrap4.FONT_WEIGHT_BOLD));
-        stream.close(HtmlTag.TABLEROW);
-        for (OutlierDescriptor o : outliers) {
-            double b = c.get(start), e = Math.sqrt(var.get(start)), tval = b / e;
-            ++start;
-            stream.open(HtmlTag.TABLEROW);
-            stream.write(new HtmlTableCell(o.getCode() + " - " + domain.get(o.getPosition()).display()).withWidth(100));
-            stream.write(new HtmlTableCell(df4.format(b)).withWidth(100));
-            stream.write(new HtmlTableCell(formatT(tval)).withWidth(100));
-            stream.write(new HtmlTableCell(df4.format(1 - t.getProbabilityForInterval(-tval, tval))).withWidth(100));
-            stream.close(HtmlTag.TABLEROW);
-        }
-        stream.close(HtmlTag.TABLE);
-        stream.newLine();
+        writeRegressionItems(stream, outliers, edom);
     }
 
     private void writeHolidays(HtmlStream stream) throws IOException {
-        
-        if (spec.getX() == null)
+        String header = "Holidays";
+        GeneralLinearModel.Description<ExtendedAirlineSpec> description = model.getDescription();
+        Set<ITsVariable> hol = Arrays.stream(description.getVariables())
+                .filter(var -> var.getCore() instanceof HolidaysVariable)
+                .map(var -> var.getCore()).collect(Collectors.toSet());
+        if (hol.isEmpty()) {
             return;
+        }
 
-        String header = "Variables";
-
-        DoubleSeq c = estimation.getCoefficients();
-        DoubleSeq var = estimation.getCoefficientsCovariance().diagonal();
-
+        TsDomain edom = model.getEstimation().getDomain();
         stream.write(HtmlTag.HEADER3, header);
+        writeRegressionItems(stream, hol, edom);
+    }
 
-        int start = spec.isMeanCorrection() ? 1 : 0;
-        String[] vars = spec.getXnames();
-        int nx=vars.length;
-        LikelihoodStatistics ll = estimation.getLikelihood();
-        int nhp = estimation.getParameters().length();
-        int nobs = ll.getEffectiveObservationsCount(), nparams = ll.getEstimatedParametersCount();
-        T t = new T(nobs - nparams - nhp);
+    private <V extends ITsVariable> void writeRegressionItems(HtmlStream stream, Set<ITsVariable> vars, TsDomain context) throws IOException {
+        List<RegressionDesc> regs = new ArrayList<>();
+        for (RegressionDesc reg : model.getRegressionItems()) {
+            if (vars.contains(reg.getCore())) {
+                regs.add(reg);
+            }
+        }
+        writeRegressionItems(stream, regs, context);
+    }
+
+    private <V extends ITsVariable> void writeRegressionItems(HtmlStream stream, List<RegressionDesc> regs, TsDomain context) throws IOException {
 
         stream.open(new HtmlTable().withWidth(400));
         stream.open(HtmlTag.TABLEROW);
@@ -291,16 +250,25 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
         stream.write(new HtmlTableCell("T-Stat").withWidth(100).withClass(Bootstrap4.FONT_WEIGHT_BOLD));
         stream.write(new HtmlTableCell("P[|T| &gt t]").withWidth(100).withClass(Bootstrap4.FONT_WEIGHT_BOLD));
         stream.close(HtmlTag.TABLEROW);
-        for (int i=0; i< nx; ++i) {
-            double b = c.get(start+i), e = Math.sqrt(var.get(start+i)), tval = b / e;
+        for (RegressionDesc reg : regs) {
             stream.open(HtmlTag.TABLEROW);
-            stream.write(new HtmlTableCell(vars[i]).withWidth(100));
-            stream.write(new HtmlTableCell(df4.format(b)).withWidth(100));
-            stream.write(new HtmlTableCell(formatT(tval)).withWidth(100));
-            stream.write(new HtmlTableCell(df4.format(1 - t.getProbabilityForInterval(-tval, tval))).withWidth(100));
+            stream.write(new HtmlTableCell(reg.getCore().description(reg.getItem(), context)).withWidth(100));
+            stream.write(new HtmlTableCell(df4.format(reg.getCoef())).withWidth(100));
+            stream.write(new HtmlTableCell(formatT(reg.getTStat())).withWidth(100));
+            stream.write(new HtmlTableCell(df4.format(reg.getPvalue())).withWidth(100));
             stream.close(HtmlTag.TABLEROW);
         }
         stream.close(HtmlTag.TABLE);
         stream.newLine();
     }
+
+    private <T extends ITsVariable> int countVariables(Class<T> tclass, boolean fixed) {
+        Variable[] variables = model.getDescription().getVariables();
+        if (fixed) {
+            return Arrays.stream(variables).filter(var -> tclass.isInstance(var.getCore())).mapToInt(var -> var.fixedCoefficientsCount()).sum();
+        } else {
+            return Arrays.stream(variables).filter(var -> tclass.isInstance(var.getCore())).mapToInt(var -> var.freeCoefficientsCount()).sum();
+        }
+    }
+
 }

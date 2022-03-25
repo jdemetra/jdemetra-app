@@ -34,7 +34,8 @@ import demetra.timeseries.TsDocument;
 import demetra.util.Id;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import jdplus.highfreq.FractionalAirlineEstimation;
+import jdplus.highfreq.ExtendedAirlineEstimation;
+import jdplus.highfreq.ExtendedRegAirlineModel;
 import jdplus.regsarima.regular.RegSarimaModel;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -46,10 +47,10 @@ public class FractionalAirlineViewFactory extends ProcDocumentViewFactory<Fracti
 
     private static final AtomicReference<IProcDocumentViewFactory<FractionalAirlineDocument>> INSTANCE = new AtomicReference();
 
-    private final static Function<FractionalAirlineDocument, FractionalAirlineEstimation> MODELEXTRACTOR = doc -> doc.getResult();
+    private final static Function<FractionalAirlineDocument, ExtendedRegAirlineModel> MODELEXTRACTOR = doc -> doc.getResult();
     private final static Function<FractionalAirlineDocument, DoubleSeq> RESEXTRACTOR = doc -> {
-        FractionalAirlineEstimation result = doc.getResult();
-        return result == null ? null : result.getResiduals();
+        ExtendedRegAirlineModel result = doc.getResult();
+        return result == null ? null : result.getResiduals().getRes();
     };
 
     public static IProcDocumentViewFactory<FractionalAirlineDocument> getDefault() {
@@ -115,7 +116,7 @@ public class FractionalAirlineViewFactory extends ProcDocumentViewFactory<Fracti
 
         public SummaryFactory() {
             super(FractionalAirlineDocument.class, RegSarimaViews.MODEL_SUMMARY,
-                    source -> new HtmlFractionalAirlineModel(source, false),
+                    source -> new HtmlFractionalAirlineModel(source.getResult(), false),
                     new HtmlItemUI());
         }
 
