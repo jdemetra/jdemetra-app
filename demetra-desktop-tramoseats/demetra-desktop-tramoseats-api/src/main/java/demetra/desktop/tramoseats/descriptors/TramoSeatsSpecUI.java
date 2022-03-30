@@ -12,7 +12,6 @@ import demetra.desktop.tramo.descriptors.BasicSpecUI;
 import demetra.desktop.tramo.descriptors.EstimateSpecUI;
 import demetra.desktop.tramo.descriptors.OutlierSpecUI;
 import demetra.desktop.tramo.descriptors.RegressionSpecUI;
-import demetra.desktop.tramo.descriptors.TramoSpecUI;
 import demetra.desktop.tramo.descriptors.TransformSpecUI;
 import demetra.tramoseats.TramoSeatsSpec;
 import java.beans.IntrospectionException;

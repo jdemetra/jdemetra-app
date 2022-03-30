@@ -5,11 +5,10 @@
 package demetra.desktop.highfreq;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
-import demetra.desktop.highfreq.ui.FractionalAirlineSpecUI;
+import demetra.desktop.highfreq.ui.FractionalAirlineDecompositionSpecUI;
 import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.IProcDocumentView;
-import demetra.highfreq.ExtendedAirlineModellingSpec;
-import demetra.highfreq.ExtendedAirlineSpec;
+import demetra.highfreq.ExtendedAirlineDecompositionSpec;
 import java.awt.Color;
 import javax.swing.Icon;
 import org.openide.util.lookup.ServiceProvider;
@@ -19,7 +18,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author PALATEJ
  */
 @ServiceProvider(service = DocumentUIServices.class)
-public class FractionalAirlineDecompositionUIFactory implements DocumentUIServices<ExtendedAirlineModellingSpec, FractionalAirlineDecompositionDocument> {
+public class FractionalAirlineDecompositionUIFactory implements DocumentUIServices<ExtendedAirlineDecompositionSpec, FractionalAirlineDecompositionDocument> {
     
 //    public static FractionalAirlineUIFactory INSTANCE=new FractionalAirlineUIFactory();
 
@@ -29,8 +28,8 @@ public class FractionalAirlineDecompositionUIFactory implements DocumentUIServic
     }
 
     @Override
-    public IObjectDescriptor<ExtendedAirlineModellingSpec> getSpecificationDescriptor(FractionalAirlineDecompositionDocument doc) {
-        return new FractionalAirlineSpecUI(doc.getSpecification(), false);
+    public IObjectDescriptor<ExtendedAirlineDecompositionSpec> getSpecificationDescriptor(FractionalAirlineDecompositionDocument doc) {
+        return new FractionalAirlineDecompositionSpecUI(doc.getSpecification(), false);
     }
 
     @Override
@@ -39,8 +38,8 @@ public class FractionalAirlineDecompositionUIFactory implements DocumentUIServic
     }
 
     @Override
-    public Class<ExtendedAirlineModellingSpec> getSpecType() {
-        return ExtendedAirlineModellingSpec.class; 
+    public Class<ExtendedAirlineDecompositionSpec> getSpecType() {
+        return ExtendedAirlineDecompositionSpec.class; 
     }
 
     @Override

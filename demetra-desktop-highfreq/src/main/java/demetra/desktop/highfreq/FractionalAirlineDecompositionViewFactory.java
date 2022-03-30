@@ -5,15 +5,11 @@
 package demetra.desktop.highfreq;
 
 import demetra.data.DoubleSeq;
+import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.highfreq.ui.HtmlFractionalAirlineModel;
-import demetra.desktop.processing.ui.modelling.ForecastsFactory;
 import demetra.desktop.processing.ui.modelling.InputFactory;
-import demetra.desktop.processing.ui.modelling.LikelihoodFactory;
-import demetra.desktop.processing.ui.modelling.ModelRegressorsFactory;
-import demetra.desktop.processing.ui.modelling.ModelArimaFactory;
-import demetra.desktop.processing.ui.modelling.NiidTestsFactory;
-import demetra.desktop.processing.ui.modelling.OutOfSampleTestFactory;
 import demetra.desktop.processing.ui.modelling.RegSarimaViews;
+import demetra.desktop.ui.processing.GenericChartUI;
 import demetra.desktop.ui.processing.GenericTableUI;
 import demetra.desktop.ui.processing.HtmlItemUI;
 import demetra.desktop.ui.processing.IProcDocumentItemFactory;
@@ -22,21 +18,17 @@ import demetra.desktop.ui.processing.ProcDocumentItemFactory;
 import demetra.desktop.ui.processing.ProcDocumentViewFactory;
 import demetra.desktop.ui.processing.stats.DistributionUI;
 import demetra.desktop.ui.processing.stats.PeriodogramUI;
-import demetra.desktop.ui.processing.stats.ResidualsDistUI;
-import demetra.desktop.ui.processing.stats.ResidualsUI;
-import demetra.desktop.ui.processing.stats.SpectrumUI;
+import demetra.desktop.sa.ui.SaViews;
 import demetra.html.HtmlElement;
-import demetra.information.InformationSet;
+import demetra.information.BasicInformationExtractor;
 import demetra.modelling.ModellingDictionary;
 import demetra.modelling.SeriesInfo;
-import demetra.timeseries.TsData;
+import demetra.sa.SaDictionaries;
 import demetra.timeseries.TsDocument;
 import demetra.util.Id;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import jdplus.highfreq.ExtendedAirlineEstimation;
 import jdplus.highfreq.ExtendedRegAirlineModel;
-import jdplus.regsarima.regular.RegSarimaModel;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -47,9 +39,9 @@ public class FractionalAirlineDecompositionViewFactory extends ProcDocumentViewF
 
     private static final AtomicReference<IProcDocumentViewFactory<FractionalAirlineDecompositionDocument>> INSTANCE = new AtomicReference();
 
-    private final static Function<FractionalAirlineDecompositionDocument, ExtendedRegAirlineModel> MODELEXTRACTOR = doc -> doc.getResult();
+    private final static Function<FractionalAirlineDecompositionDocument, ExtendedRegAirlineModel> MODELEXTRACTOR = doc -> doc.getResult().getPreprocessing();
     private final static Function<FractionalAirlineDecompositionDocument, DoubleSeq> RESEXTRACTOR = doc -> {
-        ExtendedRegAirlineModel result = doc.getResult();
+        ExtendedRegAirlineModel result = doc.getResult().getPreprocessing();
         return result == null ? null : result.getResiduals().getRes();
     };
 
@@ -75,6 +67,80 @@ public class FractionalAirlineDecompositionViewFactory extends ProcDocumentViewF
         return RegSarimaViews.MODEL_SUMMARY;
     }
 
+    private static String generateId(String name, String id){
+        return TsDynamicProvider.CompositeTs.builder()
+                .name(name)
+                .back(id+SeriesInfo.B_SUFFIX)
+                .now(id)
+                .fore(id+SeriesInfo.F_SUFFIX)
+                .build().toString();
+    }
+    
+    public static String[] lowSeries(){
+        return new String[]{
+            generateId("Series", SaDictionaries.Y),
+            generateId("Seasonally adjusted", SaDictionaries.SA),
+            generateId("Trend", SaDictionaries.T)
+        };
+    }
+    
+    public static String[] highSeries(){
+        return new String[]{
+            generateId("Seasonal (component)", BasicInformationExtractor.concatenate(SaDictionaries.DECOMPOSITION,SaDictionaries.S_CMP)),
+            generateId("Calendar effects", ModellingDictionary.CAL),
+            generateId("Irregular", SaDictionaries.I)
+        };
+    }
+    
+    public static String[] finalSeries(){
+        return new String[]{
+            generateId("Series", SaDictionaries.Y),
+            generateId("Seasonally adjusted", SaDictionaries.SA),
+            generateId("Trend", SaDictionaries.T),
+            generateId("Seasonal", SaDictionaries.S),
+            generateId("Irregular", SaDictionaries.I)
+        };
+    }
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
+    public static class MainLowChart extends ProcDocumentItemFactory<FractionalAirlineDecompositionDocument, TsDocument> {
+
+        public MainLowChart() {
+            super(FractionalAirlineDecompositionDocument.class, SaViews.MAIN_CHARTS_LOW, s -> s, new GenericChartUI(false, lowSeries()));
+        }
+
+        @Override
+        public int getPosition() {
+            return 2000;
+        }
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2100)
+    public static class MainHighChart extends ProcDocumentItemFactory<FractionalAirlineDecompositionDocument, TsDocument> {
+
+        public MainHighChart() {
+            super(FractionalAirlineDecompositionDocument.class, SaViews.MAIN_CHARTS_HIGH, s -> s, new GenericChartUI(false, highSeries()));
+        }
+
+        @Override
+        public int getPosition() {
+            return 2100;
+        }
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2200)
+    public static class MainTable extends ProcDocumentItemFactory<FractionalAirlineDecompositionDocument, TsDocument> {
+
+        public MainTable() {
+            super(FractionalAirlineDecompositionDocument.class, SaViews.MAIN_TABLE, s -> s, new GenericTableUI(false, finalSeries()));
+        }
+
+        @Override
+        public int getPosition() {
+            return 2200;
+        }
+
+    }
+    
 //<editor-fold defaultstate="collapsed" desc="REGISTER SPEC">
 //    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100010)
 //    public static class SpecFactory extends ProcDocumentItemFactory<FractionalAirlineDecompositionDocument, HtmlElement> {
@@ -116,7 +182,7 @@ public class FractionalAirlineDecompositionViewFactory extends ProcDocumentViewF
 
         public SummaryFactory() {
             super(FractionalAirlineDecompositionDocument.class, RegSarimaViews.MODEL_SUMMARY,
-                    source -> new HtmlFractionalAirlineModel(source.getResult(), false),
+                    source -> new HtmlFractionalAirlineModel(source.getResult().getPreprocessing(), false),
                     new HtmlItemUI());
         }
 

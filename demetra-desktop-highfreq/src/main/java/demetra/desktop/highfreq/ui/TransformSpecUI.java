@@ -6,7 +6,6 @@ package demetra.desktop.highfreq.ui;
 
 import demetra.desktop.descriptors.DateSelectorUI;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
-import demetra.highfreq.EstimateSpec;
 import demetra.highfreq.TransformSpec;
 import demetra.modelling.TransformationType;
 import demetra.timeseries.TimeSelector;

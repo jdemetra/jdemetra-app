@@ -4,12 +4,11 @@
  */
 package demetra.desktop.highfreq;
 
-import demetra.desktop.workspace.AbstractWorkspaceItemManager;
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
+import demetra.highfreq.ExtendedAirlineDecompositionSpec;
 import demetra.highfreq.ExtendedAirlineModellingSpec;
-import demetra.highfreq.ExtendedAirlineSpec;
 import demetra.util.Id;
 import demetra.util.LinearId;
 import org.openide.util.lookup.ServiceProvider;
@@ -20,7 +19,7 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = WorkspaceItemManager.class,
         position = 500)
-public class FractionalAirlineDecompositionDocumentManager extends AbstractWorkspaceTsItemManager<ExtendedAirlineModellingSpec, FractionalAirlineDecompositionDocument> {
+public class FractionalAirlineDecompositionDocumentManager extends AbstractWorkspaceTsItemManager<ExtendedAirlineDecompositionSpec, FractionalAirlineDecompositionDocument> {
 
 
     public static final LinearId ID = new LinearId(ExtendedAirlineModellingSpec.FAMILY, "documents", ExtendedAirlineModellingSpec.METHOD);

@@ -90,6 +90,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-sa-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-stl</artifactId>
             <version>${stl-desktop.version}</version>
         </dependency>
