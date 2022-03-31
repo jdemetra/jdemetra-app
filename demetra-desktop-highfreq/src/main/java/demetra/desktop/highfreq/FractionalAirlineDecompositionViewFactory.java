@@ -19,12 +19,14 @@ import demetra.desktop.ui.processing.ProcDocumentViewFactory;
 import demetra.desktop.ui.processing.stats.DistributionUI;
 import demetra.desktop.ui.processing.stats.PeriodogramUI;
 import demetra.desktop.sa.ui.SaViews;
+import demetra.highfreq.ExtendedAirlineDictionaries;
 import demetra.html.HtmlElement;
 import demetra.information.BasicInformationExtractor;
 import demetra.modelling.ModellingDictionary;
 import demetra.modelling.SeriesInfo;
 import demetra.sa.SaDictionaries;
 import demetra.timeseries.TsDocument;
+import demetra.toolkit.dictionaries.Dictionary;
 import demetra.util.Id;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -86,7 +88,8 @@ public class FractionalAirlineDecompositionViewFactory extends ProcDocumentViewF
     
     public static String[] highSeries(){
         return new String[]{
-            generateId("Seasonal (component)", BasicInformationExtractor.concatenate(SaDictionaries.DECOMPOSITION,SaDictionaries.S_CMP)),
+            generateId("Seasonal (component)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, ExtendedAirlineDictionaries.SY_CMP)),
+            generateId("Seasonal (component)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, ExtendedAirlineDictionaries.SW_CMP)),
             generateId("Calendar effects", ModellingDictionary.CAL),
             generateId("Irregular", SaDictionaries.I)
         };

@@ -38,8 +38,9 @@ public class GenericChartUI<D extends TsDocument<?,?> >implements ItemUI<TsDocum
         List<Ts> items=new ArrayList<>();
         for (String s : names_){
             TsMoniker moniker = TsDynamicProvider.monikerOf(doc, s);
-            Ts x =  TsFactory.getDefault().makeTs(moniker, TsInformationType.All); 
-            items.add(x);
+            Ts x =  TsFactory.getDefault().makeTs(moniker, TsInformationType.All);
+            if (!x.getData().isEmpty())
+                items.add(x);
        }
         return TsViewToolkit.getChart(items);
     }

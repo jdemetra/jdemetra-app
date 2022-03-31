@@ -45,7 +45,9 @@ public class GenericTableUI<D extends TsDocument> implements ItemUI<D> {
                     x = x.withName(s.substring(idx + 1));
                 }
             }
-            items.add(x);
+            if (!x.getData().isEmpty()) {
+                items.add(x);
+            }
         }
         return TsViewToolkit.getGrid(items);
     }
