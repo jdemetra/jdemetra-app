@@ -65,8 +65,8 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
     }
 
     @Override
-    public void updateDocument() {
-        super.updateDocument();
+    public void onDocumentChanged() {
+        super.onDocumentChanged();
         TsDynamicProvider.OnDocumentChanged(getDocument());
     }
 
@@ -106,8 +106,6 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
             if (ts.isPresent()) {
                 Ts input = ts.get().load(TsInformationType.All, TsManager.getDefault()).freeze();
                 Ts old=getDocument().getInput();
-                getDocument().set(input);
-                refreshAll();
                 TsProcessingViewer.this.firePropertyChange(INPUT_CHANGED, old, input);
                 return true;
             }

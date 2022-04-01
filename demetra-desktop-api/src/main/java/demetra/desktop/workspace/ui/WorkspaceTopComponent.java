@@ -101,15 +101,15 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements A
                         SwingUtilities.invokeLater(this::close);
                         break;
                     case WorkspaceFactory.Event.ITEMCHANGED:
-                        if (ev.source != this) {
+                        //if (ev.source != this) {
                             SwingUtilities.invokeLater(this::refresh);
-                        }
+                        //}
                         break;
                     case WorkspaceFactory.Event.ITEMRENAMED:
-                        if (ev.source != this) {
+                        //if (ev.source != this) {
                             SwingUtilities.invokeLater(()
                                     -> this.setDisplayName(doc.getDisplayName()));
-                        }
+                        //}
                         break;
                 }
             }

@@ -64,7 +64,7 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
 
     @Override
     public void refresh() {
-        panel.refreshAll();
+        panel.onDocumentChanged();
     }
 
     @Override
@@ -74,9 +74,14 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
             @Override
             public void propertyChange(PropertyChangeEvent arg0) {
                 switch (arg0.getPropertyName()) {
-                    case DefaultProcessingViewer.SPEC_CHANGED:
                     case DefaultProcessingViewer.INPUT_CHANGED:
-                        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
+                        Object nval=arg0.getNewValue();
+                        if (nval instanceof Ts){
+                            setTs((Ts) nval);
+                        }
+                        break;
+                    case DefaultProcessingViewer.SPEC_CHANGED:
+                        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, WorkspaceTsTopComponent.this);
                         WorkspaceFactory.getInstance().notifyEvent(ev);
 
                 }
@@ -123,10 +128,6 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
             cts = ts.load(TsInformationType.All, TsManager.getDefault());
         }
         panel.getDocument().set(cts);
-        panel.initSpecView();
-        panel.refreshAll();
-        panel.updateDocument();
-
         getDocument().setDirty();
         WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
         WorkspaceFactory.getInstance().notifyEvent(ev);

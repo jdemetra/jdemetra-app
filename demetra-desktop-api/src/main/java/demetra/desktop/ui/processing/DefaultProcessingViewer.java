@@ -21,7 +21,6 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
-import org.openide.util.lookup.InstanceContent;
 
 /**
  *
@@ -34,7 +33,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     public static final String BUTTONS = "Buttons", BUTTON_APPLY = "Apply", BUTTON_RESTORE = "Restore", BUTTON_SAVE = "Save",
             DIRTY_SPEC_PROPERTY = "dirtySpecProperty";
 
-    public static final String SPEC_CHANGED = "spec_changed", INPUT_CHANGED = "input_changed", DOC_CHANGED = "doc_changed";
+    public static final String SPEC_CHANGED = "spec_changed", SPEC_SAVED = "spec_saved", INPUT_CHANGED = "input_changed", DOC_CHANGED = "doc_changed";
 
     public enum Type {
 
@@ -240,7 +239,6 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     doc.set(pspec);
                     updateButtons(BUTTON_APPLY);
                     DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, pspec);
-                    refreshAll();
                 }
             }};
         PropertySheetPanel specView = factory.getSpecView(specDescriptor);
@@ -255,20 +253,22 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     S pspec = specDescriptor.getCore();
+                    S ospec = doc.getSpecification();
                     doc.set(pspec);
                     updateButtons(BUTTON_APPLY);
                     dirty = true;
-                    refreshAll();
+                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, pspec);
                 }
             },
             new AbstractAction(BUTTON_RESTORE) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    S ospec = doc.getSpecification();
                     doc.set(originalSpec);
                     initSpecView(doc);
                     updateButtons(BUTTON_RESTORE);
                     dirty = false;
-                    refreshAll();
+                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, originalSpec);
                 }
             },
             new AbstractAction(BUTTON_SAVE) {
@@ -278,8 +278,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     updateButtons(BUTTON_SAVE);
                     dirty = false;
                     originalSpec = doc.getSpecification();
-                    refreshAll();
-                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, null, null);
+                    DefaultProcessingViewer.this.firePropertyChange(SPEC_SAVED, null, null);
                 }
             }};
         PropertySheetPanel specView = factory.getSpecView(specDescriptor);
@@ -308,6 +307,10 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         specPanel.validate();
     }
 
+    public void onDocumentChanged() {
+        refreshAll();
+    }
+
     /**
      * Refresh all parts of the view
      */
@@ -325,7 +328,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     /**
      * Refresh the views panel
      */
-    public void refreshView() {
+    private void refreshView() {
         procView.refresh();
         Node[] sel = explorerManager.getSelectedNodes();
         if (!Arrays2.isNullOrEmpty(sel)) {
@@ -434,7 +437,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 }
             } else if (o instanceof Container && BUTTONS.equals(o.getName())) {
                 updateButtons((Container) o, sourceButton);
-             }
+            }
         }
     }
 }
