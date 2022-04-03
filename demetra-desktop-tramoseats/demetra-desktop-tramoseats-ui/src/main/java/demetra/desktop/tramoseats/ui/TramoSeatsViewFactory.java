@@ -36,6 +36,7 @@ import demetra.sa.SaManager;
 import demetra.sa.SaProcessingFactory;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDocument;
+import demetra.toolkit.dictionaries.Dictionary;
 import demetra.toolkit.dictionaries.RegressionDictionaries;
 import demetra.tramoseats.io.information.TramoSeatsSpecMapping;
 import demetra.util.Id;
@@ -198,7 +199,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     
     public static String[] highSeries(){
         return new String[]{
-            generateId("Seasonal (component)", BasicInformationExtractor.concatenate(SaDictionaries.DECOMPOSITION,SaDictionaries.S_CMP)),
+            generateId("Seasonal (component)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION,SaDictionaries.S_CMP)),
             generateId("Calendar effects", ModellingDictionary.CAL),
             generateId("Irregular", SaDictionaries.I)
         };
@@ -215,28 +216,18 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     }
     
 //    //<editor-fold defaultstate="collapsed" desc="MAIN">
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000)
-//    public static class MainSummaryFactory extends ItemFactory<TramoSeatsDocument> {
-//
-//        public MainSummaryFactory() {
-//            super(MAIN_SUMMARY, new DefaultInformationExtractor<TramoSeatsDocument, TramoSeatsDocument>() {
-//                @Override
-//                public TramoSeatsDocument retrieve(TramoSeatsDocument source) {
-//                    return source;
-//                }
-//            }, new PooledItemUI<View, TramoSeatsDocument, JTramoSeatsSummary>(JTramoSeatsSummary.class) {
-//                @Override
-//                protected void init(JTramoSeatsSummary c, View host, TramoSeatsDocument information) {
-//                    c.set(information);
-//                }
-//            });
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 200000;
-//        }
-//    }
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
+    public static class MainSummaryFactory extends ProcDocumentItemFactory<TramoSeatsDocument, TramoSeatsDocument> {
+
+        public MainSummaryFactory() {
+            super(TramoSeatsDocument.class, SaViews.MAIN_SUMMARY, s->s, new TramoSeatsSummary());
+        }
+
+        @Override
+        public int getPosition() {
+            return 2000;
+        }
+    }
 //    //</editor-fold>
 //
 //    public String[] generateItems(String prefix) {
@@ -296,7 +287,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 //        }
 //    }
 //
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2100)
     public static class MainLowChart extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
 
         public MainLowChart() {
@@ -309,7 +300,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         }
     }
     
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2100)
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2200)
     public static class MainHighChart extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
 
         public MainHighChart() {
