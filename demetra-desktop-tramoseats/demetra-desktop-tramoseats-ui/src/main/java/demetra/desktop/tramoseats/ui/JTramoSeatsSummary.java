@@ -5,30 +5,28 @@
 package demetra.desktop.tramoseats.ui;
 
 import demetra.desktop.TsDynamicProvider;
-import demetra.desktop.design.SwingComponent;
-import demetra.timeseries.TsCollection;
 import demetra.desktop.components.JTsChart;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.desktop.design.SwingComponent;
 import demetra.desktop.interfaces.Disposable;
 import demetra.desktop.processing.ui.sa.JSIView;
 import demetra.desktop.ui.Disposables;
-import demetra.desktop.ui.processing.ItemUI;
-import demetra.tramoseats.io.html.HtmlTramoSeatsSummary;
 import demetra.desktop.ui.processing.TsViewToolkit;
 import demetra.desktop.util.ComponentDescriptor;
 import demetra.desktop.util.NbComponents;
 import demetra.modelling.SeriesInfo;
 import demetra.sa.SaDictionaries;
 import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsInformationType;
 import demetra.toolkit.dictionaries.Dictionary;
+import demetra.tramoseats.io.html.HtmlTramoSeatsSummary;
 import demetra.util.MultiLineNameUtil;
-
-import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
+import javax.swing.*;
 import jdplus.arima.ArimaModel;
 import jdplus.seats.SeatsResults;
 import jdplus.tramoseats.TramoSeatsDocument;

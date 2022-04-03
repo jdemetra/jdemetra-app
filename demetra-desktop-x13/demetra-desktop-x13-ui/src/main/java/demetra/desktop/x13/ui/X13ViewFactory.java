@@ -47,17 +47,17 @@ import demetra.util.Id;
 import demetra.util.LinearId;
 import demetra.x11.SeasonalFilterOption;
 import demetra.x11.X11Dictionaries;
-import jdplus.x11.X11Results;
 import demetra.x13.X13Dictionaries;
 import demetra.x13.io.information.X13SpecMapping;
-import jdplus.x13.X13Results;
-import jdplus.x13.X13Document;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
+import jdplus.x11.X11Results;
+import jdplus.x13.X13Document;
+import jdplus.x13.X13Results;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -208,28 +208,18 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
     }
 
 //    //<editor-fold defaultstate="collapsed" desc="MAIN">
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 200000)
-//    public static class MainSummaryFactory extends ItemFactory<X13Document> {
-//
-//        public MainSummaryFactory() {
-//            super(MAIN_SUMMARY, new DefaultInformationExtractor<X13Document, X13Document>() {
-//                @Override
-//                public X13Document retrieve(X13Document source) {
-//                    return source;
-//                }
-//            }, new PooledItemUI<View, X13Document, JX13Summary>(JX13Summary.class) {
-//                @Override
-//                protected void init(JX13Summary c, View host, X13Document information) {
-//                    c.set(information);
-//                }
-//            });
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 200000;
-//        }
-//    }
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
+    public static class MainSummaryFactory extends ProcDocumentItemFactory<X13Document, X13Document> {
+
+        public MainSummaryFactory() {
+            super(X13Document.class, SaViews.MAIN_SUMMARY, s->s, new X13Summary());
+        }
+
+        @Override
+        public int getPosition() {
+            return 2000;
+        }
+    }
 //    //</editor-fold>
 //
 //    public String[] generateItems(String prefix) {
@@ -289,7 +279,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 //        }
 //    }
 //
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2100)
     public static class MainLowChart extends ProcDocumentItemFactory<X13Document, TsDocument> {
 
         public MainLowChart() {
@@ -298,11 +288,11 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
         @Override
         public int getPosition() {
-            return 2000;
+            return 2100;
         }
     }
 
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2100)
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2200)
     public static class MainHighChart extends ProcDocumentItemFactory<X13Document, TsDocument> {
 
         public MainHighChart() {
@@ -311,7 +301,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
         @Override
         public int getPosition() {
-            return 2100;
+            return 2200;
         }
     }
 
