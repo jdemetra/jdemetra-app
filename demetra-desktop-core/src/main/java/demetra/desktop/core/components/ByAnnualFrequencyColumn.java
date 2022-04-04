@@ -22,39 +22,36 @@ import demetra.timeseries.TsData;
 import demetra.timeseries.TsDataTable;
 import demetra.timeseries.TsDomain;
 import ec.util.chart.ObsIndex;
+import java.time.Month;
+import java.time.format.TextStyle;
 
-import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Philippe Charles
  */
-final class SingleTsGridData implements TsGridData {
-
-    private static final String[] MONTHS = {"jan", "feb", "mar", "apr", "may", "jun",
-        "jul", "aug", "sep", "oct", "nov", "dec"};
+final class ByAnnualFrequencyColumn implements TsGridData {
 
     private final int seriesIndex;
     private final TsData data;
     private final TsDomain domain;
     private final int startYear;
     private final int startPosition;
-    private final int frequency;
+    private final int annualFrequency;
     private final TsGridObs obs;
 
-    public SingleTsGridData(List<Ts> col, int seriesIndex) {
+    public ByAnnualFrequencyColumn(Ts series, int seriesIndex) {
         this.seriesIndex = seriesIndex;
-        Ts ts = col.get(seriesIndex);
-        this.data = ts.getData();
-        this.domain = ts.getData().getDomain();
+        this.data = series.getData();
+        this.domain = series.getData().getDomain();
         this.startYear = domain.getStartPeriod().year();
         this.startPosition = domain.getStartPeriod().annualPosition();
-        int period = domain.getAnnualFrequency();
-        this.frequency = period < 0 ? 0 : period;
+        this.annualFrequency = Math.max(0, domain.getAnnualFrequency());
         this.obs = new TsGridObs();
     }
 
     private int getPeriodId(int i, int j) {
-        int periodId = j + (frequency * i) - startPosition;
+        int periodId = j + (annualFrequency * i) - startPosition;
         return (periodId < 0 || periodId >= domain.getLength()) ? -1 : periodId;
     }
 
@@ -65,7 +62,7 @@ final class SingleTsGridData implements TsGridData {
 
     @Override
     public String getColumnName(int j) {
-        return MONTHS[(j + 1) * 12 / frequency - 1];
+        return Month.of((j + 1) * 12 / annualFrequency).getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault(Locale.Category.DISPLAY));
     }
 
     @Override
@@ -86,20 +83,20 @@ final class SingleTsGridData implements TsGridData {
 
     @Override
     public int getColumnCount() {
-        return frequency;
+        return annualFrequency;
     }
 
     @Override
     public int getRowIndex(ObsIndex index) {
         return index.getSeries() != seriesIndex
                 ? -1
-                : (index.getObs() + startPosition) / frequency;
+                : (index.getObs() + startPosition) / annualFrequency;
     }
 
     @Override
     public int getColumnIndex(ObsIndex index) {
         return index.getSeries() != seriesIndex
                 ? -1
-                : (index.getObs() + startPosition) % frequency;
+                : (index.getObs() + startPosition) % annualFrequency;
     }
 }

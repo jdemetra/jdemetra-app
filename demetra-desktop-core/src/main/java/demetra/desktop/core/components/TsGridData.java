@@ -19,6 +19,7 @@ package demetra.desktop.core.components;
 import demetra.desktop.components.TsGridObs;
 import demetra.timeseries.Ts;
 import ec.util.chart.ObsIndex;
+import java.util.Collections;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -54,7 +55,13 @@ interface TsGridData {
         if (col.isEmpty() || (singleSeriesIndex != -1 && col.get(singleSeriesIndex).getData().isEmpty())) {
             return Empty.INSTANCE;
         }
-        return singleSeriesIndex == -1 ? new MultiTsGridData(col) : new SingleTsGridData(col, singleSeriesIndex);
+        if (singleSeriesIndex == -1) {
+            return new ByTsColumn(col);
+        }
+        Ts series = col.get(singleSeriesIndex);
+        return series.getData().getAnnualFrequency() == -1
+                ? new ByTsColumn(Collections.singletonList(series))
+                : new ByAnnualFrequencyColumn(series, singleSeriesIndex);
     }
 
     enum Empty implements TsGridData {
