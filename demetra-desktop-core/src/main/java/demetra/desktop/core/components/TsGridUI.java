@@ -55,6 +55,9 @@ import java.util.function.Supplier;
 
 import static demetra.desktop.components.JTsGrid.TOGGLE_MODE_ACTION;
 import demetra.util.MultiLineNameUtil;
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorManager;
+import nbbrd.design.MightBePromoted;
 
 public final class TsGridUI implements InternalUI<JTsGrid> {
 
@@ -547,12 +550,25 @@ public final class TsGridUI implements InternalUI<JTsGrid> {
         }
     }
 
+    @MightBePromoted
+    private static <T> Formatter<T> asFormatter(Class<T> type) {
+        final PropertyEditor editor = PropertyEditorManager.findEditor(type);
+        if (editor == null) {
+            return Formatter.of(Object::toString);
+        }
+        return Formatter.of(value -> {
+            editor.setValue(value);
+            return editor.getAsText();
+        });
+    }
+
     private static final class CustomCellRenderer extends BarTableCellRenderer {
 
         private final TableCellRenderer delegate;
-        private final Formatter<? super TsPeriod> periodFormatter;
         private final JToolTip toolTip;
-        private Formatter<? super Number> valueFormatter;
+        private final Formatter<? super TsPeriod> periodTooltip;
+        private final Formatter<? super Double> valueTooltip;
+        private Formatter<? super Number> valueCell;
         private SwingColorSchemeSupport colorSchemeSupport;
         private boolean showBars;
         private Supplier<TsFeatureHelper> tsFeatures;
@@ -563,9 +579,10 @@ public final class TsGridUI implements InternalUI<JTsGrid> {
             setHorizontalAlignment(JLabel.TRAILING);
             setOpaque(true);
             this.delegate = delegate;
-            this.periodFormatter = TsPeriod::toString;
             this.toolTip = super.createToolTip();
-            this.valueFormatter = ObsFormat.getSystemDefault().numberFormatter();
+            this.periodTooltip = asFormatter(TsPeriod.class);
+            this.valueTooltip = asFormatter(Double.class);
+            this.valueCell = ObsFormat.getSystemDefault().numberFormatter();
             this.colorSchemeSupport = null;
             this.showBars = false;
             this.tsFeatures = () -> TsFeatureHelper.EMPTY;
@@ -573,7 +590,7 @@ public final class TsGridUI implements InternalUI<JTsGrid> {
         }
 
         void update(@NonNull ObsFormat obsFormat, @Nullable SwingColorSchemeSupport colorSchemeSupport, boolean showBars, Supplier<TsFeatureHelper> tsFeatures, Supplier<DoubleSummaryStatistics> stats) {
-            this.valueFormatter = obsFormat.numberFormatter();
+            this.valueCell = obsFormat.numberFormatter();
             this.colorSchemeSupport = colorSchemeSupport;
             this.showBars = showBars;
             this.tsFeatures = tsFeatures;
@@ -623,17 +640,17 @@ public final class TsGridUI implements InternalUI<JTsGrid> {
                 case PRESENT:
                     if (Double.isNaN(obs.getValue())) {
                         setText(".");
-                        setToolTipText(periodFormatter.formatAsString(obs.getPeriod()));
+                        setToolTipText(periodTooltip.formatAsString(obs.getPeriod()));
                         setBarValues(0, 0, 0);
                     } else {
-                        String valueAsString = valueFormatter.formatAsString(obs.getValue());
-                        String periodAsString = periodFormatter.formatAsString(obs.getPeriod());
+                        String text = valueCell.formatAsString(obs.getValue());
+                        String toolTipText = periodTooltip.formatAsString(obs.getPeriod()) + ": " + valueTooltip.formatAsString(obs.getValue());
                         if (tsFeatures.get().hasFeature(TsFeatureHelper.Feature.Forecasts, obs.getSeriesIndex(), obs.getIndex())) {
-                            setText("<html><i>" + valueAsString);
-                            setToolTipText("<html>" + periodAsString + ": " + valueAsString + "<br>Forecast");
+                            setText("<html><i>" + text);
+                            setToolTipText("<html>" + toolTipText + "<br>Forecast");
                         } else {
-                            setText(valueAsString);
-                            setToolTipText(periodAsString + ": " + valueAsString);
+                            setText(text);
+                            setToolTipText(toolTipText);
                         }
                         if (showBars && !isSelected) {
                             DoubleSummaryStatistics tmp = stats.get();
