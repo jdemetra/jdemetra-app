@@ -280,8 +280,8 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
     }
 
     @NbBundle.Messages({
-        "decompositionSpecUI.nbcastsDesc.name=Prediction length",
-        "decompositionSpecUI.nbcastsDesc.desc=[npred] Number of forecasts used in the decomposition. Negative values correspond to numbers of years"
+        "decompositionSpecUI.nbcastsDesc.name=Backcasts length",
+        "decompositionSpecUI.nbcastsDesc.desc=[npred] Number of backcasts used in the decomposition."
     })
     private EnhancedPropertyDescriptor nbcastsDesc() {
         try {
@@ -299,7 +299,7 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
 
     @NbBundle.Messages({
         "decompositionSpecUI.nfcastsDesc.name=Forecasts length",
-        "decompositionSpecUI.nfcastsDesc.desc=[npred] Number of forecasts used in the decomposition. Negative values correspond to numbers of years"
+        "decompositionSpecUI.nfcastsDesc.desc=[npred] Number of forecasts used in the decomposition."
     })
     private EnhancedPropertyDescriptor nfcastsDesc() {
         try {

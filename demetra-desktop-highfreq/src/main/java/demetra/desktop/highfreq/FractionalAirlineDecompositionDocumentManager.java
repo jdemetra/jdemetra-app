@@ -8,7 +8,6 @@ import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.highfreq.ExtendedAirlineDecompositionSpec;
-import demetra.highfreq.ExtendedAirlineModellingSpec;
 import demetra.util.Id;
 import demetra.util.LinearId;
 import org.openide.util.lookup.ServiceProvider;
@@ -22,7 +21,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class FractionalAirlineDecompositionDocumentManager extends AbstractWorkspaceTsItemManager<ExtendedAirlineDecompositionSpec, FractionalAirlineDecompositionDocument> {
 
 
-    public static final LinearId ID = new LinearId(ExtendedAirlineModellingSpec.FAMILY, "documents", ExtendedAirlineModellingSpec.METHOD);
+    public static final LinearId ID = new LinearId(ExtendedAirlineDecompositionSpec.FAMILY, "documents", ExtendedAirlineDecompositionSpec.METHOD);
     public static final String PATH = "fractionalairlinedecomposition.doc";
     public static final String ITEMPATH = "fractionalairlinedecomposition.doc.item";
     public static final String CONTEXTPATH = "fractionalairlinedecomposition.doc.context";

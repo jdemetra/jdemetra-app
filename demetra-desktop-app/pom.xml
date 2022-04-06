@@ -151,11 +151,11 @@
             <artifactId>demetra-desktop-sts-api</artifactId>
             <version>${sts.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-stl</artifactId>
             <version>${stl.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-highfreq</artifactId>

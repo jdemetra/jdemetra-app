@@ -59,7 +59,6 @@
         <module>demetra-desktop-modelling</module>
         <module>demetra-desktop-x13</module>
         <module>demetra-desktop-sa</module>
-        <module>demetra-desktop-stl</module>
         <module>demetra-desktop-sts</module>
         <module>demetra-desktop-highfreq</module>
     </modules>

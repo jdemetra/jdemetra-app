@@ -94,11 +94,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>demetra-desktop-stl</artifactId>
-            <version>${stl-desktop.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-sts-api</artifactId>
             <version>${sts-desktop.version}</version>
         </dependency>
