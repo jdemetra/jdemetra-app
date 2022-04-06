@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JTextPane;
@@ -76,7 +77,7 @@ public final class DefaultCheckLastReport implements CheckLastReportFactory {
                     try {
                         String sfile = file.getAbsolutePath();
                         sfile = Paths.changeExtension(sfile, "txt");
-                        try (FileWriter writer = new FileWriter(sfile)) {
+                        try (FileWriter writer = new FileWriter(sfile, StandardCharsets.UTF_8)) {
                             writer.append(report);
                         }
                     } catch (Exception ex) {
