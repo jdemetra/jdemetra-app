@@ -110,19 +110,11 @@ public final class ToolsPersistence {
     }
 
     private static String escape(String value) {
-        try {
-            return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException | RuntimeException ex) {
-            return null;
-        }
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
     private static String unescape(String value) {
-        try {
-            return URLDecoder.decode(value, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException | RuntimeException ex) {
-            return null;
-        }
+        return URLDecoder.decode(value, StandardCharsets.UTF_8);
     }
 
     @lombok.AllArgsConstructor

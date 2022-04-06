@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 8, 17 ]
+        java: [ 17 ]
         os: [ ubuntu-latest, macOS-latest, windows-latest ]
         experimental: [ false ]
         include:
