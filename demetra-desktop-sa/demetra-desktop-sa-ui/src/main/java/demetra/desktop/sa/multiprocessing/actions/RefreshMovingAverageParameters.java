@@ -13,31 +13,31 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.NbBundle;
+import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "demetra.desktop.sa.multiprocessing.actions.LocalRefreshParameters")
-@ActionRegistration(displayName = "#CTL_LocalRefreshParameters", lazy=true)
+id = "demetra.desktop.sa.multiprocessing.actions.RefreshMovingAverageParameters")
+@ActionRegistration(displayName = "#CTL_RefreshMovingAverageParameters", lazy=true)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.LOCALPATH+LocalRefreshPartial.PATH, position = 1235)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH+RefreshPartial.PATH, position = 1230)
 })
-@NbBundle.Messages("CTL_LocalRefreshParameters=+ Arima parameters")
-public final class LocalRefreshParameters extends ActiveViewAction<SaBatchUI> {
+@Messages("CTL_RefreshMovingAverageParameters=+ Moving average parameters")
+public final class RefreshMovingAverageParameters extends ActiveViewAction<SaBatchUI> {
 
-    public LocalRefreshParameters() {
+    public RefreshMovingAverageParameters() {
         super(SaBatchUI.class);
         refreshAction();
-        putValue(NAME, Bundle.CTL_LocalRefreshParameters());
+        putValue(NAME, Bundle.CTL_RefreshMovingAverageParameters());
     }
 
     @Override
     protected void process(SaBatchUI ui) {
-        ui.refresh(EstimationPolicyType.FreeParameters, true, false);
+        ui.refresh(EstimationPolicyType.FixedAutoRegressiveParameters, true, true);
     }
 
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew() && ui.getSelectionCount() == 1;
+        enabled = ui != null && !ui.getElement().isNew();
     }
 }

@@ -11,9 +11,9 @@ import demetra.desktop.util.Pools;
 import demetra.timeseries.TsData;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.util.Date;
 import javax.swing.JComponent;
 import demetra.desktop.util.Pool;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -58,7 +58,7 @@ public class EstimationUI implements ItemUI<EstimationUI.Information> {
 
         final TsData original, fcasts, lfcasts, ufcasts;
 
-        public Date[] markers;
+        public LocalDateTime[] markers;
     }
 
     private static abstract class JDisposable extends JComponent implements Disposable {

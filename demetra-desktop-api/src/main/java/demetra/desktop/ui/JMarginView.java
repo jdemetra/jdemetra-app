@@ -56,6 +56,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Ellipse2D;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.Date;
@@ -253,11 +254,11 @@ public final class JMarginView extends JComponent implements TimeSeriesComponent
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">
-    public void setData(TsData series, TsData lower, TsData upper, Date... markers) {
+    public void setData(TsData series, TsData lower, TsData upper, LocalDateTime... markers) {
         setData(series, lower, upper, false, markers);
     }
 
-    public void setData(TsData series, TsData lower, TsData upper, boolean multiplicative, Date... markers) {
+    public void setData(TsData series, TsData lower, TsData upper, boolean multiplicative, LocalDateTime... markers) {
         this.data = new MarginData(series, lower, upper, multiplicative, markers);
         firePropertyChange(DATA_PROPERTY, null, data);
     }
@@ -276,8 +277,9 @@ public final class JMarginView extends JComponent implements TimeSeriesComponent
     private void addDateMarkers() {
         XYPlot plot = chartPanel.getChart().getXYPlot();
         if (data.markers != null) {
-            for (Date o : data.markers) {
-                ValueMarker marker = new ValueMarker(new Day(o).getFirstMillisecond());
+            for (LocalDateTime o : data.markers) {
+                ValueMarker marker = new ValueMarker(1000 * o.toEpochSecond(ZoneOffset.UTC));
+//                ValueMarker marker = new ValueMarker(new Day(o.getDayOfMonth(), o.getMonthValue(), o.getYear()).getFirstMillisecond());
                 marker.setStroke(DATE_MARKER_STROKE);
                 marker.setAlpha(DATE_MARKER_ALPHA);
                 plot.addDomainMarker(marker, Layer.FOREGROUND);
@@ -374,10 +376,10 @@ public final class JMarginView extends JComponent implements TimeSeriesComponent
         final TsData series;
         final TsData lower;
         final TsData upper;
-        final Date[] markers;
+        final LocalDateTime[] markers;
         final boolean multiplicative;
 
-        public MarginData(TsData series, TsData lower, TsData upper, boolean multiplicative, Date[] markers) {
+        public MarginData(TsData series, TsData lower, TsData upper, boolean multiplicative, LocalDateTime[] markers) {
             this.series = series;
             this.lower = lower;
             this.upper = upper;

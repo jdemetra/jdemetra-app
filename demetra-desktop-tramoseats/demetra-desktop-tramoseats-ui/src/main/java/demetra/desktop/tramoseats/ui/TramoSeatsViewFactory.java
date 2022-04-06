@@ -21,16 +21,18 @@ import demetra.desktop.ui.processing.IProcDocumentItemFactory;
 import demetra.desktop.ui.processing.IProcDocumentViewFactory;
 import demetra.desktop.ui.processing.ProcDocumentItemFactory;
 import demetra.desktop.ui.processing.ProcDocumentViewFactory;
+import demetra.desktop.ui.processing.stats.EstimationUI;
 import demetra.desktop.ui.processing.stats.ResidualsDistUI;
 import demetra.desktop.ui.processing.stats.ResidualsUI;
 import demetra.desktop.ui.processing.stats.SpectrumUI;
 import demetra.html.HtmlElement;
 import demetra.html.core.HtmlDiagnosticsSummary;
-import demetra.information.BasicInformationExtractor;
 import demetra.information.InformationSet;
+import demetra.modelling.ComponentInformation;
 import demetra.modelling.ModellingDictionary;
 import demetra.modelling.SeriesInfo;
 import demetra.processing.ProcDiagnostic;
+import demetra.sa.ComponentType;
 import demetra.sa.SaDictionaries;
 import demetra.sa.SaManager;
 import demetra.sa.SaProcessingFactory;
@@ -41,13 +43,16 @@ import demetra.toolkit.dictionaries.RegressionDictionaries;
 import demetra.tramoseats.io.information.TramoSeatsSpecMapping;
 import demetra.util.Id;
 import demetra.util.LinearId;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
+import jdplus.seats.SeatsResults;
 import jdplus.tramoseats.TramoSeatsResults;
 import jdplus.tramoseats.TramoSeatsDocument;
+import jdplus.ucarima.UcarimaModel;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -94,8 +99,40 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         return tr == null ? null : tr.getPreprocessing();
     };
 
+    private final static Function<TramoSeatsDocument, SeatsResults> DECOMPOSITIONEXTRACTOR = source -> {
+        TramoSeatsResults tr = source.getResult();
+        return tr == null ? null : tr.getDecomposition();
+    };
+
     private final static Function<TramoSeatsDocument, TsData> RESEXTRACTOR = MODELEXTRACTOR
             .andThen(regarima -> regarima.fullResiduals());
+
+    private static Function<SeatsResults, EstimationUI.Information> cmpExtractor(ComponentType type) {
+
+        return (SeatsResults source) -> {
+            if (source == null) {
+                return null;
+            }
+            TsData s = source.getInitialComponents().getSeries(type, ComponentInformation.Value);
+            if (s == null) {
+                return new EstimationUI.Information(null, null, null, null);
+            }
+            TsData es = source.getInitialComponents().getSeries(type, ComponentInformation.Stdev);
+//            TsPeriodSelector sel = new TsPeriodSelector();
+//            sel.last(2 * s.getFrequency().intValue());
+            TsData fs = source.getInitialComponents().getSeries(type, ComponentInformation.Forecast);
+            TsData efs = source.getInitialComponents().getSeries(type, ComponentInformation.StdevForecast);
+            LocalDateTime x = s.getDomain().getEndPeriod().start();
+            s = TsData.concatenate(s, fs);
+            es = TsData.concatenate(es, efs);
+//           s = s.select(sel).update(fs);
+//            es = es.select(sel).update(efs);
+            EstimationUI.Information rslt
+                    = new EstimationUI.Information(s, null, s.fastFn(es, (a,b) -> a + b * 1.96), s.fastFn(es, (a, b) -> a - b * 1.96));
+            rslt.markers = new LocalDateTime[]{x};
+            return rslt;
+        };
+    }
 
     public static IProcDocumentViewFactory<TramoSeatsDocument> getDefault() {
         IProcDocumentViewFactory<TramoSeatsDocument> fac = INSTANCE.get();
@@ -111,12 +148,14 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     }
 
     public TramoSeatsViewFactory() {
-        registerFromLookup(TramoSeatsDocument.class);
+        registerFromLookup(TramoSeatsDocument.class
+        );
     }
 
     @Override
     public Id getPreferredView() {
-        return SaViews.PREPROCESSING_SUMMARY;
+        return SaViews.MAIN_SUMMARY;
+
     }
 
 //<editor-fold defaultstate="collapsed" desc="INPUT">
@@ -152,60 +191,42 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         }
     }
 //</editor-fold>
-    
-    private static String generateId(String name, String id){
+
+    private static String generateId(String name, String id) {
         return TsDynamicProvider.CompositeTs.builder()
                 .name(name)
-                .back(id+SeriesInfo.B_SUFFIX)
+                .back(id + SeriesInfo.B_SUFFIX)
                 .now(id)
-                .fore(id+SeriesInfo.F_SUFFIX)
+                .fore(id + SeriesInfo.F_SUFFIX)
                 .build().toString();
     }
 
-    private static String generateStdErrorId(String name, String id){
+    private static String generateStdErrorId(String name, String id) {
         return TsDynamicProvider.CompositeTs.builder()
                 .name(name)
-                .back(id+SeriesInfo.EB_SUFFIX)
-                .now(id+SeriesInfo.E_SUFFIX)
-                .fore(id+SeriesInfo.EF_SUFFIX)
+                .back(id + SeriesInfo.EB_SUFFIX)
+                .now(id + SeriesInfo.E_SUFFIX)
+                .fore(id + SeriesInfo.EF_SUFFIX)
                 .build().toString();
     }
-    
-//    private static String generateId2(String name, String id) {
-//        return TsDynamicProvider.CompositeTs.builder()
-//                .name(name)
-//                .back(id + "_b(?)")
-//                .now(id)
-//                .fore(id + "_f(-2)")
-//                .build().toString();
-//    }
-//
-//    private static String generateStdErrorId2(String name, String id) {
-//        return TsDynamicProvider.CompositeTs.builder()
-//                .name(name)
-//                .back(id + "_eb(?)")
-//                .now(id + SeriesInfo.E_SUFFIX)
-//                .fore(id  + "_ef(?)")
-//                .build().toString();
-//    }
 
-    public static String[] lowSeries(){
+    public static String[] lowSeries() {
         return new String[]{
             generateId("Series", SaDictionaries.Y),
             generateId("Seasonally adjusted", SaDictionaries.SA),
             generateId("Trend", SaDictionaries.T)
         };
     }
-    
-    public static String[] highSeries(){
+
+    public static String[] highSeries() {
         return new String[]{
-            generateId("Seasonal (component)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION,SaDictionaries.S_CMP)),
+            generateId("Seasonal (component)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.S_CMP)),
             generateId("Calendar effects", ModellingDictionary.CAL),
             generateId("Irregular", SaDictionaries.I)
         };
     }
-    
-    public static String[] finalSeries(){
+
+    public static String[] finalSeries() {
         return new String[]{
             generateId("Series", SaDictionaries.Y),
             generateId("Seasonally adjusted", SaDictionaries.SA),
@@ -213,14 +234,15 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             generateId("Seasonal", SaDictionaries.S),
             generateId("Irregular", SaDictionaries.I)
         };
+
     }
-    
-//    //<editor-fold defaultstate="collapsed" desc="MAIN">
+
+    //<editor-fold defaultstate="collapsed" desc="MAIN">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
     public static class MainSummaryFactory extends ProcDocumentItemFactory<TramoSeatsDocument, TramoSeatsDocument> {
 
         public MainSummaryFactory() {
-            super(TramoSeatsDocument.class, SaViews.MAIN_SUMMARY, s->s, new TramoSeatsSummary());
+            super(TramoSeatsDocument.class, SaViews.MAIN_SUMMARY, s -> s, new TramoSeatsSummary());
         }
 
         @Override
@@ -228,65 +250,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             return 2000;
         }
     }
-//    //</editor-fold>
-//
-//    public String[] generateItems(String prefix) {
-//        StringBuilder cal = new StringBuilder();
-//        cal.append(TsDynamicProvider.COMPOSITE).append("Calendar effects=,").append(ModellingDictionary.CAL)
-//                .append(',').append(ModellingDictionary.CAL).append(SeriesInfo.F_SUFFIX);
-//        String ss = BasicInformationExtractor.concatenate(prefix, SaDictionaries.S_CMP);
-//        StringBuilder s = new StringBuilder();
-//        s.append(TsDynamicProvider.COMPOSITE).append("Seas (component)=,").append(SaDictionaries.S_CMP)
-//                .append(',').append(SaDictionaries.S_CMP).append(SeriesInfo.F_SUFFIX);
-//        String si = BasicInformationExtractor.concatenate(prefix, SaDictionaries.I_CMP);
-//        StringBuilder i = new StringBuilder();
-//        i.append(TsDynamicProvider.COMPOSITE).append("Irregular=")
-//                .append(',').append(si)
-//                .append(',').append(si).append(SeriesInfo.F_SUFFIX);
-//        return new String[]{cal.toString(), s.toString(), i.toString()};
-//    }
-//
-//    //<editor-fold defaultstate="collapsed" desc="REGISTER MAIN VIEWS">
-//    // provide regitration of main components
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 201010)
-//    public static class MainChartsLowFactory extends SaDocumentViewFactory.MainChartsLowFactory<TramoSeatsDocument> {
-//
-//        public MainChartsLowFactory() {
-//            super(TramoSeatsDocument.class, SaDictionaries.FINAL);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 201010;
-//        }
-//    }
-//
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 201020)
-//    public static class MainChartsHighFactory extends SaDocumentViewFactory.MainChartsHighFactory<TramoSeatsDocument> {
-//
-//        public MainChartsHighFactory() {
-//            super(TramoSeatsDocument.class, GenericSaProcessingFactory.FINAL);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 201020;
-//        }
-//    }
-//
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 202000)
-//    public static class MainTableFactory extends SaDocumentViewFactory.MainTableFactory<TramoSeatsDocument> {
-//
-//        public MainTableFactory() {
-//            super(TramoSeatsDocument.class, GenericSaProcessingFactory.FINAL);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 202000;
-//        }
-//    }
-//
+
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2100)
     public static class MainLowChart extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
 
@@ -296,10 +260,10 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 
         @Override
         public int getPosition() {
-            return 2000;
+            return 2100;
         }
     }
-    
+
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2200)
     public static class MainHighChart extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
 
@@ -309,11 +273,11 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 
         @Override
         public int getPosition() {
-            return 2100;
+            return 2200;
         }
     }
-    
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2200)
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2300)
     public static class MainTable extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
 
         public MainTable() {
@@ -322,28 +286,30 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 
         @Override
         public int getPosition() {
-            return 2200;
+            return 2300;
         }
 
     }
 
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2300)
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2400)
     public static class MainSiFactory extends SIFactory<TramoSeatsDocument> {
 
         public MainSiFactory() {
-            super(TramoSeatsDocument.class, SaViews.MAIN_SI, (TramoSeatsDocument source)->{
+            super(TramoSeatsDocument.class, SaViews.MAIN_SI, (TramoSeatsDocument source) -> {
                 TramoSeatsResults result = source.getResult();
-                if (result == null)
+                if (result == null) {
                     return null;
+                }
                 return result.getDecomposition().getFinalComponents();
             });
         }
 
         @Override
         public int getPosition() {
-            return 2300;
+            return 2400;
         }
     }
+//</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="PREPROCESSING">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3000)
@@ -364,7 +330,6 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     }
 
 //</editor-fold>
-    
 //<editor-fold defaultstate="collapsed" desc="PREPROCESSING-FORECASTS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3110)
     public static class ForecastsTable extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
@@ -409,7 +374,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         }
     }
 //</editor-fold>
-//
+
 //<editor-fold defaultstate="collapsed" desc="PREPROCESSING-DETAILS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3200)
     public static class ModelRegsFactory extends ModelRegressorsFactory<TramoSeatsDocument> {
@@ -441,20 +406,13 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     public static class PreprocessingDetFactory extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
 
         public PreprocessingDetFactory() {
-            super(TramoSeatsDocument.class, SaViews.PREPROCESSING_DET, source->source, new GenericTableUI(false,
-//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.Y_LIN), 
-//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.DET),
-//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.CAL), 
-//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.TDE), 
-//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.EE),
-//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.OUT), 
-//                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.FULL_RES)));
-                    SaDictionaries.PREPROCESSING, ModellingDictionary.Y_LIN, 
+            super(TramoSeatsDocument.class, SaViews.PREPROCESSING_DET, source -> source, new GenericTableUI(false,
+                    SaDictionaries.PREPROCESSING, ModellingDictionary.Y_LIN,
                     SaDictionaries.PREPROCESSING, ModellingDictionary.DET,
-                    SaDictionaries.PREPROCESSING, ModellingDictionary.CAL, 
-                   SaDictionaries.PREPROCESSING, ModellingDictionary.TDE, 
+                    SaDictionaries.PREPROCESSING, ModellingDictionary.CAL,
+                    SaDictionaries.PREPROCESSING, ModellingDictionary.TDE,
                     SaDictionaries.PREPROCESSING, ModellingDictionary.EE,
-                    SaDictionaries.PREPROCESSING, ModellingDictionary.OUT, 
+                    SaDictionaries.PREPROCESSING, ModellingDictionary.OUT,
                     SaDictionaries.PREPROCESSING, ModellingDictionary.FULL_RES));
         }
 
@@ -464,9 +422,8 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         }
     }
 //</editor-fold>
-    
-//<editor-fold defaultstate="collapsed" desc="PREPROCESSING-RESIDUALS">
 
+//<editor-fold defaultstate="collapsed" desc="PREPROCESSING-RESIDUALS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3500)
     public static class ModelResFactory extends ProcDocumentItemFactory<TramoSeatsDocument, TsData> {
 
@@ -494,7 +451,6 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             return 3510;
         }
     }
-
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3520)
     public static class ModelResDist extends ProcDocumentItemFactory<TramoSeatsDocument, TsData> {
@@ -529,20 +485,239 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     }
 //</editor-fold>
 
+//<editor-fold defaultstate="collapsed" desc="REGISTER SEATS">
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4000)
+    public static class DecompositionSummaryFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public DecompositionSummaryFactory() {
+            super(TramoSeatsDocument.class, DECOMPOSITION_SUMMARY, DECOMPOSITIONEXTRACTOR
+                    .andThen((SeatsResults seats) -> {
+                        if (seats == null) {
+                            return null;
+                        }
+                        UcarimaModel ucm = seats.getUcarimaModel();
+                        return new demetra.html.modelling.HtmlUcarima(ucm.getModel(),
+                                Utility.getComponents(ucm),
+                                Utility.getComponentsName(ucm));
+                    }),
+                    new HtmlItemUI());
+
+        }
+
+        @Override
+        public int getPosition() {
+            return 4000;
+        }
+    }
+
+    private static String[] linSeries() {
+        return new String[]{
+            generateId("Series (lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.Y_LIN)),
+            generateId("Seasonally adjusted (lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.SA_LIN)),
+            generateId("Trend (lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.T_LIN)),
+            generateId("Seasonal (lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.S_LIN)),
+            generateId("Irregular (lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.I_LIN)),
+            generateId("Series (lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.Y_LIN)),
+            generateStdErrorId("Seasonally adjusted (stde lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.SA_LIN)),
+            generateStdErrorId("Trend (stde lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.T_LIN)),
+            generateStdErrorId("Seasonal (stde lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.S_LIN)),
+            generateStdErrorId("Irregular (stde lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.I_LIN))
+        };
+
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4100)
+    public static class LinearizedSeriesFactory extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
+
+        public LinearizedSeriesFactory() {
+            super(TramoSeatsDocument.class, DECOMPOSITION_SERIES, s -> s, new GenericTableUI(true, linSeries()));
+        }
+
+        @Override
+        public int getPosition() {
+            return 4100;
+        }
+    }
+
+    private static String[] cmpSeries() {
+        return new String[]{
+            generateId("Series (cmp)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.Y_CMP)),
+            generateId("Seasonally adjusted (cmp)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.SA_CMP)),
+            generateId("Trend (cmp)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.T_CMP)),
+            generateId("Seasonal (cmp)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.S_CMP)),
+            generateId("Irregular (cmp)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.I_CMP))
+        };
+
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4200)
+    public static class ComponentsSeriesFactory extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
+
+        public ComponentsSeriesFactory() {
+            super(TramoSeatsDocument.class, DECOMPOSITION_CMPSERIES, s -> s, new GenericTableUI(true, cmpSeries()));
+        }
+
+        @Override
+        public int getPosition() {
+            return 4200;
+        }
+    }
+
+//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 4210)
+//    public static class DecompositionWkComponentsFactory extends ItemFactory<WkInformation> {
+//
+//        public DecompositionWkComponentsFactory() {
+//            super(DECOMPOSITION_WK_COMPONENTS, wkExtractor(), new WkComponentsUI());
+//        }
+//
+//        @Override
+//        public int getPosition() {
+//            return 402010;
+//        }
+//    }
+//
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4110)
+    public static class DecompositionStochTrendFactory extends ProcDocumentItemFactory<TramoSeatsDocument, EstimationUI.Information> {
+
+        public DecompositionStochTrendFactory() {
+            super(TramoSeatsDocument.class, DECOMPOSITION_STOCH_TREND, DECOMPOSITIONEXTRACTOR.andThen(cmpExtractor(ComponentType.Trend)), new EstimationUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 4110;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4120)
+    public static class DecompositionStochSeasFactory extends ProcDocumentItemFactory<TramoSeatsDocument, EstimationUI.Information> {
+
+        public DecompositionStochSeasFactory() {
+            super(TramoSeatsDocument.class, DECOMPOSITION_STOCH_SEAS, DECOMPOSITIONEXTRACTOR.andThen(cmpExtractor(ComponentType.Seasonal)), new EstimationUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 4120;
+        }
+    }
+
+//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 402020)
+//    public static class DecompositionWkFinalsFactory extends ItemFactory<WkInformation> {
+//
+//        public DecompositionWkFinalsFactory() {
+//            super(DECOMPOSITION_WK_FINALS, wkExtractor(), new WkFinalEstimatorsUI());
+//        }
+//
+//        @Override
+//        public int getPosition() {
+//            return 402020;
+//        }
+//    }
+//
+//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 402030)
+//    public static class DecompositionWkErrorsFactory extends ItemFactory<WkInformation> {
+//
+//        public DecompositionWkErrorsFactory() {
+//            super(DECOMPOSITION_ERRORS, wkExtractor(), new WkErrorsUI());
+//        }
+//
+//        @Override
+//        public int getPosition() {
+//            return 402030;
+//        }
+//    }
+//
+//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 402050)
+//    public static class DecompositionGrowthFactory extends ItemFactory<CompositeResults> {
+//
+//        public DecompositionGrowthFactory() {
+//            super(DECOMPOSITION_RATES, new DefaultInformationExtractor<TramoSeatsDocument, CompositeResults>() {
+//                @Override
+//                public CompositeResults retrieve(TramoSeatsDocument source) {
+//                    CompositeResults results = source.getResults();
+//                    if (!results.isSuccessful()) {
+//                        return null;
+//                    } else {
+//                        return results;
+//                    }
+//                }
+//            }, new GrowthRatesUI());
+//        }
+//
+//        @Override
+//        public int getPosition() {
+//            return 402050;
+//        }
+//    }
+//
+//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 403000)
+//    public static class DecompositionTestsFactory extends ItemFactory<ModelBasedUI.Information> {
+//
+//        public DecompositionTestsFactory() {
+//            super(DECOMPOSITION_TESTS, new DefaultInformationExtractor<TramoSeatsDocument, ModelBasedUI.Information>() {
+//                @Override
+//                public ModelBasedUI.Information retrieve(TramoSeatsDocument source) {
+//                    SeatsResults rslt = source.getDecompositionPart();
+//                    if (rslt == null) {
+//                        return null;
+//                    }
+//                    ModelBasedUI.Information info = new ModelBasedUI.Information();
+//                    info.decomposition = rslt.getComponents();
+//                    info.ucm = rslt.getUcarimaModel();
+//                    info.err = rslt.getModel().getSer();
+//                    return info;
+//                }
+//            }, new ModelBasedUI());
+//        }
+//
+//        @Override
+//        public int getPosition() {
+//            return 403000;
+//        }
+//    }
+//
+//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 403010)
+//    public static class StationaryVarianceDecompositionFactory extends ItemFactory<StationaryVarianceDecomposition> {
+//
+//        public StationaryVarianceDecompositionFactory() {
+//            super(DECOMPOSITION_VAR, stvarExtractor(), new StvarUI());
+//        }
+//
+//        @Override
+//        public int getPosition() {
+//            return 403010;
+//        }
+//    }
+//
+//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 403005)
+//    public static class SignificantSeasonalityFactory extends ItemFactory<CompositeResults> {
+//
+//        public SignificantSeasonalityFactory() {
+//            super(DECOMPOSITION_SIGSEAS, saExtractor(), new SigSeasUI());
+//        }
+//
+//        @Override
+//        public int getPosition() {
+//            return 403005;
+//        }
+//    }
+//</editor-fold>
 //<editor-fold defaultstate="collapsed" desc="DIAGNOSTICS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5000)
     public static class DiagnosticsSummaryFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
 
         public DiagnosticsSummaryFactory() {
-            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_SUMMARY, (TramoSeatsDocument doc)->{
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_SUMMARY, (TramoSeatsDocument doc) -> {
                 TramoSeatsResults rslt = doc.getResult();
-                if (rslt == null)
+                if (rslt == null) {
                     return null;
+                }
                 SaProcessingFactory factory = SaManager.factoryFor(doc.getSpecification());
-                List<ProcDiagnostic> diags=new ArrayList<>();
+                List<ProcDiagnostic> diags = new ArrayList<>();
                 factory.fillDiagnostics(diags, rslt);
                 return new HtmlDiagnosticsSummary(diags);
-                    }, new HtmlItemUI());
+            }, new HtmlItemUI());
         }
 
         @Override

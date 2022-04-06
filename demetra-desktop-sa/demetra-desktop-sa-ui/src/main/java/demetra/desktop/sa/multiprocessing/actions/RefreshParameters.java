@@ -19,7 +19,7 @@ import org.openide.util.NbBundle.Messages;
 id = "demetra.desktop.sa.multiprocessing.actions.RefreshParameters")
 @ActionRegistration(displayName = "#CTL_RefreshParameters", lazy=true)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH+RefreshPartial.PATH, position = 1230)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH+RefreshPartial.PATH, position = 1235)
 })
 @Messages("CTL_RefreshParameters=+ Arima parameters")
 public final class RefreshParameters extends ActiveViewAction<SaBatchUI> {

@@ -108,7 +108,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
     @Override
     public Id getPreferredView() {
-        return SaViews.PREPROCESSING_SUMMARY;
+        return SaViews.MAIN_SUMMARY;
     }
 
 //<editor-fold defaultstate="collapsed" desc="INPUT">
@@ -163,24 +163,6 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
                 .build().toString();
     }
 
-//    private static String generateId2(String name, String id) {
-//        return TsDynamicProvider.CompositeTs.builder()
-//                .name(name)
-//                .back(id + "_b(?)")
-//                .now(id)
-//                .fore(id + "_f(?)")
-//                .build().toString();
-//    }
-//
-//    private static String generateStdErrorId2(String name, String id) {
-//        return TsDynamicProvider.CompositeTs.builder()
-//                .name(name)
-//                .back(id + "_eb(?)")
-//                .now(id + SeriesInfo.E_SUFFIX)
-//                .fore(id  + "_ef(?)")
-//                .build().toString();
-//    }
-//
     public static String[] lowSeries() {
         return new String[]{
             generateId("Series", SaDictionaries.Y),
@@ -207,7 +189,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
         };
     }
 
-//    //<editor-fold defaultstate="collapsed" desc="MAIN">
+    //<editor-fold defaultstate="collapsed" desc="MAIN">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
     public static class MainSummaryFactory extends ProcDocumentItemFactory<X13Document, X13Document> {
 
@@ -220,65 +202,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
             return 2000;
         }
     }
-//    //</editor-fold>
-//
-//    public String[] generateItems(String prefix) {
-//        StringBuilder cal = new StringBuilder();
-//        cal.append(TsDynamicProvider.COMPOSITE).append("Calendar effects=,").append(ModellingDictionary.CAL)
-//                .append(',').append(ModellingDictionary.CAL).append(SeriesInfo.F_SUFFIX);
-//        String ss = BasicInformationExtractor.concatenate(prefix, SaDictionaries.S_CMP);
-//        StringBuilder s = new StringBuilder();
-//        s.append(TsDynamicProvider.COMPOSITE).append("Seas (component)=,").append(SaDictionaries.S_CMP)
-//                .append(',').append(SaDictionaries.S_CMP).append(SeriesInfo.F_SUFFIX);
-//        String si = BasicInformationExtractor.concatenate(prefix, SaDictionaries.I_CMP);
-//        StringBuilder i = new StringBuilder();
-//        i.append(TsDynamicProvider.COMPOSITE).append("Irregular=")
-//                .append(',').append(si)
-//                .append(',').append(si).append(SeriesInfo.F_SUFFIX);
-//        return new String[]{cal.toString(), s.toString(), i.toString()};
-//    }
-//
-//    //<editor-fold defaultstate="collapsed" desc="REGISTER MAIN VIEWS">
-//    // provide regitration of main components
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 201010)
-//    public static class MainChartsLowFactory extends SaDocumentViewFactory.MainChartsLowFactory<X13Document> {
-//
-//        public MainChartsLowFactory() {
-//            super(X13Document.class, SaDictionaries.FINAL);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 201010;
-//        }
-//    }
-//
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 201020)
-//    public static class MainChartsHighFactory extends SaDocumentViewFactory.MainChartsHighFactory<X13Document> {
-//
-//        public MainChartsHighFactory() {
-//            super(X13Document.class, GenericSaProcessingFactory.FINAL);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 201020;
-//        }
-//    }
-//
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 202000)
-//    public static class MainTableFactory extends SaDocumentViewFactory.MainTableFactory<X13Document> {
-//
-//        public MainTableFactory() {
-//            super(X13Document.class, GenericSaProcessingFactory.FINAL);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 202000;
-//        }
-//    }
-//
+    
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2100)
     public static class MainLowChart extends ProcDocumentItemFactory<X13Document, TsDocument> {
 
@@ -305,7 +229,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
         }
     }
 
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2200)
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2300)
     public static class MainTable extends ProcDocumentItemFactory<X13Document, TsDocument> {
 
         public MainTable() {
@@ -314,11 +238,11 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
         @Override
         public int getPosition() {
-            return 2200;
+            return 2300;
         }
     }
 
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2300)
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2400)
     public static class MainSiFactory extends SIFactory<X13Document> {
 
         public MainSiFactory() {
@@ -340,9 +264,10 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
         @Override
         public int getPosition() {
-            return 2300;
+            return 2400;
         }
     }
+   //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="PREPROCESSING">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3000)
