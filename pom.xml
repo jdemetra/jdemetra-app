@@ -351,18 +351,19 @@
     </dependencies>
 
     <profiles>
-        <!-- Base build java8 -->
+        <!-- Base build java17 -->
         <profile>
-            <id>base-java8</id>
+            <id>base-java17</id>
             <activation>
                 <property>
-                    <name>!skipBaseJava8</name>
+                    <name>!skipBaseJava17</name>
                 </property>
             </activation>
             <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                <maven.compiler.target>1.8</maven.compiler.target>
-                <maven.compiler.source>1.8</maven.compiler.source>
+                <maven.compiler.target>17</maven.compiler.target>
+                <maven.compiler.source>17</maven.compiler.source>
+                <maven.compiler.release>17</maven.compiler.release>
             </properties>
             <build>
                 <plugins>
@@ -379,7 +380,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.0.0-M5</version>
+                        <version>3.0.0-M6</version>
                         <configuration>
                             <useModulePath>false</useModulePath>
                         </configuration>
@@ -391,17 +392,6 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-
-        <!-- Enforce Java8 API -->
-        <profile>
-            <id>enforce-java8-api</id>
-            <activation>
-                <jdk>[11,)</jdk>
-            </activation>
-            <properties>
-                <maven.compiler.release>8</maven.compiler.release>
-            </properties>
         </profile>
 
         <!-- Enforce dependency & Maven-central rules -->
@@ -451,7 +441,7 @@
                                             <strict>false</strict>
                                         </CheckMavenCentral>
                                         <enforceBytecodeVersion>
-                                            <maxJdkVersion>8</maxJdkVersion>
+                                            <maxJdkVersion>17</maxJdkVersion>
                                             <ignoredScopes>
                                                 <ignoreScope>test</ignoreScope>
                                             </ignoredScopes>
@@ -480,7 +470,7 @@
                         <artifactId>modernizer-maven-plugin</artifactId>
                         <version>2.4.0</version>
                         <configuration>
-                            <javaVersion>1.8</javaVersion>
+                            <javaVersion>17</javaVersion>
                             <exclusionPatterns>
                                 <exclusionPattern>com/google/common/base/Optional.*</exclusionPattern>
                             </exclusionPatterns>

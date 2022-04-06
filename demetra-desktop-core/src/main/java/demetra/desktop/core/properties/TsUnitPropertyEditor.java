@@ -16,7 +16,8 @@
  */
 package demetra.desktop.core.properties;
 
-import demetra.timeseries.TsPeriod;
+import demetra.timeseries.TsUnit;
+import demetra.timeseries.calendars.RegularFrequency;
 import java.beans.PropertyEditorSupport;
 import org.openide.nodes.PropertyEditorRegistration;
 
@@ -24,12 +25,17 @@ import org.openide.nodes.PropertyEditorRegistration;
  *
  * @author Philippe Charles
  */
-@PropertyEditorRegistration(targetType = TsPeriod.class)
-public class TsPeriodPropertyEditor extends PropertyEditorSupport {
+@PropertyEditorRegistration(targetType = TsUnit.class)
+public class TsUnitPropertyEditor extends PropertyEditorSupport {
 
     @Override
     public String getAsText() {
-        TsPeriod value = (TsPeriod) getValue();
-        return value != null ? value.toString(): "";
+        TsUnit data = (TsUnit) getValue();
+        try {
+            RegularFrequency freq = RegularFrequency.parseTsUnit(data);
+            return data.toString() + " (" + freq.name() + ")";
+        } catch (IllegalArgumentException ex) {
+            return data.toString();
+        }
     }
 }

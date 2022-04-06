@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  *
  * @author Philippe Charles
  */
-final class MultiTsGridData implements TsGridData {
+final class ByTsColumn implements TsGridData {
 
     private final List<String> names;
     private final TsDataTable dataTable;
@@ -38,7 +38,7 @@ final class MultiTsGridData implements TsGridData {
     private final TsDataTable.Cursor cursor;
     private final TsGridObs obs;
 
-    public MultiTsGridData(List<Ts> col) {
+    public ByTsColumn(List<Ts> col) {
         this.names = col.stream().map(demetra.timeseries.Ts::getName).collect(Collectors.toList());
         this.dataTable = TsDataTable.of(col, demetra.timeseries.Ts::getData);
         this.domain = dataTable.getDomain();
