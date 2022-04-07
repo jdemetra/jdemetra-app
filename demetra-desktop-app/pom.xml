@@ -67,26 +67,32 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-branding</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-util</artifactId>   
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-modelling</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-sa-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <!--dependency>
             <groupId>${project.groupId}</groupId>
@@ -95,18 +101,22 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-sql</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-text</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-spreadsheet</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-extra</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

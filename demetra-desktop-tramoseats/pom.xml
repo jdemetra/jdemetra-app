@@ -74,17 +74,17 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-api</artifactId>
-                <version>${jd3-desktop.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-modelling</artifactId>
-                <version>${jd3-desktop.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-sa-api</artifactId>
-                <version>${sa-desktop.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>

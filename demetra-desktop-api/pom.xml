@@ -51,10 +51,13 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-design</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-util</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- compile and runtime -->
@@ -103,7 +106,7 @@
             <artifactId>demetra-toolkit-xml</artifactId>
             <version>${jd3-basic.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
             <artifactId>demetra-tsp-api</artifactId>
             <version>${jd3.version}</version>

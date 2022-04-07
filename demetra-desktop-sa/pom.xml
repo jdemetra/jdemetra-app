@@ -11,13 +11,13 @@
  
     <name>JD3 - Desktop - SA</name>
 
-   <properties>
+    <properties>
         <jd3-sa.version>1.0.0-SNAPSHOT</jd3-sa.version>
         <sa-desktop.version>3.0.0-SNAPSHOT</sa-desktop.version>
         <jd3-desktop.version>3.0.0-SNAPSHOT</jd3-desktop.version>
     </properties>
 
-     <modules>
+    <modules>
         <module>demetra-desktop-sa-api</module>
         <module>demetra-desktop-sa-ui</module>
     </modules>
@@ -56,7 +56,7 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-sa-api</artifactId>
-                <version>${sa-desktop.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -66,12 +66,12 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-api</artifactId>
-                <version>${jd3-desktop.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-modelling</artifactId>
-                <version>${jd3-desktop.version}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

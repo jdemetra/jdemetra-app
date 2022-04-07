@@ -20,7 +20,7 @@
         <sa-desktop.version>3.0.0-SNAPSHOT</sa-desktop.version>
         <x13-desktop.version>3.0.0-SNAPSHOT</x13-desktop.version>
         <jd3-desktop.version>3.0.0-SNAPSHOT</jd3-desktop.version>
-   </properties>
+    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -72,17 +72,17 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-api</artifactId>
-                <version>${jd3-desktop.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-modelling</artifactId>
-                <version>${jd3-desktop.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>demetra-desktop-sa-api</artifactId>
-                <version>${sa-desktop.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
