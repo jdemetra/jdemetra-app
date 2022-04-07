@@ -238,74 +238,6 @@
                 <scope>test</scope>
             </dependency>
             <!-- < NetBeans deps -->
-
-            <!-- nbdemetra modules > -->
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-desktop-design</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-desktop-util</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-desktop-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-desktop-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-desktop-modelling</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-desktop-sa-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-desktop-branding</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-desktop-app</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <!--dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-desktop-jd2</artifactId>
-                <version>${project.version}</version>
-            </dependency-->
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-desktop-sql</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-desktop-text</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-desktop-spreadsheet</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>demetra-desktop-extra</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <!-- < nbdemetra modules -->
         </dependencies>
     </dependencyManagement>
 
@@ -314,22 +246,22 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>        
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.nbbrd.java-design-util</groupId>
             <artifactId>java-design-processor</artifactId>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.nbbrd.java-service-util</groupId>
             <artifactId>java-service-processor</artifactId>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
 
         <!-- test libraries -->
