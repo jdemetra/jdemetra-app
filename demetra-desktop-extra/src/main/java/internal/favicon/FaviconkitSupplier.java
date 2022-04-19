@@ -7,7 +7,6 @@ import internal.util.http.HttpContext;
 import internal.util.http.HttpRequest;
 import internal.util.http.HttpResponse;
 import internal.util.http.HttpURLConnectionFactoryLoader;
-import internal.util.http.MediaType;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -16,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import nbbrd.design.VisibleForTesting;
+import sdmxdl.format.MediaType;
 
 public final class FaviconkitSupplier implements FaviconSupplier {
 
