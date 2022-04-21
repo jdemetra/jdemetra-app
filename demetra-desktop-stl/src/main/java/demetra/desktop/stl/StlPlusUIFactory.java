@@ -9,7 +9,7 @@ import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.IProcDocumentView;
 import java.awt.Color;
 import javax.swing.Icon;
-import jdplus.stl.StlPlusSpecification;
+import demetra.stl.StlPlusSpecification;
 import org.openide.util.lookup.ServiceProvider;
 
 /**

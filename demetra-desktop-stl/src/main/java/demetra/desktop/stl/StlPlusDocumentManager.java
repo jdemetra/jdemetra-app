@@ -10,7 +10,7 @@ import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.util.Id;
 import demetra.util.LinearId;
-import jdplus.stl.StlPlusSpecification;
+import demetra.stl.StlPlusSpecification;
 import org.openide.util.lookup.ServiceProvider;
 
 /**

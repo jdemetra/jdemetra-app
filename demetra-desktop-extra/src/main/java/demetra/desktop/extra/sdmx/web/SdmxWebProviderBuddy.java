@@ -50,9 +50,9 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 import sdmxdl.DataflowRef;
 import sdmxdl.Dimension;
+import sdmxdl.format.xml.XmlWebSource;
 import sdmxdl.web.SdmxWebManager;
 import sdmxdl.web.SdmxWebSource;
-import sdmxdl.xml.XmlWebSource;
 
 /**
  * @author Philippe Charles

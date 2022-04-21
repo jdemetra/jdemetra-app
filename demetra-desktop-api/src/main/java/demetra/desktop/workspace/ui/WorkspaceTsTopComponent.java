@@ -128,11 +128,10 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
             cts = ts.load(TsInformationType.All, TsManager.getDefault());
         }
         panel.getDocument().set(cts);
+        panel.updateButtons(null);
         getDocument().setDirty();
         WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
         WorkspaceFactory.getInstance().notifyEvent(ev);
 
     }
-
- 
 }

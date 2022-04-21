@@ -7,7 +7,7 @@ package demetra.desktop.stl;
 import demetra.timeseries.AbstractTsDocument;
 import demetra.timeseries.TsData;
 import jdplus.stl.StlPlusResults;
-import jdplus.stl.StlPlusSpecification;
+import demetra.stl.StlPlusSpecification;
 
 /**
  *
@@ -15,11 +15,9 @@ import jdplus.stl.StlPlusSpecification;
  */
 public class StlPlusDocument extends AbstractTsDocument<StlPlusSpecification, StlPlusResults> {
 
-
     public StlPlusDocument() {
         super(StlPlusSpecification.DEFAULT);
     }
-
 
     @Override
     protected StlPlusResults internalProcess(StlPlusSpecification spec, TsData data) {

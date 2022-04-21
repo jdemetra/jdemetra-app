@@ -45,15 +45,18 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-design</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-util</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- test only -->
@@ -70,6 +73,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-core</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- NetBeans -->

@@ -19,7 +19,7 @@ package demetra.desktop.components.tools;
 import demetra.data.DoubleSeq;
 import demetra.data.DoubleSeqCursor;
 import javax.swing.JPopupMenu;
-import jdplus.data.analysis.DiscreteWindowFunction;
+import jdplus.data.analysis.WindowFunction;
 import jdplus.data.analysis.SmoothedPeriodogram;
 import jdplus.data.analysis.TukeyHanningTaper;
 import org.jfree.data.xy.XYSeries;
@@ -41,7 +41,7 @@ public class TukeySpectrumView extends ARPView {
 
     // DEFAULT PROPERTIES
     private static final int DEFAULT_WINDOW_LENGTH = 0; // use default
-    private static final DiscreteWindowFunction DEFAULT_WINDOW_TYPE = DiscreteWindowFunction.Tukey;
+    private static final WindowFunction DEFAULT_WINDOW_TYPE = WindowFunction.Tukey;
     private static final double DEFAULT_TAPER_PART = 0; // no taper
     private static final boolean DEFAULT_LOG = false; // no log
     private static final int DEFAULT_DIFF = 1; // no log
@@ -49,7 +49,7 @@ public class TukeySpectrumView extends ARPView {
 
     // PROPERTIES
     protected int windowLength;
-    protected DiscreteWindowFunction windowType;
+    protected WindowFunction windowType;
     protected double taperPart;
     private int del;
     private int lag;
@@ -156,13 +156,13 @@ public class TukeySpectrumView extends ARPView {
         firePropertyChange(WINDOW_LENGTH_PROPERTY, old, this.windowLength);
     }
 
-    public DiscreteWindowFunction getWindowType() {
+    public WindowFunction getWindowType() {
         return windowType;
     }
 
-    public void setWindowType(DiscreteWindowFunction windowType) {
+    public void setWindowType(WindowFunction windowType) {
         if (windowType != this.windowType) {
-            DiscreteWindowFunction old = this.windowType;
+            WindowFunction old = this.windowType;
             this.windowType = windowType;
             firePropertyChange(WINDOW_TYPE_PROPERTY, old, this.windowType);
         }

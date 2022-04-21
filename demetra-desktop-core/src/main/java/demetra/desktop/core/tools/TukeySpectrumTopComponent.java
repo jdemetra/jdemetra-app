@@ -9,7 +9,7 @@ import demetra.desktop.components.tools.TukeySpectrumView;
 import demetra.desktop.ui.processing.TsTopComponent;
 import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
-import jdplus.data.analysis.DiscreteWindowFunction;
+import jdplus.data.analysis.WindowFunction;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -325,7 +325,7 @@ public final class TukeySpectrumTopComponent extends TopComponent implements Has
             wlength.setName(Bundle.turkeySpectrumTopComponent_windowLenght_name());
             wlength.setShortDescription(Bundle.turkeySpectrumTopComponent_windowLenght_desc());
             spectrum.put(wlength);
-            Property<DiscreteWindowFunction> wtype = new Property(DiscreteWindowFunction.class) {
+            Property<WindowFunction> wtype = new Property(WindowFunction.class) {
 
                 @Override
                 public boolean canRead() {
@@ -344,7 +344,7 @@ public final class TukeySpectrumTopComponent extends TopComponent implements Has
 
                 @Override
                 public void setValue(Object t) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-                    view.setWindowType((DiscreteWindowFunction) t);
+                    view.setWindowType((WindowFunction) t);
                 }
             };
 
