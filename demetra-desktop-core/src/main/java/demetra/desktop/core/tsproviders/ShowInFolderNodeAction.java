@@ -18,6 +18,7 @@ package demetra.desktop.core.tsproviders;
 
 import demetra.desktop.TsManager;
 import demetra.desktop.actions.AbilityNodeAction;
+import demetra.desktop.actions.Actions;
 import demetra.tsprovider.DataSource;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
@@ -30,6 +31,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Stream;
+import javax.swing.JMenuItem;
+import org.openide.util.actions.Presenter;
 
 /**
  * Launch the default file manager and select the file used as a source by the
@@ -46,12 +49,17 @@ import java.util.stream.Stream;
 @ActionID(category = "Edit", id = ShowInFolderNodeAction.ID)
 @ActionRegistration(displayName = "#CTL_ShowInFolderAction", lazy = false)
 @Messages("CTL_ShowInFolderAction=Show in folder")
-public final class ShowInFolderNodeAction extends AbilityNodeAction<DataSource> {
+public final class ShowInFolderNodeAction extends AbilityNodeAction<DataSource> implements Presenter.Popup {
 
     public static final String ID = "demetra.desktop.core.tsproviders.ShowInFolderAction";
 
     public ShowInFolderNodeAction() {
         super(DataSource.class, true);
+    }
+
+    @Override
+    public JMenuItem getPopupPresenter() {
+        return Actions.hideWhenDisabled(new JMenuItem(this));
     }
 
     @Override
