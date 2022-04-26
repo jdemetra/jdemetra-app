@@ -17,10 +17,8 @@
 package demetra.desktop.ui.properties.l2fprod;
 
 import demetra.information.InformationSet;
-import demetra.information.formatters.StringFormatter;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;
-import demetra.timeseries.regression.IOutlier;
 import java.time.LocalDate;
 import nbbrd.design.Development;
 

@@ -61,6 +61,7 @@
         <module>demetra-desktop-sa</module>
         <module>demetra-desktop-sts</module>
         <module>demetra-desktop-highfreq</module>
+        <module>demetra-desktop-stl</module>
     </modules>
 
     <dependencyManagement>

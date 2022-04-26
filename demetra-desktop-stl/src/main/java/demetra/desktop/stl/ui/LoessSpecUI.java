@@ -13,7 +13,6 @@ import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.DoubleUnaryOperator;
 import org.openide.util.NbBundle;
 
 /**
@@ -49,7 +48,7 @@ public class LoessSpecUI implements IPropertyDescriptors {
         if (degree < 0 || degree > 1) {
             throw new IllegalArgumentException("Unsupported option. Should be 0 or 1");
         }
-        loess.toBuilder()
+        loess=loess.toBuilder()
                 .degree(degree)
                 .build();
         callback.accept(loess);
@@ -63,7 +62,7 @@ public class LoessSpecUI implements IPropertyDescriptors {
         if (jump < 0) {
             throw new IllegalArgumentException("Should be gt 0");
         }
-        loess.toBuilder()
+        loess=loess.toBuilder()
                 .jump(jump)
                 .build();
         callback.accept(loess);
@@ -77,7 +76,7 @@ public class LoessSpecUI implements IPropertyDescriptors {
         if (window <= 0 || window % 2 == 0) {
             throw new IllegalArgumentException("Should be odd");
         }
-        loess.toBuilder()
+        loess=loess.toBuilder()
                 .window(window)
                 .build();
         callback.accept(loess);
@@ -88,7 +87,7 @@ public class LoessSpecUI implements IPropertyDescriptors {
     }
 
     public void setWeights(WeightFunction fn) {
-        loess.toBuilder()
+        loess=loess.toBuilder()
                 .loessFunction(fn)
                 .build();
         callback.accept(loess);
@@ -136,8 +135,8 @@ public class LoessSpecUI implements IPropertyDescriptors {
     }
 
     @NbBundle.Messages({
-        "loessSpecUI.windowDesc.name=degree",
-        "loessSpecUI.windowDesc.desc=Degree of the local polynomial."
+        "loessSpecUI.windowDesc.name=window",
+        "loessSpecUI.windowDesc.desc=Window of the local polynomial."
     })
     private EnhancedPropertyDescriptor windowDesc() {
         try {
@@ -154,8 +153,8 @@ public class LoessSpecUI implements IPropertyDescriptors {
     }
 
     @NbBundle.Messages({
-        "loessSpecUI.jumpDesc.name=degree",
-        "loessSpecUI.jumpDesc.desc=Degree of the local polynomial."
+        "loessSpecUI.jumpDesc.name=jump",
+        "loessSpecUI.jumpDesc.desc=Jump between two successive estimations."
     })
     private EnhancedPropertyDescriptor jumpDesc() {
         try {
@@ -172,12 +171,12 @@ public class LoessSpecUI implements IPropertyDescriptors {
     }
 
     @NbBundle.Messages({
-        "loessSpecUI.weightDesc.name=degree",
-        "loessSpecUI.weightDesc.desc=Degree of the local polynomial."
+        "loessSpecUI.weightDesc.name=weights",
+        "loessSpecUI.weightDesc.desc=Weights of the local polynomial."
     })
     private EnhancedPropertyDescriptor weightDesc() {
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("Degree", this.getClass());
+            PropertyDescriptor desc = new PropertyDescriptor("Weights", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, WEIGHT_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(Bundle.loessSpecUI_weightDesc_name());
@@ -192,9 +191,9 @@ public class LoessSpecUI implements IPropertyDescriptors {
     private static final int DEG_ID = 1, WIN_ID = 2, JUMP_ID = 5, WEIGHT_ID = 6;
 
     @Override
-    @NbBundle.Messages("decompositionSpecUI.getDisplayName=Outliers")
+    @NbBundle.Messages("loessSpecUI.getDisplayName=Loess")
     public String getDisplayName() {
-        return Bundle.decompositionSpecUI_getDisplayName();
+        return Bundle.loessSpecUI_getDisplayName();
     }
 
 }

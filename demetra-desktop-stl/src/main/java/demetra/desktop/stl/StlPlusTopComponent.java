@@ -26,13 +26,13 @@ import org.openide.util.NbBundle;
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Modelling", id = "demetra.desktop.stlplus.StlPlusTopComponent")
-@ActionReference(path = "Menu/Statistical methods/Modelling/Single Analysis", position = 2000)
+@ActionID(category = "Seasonal Adjustment", id = "demetra.desktop.stlplus.StlPlusTopComponent")
+@ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Single Analysis", position = 2000)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_StlPlusAction")
 @NbBundle.Messages({
-    "CTL_StlPlusAction=Fractional airline",
-    "CTL_StlPlusTopComponent=Fractional Airline Window",
-    "HINT_StlPlusTopComponent=This is a Fractional Airline window"
+    "CTL_StlPlusAction=STL+",
+    "CTL_StlPlusTopComponent=STL+ Window",
+    "HINT_StlPlusTopComponent=This is a STL+ window"
 })
 public final class StlPlusTopComponent extends WorkspaceTsTopComponent<StlPlusDocument> {
 

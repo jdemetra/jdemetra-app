@@ -5,6 +5,7 @@
 package demetra.desktop.stl;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
+import demetra.desktop.stl.ui.StlPlusSpecUI;
 import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.IProcDocumentView;
 import java.awt.Color;
@@ -28,7 +29,7 @@ public class StlPlusUIFactory implements DocumentUIServices<StlPlusSpecification
 
     @Override
     public IObjectDescriptor<StlPlusSpecification> getSpecificationDescriptor(StlPlusDocument doc) {
-        return null;
+        return new StlPlusSpecUI(doc.getSpecification(), false);
     }
 
     @Override

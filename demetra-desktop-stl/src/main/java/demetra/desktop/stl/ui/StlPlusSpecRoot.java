@@ -4,6 +4,10 @@
  */
 package demetra.desktop.stl.ui;
 
+import demetra.desktop.ui.properties.l2fprod.ArrayRenderer;
+import demetra.desktop.ui.properties.l2fprod.CustomPropertyEditorRegistry;
+import demetra.desktop.ui.properties.l2fprod.CustomPropertyRendererFactory;
+import demetra.stl.SeasonalSpecification;
 import demetra.stl.StlPlusSpecification;
 
 
@@ -15,6 +19,11 @@ import demetra.stl.StlPlusSpecification;
 @lombok.Getter
 @lombok.AllArgsConstructor
 public class StlPlusSpecRoot  {
+    
+    static{
+        CustomPropertyEditorRegistry.INSTANCE.register(SeasonalSpecification[].class, new SeasonalSpecsEditor());
+        CustomPropertyRendererFactory.INSTANCE.getRegistry().registerRenderer(SeasonalSpecification[].class, new ArrayRenderer());
+    }
     
     StlPlusSpecification core;
     boolean ro;
