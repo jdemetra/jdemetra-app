@@ -1,12 +1,9 @@
 package internal.favicon;
 
 import com.google.common.net.InternetDomainName;
-import internal.util.http.DefaultHttpClient;
 import internal.util.http.HttpClient;
-import internal.util.http.HttpContext;
 import internal.util.http.HttpRequest;
 import internal.util.http.HttpResponse;
-import internal.util.http.HttpURLConnectionFactoryLoader;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -14,21 +11,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.imageio.ImageIO;
-import nbbrd.design.VisibleForTesting;
 import sdmxdl.format.MediaType;
 
 public final class FaviconkitSupplier implements FaviconSupplier {
-
-    private final HttpClient client;
-
-    public FaviconkitSupplier() {
-        this(new DefaultHttpClient(HttpContext.builder().build(), HttpURLConnectionFactoryLoader.get()));
-    }
-
-    @VisibleForTesting
-    FaviconkitSupplier(HttpClient client) {
-        this.client = client;
-    }
 
     @Override
     public String getName() {
@@ -36,12 +21,12 @@ public final class FaviconkitSupplier implements FaviconSupplier {
     }
 
     @Override
-    public Image getFaviconOrNull(URL url) throws IOException {
-        try (HttpResponse response = client.requestGET(getFaviconRequest(url))) {
+    public Image getFaviconOrNull(URL url, HttpClient client) throws IOException {
+        try ( HttpResponse response = client.requestGET(getFaviconRequest(url))) {
             if (isDefaultFavicon(response)) {
                 return null;
             }
-            try (InputStream stream = response.getBody()) {
+            try ( InputStream stream = response.getBody()) {
                 return resize(ImageIO.read(stream));
             }
         }

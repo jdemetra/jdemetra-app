@@ -2,6 +2,7 @@ package internal.favicon;
 
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
+import internal.util.http.HttpClient;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
@@ -15,6 +16,9 @@ import org.openide.awt.StatusDisplayer;
 
 @lombok.Builder
 public class FaviconSupport {
+
+    @lombok.NonNull
+    private final HttpClient client;
 
     @lombok.Singular
     private final List<FaviconSupplier> suppliers;
@@ -60,7 +64,7 @@ public class FaviconSupport {
         report("Loading favicon for " + url.getHost());
         try {
             for (FaviconSupplier supplier : suppliers) {
-                Image result = supplier.getFaviconOrNull(url);
+                Image result = supplier.getFaviconOrNull(url, client);
                 if (result != null) {
                     return new ImageIcon(result);
                 }

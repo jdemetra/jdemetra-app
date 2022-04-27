@@ -25,6 +25,8 @@ import sdmxdl.LanguagePriorityList;
 import sdmxdl.web.SdmxWebManager;
 import sdmxdl.web.SdmxWebSource;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import demetra.desktop.TsManager;
+import demetra.tsp.extra.sdmx.web.SdmxWebProvider;
 import ec.util.completion.AutoCompletionSource;
 import static ec.util.completion.AutoCompletionSource.Behavior.ASYNC;
 import static ec.util.completion.AutoCompletionSource.Behavior.NONE;
@@ -32,6 +34,8 @@ import static ec.util.completion.AutoCompletionSource.Behavior.SYNC;
 import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
 import internal.favicon.FaviconkitSupplier;
+import internal.util.http.DefaultHttpClient;
+import internal.util.http.HttpContext;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -52,6 +56,7 @@ import sdmxdl.SdmxManager;
 import sdmxdl.SdmxSource;
 import sdmxdl.ext.Registry;
 import sdmxdl.ext.spi.Dialect;
+import sdmxdl.web.Network;
 
 /**
  *
@@ -340,6 +345,7 @@ public abstract class SdmxAutoCompletion {
 
     public static final FaviconSupport FAVICONS = FaviconSupport
             .builder()
+            .client(new DefaultHttpClient(getHttpContext()))
             .supplier(new GoogleSupplier())
             .supplier(new FaviconkitSupplier())
             .executor(Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setPriority(Thread.MIN_PRIORITY).build()))
@@ -347,4 +353,23 @@ public abstract class SdmxAutoCompletion {
             .cache(new HashMap<>())
             //            .cache(IOCacheFactoryLoader.get().ofTtl(Duration.ofHours(1)))
             .build();
+
+    private static HttpContext getHttpContext() {
+        return HttpContext
+                .builder()
+                .proxySelector(() -> getNetwork().getProxySelector())
+                .sslSocketFactory(() -> getNetwork().getSSLSocketFactory())
+                .hostnameVerifier(() -> getNetwork().getHostnameVerifier())
+                .urlConnectionFactory(() -> getNetwork().getURLConnectionFactory())
+                .build();
+    }
+
+    private static Network getNetwork() {
+        return TsManager
+                .getDefault()
+                .getProvider(SdmxWebProvider.class)
+                .map(SdmxWebProvider::getSdmxManager)
+                .map(SdmxWebManager::getNetwork)
+                .orElse(Network.getDefault());
+    }
 }
