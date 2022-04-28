@@ -1,13 +1,10 @@
 package internal.favicon;
 
 import com.google.common.net.InternetDomainName;
-import internal.util.http.DefaultHttpClient;
 import internal.util.http.HttpClient;
-import internal.util.http.HttpContext;
 import internal.util.http.HttpRequest;
 import internal.util.http.HttpResponse;
 import internal.util.http.HttpResponseException;
-import internal.util.http.HttpURLConnectionFactoryLoader;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,20 +12,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.imageio.ImageIO;
-import nbbrd.design.VisibleForTesting;
 
 public final class GoogleSupplier implements FaviconSupplier {
-
-    private final HttpClient client;
-
-    public GoogleSupplier() {
-        this(new DefaultHttpClient(HttpContext.builder().build(), HttpURLConnectionFactoryLoader.get()));
-    }
-
-    @VisibleForTesting
-    GoogleSupplier(HttpClient client) {
-        this.client = client;
-    }
 
     @Override
     public String getName() {
@@ -36,9 +21,9 @@ public final class GoogleSupplier implements FaviconSupplier {
     }
 
     @Override
-    public Image getFaviconOrNull(URL url) throws IOException {
-        try (HttpResponse response = client.requestGET(getFaviconRequest(url))) {
-            try (InputStream stream = response.getBody()) {
+    public Image getFaviconOrNull(URL url, HttpClient client) throws IOException {
+        try ( HttpResponse response = client.requestGET(getFaviconRequest(url))) {
+            try ( InputStream stream = response.getBody()) {
                 return ImageIO.read(stream);
             }
         } catch (HttpResponseException ex) {

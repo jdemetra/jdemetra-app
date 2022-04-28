@@ -97,8 +97,13 @@ public final class AutoCompletedPropertyEditor extends AbstractExPropertyEditor 
     @Override
     public String getAsText() {
         return attr(currentEnv, SEPARATOR_ATTRIBUTE, String.class)
-                .map(s -> super.getAsText().replace(s, " \u27A1 "))
+                .map(this::replaceSeparatorWithPrettyChar)
                 .orElseGet(super::getAsText);
+    }
+
+    private String replaceSeparatorWithPrettyChar(String s) {
+        final String result = super.getAsText();
+        return result != null ? result.replace(s, " \u27A1 ") : result;
     }
 
     @Override
