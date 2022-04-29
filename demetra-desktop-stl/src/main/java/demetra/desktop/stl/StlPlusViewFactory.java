@@ -5,8 +5,13 @@
 package demetra.desktop.stl;
 
 import demetra.data.DoubleSeq;
+import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.processing.ui.modelling.InputFactory;
 import demetra.desktop.processing.ui.modelling.RegSarimaViews;
+import demetra.desktop.sa.ui.SaViews;
+import demetra.desktop.stl.extractors.StlPlusExtractor;
+import demetra.desktop.ui.processing.GenericChartUI;
+import demetra.desktop.ui.processing.GenericTableUI;
 import demetra.desktop.ui.processing.HtmlItemUI;
 import demetra.desktop.ui.processing.IProcDocumentItemFactory;
 import demetra.desktop.ui.processing.IProcDocumentViewFactory;
@@ -15,6 +20,10 @@ import demetra.desktop.ui.processing.ProcDocumentViewFactory;
 import demetra.desktop.ui.processing.stats.DistributionUI;
 import demetra.desktop.ui.processing.stats.PeriodogramUI;
 import demetra.html.HtmlElement;
+import demetra.modelling.SeriesInfo;
+import demetra.sa.SaDictionaries;
+import demetra.timeseries.TsDocument;
+import demetra.toolkit.dictionaries.Dictionary;
 import demetra.util.Id;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -27,7 +36,6 @@ import org.openide.util.lookup.ServiceProvider;
 public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument> {
 
     private static final AtomicReference<IProcDocumentViewFactory<StlPlusDocument>> INSTANCE = new AtomicReference();
-
 
     public static IProcDocumentViewFactory<StlPlusDocument> getDefault() {
         IProcDocumentViewFactory<StlPlusDocument> fac = INSTANCE.get();
@@ -48,7 +56,40 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
 
     @Override
     public Id getPreferredView() {
-        return null;
+        return SaViews.MAIN_CHARTS_LOW;
+    }
+
+    private static String generateId(String name, String id) {
+        return TsDynamicProvider.CompositeTs.builder()
+                .name(name)
+                .now(id)
+                .build().toString();
+    }
+
+    public static String[] lowSeries() {
+        return new String[]{
+            generateId("Series", StlPlusExtractor.Y),
+            generateId("Seasonally adjusted", StlPlusExtractor.SA),
+            generateId("Trend", StlPlusExtractor.T)
+        };
+    }
+
+    public static String[] highSeries() {
+        return new String[]{
+            generateId("Yearly seasonal", StlPlusExtractor.SY),
+            generateId("Weekly seasonal", StlPlusExtractor.SW),
+            generateId("Irregular", StlPlusExtractor.I)
+        };
+    }
+
+    public static String[] finalSeries() {
+        return new String[]{
+            generateId("Series", SaDictionaries.Y),
+            generateId("Seasonally adjusted", SaDictionaries.SA),
+            generateId("Trend", SaDictionaries.T),
+            generateId("Seasonal", SaDictionaries.S),
+            generateId("Irregular", SaDictionaries.I)
+        };
     }
 
 //<editor-fold defaultstate="collapsed" desc="REGISTER SPEC">
@@ -70,7 +111,6 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
 //            return 100010;
 //        }
 //    }
-
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100000)
     public static class Input extends InputFactory<StlPlusDocument> {
 
@@ -101,8 +141,47 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
 //            return 101000;
 //        }
 //    }
-
 //</editor-fold>
+       @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
+    public static class MainLowChart extends ProcDocumentItemFactory<StlPlusDocument, TsDocument> {
+
+        public MainLowChart() {
+            super(StlPlusDocument.class, SaViews.MAIN_CHARTS_LOW, s -> s, new GenericChartUI(false, lowSeries()));
+        }
+
+        @Override
+        public int getPosition() {
+            return 2000;
+        }
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2100)
+    public static class MainHighChart extends ProcDocumentItemFactory<StlPlusDocument, TsDocument> {
+
+        public MainHighChart() {
+            super(StlPlusDocument.class, SaViews.MAIN_CHARTS_HIGH, s -> s, new GenericChartUI(false, highSeries()));
+        }
+
+        @Override
+        public int getPosition() {
+            return 2100;
+        }
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2200)
+    public static class MainTable extends ProcDocumentItemFactory<StlPlusDocument, TsDocument> {
+
+        public MainTable() {
+            super(StlPlusDocument.class, SaViews.MAIN_TABLE, s -> s, new GenericTableUI(false, finalSeries()));
+        }
+
+        @Override
+        public int getPosition() {
+            return 2200;
+        }
+
+    }
+
 //<editor-fold defaultstate="collapsed" desc="REGISTER FORECASTS">
 //    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 200000 + 500)
 //    public static class ForecastsTable extends ProcDocumentItemFactory<FractionalAirlineDocument, TsDocument> {
@@ -146,7 +225,6 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
 //            return 202000;
 //        }
 //    }
-
 //</editor-fold>
 //
 //<editor-fold defaultstate="collapsed" desc="REGISTER MODEL">
@@ -193,7 +271,6 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
 //        }
 //    }
 //</editor-fold>
-
 //<editor-fold defaultstate="collapsed" desc="REGISTER RESIDUALS">
 //    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 1000)
 //    public static class ModelResFactory extends ProcDocumentItemFactory<FractionalAirlineDocument, TsData> {
@@ -237,7 +314,6 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
 //            return 403000;
 //        }
 //    }
-
 //    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 4000)
 //    public static class ModelResSpectrum extends ProcDocumentItemFactory<StlPlusDocument, DoubleSeq> {
 //
@@ -252,7 +328,6 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
 //            return 404000;
 //        }
 //    }
-
 //</editor-fold>
 //<editor-fold defaultstate="collapsed" desc="REGISTER DETAILS">
 //    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 500000)
@@ -269,5 +344,4 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
 //        }
 //    }
 //</editor-fold>
-
 }

@@ -5,7 +5,7 @@
 package demetra.desktop.stl.ui;
 
 import demetra.desktop.descriptors.IPropertyDescriptors;
-import demetra.stl.StlPlusSpecification;
+import demetra.stl.StlSpecification;
 
 /**
  *
@@ -19,7 +19,7 @@ abstract class BaseStlPlusSpecUI implements IPropertyDescriptors{
         this.root =root;
     }
     
-    StlPlusSpecification core(){return root.getCore();}
+    StlSpecification core(){return root.getCore();}
     
     boolean isRo(){return root.ro;}
     

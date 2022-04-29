@@ -92,6 +92,11 @@
             <artifactId>demetra-desktop-sa-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-sa-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- compile & runtime -->
         <dependency>
             <groupId>${project.groupId}</groupId>

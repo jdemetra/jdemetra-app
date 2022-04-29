@@ -173,17 +173,20 @@ public class FractionalAirlineViewFactory extends ProcDocumentViewFactory<Fracti
 
 //</editor-fold>
 //
-//<editor-fold defaultstate="collapsed" desc="REGISTER MODEL">
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 1000)
-//    public static class ModelRegsFactory extends ModelRegressorsFactory<FractionalAirlineDocument> {
+//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 300000 + 3000)
+//    public static class PreprocessingDetFactory extends ProcDocumentItemFactory<FractionalAirlineDocument, FractionalAirlineDocument> {
 //
-//        public ModelRegsFactory() {
-//            super(FractionalAirlineDocument.class, RegSarimaViews.MODEL_REGS, MODELEXTRACTOR);
+//        public PreprocessingDetFactory() {
+//            super(FractionalAirlineDocument.class, RegSarimaViews.MODEL_DET,
+//                    source -> source, new GenericTableUI(false,
+//                            ModellingDictionary.Y_LIN, ModellingDictionary.DET,
+//                            ModellingDictionary.CAL, ModellingDictionary.TDE, ModellingDictionary.EE,
+//                            ModellingDictionary.OUT, ModellingDictionary.FULL_RES));
 //        }
 //
 //        @Override
 //        public int getPosition() {
-//            return 301000;
+//            return 303000;
 //        }
 //    }
 //

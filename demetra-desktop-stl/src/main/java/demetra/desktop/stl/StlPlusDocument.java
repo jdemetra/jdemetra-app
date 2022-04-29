@@ -7,21 +7,22 @@ package demetra.desktop.stl;
 import demetra.timeseries.AbstractTsDocument;
 import demetra.timeseries.TsData;
 import jdplus.stl.StlPlusResults;
-import demetra.stl.StlPlusSpecification;
+import demetra.stl.StlSpecification;
+import jdplus.stl.StlPlusKernel;
 
 /**
  *
  * @author PALATEJ
  */
-public class StlPlusDocument extends AbstractTsDocument<StlPlusSpecification, StlPlusResults> {
+public class StlPlusDocument extends AbstractTsDocument<StlSpecification, StlPlusResults> {
 
     public StlPlusDocument() {
-        super(StlPlusSpecification.DEFAULT);
+        super(StlSpecification.DEFAULT);
     }
 
     @Override
-    protected StlPlusResults internalProcess(StlPlusSpecification spec, TsData data) {
-        return null;
+    protected StlPlusResults internalProcess(StlSpecification spec, TsData data) {
+        return new StlPlusKernel(spec).process(data);
     }
 
 }

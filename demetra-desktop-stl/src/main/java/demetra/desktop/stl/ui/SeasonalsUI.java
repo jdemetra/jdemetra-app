@@ -18,7 +18,7 @@ package demetra.desktop.stl.ui;
 
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.stl.SeasonalSpecification;
-import demetra.stl.StlPlusSpecification;
+import demetra.stl.StlSpecification;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class SeasonalsUI extends BaseStlPlusSpecUI {
     }
 
     public void setSeasonalFilters(SeasonalSpecification[] specs) {
-        StlPlusSpecification.Builder builder = root.core.toBuilder().clearSeasonalSpecs();
+        StlSpecification.Builder builder = root.core.toBuilder().clearSeasonalSpecs();
         for (int i = 0; i < specs.length; ++i) {
             builder.seasonalSpec(specs[i]);
         }
