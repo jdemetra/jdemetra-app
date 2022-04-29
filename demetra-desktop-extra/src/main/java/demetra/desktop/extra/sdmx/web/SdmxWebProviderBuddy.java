@@ -25,14 +25,20 @@ import demetra.tsp.extra.sdmx.web.SdmxWebBean;
 import demetra.tsp.extra.sdmx.web.SdmxWebProvider;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
+import static ec.util.chart.impl.TangoColorScheme.DARK_ORANGE;
+import static ec.util.chart.swing.SwingColorSchemeSupport.rgbToColor;
+import ec.util.various.swing.FontAwesome;
 import internal.extra.sdmx.SdmxAutoCompletion;
 import java.awt.Image;
+import java.io.IOException;
 import java.util.Optional;
 import nbbrd.service.ServiceProvider;
 import nbbrd.design.DirectImpl;
 import nbbrd.io.function.IORunnable;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
+import sdmxdl.Connection;
+import sdmxdl.Feature;
 import sdmxdl.web.SdmxWebSource;
 
 /**
@@ -119,9 +125,25 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy, Conf
 
     private static Image getSourceIcon(SdmxWebBean bean, SdmxWebProvider provider) {
         SdmxWebSource source = provider.getSdmxManager().getSources().get(bean.getSource());
-        return source != null
-                ? ImageUtilities.icon2Image(SdmxAutoCompletion.FAVICONS.get(source.getWebsite(), IORunnable.noOp().asUnchecked()))
-                : null;
+        if (source != null) {
+            Image result = ImageUtilities.icon2Image(SdmxAutoCompletion.FAVICONS.get(source.getWebsite(), IORunnable.noOp().asUnchecked()));
+            return supportsDataQueryDetail(provider, source) 
+                    ? result
+                    : ImageUtilities.mergeImages(result, getWarningBadge(), 8, 8);
+        }
+        return null;
+    }
+
+    private static boolean supportsDataQueryDetail(SdmxWebProvider provider, SdmxWebSource source) {
+        try ( Connection conn = provider.getSdmxManager().getConnection(source)) {
+            return conn.getSupportedFeatures().contains(Feature.DATA_QUERY_DETAIL);
+        } catch (IOException ex) {
+            return false;
+        }
+    }
+    
+    private static Image getWarningBadge() {
+        return FontAwesome.FA_EXCLAMATION_TRIANGLE.getImage(rgbToColor(DARK_ORANGE), 8f);
     }
 
     private static Optional<SdmxWebProvider> lookupProvider() {
