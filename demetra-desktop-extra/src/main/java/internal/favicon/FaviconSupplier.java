@@ -1,5 +1,6 @@
 package internal.favicon;
 
+import internal.util.http.HttpClient;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
@@ -12,5 +13,5 @@ public interface FaviconSupplier {
     String getName();
 
     @Nullable
-    Image getFaviconOrNull(@NonNull URL url) throws IOException;
+    Image getFaviconOrNull(@NonNull URL url, @NonNull HttpClient client) throws IOException;
 }

@@ -1,6 +1,7 @@
 package demetra.desktop.util;
 
 import demetra.desktop.Config;
+import java.io.File;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -69,6 +70,11 @@ public class Persistence<T> {
 
         public <X extends Enum<X>> Builder<T> onEnum(String key, X defaultValue, Function<T, X> getter, BiConsumer<T, X> setter) {
             nbbrd.io.text.Property<X> property = nbbrd.io.text.Property.of(key, defaultValue, nbbrd.io.text.Parser.onEnum((Class<X>) defaultValue.getClass()), nbbrd.io.text.Formatter.onEnum());
+            return onProperty(property, getter, setter);
+        }
+
+        public Builder<T> onFile(String key, File defaultValue, Function<T, File> getter, BiConsumer<T, File> setter) {
+            nbbrd.io.text.Property<File> property = nbbrd.io.text.Property.of(key, defaultValue, nbbrd.io.text.Parser.onFile(), nbbrd.io.text.Formatter.onFile());
             return onProperty(property, getter, setter);
         }
 
