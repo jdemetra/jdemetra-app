@@ -127,7 +127,7 @@ public final class TsTableUI implements InternalUI<JTsTable> {
     }
 
     private void enableOpenOnDoubleClick() {
-        table.addMouseListener(new OpenOnDoubleClick(target.getActionMap()));
+        ActionMaps.onDoubleClick(target.getActionMap(), HasTsCollection.OPEN_ACTION, table);
     }
 
     private void enableProperties() {

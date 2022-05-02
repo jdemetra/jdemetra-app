@@ -2,33 +2,52 @@ package demetra.desktop.extra.sdmx.web;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.desktop.ColorSchemeManager;
+import demetra.desktop.TsManager;
+import demetra.desktop.design.SwingAction;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
+import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.util.ActionMaps;
 import demetra.desktop.util.FontAwesomeUtils;
+import demetra.desktop.util.InputMaps;
+import demetra.desktop.util.KeyStrokes;
 import demetra.desktop.util.ListTableModel;
+import demetra.tsp.extra.sdmx.web.SdmxWebBean;
+import demetra.tsp.extra.sdmx.web.SdmxWebProvider;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.swing.SwingColorSchemeSupport;
+import ec.util.desktop.Desktop;
+import ec.util.desktop.DesktopManager;
 import ec.util.table.swing.JTables;
 import ec.util.various.swing.FontAwesome;
+import ec.util.various.swing.JCommand;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
+import ec.util.various.swing.StandardSwingColor;
 import internal.extra.sdmx.SdmxAutoCompletion;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
 import java.beans.BeanInfo;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
+import javax.swing.ActionMap;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
@@ -36,6 +55,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import nbbrd.io.text.Formatter;
 import org.netbeans.swing.etable.ETable;
 import org.openide.awt.StatusDisplayer;
+import org.openide.util.Exceptions;
+import sdmxdl.LanguagePriorityList;
 import sdmxdl.web.MonitorReport;
 import sdmxdl.web.MonitorStatus;
 import sdmxdl.web.SdmxWebManager;
@@ -43,6 +64,12 @@ import sdmxdl.web.SdmxWebSource;
 
 @SwingComponent
 public final class JSdmxWebSourcePanel extends JComponent {
+
+    @SwingAction
+    public static final String OPEN_ACTION = "open";
+
+    @SwingAction
+    public static final String OPEN_WEBSITE_ACTION = "openWebsite";
 
     @SwingProperty
     public static final String SDMX_MANAGER_PROPERTY = "sdmxManager";
@@ -62,17 +89,52 @@ public final class JSdmxWebSourcePanel extends JComponent {
 
     public JSdmxWebSourcePanel() {
         this.table = new ETable();
+
+        registerActions();
+        registerInputs();
+
+        initTable();
+        initSupport();
+
+        enableOpenOnDoubleClick();
+        enablePopupMenu();
+        enableProperties();
+
         setLayout(new BorderLayout());
         add(new JScrollPane(table), BorderLayout.CENTER);
-        addPropertyChangeListener(event -> {
-            switch (event.getPropertyName()) {
-                case SDMX_MANAGER_PROPERTY:
-                    updateTable();
-            }
-        });
     }
 
-    private void updateTable() {
+    private void registerActions() {
+        getActionMap().put(OPEN_ACTION, OpenCommand.INSTANCE.toAction(this));
+        getActionMap().put(OPEN_WEBSITE_ACTION, OpenWebsiteCommand.INSTANCE.toAction(this));
+        ActionMaps.copyEntries(getActionMap(), false, table.getActionMap());
+    }
+
+    private void registerInputs() {
+        KeyStrokes.putAll(getInputMap(), KeyStrokes.OPEN, OPEN_ACTION);
+        InputMaps.copyEntries(getInputMap(), false, table.getInputMap());
+    }
+
+    private void initTable() {
+        int cellPaddingHeight = 2;
+        table.setRowHeight(table.getFontMetrics(table.getFont()).getHeight() + cellPaddingHeight * 2 + 1);
+//        table.setRowMargin(cellPaddingHeight);
+
+        table.setFullyNonEditable(true);
+        table.setShowHorizontalLines(true);
+        table.setBorder(null);
+        StandardSwingColor.CONTROL.lookup().ifPresent(table::setGridColor);
+
+        table.setModel(new WebSourceModel());
+        table.getColumnModel().getColumn(0).setCellRenderer(newNameRenderer());
+        table.getColumnModel().getColumn(3).setCellRenderer(newStatusRenderer());
+        JTables.setWidthAsPercentages(table, .2, .35, .35, .1);
+
+//        table.setDragEnabled(true);
+        table.setFillsViewportHeight(true);
+    }
+
+    private void initSupport() {
         support = StatusSupport
                 .builder()
                 .sdmxManager(sdmxManager)
@@ -80,39 +142,48 @@ public final class JSdmxWebSourcePanel extends JComponent {
                 .cache(new HashMap<>())
                 .fallback(MonitorReport.builder().source("").status(MonitorStatus.UNKNOWN).build())
                 .build();
+    }
 
-        table.setModel(new ListTableModel<SdmxWebSource>() {
-            final List<SdmxWebSource> values = new ArrayList<>(sdmxManager.getSources().values());
+    private void enableOpenOnDoubleClick() {
+        ActionMaps.onDoubleClick(getActionMap(), OPEN_ACTION, table);
+    }
 
-            @Override
-            protected List<String> getColumnNames() {
-                return Arrays.asList("Name", "Description", "Website", "Status");
-            }
+    private void enablePopupMenu() {
+        table.setComponentPopupMenu(buildPopupMenu());
+    }
 
-            @Override
-            protected List<SdmxWebSource> getValues() {
-                return values;
-            }
-
-            @Override
-            protected Object getValueAt(SdmxWebSource row, int columnIndex) {
-                switch (columnIndex) {
-                    case 0:
-                        return row;
-                    case 1:
-                        return sdmxManager.getLanguages().select(row.getDescriptions());
-                    case 2:
-                        return row.getWebsite();
-                    case 3:
-                        return row;
-                    default:
-                        return null;
-                }
+    private void enableProperties() {
+        addPropertyChangeListener(event -> {
+            switch (event.getPropertyName()) {
+                case SDMX_MANAGER_PROPERTY:
+                    onSdmxManagerChange();
             }
         });
-        table.getColumnModel().getColumn(0).setCellRenderer(newNameRenderer());
-        table.getColumnModel().getColumn(3).setCellRenderer(newStatusRenderer());
-        JTables.setWidthAsPercentages(table, .2, .35, .35, .1);
+    }
+
+    private void onSdmxManagerChange() {
+        support = support.toBuilder().sdmxManager(sdmxManager).build();
+        ((WebSourceModel) table.getModel()).setValues(new ArrayList<>(sdmxManager.getSources().values()), sdmxManager.getLanguages());
+    }
+
+    private JPopupMenu buildPopupMenu() {
+        ActionMap actionMap = getActionMap();
+
+        JMenu result = new JMenu();
+
+        JMenuItem item;
+
+        item = new JMenuItem(actionMap.get(OPEN_ACTION));
+        item.setText("Open");
+        item.setAccelerator(KeyStrokes.OPEN.get(0));
+        item.setFont(item.getFont().deriveFont(Font.BOLD));
+        result.add(item);
+
+        item = new JMenuItem(actionMap.get(OPEN_WEBSITE_ACTION));
+        item.setText("Open web site");
+        result.add(item);
+
+        return result.getPopupMenu();
     }
 
     private DefaultTableCellRenderer newNameRenderer() {
@@ -155,7 +226,7 @@ public final class JSdmxWebSourcePanel extends JComponent {
         };
     }
 
-    @lombok.Builder
+    @lombok.Builder(toBuilder = true)
     private static class StatusSupport {
 
         private final SdmxWebManager sdmxManager;
@@ -210,6 +281,103 @@ public final class JSdmxWebSourcePanel extends JComponent {
         @OnAnyThread
         private void report(String message) {
             StatusDisplayer.getDefault().setStatusText(message);
+        }
+    }
+
+    private static final class WebSourceModel extends ListTableModel<SdmxWebSource> {
+
+        private List<SdmxWebSource> values = Collections.emptyList();
+        private LanguagePriorityList languages = LanguagePriorityList.ANY;
+
+        public void setValues(List<SdmxWebSource> values, LanguagePriorityList languages) {
+            this.values = values;
+            this.languages = languages;
+            fireTableDataChanged();
+        }
+
+        @Override
+        protected List<String> getColumnNames() {
+            return Arrays.asList("Name", "Description", "Website", "Status");
+        }
+
+        @Override
+        protected List<SdmxWebSource> getValues() {
+            return values;
+        }
+
+        @Override
+        protected Object getValueAt(SdmxWebSource row, int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                    return row;
+                case 1:
+                    return languages.select(row.getDescriptions());
+                case 2:
+                    return row.getWebsite();
+                case 3:
+                    return row;
+                default:
+                    return null;
+            }
+        }
+    }
+
+    private static final class OpenCommand extends JCommand<JSdmxWebSourcePanel> {
+
+        public static final OpenCommand INSTANCE = new OpenCommand();
+
+        @Override
+        public void execute(JSdmxWebSourcePanel c) throws Exception {
+            int idx = c.table.convertRowIndexToModel(c.table.getSelectedRow());
+            SdmxWebSource source = ((WebSourceModel) c.table.getModel()).getValues().get(idx);
+            TsManager.getDefault().getProvider(SdmxWebProvider.class).ifPresent(provider -> {
+                SdmxWebBean bean = provider.newBean();
+                bean.setSource(source.getName());
+                if (DataSourceProviderBuddySupport.getDefault().getBeanEditor(provider.getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
+                    provider.open(provider.encodeBean(bean));
+                }
+            });
+        }
+
+        @Override
+        public boolean isEnabled(JSdmxWebSourcePanel c) {
+            return c.table.getSelectedRowCount() == 1;
+        }
+
+        @Override
+        public JCommand.ActionAdapter toAction(JSdmxWebSourcePanel c) {
+            return super.toAction(c).withWeakListSelectionListener(c.table.getSelectionModel());
+        }
+    }
+
+    private static final class OpenWebsiteCommand extends JCommand<JSdmxWebSourcePanel> {
+
+        public static final OpenWebsiteCommand INSTANCE = new OpenWebsiteCommand();
+
+        @Override
+        public void execute(JSdmxWebSourcePanel c) throws Exception {
+            try {
+                DesktopManager.get().browse(getSelection(c).getWebsite().toURI());
+            } catch (IOException | URISyntaxException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+
+        @Override
+        public boolean isEnabled(JSdmxWebSourcePanel c) {
+            return c.table.getSelectedRowCount() == 1
+                    && DesktopManager.get().isSupported(Desktop.Action.BROWSE)
+                    && getSelection(c).getWebsite() != null;
+        }
+
+        @Override
+        public JCommand.ActionAdapter toAction(JSdmxWebSourcePanel c) {
+            return super.toAction(c).withWeakListSelectionListener(c.table.getSelectionModel());
+        }
+
+        private SdmxWebSource getSelection(JSdmxWebSourcePanel c) {
+            int idx = c.table.convertRowIndexToModel(c.table.getSelectedRow());
+            return ((WebSourceModel) c.table.getModel()).getValues().get(idx);
         }
     }
 }
