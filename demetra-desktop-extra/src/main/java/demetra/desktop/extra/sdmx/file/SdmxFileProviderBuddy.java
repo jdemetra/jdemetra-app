@@ -51,6 +51,21 @@ public final class SdmxFileProviderBuddy implements DataSourceProviderBuddy, Con
     }
 
     @Override
+    public String getProviderName() {
+        return SdmxFileProvider.NAME;
+    }
+
+    @Override
+    public Image getIconOrNull(int type, boolean opened) {
+        return SdmxAutoCompletion.getDefaultIcon().getImage();
+    }
+
+    @Override
+    public Sheet getSheetOfBeanOrNull(Object bean) {
+        return bean instanceof SdmxFileBean ? getSheetOrNull((SdmxFileBean) bean) : null;
+    }
+
+    @Override
     public void configure() {
         SdmxFileConfiguration editable = SdmxFileConfiguration.copyOf(configuration);
         PropertySheetDialogBuilder editor = new PropertySheetDialogBuilder()
@@ -71,21 +86,6 @@ public final class SdmxFileProviderBuddy implements DataSourceProviderBuddy, Con
     public void setConfig(Config config) throws IllegalArgumentException {
         SdmxFileConfiguration.PERSISTENCE.storeConfig(configuration, config);
         updateProvider();
-    }
-
-    @Override
-    public String getProviderName() {
-        return SdmxFileProvider.NAME;
-    }
-
-    @Override
-    public Image getIconOrNull(int type, boolean opened) {
-        return SdmxAutoCompletion.getDefaultIcon().getImage();
-    }
-
-    @Override
-    public Sheet getSheetOfBeanOrNull(Object bean) {
-        return bean instanceof SdmxFileBean ? getSheetOrNull((SdmxFileBean) bean) : null;
     }
 
     private Sheet getSheetOrNull(SdmxFileBean bean) {

@@ -171,7 +171,7 @@ public final class JSdmxWebSourcePanel extends JComponent {
 
         @OnEDT
         public MonitorReport get(SdmxWebSource url, Runnable onUpdate) {
-            return cache.computeIfAbsent(url.getName(), host -> request(url, onUpdate));
+            return url != null ? cache.computeIfAbsent(url.getName(), host -> request(url, onUpdate)) : fallback;
         }
 
         @OnEDT

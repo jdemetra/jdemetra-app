@@ -34,7 +34,7 @@ public class FaviconSupport {
 
     @OnEDT
     public Icon get(URL url, Runnable onUpdate) {
-        return cache.computeIfAbsent(url.getHost(), host -> request(url, onUpdate));
+        return url != null ? cache.computeIfAbsent(url.getHost(), host -> request(url, onUpdate)) : fallback;
     }
 
     @OnEDT

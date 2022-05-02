@@ -16,6 +16,8 @@
  */
 package demetra.desktop.extra.sdmx.web;
 
+import demetra.desktop.Config;
+import demetra.desktop.Persistable;
 import demetra.desktop.TsManager;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
@@ -46,7 +48,7 @@ import sdmxdl.web.SdmxWebSource;
  */
 @DirectImpl
 @ServiceProvider(DataSourceProviderBuddy.class)
-public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy, Configurable {
+public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy, Configurable, Persistable {
 
     private static final String SOURCE = "DOTSTAT";
 
@@ -59,18 +61,6 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy, Conf
 
     private void updateProvider() {
         lookupProvider().ifPresent(provider -> provider.setSdmxManager(configuration.toSdmxWebManager()));
-    }
-
-    @Override
-    public void configure() {
-        SdmxWebConfiguration editable = SdmxWebConfiguration.copyOf(configuration);
-        PropertySheetDialogBuilder editor = new PropertySheetDialogBuilder()
-                .title("Configure " + lookupProvider().map(SdmxWebProvider::getDisplayName).orElse(""))
-                .icon(SdmxAutoCompletion.getDefaultIcon());
-        if (editor.editSheet(editable.toSheet())) {
-            configuration = editable;
-            updateProvider();
-        }
     }
 
     @Override
@@ -120,6 +110,29 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy, Conf
     @Override
     public Sheet getSheetOfBeanOrNull(Object bean) {
         return bean instanceof SdmxWebBean ? getSheetOrNull((SdmxWebBean) bean) : null;
+    }
+
+    @Override
+    public void configure() {
+        SdmxWebConfiguration editable = SdmxWebConfiguration.copyOf(configuration);
+        PropertySheetDialogBuilder editor = new PropertySheetDialogBuilder()
+                .title("Configure " + lookupProvider().map(SdmxWebProvider::getDisplayName).orElse(""))
+                .icon(SdmxAutoCompletion.getDefaultIcon());
+        if (editor.editSheet(editable.toSheet())) {
+            configuration = editable;
+            updateProvider();
+        }
+    }
+
+    @Override
+    public Config getConfig() {
+        return SdmxWebConfiguration.PERSISTENCE.loadConfig(configuration);
+    }
+
+    @Override
+    public void setConfig(Config config) throws IllegalArgumentException {
+        SdmxWebConfiguration.PERSISTENCE.storeConfig(configuration, config);
+        updateProvider();
     }
 
     private Sheet getSheetOrNull(SdmxWebBean bean) {
