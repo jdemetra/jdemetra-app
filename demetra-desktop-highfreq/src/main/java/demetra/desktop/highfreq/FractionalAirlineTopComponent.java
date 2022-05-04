@@ -4,7 +4,7 @@
  */
 package demetra.desktop.highfreq;
 
-import demetra.desktop.ui.processing.DocumentUIServices;
+import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;

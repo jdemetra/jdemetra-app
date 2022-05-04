@@ -19,7 +19,7 @@ package demetra.desktop.tramo.ui.actions;
 import demetra.desktop.Config;
 import demetra.desktop.interchange.Exportable;
 import demetra.desktop.interchange.Interchange;
-import demetra.desktop.tramo.ui.TramoSpecManager;
+import demetra.desktop.tramo.documents.TramoSpecManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.ItemWsNode;
 import demetra.information.InformationSet;

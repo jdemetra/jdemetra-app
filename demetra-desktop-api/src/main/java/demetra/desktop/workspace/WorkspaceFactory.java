@@ -4,6 +4,7 @@
  */
 package demetra.desktop.workspace;
 
+import demetra.DemetraVersion;
 import demetra.timeseries.regression.ModellingContext;
 import demetra.util.Id;
 import demetra.util.TreeOfIds;
@@ -247,7 +248,7 @@ public class WorkspaceFactory implements LookupListener {
             NotifyDescriptor nd = new NotifyDescriptor.Confirmation(CLOSE_MSG, NotifyDescriptor.YES_NO_CANCEL_OPTION);
             Object notify = DialogDisplayer.getDefault().notify(nd);
             if (notify == NotifyDescriptor.YES_OPTION) {
-                ws_.save();
+                ws_.save(DemetraVersion.JD3);
             } else if (notify == NotifyDescriptor.CANCEL_OPTION) {
                 return false;
             }

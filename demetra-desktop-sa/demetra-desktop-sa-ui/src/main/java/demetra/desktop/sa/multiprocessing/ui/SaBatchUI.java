@@ -31,7 +31,7 @@ import demetra.desktop.workspace.ui.JSpecSelectionComponent;
 import demetra.sa.SaItem;
 import demetra.desktop.sa.multiprocessing.ui.MultiProcessingController.SaProcessingState;
 import demetra.desktop.sa.ui.DemetraSaUI;
-import demetra.desktop.ui.processing.DocumentUIServices;
+import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.processing.ProcQuality;

@@ -99,7 +99,6 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
             panel.dispose();
         }
         TsDynamicProvider.OnDocumentClosing(panel.getDocument());
-        doc.setView(null);
         super.componentClosed();
     }
 

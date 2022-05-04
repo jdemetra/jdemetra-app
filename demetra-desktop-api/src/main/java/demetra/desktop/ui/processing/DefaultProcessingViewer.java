@@ -7,6 +7,7 @@ import demetra.desktop.interfaces.Disposable;
 import demetra.desktop.nodes.DecoratedNode;
 import demetra.desktop.ui.IdNodes;
 import demetra.desktop.util.NbComponents;
+import demetra.desktop.workspace.DocumentUIServices;
 import demetra.processing.ProcDocument;
 import demetra.processing.ProcSpecification;
 import demetra.util.Arrays2;

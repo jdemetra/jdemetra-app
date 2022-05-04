@@ -16,6 +16,7 @@
  */
 package demetra.desktop.workspace;
 
+import demetra.DemetraVersion;
 import demetra.timeseries.calendars.CalendarDefinition;
 import demetra.timeseries.calendars.CalendarManager;
 import demetra.timeseries.regression.ModellingContext;
@@ -49,11 +50,11 @@ public interface WorkspaceRepository {
 
     Workspace open();
 
-    boolean saveAs(Workspace ws);
+    boolean saveAs(Workspace ws, DemetraVersion version);
 
     boolean load(Workspace ws);
 
-    boolean save(Workspace ws, boolean force);
+    boolean save(Workspace ws, DemetraVersion version, boolean force);
 
     boolean delete(Workspace ws);
 
@@ -61,7 +62,7 @@ public interface WorkspaceRepository {
 
     boolean loadItem(WorkspaceItem<?> item);
 
-    boolean saveItem(WorkspaceItem<?> item);
+    boolean saveItem(WorkspaceItem<?> item, DemetraVersion version);
 
     boolean deleteItem(WorkspaceItem<?> item);
 

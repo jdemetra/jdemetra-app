@@ -6,11 +6,13 @@ package demetra.desktop.stl;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.stl.ui.StlPlusSpecUI;
-import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.IProcDocumentView;
+import demetra.desktop.workspace.DocumentUIServices;
+import demetra.desktop.workspace.WorkspaceItem;
 import java.awt.Color;
 import javax.swing.Icon;
 import demetra.stl.StlSpecification;
+import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -19,9 +21,8 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = DocumentUIServices.class)
 public class StlPlusUIFactory implements DocumentUIServices<StlSpecification, StlPlusDocument> {
-    
-//    public static StlPlusUIFactory INSTANCE=new StlPlusUIFactory();
 
+//    public static StlPlusUIFactory INSTANCE=new StlPlusUIFactory();
     @Override
     public IProcDocumentView<StlPlusDocument> getDocumentView(StlPlusDocument document) {
         return StlPlusViewFactory.getDefault().create(document);
@@ -34,23 +35,33 @@ public class StlPlusUIFactory implements DocumentUIServices<StlSpecification, St
 
     @Override
     public Class<StlPlusDocument> getDocumentType() {
-        return StlPlusDocument.class; 
+        return StlPlusDocument.class;
     }
 
     @Override
     public Class<StlSpecification> getSpecType() {
-        return StlSpecification.class; 
+        return StlSpecification.class;
     }
 
     @Override
     public Color getColor() {
-        return Color.GRAY; 
+        return Color.RED;
     }
 
     @Override
     public Icon getIcon() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ImageUtilities.loadImageIcon("demetra/desktop/stl/tangent_red.png", false);
     }
 
+    @Override
+    public void showDocument(WorkspaceItem<StlPlusDocument> item) {
+        if (item.isOpen()) {
+            item.getView().requestActive();
+        } else {
+            StlPlusTopComponent view = new StlPlusTopComponent(item);
+            view.open();
+            view.requestActive();
+        }
+    }
 
 }

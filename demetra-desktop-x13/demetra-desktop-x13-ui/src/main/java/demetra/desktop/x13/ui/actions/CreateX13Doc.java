@@ -16,13 +16,16 @@
  */
 package demetra.desktop.x13.ui.actions;
 
-import demetra.desktop.x13.ui.X13SpecManager;
+import demetra.desktop.x13.documents.X13SpecManager;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.WsNode;
+import demetra.desktop.x13.documents.X13DocumentManager;
+import demetra.desktop.x13.ui.X13TopComponent;
 import demetra.x13.X13Spec;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import jdplus.x13.X13Document;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -47,13 +50,16 @@ public final class CreateX13Doc implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ev) {
         final WorkspaceItem<X13Spec> xdoc = context.getWorkspace().searchDocument(context.lookup(), X13Spec.class);
-        if (xdoc == null||xdoc.getElement() == null) {
+        if (xdoc == null || xdoc.getElement() == null) {
             return;
         }
-        X13SpecManager mgr = (X13SpecManager) WorkspaceFactory.getInstance().getManager(xdoc.getFamily());
-        if (mgr != null) {
-            mgr.createDocument(context.getWorkspace(), xdoc);
-        }
+        X13DocumentManager dmgr = (X13DocumentManager) WorkspaceFactory.getInstance().getManager(X13DocumentManager.ID);
+        WorkspaceItem<X13Document> doc = dmgr.create(context.getWorkspace());
+        doc.setComments(xdoc.getComments());
+        doc.getElement().set(xdoc.getElement());
+        X13TopComponent view = new X13TopComponent(doc);
+        view.open();
+        view.requestActive();
     }
 }
 

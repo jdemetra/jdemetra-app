@@ -6,13 +6,14 @@ package demetra.desktop.tramoseats.ui;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.tramoseats.descriptors.TramoSeatsSpecUI;
-import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.IProcDocumentView;
-import demetra.processing.ProcDocument;
+import demetra.desktop.workspace.DocumentUIServices;
+import demetra.desktop.workspace.WorkspaceItem;
 import demetra.tramoseats.TramoSeatsSpec;
 import java.awt.Color;
 import javax.swing.Icon;
 import jdplus.tramoseats.TramoSeatsDocument;
+import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -21,8 +22,6 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = DocumentUIServices.class)
 public class TramoSeatsUIFactory implements DocumentUIServices<TramoSeatsSpec, TramoSeatsDocument> {
-    
-//    public static TramoSeatsUIFactory INSTANCE=new TramoSeatsUIFactory();
 
     @Override
     public IProcDocumentView<TramoSeatsDocument> getDocumentView(TramoSeatsDocument document) {
@@ -36,22 +35,33 @@ public class TramoSeatsUIFactory implements DocumentUIServices<TramoSeatsSpec, T
 
     @Override
     public Class<TramoSeatsDocument> getDocumentType() {
-        return TramoSeatsDocument.class; 
+        return TramoSeatsDocument.class;
     }
 
     @Override
     public Class<TramoSeatsSpec> getSpecType() {
-        return TramoSeatsSpec.class; 
+        return TramoSeatsSpec.class;
     }
 
     @Override
     public Color getColor() {
-        return Color.BLUE; 
+        return Color.BLUE;
     }
 
     @Override
     public Icon getIcon() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ImageUtilities.loadImageIcon("demetra/desktop/tramoseats/ui/tangent_blue.png", false);
+    }
+
+    @Override
+    public void showDocument(WorkspaceItem<TramoSeatsDocument> item) {
+        if (item.isOpen()) {
+            item.getView().requestActive();
+        } else {
+            TramoSeatsTopComponent view = new TramoSeatsTopComponent(item);
+            view.open();
+            view.requestActive();
+        }
     }
 
 }

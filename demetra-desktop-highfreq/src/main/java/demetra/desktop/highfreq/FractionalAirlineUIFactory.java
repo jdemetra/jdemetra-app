@@ -6,12 +6,13 @@ package demetra.desktop.highfreq;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.highfreq.ui.FractionalAirlineSpecUI;
-import demetra.desktop.ui.processing.DocumentUIServices;
+import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.ui.processing.IProcDocumentView;
+import demetra.desktop.workspace.WorkspaceItem;
 import demetra.highfreq.ExtendedAirlineModellingSpec;
-import demetra.highfreq.ExtendedAirlineSpec;
 import java.awt.Color;
 import javax.swing.Icon;
+import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -45,13 +46,23 @@ public class FractionalAirlineUIFactory implements DocumentUIServices<ExtendedAi
 
     @Override
     public Color getColor() {
-        return Color.BLUE; 
+        return Color.GREEN; 
     }
 
     @Override
     public Icon getIcon() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ImageUtilities.loadImageIcon("demetra/desktop/highfreq/tangent_green.png", false);
     }
 
+    @Override
+    public void showDocument(WorkspaceItem<FractionalAirlineDocument> item) {
+        if (item.isOpen()) {
+            item.getView().requestActive();
+        } else {
+            FractionalAirlineTopComponent view = new FractionalAirlineTopComponent(item);
+            view.open();
+            view.requestActive();
+        }
+    }
 
 }

@@ -9,6 +9,7 @@ import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.TsManager;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.workspace.DocumentUIServices;
 import demetra.processing.ProcSpecification;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsDocument;

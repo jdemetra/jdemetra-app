@@ -4,7 +4,7 @@
  */
 package demetra.desktop.x13.ui.actions;
 
-import demetra.desktop.x13.ui.X13SpecManager;
+import demetra.desktop.x13.documents.X13SpecManager;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.WsNode;

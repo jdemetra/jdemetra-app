@@ -61,14 +61,4 @@ public class FractionalAirlineDecompositionDocumentManager extends AbstractWorks
         return FractionalAirlineDecompositionDocument.class;
     }
 
-    @Override
-    public void openDocument(WorkspaceItem<FractionalAirlineDecompositionDocument> item) {
-        if (item.isOpen()) {
-            item.getView().requestActive();
-        } else {
-            FractionalAirlineDecompositionTopComponent view = new FractionalAirlineDecompositionTopComponent(item);
-            view.open();
-            view.requestActive();
-        }
-    }
 }

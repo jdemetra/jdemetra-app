@@ -27,7 +27,9 @@ public abstract class AbstractWorkspaceTsItemManager<S extends ProcSpecification
             public void actionPerformed(ActionEvent e) {
                 WorkspaceItem<D> doc = (WorkspaceItem<D>) WorkspaceFactory.getInstance().getActiveWorkspace().searchDocument(child);
                 if (doc != null) {
-                    openDocument(doc);
+                    DocumentUIServices ui = DocumentUIServices.forDocument(doc.getElement().getClass());
+                    if (ui != null)
+                        ui.showDocument(doc);
                 }
             }
         };
@@ -36,7 +38,6 @@ public abstract class AbstractWorkspaceTsItemManager<S extends ProcSpecification
     @Override
     public abstract D createNewObject();
 
-    public abstract void openDocument(WorkspaceItem<D> doc);
     
     @Override
     public WorkspaceItem<D> create(Workspace ws){

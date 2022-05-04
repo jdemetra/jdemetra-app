@@ -19,14 +19,13 @@ import org.openide.util.Lookup;
  */
 @ServiceDefinition
 public interface WorkspaceItemManager<D> {
-    
-        public  static <K> WorkspaceItemManager<K> forItem(Class<K> itemclass) {
-        Optional<? extends WorkspaceItemManager > s = Lookup.getDefault().lookupAll(WorkspaceItemManager.class).stream()
-                .filter(mgr->mgr.getItemClass().equals(itemclass)).findFirst();
-      
+
+    public static <K> WorkspaceItemManager<K> forItem(Class<K> itemclass) {
+        Optional<? extends WorkspaceItemManager> s = Lookup.getDefault().lookupAll(WorkspaceItemManager.class).stream()
+                .filter(mgr -> mgr.getItemClass().equals(itemclass)).findFirst();
+
         return s.isPresent() ? s.get() : null;
     }
-
 
     enum ItemType {
         Undefined,
@@ -36,7 +35,7 @@ public interface WorkspaceItemManager<D> {
         Tool
     }
 
-    enum Status  {
+    enum Status {
         Certified,
         Acceptable,
         Legacy,
@@ -67,7 +66,22 @@ public interface WorkspaceItemManager<D> {
 
     boolean isAutoLoad();
 
-    Icon getItemIcon(WorkspaceItem<D> doc);
-
-    Icon getManagerIcon();
+    default Icon getManagerIcon() {
+        DocumentUIServices ui = DocumentUIServices.forDocument(getItemClass());
+        if (ui != null) {
+            return ui.getIcon();
+        } else {
+            return null;
+        }
+    }
+    
+    default Icon getItemIcon(WorkspaceItem<D> doc) {
+        DocumentUIServices ui = DocumentUIServices.forDocument(getItemClass());
+        if (ui != null) {
+            return ui.getItemIcon(doc);
+        } else {
+            return null;
+        }
+    }
+    
 }

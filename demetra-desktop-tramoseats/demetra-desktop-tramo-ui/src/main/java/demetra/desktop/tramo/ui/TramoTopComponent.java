@@ -4,9 +4,10 @@
  */
 package demetra.desktop.tramo.ui;
 
-import demetra.desktop.ui.processing.DocumentUIServices;
+import demetra.desktop.tramo.documents.TramoDocumentManager;
 import jdplus.tramo.TramoDocument;
 import demetra.desktop.ui.processing.TsProcessingViewer;
+import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.WorkspaceTsTopComponent;

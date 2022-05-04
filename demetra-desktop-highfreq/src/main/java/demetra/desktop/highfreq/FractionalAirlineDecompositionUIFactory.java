@@ -6,11 +6,13 @@ package demetra.desktop.highfreq;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.highfreq.ui.FractionalAirlineDecompositionSpecUI;
-import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.IProcDocumentView;
+import demetra.desktop.workspace.DocumentUIServices;
+import demetra.desktop.workspace.WorkspaceItem;
 import demetra.highfreq.ExtendedAirlineDecompositionSpec;
 import java.awt.Color;
 import javax.swing.Icon;
+import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -44,13 +46,23 @@ public class FractionalAirlineDecompositionUIFactory implements DocumentUIServic
 
     @Override
     public Color getColor() {
-        return Color.BLUE; 
+        return Color.GREEN; 
     }
 
     @Override
     public Icon getIcon() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ImageUtilities.loadImageIcon("demetra/desktop/highfreq/tangent_green.png", false);
     }
 
+    @Override
+    public void showDocument(WorkspaceItem<FractionalAirlineDecompositionDocument> item) {
+        if (item.isOpen()) {
+            item.getView().requestActive();
+        } else {
+            FractionalAirlineDecompositionTopComponent view = new FractionalAirlineDecompositionTopComponent(item);
+            view.open();
+            view.requestActive();
+        }
+    }
 
 }

@@ -16,8 +16,8 @@
  */
 package demetra.desktop.x13.ui.actions;
 
-import demetra.desktop.x13.ui.X13DocumentManager;
-import demetra.desktop.x13.ui.X13SpecManager;
+import demetra.desktop.x13.documents.X13DocumentManager;
+import demetra.desktop.x13.documents.X13SpecManager;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

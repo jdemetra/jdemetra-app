@@ -4,8 +4,9 @@
  */
 package demetra.desktop.tramoseats.ui;
 
-import demetra.desktop.ui.processing.DocumentUIServices;
+import demetra.desktop.tramoseats.documents.TramoSeatsDocumentManager;
 import demetra.desktop.ui.processing.TsProcessingViewer;
+import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.WorkspaceTsTopComponent;

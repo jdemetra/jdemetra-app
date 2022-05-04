@@ -4,12 +4,10 @@
  */
 package demetra.desktop.highfreq;
 
-import demetra.desktop.workspace.AbstractWorkspaceItemManager;
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.highfreq.ExtendedAirlineModellingSpec;
-import demetra.highfreq.ExtendedAirlineSpec;
 import demetra.util.Id;
 import demetra.util.LinearId;
 import org.openide.util.lookup.ServiceProvider;
@@ -63,14 +61,4 @@ public class FractionalAirlineDocumentManager extends AbstractWorkspaceTsItemMan
         return FractionalAirlineDocument.class;
     }
 
-    @Override
-    public void openDocument(WorkspaceItem<FractionalAirlineDocument> item) {
-        if (item.isOpen()) {
-            item.getView().requestActive();
-        } else {
-            FractionalAirlineTopComponent view = new FractionalAirlineTopComponent(item);
-            view.open();
-            view.requestActive();
-        }
-    }
 }

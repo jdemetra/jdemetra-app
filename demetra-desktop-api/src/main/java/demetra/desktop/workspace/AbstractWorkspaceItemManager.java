@@ -62,16 +62,6 @@ public abstract class AbstractWorkspaceItemManager<D> implements WorkspaceItemMa
     }
 
     @Override
-    public Icon getItemIcon(WorkspaceItem<D> doc) {
-        return getManagerIcon();
-    }
-
-    @Override
-    public Icon getManagerIcon() {
-        return null;
-    }
-
-    @Override
     public boolean isAutoLoad(){
         return false;
     }

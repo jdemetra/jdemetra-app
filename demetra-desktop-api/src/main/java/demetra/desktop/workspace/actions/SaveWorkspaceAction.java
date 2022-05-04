@@ -4,6 +4,7 @@
  */
 package demetra.desktop.workspace.actions;
 
+import demetra.DemetraVersion;
 import demetra.desktop.workspace.Workspace;
 import demetra.desktop.workspace.WorkspaceFactory;
 import java.awt.event.ActionEvent;
@@ -30,7 +31,7 @@ public final class SaveWorkspaceAction extends AbstractAction{ // implements Con
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        WorkspaceFactory.getInstance().getActiveWorkspace().save();
+        WorkspaceFactory.getInstance().getActiveWorkspace().save(DemetraVersion.JD2);
     }
     
     @Override

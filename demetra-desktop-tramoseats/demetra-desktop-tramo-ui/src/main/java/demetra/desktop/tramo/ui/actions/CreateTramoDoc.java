@@ -16,13 +16,16 @@
  */
 package demetra.desktop.tramo.ui.actions;
 
-import demetra.desktop.tramo.ui.TramoSpecManager;
+import demetra.desktop.tramo.documents.TramoDocumentManager;
+import demetra.desktop.tramo.documents.TramoSpecManager;
+import demetra.desktop.tramo.ui.TramoTopComponent;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.WsNode;
 import demetra.tramo.TramoSpec;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import jdplus.tramo.TramoDocument;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -30,7 +33,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "Tools",
-id = "demetra.desktop.tramo.ui.actions.CreateTramoDoc")
+        id = "demetra.desktop.tramo.ui.actions.CreateTramoDoc")
 @ActionRegistration(displayName = "#CTL_CreateTramoDoc")
 @ActionReferences({
     @ActionReference(path = TramoSpecManager.ITEMPATH, position = 1620, separatorBefore = 1300)
@@ -43,17 +46,19 @@ public final class CreateTramoDoc implements ActionListener {
     public CreateTramoDoc(WsNode context) {
         this.context = context;
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent ev) {
         final WorkspaceItem<TramoSpec> xdoc = context.getWorkspace().searchDocument(context.lookup(), TramoSpec.class);
-        if (xdoc == null||xdoc.getElement() == null) {
+        if (xdoc == null || xdoc.getElement() == null) {
             return;
         }
-        TramoSpecManager mgr = (TramoSpecManager) WorkspaceFactory.getInstance().getManager(xdoc.getFamily());
-        if (mgr != null) {
-            mgr.createDocument(context.getWorkspace(), xdoc);
-        }
+        TramoDocumentManager dmgr = (TramoDocumentManager) WorkspaceFactory.getInstance().getManager(TramoDocumentManager.ID);
+        WorkspaceItem<TramoDocument> doc = dmgr.create(context.getWorkspace());
+        doc.setComments(xdoc.getComments());
+        doc.getElement().set(xdoc.getElement());
+        TramoTopComponent view = new TramoTopComponent(doc);
+        view.open();
+        view.requestActive();
     }
 }
-

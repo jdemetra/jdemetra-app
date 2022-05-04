@@ -6,12 +6,14 @@ package demetra.desktop.tramo.ui;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.tramo.descriptors.TramoSpecUI;
-import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.IProcDocumentView;
+import demetra.desktop.workspace.DocumentUIServices;
+import demetra.desktop.workspace.WorkspaceItem;
 import demetra.tramo.TramoSpec;
 import java.awt.Color;
 import javax.swing.Icon;
 import jdplus.tramo.TramoDocument;
+import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -50,8 +52,18 @@ public class TramoUIFactory implements DocumentUIServices<TramoSpec, TramoDocume
 
     @Override
     public Icon getIcon() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ImageUtilities.loadImageIcon("demetra/desktop/tramo/ui/tangent_blue.png", false);
     }
 
+    @Override
+    public void showDocument(WorkspaceItem<TramoDocument> item) {
+        if (item.isOpen()) {
+            item.getView().requestActive();
+        } else {
+            TramoTopComponent view = new TramoTopComponent(item);
+            view.open();
+            view.requestActive();
+        }
+    }
 
 }

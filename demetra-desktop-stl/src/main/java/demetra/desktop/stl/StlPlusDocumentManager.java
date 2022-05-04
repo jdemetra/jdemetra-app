@@ -62,14 +62,4 @@ public class StlPlusDocumentManager extends AbstractWorkspaceTsItemManager<StlSp
         return StlPlusDocument.class;
     }
 
-    @Override
-    public void openDocument(WorkspaceItem<StlPlusDocument> item) {
-        if (item.isOpen()) {
-            item.getView().requestActive();
-        } else {
-            StlPlusTopComponent view = new StlPlusTopComponent(item);
-            view.open();
-            view.requestActive();
-        }
-    }
 }
