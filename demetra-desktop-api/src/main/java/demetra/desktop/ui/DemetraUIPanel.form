@@ -30,7 +30,7 @@
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
             <TitledBorder title="Charts">
-              <ResourceString PropertyName="titleX" bundle="ec/nbdemetra/ui/Bundle.properties" key="DemetraUIPanel.chartsPanel.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString PropertyName="titleX" bundle="demetra/desktop/api/Bundle.properties" key="DemetraUIPanel.chartsPanel.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </TitledBorder>
           </Border>
         </Property>
@@ -56,7 +56,7 @@
             <Property name="horizontalGap" type="int" value="10"/>
           </Layout>
           <SubComponents>
-            <Component class="ec.nbdemetra.ui.ns.NamedServiceChoicePanel" name="colorSchemeChoicePanel">
+            <Component class="demetra.desktop.nodes.NamedServiceChoicePanel" name="colorSchemeChoicePanel">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
                   <BorderConstraints direction="Center"/>
@@ -66,7 +66,7 @@
             <Component class="javax.swing.JLabel" name="colorSchemeLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="ec/nbdemetra/ui/Bundle.properties" key="DemetraUIPanel.colorSchemeLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                  <ResourceString bundle="demetra/desktop/api/Bundle.properties" key="DemetraUIPanel.colorSchemeLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Constraints>
@@ -139,7 +139,7 @@
             <Component class="javax.swing.JLabel" name="dataFormatLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="ec/nbdemetra/ui/Bundle.properties" key="DemetraUIPanel.dataFormatLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                  <ResourceString bundle="demetra/desktop/api/Bundle.properties" key="DemetraUIPanel.dataFormatLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Constraints>
@@ -148,7 +148,7 @@
                 </Constraint>
               </Constraints>
             </Component>
-            <Component class="JObsFormatComponent" name="dataFormatComponent">
+            <Component class="demetra.desktop.components.JObsFormatComponent" name="dataFormatComponent">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
                   <BorderConstraints direction="Center"/>
@@ -179,7 +179,7 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Growth Charts">
-                      <ResourceString PropertyName="titleX" bundle="ec/nbdemetra/ui/Bundle.properties" key="DemetraUIPanel.growthChartsPanel.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString PropertyName="titleX" bundle="demetra/desktop/api/Bundle.properties" key="DemetraUIPanel.growthChartsPanel.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </TitledBorder>
                   </Border>
                 </Property>
@@ -220,7 +220,7 @@
                 <Component class="javax.swing.JLabel" name="lastYearsLabel">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ec/nbdemetra/ui/Bundle.properties" key="DemetraUIPanel.lastYearsLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="demetra/desktop/api/Bundle.properties" key="DemetraUIPanel.lastYearsLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                 </Component>
@@ -231,7 +231,7 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Pre-specified Outliers">
-                      <ResourceString PropertyName="titleX" bundle="ec/nbdemetra/ui/Bundle.properties" key="DemetraUIPanel.outliersEditorPanel.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString PropertyName="titleX" bundle="demetra/desktop/api/Bundle.properties" key="DemetraUIPanel.outliersEditorPanel.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </TitledBorder>
                   </Border>
                 </Property>
@@ -262,7 +262,7 @@
                 <Component class="javax.swing.JLabel" name="lastYearsLabel1">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ec/nbdemetra/ui/Bundle.properties" key="DemetraUIPanel.lastYearsLabel1.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                      <ResourceString bundle="demetra/desktop/api/Bundle.properties" key="DemetraUIPanel.lastYearsLabel1.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                 </Component>
@@ -285,7 +285,7 @@
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                 <TitledBorder title="Html Font Size">
-                  <ResourceString PropertyName="titleX" bundle="ec/nbdemetra/ui/Bundle.properties" key="DemetraUIPanel.htmlFontPanel.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                  <ResourceString PropertyName="titleX" bundle="demetra/desktop/api/Bundle.properties" key="DemetraUIPanel.htmlFontPanel.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </TitledBorder>
               </Border>
             </Property>
@@ -305,7 +305,7 @@
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                 <TitledBorder title="Context Menus">
-                  <ResourceString PropertyName="titleX" bundle="ec/nbdemetra/ui/Bundle.properties" key="DemetraUIPanel.popupMenuPanel.border.title_1" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                  <ResourceString PropertyName="titleX" bundle="demetra/desktop/api/Bundle.properties" key="DemetraUIPanel.popupMenuPanel.border.title_1" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </TitledBorder>
               </Border>
             </Property>
@@ -319,7 +319,7 @@
             <Component class="javax.swing.JCheckBox" name="iconsVisibleCB">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="ec/nbdemetra/ui/Bundle.properties" key="DemetraUIPanel.iconsVisibleCB.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                  <ResourceString bundle="demetra/desktop/api/Bundle.properties" key="DemetraUIPanel.iconsVisibleCB.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
                 <Property name="focusPainted" type="boolean" value="false"/>
               </Properties>

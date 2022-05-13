@@ -23,11 +23,14 @@ import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 
-@OptionsPanelController.SubRegistration(location = "Demetra",
-displayName = "#AdvancedOption_DisplayName_DemetraUI",
-keywords = "#AdvancedOption_Keywords_DemetraUI",
-keywordsCategory = "Demetra/DemetraUI",
-id = DemetraUIOptionsPanelController.ID, position = 2)
+@OptionsPanelController.SubRegistration(
+    location = "Demetra",
+    displayName = "#AdvancedOption_DisplayName_DemetraUI",
+    keywords = "#AdvancedOption_Keywords_DemetraUI",
+    keywordsCategory = "Demetra/DemetraUI",
+    id = DemetraUIOptionsPanelController.ID, 
+    position = 1
+)
 @org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_DemetraUI=Demetra UI", "AdvancedOption_Keywords_DemetraUI=demetraui"})
 public final class DemetraUIOptionsPanelController extends OptionsPanelController {
 

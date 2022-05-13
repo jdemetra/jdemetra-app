@@ -15,6 +15,7 @@ import demetra.timeseries.calendars.FixedDay;
 import demetra.timeseries.calendars.FixedWeekDay;
 import demetra.timeseries.calendars.Holiday;
 import demetra.timeseries.calendars.PrespecifiedHoliday;
+import demetra.timeseries.calendars.SingleDate;
 import demetra.timeseries.regression.ModellingContext;
 import demetra.util.Arrays2;
 import demetra.util.Constraint;
@@ -115,6 +116,14 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
                 lastUsedAction = this;
             }
         });
+        addPopupMenu.add(new AbstractAction("Single Date") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                childFactory.beans.add(new SingleDateBean());
+                childFactory.refreshData();
+                lastUsedAction = this;
+            }
+        });
 
         initComponents();
 
@@ -145,7 +154,7 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
 
     private void updateFromBeans() {
         ImmutableList.Builder<Holiday> tmp = ImmutableList.builder();
-        for (AbstractEventBean o : this.childFactory.beans) {
+        for (HasHoliday o : this.childFactory.beans) {
             tmp.add(o.toHoliday());
         }
         setHolidays(tmp.build());
@@ -265,14 +274,16 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
             childFactory.state = ListenerState.SUSPENDED;
             childFactory.beans.clear();
             for (Holiday o : holidays) {
-                if (o instanceof FixedDay) {
-                    childFactory.beans.add(new FixedEventBean((FixedDay) o, o.getValidityPeriod()));
-                } else if (o instanceof EasterRelatedDay) {
-                    childFactory.beans.add(new EasterRelatedEventBean((EasterRelatedDay) o, o.getValidityPeriod()));
-                } else if (o instanceof FixedWeekDay) {
-                    childFactory.beans.add(new FixedWeekEventBean((FixedWeekDay) o, o.getValidityPeriod()));
-                } else if (o instanceof PrespecifiedHoliday) {
-                    childFactory.beans.add(new PrespecifiedHolidayBean((PrespecifiedHoliday) o));
+                if (o instanceof FixedDay fixedDay) {
+                    childFactory.beans.add(new FixedEventBean(fixedDay, o.getValidityPeriod()));
+                } else if (o instanceof EasterRelatedDay easterRelatedDay) {
+                    childFactory.beans.add(new EasterRelatedEventBean(easterRelatedDay, o.getValidityPeriod()));
+                } else if (o instanceof FixedWeekDay fixedWeekDay) {
+                    childFactory.beans.add(new FixedWeekEventBean(fixedWeekDay, o.getValidityPeriod()));
+                } else if (o instanceof PrespecifiedHoliday prespecifiedHoliday) {
+                    childFactory.beans.add(new PrespecifiedHolidayBean(prespecifiedHoliday));
+                 } else if (o instanceof SingleDate  singleDate) {
+                    childFactory.beans.add(new SingleDateBean(singleDate));
                 }
             }
             childFactory.refreshData();
@@ -308,9 +319,9 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
     }
     //</editor-fold>
 
-    class ListOfSpecialDayEvent extends ChildFactory<AbstractEventBean> implements NodeListener {
+    class ListOfSpecialDayEvent extends ChildFactory<HasHoliday> implements NodeListener {
 
-        public final List<AbstractEventBean> beans = new ArrayList<>();
+        public final List<HasHoliday> beans = new ArrayList<>();
         ListenerState state = ListenerState.READY;
 
         public void refreshData() {
@@ -327,22 +338,24 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
         }
 
         @Override
-        protected boolean createKeys(List<AbstractEventBean> toPopulate) {
+        protected boolean createKeys(List<HasHoliday> toPopulate) {
             toPopulate.addAll(beans);
             return true;
         }
 
         @Override
-        protected Node createNodeForKey(AbstractEventBean key) {
+        protected Node createNodeForKey(HasHoliday key) {
             Node result;
-            if (key instanceof FixedEventBean) {
-                result = new FixedEventNode((FixedEventBean) key);
-            } else if (key instanceof EasterRelatedEventBean) {
-                result = new EasterRelatedEventNode((EasterRelatedEventBean) key);
-            } else if (key instanceof FixedWeekEventBean) {
-                result = new FixedWeekEventNode((FixedWeekEventBean) key);
-            } else if (key instanceof PrespecifiedHolidayBean) {
-                result = new SpecialEventNode((PrespecifiedHolidayBean) key);
+            if (key instanceof FixedEventBean fixedEventBean) {
+                result = new FixedEventNode(fixedEventBean);
+            } else if (key instanceof EasterRelatedEventBean easterRelatedEventBean) {
+                result = new EasterRelatedEventNode(easterRelatedEventBean);
+            } else if (key instanceof FixedWeekEventBean fixedWeekEventBean) {
+                result = new FixedWeekEventNode(fixedWeekEventBean);
+            } else if (key instanceof PrespecifiedHolidayBean prespecifiedHolidayBean) {
+                result = new SpecialEventNode(prespecifiedHolidayBean);
+           } else if (key instanceof SingleDateBean singleDateBean) {
+                result = new SingleDateNode(singleDateBean);
             } else {
                 throw new UnsupportedOperationException();
             }
@@ -399,41 +412,6 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
 
         @Override
         public void changedUpdate(DocumentEvent e) {
-        }
-    }
-
-    private class MeanCheckBoxListener implements ActionListener {
-
-        ListenerState state = ListenerState.READY;
-
-        void update() {
-            if (state == ListenerState.READY) {
-                state = ListenerState.SENDING;
-                state = ListenerState.READY;
-            }
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            update();
-        }
-    }
-
-    private class JulianCheckBoxListener implements ActionListener {
-
-        ListenerState state = ListenerState.READY;
-
-        void update() {
-            if (state == ListenerState.READY) {
-                state = ListenerState.SENDING;
-                updateFromBeans();
-                state = ListenerState.READY;
-            }
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            update();
         }
     }
 

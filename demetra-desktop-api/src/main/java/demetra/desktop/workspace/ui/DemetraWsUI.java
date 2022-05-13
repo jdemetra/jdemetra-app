@@ -4,6 +4,7 @@
  */
 package demetra.desktop.workspace.ui;
 
+import demetra.desktop.ui.mru.MruList;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.nodes.ItemWsNode;
 import demetra.desktop.workspace.nodes.WsNode;
@@ -39,7 +40,7 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Window", id = "demetra.desktop.workspace.ui.DemetraWsUI")
 @ActionReference(path = "Menu/Window" /*
          * , position = 444
-         */)
+ */)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_WsAction",
         preferredID = "WorkspaceTopComponent")
 @NbBundle.Messages({
@@ -157,11 +158,11 @@ public class DemetraWsUI extends TopComponent implements ExplorerManager.Provide
     }
 
     private void processSave(WorkspaceFactory.Event ev) {
-//        MruList.getWorkspacesInstance().add(ev.workspace.getSourceId());
+        MruList.getWorkspacesInstance().add(ev.workspace.getSourceId());
     }
 
     private void processSaveAs(WorkspaceFactory.Event ev) {
-//        MruList.getWorkspacesInstance().add(ev.workspace.getSourceId());
+        MruList.getWorkspacesInstance().add(ev.workspace.getSourceId());
         mgr.getRootContext().setDisplayName(ev.workspace.getName());
     }
 
@@ -171,7 +172,7 @@ public class DemetraWsUI extends TopComponent implements ExplorerManager.Provide
 
     private void processOpen(WorkspaceFactory.Event ev) {
         mgr.setRootContext(new WsRootNode(ev.workspace));
-//       MruList.getWorkspacesInstance().add(ev.workspace.getSourceId());
+        MruList.getWorkspacesInstance().add(ev.workspace.getSourceId());
     }
 
     private void processItemAdded(WorkspaceFactory.Event ev) {

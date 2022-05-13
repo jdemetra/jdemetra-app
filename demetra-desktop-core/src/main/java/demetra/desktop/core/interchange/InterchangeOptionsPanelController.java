@@ -29,7 +29,9 @@ import java.beans.PropertyChangeSupport;
         location = "Demetra",
         displayName = "#AdvancedOption_DisplayName_Interchange",
         keywords = "#AdvancedOption_Keywords_Interchange",
-        keywordsCategory = "Demetra/Interchange"
+        keywordsCategory = "Demetra/Interchange",
+    id = "Demetra/Interchange", 
+    position = 2
 )
 @NbBundle.Messages({
     "AdvancedOption_DisplayName_Interchange=Interchange", 

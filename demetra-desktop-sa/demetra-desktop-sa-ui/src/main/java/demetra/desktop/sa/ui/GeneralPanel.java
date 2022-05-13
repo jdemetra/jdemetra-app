@@ -5,74 +5,41 @@
 package demetra.desktop.sa.ui;
 
 import demetra.desktop.DemetraIcons;
-import demetra.desktop.nodes.AbstractNodeBuilder;
 import demetra.sa.EstimationPolicyType;
 import demetra.sa.SaSpecification;
 import ec.util.list.swing.JListSelection;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.awt.DropDownButtonFactory;
-import org.openide.explorer.ExplorerManager;
-import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 
 final class GeneralPanel extends javax.swing.JPanel {
 
     private final GeneralOptionsPanelController controller;
 
-    private SpecSelectionComponent specComponent = new SpecSelectionComponent(true);
-    private JPopupMenu specPopup = new JPopupMenu();
+    private final SpecSelectionComponent specComponent = new SpecSelectionComponent(true);
+    private final JPopupMenu specPopup = new JPopupMenu();
 
-    private JListSelection<String> fieldSelectionComponent = new JListSelection<>();
+    private final JListSelection<String> fieldSelectionComponent = new JListSelection<>();
 
-    private List<String> selectedDiagFields = new ArrayList<>();
-    private final List<String> allDiagFields = new ArrayList<>();
-
-    private List<String> selectedSeriesFields = new ArrayList<>();
-    private final List<String> allSeriesFields = new ArrayList<>();
 
     private EstimationPolicyType[] types = {EstimationPolicyType.Complete,
         EstimationPolicyType.FreeParameters,
         EstimationPolicyType.None};
 
     GeneralPanel(GeneralOptionsPanelController controller) {
-       this.controller = controller;
+        this.controller = controller;
         initComponents();
         initSpecButton();
-
-        diagnosticsView.getOutline().setRootVisible(false);
-        editDiagnostic.setEnabled(false);
-        resetDiagnostic.setEnabled(false);
 
 // TODO        
 //        allDiagFields.addAll(BasicConfiguration.allSingleSaDetails(false));
 //        allSeriesFields.addAll(BasicConfiguration.allSeries(false, SaManager.instance.getProcessors()));
-
-        selectedDiagFields = new ArrayList<>(allDiagFields);
-        selectedDiagLabel.setText(String.format("%s selected", selectedDiagFields == null ? 0 : selectedDiagFields.size()));
-
-        selectedSeriesFields = new ArrayList<>(selectedSeriesFields);
-        selectedSeriesLabel.setText(String.format("%s selected", selectedSeriesFields == null ? 0 : selectedSeriesFields.size()));
-
-        getDiagnosticsExplorerManager().addPropertyChangeListener((PropertyChangeEvent evt) -> {
-            if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
-                Node[] nodes = (Node[]) evt.getNewValue();
-//                editDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IConfigurable.class) != null);
-//                resetDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(IResetable.class) != null);
-            }
-        });
-        
         fieldSelectionComponent.setSourceHeader(new JLabel("Available items :"));
         fieldSelectionComponent.setTargetHeader(new JLabel("Selected items :"));
         fieldSelectionComponent.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -100,20 +67,6 @@ final class GeneralPanel extends javax.swing.JPanel {
         revisionHistoryPanel = new javax.swing.JPanel();
         estimationLabel = new javax.swing.JLabel();
         estimationPolicyComboBox = new javax.swing.JComboBox();
-        componentsPanel = new javax.swing.JPanel();
-        seriesSubPanel1 = new javax.swing.JPanel();
-        selectedSeriesLabel = new javax.swing.JLabel();
-        selectedSeriesButton = new javax.swing.JButton();
-        estimationLabel6 = new javax.swing.JLabel();
-        seriesSubPanel = new javax.swing.JPanel();
-        selectedDiagLabel = new javax.swing.JLabel();
-        selectedDiagButton = new javax.swing.JButton();
-        estimationLabel1 = new javax.swing.JLabel();
-        diagnosticsPanel = new ExtPanel();
-        jToolBar1 = new javax.swing.JToolBar();
-        editDiagnostic = new javax.swing.JButton();
-        resetDiagnostic = new javax.swing.JButton();
-        diagnosticsView = new org.openide.explorer.view.OutlineView("Diagnostics");
 
         lastYearsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.lastYearsPanel.border.title"))); // NOI18N
 
@@ -177,105 +130,10 @@ final class GeneralPanel extends javax.swing.JPanel {
 
         revisionHistoryPanel.add(estimationPolicyComboBox);
 
-        componentsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.componentsPanel.border.title"))); // NOI18N
-        componentsPanel.setLayout(new javax.swing.BoxLayout(componentsPanel, javax.swing.BoxLayout.PAGE_AXIS));
-
-        seriesSubPanel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 5, 1));
-        seriesSubPanel1.setLayout(new java.awt.BorderLayout());
-
-        org.openide.awt.Mnemonics.setLocalizedText(selectedSeriesLabel, org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.selectedSeriesLabel.text")); // NOI18N
-        seriesSubPanel1.add(selectedSeriesLabel, java.awt.BorderLayout.CENTER);
-
-        org.openide.awt.Mnemonics.setLocalizedText(selectedSeriesButton, org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.selectedSeriesButton.text")); // NOI18N
-        selectedSeriesButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                selectedSeriesButtonActionPerformed(evt);
-            }
-        });
-        seriesSubPanel1.add(selectedSeriesButton, java.awt.BorderLayout.EAST);
-
-        org.openide.awt.Mnemonics.setLocalizedText(estimationLabel6, org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.estimationLabel6.text")); // NOI18N
-        estimationLabel6.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 1, 10));
-        seriesSubPanel1.add(estimationLabel6, java.awt.BorderLayout.WEST);
-
-        componentsPanel.add(seriesSubPanel1);
-
-        seriesSubPanel.setLayout(new java.awt.BorderLayout());
-
-        org.openide.awt.Mnemonics.setLocalizedText(selectedDiagLabel, org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.selectedDiagLabel.text")); // NOI18N
-        seriesSubPanel.add(selectedDiagLabel, java.awt.BorderLayout.CENTER);
-
-        org.openide.awt.Mnemonics.setLocalizedText(selectedDiagButton, org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.selectedDiagButton.text")); // NOI18N
-        selectedDiagButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                selectedDiagButtonActionPerformed(evt);
-            }
-        });
-        seriesSubPanel.add(selectedDiagButton, java.awt.BorderLayout.EAST);
-
-        org.openide.awt.Mnemonics.setLocalizedText(estimationLabel1, org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.estimationLabel1.text")); // NOI18N
-        estimationLabel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 1, 10));
-        seriesSubPanel.add(estimationLabel1, java.awt.BorderLayout.WEST);
-
-        componentsPanel.add(seriesSubPanel);
-
-        diagnosticsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.diagnosticsPanel.border.title"))); // NOI18N
-
-        jToolBar1.setFloatable(false);
-        jToolBar1.setOrientation(javax.swing.SwingConstants.VERTICAL);
-        jToolBar1.setRollover(true);
-
-        org.openide.awt.Mnemonics.setLocalizedText(editDiagnostic, org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.editDiagnostic.text")); // NOI18N
-        editDiagnostic.setFocusable(false);
-        editDiagnostic.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        editDiagnostic.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        editDiagnostic.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editDiagnosticActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(editDiagnostic);
-
-        org.openide.awt.Mnemonics.setLocalizedText(resetDiagnostic, org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.resetDiagnostic.text")); // NOI18N
-        resetDiagnostic.setFocusable(false);
-        resetDiagnostic.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        resetDiagnostic.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        resetDiagnostic.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetDiagnosticActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(resetDiagnostic);
-
-        javax.swing.GroupLayout diagnosticsPanelLayout = new javax.swing.GroupLayout(diagnosticsPanel);
-        diagnosticsPanel.setLayout(diagnosticsPanelLayout);
-        diagnosticsPanelLayout.setHorizontalGroup(
-            diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(diagnosticsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(diagnosticsView, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        diagnosticsPanelLayout.setVerticalGroup(
-            diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(diagnosticsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(diagnosticsPanelLayout.createSequentialGroup()
-                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(diagnosticsView, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(diagnosticsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(componentsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addComponent(revisionHistoryPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(saPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(lastYearsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -288,71 +146,9 @@ final class GeneralPanel extends javax.swing.JPanel {
                 .addComponent(saPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(revisionHistoryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(componentsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(diagnosticsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void selectedSeriesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectedSeriesButtonActionPerformed
-        fieldSelectionComponent.getSourceModel().clear();
-        fieldSelectionComponent.getTargetModel().clear();
-        List<String> tmpAvailable = new ArrayList<>(allSeriesFields);
-        tmpAvailable.removeAll(selectedSeriesFields);
-
-        tmpAvailable.forEach(fieldSelectionComponent.getSourceModel()::addElement);
-        selectedSeriesFields.forEach(fieldSelectionComponent.getTargetModel()::addElement);
-
-        NotifyDescriptor d = new NotifyDescriptor(fieldSelectionComponent, "Select fields",
-            NotifyDescriptor.OK_CANCEL_OPTION,
-            NotifyDescriptor.PLAIN_MESSAGE,
-            null,
-            NotifyDescriptor.OK_OPTION);
-        if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.OK_OPTION) {
-            selectedSeriesFields = fieldSelectionComponent.getSelectedValues();
-            selectedSeriesLabel.setText(String.format("%s selected", selectedSeriesFields == null ? 0 : selectedSeriesFields.size()));
-            controller.changed();
-        }
-    }//GEN-LAST:event_selectedSeriesButtonActionPerformed
-
-    private void selectedDiagButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectedDiagButtonActionPerformed
-        fieldSelectionComponent.getSourceModel().clear();
-        fieldSelectionComponent.getTargetModel().clear();
-        List<String> tmpAvailable = new ArrayList<>(allDiagFields);
-        tmpAvailable.removeAll(selectedDiagFields);
-
-        tmpAvailable.forEach(fieldSelectionComponent.getSourceModel()::addElement);
-        selectedDiagFields.forEach(fieldSelectionComponent.getTargetModel()::addElement);
-
-        NotifyDescriptor d = new NotifyDescriptor(fieldSelectionComponent, "Select fields",
-            NotifyDescriptor.OK_CANCEL_OPTION,
-            NotifyDescriptor.PLAIN_MESSAGE,
-            null,
-            NotifyDescriptor.OK_OPTION);
-        if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.OK_OPTION) {
-            selectedDiagFields = fieldSelectionComponent.getSelectedValues();
-            selectedDiagLabel.setText(String.format("%s selected", selectedDiagFields == null ? 0 : selectedDiagFields.size()));
-            controller.changed();
-        }
-    }//GEN-LAST:event_selectedDiagButtonActionPerformed
-
-    private void editDiagnosticActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDiagnosticActionPerformed
-        if (getDiagnosticsExplorerManager().getSelectedNodes() != null && getDiagnosticsExplorerManager().getSelectedNodes().length != 0) {
-            getDiagnosticsExplorerManager().getSelectedNodes()[0].getPreferredAction().actionPerformed(evt);
-        }
-    }//GEN-LAST:event_editDiagnosticActionPerformed
-
-    private void resetDiagnosticActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetDiagnosticActionPerformed
-        if (getDiagnosticsExplorerManager().getSelectedNodes() != null && getDiagnosticsExplorerManager().getSelectedNodes().length != 0) {
-            NotifyDescriptor d = new NotifyDescriptor.Confirmation("Would you like to reset to default values ?", "Reset", NotifyDescriptor.YES_NO_OPTION);
-            if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.YES_OPTION) {
-                Node node = getDiagnosticsExplorerManager().getSelectedNodes()[0];
-//                IResetable r = node.getLookup().lookup(IResetable.class);
-//                r.reset();
-            }
-        }
-    }//GEN-LAST:event_resetDiagnosticActionPerformed
 
     void load() {
         DemetraSaUI ui = DemetraSaUI.getDefault();
@@ -366,18 +162,12 @@ final class GeneralPanel extends javax.swing.JPanel {
         specComponent.setSpecification(ui.getDefaultSaSpec());
         selectedSpecLabel.setText(ui.getDefaultSaSpec() == null ? "" : ui.getDefaultSaSpec().display());
 
-        selectedDiagFields = ui.getSelectedDiagFields();
-        selectedSeriesFields = ui.getSelectedSeriesFields();
-
-        selectedDiagLabel.setText(String.format("%s selected", selectedDiagFields == null ? 0 : selectedDiagFields.size()));
-        selectedSeriesLabel.setText(String.format("%s selected", selectedSeriesFields == null ? 0 : selectedSeriesFields.size()));
 
 //        AbstractNodeBuilder root = new AbstractNodeBuilder();
 //        root.add(new AbstractNodeBuilder().name("Diagnostics")
 //                .add(Lookup.getDefault().lookupAll(SaDiagnosticsFactoryBuddy.class).stream().map(NamedServiceNode::new)).build());
 //        root.add(new AbstractNodeBuilder().name("Outputs")
 //                .add(Lookup.getDefault().lookupAll(INbOutputFactory.class).stream().map(NamedServiceNode::new)).build());
-
 //        getDiagnosticsExplorerManager().setRootContext(root.build());
     }
 
@@ -386,9 +176,7 @@ final class GeneralPanel extends javax.swing.JPanel {
         ui.setSpectralLastYears((Integer) spectralLastYears.getValue());
         ui.setEstimationPolicyType((EstimationPolicyType) estimationPolicyComboBox.getSelectedItem());
         ui.setStabilityLength((Integer) stabilityLength.getValue());
-        ui.setSelectedDiagFields(selectedDiagFields);
-        ui.setSelectedSeriesFields(selectedSeriesFields);
-        
+
         ui.setDefaultSaSpec(specComponent.getSpecification());
 
 //        NamedServiceNode.storeAll(getDiagnosticsExplorerManager());
@@ -400,27 +188,13 @@ final class GeneralPanel extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel componentsPanel;
     private javax.swing.JLabel defaultSpecLabel;
-    private javax.swing.JPanel diagnosticsPanel;
-    private org.openide.explorer.view.OutlineView diagnosticsView;
-    private javax.swing.JButton editDiagnostic;
     private javax.swing.JLabel estimationLabel;
-    private javax.swing.JLabel estimationLabel1;
-    private javax.swing.JLabel estimationLabel6;
     private javax.swing.JComboBox estimationPolicyComboBox;
-    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel lastYearsPanel;
-    private javax.swing.JButton resetDiagnostic;
     private javax.swing.JPanel revisionHistoryPanel;
     private javax.swing.JPanel saPanel;
-    private javax.swing.JButton selectedDiagButton;
-    private javax.swing.JLabel selectedDiagLabel;
-    private javax.swing.JButton selectedSeriesButton;
-    private javax.swing.JLabel selectedSeriesLabel;
     private javax.swing.JLabel selectedSpecLabel;
-    private javax.swing.JPanel seriesSubPanel;
-    private javax.swing.JPanel seriesSubPanel1;
     private javax.swing.JButton specButton;
     private javax.swing.JLabel spectralLabel;
     private javax.swing.JSpinner spectralLastYears;
@@ -438,20 +212,4 @@ final class GeneralPanel extends javax.swing.JPanel {
             }
         });
     }
-
-    private ExplorerManager getDiagnosticsExplorerManager() {
-        return ((ExplorerManager.Provider) diagnosticsPanel).getExplorerManager();
-
-    }
-
-    private static final class ExtPanel extends JPanel implements ExplorerManager.Provider {
-
-        private final ExplorerManager em = new ExplorerManager();
-
-        @Override
-        public ExplorerManager getExplorerManager() {
-            return em;
-        }
-    }
-
 }
