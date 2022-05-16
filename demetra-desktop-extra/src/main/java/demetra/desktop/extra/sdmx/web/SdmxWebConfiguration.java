@@ -4,6 +4,7 @@ import demetra.desktop.notification.MessageUtil;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import demetra.desktop.util.Persistence;
 import internal.extra.sdmx.CustomNetwork;
+import internal.extra.sdmx.SdmxAutoCompletion;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.Locale;
 import java.util.function.BiConsumer;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import nbbrd.design.MightBeGenerated;
+import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.StatusDisplayer;
 import org.openide.nodes.Sheet;
 import sdmxdl.DataRepository;
@@ -123,7 +125,7 @@ public class SdmxWebConfiguration {
                 .builder()
                 .repositoryFormat(getRepositoryFormat(noCacheCompression))
                 .monitorFormat(getMonitorFormat(noCacheCompression))
-                .onIOException(MessageUtil::showException)
+                .onIOException(SdmxWebConfiguration::reportIOException)
                 .build();
     }
 
@@ -135,6 +137,10 @@ public class SdmxWebConfiguration {
     private static FileFormat<MonitorReports> getMonitorFormat(boolean noCacheCompression) {
         FileFormat<MonitorReports> result = FileFormat.of(KryoFileFormat.MONITOR, ".kryo");
         return noCacheCompression ? result : FileFormat.gzip(result);
+    }
+
+    private static void reportIOException(String message, IOException error) {
+        NotificationDisplayer.getDefault().notify(message, SdmxAutoCompletion.getDefaultIcon(), "", null);
     }
 
     private static Cache getVerboseCache(Cache delegate, boolean verbose) {

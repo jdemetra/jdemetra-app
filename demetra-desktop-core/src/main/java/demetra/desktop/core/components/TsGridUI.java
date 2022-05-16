@@ -139,7 +139,7 @@ public final class TsGridUI implements InternalUI<JTsGrid> {
     }
 
     private void enableOpenOnDoubleClick() {
-        grid.addMouseListener(new OpenOnDoubleClick(target.getActionMap()));
+        ActionMaps.onDoubleClick(target.getActionMap(), HasTsCollection.OPEN_ACTION, grid);
     }
 
     private void enableObsHovering() {

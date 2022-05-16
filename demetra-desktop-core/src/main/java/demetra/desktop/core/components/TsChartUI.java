@@ -157,7 +157,7 @@ public final class TsChartUI implements InternalUI<JTsChart> {
     }
 
     private void enableOpenOnDoubleClick() {
-        chartPanel.addMouseListener(new OpenOnDoubleClick(target.getActionMap()));
+        ActionMaps.onDoubleClick(target.getActionMap(), HasTsCollection.OPEN_ACTION, chartPanel);
     }
 
     private void enableObsHovering() {

@@ -16,8 +16,10 @@
  */
 package demetra.desktop.util;
 
+import demetra.desktop.Persistable;
 import demetra.timeseries.TsProvider;
 import demetra.desktop.TsManager;
+import demetra.desktop.tsproviders.DataSourceProviderBuddy;
 import demetra.desktop.ui.mru.MruProvidersStep;
 import demetra.desktop.ui.mru.MruWorkspacesStep;
 import demetra.desktop.workspace.WorkspaceFactory;
@@ -48,6 +50,7 @@ public final class Installer extends ModuleInstall {
     public static final InstallerStep STEP = InstallerStep.all(
             new AppVersionStep(),
             new ProvidersV3Step(),
+            new ProviderBuddyStep(),
             new TsVariableStep(),
             new MruProvidersStep(),
             new MruWorkspacesStep()
@@ -175,6 +178,38 @@ public final class Installer extends ModuleInstall {
         public void restore() {
 //            TsVariable.register();
 //            DynamicTsVariable.register();
+        }
+    }
+
+    private static final class ProviderBuddyStep extends InstallerStep.LookupStep<DataSourceProviderBuddy> {
+
+        final Preferences prefs = prefs();
+
+        public ProviderBuddyStep() {
+            super(DataSourceProviderBuddy.class);
+        }
+
+        @Override
+        protected void onRestore(Lookup.Result<DataSourceProviderBuddy> lookup) {
+            for (DataSourceProviderBuddy buddy : lookup.allInstances()) {
+                if (buddy instanceof Persistable persistable) {
+                    tryGet(prefs, buddy.getProviderName(), XmlConfig.xmlParser()).ifPresent(persistable::setConfig);
+                }
+            }
+        }
+
+        @Override
+        protected void onResultChanged(Lookup.Result<DataSourceProviderBuddy> lookup) {
+            onRestore(lookup);
+        }
+
+        @Override
+        protected void onClose(Lookup.Result<DataSourceProviderBuddy> lookup) {
+            for (DataSourceProviderBuddy buddy : lookup.allInstances()) {
+                if (buddy instanceof Persistable persistable) {
+                    tryPut(prefs, buddy.getProviderName(), XmlConfig.xmlFormatter(false), persistable.getConfig());
+                }
+            }
         }
     }
 }

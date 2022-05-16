@@ -16,6 +16,8 @@
  */
 package demetra.desktop.extra.sdmx.web;
 
+import demetra.desktop.Config;
+import demetra.desktop.Persistable;
 import demetra.desktop.TsManager;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
@@ -25,14 +27,20 @@ import demetra.tsp.extra.sdmx.web.SdmxWebBean;
 import demetra.tsp.extra.sdmx.web.SdmxWebProvider;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSource;
+import static ec.util.chart.impl.TangoColorScheme.DARK_ORANGE;
+import static ec.util.chart.swing.SwingColorSchemeSupport.rgbToColor;
+import ec.util.various.swing.FontAwesome;
 import internal.extra.sdmx.SdmxAutoCompletion;
 import java.awt.Image;
+import java.io.IOException;
 import java.util.Optional;
 import nbbrd.service.ServiceProvider;
 import nbbrd.design.DirectImpl;
 import nbbrd.io.function.IORunnable;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
+import sdmxdl.Connection;
+import sdmxdl.Feature;
 import sdmxdl.web.SdmxWebSource;
 
 /**
@@ -40,7 +48,7 @@ import sdmxdl.web.SdmxWebSource;
  */
 @DirectImpl
 @ServiceProvider(DataSourceProviderBuddy.class)
-public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy, Configurable {
+public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy, Configurable, Persistable {
 
     private static final String SOURCE = "DOTSTAT";
 
@@ -53,18 +61,6 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy, Conf
 
     private void updateProvider() {
         lookupProvider().ifPresent(provider -> provider.setSdmxManager(configuration.toSdmxWebManager()));
-    }
-
-    @Override
-    public void configure() {
-        SdmxWebConfiguration editable = SdmxWebConfiguration.copyOf(configuration);
-        PropertySheetDialogBuilder editor = new PropertySheetDialogBuilder()
-                .title("Configure " + lookupProvider().map(SdmxWebProvider::getDisplayName).orElse(""))
-                .icon(SdmxAutoCompletion.getDefaultIcon());
-        if (editor.editSheet(editable.toSheet())) {
-            configuration = editable;
-            updateProvider();
-        }
     }
 
     @Override
@@ -83,9 +79,12 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy, Conf
         if (lookupProvider.isPresent()) {
             SdmxWebProvider provider = lookupProvider.get();
             SdmxWebBean bean = provider.decodeBean(dataSource);
-            Image result = getSourceIcon(bean, provider);
-            if (result != null) {
-                return result;
+            SdmxWebSource source = provider.getSdmxManager().getSources().get(bean.getSource());
+            if (source != null) {
+                Image result = getSourceIcon(provider, source);
+                return supportsDataQueryDetail(provider, source)
+                        ? result
+                        : ImageUtilities.mergeImages(result, getWarningBadge(), 13, 8);
             }
         }
         return DataSourceProviderBuddy.super.getIconOrNull(dataSource, type, opened);
@@ -99,9 +98,9 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy, Conf
             Optional<DataSet> dataSet = provider.toDataSet(moniker);
             if (dataSet.isPresent()) {
                 SdmxWebBean bean = provider.decodeBean(dataSet.get().getDataSource());
-                Image result = getSourceIcon(bean, provider);
-                if (result != null) {
-                    return result;
+                SdmxWebSource source = provider.getSdmxManager().getSources().get(bean.getSource());
+                if (source != null) {
+                    return getSourceIcon(provider, source);
                 }
             }
         }
@@ -113,15 +112,47 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy, Conf
         return bean instanceof SdmxWebBean ? getSheetOrNull((SdmxWebBean) bean) : null;
     }
 
+    @Override
+    public void configure() {
+        SdmxWebConfiguration editable = SdmxWebConfiguration.copyOf(configuration);
+        PropertySheetDialogBuilder editor = new PropertySheetDialogBuilder()
+                .title("Configure " + lookupProvider().map(SdmxWebProvider::getDisplayName).orElse(""))
+                .icon(SdmxAutoCompletion.getDefaultIcon());
+        if (editor.editSheet(editable.toSheet())) {
+            configuration = editable;
+            updateProvider();
+        }
+    }
+
+    @Override
+    public Config getConfig() {
+        return SdmxWebConfiguration.PERSISTENCE.loadConfig(configuration);
+    }
+
+    @Override
+    public void setConfig(Config config) throws IllegalArgumentException {
+        SdmxWebConfiguration.PERSISTENCE.storeConfig(configuration, config);
+        updateProvider();
+    }
+
     private Sheet getSheetOrNull(SdmxWebBean bean) {
         return lookupProvider().map(provider -> SdmxWebBeanSupport.newSheet(bean, provider)).orElse(null);
     }
 
-    private static Image getSourceIcon(SdmxWebBean bean, SdmxWebProvider provider) {
-        SdmxWebSource source = provider.getSdmxManager().getSources().get(bean.getSource());
-        return source != null
-                ? ImageUtilities.icon2Image(SdmxAutoCompletion.FAVICONS.get(source.getWebsite(), IORunnable.noOp().asUnchecked()))
-                : null;
+    private static Image getSourceIcon(SdmxWebProvider provider, SdmxWebSource source) {
+        return ImageUtilities.icon2Image(SdmxAutoCompletion.FAVICONS.get(source.getWebsite(), IORunnable.noOp().asUnchecked()));
+    }
+
+    private static boolean supportsDataQueryDetail(SdmxWebProvider provider, SdmxWebSource source) {
+        try ( Connection conn = provider.getSdmxManager().getConnection(source)) {
+            return conn.getSupportedFeatures().contains(Feature.DATA_QUERY_DETAIL);
+        } catch (IOException ex) {
+            return false;
+        }
+    }
+
+    private static Image getWarningBadge() {
+        return FontAwesome.FA_EXCLAMATION_TRIANGLE.getImage(rgbToColor(DARK_ORANGE), 8f);
     }
 
     private static Optional<SdmxWebProvider> lookupProvider() {

@@ -51,6 +51,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static demetra.desktop.tsproviders.TsProviderNodes.PROVIDER_ACTION_PATH;
+import nbbrd.design.MightBePromoted;
 
 /**
  * A node that represents a IDataSourceProvider.
@@ -191,6 +192,7 @@ public final class ProviderNode extends AbstractNode {
         }
     }
 
+    @MightBePromoted
     private final class OpenableImpl implements Openable {
 
         @Override
