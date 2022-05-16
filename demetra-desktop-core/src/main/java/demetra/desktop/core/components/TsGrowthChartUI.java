@@ -151,7 +151,7 @@ public final class TsGrowthChartUI implements InternalUI<JTsGrowthChart> {
     }
 
     private void enableOpenOnDoubleClick() {
-        chartPanel.addMouseListener(new OpenOnDoubleClick(target.getActionMap()));
+        ActionMaps.onDoubleClick(target.getActionMap(), HasTsCollection.OPEN_ACTION, chartPanel);
     }
 
     private void enableProperties() {

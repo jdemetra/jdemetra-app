@@ -205,7 +205,7 @@ public abstract class SdmxAutoCompletion {
 
         @Override
         public ListCellRenderer getRenderer() {
-            return CustomListCellRenderer.<Dataflow>of(flow -> flow.getRef().getId() + "<br><i>" + flow.getLabel(), flow -> flow.getRef().toString());
+            return CustomListCellRenderer.<Dataflow>of(flow -> flow.getRef() + "<br><i>" + flow.getLabel(), flow -> flow.getRef().toString());
         }
 
         private List<Dataflow> load(String term) throws Exception {

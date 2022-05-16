@@ -20,6 +20,7 @@ import demetra.timeseries.TsDomain;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.regression.IOutlier;
 import java.time.LocalDateTime;
+import jdplus.modelling.regression.RegressionDesc;
 import jdplus.regsarima.regular.RegSarimaModel;
 
 /**
@@ -31,7 +32,7 @@ public class OutlierEstimation {
     
     private static final OutlierEstimation[] NO_OUTLIER=new OutlierEstimation[0];
 
-    public static OutlierEstimation of(RegSarimaModel.RegressionDesc desc, TsDomain estimationDomain) {
+    public static OutlierEstimation of(RegressionDesc desc, TsDomain estimationDomain) {
         IOutlier outlier = (IOutlier) desc.getCore();
         LocalDateTime pos = outlier.getPosition();
         int idx = estimationDomain.indexOf(pos);

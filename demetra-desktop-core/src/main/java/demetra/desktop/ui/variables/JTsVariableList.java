@@ -33,10 +33,6 @@ import java.awt.Font;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Collections;
-import java.util.List;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.InputVerifier;
@@ -69,7 +65,6 @@ import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.regression.TsDataSuppliers;
 import demetra.util.MultiLineNameUtil;
-import ec.util.chart.swing.Charts;
 import ec.util.grid.swing.XTable;
 import ec.util.various.swing.JCommand;
 import nbbrd.design.SkipProcessing;
@@ -391,14 +386,7 @@ public final class JTsVariableList extends JComponent implements HasTsAction {
     }
 
     private void enableOpenOnDoubleClick() {
-        table.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (!Charts.isPopup(e) && Charts.isDoubleClick(e)) {
-                    ActionMaps.performAction(getActionMap(), OPEN_ACTION, e);
-                }
-            }
-        });
+        ActionMaps.onDoubleClick(getActionMap(), OPEN_ACTION, table);
     }
 
     private void enablePopupMenu() {

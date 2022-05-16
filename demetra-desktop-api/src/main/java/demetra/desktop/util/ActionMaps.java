@@ -16,10 +16,12 @@
  */
 package demetra.desktop.util;
 
+import ec.util.chart.swing.Charts;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -56,6 +58,27 @@ public final class ActionMaps {
         Action action = actionMap.get(actionName);
         if (action != null && action.isEnabled()) {
             action.actionPerformed(new ActionEvent(e.getSource(), ActionEvent.ACTION_PERFORMED, actionName));
+        }
+    }
+
+    public static void onDoubleClick(@NonNull ActionMap actionMap, @NonNull String actionName, @NonNull JComponent component) {
+        component.addMouseListener(new OnDoubleClick(actionMap, actionName));
+    }
+
+    @lombok.AllArgsConstructor
+    private static final class OnDoubleClick extends MouseAdapter {
+
+        @lombok.NonNull
+        private final ActionMap actionMap;
+
+        @lombok.NonNull
+        private final String action;
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (!Charts.isPopup(e) && Charts.isDoubleClick(e)) {
+                ActionMaps.performAction(actionMap, action, e);
+            }
         }
     }
 
