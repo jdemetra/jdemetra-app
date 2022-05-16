@@ -71,6 +71,9 @@ public final class JSdmxWebSourcePanel extends JComponent {
     @SwingAction
     public static final String OPEN_WEBSITE_ACTION = "openWebsite";
 
+    @SwingAction
+    public static final String OPEN_MONITOR_ACTION = "openMonitor";
+
     @SwingProperty
     public static final String SDMX_MANAGER_PROPERTY = "sdmxManager";
     private static final Supplier<SdmxWebManager> DEFAULT_SDMX_MANAGER = SdmxWebManager::ofServiceLoader;
@@ -107,6 +110,7 @@ public final class JSdmxWebSourcePanel extends JComponent {
     private void registerActions() {
         getActionMap().put(OPEN_ACTION, OpenCommand.INSTANCE.toAction(this));
         getActionMap().put(OPEN_WEBSITE_ACTION, OpenWebsiteCommand.INSTANCE.toAction(this));
+        getActionMap().put(OPEN_MONITOR_ACTION, OpenMonitorCommand.INSTANCE.toAction(this));
         ActionMaps.copyEntries(getActionMap(), false, table.getActionMap());
     }
 
@@ -181,6 +185,10 @@ public final class JSdmxWebSourcePanel extends JComponent {
 
         item = new JMenuItem(actionMap.get(OPEN_WEBSITE_ACTION));
         item.setText("Open web site");
+        result.add(item);
+
+        item = new JMenuItem(actionMap.get(OPEN_MONITOR_ACTION));
+        item.setText("Open monitor");
         result.add(item);
 
         return result.getPopupMenu();
@@ -368,6 +376,37 @@ public final class JSdmxWebSourcePanel extends JComponent {
             return c.table.getSelectedRowCount() == 1
                     && DesktopManager.get().isSupported(Desktop.Action.BROWSE)
                     && getSelection(c).getWebsite() != null;
+        }
+
+        @Override
+        public JCommand.ActionAdapter toAction(JSdmxWebSourcePanel c) {
+            return super.toAction(c).withWeakListSelectionListener(c.table.getSelectionModel());
+        }
+
+        private SdmxWebSource getSelection(JSdmxWebSourcePanel c) {
+            int idx = c.table.convertRowIndexToModel(c.table.getSelectedRow());
+            return ((WebSourceModel) c.table.getModel()).getValues().get(idx);
+        }
+    }
+
+    private static final class OpenMonitorCommand extends JCommand<JSdmxWebSourcePanel> {
+
+        public static final OpenMonitorCommand INSTANCE = new OpenMonitorCommand();
+
+        @Override
+        public void execute(JSdmxWebSourcePanel c) throws Exception {
+            try {
+                DesktopManager.get().browse(getSelection(c).getMonitorWebsite().toURI());
+            } catch (IOException | URISyntaxException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+
+        @Override
+        public boolean isEnabled(JSdmxWebSourcePanel c) {
+            return c.table.getSelectedRowCount() == 1
+                    && DesktopManager.get().isSupported(Desktop.Action.BROWSE)
+                    && getSelection(c).getMonitorWebsite()!= null;
         }
 
         @Override
