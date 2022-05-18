@@ -4,6 +4,7 @@
  */
 package demetra.desktop.workspace.actions;
 
+import demetra.DemetraVersion;
 import demetra.desktop.workspace.WorkspaceFactory;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,6 +25,6 @@ public final class SaveWorkspaceAs implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-         WorkspaceFactory.getInstance().getActiveWorkspace().saveAs();
+         WorkspaceFactory.getInstance().getActiveWorkspace().saveAs(DemetraVersion.JD3);
     }
 }

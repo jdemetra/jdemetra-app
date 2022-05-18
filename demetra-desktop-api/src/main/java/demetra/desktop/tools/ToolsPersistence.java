@@ -8,13 +8,12 @@ import demetra.timeseries.TsCollection;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.Config;
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraBehaviour;
 import demetra.desktop.Persistable;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsMoniker;
 import demetra.desktop.util.XmlConfig;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -77,7 +76,7 @@ public final class ToolsPersistence {
             Config config = ((Persistable) view).getConfig();
             tryPut(p, "config", XmlConfig.xmlFormatter(false)::format, true, config);
         }
-        if (DemetraOptions.getDefault().isPersistToolsContent()) {
+        if (DemetraBehaviour.getDefault().isPersistToolsContent()) {
             Content content = new Content(
                     view.getTsCollection().getItems(),
                     view.getTsSelectionStream().collect(Collectors.toList()));
@@ -86,7 +85,7 @@ public final class ToolsPersistence {
     }
 
     public static void readTsCollection(@NonNull HasTsCollection view, @NonNull Properties p) {
-        if (DemetraOptions.getDefault().isPersistToolsContent()) {
+        if (DemetraBehaviour.getDefault().isPersistToolsContent()) {
             tryGet(p, "content", IOFunction.unchecked(CONTENT_PARSER::parseChars)::apply, true).ifPresent(o -> {
                 view.setTsCollection(TsCollection.of(o.collection));
                 view.getTsSelectionModel().clearSelection();

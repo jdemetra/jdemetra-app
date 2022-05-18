@@ -17,7 +17,7 @@
 package demetra.desktop.ui.chart3d.functions;
 
 import demetra.data.DoubleSeq;
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraBehaviour;
 import demetra.desktop.concurrent.UIExecutors;
 import demetra.desktop.ui.chart3d.AbstractSurfaceModel;
 import demetra.desktop.ui.chart3d.SurfaceVertex;
@@ -136,7 +136,7 @@ public class FunctionsSurfaceModel extends AbstractSurfaceModel {
                     return null;
                 }
 
-                DemetraOptions options = DemetraOptions.getDefault();
+                DemetraBehaviour options = DemetraBehaviour.getDefault();
 
                 ExecutorService executorService = UIExecutors.newFixedThreadPool(options.getBatchPoolSize(), options.getBatchPriority());
                 try {

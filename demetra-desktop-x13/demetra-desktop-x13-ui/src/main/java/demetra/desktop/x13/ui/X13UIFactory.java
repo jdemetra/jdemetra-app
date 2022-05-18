@@ -5,13 +5,15 @@
 package demetra.desktop.x13.ui;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
-import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.IProcDocumentView;
+import demetra.desktop.workspace.DocumentUIServices;
+import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.x13.descriptors.X13SpecUI;
 import demetra.x13.X13Spec;
 import java.awt.Color;
 import javax.swing.Icon;
 import jdplus.x13.X13Document;
+import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -20,9 +22,8 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = DocumentUIServices.class)
 public class X13UIFactory implements DocumentUIServices<X13Spec, X13Document> {
-    
- //   public static X13UIFactory INSTANCE=new X13UIFactory();
 
+    //   public static X13UIFactory INSTANCE=new X13UIFactory();
     @Override
     public IProcDocumentView<X13Document> getDocumentView(X13Document document) {
         return X13ViewFactory.getDefault().create(document);
@@ -35,23 +36,33 @@ public class X13UIFactory implements DocumentUIServices<X13Spec, X13Document> {
 
     @Override
     public Class<X13Document> getDocumentType() {
-        return X13Document.class; 
+        return X13Document.class;
     }
 
     @Override
     public Class<X13Spec> getSpecType() {
-        return X13Spec.class; 
+        return X13Spec.class;
     }
 
     @Override
     public Color getColor() {
-        return Color.MAGENTA; 
+        return Color.MAGENTA;
+    }
+
+    @Override
+    public void showDocument(WorkspaceItem<X13Document> item) {
+        if (item.isOpen()) {
+            item.getView().requestActive();
+        } else {
+            X13TopComponent view = new X13TopComponent(item);
+            view.open();
+            view.requestActive();
+        }
     }
 
     @Override
     public Icon getIcon() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ImageUtilities.loadImageIcon("demetra/desktop/x13/ui/tangent_magenta.png", false);
     }
-
 
 }

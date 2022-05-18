@@ -4,6 +4,7 @@
  */
 package demetra.desktop.workspace;
 
+import demetra.DemetraVersion;
 import demetra.workspace.WorkspaceFamily;
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import org.openide.util.Exceptions;
  * @author Jean Palate
  * @param <D>
  */
-public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceItemRepository<D> {
+public abstract class AbstractFileItemRepository<D> implements WorkspaceItemRepository<D> {
 
     private static demetra.workspace.WorkspaceItemDescriptor toFileItem(WorkspaceItem item) {
         WorkspaceFamily family = demetra.workspace.WorkspaceFamily.of(item.getFamily());
@@ -50,10 +51,10 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
         return false;
     }
 
-    protected static <D, R> boolean storeFile(WorkspaceItem<?> item, R value, Runnable onSuccess) {
+    protected static <D, R> boolean storeFile(WorkspaceItem<?> item, R value, DemetraVersion version, Runnable onSuccess) {
         File file = decodeFile(item);
         if (file != null) {
-            try ( demetra.workspace.file.FileWorkspace storage = demetra.workspace.file.FileWorkspace.open(file.toPath())) {
+            try ( demetra.workspace.file.FileWorkspace storage = demetra.workspace.file.FileWorkspace.open(file.toPath(), version)) {
                 storage.store(toFileItem(item), value);
                 onSuccess.run();
                 return true;

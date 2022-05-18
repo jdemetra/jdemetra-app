@@ -4,7 +4,6 @@ import demetra.data.AggregationType;
 import demetra.desktop.properties.DhmsPropertyEditor;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import demetra.desktop.ui.properties.FileLoaderFileFilter;
-import demetra.timeseries.TsUnit;
 import demetra.timeseries.calendars.RegularFrequency;
 import demetra.timeseries.util.ObsGathering;
 import demetra.tsprovider.FileBean;

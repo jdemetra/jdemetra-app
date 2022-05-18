@@ -17,7 +17,6 @@
 package demetra.desktop.components.tools;
 
 import demetra.data.DoubleSeq;
-import demetra.desktop.TsManager;
 import demetra.desktop.components.TimeSeriesComponent;
 import demetra.desktop.components.parts.*;
 import demetra.desktop.jfreechart.TsCharts;
@@ -29,6 +28,7 @@ import demetra.desktop.jfreechart.MatrixChartCommand;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsInformationType;
+import demetra.timeseries.TsUnit;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jfree.chart.ChartFactory;
@@ -86,9 +86,7 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
 
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
-                case TS_PROPERTY:
-                    onTsChange();
-                    break;
+                case TS_PROPERTY -> onTsChange();
             }
         });
 
@@ -135,7 +133,17 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
             clear();
         } else {
             String name = getTs().getName();
-            setData(name, tsdata.getAnnualFrequency(), tsdata.getValues());
+            double f = tsdata.getAnnualFrequency();
+            if (f < 0) {
+                TsUnit unit = tsdata.getTsUnit();
+                switch (unit.getChronoUnit()) {
+                    case DAYS ->
+                        f = 365.25 / unit.getAmount();
+                    default ->
+                        f = 0;
+                }
+            }
+            setData(name, f, tsdata.getValues());
         }
     }
 

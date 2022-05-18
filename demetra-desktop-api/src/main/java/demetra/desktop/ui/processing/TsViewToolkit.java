@@ -23,10 +23,12 @@ import javax.swing.*;
 public class TsViewToolkit {
 
     public static JTsGrid getGrid(Iterable<Ts> series) {
+        TsCollection all = Collections2.streamOf(series).collect(TsCollection.toTsCollection());
         JTsGrid result = new JTsGrid();
         result.setTsUpdateMode(HasTsCollection.TsUpdateMode.None);
-        result.setTsCollection(Collections2.streamOf(series).collect(TsCollection.toTsCollection()));
-        result.setMode(result.getTsCollection().size() == 1 ? JTsGrid.Mode.SINGLETS : JTsGrid.Mode.MULTIPLETS);
+        result.setTsCollection(all);
+        boolean single = all.size() == 1 && all.get(0).getData().getAnnualFrequency()>0;
+        result.setMode(single ? JTsGrid.Mode.SINGLETS : JTsGrid.Mode.MULTIPLETS);
         return result;
     }
 

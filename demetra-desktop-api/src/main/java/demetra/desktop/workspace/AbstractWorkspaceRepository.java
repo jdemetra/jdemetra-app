@@ -16,6 +16,7 @@
  */
 package demetra.desktop.workspace;
 
+import demetra.DemetraVersion;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,19 +52,19 @@ public abstract class AbstractWorkspaceRepository implements WorkspaceRepository
     }
 
     @Override
-    public boolean save(Workspace ws, boolean force) {
+    public boolean save(Workspace ws, DemetraVersion version, boolean force) {
         if (ws.getDataSource() == null) {
             return false;
         }
-        if (!saveWorkspace(ws)) {
+        if (!saveWorkspace(ws, version)) {
             return false;
         }
         return ws.getItems().stream()
                 .filter(o -> o.isDirty() || (force && !o.getStatus().isVolatile()))
-                .noneMatch(o -> !saveItem(o));
+                .noneMatch(o -> !saveItem(o, version));
     }
 
-    protected abstract boolean saveWorkspace(Workspace ws);
+    protected abstract boolean saveWorkspace(Workspace ws, DemetraVersion version);
 
     @Override
     public boolean delete(Workspace ws) {
@@ -93,7 +94,7 @@ public abstract class AbstractWorkspaceRepository implements WorkspaceRepository
     }
 
     @Override
-    public boolean saveItem(WorkspaceItem<?> item) {
+    public boolean saveItem(WorkspaceItem<?> item, DemetraVersion version) {
         if (!item.getStatus().canBeSaved()) {
             return true;
         }
@@ -101,7 +102,7 @@ public abstract class AbstractWorkspaceRepository implements WorkspaceRepository
         if (repos == null) {
             return true;
         }
-        return repos.stream().anyMatch(o -> o.save(item));
+        return repos.stream().anyMatch(o -> o.save(item, version));
     }
 
     @Override

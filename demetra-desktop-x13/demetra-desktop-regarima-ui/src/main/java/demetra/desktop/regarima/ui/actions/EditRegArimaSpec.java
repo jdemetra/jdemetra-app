@@ -4,7 +4,7 @@
  */
 package demetra.desktop.regarima.ui.actions;
 
-import demetra.desktop.regarima.ui.RegArimaSpecManager;
+import demetra.desktop.regarima.documents.RegArimaSpecManager;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.WsNode;

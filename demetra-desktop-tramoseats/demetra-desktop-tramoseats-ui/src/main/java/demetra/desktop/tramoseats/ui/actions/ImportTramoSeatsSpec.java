@@ -20,7 +20,7 @@ import demetra.desktop.Config;
 import demetra.desktop.interchange.Importable;
 import demetra.desktop.interchange.Interchange;
 import demetra.desktop.nodes.SingleNodeAction;
-import demetra.desktop.tramoseats.ui.TramoSeatsSpecManager;
+import demetra.desktop.tramoseats.documents.TramoSeatsSpecManager;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.information.InformationSet;

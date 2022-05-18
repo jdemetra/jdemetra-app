@@ -17,9 +17,9 @@
 package demetra.desktop.workspace;
 
 import com.google.common.base.StandardSystemProperty;
+import demetra.DemetraVersion;
 import demetra.timeseries.calendars.CalendarDefinition;
 import demetra.timeseries.calendars.CalendarManager;
-import demetra.timeseries.regression.ModellingContext;
 import demetra.tsprovider.DataSource;
 import demetra.util.LinearId;
 import demetra.util.Paths;
@@ -100,7 +100,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     }
 
     @Override
-    public boolean saveAs(Workspace ws) {
+    public boolean saveAs(Workspace ws, DemetraVersion version) {
         File file = wsFileChooser.showSaveDialog();
         if (file == null) {
             return false;
@@ -110,23 +110,23 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
             ws.loadAll();
             ws.setName(Paths.changeExtension(file.getName(), null));
             ws.setDataSource(encode(file));
-            return save(ws, true);
+            return save(ws, version, true);
         } catch (Exception ex) {
             return false;
         }
     }
 
     @Override
-    protected boolean saveWorkspace(Workspace ws) {
+    protected boolean saveWorkspace(Workspace ws, DemetraVersion version) {
         File file = decode(ws.getDataSource());
         if (file == null) {
-            return saveAs(ws);
+            return saveAs(ws, version);
         }
 
         boolean exist = file.exists();
         try (demetra.workspace.file.FileWorkspace storage = exist
-                ? demetra.workspace.file.FileWorkspace.open(file.toPath())
-                : demetra.workspace.file.FileWorkspace.create(file.toPath())) {
+                ? demetra.workspace.file.FileWorkspace.open(file.toPath(), version)
+                : demetra.workspace.file.FileWorkspace.create(file.toPath(), version)) {
             storage.setName(ws.getName());
             storeCalendar(storage, ws.getContext().getCalendars());
             if (exist) {

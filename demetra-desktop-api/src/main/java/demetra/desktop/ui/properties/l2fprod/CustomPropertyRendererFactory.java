@@ -32,16 +32,3 @@ public enum CustomPropertyRendererFactory {
     }
 }
 
-class ArrayRenderer extends DefaultTableCellRenderer {
-
-    public ArrayRenderer() {
-        super();
-    }
-
-    @Override
-    protected void setValue(Object value) {
-        //super.setValue(value);
-        setText("");
-    }
-
-}

@@ -19,7 +19,7 @@ import org.openide.util.NbBundle;
 id = "demetra.desktop.sa.multiprocessing.actions.LocalRefreshParameters")
 @ActionRegistration(displayName = "#CTL_LocalRefreshParameters", lazy=true)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.LOCALPATH+LocalRefreshPartial.PATH, position = 1230)
+    @ActionReference(path = MultiProcessingManager.LOCALPATH+LocalRefreshPartial.PATH, position = 1235)
 })
 @NbBundle.Messages("CTL_LocalRefreshParameters=+ Arima parameters")
 public final class LocalRefreshParameters extends ActiveViewAction<SaBatchUI> {

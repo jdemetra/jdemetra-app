@@ -16,13 +16,16 @@
  */
 package demetra.desktop.tramoseats.ui.actions;
 
-import demetra.desktop.tramoseats.ui.TramoSeatsSpecManager;
+import demetra.desktop.tramoseats.documents.TramoSeatsDocumentManager;
+import demetra.desktop.tramoseats.documents.TramoSeatsSpecManager;
+import demetra.desktop.tramoseats.ui.TramoSeatsTopComponent;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.WsNode;
 import demetra.tramoseats.TramoSeatsSpec;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import jdplus.tramoseats.TramoSeatsDocument;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -30,7 +33,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "Tools",
-id = "demetra.desktop.tramoseats.ui.actions.CreateTramoSeatsDoc")
+        id = "demetra.desktop.tramoseats.ui.actions.CreateTramoSeatsDoc")
 @ActionRegistration(displayName = "#CTL_CreateTramoSeatsDoc")
 @ActionReferences({
     @ActionReference(path = TramoSeatsSpecManager.ITEMPATH, position = 1620, separatorBefore = 1300)
@@ -43,17 +46,19 @@ public final class CreateTramoSeatsDoc implements ActionListener {
     public CreateTramoSeatsDoc(WsNode context) {
         this.context = context;
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent ev) {
         final WorkspaceItem<TramoSeatsSpec> xdoc = context.getWorkspace().searchDocument(context.lookup(), TramoSeatsSpec.class);
-        if (xdoc == null||xdoc.getElement() == null) {
+        if (xdoc == null || xdoc.getElement() == null) {
             return;
         }
-        TramoSeatsSpecManager mgr = (TramoSeatsSpecManager) WorkspaceFactory.getInstance().getManager(xdoc.getFamily());
-        if (mgr != null) {
-            mgr.createDocument(context.getWorkspace(), xdoc);
-        }
+        TramoSeatsDocumentManager dmgr = (TramoSeatsDocumentManager) WorkspaceFactory.getInstance().getManager(TramoSeatsDocumentManager.ID);
+        WorkspaceItem<TramoSeatsDocument> doc = dmgr.create(context.getWorkspace());
+        doc.setComments(xdoc.getComments());
+        doc.getElement().set(xdoc.getElement());
+        TramoSeatsTopComponent view = new TramoSeatsTopComponent(doc);
+        view.open();
+        view.requestActive();
     }
 }
-

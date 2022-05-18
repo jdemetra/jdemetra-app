@@ -15,7 +15,7 @@ import java.time.LocalDate;
  *
  * @author Philippe Charles
  */
-public abstract class AbstractEventBean implements PropertyChangeSource.WithWeakListeners {
+public abstract class AbstractEventBean implements HasHoliday, PropertyChangeSource.WithWeakListeners {
 
     // PROPERTIES DEFINITIONS
     @SwingProperty

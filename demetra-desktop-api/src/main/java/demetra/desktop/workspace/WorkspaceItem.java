@@ -16,6 +16,7 @@
  */
 package demetra.desktop.workspace;
 
+import demetra.DemetraVersion;
 import java.util.Comparator;
 import org.openide.windows.TopComponent;
 import demetra.desktop.interfaces.Modifiable;
@@ -183,11 +184,11 @@ public class WorkspaceItem<T> implements Modifiable, Comparable<WorkspaceItem> {
         }
     }
 
-    public boolean close() {
+    public boolean close(DemetraVersion version) {
         if (!status_.canBeSaved()) {
             return false;
         }
-        if (owner_.getRepository().saveItem(this)) {
+        if (owner_.getRepository().saveItem(this, version)) {
             closeView();
             this.element_ = null;
             status_ = Status.Undefined;

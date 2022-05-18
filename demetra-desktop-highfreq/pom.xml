@@ -95,8 +95,8 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>demetra-desktop-stl</artifactId>
-            <version>${stl-desktop.version}</version>
+            <artifactId>demetra-desktop-sa-ui</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

@@ -4,6 +4,7 @@
  */
 package demetra.desktop.workspace;
 
+import demetra.DemetraVersion;
 import demetra.timeseries.regression.ModellingContext;
 import demetra.tsprovider.DataSource;
 import demetra.desktop.interfaces.Disposable;
@@ -269,11 +270,11 @@ public class Workspace implements Disposable {
         }
     }
 
-    public void save() {
+    public void save(DemetraVersion version) {
         if (!isDirty()) {
             return;
         }
-        getRepository().save(this, false);
+        getRepository().save(this, version, false);
         WorkspaceFactory.Event ev = new WorkspaceFactory.Event(this, null, WorkspaceFactory.Event.SAVE);
         WorkspaceFactory.getInstance().notifyEvent(ev);
     }
@@ -281,8 +282,8 @@ public class Workspace implements Disposable {
 //    public void forceSave() {
 //        getRepository().save(this, true);
 //    }
-    public void saveAs() {
-        getRepository().saveAs(this);
+    public void saveAs(DemetraVersion version) {
+        getRepository().saveAs(this, version);
         WorkspaceFactory.Event ev = new WorkspaceFactory.Event(this, null, WorkspaceFactory.Event.SAVEAS);
         WorkspaceFactory.getInstance().notifyEvent(ev);
     }

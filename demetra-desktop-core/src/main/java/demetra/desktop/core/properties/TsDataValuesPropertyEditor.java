@@ -17,7 +17,7 @@
 package demetra.desktop.core.properties;
 
 import demetra.tsprovider.util.ObsFormat;
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraUI;
 import demetra.desktop.jfreechart.TsCharts;
 import demetra.timeseries.TsData;
 import ec.util.chart.swing.Charts;
@@ -69,7 +69,7 @@ public class TsDataValuesPropertyEditor extends PropertyEditorSupport {
                 singleValuePainter.paint(gfx);
                 break;
             case 1:
-                ObsFormat obsFormat = DemetraOptions.getDefault().getObsFormat();
+                ObsFormat obsFormat = DemetraUI.getDefault().getObsFormat();
                 String str = "Single: " + obsFormat.numberFormatter().formatAsString(data.getValue(0));
                 singleValuePainter.setText(str);
                 singleValuePainter.setBounds(box);

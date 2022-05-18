@@ -50,9 +50,8 @@ public class SaNode {
         } else {
             SaDefinition definition = item.getDefinition();
             SaDefinition ndefinition = definition.toBuilder()
-                    .domainSpec(definition.getDomainSpec())
-                    .estimationSpec(nspec)
-                    .policy(EstimationPolicyType.Interactive)
+                    .domainSpec(nspec)
+                    .policy(EstimationPolicyType.None)
                     .build();
             SaItem nitem=SaItem.builder()
                     .definition(ndefinition)

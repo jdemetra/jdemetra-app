@@ -20,7 +20,7 @@ import com.google.common.base.Stopwatch;
 import demetra.desktop.notification.MessageType;
 import demetra.desktop.notification.NotifyUtil;
 import demetra.timeseries.TsCollection;
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraBehaviour;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.DemetraIcons;
 import demetra.desktop.anomalydetection.AnomalyItem;
@@ -390,7 +390,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
             }
             ntasks=tasks.size();
 
-            DemetraOptions options = DemetraOptions.getDefault();
+            DemetraBehaviour options = DemetraBehaviour.getDefault();
 
             ExecutorService executorService = UIExecutors.newFixedThreadPool(options.getBatchPoolSize(), options.getBatchPriority());
             Stopwatch stopwatch = Stopwatch.createStarted();

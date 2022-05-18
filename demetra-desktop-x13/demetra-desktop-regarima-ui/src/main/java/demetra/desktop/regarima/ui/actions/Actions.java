@@ -16,8 +16,8 @@
  */
 package demetra.desktop.regarima.ui.actions;
 
-import demetra.desktop.regarima.ui.RegArimaDocumentManager;
-import demetra.desktop.regarima.ui.RegArimaSpecManager;
+import demetra.desktop.regarima.documents.RegArimaDocumentManager;
+import demetra.desktop.regarima.documents.RegArimaSpecManager;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

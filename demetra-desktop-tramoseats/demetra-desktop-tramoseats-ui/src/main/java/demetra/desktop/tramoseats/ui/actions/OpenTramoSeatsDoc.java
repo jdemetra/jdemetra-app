@@ -4,7 +4,8 @@
  */
 package demetra.desktop.tramoseats.ui.actions;
 
-import demetra.desktop.tramoseats.ui.TramoSeatsDocumentManager;
+import demetra.desktop.tramoseats.documents.TramoSeatsDocumentManager;
+import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.WsNode;
@@ -35,7 +36,9 @@ public class OpenTramoSeatsDoc implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ev) {
         WorkspaceItem<TramoSeatsDocument> doc = context.getWorkspace().searchDocument(context.lookup(), TramoSeatsDocument.class);
-        TramoSeatsDocumentManager mgr = WorkspaceFactory.getInstance().getManager(TramoSeatsDocumentManager.class);
-        mgr.openDocument(doc);
+        DocumentUIServices ui = DocumentUIServices.forDocument(TramoSeatsDocument.class);
+        if (ui != null) {
+            ui.showDocument(doc);
+        }
     }
 }

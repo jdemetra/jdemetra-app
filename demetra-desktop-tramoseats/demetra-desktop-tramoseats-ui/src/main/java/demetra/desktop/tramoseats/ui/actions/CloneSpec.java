@@ -4,7 +4,7 @@
  */
 package demetra.desktop.tramoseats.ui.actions;
 
-import demetra.desktop.tramoseats.ui.TramoSeatsSpecManager;
+import demetra.desktop.tramoseats.documents.TramoSeatsSpecManager;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;

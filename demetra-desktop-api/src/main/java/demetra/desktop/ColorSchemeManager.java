@@ -33,7 +33,7 @@ public final class ColorSchemeManager {
 
     @NonNull
     public ColorScheme getMainColorScheme() {
-        String mainColorSchemeName = DemetraOptions.getDefault().getColorSchemeName();
+        String mainColorSchemeName = DemetraUI.getDefault().getColorSchemeName();
         return providers
                 .stream()
                 .filter(Collections2.compose(Predicate.isEqual(mainColorSchemeName), ColorScheme::getName))

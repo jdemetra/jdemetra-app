@@ -64,7 +64,7 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
 
     @Override
     public void refresh() {
-        panel.refreshAll();
+        panel.onDocumentChanged();
     }
 
     @Override
@@ -74,16 +74,21 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
             @Override
             public void propertyChange(PropertyChangeEvent arg0) {
                 switch (arg0.getPropertyName()) {
-                    case DefaultProcessingViewer.SPEC_CHANGED:
                     case DefaultProcessingViewer.INPUT_CHANGED:
-                        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
+                        Object nval=arg0.getNewValue();
+                        if (nval instanceof Ts){
+                            setTs((Ts) nval);
+                        }
+                        break;
+                    case DefaultProcessingViewer.SPEC_CHANGED:
+                        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, WorkspaceTsTopComponent.this);
                         WorkspaceFactory.getInstance().notifyEvent(ev);
 
                 }
             }
         });
 
-        TsDynamicProvider.OnDocumentOpened(panel.getDocument());
+        TsDynamicProvider.onDocumentOpened(panel.getDocument());
         // TODO add custom code on component opening
     }
 
@@ -93,8 +98,7 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
             panel.removeListeners();
             panel.dispose();
         }
-        TsDynamicProvider.OnDocumentClosing(panel.getDocument());
-        doc.setView(null);
+        TsDynamicProvider.onDocumentClosing(panel.getDocument());
         super.componentClosed();
     }
 
@@ -123,14 +127,10 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
             cts = ts.load(TsInformationType.All, TsManager.getDefault());
         }
         panel.getDocument().set(cts);
-        panel.initSpecView();
-        panel.refreshAll();
-        panel.updateDocument();
-
+        panel.updateButtons(null);
+        getDocument().setDirty();
         WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
         WorkspaceFactory.getInstance().notifyEvent(ev);
 
     }
-
- 
 }

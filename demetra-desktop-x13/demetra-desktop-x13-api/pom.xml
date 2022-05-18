@@ -151,8 +151,8 @@
                         <publicPackage>demetra.x13.*</publicPackage>
                         <publicPackage>jdplus.x11.*</publicPackage>
                         <publicPackage>jdplus.x13.*</publicPackage>
-                        <publicPackage>demetra.desktop.x13.descriptors.*</publicPackage>
-                        <publicPackage>demetra.desktop.regarima.descriptors.*</publicPackage>
+                        <publicPackage>demetra.desktop.x13.*</publicPackage>
+                        <publicPackage>demetra.desktop.regarima.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

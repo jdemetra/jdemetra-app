@@ -17,7 +17,7 @@
 package demetra.desktop.core.tsproviders;
 
 import demetra.desktop.Config;
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraBehaviour;
 import demetra.desktop.TsManager;
 import demetra.desktop.core.actions.ConfigureNodeAction;
 import demetra.desktop.core.interchange.ImportNodeAction;
@@ -112,14 +112,14 @@ public final class ProvidersNode extends AbstractNode {
         @Override
         protected void addNotify() {
             lookupResult.addLookupListener(this);
-            DemetraOptions.getDefault().addPropertyChangeListener(this);
+            DemetraBehaviour.getDefault().addPropertyChangeListener(this);
             providerStream().forEach(o -> o.addDataSourceListener(this));
         }
 
         @Override
         protected void removeNotify() {
             providerStream().forEach(o -> o.removeDataSourceListener(this));
-            DemetraOptions.getDefault().removePropertyChangeListener(this);
+            DemetraBehaviour.getDefault().removePropertyChangeListener(this);
             lookupResult.removeLookupListener(this);
         }
 
@@ -131,13 +131,13 @@ public final class ProvidersNode extends AbstractNode {
 
         @Override
         protected Node createNodeForKey(Object key) {
-            return DemetraOptions.getDefault().isShowTsProviderNodes()
+            return DemetraBehaviour.getDefault().isShowTsProviderNodes()
                     ? new ProviderNode((DataSourceProvider) key)
                     : new DataSourceNode((DataSource) key);
         }
 
         private List<?> getKeys() {
-            return DemetraOptions.getDefault().isShowTsProviderNodes()
+            return DemetraBehaviour.getDefault().isShowTsProviderNodes()
                     ? providerStream().sorted(ON_CLASS_SIMPLENAME).collect(Collectors.toList())
                     : providerStream().flatMap(o -> o.getDataSources().stream()).sorted(ON_TO_STRING).collect(Collectors.toList());
         }
@@ -146,7 +146,7 @@ public final class ProvidersNode extends AbstractNode {
             return TsManager.getDefault().getProviders()
                     .filter(DataSourceProvider.class::isInstance)
                     .map(DataSourceProvider.class::cast)
-                    .filter(DemetraOptions.getDefault().isShowUnavailableTsProviders() ? (o -> true) : TsProvider::isAvailable);
+                    .filter(DemetraBehaviour.getDefault().isShowUnavailableTsProviders() ? (o -> true) : TsProvider::isAvailable);
         }
 
         //<editor-fold defaultstate="collapsed" desc="LookupListener">
@@ -161,8 +161,8 @@ public final class ProvidersNode extends AbstractNode {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             switch (evt.getPropertyName()) {
-                case DemetraOptions.SHOW_UNAVAILABLE_TS_PROVIDERS_PROPERTY:
-                case DemetraOptions.SHOW_TS_PROVIDER_NODES_PROPERTY:
+                case DemetraBehaviour.SHOW_UNAVAILABLE_TS_PROVIDERS_PROPERTY:
+                case DemetraBehaviour.SHOW_TS_PROVIDER_NODES_PROPERTY:
                     refresh(true);
                     break;
 
@@ -173,28 +173,28 @@ public final class ProvidersNode extends AbstractNode {
         //<editor-fold defaultstate="collapsed" desc="DataSourceListener">
         @Override
         public void opened(demetra.tsprovider.DataSource dataSource) {
-            if (!DemetraOptions.getDefault().isShowTsProviderNodes()) {
+            if (!DemetraBehaviour.getDefault().isShowTsProviderNodes()) {
                 refresh(true);
             }
         }
 
         @Override
         public void closed(demetra.tsprovider.DataSource dataSource) {
-            if (!DemetraOptions.getDefault().isShowTsProviderNodes()) {
+            if (!DemetraBehaviour.getDefault().isShowTsProviderNodes()) {
                 refresh(true);
             }
         }
 
         @Override
         public void changed(demetra.tsprovider.DataSource dataSource) {
-            if (!DemetraOptions.getDefault().isShowTsProviderNodes()) {
+            if (!DemetraBehaviour.getDefault().isShowTsProviderNodes()) {
                 refresh(true);
             }
         }
 
         @Override
         public void allClosed(String providerName) {
-            if (!DemetraOptions.getDefault().isShowTsProviderNodes()) {
+            if (!DemetraBehaviour.getDefault().isShowTsProviderNodes()) {
                 refresh(true);
             }
         }

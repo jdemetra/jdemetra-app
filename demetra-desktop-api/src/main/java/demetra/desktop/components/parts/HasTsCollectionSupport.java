@@ -160,7 +160,7 @@ public class HasTsCollectionSupport {
             JMenuItem item = new JMenuItem(((JCommand<HasTsCollection>) new OpenWithCommand(o.getName())).toAction(component));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
-            if (DemetraOptions.getDefault().isPopupMenuIconsVisible()) {
+            if (DemetraUI.getDefault().isPopupMenuIconsVisible()) {
                 Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
                 if (image != null) {
                     item.setIcon(ImageUtilities.image2Icon(image));
@@ -179,7 +179,7 @@ public class HasTsCollectionSupport {
             JMenuItem item = new JMenuItem(((JCommand<HasTsCollection>) new SaveCommand(o)).toAction(component));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
-            if (DemetraOptions.getDefault().isPopupMenuIconsVisible()) {
+            if (DemetraUI.getDefault().isPopupMenuIconsVisible()) {
                 Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
                 if (image != null) {
                     item.setIcon(ImageUtilities.image2Icon(image));
@@ -342,7 +342,7 @@ public class HasTsCollectionSupport {
             if (c instanceof HasTsAction) {
                 String actionName = ((HasTsAction) c).getTsAction();
                 if (actionName == null) {
-                    actionName = DemetraOptions.getDefault().getTsActionName();
+                    actionName = DemetraBehaviour.getDefault().getTsActionName();
                 }
                 TsActions.getDefault().openWith(getSingleTs(c), actionName);
             }

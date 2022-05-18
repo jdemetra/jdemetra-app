@@ -1,6 +1,6 @@
 package demetra.desktop.core.components;
 
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraUI;
 import demetra.desktop.components.JHtmlView;
 import demetra.desktop.components.parts.HasZoomRatioSupport;
 import demetra.desktop.util.NbComponents;
@@ -47,10 +47,10 @@ final class HtmlViewUI implements InternalUI<JHtmlView> {
         JHtmlPane result = new JHtmlPane();
         result.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         result.setComponentPopupMenu(createMenu(result).getPopupMenu());
-        result.setZoomRatio(DemetraOptions.getDefault().getHtmlZoomRatio());
+        result.setZoomRatio(DemetraUI.getDefault().getHtmlZoomRatio());
         DEFAULT_STYLE_CMD.executeSafely(result);
-        DemetraOptions.getDefault()
-                .addWeakPropertyChangeListener(DemetraOptions.HTML_ZOOM_RATIO_PROPERTY, o -> result.setZoomRatio(DemetraOptions.getDefault().getHtmlZoomRatio()));
+        DemetraUI.getDefault()
+                .addWeakPropertyChangeListener(DemetraUI.HTML_ZOOM_RATIO_PROPERTY, o -> result.setZoomRatio(DemetraUI.getDefault().getHtmlZoomRatio()));
         return result;
     }
 

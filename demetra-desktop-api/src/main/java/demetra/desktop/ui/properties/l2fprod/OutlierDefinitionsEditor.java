@@ -9,8 +9,6 @@ import demetra.desktop.DemetraIcons;
 import demetra.desktop.ui.properties.l2fprod.OutlierCheckComboBox.CheckListItem;
 import demetra.desktop.ui.properties.l2fprod.OutlierDefinition.OutlierType;
 import demetra.desktop.util.NbComponents;
-import demetra.timeseries.TsPeriod;
-import demetra.timeseries.TsUnit;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;

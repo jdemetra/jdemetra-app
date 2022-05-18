@@ -1,11 +1,12 @@
 package demetra.desktop.components.parts;
 
 import demetra.desktop.ColorSchemeManager;
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraUI;
 import ec.util.chart.swing.SwingColorSchemeSupport;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 public final class HasColorSchemeResolver {
 
@@ -15,10 +16,14 @@ public final class HasColorSchemeResolver {
     @lombok.NonNull
     private final Runnable onChange;
 
+    @lombok.NonNull
+    private final PropertyChangeListener listener;
+
     public HasColorSchemeResolver(HasColorScheme property, Runnable onChange) {
         this.property = property;
         this.onChange = onChange;
-        DemetraOptions.getDefault().addWeakPropertyChangeListener(this::onPropertyChange);
+        this.listener = this::onPropertyChange;
+        DemetraUI.getDefault().addWeakPropertyChangeListener(listener);
     }
 
     @NonNull
@@ -27,7 +32,7 @@ public final class HasColorSchemeResolver {
     }
 
     private void onPropertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(DemetraOptions.COLOR_SCHEME_NAME_PROPERTY) && !property.hasColorScheme()) {
+        if (evt.getPropertyName().equals(DemetraUI.COLOR_SCHEME_NAME_PROPERTY) && !property.hasColorScheme()) {
             onChange.run();
         }
     }

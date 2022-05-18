@@ -16,8 +16,8 @@
  */
 package demetra.desktop.tramo.ui.actions;
 
-import demetra.desktop.tramo.ui.TramoDocumentManager;
-import demetra.desktop.tramo.ui.TramoSpecManager;
+import demetra.desktop.tramo.documents.TramoDocumentManager;
+import demetra.desktop.tramo.documents.TramoSpecManager;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

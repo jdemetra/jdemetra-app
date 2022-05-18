@@ -19,7 +19,7 @@ package demetra.desktop.x13.ui.actions;
 import demetra.desktop.Config;
 import demetra.desktop.interchange.Exportable;
 import demetra.desktop.interchange.Interchange;
-import demetra.desktop.x13.ui.X13SpecManager;
+import demetra.desktop.x13.documents.X13SpecManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.ItemWsNode;
 import demetra.information.InformationSet;

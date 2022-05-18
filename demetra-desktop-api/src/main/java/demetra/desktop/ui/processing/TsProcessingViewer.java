@@ -9,6 +9,7 @@ import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.TsManager;
 import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.workspace.DocumentUIServices;
 import demetra.processing.ProcSpecification;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsDocument;
@@ -65,9 +66,9 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
     }
 
     @Override
-    public void updateDocument() {
-        super.updateDocument();
-        TsDynamicProvider.OnDocumentChanged(getDocument());
+    public void onDocumentChanged() {
+        super.onDocumentChanged();
+        TsDynamicProvider.onDocumentChanged(getDocument());
     }
 
     @Override
@@ -106,8 +107,6 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
             if (ts.isPresent()) {
                 Ts input = ts.get().load(TsInformationType.All, TsManager.getDefault()).freeze();
                 Ts old=getDocument().getInput();
-                getDocument().set(input);
-                refreshAll();
                 TsProcessingViewer.this.firePropertyChange(INPUT_CHANGED, old, input);
                 return true;
             }

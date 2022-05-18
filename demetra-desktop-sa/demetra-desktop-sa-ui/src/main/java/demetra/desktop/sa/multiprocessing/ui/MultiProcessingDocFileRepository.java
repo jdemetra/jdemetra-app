@@ -4,6 +4,7 @@
  */
 package demetra.desktop.sa.multiprocessing.ui;
 
+import demetra.DemetraVersion;
 import demetra.desktop.workspace.AbstractFileItemRepository;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemRepository;
@@ -30,14 +31,12 @@ public class MultiProcessingDocFileRepository extends AbstractFileItemRepository
     }
 
     @Override
-    public boolean save(WorkspaceItem<MultiProcessingDocument> doc) {
+    public boolean save(WorkspaceItem<MultiProcessingDocument> doc, DemetraVersion version) {
         MultiProcessingDocument element = doc.getElement();
         Map<String, String> meta=new HashMap<>(element.getMetadata());
         TsMeta.TIMESTAMP.store(meta, LocalDateTime.now());
         SaItems current = element.current(meta);
-        return storeFile(doc, current, () -> {
-            doc.resetDirty();
-        });
+        return storeFile(doc, current, version, doc::resetDirty);
     }
 
     @Override

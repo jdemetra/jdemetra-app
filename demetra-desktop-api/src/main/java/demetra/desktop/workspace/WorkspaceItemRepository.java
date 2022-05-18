@@ -4,6 +4,7 @@
  */
 package demetra.desktop.workspace;
 
+import demetra.DemetraVersion;
 import nbbrd.service.ServiceDefinition;
 
 
@@ -19,7 +20,7 @@ public interface WorkspaceItemRepository<D> {
     
     boolean load(WorkspaceItem<D> item);
 
-    boolean save(WorkspaceItem<D> item);
+    boolean save(WorkspaceItem<D> item, DemetraVersion version);
 
     boolean delete(WorkspaceItem<D> doc);
 }

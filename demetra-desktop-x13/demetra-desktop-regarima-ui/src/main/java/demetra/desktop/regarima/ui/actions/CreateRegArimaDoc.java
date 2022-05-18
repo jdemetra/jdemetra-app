@@ -16,13 +16,16 @@
  */
 package demetra.desktop.regarima.ui.actions;
 
-import demetra.desktop.regarima.ui.RegArimaSpecManager;
+import demetra.desktop.regarima.documents.RegArimaDocumentManager;
+import demetra.desktop.regarima.documents.RegArimaSpecManager;
+import demetra.desktop.regarima.ui.RegArimaTopComponent;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.WsNode;
 import demetra.regarima.RegArimaSpec;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import jdplus.x13.regarima.RegArimaDocument;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -30,7 +33,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "Tools",
-id = "demetra.desktop.regarima.ui.spec.actions.CreateRegArimaDoc")
+        id = "demetra.desktop.regarima.ui.spec.actions.CreateRegArimaDoc")
 @ActionRegistration(displayName = "#CTL_CreateRegArimaDoc")
 @ActionReferences({
     @ActionReference(path = RegArimaSpecManager.ITEMPATH, position = 1620, separatorBefore = 1300)
@@ -43,17 +46,19 @@ public final class CreateRegArimaDoc implements ActionListener {
     public CreateRegArimaDoc(WsNode context) {
         this.context = context;
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent ev) {
         final WorkspaceItem<RegArimaSpec> xdoc = context.getWorkspace().searchDocument(context.lookup(), RegArimaSpec.class);
-        if (xdoc == null||xdoc.getElement() == null) {
+        if (xdoc == null || xdoc.getElement() == null) {
             return;
         }
-        RegArimaSpecManager mgr = (RegArimaSpecManager) WorkspaceFactory.getInstance().getManager(xdoc.getFamily());
-        if (mgr != null) {
-            mgr.createDocument(context.getWorkspace(), xdoc);
-        }
+        RegArimaDocumentManager dmgr = (RegArimaDocumentManager) WorkspaceFactory.getInstance().getManager(RegArimaDocumentManager.ID);
+        WorkspaceItem<RegArimaDocument> doc = dmgr.create(context.getWorkspace());
+        doc.setComments(xdoc.getComments());
+        doc.getElement().set(xdoc.getElement());
+        RegArimaTopComponent view = new RegArimaTopComponent(doc);
+        view.open();
+        view.requestActive();
     }
 }
-

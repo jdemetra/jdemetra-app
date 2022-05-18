@@ -16,7 +16,7 @@
  */
 package demetra.desktop.core.tsproviders;
 
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraBehaviour;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
@@ -39,14 +39,14 @@ public final class ShowProvidersNodeAction extends AbstractAction implements Pre
     public ShowProvidersNodeAction() {
         this.item = new JCheckBoxMenuItem(this);
         item.setText(Bundle.CTL_ShowProvidersAction());
-        DemetraOptions options = DemetraOptions.getDefault();
+        DemetraBehaviour options = DemetraBehaviour.getDefault();
         item.setSelected(options.isShowTsProviderNodes());
         options.addWeakPropertyChangeListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        DemetraOptions options = DemetraOptions.getDefault();
+        DemetraBehaviour options = DemetraBehaviour.getDefault();
         options.setShowTsProviderNodes(!options.isShowTsProviderNodes());
     }
 
@@ -58,7 +58,7 @@ public final class ShowProvidersNodeAction extends AbstractAction implements Pre
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case DemetraOptions.SHOW_TS_PROVIDER_NODES_PROPERTY:
+            case DemetraBehaviour.SHOW_TS_PROVIDER_NODES_PROPERTY:
                 item.setSelected((Boolean) evt.getNewValue());
                 break;
         }

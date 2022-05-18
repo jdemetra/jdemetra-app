@@ -17,10 +17,7 @@
 package demetra.desktop.anomalydetection;
 
 import demetra.data.DoubleSeqCursor;
-import demetra.timeseries.Ts;
 import demetra.timeseries.TsData;
-import demetra.timeseries.TsFactory;
-import demetra.timeseries.TsInformationType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -136,6 +133,8 @@ public class AnomalyItem {
     }
 
     public double getAbsoluteError(int index) {
+        if (absoluteError == null)
+            return Double.NaN;
         if (index < 0 || index > backCount - 1) {
             throw new IllegalArgumentException("Given index for absolute error is incorrect");
         }
@@ -143,6 +142,8 @@ public class AnomalyItem {
     }
 
     public double getRelativeError(int index) {
+        if (relativeError == null)
+            return Double.NaN;
         if (index < 0 || index > backCount - 1) {
             throw new IllegalArgumentException("Given index for relative error is incorrect");
         }

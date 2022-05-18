@@ -18,7 +18,7 @@ package demetra.desktop.processing.ui.sa;
 
 import demetra.data.DoubleSeq;
 import demetra.desktop.components.parts.*;
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraUI;
 import demetra.desktop.jfreechart.BasicXYDataset;
 import demetra.desktop.jfreechart.TsCharts;
 import demetra.desktop.components.parts.HasChart.LinesThickness;
@@ -183,7 +183,7 @@ public final class JSIView extends JComponent implements TimeSeriesComponent, Ha
         this.masterChart = createMasterChart(sRenderer, tRenderer, siMasterRenderer);
         this.detailChart = createDetailChart(sRenderer, tRenderer, siDetailRenderer);
         this.chartPanel = new JChartPanel(null);
-        this.numberFormat = DemetraOptions.getDefault().getObsFormat().numberFormatter();
+        this.numberFormat = DemetraUI.getDefault().getObsFormat().numberFormatter();
         initComponents();
     }
 
@@ -273,7 +273,7 @@ public final class JSIView extends JComponent implements TimeSeriesComponent, Ha
 
     private void onObsFormatChange() {
         // FIXME: never called
-        numberFormat = DemetraOptions.getDefault().getObsFormat().numberFormatter();
+        numberFormat = DemetraUI.getDefault().getObsFormat().numberFormatter();
     }
 
     private void onTsChange() {

@@ -136,7 +136,7 @@ public final class TsDynamicProvider implements TsProvider {
 //            return Collections.unmodifiableSet(items);
 //        }
 //    }
-    public static void OnDocumentClosing(TsDocument doc) {
+    public static void onDocumentClosing(TsDocument doc) {
         if (doc == null) {
             return;
         }
@@ -147,7 +147,7 @@ public final class TsDynamicProvider implements TsProvider {
         }
     }
 
-    public static void OnDocumentOpened(TsDocument doc) {
+    public static void onDocumentOpened(TsDocument doc) {
         if (doc == null) {
             return;
         }
@@ -157,7 +157,7 @@ public final class TsDynamicProvider implements TsProvider {
         }
     }
 
-    public static void OnDocumentChanged(TsDocument doc) {
+    public static void onDocumentChanged(TsDocument doc) {
         if (doc == null) {
             return;
         }
@@ -204,7 +204,7 @@ public final class TsDynamicProvider implements TsProvider {
         }
         if (item.now != null) {
             n = source.getData(item.now, TsData.class);
-            if (n != null) {
+            if (n != null && ! n.isEmpty()) {
                 beg = n.getStart().start().toLocalDate();
                 end = n.getEnd().end().toLocalDate();
             }

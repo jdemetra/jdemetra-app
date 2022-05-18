@@ -56,11 +56,10 @@ final class InterchangePanel extends javax.swing.JPanel implements ExplorerManag
         editButton = new javax.swing.JButton();
         outlineView2 = new org.openide.explorer.view.OutlineView("Interchange broker");
 
-        jToolBar1.setFloatable(false);
         jToolBar1.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jToolBar1.setRollover(true);
 
-        editButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ec/nbdemetra/ui/preferences-system_16x16.png"))); // NOI18N
+        editButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/core/preferences-system_16x16.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(editButton, org.openide.util.NbBundle.getMessage(InterchangePanel.class, "InterchangePanel.editButton.text")); // NOI18N
         editButton.setToolTipText(org.openide.util.NbBundle.getMessage(InterchangePanel.class, "InterchangePanel.editButton.toolTipText")); // NOI18N
         editButton.addActionListener(new java.awt.event.ActionListener() {

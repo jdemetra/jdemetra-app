@@ -19,9 +19,9 @@ package demetra.desktop.components.tools;
 import demetra.data.DoubleSeq;
 import demetra.data.DoubleSeqCursor;
 import javax.swing.JPopupMenu;
+import jdplus.data.analysis.WindowFunction;
 import jdplus.data.analysis.SmoothedPeriodogram;
 import jdplus.data.analysis.TukeyHanningTaper;
-import jdplus.data.analysis.WindowFunction;
 import org.jfree.data.xy.XYSeries;
 
 /**

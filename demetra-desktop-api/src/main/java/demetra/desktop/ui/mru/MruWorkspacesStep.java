@@ -18,11 +18,11 @@ public class MruWorkspacesStep extends InstallerStep {
 
     @Override
     public void restore() {
-//        MruPreferences.INSTANCE.load(prefsWs, MruList.getWorkspacesInstance());
+        MruPreferences.INSTANCE.load(prefsWs, MruList.getWorkspacesInstance());
     }
 
     @Override
     public void close() {
-//        MruPreferences.INSTANCE.store(prefsWs, MruList.getWorkspacesInstance());
+        MruPreferences.INSTANCE.store(prefsWs, MruList.getWorkspacesInstance());
     }
 }

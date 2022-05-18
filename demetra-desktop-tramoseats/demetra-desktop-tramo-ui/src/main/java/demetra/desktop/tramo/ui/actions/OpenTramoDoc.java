@@ -7,7 +7,8 @@ package demetra.desktop.tramo.ui.actions;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.WsNode;
-import demetra.desktop.tramo.ui.TramoDocumentManager;
+import demetra.desktop.tramo.documents.TramoDocumentManager;
+import demetra.desktop.workspace.DocumentUIServices;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import jdplus.tramo.TramoDocument;
@@ -35,7 +36,9 @@ public class OpenTramoDoc implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ev) {
         WorkspaceItem<TramoDocument> doc = context.getWorkspace().searchDocument(context.lookup(), TramoDocument.class);
-        TramoDocumentManager mgr = WorkspaceFactory.getInstance().getManager(TramoDocumentManager.class);
-        mgr.openDocument(doc);
+        DocumentUIServices ui = DocumentUIServices.forDocument(TramoDocument.class);
+        if (ui != null) {
+            ui.showDocument(doc);
+        }
     }
 }

@@ -6,12 +6,14 @@ package demetra.desktop.regarima.ui;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.regarima.descriptors.RegArimaSpecUI;
-import demetra.desktop.ui.processing.DocumentUIServices;
 import demetra.desktop.ui.processing.IProcDocumentView;
+import demetra.desktop.workspace.DocumentUIServices;
+import demetra.desktop.workspace.WorkspaceItem;
 import demetra.regarima.RegArimaSpec;
 import java.awt.Color;
 import javax.swing.Icon;
 import jdplus.x13.regarima.RegArimaDocument;
+import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -50,8 +52,17 @@ public class RegArimaUIFactory implements DocumentUIServices<RegArimaSpec, RegAr
 
     @Override
     public Icon getIcon() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ImageUtilities.loadImageIcon("demetra/desktop/regarima/ui/tangent_magenta.png", false);
     }
 
-
+    @Override
+    public void showDocument(WorkspaceItem<RegArimaDocument> item) {
+        if (item.isOpen()) {
+            item.getView().requestActive();
+        } else {
+            RegArimaTopComponent view = new RegArimaTopComponent(item);
+            view.open();
+            view.requestActive();
+        }
+    }
 }

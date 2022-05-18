@@ -19,7 +19,7 @@ package demetra.desktop.regarima.ui.actions;
 import demetra.desktop.Config;
 import demetra.desktop.interchange.Exportable;
 import demetra.desktop.interchange.Interchange;
-import demetra.desktop.regarima.ui.RegArimaSpecManager;
+import demetra.desktop.regarima.documents.RegArimaSpecManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.ItemWsNode;
 import demetra.information.InformationSet;

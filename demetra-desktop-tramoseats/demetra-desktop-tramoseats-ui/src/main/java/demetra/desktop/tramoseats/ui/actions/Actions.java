@@ -16,8 +16,8 @@
  */
 package demetra.desktop.tramoseats.ui.actions;
 
-import demetra.desktop.tramoseats.ui.TramoSeatsDocumentManager;
-import demetra.desktop.tramoseats.ui.TramoSeatsSpecManager;
+import demetra.desktop.tramoseats.documents.TramoSeatsDocumentManager;
+import demetra.desktop.tramoseats.documents.TramoSeatsSpecManager;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;

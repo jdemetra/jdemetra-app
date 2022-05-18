@@ -16,7 +16,7 @@
  */
 package demetra.desktop.core.tsproviders;
 
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraBehaviour;
 import demetra.desktop.TsActions;
 import demetra.desktop.TsCollectable;
 import demetra.desktop.TsManager;
@@ -170,7 +170,7 @@ abstract public class DataSetNode extends AbstractNode {
             DataSet dataSet = getLookup().lookup(DataSet.class);
             TsManager.getDefault()
                     .getTs(dataSet, demetra.timeseries.TsInformationType.None)
-                    .ifPresent(ts -> TsActions.getDefault().openWith(ts, DemetraOptions.getDefault().getTsActionName()));
+                    .ifPresent(ts -> TsActions.getDefault().openWith(ts, DemetraBehaviour.getDefault().getTsActionName()));
         }
     }
 
