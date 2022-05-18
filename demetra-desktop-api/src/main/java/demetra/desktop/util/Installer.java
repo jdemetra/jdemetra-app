@@ -16,6 +16,8 @@
  */
 package demetra.desktop.util;
 
+import demetra.desktop.DemetraBehaviour;
+import demetra.desktop.DemetraUI;
 import demetra.desktop.Persistable;
 import demetra.timeseries.TsProvider;
 import demetra.desktop.TsManager;
@@ -24,6 +26,7 @@ import demetra.desktop.ui.mru.MruProvidersStep;
 import demetra.desktop.ui.mru.MruWorkspacesStep;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.tsprovider.FileLoader;
+import ec.util.chart.swing.Charts;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +41,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.Parser;
 import nbbrd.io.xml.bind.Jaxb;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.openide.modules.ModuleInstall;
 import org.openide.util.Lookup;
 import org.slf4j.Logger;
@@ -53,7 +60,9 @@ public final class Installer extends ModuleInstall {
             new ProviderBuddyStep(),
             new TsVariableStep(),
             new MruProvidersStep(),
-            new MruWorkspacesStep()
+            new MruWorkspacesStep(),
+            new JFreeChartStep(),
+            new DemetraOptionsStep()
     );
 
     @Override
@@ -210,6 +219,39 @@ public final class Installer extends ModuleInstall {
                     tryPut(prefs, buddy.getProviderName(), XmlConfig.xmlFormatter(false), persistable.getConfig());
                 }
             }
+        }
+    }
+
+    private static final class JFreeChartStep extends InstallerStep {
+
+        @Override
+        public void restore() {
+            ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
+            BarRenderer.setDefaultBarPainter(new StandardBarPainter());
+            LOGGER.info("ChartPanel buffer " + (Charts.USE_CHART_PANEL_BUFFER ? "enabled" : "disabled"));
+        }
+    }
+
+    private static final class DemetraOptionsStep extends InstallerStep {
+
+        final Preferences prefs = prefs().node("options");
+
+        private static final String UI = "ui", BEHAVIOUR = "behaviour";
+
+        @Override
+        public void restore() {
+            DemetraUI ui = DemetraUI.getDefault();
+            tryGet(prefs.node(UI)).ifPresent(ui::setConfig);
+            DemetraBehaviour behaviour = DemetraBehaviour.getDefault();
+            tryGet(prefs.node(BEHAVIOUR)).ifPresent(behaviour::setConfig);
+        }
+
+        @Override
+        public void close() {
+            DemetraUI ui = DemetraUI.getDefault();
+            put(prefs.node(UI), ui.getConfig());
+            DemetraBehaviour behaviour = DemetraBehaviour.getDefault();
+            put(prefs.node(BEHAVIOUR), behaviour.getConfig());
         }
     }
 }

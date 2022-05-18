@@ -17,7 +17,6 @@
 package demetra.desktop.components.tools;
 
 import demetra.data.DoubleSeq;
-import demetra.desktop.TsManager;
 import demetra.desktop.components.TimeSeriesComponent;
 import demetra.desktop.components.parts.*;
 import demetra.desktop.jfreechart.TsCharts;
@@ -47,7 +46,6 @@ import org.jfree.ui.Layer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -88,9 +86,7 @@ public abstract class ARPView extends JComponent implements TimeSeriesComponent,
 
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
-                case TS_PROPERTY:
-                    onTsChange();
-                    break;
+                case TS_PROPERTY -> onTsChange();
             }
         });
 

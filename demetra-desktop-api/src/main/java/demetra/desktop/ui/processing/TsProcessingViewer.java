@@ -68,7 +68,7 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
     @Override
     public void onDocumentChanged() {
         super.onDocumentChanged();
-        TsDynamicProvider.OnDocumentChanged(getDocument());
+        TsDynamicProvider.onDocumentChanged(getDocument());
     }
 
     @Override

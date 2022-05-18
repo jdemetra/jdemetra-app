@@ -5,11 +5,14 @@
 package demetra.desktop.util;
 
 import com.google.common.collect.ImmutableList;
+import demetra.desktop.Config;
 
 import java.util.Optional;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.Parser;
+import org.openide.util.Exceptions;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.NbPreferences;
@@ -113,6 +116,37 @@ public abstract class InstallerStep {
         }
         prefs.put(key, stringValue.toString());
         return true;
+    }
+
+    public static void put(Preferences prefs, Config config) {
+        prefs.put("domain", config.getDomain());
+        prefs.put("name", config.getName());
+        prefs.put("version", config.getVersion());
+        config.getParameters().forEach((k, v) -> prefs.put(k, v));
+    }
+
+    public static Optional<Config> tryGet(Preferences prefs) {
+        String domain = prefs.get("domain", "");
+        String name = prefs.get("name", "");
+        String version = prefs.get("version", "");
+        if (domain.isEmpty() || name.isEmpty() || version.isEmpty()) {
+            return Optional.empty();
+        }
+        String[] keys;
+        try {
+            keys = prefs.keys();
+        } catch (BackingStoreException ex) {
+            keys = null;
+        }
+        Config.Builder builder = Config.builder(domain, name, version);
+        if (keys != null) {
+            for (String key : keys) {
+                if (!key.equals("domain") && !key.equals("name") && !key.equals("version")) {
+                    builder.parameter(key, prefs.get(key, ""));
+                }
+            }
+        }
+        return Optional.of(builder.build());
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">

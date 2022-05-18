@@ -16,7 +16,7 @@
  */
 package demetra.desktop.components;
 
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraUI;
 import demetra.desktop.beans.PropertyChangeSource;
 import demetra.desktop.components.parts.*;
 import demetra.desktop.design.SwingComponent;
@@ -275,7 +275,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
 
         private ObsFormat lookupObsFormat() {
             ObsFormat result = target.getObsFormat();
-            return result != null ? result : DemetraOptions.getDefault().getObsFormat();
+            return result != null ? result : DemetraUI.getDefault().getObsFormat();
         }
 
         private String formatValue(Number o) {

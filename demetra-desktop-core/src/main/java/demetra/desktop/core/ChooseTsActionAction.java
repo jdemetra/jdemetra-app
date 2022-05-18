@@ -4,7 +4,7 @@
  */
 package demetra.desktop.core;
 
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraBehaviour;
 import demetra.desktop.TsActions;
 import demetra.desktop.nodes.NamedServiceChoicePanel;
 import org.openide.awt.ActionID;
@@ -40,7 +40,7 @@ public final class ChooseTsActionAction extends AbstractAction implements Presen
 
     public ChooseTsActionAction() {
         this.choicePanel = new NamedServiceChoicePanel();
-        DemetraOptions options = DemetraOptions.getDefault();
+        DemetraBehaviour options = DemetraBehaviour.getDefault();
         choicePanel.setContent(TsActions.getDefault().getOpenActions());
         choicePanel.setSelectedServiceName(options.getTsActionName());
         choicePanel.getExplorerManager().addVetoableChangeListener(this);
@@ -61,7 +61,7 @@ public final class ChooseTsActionAction extends AbstractAction implements Presen
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(DemetraOptions.TS_ACTION_NAME_PROPERTY)) {
+        if (evt.getPropertyName().equals(DemetraBehaviour.TS_ACTION_NAME_PROPERTY)) {
             Node o = choicePanel.getExplorerManager().getRootContext().getChildren().findChild((String) evt.getNewValue());
             if (o != null) {
                 try {
@@ -78,7 +78,7 @@ public final class ChooseTsActionAction extends AbstractAction implements Presen
         if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
             Node[] nodes = (Node[]) evt.getNewValue();
             if (nodes.length > 0) {
-                DemetraOptions.getDefault().setTsActionName(nodes[0].getName());
+                DemetraBehaviour.getDefault().setTsActionName(nodes[0].getName());
             }
         }
     }

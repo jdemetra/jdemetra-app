@@ -88,7 +88,7 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
             }
         });
 
-        TsDynamicProvider.OnDocumentOpened(panel.getDocument());
+        TsDynamicProvider.onDocumentOpened(panel.getDocument());
         // TODO add custom code on component opening
     }
 
@@ -98,7 +98,7 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
             panel.removeListeners();
             panel.dispose();
         }
-        TsDynamicProvider.OnDocumentClosing(panel.getDocument());
+        TsDynamicProvider.onDocumentClosing(panel.getDocument());
         super.componentClosed();
     }
 

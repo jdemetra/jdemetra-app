@@ -16,7 +16,7 @@
  */
 package demetra.desktop.components;
 
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraUI;
 import demetra.desktop.actions.PrintableWithPreview;
 import demetra.desktop.actions.ResetableZoom;
 import demetra.desktop.beans.PropertyChangeSource;
@@ -104,7 +104,7 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
         this.printableWithPreview = PrintableWithPreview.of(this::getActionMap);
         this.resetableZoom = ResetableZoom.of(this::getActionMap);
         this.growthKind = DEFAULT_GROWTH_KIND;
-        this.lastYears = DemetraOptions.getDefault().getGrowthLastYears();
+        this.lastYears = DemetraUI.getDefault().getGrowthLastYears();
 
         this.tsSelectionBridge = new TsSelectionBridge(this::firePropertyChange);
         tsSelectionBridge.register(this);

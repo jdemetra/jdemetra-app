@@ -1,18 +1,6 @@
 /*
- * Copyright 2013 National Bank of Belgium
- *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
- * by the European Commission - subsequent versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at:
- * 
- * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
- * limitations under the Licence.
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/NetBeansModuleDevelopment-files/template_mypluginOptionsPanelController.java to edit this template
  */
 package demetra.desktop.ui;
 
@@ -24,19 +12,15 @@ import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 
 @OptionsPanelController.SubRegistration(
-    location = "Demetra",
-    displayName = "#AdvancedOption_DisplayName_DemetraUI",
-    keywords = "#AdvancedOption_Keywords_DemetraUI",
-    keywordsCategory = "Demetra/DemetraUI",
-    id = DemetraUIOptionsPanelController.ID, 
-    position = 1
+        location = "Demetra",
+        displayName = "#AdvancedOption_DisplayName_CommonUI",
+        keywords = "#AdvancedOption_Keywords_CommonUI",
+        keywordsCategory = "Demetra/CommonUI"
 )
-@org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_DemetraUI=Demetra UI", "AdvancedOption_Keywords_DemetraUI=demetraui"})
-public final class DemetraUIOptionsPanelController extends OptionsPanelController {
+@org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_CommonUI=CommonUI", "AdvancedOption_Keywords_CommonUI=UI"})
+public final class CommonUIOptionsPanelController extends OptionsPanelController {
 
-    public static final String ID = "Demetra/DemetraUI";
-    
-    private DemetraUIPanel panel;
+    private CommonUIPanel panel;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private boolean changed;
 
@@ -90,9 +74,9 @@ public final class DemetraUIOptionsPanelController extends OptionsPanelControlle
         pcs.removePropertyChangeListener(l);
     }
 
-    private DemetraUIPanel getPanel() {
+    private CommonUIPanel getPanel() {
         if (panel == null) {
-            panel = new DemetraUIPanel(this);
+            panel = new CommonUIPanel(this);
         }
         return panel;
     }
@@ -104,4 +88,5 @@ public final class DemetraUIOptionsPanelController extends OptionsPanelControlle
         }
         pcs.firePropertyChange(OptionsPanelController.PROP_VALID, null, null);
     }
+
 }

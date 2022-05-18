@@ -17,7 +17,7 @@
 package demetra.desktop.ui.variables;
 
 import demetra.desktop.design.SwingAction;
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraBehaviour;
 import demetra.desktop.NamedService;
 import demetra.desktop.components.parts.HasTsActionSupport;
 import demetra.desktop.TsActions;
@@ -434,7 +434,7 @@ public final class JTsVariableList extends JComponent implements HasTsAction {
         public void execute(JTsVariableList c) throws Exception {
             String actionName = c.getTsAction();
             if (actionName == null) {
-                actionName = DemetraOptions.getDefault().getTsActionName();
+                actionName = DemetraBehaviour.getDefault().getTsActionName();
             }
             String selectedVariable = getSelectedVariable(c);
             if (selectedVariable != null)

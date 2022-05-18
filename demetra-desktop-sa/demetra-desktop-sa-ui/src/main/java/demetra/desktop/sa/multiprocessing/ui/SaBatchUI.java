@@ -9,7 +9,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.desktop.DemetraIcons;
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraBehaviour;
 import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.parts.HasTsCollection;
@@ -117,7 +117,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     @Override
     public void componentClosed() {
         if (detail.getDocument() != null) {
-            TsDynamicProvider.OnDocumentClosing((TsDocument) detail.getDocument());
+            TsDynamicProvider.onDocumentClosing((TsDocument) detail.getDocument());
         }
         stop();
         detail.dispose();
@@ -688,7 +688,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 int row = result.getSelectedRow();
                 if (e.getClickCount() > 1 && row != -1) {
                     SaNode item = model.getValues().get(result.getRowSorter().convertRowIndexToModel(row));
-//                    TsActions.getDefault().openWith(item..getDefinition().getTs(), DemetraOptions.getDefault().getTsActionName());
+//                    TsActions.getDefault().openWith(item..getDefinition().getTs(), DemetraUI.getDefault().getTsActionName());
                 }
             }
         });
@@ -732,7 +732,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 // same document. To be updated
                 doc.setAll(cspec, ts, output.getEstimation().getResults());
                 detail.updateDocument();
-                TsDynamicProvider.OnDocumentChanged(doc);
+                TsDynamicProvider.onDocumentChanged(doc);
             } else {
                 DocumentUIServices ui = DocumentUIServices.forSpec(cspec.getClass());
                 if (ui == null) {
@@ -745,9 +745,9 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                     } else {
                         TsDocument tmp = (TsDocument) mgr.createNewObject();
                         if (doc != null) {
-                            TsDynamicProvider.OnDocumentClosing(doc);
+                            TsDynamicProvider.onDocumentClosing(doc);
                         }
-                        TsDynamicProvider.OnDocumentOpened(tmp);
+                        TsDynamicProvider.onDocumentOpened(tmp);
                         tmp.setAll(cspec, ts, output.getEstimation().getResults());
                         detail.setDocument(tmp, ui);
                     }
@@ -1178,7 +1178,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 return null;
             }
 
-            DemetraOptions options = DemetraOptions.getDefault();
+            DemetraBehaviour options = DemetraBehaviour.getDefault();
             int nThread = options.getBatchPoolSize().getSize();
             int priority = options.getBatchPriority().getPriority();
 

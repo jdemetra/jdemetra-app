@@ -64,8 +64,6 @@ public abstract class AChartView extends JComponent implements HasColorScheme {
         this.basedecimalformat_ = baseformat;
         this.orientation_ = orientation;
 
-        SwingColorSchemeSupport themeSupport = colorSchemeResolver.resolve();
-
         this.seriesCollection = new XYSeriesCollection();
         this.chartPanel = new JChartPanel(ChartFactory.createLineChart(null, null, null, null, orientation_, false, false, false)); //, getDefaultMinX(), getDefaultMaxX(), getDefaultMinY(), getDefaultMaxY());
 

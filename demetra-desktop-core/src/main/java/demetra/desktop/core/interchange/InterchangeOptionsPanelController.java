@@ -25,14 +25,14 @@ import javax.swing.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-@OptionsPanelController.SubRegistration(
-        location = "Demetra",
-        displayName = "#AdvancedOption_DisplayName_Interchange",
-        keywords = "#AdvancedOption_Keywords_Interchange",
-        keywordsCategory = "Demetra/Interchange",
-    id = "Demetra/Interchange", 
-    position = 2
-)
+//@OptionsPanelController.SubRegistration(
+//        location = "Demetra",
+//        displayName = "#AdvancedOption_DisplayName_Interchange",
+//        keywords = "#AdvancedOption_Keywords_Interchange",
+//        keywordsCategory = "Demetra/Interchange",
+//    id = "Demetra/Interchange", 
+//    position = 2
+//)
 @NbBundle.Messages({
     "AdvancedOption_DisplayName_Interchange=Interchange", 
     "AdvancedOption_Keywords_Interchange=Import Export"

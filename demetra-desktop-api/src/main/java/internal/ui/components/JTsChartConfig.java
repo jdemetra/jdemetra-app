@@ -19,7 +19,7 @@ package internal.ui.components;
 import demetra.desktop.ColorSchemeManager;
 import demetra.desktop.Config;
 import demetra.desktop.Converter;
-import demetra.desktop.DemetraOptions;
+import demetra.desktop.DemetraUI;
 import demetra.desktop.beans.BeanConfigurator;
 import demetra.desktop.beans.BeanHandler;
 import demetra.desktop.components.JTsChart;
@@ -106,7 +106,7 @@ public final class JTsChartConfig {
             sheet.put(b.build());
             b.reset("Series display");
             b.withEnum(HasChart.LinesThickness.class).selectField(bean, "linesThickness").display("Line thickness").description("Thickness of the line representing the series").add();
-            b.withAutoCompletion().selectField(bean, "colorSchemeName").servicePath(ColorScheme.class.getName()).promptText(DemetraOptions.getDefault().getColorSchemeName()).display("Color scheme").add();
+            b.withAutoCompletion().selectField(bean, "colorSchemeName").servicePath(ColorScheme.class.getName()).promptText(DemetraUI.getDefault().getColorSchemeName()).display("Color scheme").add();
 
             sheet.put(b.build());
             return new PropertySheetDialogBuilder().title("Configure chart").editSheet(sheet);
