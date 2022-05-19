@@ -16,7 +16,8 @@ import org.openide.util.Lookup;
         location = "Demetra",
         displayName = "#AdvancedOption_DisplayName_Behaviour",
         keywords = "#AdvancedOption_Keywords_Behaviour",
-        keywordsCategory = "Demetra/Behaviour"
+        keywordsCategory = "Demetra/Behaviour",
+        position=20
 )
 @org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_Behaviour=Behaviour", "AdvancedOption_Keywords_Behaviour=Behaviour"})
 public final class BehaviourOptionsPanelController extends OptionsPanelController {

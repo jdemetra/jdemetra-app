@@ -48,14 +48,14 @@ import org.netbeans.api.options.OptionsDisplayer;
  * @author Mats Maggi
  */
 @GlobalService
-public final class DemetraSaManager implements PropertyChangeSource.WithWeakListeners, Persistable, Configurable {
+public final class DemetraSaUI implements PropertyChangeSource.WithWeakListeners, Persistable, Configurable {
 
     @NonNull
-    public static DemetraSaManager get() {
-        return LazyGlobalService.get(DemetraSaManager.class, DemetraSaManager::new);
+    public static DemetraSaUI getDefault() {
+        return LazyGlobalService.get(DemetraSaUI.class, DemetraSaUI::new);
     }
 
-    private DemetraSaManager() {
+    private DemetraSaUI() {
     }
 
     @lombok.experimental.Delegate(types = PropertyChangeSource.class)
@@ -173,6 +173,8 @@ public final class DemetraSaManager implements PropertyChangeSource.WithWeakList
     private static final Property<String[]> SELECTED_DIAG_FIELDS_CONFIG = Property.of(SELECTED_DIAG_FIELDS_PROPERTY, DEFAULT_SELECTED_DIAG_FIELDS.stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
     private static final Property<String[]> SELECTED_SERIES_FIELDS_CONFIG = Property.of(SELECTED_SERIES_FIELDS_PROPERTY, DEFAULT_SELECTED_SERIES_FIELDS.stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
 
+    private static final String DOMAIN = DemetraSaUI.class.getName(), NAME = "demetra-sa", VERSION = "3.0.0";
+
     @Override
     public Config getConfig() {
         Config.Builder b = Config.builder(DOMAIN, NAME, VERSION);
@@ -181,8 +183,8 @@ public final class DemetraSaManager implements PropertyChangeSource.WithWeakList
         STABILITY_LENGTH_CONFIG.set(b::parameter, getStabilityLength());
         DEFAULT_SA_SPEC_CONFIG.set(b::parameter, idOf(getDefaultSaSpec()));
         PRESPECIFIED_OUTLIERS_EDITOR_CONFIG.set(b::parameter, getPrespecifiedOutliersEditor());
-        SELECTED_DIAG_FIELDS_CONFIG.set(b::parameter, getSelectedDiagFields().toArray(new String[0]));
-        SELECTED_SERIES_FIELDS_CONFIG.set(b::parameter, getSelectedSeriesFields().toArray(new String[0]));
+        SELECTED_DIAG_FIELDS_CONFIG.set(b::parameter, getSelectedDiagFields().toArray(n->new String[n]));
+        SELECTED_SERIES_FIELDS_CONFIG.set(b::parameter, getSelectedSeriesFields().toArray(n->new String[n]));
         return b.build();
     }
 
@@ -207,8 +209,9 @@ public final class DemetraSaManager implements PropertyChangeSource.WithWeakList
         if (id == null || id.length() == 0) {
             return null;
         }
+        
         List<WorkspaceItem<SaSpecification>> items = WorkspaceFactory.getInstance().getActiveWorkspace().searchDocuments(SaSpecification.class);
-        Optional<WorkspaceItem<SaSpecification>> fspec = items.stream().filter(c -> c.getId().equals(id)).findFirst();
+        Optional<WorkspaceItem<SaSpecification>> fspec = items.stream().filter(c -> c.getId().toString().equals(id)).findFirst();
         return fspec.isPresent() ? fspec.get().getElement() : null;
     }
 
@@ -221,7 +224,5 @@ public final class DemetraSaManager implements PropertyChangeSource.WithWeakList
             return item.getId().toString();
         }
     }
-
-    private static final String DOMAIN = DemetraSaManager.class.getName(), NAME = "INSTANCE", VERSION = "";
 
 }
