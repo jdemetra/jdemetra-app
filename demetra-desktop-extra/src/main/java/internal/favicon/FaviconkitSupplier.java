@@ -22,7 +22,7 @@ public final class FaviconkitSupplier implements FaviconSupplier {
 
     @Override
     public Image getFaviconOrNull(URL url, HttpClient client) throws IOException {
-        try ( HttpResponse response = client.requestGET(getFaviconRequest(url))) {
+        try ( HttpResponse response = client.send(getFaviconRequest(url))) {
             if (isDefaultFavicon(response)) {
                 return null;
             }

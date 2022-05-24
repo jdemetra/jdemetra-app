@@ -22,7 +22,7 @@ public final class GoogleSupplier implements FaviconSupplier {
 
     @Override
     public Image getFaviconOrNull(URL url, HttpClient client) throws IOException {
-        try ( HttpResponse response = client.requestGET(getFaviconRequest(url))) {
+        try ( HttpResponse response = client.send(getFaviconRequest(url))) {
             try ( InputStream stream = response.getBody()) {
                 return ImageIO.read(stream);
             }
