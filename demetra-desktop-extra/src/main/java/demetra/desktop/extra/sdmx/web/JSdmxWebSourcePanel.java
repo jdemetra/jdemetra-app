@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +41,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import javax.swing.ActionMap;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -167,7 +167,10 @@ public final class JSdmxWebSourcePanel extends JComponent {
 
     private void onSdmxManagerChange() {
         support = support.toBuilder().sdmxManager(sdmxManager).build();
-        ((WebSourceModel) table.getModel()).setValues(new ArrayList<>(sdmxManager.getSources().values()), sdmxManager.getLanguages());
+        ((WebSourceModel) table.getModel()).setValues(
+                sdmxManager.getSources().values().stream().filter(source -> !source.isAlias()).collect(Collectors.toList()),
+                sdmxManager.getLanguages()
+        );
     }
 
     private JPopupMenu buildPopupMenu() {
@@ -406,7 +409,7 @@ public final class JSdmxWebSourcePanel extends JComponent {
         public boolean isEnabled(JSdmxWebSourcePanel c) {
             return c.table.getSelectedRowCount() == 1
                     && DesktopManager.get().isSupported(Desktop.Action.BROWSE)
-                    && getSelection(c).getMonitorWebsite()!= null;
+                    && getSelection(c).getMonitorWebsite() != null;
         }
 
         @Override
