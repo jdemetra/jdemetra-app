@@ -117,7 +117,7 @@ public final class Installer extends ModuleInstall {
             }
 
             for (demetra.tsprovider.DataSource o : StarList.getDefault()) {
-                TsManager.getDefault()
+                TsManager.get()
                         .getProvider(DataSourceLoader.class, o)
                         .ifPresent(x -> x.open(o));
             }
@@ -203,7 +203,7 @@ public final class Installer extends ModuleInstall {
             if (DemetraOptions.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
                 Parser<DataSourcesBean> parser = Parsers.onJAXB(DataSourcesBean.class)::parse;
-                TsManager.getDefault().getProviders()
+                TsManager.get().getProviders()
                         .filter(DataSourceLoader.class::isInstance)
                         .map(DataSourceLoader.class::cast)
                         .forEach(o -> {
@@ -222,7 +222,7 @@ public final class Installer extends ModuleInstall {
             if (DemetraOptions.getDefault().isPersistOpenedDataSources()) {
                 Preferences prefs = prefs();
                 Formatter<DataSourcesBean> formatter = Formatters.onJAXB(DataSourcesBean.class, false)::format;
-                TsManager.getDefault().getProviders()
+                TsManager.get().getProviders()
                         .filter(DataSourceLoader.class::isInstance)
                         .map(DataSourceLoader.class::cast)
                         .forEach(o -> {

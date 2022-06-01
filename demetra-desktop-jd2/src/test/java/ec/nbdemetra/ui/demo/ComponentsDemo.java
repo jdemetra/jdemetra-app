@@ -115,7 +115,7 @@ public final class ComponentsDemo {
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarRenderer.setDefaultBarPainter(new StandardBarPainter());
         UIManager.put("Nb.Editor.Toolbar.border", BorderFactory.createLineBorder(Color.WHITE));
-        TsManager.getDefault().register(new PocProvider());
+        TsManager.get().register(new PocProvider());
     }
 
     private static void expandAll(JTree tree) {

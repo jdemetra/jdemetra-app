@@ -8,7 +8,7 @@ import com.google.common.base.Strings;
 import demetra.bridge.TsConverter;
 import demetra.desktop.TsManager;
 import demetra.desktop.datatransfer.DataTransfer;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.timeseries.TsInformationType;
 import ec.tss.Ts;
 import ec.tss.TsMoniker;
@@ -74,7 +74,7 @@ public class TsProcessingViewer extends DefaultProcessingViewer<TsDocument> {
             tsLabel.setText(MultiLineNameUtil.lastWithMax(displayName, 70));
             tsLabel.setToolTipText(!Strings.isNullOrEmpty(displayName) ? MultiLineNameUtil.toHtml(displayName) : null);
             TsMoniker moniker = doc.getMoniker();
-            tsLabel.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(TsConverter.toTsMoniker(moniker), BeanInfo.ICON_COLOR_16x16, false));
+            tsLabel.setIcon(DataSourceManager.get().getIcon(TsConverter.toTsMoniker(moniker), BeanInfo.ICON_COLOR_16x16, false));
             tsLabel.setVisible(true);
             IProcSpecification spec = doc.getSpecification();
             specLabel.setText("Spec: " + (spec != null ? spec.toString() : ""));
@@ -94,7 +94,7 @@ public class TsProcessingViewer extends DefaultProcessingViewer<TsDocument> {
             Optional<demetra.timeseries.Ts> ts = DataTransfer.getDefault().toTs(support.getTransferable());
             if (ts.isPresent()) {
                 // data needs to be loaded and frozen because JD2 underlying document tries (and fails) to refresh it
-                demetra.timeseries.Ts input = ts.get().load(TsInformationType.All, TsManager.getDefault()).freeze();
+                demetra.timeseries.Ts input = ts.get().load(TsInformationType.All, TsManager.get()).freeze();
                 getDocument().setInput(TsConverter.fromTs(input));
                 refreshAll();
                 return true;

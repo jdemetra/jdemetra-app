@@ -76,6 +76,6 @@ public enum DemetraIcons implements Icon {
 
     @Deprecated
     public static Icon getPopupMenuIcon(FontAwesome icon) {
-        return DemetraUI.getDefault().isPopupMenuIconsVisible() ? icon.getIcon(Color.BLACK, 13f) : null;
+        return DemetraUI.get().isPopupMenuIconsVisible() ? icon.getIcon(Color.BLACK, 13f) : null;
     }
 }

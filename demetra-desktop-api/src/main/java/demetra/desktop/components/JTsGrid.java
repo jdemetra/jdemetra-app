@@ -186,7 +186,7 @@ public final class JTsGrid extends JComponent implements TimeSeriesComponent, Pr
         this.tsSelectionBridge = new TsSelectionBridge(this::firePropertyChange);
         tsSelectionBridge.register(this);
 
-        ComponentBackend.getDefault().install(this);
+        ComponentBackendManager.get().install(this);
 
         applyDesignTimeProperties();
     }

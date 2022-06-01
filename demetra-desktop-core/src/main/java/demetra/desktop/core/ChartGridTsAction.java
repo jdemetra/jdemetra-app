@@ -16,12 +16,11 @@
  */
 package demetra.desktop.core;
 
-import demetra.desktop.TsActionsOpenSpi;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.JTsGrid;
 import demetra.desktop.components.parts.HasChart.LinesThickness;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.util.NbComponents;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
@@ -39,13 +38,14 @@ import org.openide.windows.TopComponent;
 
 import java.awt.*;
 import java.beans.BeanInfo;
+import demetra.desktop.TsActionOpenSpi;
 
 /**
  * @author Philippe Charles
  */
 @DirectImpl
 @ServiceProvider
-public final class ChartGridTsAction implements TsActionsOpenSpi {
+public final class ChartGridTsAction implements TsActionOpenSpi {
 
     @Override
     public String getName() {
@@ -73,7 +73,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
         MultiViewDescription[] descriptions = {new ChartTab(ts), new GridTab(ts)};
         TopComponent c = MultiViewFactory.createMultiView(descriptions, descriptions[0], null);
         c.setName(topComponentName);
-        c.setIcon(DataSourceProviderBuddySupport.getDefault().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
+        c.setIcon(DataSourceManager.get().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
         applyText(ts.getName(), c);
         c.open();
         return c;
@@ -109,7 +109,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
 
         @Override
         public Image getIcon() {
-            return DataSourceProviderBuddySupport.getDefault().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false);
+            return DataSourceManager.get().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false);
         }
 
         @Override
@@ -131,7 +131,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
             result.getChart().setLegendVisible(true);
             result.getChart().setTitleVisible(false);
             result.getChart().setLinesThickness(LinesThickness.Thick);
-            TsManager.getDefault().loadAsync(col, TsInformationType.All, result.getChart()::replaceTsCollection);
+            TsManager.get().loadAsync(col, TsInformationType.All, result.getChart()::replaceTsCollection);
             return result;
         }
     }
@@ -153,7 +153,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
 
         @Override
         public Image getIcon() {
-            return DataSourceProviderBuddySupport.getDefault().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false);
+            return DataSourceManager.get().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false);
         }
 
         @Override
@@ -173,7 +173,7 @@ public final class ChartGridTsAction implements TsActionsOpenSpi {
             result.getGrid().setTsCollection(col);
             result.getGrid().setTsUpdateMode(TsUpdateMode.None);
             result.getGrid().setMode(JTsGrid.Mode.SINGLETS);
-            TsManager.getDefault().loadAsync(col, TsInformationType.All, result.getGrid()::replaceTsCollection);
+            TsManager.get().loadAsync(col, TsInformationType.All, result.getGrid()::replaceTsCollection);
             return result;
         }
     }

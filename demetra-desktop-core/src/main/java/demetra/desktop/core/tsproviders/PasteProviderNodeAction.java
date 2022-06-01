@@ -5,7 +5,7 @@
 package demetra.desktop.core.tsproviders;
 
 import demetra.desktop.actions.AbilityNodeAction;
-import demetra.desktop.datatransfer.DataSourceTransfer;
+import demetra.desktop.datatransfer.DataSourceTransferManager;
 import demetra.desktop.datatransfer.DataTransfers;
 import demetra.tsprovider.DataSourceLoader;
 import org.openide.awt.ActionID;
@@ -28,7 +28,7 @@ public final class PasteProviderNodeAction extends AbilityNodeAction<DataSourceL
     @Override
     protected void performAction(Stream<DataSourceLoader> items) {
         items.forEach(item -> {
-            DataSourceTransfer.getDefault()
+            DataSourceTransferManager.get()
                     .getDataSource(DataTransfers.systemClipboardAsTransferable(), item.getSource())
                     .ifPresent(item::open);
         });
@@ -36,7 +36,7 @@ public final class PasteProviderNodeAction extends AbilityNodeAction<DataSourceL
 
     @Override
     protected boolean enable(Stream<DataSourceLoader> items) {
-        return items.anyMatch(item -> DataSourceTransfer.getDefault().canHandle(DataTransfers.systemClipboardAsTransferable(), item.getSource()));
+        return items.anyMatch(item -> DataSourceTransferManager.get().canHandle(DataTransfers.systemClipboardAsTransferable(), item.getSource()));
     }
 
     @Override

@@ -136,7 +136,7 @@ public class FunctionsSurfaceModel extends AbstractSurfaceModel {
                     return null;
                 }
 
-                DemetraBehaviour options = DemetraBehaviour.getDefault();
+                DemetraBehaviour options = DemetraBehaviour.get();
 
                 ExecutorService executorService = UIExecutors.newFixedThreadPool(options.getBatchPoolSize(), options.getBatchPriority());
                 try {

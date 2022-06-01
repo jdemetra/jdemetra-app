@@ -18,7 +18,7 @@ package demetra.desktop.x13.ui.actions;
 
 import demetra.desktop.Config;
 import demetra.desktop.interchange.Exportable;
-import demetra.desktop.interchange.Interchange;
+import demetra.desktop.interchange.InterchangeManager;
 import demetra.desktop.x13.documents.X13SpecManager;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.ItemWsNode;
@@ -61,7 +61,7 @@ public class ExportX13Spec extends NodeAction implements Presenter.Popup {
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = Interchange.getDefault().newExportMenu(getExportables(getActivatedNodes()));
+        JMenuItem result = InterchangeManager.get().newExportMenu(getExportables(getActivatedNodes()));
         result.setText(Bundle.CTL_ExportX13Spec());
         return result;
     }

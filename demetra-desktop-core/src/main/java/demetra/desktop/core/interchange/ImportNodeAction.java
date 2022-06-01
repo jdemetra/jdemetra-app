@@ -19,7 +19,7 @@ package demetra.desktop.core.interchange;
 import demetra.desktop.actions.AbilityNodeAction;
 import demetra.desktop.core.tsproviders.ProviderNode;
 import demetra.desktop.interchange.Importable;
-import demetra.desktop.interchange.Interchange;
+import demetra.desktop.interchange.InterchangeManager;
 import demetra.desktop.nodes.AbstractNodeBuilder;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
@@ -56,7 +56,7 @@ public final class ImportNodeAction extends AbilityNodeAction<Importable> implem
         if (nodes == null || isProvidersNode(nodes)) {
             nodes = new Node[]{fakeProviderNode};
         }
-        JMenuItem result = Interchange.getDefault().newImportMenu(getImportables(nodes));
+        JMenuItem result = InterchangeManager.get().newImportMenu(getImportables(nodes));
         result.setText(Bundle.CTL_ImportNodeAction());
         return result;
     }

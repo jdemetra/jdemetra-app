@@ -76,7 +76,7 @@ public final class ToolsPersistence {
             Config config = ((Persistable) view).getConfig();
             tryPut(p, "config", XmlConfig.xmlFormatter(false)::format, true, config);
         }
-        if (DemetraBehaviour.getDefault().isPersistToolsContent()) {
+        if (DemetraBehaviour.get().isPersistToolsContent()) {
             Content content = new Content(
                     view.getTsCollection().getItems(),
                     view.getTsSelectionStream().collect(Collectors.toList()));
@@ -85,7 +85,7 @@ public final class ToolsPersistence {
     }
 
     public static void readTsCollection(@NonNull HasTsCollection view, @NonNull Properties p) {
-        if (DemetraBehaviour.getDefault().isPersistToolsContent()) {
+        if (DemetraBehaviour.get().isPersistToolsContent()) {
             tryGet(p, "content", IOFunction.unchecked(CONTENT_PARSER::parseChars)::apply, true).ifPresent(o -> {
                 view.setTsCollection(TsCollection.of(o.collection));
                 view.getTsSelectionModel().clearSelection();
@@ -144,7 +144,7 @@ public final class ToolsPersistence {
             Content result = new Content(new ArrayList<>(), new ArrayList<>());
             if (input.items != null) {
                 for (ContentItemBean o : input.items) {
-                    Ts ts = TsManager.getDefault()
+                    Ts ts = TsManager.get()
                             .makeTs(TsMoniker.of(o.source, o.id), TsInformationType.Definition)
                             .toBuilder()
                             .name(o.name)

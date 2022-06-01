@@ -104,12 +104,12 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
         this.printableWithPreview = PrintableWithPreview.of(this::getActionMap);
         this.resetableZoom = ResetableZoom.of(this::getActionMap);
         this.growthKind = DEFAULT_GROWTH_KIND;
-        this.lastYears = DemetraUI.getDefault().getGrowthLastYears();
+        this.lastYears = DemetraUI.get().getGrowthLastYears();
 
         this.tsSelectionBridge = new TsSelectionBridge(this::firePropertyChange);
         tsSelectionBridge.register(this);
 
-        ComponentBackend.getDefault().install(this);
+        ComponentBackendManager.get().install(this);
 
         applyDesignTimeProperties();
     }

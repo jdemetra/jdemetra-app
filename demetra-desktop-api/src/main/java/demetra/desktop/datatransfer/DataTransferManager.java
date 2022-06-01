@@ -53,11 +53,11 @@ import demetra.math.matrices.Matrix;
  */
 @lombok.extern.java.Log
 @GlobalService
-public final class DataTransfer implements PropertyChangeSource.WithWeakListeners {
+public final class DataTransferManager implements PropertyChangeSource.WithWeakListeners {
 
     @NonNull
-    public static DataTransfer getDefault() {
-        return LazyGlobalService.get(DataTransfer.class, DataTransfer::new);
+    public static DataTransferManager get() {
+        return LazyGlobalService.get(DataTransferManager.class, DataTransferManager::new);
     }
 
     @SwingProperty
@@ -71,13 +71,13 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
     private final Logger logger;
     private boolean validClipboard;
 
-    private DataTransfer() {
+    private DataTransferManager() {
         this(DataTransferSpiLoader::get, log, false);
         clipboardValidator.register(Toolkit.getDefaultToolkit().getSystemClipboard());
     }
 
     @VisibleForTesting
-    DataTransfer(CollectionSupplier<DataTransferSpi> providers, Logger logger, boolean validClipboard) {
+    DataTransferManager(CollectionSupplier<DataTransferSpi> providers, Logger logger, boolean validClipboard) {
         this.clipboardValidator = new ClipboardValidator();
         this.providers = providers;
         this.logger = logger;
@@ -251,7 +251,7 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
     @NonNull
     public Optional<TsData> toTsData(@NonNull Transferable transferable) {
         return toTs(transferable)
-                .map(ts -> ts.load(TsInformationType.Data, TsManager.getDefault()).getData());
+                .map(ts -> ts.load(TsInformationType.Data, TsManager.get()).getData());
     }
 
     /**
@@ -389,7 +389,7 @@ public final class DataTransfer implements PropertyChangeSource.WithWeakListener
     private static <T> Map<DataFlavor, List<DataTransferSpi>> getHandlersByFlavor(T data, Stream<? extends DataTransferSpi> allHandlers, TypeHelper<T> helper) {
         return allHandlers
                 .filter(o -> helper.canTransferData(data, o))
-                .collect(Collectors.groupingBy(DataTransfer::getDataFlavorOrNull));
+                .collect(Collectors.groupingBy(DataTransferManager::getDataFlavorOrNull));
     }
 
     private static <T> IOFunction<DataTransferSpi, Object> getTransferDataLoader(T data, TypeHelper<T> helper) {

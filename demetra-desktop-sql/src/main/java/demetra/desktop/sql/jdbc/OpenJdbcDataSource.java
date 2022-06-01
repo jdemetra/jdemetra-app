@@ -20,7 +20,7 @@ import demetra.desktop.beans.BeanEditor;
 import static demetra.desktop.sql.jdbc.DbExplorerUtil.findConnection;
 import static demetra.desktop.sql.jdbc.DbExplorerUtil.isTableOrView;
 import demetra.desktop.nodes.SingleNodeAction;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.sql.jdbc.JdbcBean;
 import demetra.sql.jdbc.JdbcProvider;
 import java.beans.IntrospectionException;
@@ -54,7 +54,7 @@ public final class OpenJdbcDataSource extends SingleNodeAction<Node> {
     protected void performAction(Node activatedNode) {
         JdbcBean bean = provider.newBean();
         preFillBean(bean, activatedNode);
-        BeanEditor editor = DataSourceProviderBuddySupport.getDefault().getBeanEditor(provider.getSource(), "Open data source");
+        BeanEditor editor = DataSourceManager.get().getBeanEditor(provider.getSource(), "Open data source");
         try {
             if (editor.editBean(bean)) {
                 provider.open(provider.encodeBean(bean));

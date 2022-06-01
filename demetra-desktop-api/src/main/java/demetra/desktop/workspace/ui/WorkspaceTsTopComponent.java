@@ -124,7 +124,7 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
         if (TsManager.isDynamic(ts)) {
             cts = ts.freeze();
         } else {
-            cts = ts.load(TsInformationType.All, TsManager.getDefault());
+            cts = ts.load(TsInformationType.All, TsManager.get());
         }
         panel.getDocument().set(cts);
         panel.updateButtons(null);

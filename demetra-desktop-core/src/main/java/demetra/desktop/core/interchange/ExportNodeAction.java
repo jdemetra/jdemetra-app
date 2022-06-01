@@ -18,7 +18,7 @@ package demetra.desktop.core.interchange;
 
 import demetra.desktop.actions.AbilityNodeAction;
 import demetra.desktop.interchange.Exportable;
-import demetra.desktop.interchange.Interchange;
+import demetra.desktop.interchange.InterchangeManager;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
@@ -48,7 +48,7 @@ public final class ExportNodeAction extends AbilityNodeAction<Exportable> implem
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = Interchange.getDefault().newExportMenu(getExportables(getActivatedNodes()));
+        JMenuItem result = InterchangeManager.get().newExportMenu(getExportables(getActivatedNodes()));
         result.setText(Bundle.CTL_ExportNodeAction());
         return result;
     }

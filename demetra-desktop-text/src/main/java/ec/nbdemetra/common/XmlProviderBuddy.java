@@ -67,7 +67,7 @@ public final class XmlProviderBuddy implements DataSourceProviderBuddy {
 
     private Sheet.Set createSource(NodePropertySetBuilder b, XmlBean bean) {
         b.reset("Source");
-        TsManager.getDefault()
+        TsManager.get()
                 .getProvider(FileLoader.class, SOURCE)
                 .ifPresent(o -> TsProviderProperties.addFile(b, o, bean));
         addReaderProperty(b, bean);

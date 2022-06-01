@@ -26,7 +26,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ListSelectionModel;
-import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.util.Table;
 
 /**
@@ -38,7 +38,7 @@ public abstract class SheetGridCommand extends JCommand<JGrid> {
     @Override
     public void execute(JGrid grid) {
         Table<?> table = toTable(grid);
-        Transferable t = DataTransfer.getDefault().fromTable(table);
+        Transferable t = DataTransferManager.get().fromTable(table);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
     }
 

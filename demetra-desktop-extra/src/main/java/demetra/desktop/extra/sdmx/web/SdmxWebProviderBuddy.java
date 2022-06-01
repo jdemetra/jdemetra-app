@@ -156,6 +156,6 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy, Conf
     }
 
     private static Optional<SdmxWebProvider> lookupProvider() {
-        return TsManager.getDefault().getProvider(SdmxWebProvider.class);
+        return TsManager.get().getProvider(SdmxWebProvider.class);
     }
 }

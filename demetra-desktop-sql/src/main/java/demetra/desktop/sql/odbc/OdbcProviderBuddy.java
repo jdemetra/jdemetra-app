@@ -192,7 +192,7 @@ public final class OdbcProviderBuddy implements DataSourceProviderBuddy, Configu
     }
 
     private static SqlConnectionSupplier getOdbcConnectionSupplier() {
-        Optional<HasSqlProperties> provider = TsManager.getDefault()
+        Optional<HasSqlProperties> provider = TsManager.get()
                 .getProvider(SOURCE)
                 .filter(HasSqlProperties.class::isInstance)
                 .map(HasSqlProperties.class::cast);

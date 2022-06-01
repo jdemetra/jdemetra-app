@@ -5,7 +5,7 @@
 package demetra.desktop.core.datatransfer;
 
 import demetra.desktop.datatransfer.DataSourceTransferSpi;
-import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.desktop.datatransfer.DataTransfers;
 import demetra.tsprovider.DataSource;
 import nbbrd.design.DirectImpl;
@@ -35,7 +35,7 @@ public final class UriDataSourceTransfer implements DataSourceTransferSpi {
 
     @Override
     public Optional<DataSource> getDataSource(Transferable t) {
-        return !DataTransfer.getDefault().isTssTransferable(t) ? DataTransfers.tryParse(t, Parser.of(DataSource::parse)) : Optional.empty();
+        return !DataTransferManager.get().isTssTransferable(t) ? DataTransfers.tryParse(t, Parser.of(DataSource::parse)) : Optional.empty();
     }
 
     @Override

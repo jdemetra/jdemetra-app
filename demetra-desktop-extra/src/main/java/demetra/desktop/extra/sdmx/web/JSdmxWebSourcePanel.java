@@ -6,7 +6,7 @@ import demetra.desktop.TsManager;
 import demetra.desktop.design.SwingAction;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.util.ActionMaps;
 import demetra.desktop.util.FontAwesomeUtils;
 import demetra.desktop.util.InputMaps;
@@ -222,7 +222,7 @@ public final class JSdmxWebSourcePanel extends JComponent {
                     MonitorReport report = support.get(source, table::repaint);
                     result.setText("");
                     result.setToolTipText(uptimeRatioFormatter.formatAsString(report.getUptimeRatio()) + " uptime");
-                    SwingColorSchemeSupport colors = ColorSchemeManager.getDefault().getSupport(ColorSchemeManager.getDefault().getMainColorScheme());
+                    SwingColorSchemeSupport colors = ColorSchemeManager.get().getSupport(ColorSchemeManager.get().getMainColorScheme());
                     switch (report.getStatus()) {
                         case DOWN ->
                             result.setIcon(FontAwesome.FA_TIMES_CIRCLE.getIcon(colors.getAreaColor(ColorScheme.KnownColor.RED), FontAwesomeUtils.toSize(BeanInfo.ICON_COLOR_16x16)));
@@ -341,10 +341,10 @@ public final class JSdmxWebSourcePanel extends JComponent {
         public void execute(JSdmxWebSourcePanel c) throws Exception {
             int idx = c.table.convertRowIndexToModel(c.table.getSelectedRow());
             SdmxWebSource source = ((WebSourceModel) c.table.getModel()).getValues().get(idx);
-            TsManager.getDefault().getProvider(SdmxWebProvider.class).ifPresent(provider -> {
+            TsManager.get().getProvider(SdmxWebProvider.class).ifPresent(provider -> {
                 SdmxWebBean bean = provider.newBean();
                 bean.setSource(source.getName());
-                if (DataSourceProviderBuddySupport.getDefault().getBeanEditor(provider.getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
+                if (DataSourceManager.get().getBeanEditor(provider.getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
                     provider.open(provider.encodeBean(bean));
                 }
             });

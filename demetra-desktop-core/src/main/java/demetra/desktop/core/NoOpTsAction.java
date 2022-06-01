@@ -4,16 +4,16 @@
  */
 package demetra.desktop.core;
 
-import demetra.desktop.TsActionsOpenSpi;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
+import demetra.desktop.TsActionOpenSpi;
 
 /**
  * @author Philippe Charles
  */
 @DirectImpl
 @ServiceProvider
-public final class NoOpTsAction implements TsActionsOpenSpi {
+public final class NoOpTsAction implements TsActionOpenSpi {
 
     @Override
     public String getName() {

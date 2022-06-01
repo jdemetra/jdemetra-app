@@ -65,7 +65,7 @@ public final class ShowInFolderNodeAction extends AbilityNodeAction<DataSource> 
     @Override
     protected void performAction(Stream<DataSource> items) {
         items.forEach(item -> {
-            Optional<File> file = TsManager.getDefault().getFile(item);
+            Optional<File> file = TsManager.get().getFile(item);
             if (file.isPresent()) {
                 try {
                     DesktopManager.get().showInFolder(file.get());
@@ -79,7 +79,7 @@ public final class ShowInFolderNodeAction extends AbilityNodeAction<DataSource> 
     @Override
     protected boolean enable(Stream<DataSource> items) {
         return DesktopManager.get().isSupported(Desktop.Action.SHOW_IN_FOLDER)
-                && items.anyMatch(item -> TsManager.getDefault().getFile(item).isPresent());
+                && items.anyMatch(item -> TsManager.get().getFile(item).isPresent());
     }
 
     @Override

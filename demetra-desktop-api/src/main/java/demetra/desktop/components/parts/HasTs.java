@@ -46,7 +46,7 @@ public interface HasTs {
     default void loadAsync(TsInformationType info) {
         Ts ts = getTs();
         if (ts != null && !ts.getType().encompass(info)) {
-            TsManager.getDefault().loadAsync(ts, info, this::updateTs);
+            TsManager.get().loadAsync(ts, info, this::updateTs);
         }
     }
     

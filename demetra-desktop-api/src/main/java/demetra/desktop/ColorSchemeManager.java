@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public final class ColorSchemeManager {
 
     @NonNull
-    public static ColorSchemeManager getDefault() {
+    public static ColorSchemeManager get() {
         return LazyGlobalService.get(ColorSchemeManager.class, ColorSchemeManager::new);
     }
 
@@ -33,7 +33,7 @@ public final class ColorSchemeManager {
 
     @NonNull
     public ColorScheme getMainColorScheme() {
-        String mainColorSchemeName = DemetraUI.getDefault().getColorSchemeName();
+        String mainColorSchemeName = DemetraUI.get().getColorSchemeName();
         return providers
                 .stream()
                 .filter(Collections2.compose(Predicate.isEqual(mainColorSchemeName), ColorScheme::getName))

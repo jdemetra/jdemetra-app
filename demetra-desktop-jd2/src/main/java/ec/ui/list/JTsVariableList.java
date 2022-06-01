@@ -213,7 +213,7 @@ public final class JTsVariableList extends JComponent implements HasTsAction {
         public boolean importData(TransferHandler.TransferSupport support) {
             return DataTransfer.getDefault()
                     .toTsCollectionStream(support.getTransferable())
-                    .map(col -> col.load(TsInformationType.All, TsManager.getDefault()))
+                    .map(col -> col.load(TsInformationType.All, TsManager.get()))
                     .filter(col -> !col.isEmpty())
                     .peek(JTsVariableList.this::appendTsVariables)
                     .count() > 0;
@@ -456,7 +456,7 @@ public final class JTsVariableList extends JComponent implements HasTsAction {
             name = variable.getName();
         }
         return variable instanceof DynamicTsVariable
-                ? TsManager.getDefault()
+                ? TsManager.get()
                         .makeTs(TsConverter.toTsMoniker(((DynamicTsVariable) variable).getMoniker()), demetra.timeseries.TsInformationType.None)
                         .toBuilder()
                         .name(name)

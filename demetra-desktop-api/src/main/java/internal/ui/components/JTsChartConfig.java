@@ -55,7 +55,7 @@ public final class JTsChartConfig {
         if (colorSchemeName.isEmpty()) {
             return null;
         }
-        return ColorSchemeManager.getDefault().getColorSchemes().stream()
+        return ColorSchemeManager.get().getColorSchemes().stream()
                 .filter(o -> colorSchemeName.equals(o.getName()))
                 .findFirst()
                 .orElse(null);
@@ -106,7 +106,7 @@ public final class JTsChartConfig {
             sheet.put(b.build());
             b.reset("Series display");
             b.withEnum(HasChart.LinesThickness.class).selectField(bean, "linesThickness").display("Line thickness").description("Thickness of the line representing the series").add();
-            b.withAutoCompletion().selectField(bean, "colorSchemeName").servicePath(ColorScheme.class.getName()).promptText(DemetraUI.getDefault().getColorSchemeName()).display("Color scheme").add();
+            b.withAutoCompletion().selectField(bean, "colorSchemeName").servicePath(ColorScheme.class.getName()).promptText(DemetraUI.get().getColorSchemeName()).display("Color scheme").add();
 
             sheet.put(b.build());
             return new PropertySheetDialogBuilder().title("Configure chart").editSheet(sheet);

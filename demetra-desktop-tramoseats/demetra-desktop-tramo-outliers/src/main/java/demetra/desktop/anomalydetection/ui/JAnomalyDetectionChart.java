@@ -29,7 +29,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
-import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
 import demetra.desktop.ui.TsXYDatasets;
@@ -252,7 +252,7 @@ final class JAnomalyDetectionChart extends JComponent {
 
         @Override
         public void execute(JAnomalyDetectionChart c) throws Exception {
-            Transferable t = DataTransfer.getDefault().fromTs(c.model.getTs());
+            Transferable t = DataTransferManager.get().fromTs(c.model.getTs());
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
     }
@@ -261,7 +261,7 @@ final class JAnomalyDetectionChart extends JComponent {
 
         @Override
         public void execute(JAnomalyDetectionChart c) throws Exception {
-            Transferable t = DataTransfer.getDefault().fromTable(toTable(c.model.getOutliers()));
+            Transferable t = DataTransferManager.get().fromTable(toTable(c.model.getOutliers()));
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
 

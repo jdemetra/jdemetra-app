@@ -17,7 +17,7 @@
 package demetra.desktop.core.star;
 
 import demetra.desktop.nodes.SingleNodeAction;
-import demetra.desktop.star.StarList;
+import demetra.desktop.star.StarListManager;
 import demetra.tsprovider.DataSource;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -58,7 +58,7 @@ public final class StarAction extends SingleNodeAction<Node> {
     @Override
     protected void performAction(Node activatedNode) {
         getDataSource(activatedNode).ifPresent(dataSource -> {
-            StarList.getDefault().toggle(dataSource);
+            StarListManager.get().toggle(dataSource);
             updateDisplayName(dataSource);
         });
     }
@@ -69,7 +69,7 @@ public final class StarAction extends SingleNodeAction<Node> {
     }
 
     private void updateDisplayName(DataSource dataSource) {
-        putValue(NAME, StarList.getDefault().isStarred(dataSource) ? Bundle.starAction_remove() : Bundle.starAction_add());
+        putValue(NAME, StarListManager.get().isStarred(dataSource) ? Bundle.starAction_remove() : Bundle.starAction_add());
     }
 
     private static Optional<DataSource> getDataSource(Node node) {

@@ -17,7 +17,7 @@ import demetra.desktop.datatransfer.DataTransfer;
 import demetra.desktop.datatransfer.DataTransfers;
 import demetra.desktop.notification.MessageType;
 import demetra.desktop.notification.NotifyUtil;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.util.ListTableModel;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.util.PopupMenuAdapter;
@@ -483,7 +483,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         long count = DataTransfer.getDefault()
                 .toTsCollectionStream(dataobj)
                 .map(col -> col
-                        .load(demetra.timeseries.TsInformationType.All, TsManager.getDefault())
+                        .load(demetra.timeseries.TsInformationType.All, TsManager.get())
                         .stream()
                         .map(Ts::freeze)
                         .collect(TsCollection.toTsCollection())
@@ -875,7 +875,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         public Icon getIcon(SaItem item) {
-            return DataSourceProviderBuddySupport.getDefault().getIcon(TsConverter.toTsMoniker(item.getTs().getMoniker()), BeanInfo.ICON_COLOR_16x16, false);
+            return DataSourceManager.get().getIcon(TsConverter.toTsMoniker(item.getTs().getMoniker()), BeanInfo.ICON_COLOR_16x16, false);
         }
     }
 

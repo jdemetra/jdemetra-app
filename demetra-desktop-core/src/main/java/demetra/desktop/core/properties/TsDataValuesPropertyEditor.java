@@ -69,7 +69,7 @@ public class TsDataValuesPropertyEditor extends PropertyEditorSupport {
                 singleValuePainter.paint(gfx);
                 break;
             case 1:
-                ObsFormat obsFormat = DemetraUI.getDefault().getObsFormat();
+                ObsFormat obsFormat = DemetraUI.get().getObsFormat();
                 String str = "Single: " + obsFormat.numberFormatter().formatAsString(data.getValue(0));
                 singleValuePainter.setText(str);
                 singleValuePainter.setBounds(box);

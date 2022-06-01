@@ -7,7 +7,7 @@ package demetra.desktop.ui;
 import demetra.desktop.ColorSchemeManager;
 import demetra.desktop.DemetraUI;
 import demetra.desktop.NamedService;
-import demetra.desktop.TsActions;
+import demetra.desktop.TsActionManager;
 import demetra.desktop.components.JObsFormatComponent;
 import demetra.desktop.components.JTsChart;
 import demetra.desktop.components.parts.HasColorSchemeSupport;
@@ -33,7 +33,7 @@ final class CommonUIPanel extends javax.swing.JPanel implements VetoableChangeLi
         initComponents();
         colorSchemePreviewer = new JTsChart();
         colorSchemePreviewer.setTsCollection(DemoTsBuilder.randomTsCollection(3));
-        colorSchemePreviewer.setTsAction(TsActions.NO_ACTION);
+        colorSchemePreviewer.setTsAction(TsActionManager.NO_ACTION);
         colorSchemePreviewer.setTsUpdateMode(HasTsCollection.TsUpdateMode.None);
         chartPreviewPanel.add(colorSchemePreviewer);
 
@@ -158,8 +158,8 @@ final class CommonUIPanel extends javax.swing.JPanel implements VetoableChangeLi
     }// </editor-fold>//GEN-END:initComponents
 
     void load() {
-        DemetraUI options = DemetraUI.getDefault();
-        colorSchemeChoicePanel.setContent(ColorSchemeManager.getDefault().getColorSchemes().stream().map(ColorSchemeNamedService::new).collect(Collectors.toList()));
+        DemetraUI options = DemetraUI.get();
+        colorSchemeChoicePanel.setContent(ColorSchemeManager.get().getColorSchemes().stream().map(ColorSchemeNamedService::new).collect(Collectors.toList()));
         colorSchemeChoicePanel.getExplorerManager().addVetoableChangeListener(this);
         colorSchemeChoicePanel.setSelectedServiceName(options.getColorSchemeName());
         dataFormatComponent.setObsFormat(options.getObsFormat());
@@ -170,7 +170,7 @@ final class CommonUIPanel extends javax.swing.JPanel implements VetoableChangeLi
      }
 
     void store() {
-        DemetraUI options = DemetraUI.getDefault();
+        DemetraUI options = DemetraUI.get();
         options.setColorSchemeName(colorSchemeChoicePanel.getSelectedServiceName());
         options.setObsFormat(dataFormatComponent.getObsFormat());
         options.setGrowthLastYears((Integer) growthLastYears.getValue());

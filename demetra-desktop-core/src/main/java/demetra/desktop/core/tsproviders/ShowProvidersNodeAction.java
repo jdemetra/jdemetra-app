@@ -39,14 +39,14 @@ public final class ShowProvidersNodeAction extends AbstractAction implements Pre
     public ShowProvidersNodeAction() {
         this.item = new JCheckBoxMenuItem(this);
         item.setText(Bundle.CTL_ShowProvidersAction());
-        DemetraBehaviour options = DemetraBehaviour.getDefault();
+        DemetraBehaviour options = DemetraBehaviour.get();
         item.setSelected(options.isShowTsProviderNodes());
         options.addWeakPropertyChangeListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        DemetraBehaviour options = DemetraBehaviour.getDefault();
+        DemetraBehaviour options = DemetraBehaviour.get();
         options.setShowTsProviderNodes(!options.isShowTsProviderNodes());
     }
 

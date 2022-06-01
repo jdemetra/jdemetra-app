@@ -39,7 +39,7 @@ public class ReportSelectionDialog extends JDialog {
     private final JList<CheckLastReportFactory> list;
 
     private void fillList() {
-        list.setModel(JLists.modelOf(CheckLastReportManager.getDefault().getFactories()));
+        list.setModel(JLists.modelOf(CheckLastReportManager.get().getFactories()));
     }
 
     public ReportSelectionDialog() {
@@ -87,7 +87,7 @@ public class ReportSelectionDialog extends JDialog {
         if (report == null) {
             return null;
         }
-        List<CheckLastReportFactory> factories = CheckLastReportManager.getDefault().getFactories();
+        List<CheckLastReportFactory> factories = CheckLastReportManager.get().getFactories();
         for (CheckLastReportFactory item : factories) {
             if (item.getReportName().equals(report))
                 return item;

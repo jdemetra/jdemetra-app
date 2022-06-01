@@ -4,19 +4,19 @@ import demetra.desktop.beans.PropertyChangeSource;
 import demetra.desktop.concurrent.ThreadPoolSize;
 import demetra.desktop.concurrent.ThreadPriority;
 import demetra.desktop.design.GlobalService;
-import demetra.desktop.design.MightBeGenerated;
 import demetra.desktop.design.SwingProperty;
 import demetra.desktop.util.LazyGlobalService;
 import demetra.desktop.util.Persistence;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.beans.PropertyChangeSupport;
+import nbbrd.design.MightBeGenerated;
 
 @GlobalService
 public final class DemetraBehaviour implements PropertyChangeSource.WithWeakListeners, Persistable {
 
     @NonNull
-    public static DemetraBehaviour getDefault() {
+    public static DemetraBehaviour get() {
         return LazyGlobalService.get(DemetraBehaviour.class, DemetraBehaviour::new);
     }
 

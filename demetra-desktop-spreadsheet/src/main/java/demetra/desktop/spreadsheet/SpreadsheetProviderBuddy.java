@@ -94,7 +94,7 @@ public final class SpreadsheetProviderBuddy implements DataSourceProviderBuddy {
         b.reset("source")
                 .display(Bundle.bean_source_display())
                 .description(Bundle.bean_source_description());
-        TsManager.getDefault()
+        TsManager.get()
                 .getProvider(FileLoader.class, SOURCE)
                 .ifPresent(o -> addFile(b, o, bean));
         return b.build();

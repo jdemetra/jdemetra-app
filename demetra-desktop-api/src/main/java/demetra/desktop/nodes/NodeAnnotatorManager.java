@@ -9,14 +9,14 @@ import org.openide.nodes.Node;
 import java.awt.*;
 
 @GlobalService
-public final class NodeAnnotator {
+public final class NodeAnnotatorManager {
 
     @NonNull
-    public static NodeAnnotator getDefault() {
-        return LazyGlobalService.get(NodeAnnotator.class, NodeAnnotator::new);
+    public static NodeAnnotatorManager get() {
+        return LazyGlobalService.get(NodeAnnotatorManager.class, NodeAnnotatorManager::new);
     }
 
-    private NodeAnnotator() {
+    private NodeAnnotatorManager() {
     }
 
     private final CollectionSupplier<NodeAnnotatorSpi> providers = NodeAnnotatorSpiLoader::get;

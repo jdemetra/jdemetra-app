@@ -21,7 +21,7 @@ import demetra.desktop.actions.Actions;
 import demetra.desktop.beans.PropertyChangeBroadcaster;
 import demetra.desktop.components.ComponentCommand;
 import demetra.desktop.components.TsSelectionBridge;
-import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.desktop.datatransfer.DataTransfers;
 import demetra.desktop.datatransfer.LocalObjectDataTransfer;
 import demetra.desktop.util.Collections2;
@@ -65,23 +65,23 @@ public class HasTsCollectionSupport {
     @NonNull
     public static HasTsCollection of(@NonNull PropertyChangeBroadcaster broadcaster, TsInformationType info) {
         TsInformationType type=info.encompass(TsInformationType.Data) ? info : TsInformationType.Data;
-        return new HasTsCollectionImpl(broadcaster, info, type).watch(TsManager.getDefault());
+        return new HasTsCollectionImpl(broadcaster, info, type).watch(TsManager.get());
     }
 
     @NonNull
     public static HasTsCollection of(@NonNull PropertyChangeBroadcaster broadcaster, TsInformationType broadcastinfo, TsInformationType loadinfo) {
         TsInformationType type=broadcastinfo.encompass(loadinfo) ? broadcastinfo : loadinfo;
-        return new HasTsCollectionImpl(broadcaster, broadcastinfo, type).watch(TsManager.getDefault());
+        return new HasTsCollectionImpl(broadcaster, broadcastinfo, type).watch(TsManager.get());
     }
 
     @NonNull
     public static TransferHandler newTransferHandler(@NonNull HasTsCollection component) {
-        return new HasTsCollectionTransferHandler(component, DataTransfer.getDefault());
+        return new HasTsCollectionTransferHandler(component, DataTransferManager.get());
     }
 
     @NonNull
     public static DropTargetListener newDropTargetListener(@NonNull HasTsCollection component, @NonNull DropTarget dropTarget) {
-        return new HasTsCollectionDropTargetListener(component, DataTransfer.getDefault()).watch(dropTarget);
+        return new HasTsCollectionDropTargetListener(component, DataTransferManager.get()).watch(dropTarget);
     }
 
     public static void registerActions(HasTsCollection component, ActionMap am) {
@@ -156,11 +156,11 @@ public class HasTsCollectionSupport {
         result.setIcon(DemetraIcons.getPopupMenuIcon(FontAwesome.FA_BAR_CHART_O));
         Actions.hideWhenDisabled(result);
 
-        for (NamedService o : TsActions.getDefault().getOpenActions()) {
+        for (NamedService o : TsActionManager.get().getOpenActions()) {
             JMenuItem item = new JMenuItem(((JCommand<HasTsCollection>) new OpenWithCommand(o.getName())).toAction(component));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
-            if (DemetraUI.getDefault().isPopupMenuIconsVisible()) {
+            if (DemetraUI.get().isPopupMenuIconsVisible()) {
                 Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
                 if (image != null) {
                     item.setIcon(ImageUtilities.image2Icon(image));
@@ -175,11 +175,11 @@ public class HasTsCollectionSupport {
         JMenu result = new JMenu(new MainSaveCommand().toAction(component));
         result.setText("Save");
         Actions.hideWhenDisabled(result);
-        for (NamedService o : TsActions.getDefault().getSaveActions()) {
+        for (NamedService o : TsActionManager.get().getSaveActions()) {
             JMenuItem item = new JMenuItem(((JCommand<HasTsCollection>) new SaveCommand(o)).toAction(component));
             item.setName(o.getName());
             item.setText(o.getDisplayName());
-            if (DemetraUI.getDefault().isPopupMenuIconsVisible()) {
+            if (DemetraUI.get().isPopupMenuIconsVisible()) {
                 Image image = o.getIcon(BeanInfo.ICON_COLOR_16x16, false);
                 if (image != null) {
                     item.setIcon(ImageUtilities.image2Icon(image));
@@ -265,7 +265,7 @@ public class HasTsCollectionSupport {
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            Transferable transferable = DataTransfer.getDefault().fromTsCollection(c.getTsCollection());
+            Transferable transferable = DataTransferManager.get().fromTsCollection(c.getTsCollection());
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
         }
     }
@@ -311,7 +311,7 @@ public class HasTsCollectionSupport {
                 descriptor.setAdditionalOptions(new Object[]{new JButton(new AbstractAction("Restore") {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        Optional<DataSourceProvider> provider = TsManager.getDefault().getProvider(DataSourceProvider.class, ts.getMoniker());
+                        Optional<DataSourceProvider> provider = TsManager.get().getProvider(DataSourceProvider.class, ts.getMoniker());
                         if (provider.isPresent()) {
                             demetra.tsprovider.DataSet dataSet = provider.get().toDataSet(ts.getMoniker()).orElse(null);
                             if (dataSet != null) {
@@ -342,9 +342,9 @@ public class HasTsCollectionSupport {
             if (c instanceof HasTsAction) {
                 String actionName = ((HasTsAction) c).getTsAction();
                 if (actionName == null) {
-                    actionName = DemetraBehaviour.getDefault().getTsActionName();
+                    actionName = DemetraBehaviour.get().getTsActionName();
                 }
-                TsActions.getDefault().openWith(getSingleTs(c), actionName);
+                TsActionManager.get().openWith(getSingleTs(c), actionName);
             }
         }
     }
@@ -373,7 +373,7 @@ public class HasTsCollectionSupport {
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            TsActions.getDefault().openWith(getSingleTs(c), tsAction);
+            TsActionManager.get().openWith(getSingleTs(c), tsAction);
         }
     }
 
@@ -389,7 +389,7 @@ public class HasTsCollectionSupport {
                     .collect(TsCollection.toTsCollection());
             if (!selection.isEmpty()) {
                 List<TsCollection> data = Collections.singletonList(selection);
-                TsActions.getDefault().saveWith(data, tsSave.getName());
+                TsActionManager.get().saveWith(data, tsSave.getName());
             }
         }
     }
@@ -401,7 +401,7 @@ public class HasTsCollectionSupport {
         @Override
         public void execute(HasTsCollection c) throws Exception {
             TsCollection data = c.getTsSelectionStream().collect(TsCollection.toTsCollection());
-            Transferable transferable = DataTransfer.getDefault().fromTsCollection(data);
+            Transferable transferable = DataTransferManager.get().fromTsCollection(data);
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
         }
     }
@@ -413,12 +413,12 @@ public class HasTsCollectionSupport {
         @Override
         public boolean isEnabled(HasTsCollection c) {
             return !c.getTsUpdateMode().isReadOnly()
-                    && DataTransfer.getDefault().isValidClipboard();
+                    && DataTransferManager.get().isValidClipboard();
         }
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            HasTsCollectionTransferHandler.importData(c, DataTransfer.getDefault(), DataTransfers::systemClipboardAsTransferable);
+            HasTsCollectionTransferHandler.importData(c, DataTransferManager.get(), DataTransfers::systemClipboardAsTransferable);
         }
 
         @Override
@@ -427,10 +427,10 @@ public class HasTsCollectionSupport {
             if (c instanceof Component) {
                 result.withWeakPropertyChangeListener((Component) c, HasTsCollection.TS_UPDATE_MODE_PROPERTY);
             }
-            DataTransfer source = DataTransfer.getDefault();
+            DataTransferManager source = DataTransferManager.get();
             PropertyChangeListener realListener = evt -> result.refreshActionState();
             result.putValue("TssTransferSupport", realListener);
-            source.addWeakPropertyChangeListener(DataTransfer.VALID_CLIPBOARD_PROPERTY, realListener);
+            source.addWeakPropertyChangeListener(DataTransferManager.VALID_CLIPBOARD_PROPERTY, realListener);
             return result;
         }
     }
@@ -553,7 +553,7 @@ public class HasTsCollectionSupport {
         private final HasTsCollection delegate;
 
         @lombok.NonNull
-        private final DataTransfer dataTransfer;
+        private final DataTransferManager dataTransfer;
 
         @Override
         public int getSourceActions(JComponent c) {
@@ -585,7 +585,7 @@ public class HasTsCollectionSupport {
             return importData(delegate, dataTransfer, support::getTransferable);
         }
 
-        public static boolean canImport(@NonNull HasTsCollection view, @NonNull DataTransfer tssSupport, @NonNull Supplier<Transferable> toData) {
+        public static boolean canImport(@NonNull HasTsCollection view, @NonNull DataTransferManager tssSupport, @NonNull Supplier<Transferable> toData) {
             if (!view.getTsUpdateMode().isReadOnly()) {
                 Transferable t = toData.get();
                 return tssSupport.canImport(t) && TransferChange.of(t, view.getTsCollection()).mayChangeContent();
@@ -593,7 +593,7 @@ public class HasTsCollectionSupport {
             return false;
         }
 
-        public static boolean importData(@NonNull HasTsCollection view, @NonNull DataTransfer tssSupport, @NonNull Supplier<Transferable> toData) {
+        public static boolean importData(@NonNull HasTsCollection view, @NonNull DataTransferManager tssSupport, @NonNull Supplier<Transferable> toData) {
             if (!view.getTsUpdateMode().isReadOnly()) {
                 // merge the collections
                 List<TsCollection> all = tssSupport.toTsCollectionStream(toData.get()).collect(Collectors.toList());
@@ -620,16 +620,16 @@ public class HasTsCollectionSupport {
 
         private static void importData(HasTsCollection view, TsCollection data) {
 //            if (view.isFreezeOnImport() && TsManager.isDynamic(data)) {
-//                TsCollection latest = TsManager.getDefault().makeTsCollection(data.getMoniker(), TsInformationType.All);
+//                TsCollection latest = TsManager.get().makeTsCollection(data.getMoniker(), TsInformationType.All);
 //                view.setTsCollection(update(view.getTsUpdateMode(), view.getTsCollection(), frozenCopyOf(latest)));
 //            } else {
                 if (TransferChange.isNotYetLoaded(data)) {
                     // TODO: put load in a separate thread
-                    data = data.load(TsInformationType.Definition, TsManager.getDefault());
+                    data = data.load(TsInformationType.Definition, TsManager.get());
                 }
                 if (!data.isEmpty()) {
                     view.setTsCollection(update(view.getTsUpdateMode(), view.getTsCollection(), data));
-//                    TsManager.getDefault().loadAsync(data, TsInformationType.All, view::replaceTsCollection);
+//                    TsManager.get().loadAsync(data, TsInformationType.All, view::replaceTsCollection);
                 }
 //            }
         }
@@ -701,7 +701,7 @@ public class HasTsCollectionSupport {
         private final HasTsCollection target;
 
         @lombok.NonNull
-        private final DataTransfer transferSupport;
+        private final DataTransferManager transferSupport;
 
         @Override
         public void dragEnter(DropTargetDragEvent dtde) {
@@ -771,7 +771,7 @@ public class HasTsCollectionSupport {
             boolean toload=tsCollection != null && ! checkInfo(tsCollection, loadInfo);
             boolean tobroadcast=tsCollection == null || broadcastInfo == TsInformationType.None || checkInfo(tsCollection, broadcastInfo);
             if (toload){
-                TsManager.getDefault().loadAsync(tsCollection, loadInfo, this::setTsCollection);
+                TsManager.get().loadAsync(tsCollection, loadInfo, this::setTsCollection);
             }
             if (tobroadcast)
                 broadcaster.firePropertyChange(TS_COLLECTION_PROPERTY, old, this.tsCollection);

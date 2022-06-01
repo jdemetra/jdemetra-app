@@ -17,13 +17,13 @@
 package demetra.desktop.core.tsproviders;
 
 import demetra.desktop.DemetraBehaviour;
-import demetra.desktop.TsActions;
+import demetra.desktop.TsActionManager;
 import demetra.desktop.TsCollectable;
 import demetra.desktop.TsManager;
 import demetra.desktop.nodes.FailSafeChildFactory;
-import demetra.desktop.nodes.NodeAnnotator;
+import demetra.desktop.nodes.NodeAnnotatorManager;
 import demetra.desktop.nodes.Nodes;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.tsprovider.DataSet;
 import demetra.tsprovider.DataSourceProvider;
 import demetra.util.MultiLineNameUtil;
@@ -92,7 +92,7 @@ abstract public class DataSetNode extends AbstractNode {
             abilities.add(new TsCollectableImpl());
         }
         // 3. Name and display name
-        TsManager.getDefault()
+        TsManager.get()
                 .getProvider(DataSourceProvider.class, dataSet)
                 .ifPresent(provider -> applyText(provider.getDisplayNodeName(dataSet)));
     }
@@ -104,25 +104,25 @@ abstract public class DataSetNode extends AbstractNode {
 
     private Image lookupIcon(int type, boolean opened) {
         DataSet o = getLookup().lookup(DataSet.class);
-        return DataSourceProviderBuddySupport.getDefault().getImage(o, type, opened);
+        return DataSourceManager.get().getImage(o, type, opened);
     }
 
     @Override
     public Image getIcon(int type) {
         Image image = lookupIcon(type, false);
-        return NodeAnnotator.getDefault().annotateIcon(this, image);
+        return NodeAnnotatorManager.get().annotateIcon(this, image);
     }
 
     @Override
     public Image getOpenedIcon(int type) {
         Image image = lookupIcon(type, true);
-        return NodeAnnotator.getDefault().annotateIcon(this, image);
+        return NodeAnnotatorManager.get().annotateIcon(this, image);
     }
 
     @Override
     protected Sheet createSheet() {
         DataSet o = getLookup().lookup(DataSet.class);
-        return DataSourceProviderBuddySupport.getDefault().getSheet(o);
+        return DataSourceManager.get().getSheet(o);
     }
 
     @Override
@@ -140,7 +140,7 @@ abstract public class DataSetNode extends AbstractNode {
 
         @Override
         protected boolean tryCreateKeys(List<Object> list) throws Exception {
-            Optional<DataSourceProvider> provider = TsManager.getDefault().getProvider(DataSourceProvider.class, dataSet);
+            Optional<DataSourceProvider> provider = TsManager.get().getProvider(DataSourceProvider.class, dataSet);
             if (provider.isPresent()) {
                 provider.get()
                         .children(dataSet)
@@ -168,9 +168,9 @@ abstract public class DataSetNode extends AbstractNode {
         @Override
         public void open() {
             DataSet dataSet = getLookup().lookup(DataSet.class);
-            TsManager.getDefault()
+            TsManager.get()
                     .getTs(dataSet, demetra.timeseries.TsInformationType.None)
-                    .ifPresent(ts -> TsActions.getDefault().openWith(ts, DemetraBehaviour.getDefault().getTsActionName()));
+                    .ifPresent(ts -> TsActionManager.get().openWith(ts, DemetraBehaviour.get().getTsActionName()));
         }
     }
 
@@ -179,7 +179,7 @@ abstract public class DataSetNode extends AbstractNode {
         @Override
         public demetra.timeseries.TsCollection getTsCollection() {
             DataSet dataSet = getLookup().lookup(DataSet.class);
-            return TsManager.getDefault()
+            return TsManager.get()
                     .getTsCollection(dataSet, TsEventHelper.SHOULD_BE_NONE)
                     .orElse(demetra.timeseries.TsCollection.EMPTY);
         }

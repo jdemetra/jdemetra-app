@@ -31,14 +31,14 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * @author Philippe Charles
  */
 @GlobalService
-public final class DataSourceTransfer {
+public final class DataSourceTransferManager {
 
     @NonNull
-    public static DataSourceTransfer getDefault() {
-        return LazyGlobalService.get(DataSourceTransfer.class, DataSourceTransfer::new);
+    public static DataSourceTransferManager get() {
+        return LazyGlobalService.get(DataSourceTransferManager.class, DataSourceTransferManager::new);
     }
 
-    private DataSourceTransfer() {
+    private DataSourceTransferManager() {
     }
 
     private final CollectionSupplier<DataSourceTransferSpi> providers = DataSourceTransferSpiLoader::get;

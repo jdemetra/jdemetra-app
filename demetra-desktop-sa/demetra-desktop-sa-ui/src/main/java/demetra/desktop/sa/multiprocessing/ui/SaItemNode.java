@@ -7,7 +7,7 @@ package demetra.desktop.sa.multiprocessing.ui;
 
 import demetra.desktop.nodes.ControlNode;
 import demetra.desktop.properties.NodePropertySetBuilder;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.util.NbUtilities;
 import demetra.sa.SaItem;
 import demetra.util.MultiLineNameUtil;
@@ -32,7 +32,7 @@ public class SaItemNode extends AbstractNode {
 
     private Image lookupIcon(int type, boolean opened) {
         SaItem item = getLookup().lookup(SaItem.class);
-        return DataSourceProviderBuddySupport.getDefault().getImage(item.getDefinition().getTs().getMoniker(), type, opened);
+        return DataSourceManager.get().getImage(item.getDefinition().getTs().getMoniker(), type, opened);
     }
 
     @Override

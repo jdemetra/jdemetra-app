@@ -6,7 +6,7 @@ package ec.nbdemetra.ui;
 
 import demetra.desktop.TsManager;
 import demetra.desktop.nodes.AbstractNodeBuilder;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.tsprovider.FileLoader;
 import ec.tss.tsproviders.IFileLoader;
 import ec.util.desktop.DesktopManager;
@@ -189,7 +189,7 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
 
         private Image lookupIcon(int type, boolean opened) {
             FileLoader o = getLookup().lookup(FileLoader.class);
-            return DataSourceProviderBuddySupport.getDefault().getImage(o.getSource(), type, opened);
+            return DataSourceManager.get().getImage(o.getSource(), type, opened);
         }
 
         @Override
@@ -257,7 +257,7 @@ final class DemetraPathsPanel extends javax.swing.JPanel implements ExplorerMana
     }
 
     void load() {
-        List<FileLoader> loaders = TsManager.getDefault().getProviders()
+        List<FileLoader> loaders = TsManager.get().getProviders()
                 .filter(FileLoader.class::isInstance)
                 .map(FileLoader.class::cast)
                 .collect(Collectors.toList());

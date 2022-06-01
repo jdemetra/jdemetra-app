@@ -23,12 +23,12 @@ public final class HasColorSchemeResolver {
         this.property = property;
         this.onChange = onChange;
         this.listener = this::onPropertyChange;
-        DemetraUI.getDefault().addWeakPropertyChangeListener(listener);
+        DemetraUI.get().addWeakPropertyChangeListener(listener);
     }
 
     @NonNull
     public SwingColorSchemeSupport resolve() {
-        return ColorSchemeManager.getDefault().getSupport(property.getColorScheme());
+        return ColorSchemeManager.get().getSupport(property.getColorScheme());
     }
 
     private void onPropertyChange(PropertyChangeEvent evt) {

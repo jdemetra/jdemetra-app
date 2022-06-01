@@ -17,7 +17,7 @@
 package demetra.desktop.core.tsproviders;
 
 import demetra.desktop.NamedService;
-import demetra.desktop.TsActions;
+import demetra.desktop.TsActionManager;
 import demetra.desktop.TsManager;
 import demetra.tsprovider.DataSet;
 import org.openide.awt.ActionID;
@@ -50,7 +50,7 @@ public final class OpenWithSetNodeAction extends AbstractAction implements Prese
         Node selectedNode = Utilities.actionsGlobalContext().lookup(Node.class);
         DataSet dataSet = selectedNode.getLookup().lookup(DataSet.class);
         JMenu result = new JMenu(Bundle.CTL_OpenWithSetAction());
-        for (NamedService o : TsActions.getDefault().getOpenActions()) {
+        for (NamedService o : TsActionManager.get().getOpenActions()) {
             result.add(new OpenTsAction(o, dataSet)).setText(o.getDisplayName());
         }
         return result;
@@ -64,9 +64,9 @@ public final class OpenWithSetNodeAction extends AbstractAction implements Prese
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            TsManager.getDefault()
+            TsManager.get()
                     .getTs(dataSet, demetra.timeseries.TsInformationType.None)
-                    .ifPresent(o -> TsActions.getDefault().openWith(o, tsAction.getName()));
+                    .ifPresent(o -> TsActionManager.get().openWith(o, tsAction.getName()));
         }
     }
 }

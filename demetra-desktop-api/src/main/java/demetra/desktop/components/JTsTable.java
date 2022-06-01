@@ -22,7 +22,7 @@ import demetra.desktop.components.parts.*;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
 import demetra.desktop.jfreechart.TsSparklineCellRenderer;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.util.ObsFormat;
@@ -171,7 +171,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
         this.tsSelectionBridge = new TsSelectionBridge(this::firePropertyChange);
         tsSelectionBridge.register(this);
 
-        ComponentBackend.getDefault().install(this);
+        ComponentBackendManager.get().install(this);
 
         applyDesignTimeProperties();
     }
@@ -247,7 +247,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
                     result.setText(MultiLineNameUtil.join(text));
                     result.setToolTipText(MultiLineNameUtil.toHtml(text));
                 }
-                result.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(id.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
+                result.setIcon(DataSourceManager.get().getIcon(id.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
             }
             return result;
         }
@@ -275,7 +275,7 @@ public final class JTsTable extends JComponent implements TimeSeriesComponent, P
 
         private ObsFormat lookupObsFormat() {
             ObsFormat result = target.getObsFormat();
-            return result != null ? result : DemetraUI.getDefault().getObsFormat();
+            return result != null ? result : DemetraUI.get().getObsFormat();
         }
 
         private String formatValue(Number o) {

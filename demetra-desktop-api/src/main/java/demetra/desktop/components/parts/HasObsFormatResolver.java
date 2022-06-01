@@ -17,13 +17,13 @@ public final class HasObsFormatResolver {
     public HasObsFormatResolver(HasObsFormat property, Runnable onChange) {
         this.property = property;
         this.onChange = onChange;
-        DemetraUI.getDefault().addWeakPropertyChangeListener(this::onPropertyChange);
+        DemetraUI.get().addWeakPropertyChangeListener(this::onPropertyChange);
     }
 
     @NonNull
     public ObsFormat resolve() {
         ObsFormat result = property.getObsFormat();
-        return result != null ? result : DemetraUI.getDefault().getObsFormat();
+        return result != null ? result : DemetraUI.get().getObsFormat();
     }
 
     private void onPropertyChange(PropertyChangeEvent evt) {

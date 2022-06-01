@@ -161,7 +161,7 @@ public final class TsDynamicProvider implements TsProvider {
         if (doc == null) {
             return;
         }
-        TsManager.getDefault().notify(m -> m.getSource().equals(DYNAMIC) && m.getId().startsWith(doc.getKey().toString()));
+        TsManager.get().notify(m -> m.getSource().equals(DYNAMIC) && m.getId().startsWith(doc.getKey().toString()));
     }
 
     private Ts simpleTs(TsMoniker moniker, Explorable result, String item) {

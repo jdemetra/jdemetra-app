@@ -102,7 +102,7 @@ public final class JTsChart extends JComponent implements TimeSeriesComponent, P
         this.tsSelectionBridge = new TsSelectionBridge(this::firePropertyChange);
         tsSelectionBridge.register(this);
 
-        ComponentBackend.getDefault().install(this);
+        ComponentBackendManager.get().install(this);
 
         applyDesignTimeProperties();
     }

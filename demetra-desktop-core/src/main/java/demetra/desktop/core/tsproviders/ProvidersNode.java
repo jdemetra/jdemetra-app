@@ -21,7 +21,7 @@ import demetra.desktop.DemetraBehaviour;
 import demetra.desktop.TsManager;
 import demetra.desktop.core.actions.ConfigureNodeAction;
 import demetra.desktop.core.interchange.ImportNodeAction;
-import demetra.desktop.datatransfer.DataSourceTransfer;
+import demetra.desktop.datatransfer.DataSourceTransferManager;
 import demetra.desktop.interchange.Importable;
 import demetra.desktop.nodes.Nodes;
 import demetra.desktop.tsproviders.DataSourceProviderBuddyUtil;
@@ -94,7 +94,7 @@ public final class ProvidersNode extends AbstractNode {
 
     @Override
     public PasteType getDropType(Transferable t, int action, int index) {
-        if (DataSourceTransfer.getDefault().canHandle(t)) {
+        if (DataSourceTransferManager.get().canHandle(t)) {
             return new PasteTypeImpl(t);
         }
         return null;
@@ -112,14 +112,14 @@ public final class ProvidersNode extends AbstractNode {
         @Override
         protected void addNotify() {
             lookupResult.addLookupListener(this);
-            DemetraBehaviour.getDefault().addPropertyChangeListener(this);
+            DemetraBehaviour.get().addPropertyChangeListener(this);
             providerStream().forEach(o -> o.addDataSourceListener(this));
         }
 
         @Override
         protected void removeNotify() {
             providerStream().forEach(o -> o.removeDataSourceListener(this));
-            DemetraBehaviour.getDefault().removePropertyChangeListener(this);
+            DemetraBehaviour.get().removePropertyChangeListener(this);
             lookupResult.removeLookupListener(this);
         }
 
@@ -131,22 +131,22 @@ public final class ProvidersNode extends AbstractNode {
 
         @Override
         protected Node createNodeForKey(Object key) {
-            return DemetraBehaviour.getDefault().isShowTsProviderNodes()
+            return DemetraBehaviour.get().isShowTsProviderNodes()
                     ? new ProviderNode((DataSourceProvider) key)
                     : new DataSourceNode((DataSource) key);
         }
 
         private List<?> getKeys() {
-            return DemetraBehaviour.getDefault().isShowTsProviderNodes()
+            return DemetraBehaviour.get().isShowTsProviderNodes()
                     ? providerStream().sorted(ON_CLASS_SIMPLENAME).collect(Collectors.toList())
                     : providerStream().flatMap(o -> o.getDataSources().stream()).sorted(ON_TO_STRING).collect(Collectors.toList());
         }
 
         private Stream<? extends DataSourceProvider> providerStream() {
-            return TsManager.getDefault().getProviders()
+            return TsManager.get().getProviders()
                     .filter(DataSourceProvider.class::isInstance)
                     .map(DataSourceProvider.class::cast)
-                    .filter(DemetraBehaviour.getDefault().isShowUnavailableTsProviders() ? (o -> true) : TsProvider::isAvailable);
+                    .filter(DemetraBehaviour.get().isShowUnavailableTsProviders() ? (o -> true) : TsProvider::isAvailable);
         }
 
         //<editor-fold defaultstate="collapsed" desc="LookupListener">
@@ -173,28 +173,28 @@ public final class ProvidersNode extends AbstractNode {
         //<editor-fold defaultstate="collapsed" desc="DataSourceListener">
         @Override
         public void opened(demetra.tsprovider.DataSource dataSource) {
-            if (!DemetraBehaviour.getDefault().isShowTsProviderNodes()) {
+            if (!DemetraBehaviour.get().isShowTsProviderNodes()) {
                 refresh(true);
             }
         }
 
         @Override
         public void closed(demetra.tsprovider.DataSource dataSource) {
-            if (!DemetraBehaviour.getDefault().isShowTsProviderNodes()) {
+            if (!DemetraBehaviour.get().isShowTsProviderNodes()) {
                 refresh(true);
             }
         }
 
         @Override
         public void changed(demetra.tsprovider.DataSource dataSource) {
-            if (!DemetraBehaviour.getDefault().isShowTsProviderNodes()) {
+            if (!DemetraBehaviour.get().isShowTsProviderNodes()) {
                 refresh(true);
             }
         }
 
         @Override
         public void allClosed(String providerName) {
-            if (!DemetraBehaviour.getDefault().isShowTsProviderNodes()) {
+            if (!DemetraBehaviour.get().isShowTsProviderNodes()) {
                 refresh(true);
             }
         }
@@ -211,7 +211,7 @@ public final class ProvidersNode extends AbstractNode {
         @Override
         public void importConfig(Config config) throws IllegalArgumentException {
             DataSource dataSource = DataSourceProviderBuddyUtil.getDataSource(config);
-            Optional<DataSourceLoader> loader = TsManager.getDefault().getProvider(DataSourceLoader.class, dataSource);
+            Optional<DataSourceLoader> loader = TsManager.get().getProvider(DataSourceLoader.class, dataSource);
             if (loader.isPresent()) {
                 loader.get().open(dataSource);
                 ProvidersNode.findNode(dataSource, ProvidersNode.this)
@@ -230,8 +230,8 @@ public final class ProvidersNode extends AbstractNode {
 
         @Override
         public Transferable paste() throws IOException {
-            DataSourceTransfer.getDefault()
-                    .getDataSource(t).ifPresent(source -> TsManager.getDefault()
+            DataSourceTransferManager.get()
+                    .getDataSource(t).ifPresent(source -> TsManager.get()
                             .getProvider(DataSourceLoader.class, source)
                             .ifPresent(dataSourceLoader -> dataSourceLoader.open(source)));
             return null;

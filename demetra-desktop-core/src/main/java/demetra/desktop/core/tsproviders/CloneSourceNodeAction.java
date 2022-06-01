@@ -6,7 +6,7 @@ package demetra.desktop.core.tsproviders;
 
 import demetra.desktop.TsManager;
 import demetra.desktop.actions.AbilityNodeAction;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceLoader;
 import org.openide.awt.ActionID;
@@ -34,13 +34,13 @@ public final class CloneSourceNodeAction extends AbilityNodeAction<DataSource> {
 
     @Override
     protected boolean enable(Stream<DataSource> items) {
-        return items.anyMatch(item -> TsManager.getDefault().getProvider(DataSourceLoader.class, item).isPresent());
+        return items.anyMatch(item -> TsManager.get().getProvider(DataSourceLoader.class, item).isPresent());
     }
 
     private static DataSource clone(DataSource dataSource) {
-        DataSourceLoader loader = TsManager.getDefault().getProvider(DataSourceLoader.class, dataSource).get();
+        DataSourceLoader loader = TsManager.get().getProvider(DataSourceLoader.class, dataSource).get();
         final Object bean = loader.decodeBean(dataSource);
-        if (DataSourceProviderBuddySupport.getDefault().getBeanEditor(loader.getSource(), "Clone data source").editBean(bean, Exceptions::printStackTrace)) {
+        if (DataSourceManager.get().getBeanEditor(loader.getSource(), "Clone data source").editBean(bean, Exceptions::printStackTrace)) {
             DataSource newDataSource = loader.encodeBean(bean);
             return loader.open(newDataSource) ? newDataSource : null;
         }

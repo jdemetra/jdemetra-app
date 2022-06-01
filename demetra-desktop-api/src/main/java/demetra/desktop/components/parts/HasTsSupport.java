@@ -5,7 +5,7 @@ import demetra.desktop.TsListener;
 import demetra.desktop.TsManager;
 import demetra.desktop.beans.PropertyChangeBroadcaster;
 import static demetra.desktop.components.parts.HasTs.TS_PROPERTY;
-import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsInformationType;
@@ -18,7 +18,7 @@ public class HasTsSupport {
 
     @NonNull
     public static HasTs of(@NonNull PropertyChangeBroadcaster broadcaster, TsInformationType info) {
-        return new HasTsImpl(broadcaster, info).register(TsManager.getDefault());
+        return new HasTsImpl(broadcaster, info).register(TsManager.get());
     }
 
     @NonNull
@@ -27,7 +27,7 @@ public class HasTsSupport {
     }
 
     public static TransferHandler newTransferHandler(HasTs delegate) {
-        return new HasTsTransferHandler(delegate, DataTransfer.getDefault());
+        return new HasTsTransferHandler(delegate, DataTransferManager.get());
     }
 
     /**
@@ -40,7 +40,7 @@ public class HasTsSupport {
         private final HasTs delegate;
 
         @lombok.NonNull
-        private final DataTransfer dataTransfer;
+        private final DataTransferManager dataTransfer;
 
         @Override
         public boolean canImport(TransferSupport support) {
@@ -52,7 +52,7 @@ public class HasTsSupport {
             Optional<Ts> ts = dataTransfer.toTs(support.getTransferable());
             if (ts.isPresent()) {
                 delegate.setTs(ts.get());
-//                TsManager.getDefault().loadAsync(ts.get(), TsInformationType.All, delegate::updateTs);
+//                TsManager.get().loadAsync(ts.get(), TsInformationType.All, delegate::updateTs);
                 return true;
             }
             return false;
@@ -90,7 +90,7 @@ public class HasTsSupport {
             this.ts = ts;
             if (info != TsInformationType.None){
                 if (ts != null && ! ts.getType().encompass(info)){
-                    TsManager.getDefault().loadAsync(ts, info, this::setTs);
+                    TsManager.get().loadAsync(ts, info, this::setTs);
                     // The broadcast is fired when the requested information is available
                     return;
                 }

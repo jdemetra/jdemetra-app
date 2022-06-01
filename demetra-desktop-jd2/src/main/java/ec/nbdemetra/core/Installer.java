@@ -91,13 +91,13 @@ public final class Installer {
         private void register(Iterable<? extends TsProvider> providers) {
             Preferences pathsNode = prefs.node("paths");
             for (TsProvider o : providers) {
-                TsManager.getDefault().register(o);
+                TsManager.get().register(o);
                 if (o instanceof IFileLoader) {
                     tryGet(pathsNode, o.getSource(), pathsParser)
                             .ifPresent(((IFileLoader) o)::setPaths);
                 }
             }
-            TsManager.getDefault().register(new PocProvider());
+            TsManager.get().register(new PocProvider());
         }
 
         private void unregister(Iterable<? extends TsProvider> providers) {
@@ -106,7 +106,7 @@ public final class Installer {
                 if (o instanceof FileLoader) {
                     tryPut(pathsNode, o.getSource(), pathsFormatter, ((FileLoader) o).getPaths());
                 }
-                TsManager.getDefault().unregister(o);
+                TsManager.get().unregister(o);
             }
         }
 
@@ -124,7 +124,7 @@ public final class Installer {
 
         @Override
         protected void onResultChanged(Lookup.Result<TsProvider> lookup) {
-            List<TsProvider> old = TsManager.getDefault().getProviders().collect(Collectors.toList());
+            List<TsProvider> old = TsManager.get().getProviders().collect(Collectors.toList());
             List<TsProvider> current = new ArrayList<>(lookup.allInstances());
 
             unregister(except(old, current));
@@ -134,18 +134,18 @@ public final class Installer {
         @Override
         protected void onRestore(Lookup.Result<TsProvider> lookup) {
             register(lookup.allInstances());
-            LOGGER.debug("Loaded providers: [{}]", toString(TsManager.getDefault().getProviders()));
+            LOGGER.debug("Loaded providers: [{}]", toString(TsManager.get().getProviders()));
         }
 
         @Override
         protected void onClose(Lookup.Result<TsProvider> lookup) {
-            unregister(TsManager.getDefault().getProviders().collect(Collectors.toList()));
+            unregister(TsManager.get().getProviders().collect(Collectors.toList()));
             try {
                 prefs.flush();
             } catch (BackingStoreException ex) {
                 LOGGER.warn("Can't flush storage", ex);
             }
-            TsManager.getDefault().close();
+            TsManager.get().close();
         }
 
         @XmlRootElement(name = "paths")
@@ -176,7 +176,7 @@ public final class Installer {
         private void register(Iterable<? extends ITsProvider> providers) {
             Preferences pathsNode = prefs.node("paths");
             for (ITsProvider o : providers) {
-                TsManager.getDefault().register(TsConverter.toTsProvider(o));
+                TsManager.get().register(TsConverter.toTsProvider(o));
                 if (o instanceof IFileLoader) {
                     tryGet(pathsNode, o.getSource(), pathsParser)
                             .ifPresent(((IFileLoader) o)::setPaths);
@@ -190,7 +190,7 @@ public final class Installer {
                 if (o instanceof FileLoader) {
                     tryPut(pathsNode, o.getSource(), pathsFormatter, ((FileLoader) o).getPaths());
                 }
-                TsManager.getDefault().unregister(TsConverter.toTsProvider(o));
+                TsManager.get().unregister(TsConverter.toTsProvider(o));
             }
         }
 
@@ -208,7 +208,7 @@ public final class Installer {
 
         @Override
         protected void onResultChanged(Lookup.Result<ITsProvider> lookup) {
-            List<ITsProvider> old = TsManager.getDefault().getProviders().map(TsConverter::fromTsProvider).collect(Collectors.toList());
+            List<ITsProvider> old = TsManager.get().getProviders().map(TsConverter::fromTsProvider).collect(Collectors.toList());
             List<ITsProvider> current = new ArrayList<>(lookup.allInstances());
 
             unregister(except(old, current));
@@ -218,12 +218,12 @@ public final class Installer {
         @Override
         protected void onRestore(Lookup.Result<ITsProvider> lookup) {
             register(lookup.allInstances());
-            LOGGER.debug("Loaded providers: [{}]", toString(TsManager.getDefault().getProviders()));
+            LOGGER.debug("Loaded providers: [{}]", toString(TsManager.get().getProviders()));
         }
 
         @Override
         protected void onClose(Lookup.Result<ITsProvider> lookup) {
-            unregister(TsManager.getDefault().getProviders().map(TsConverter::fromTsProvider).collect(Collectors.toList()));
+            unregister(TsManager.get().getProviders().map(TsConverter::fromTsProvider).collect(Collectors.toList()));
             try {
                 prefs.flush();
             } catch (BackingStoreException ex) {

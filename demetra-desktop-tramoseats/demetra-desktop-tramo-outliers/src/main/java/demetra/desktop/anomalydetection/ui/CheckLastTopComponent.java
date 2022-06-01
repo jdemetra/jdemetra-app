@@ -390,7 +390,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
             }
             ntasks=tasks.size();
 
-            DemetraBehaviour options = DemetraBehaviour.getDefault();
+            DemetraBehaviour options = DemetraBehaviour.get();
 
             ExecutorService executorService = UIExecutors.newFixedThreadPool(options.getBatchPoolSize(), options.getBatchPriority());
             Stopwatch stopwatch = Stopwatch.createStarted();

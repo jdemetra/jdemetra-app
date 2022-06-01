@@ -16,7 +16,6 @@
  */
 package demetra.desktop.core;
 
-import demetra.desktop.TsActionsOpenSpi;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.parts.HasTs;
 import demetra.timeseries.TsFactory;
@@ -25,13 +24,14 @@ import javax.swing.SwingUtilities;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.openide.windows.TopComponent;
+import demetra.desktop.TsActionOpenSpi;
 
 /**
  * @author Philippe Charles
  */
 @DirectImpl
 @ServiceProvider
-public final class TsViewsTsAction implements TsActionsOpenSpi {
+public final class TsViewsTsAction implements TsActionOpenSpi {
 
     @Override
     public String getName() {
@@ -45,7 +45,7 @@ public final class TsViewsTsAction implements TsActionsOpenSpi {
 
     @Override
     public void open(demetra.timeseries.Ts ts) {
-       TsManager.getDefault().loadAsync(ts, TsInformationType.Data, this::dispatch);
+       TsManager.get().loadAsync(ts, TsInformationType.Data, this::dispatch);
     }
     
     private void dispatch(demetra.timeseries.Ts ts){

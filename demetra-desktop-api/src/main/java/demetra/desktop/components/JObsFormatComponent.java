@@ -16,7 +16,7 @@
  */
 package demetra.desktop.components;
 
-import demetra.desktop.completion.AutoCompletion;
+import demetra.desktop.completion.AutoCompletionManager;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
 import demetra.tsprovider.util.ObsFormat;
@@ -85,8 +85,8 @@ public final class JObsFormatComponent extends JComponent {
 
     //<editor-fold defaultstate="collapsed" desc="Initialization">
     private void initComponents() {
-        AutoCompletion.getDefault().bind(Locale.class, locale);
-        AutoCompletion.getDefault().bind(LocalDate.class, datePattern);
+        AutoCompletionManager.get().bind(Locale.class, locale);
+        AutoCompletionManager.get().bind(LocalDate.class, datePattern);
 
         new TextPrompt("locale", locale).setEnabled(false);
         new TextPrompt("date pattern", datePattern).setEnabled(false);

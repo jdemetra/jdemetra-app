@@ -4,6 +4,7 @@
  */
 package demetra.desktop.jfreechart;
 
+import demetra.desktop.datatransfer.DataTransferManager;
 import ec.util.chart.swing.ChartCommand;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
@@ -11,7 +12,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
-import demetra.desktop.datatransfer.DataTransfer;
 import demetra.math.matrices.Matrix;
 
 /**
@@ -25,7 +25,7 @@ public abstract class MatrixChartCommand extends ChartCommand {
     @Override
     public void execute(ChartPanel chartPanel) {
         Matrix matrix = toMatrix(chartPanel);
-        Transferable t = DataTransfer.getDefault().fromMatrix(matrix);
+        Transferable t = DataTransferManager.get().fromMatrix(matrix);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
     }
 

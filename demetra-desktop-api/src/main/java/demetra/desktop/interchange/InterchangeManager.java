@@ -14,21 +14,21 @@ import java.util.Collection;
 import java.util.List;
 
 @GlobalService
-public final class Interchange {
+public final class InterchangeManager {
 
     @NonNull
-    public static Interchange getDefault() {
-        return LazyGlobalService.get(Interchange.class, Interchange::new);
+    public static InterchangeManager get() {
+        return LazyGlobalService.get(InterchangeManager.class, InterchangeManager::new);
     }
 
     private final CollectionSupplier<InterchangeSpi> providers;
 
-    private Interchange() {
+    private InterchangeManager() {
         this(InterchangeSpiLoader::get);
     }
 
     @VisibleForTesting
-    Interchange(CollectionSupplier<InterchangeSpi> providers) {
+    InterchangeManager(CollectionSupplier<InterchangeSpi> providers) {
         this.providers = providers;
     }
 

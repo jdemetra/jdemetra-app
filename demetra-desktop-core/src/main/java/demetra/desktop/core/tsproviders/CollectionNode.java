@@ -18,7 +18,7 @@ package demetra.desktop.core.tsproviders;
 
 import demetra.desktop.TsManager;
 import demetra.desktop.core.actions.TsSaveNodeAction;
-import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.DataSet;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -49,9 +49,9 @@ public final class CollectionNode extends DataSetNode {
 
     private Transferable getData(TsInformationType type) throws IOException {
         DataSet dataSet = getLookup().lookup(DataSet.class);
-        return TsManager.getDefault()
+        return TsManager.get()
                 .getTsCollection(dataSet, type)
-                .map(DataTransfer.getDefault()::fromTsCollection)
+                .map(DataTransferManager.get()::fromTsCollection)
                 .orElseThrow(() -> new IOException("Cannot create the TS collection '" + getDisplayName() + "'; check the logs for further details."));
     }
 

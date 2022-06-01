@@ -9,7 +9,7 @@ import demetra.desktop.components.TsSelectionBridge;
 import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.properties.NodePropertySetBuilder;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.util.FrozenTsHelper;
 import demetra.timeseries.*;
 import demetra.tsprovider.DataSourceProvider;
@@ -155,7 +155,7 @@ public class ControlNode {
 
         private Image lookupIcon(int type, boolean opened) {
             demetra.timeseries.Ts ts = getLookup().lookup(demetra.timeseries.Ts.class);
-            return DataSourceProviderBuddySupport.getDefault().getImage(ts.getMoniker(), type, opened);
+            return DataSourceManager.get().getImage(ts.getMoniker(), type, opened);
         }
 
         @Override
@@ -257,7 +257,7 @@ public class ControlNode {
         TsMoniker original = FrozenTsHelper.getOriginalMoniker(moniker);
         if (original != null) {
             String providerName = original.getSource();
-            DataSourceProvider p = TsManager.getDefault().getProvider(DataSourceProvider.class, providerName).orElse(null);
+            DataSourceProvider p = TsManager.get().getProvider(DataSourceProvider.class, providerName).orElse(null);
             b.with(String.class).selectConst("Provider", getProviderDisplayName(p, providerName)).add();
             b.with(String.class).selectConst("Data source", getDataSourceDisplayName(p, original, "unavailable")).add();
         }

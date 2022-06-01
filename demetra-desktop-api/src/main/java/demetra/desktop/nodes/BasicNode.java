@@ -59,7 +59,7 @@ public abstract class BasicNode<LTYPE> extends AbstractNode {
 
     protected Image annotate(Image image) {
         Image result = image;
-        return NodeAnnotator.getDefault().annotateIcon(this, result);
+        return NodeAnnotatorManager.get().annotateIcon(this, result);
     }
 
     @Override
@@ -75,7 +75,7 @@ public abstract class BasicNode<LTYPE> extends AbstractNode {
     @Override
     public String getDisplayName() {
         String result = super.getDisplayName();
-        return NodeAnnotator.getDefault().annotateName(this, result);
+        return NodeAnnotatorManager.get().annotateName(this, result);
     }
 
     public void refreshAnnotation() {

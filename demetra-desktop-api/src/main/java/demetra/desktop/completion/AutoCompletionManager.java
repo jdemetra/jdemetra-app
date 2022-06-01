@@ -12,14 +12,14 @@ import javax.swing.text.JTextComponent;
  *
  */
 @GlobalService
-public final class AutoCompletion {
+public final class AutoCompletionManager {
 
     @NonNull
-    public static AutoCompletion getDefault() {
-        return LazyGlobalService.get(AutoCompletion.class, AutoCompletion::new);
+    public static AutoCompletionManager get() {
+        return LazyGlobalService.get(AutoCompletionManager.class, AutoCompletionManager::new);
     }
 
-    private AutoCompletion() {
+    private AutoCompletionManager() {
     }
 
     private final CollectionSupplier<AutoCompletionSpi> providers = AutoCompletionSpiLoader::get;

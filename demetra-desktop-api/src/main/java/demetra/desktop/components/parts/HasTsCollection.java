@@ -46,18 +46,18 @@ public interface HasTsCollection {
     default void loadAsync(TsInformationType info) {
         TsCollection tss = getTsCollection();
         if (tss != null && tss.stream().filter(s -> !s.getType().encompass(info)).count() > 0) {
-            TsManager.getDefault().loadAsync(tss, info, this::replaceTsCollection);
+            TsManager.get().loadAsync(tss, info, this::replaceTsCollection);
         }
 //        if (tss != null) {
 //            if (tss.getMoniker().isProvided())
 //                if (!tss.getType().encompass(info))
-//                    TsManager.getDefault().loadAsync(tss, info, this::replaceTsCollection);
+//                    TsManager.get().loadAsync(tss, info, this::replaceTsCollection);
 //            else{
 //                if (tss.stream().filter(s->s.getType().encompass(info)).count() ==tss.size())
 //                    return;
 //                TsCollection.Builder newData = tss.toBuilder().clearItems();
 //                for (Ts ts : tss) {
-//                    TsManager.getDefault().loadAsync(ts, info, s->replaceTs(ts, s));
+//                    TsManager.get().loadAsync(ts, info, s->replaceTs(ts, s));
 //                 }
 //            }
 //        }
