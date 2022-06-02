@@ -366,7 +366,7 @@ public abstract class SdmxAutoCompletion {
 
     private static Network getNetwork() {
         return TsManager
-                .getDefault()
+                .get()
                 .getProvider(SdmxWebProvider.class)
                 .map(SdmxWebProvider::getSdmxManager)
                 .map(SdmxWebManager::getNetwork)

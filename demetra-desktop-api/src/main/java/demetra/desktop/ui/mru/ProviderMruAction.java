@@ -17,7 +17,7 @@
 package demetra.desktop.ui.mru;
 
 import demetra.desktop.TsManager;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceLoader;
 import org.openide.awt.*;
@@ -85,7 +85,7 @@ public final class ProviderMruAction extends AbstractAction implements Presenter
                 return;
             }
             this.setEnabled(true);
-            DataSourceProviderBuddySupport support = DataSourceProviderBuddySupport.getDefault();
+            DataSourceManager support = DataSourceManager.get();
             for (SourceId o : MruList.getProvidersInstance()) {
                 JMenuItem item = new JMenuItem(new OpenDataSource(o.getDataSource()));
                 item.setText(o.getLabel());
@@ -102,12 +102,12 @@ public final class ProviderMruAction extends AbstractAction implements Presenter
             }));
         }
 
-        Icon getIcon(DataSourceProviderBuddySupport support, DataSource dataSource) {
+        Icon getIcon(DataSourceManager support, DataSource dataSource) {
             return support.getIcon(dataSource, BeanInfo.ICON_COLOR_16x16, false);
         }
 
         boolean isLoadable(DataSource dataSource) {
-            return TsManager.getDefault()
+            return TsManager.get()
                     .getProvider(DataSourceLoader.class, dataSource)
                     .filter(o -> !o.getDataSources().contains(dataSource))
                     .isPresent();
@@ -124,7 +124,7 @@ public final class ProviderMruAction extends AbstractAction implements Presenter
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            TsManager.getDefault()
+            TsManager.get()
                     .getProvider(DataSourceLoader.class, dataSource)
                     .ifPresent(o -> o.open(dataSource));
         }

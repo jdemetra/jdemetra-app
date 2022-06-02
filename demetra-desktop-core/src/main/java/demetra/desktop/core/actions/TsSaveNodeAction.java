@@ -17,7 +17,7 @@
 package demetra.desktop.core.actions;
 
 import demetra.desktop.NamedService;
-import demetra.desktop.TsActions;
+import demetra.desktop.TsActionManager;
 import demetra.desktop.TsCollectable;
 import demetra.desktop.actions.AbilityNodeAction;
 import demetra.timeseries.TsCollection;
@@ -75,7 +75,7 @@ public final class TsSaveNodeAction extends AbilityNodeAction<TsCollectable> imp
     public static JMenuItem getPopupPresenter(@NonNull List<TsCollectable> data) {
         JMenu result = new JMenu();
         result.setText(Bundle.CTL_TsSaveNodeAction());
-        for (NamedService o : TsActions.getDefault().getSaveActions()) {
+        for (NamedService o : TsActionManager.get().getSaveActions()) {
             JMenuItem item = result.add(new ItemAction(o, data));
             item.setText(o.getDisplayName());
         }
@@ -96,7 +96,7 @@ public final class TsSaveNodeAction extends AbilityNodeAction<TsCollectable> imp
         @Override
         public void actionPerformed(ActionEvent e) {
             List<TsCollection> xdata = data.stream().map(TsCollectable::getTsCollection).collect(Collectors.toList());
-            TsActions.getDefault().saveWith(xdata, o.getName());
+            TsActionManager.get().saveWith(xdata, o.getName());
         }
     }
 }

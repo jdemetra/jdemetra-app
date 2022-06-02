@@ -25,7 +25,7 @@ import demetra.desktop.components.TimeSeriesComponent;
 import demetra.desktop.components.parts.HasColorSchemeResolver;
 import demetra.desktop.components.parts.HasColorSchemeSupport;
 import demetra.desktop.components.parts.HasObsFormatResolver;
-import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransferManager;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.ChartCommand;
 import ec.util.chart.swing.Charts;
@@ -357,7 +357,7 @@ public final class JMarginView extends JComponent implements TimeSeriesComponent
                         Ts.of("lower", data.lower),
                         Ts.of("upper", data.upper)
                 ).collect(TsCollection.toTsCollection());
-                Transferable t = DataTransfer.getDefault().fromTsCollection(col);
+                Transferable t = DataTransferManager.get().fromTsCollection(col);
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
             }
         }).setText("Copy all series");

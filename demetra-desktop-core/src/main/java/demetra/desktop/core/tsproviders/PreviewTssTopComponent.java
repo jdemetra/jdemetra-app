@@ -119,7 +119,7 @@ public final class PreviewTssTopComponent extends TopComponent implements Lookup
                             .stream()
                             .filter(o -> o instanceof SeriesNode)
                             .map(o -> o.getLookup().lookup(DataSet.class))
-                            .map(o -> TsManager.getDefault().getTs(o, TsInformationType.None))
+                            .map(o -> TsManager.get().getTs(o, TsInformationType.None))
                             .filter(Optional::isPresent)
                             .map(Optional::get)
                             .collect(TsCollection.toTsCollection())

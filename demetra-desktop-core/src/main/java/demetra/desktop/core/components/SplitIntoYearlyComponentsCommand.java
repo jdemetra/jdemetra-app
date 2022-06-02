@@ -4,7 +4,7 @@ import demetra.data.Range;
 import demetra.desktop.components.ComponentCommand;
 import demetra.desktop.components.TsSelectionBridge;
 import demetra.desktop.components.parts.HasTsCollection;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.timeseries.*;
 import demetra.tsprovider.util.ObsFormat;
 import demetra.desktop.core.tools.JTsChartTopComponent;
@@ -41,7 +41,7 @@ public final class SplitIntoYearlyComponentsCommand extends ComponentCommand<Has
         c.getChart().setObsFormat(ObsFormat.builder().locale(null).dateTimePattern("MMM").build());
         c.getChart().setTsUpdateMode(HasTsCollection.TsUpdateMode.None);
         c.getChart().setTsCollection(split(ts));
-        c.setIcon(DataSourceProviderBuddySupport.getDefault().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
+        c.setIcon(DataSourceManager.get().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
         c.open();
         c.requestActive();
     }

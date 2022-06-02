@@ -16,7 +16,7 @@
  */
 package demetra.desktop.components;
 
-import demetra.desktop.completion.AutoCompletion;
+import demetra.desktop.completion.AutoCompletionManager;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
 import ec.util.various.swing.TextPrompt;
@@ -55,7 +55,7 @@ public final class JCharsetField extends JComponent {
     }
 
     private void initComponents() {
-        AutoCompletion.getDefault().bind(Charset.class, textField);
+        AutoCompletionManager.get().bind(Charset.class, textField);
 
         new TextPrompt(Charset.defaultCharset().name(), textField).setEnabled(false);
 

@@ -11,16 +11,16 @@ import java.util.Iterator;
 import java.util.Set;
 
 @GlobalService
-public final class StarList implements Iterable<DataSource> {
+public final class StarListManager implements Iterable<DataSource> {
 
     @NonNull
-    public static StarList getDefault() {
-        return LazyGlobalService.get(StarList.class, StarList::new);
+    public static StarListManager get() {
+        return LazyGlobalService.get(StarListManager.class, StarListManager::new);
     }
 
     private final Set<DataSource> list;
 
-    private StarList() {
+    private StarListManager() {
         list = new HashSet<>();
     }
 

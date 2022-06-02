@@ -33,7 +33,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
         backend = NetBeansServiceBackend.class,
         singleton = true
 )
-public interface TsActionsOpenSpi extends NamedService {
+public interface TsActionOpenSpi extends NamedService {
 
     @OnEDT
     void open(@NonNull Ts ts);

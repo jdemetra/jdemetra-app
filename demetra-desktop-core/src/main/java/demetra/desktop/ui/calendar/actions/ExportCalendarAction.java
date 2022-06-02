@@ -18,7 +18,7 @@ package demetra.desktop.ui.calendar.actions;
 
 import demetra.desktop.Config;
 import demetra.desktop.interchange.Exportable;
-import demetra.desktop.interchange.Interchange;
+import demetra.desktop.interchange.InterchangeManager;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,7 +54,7 @@ public final class ExportCalendarAction extends NodeAction implements Presenter.
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = Interchange.getDefault().newExportMenu(getExportables(getActivatedNodes()));
+        JMenuItem result = InterchangeManager.get().newExportMenu(getExportables(getActivatedNodes()));
         result.setText(Bundle.CTL_ExportCalendarAction());
         return result;
     }

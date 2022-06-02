@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 public final class TsManager implements DataSourceFactory, Closeable {
 
     @NonNull
-    public static TsManager getDefault() {
+    public static TsManager get() {
         return LazyGlobalService.get(TsManager.class, TsManager::new);
     }
 

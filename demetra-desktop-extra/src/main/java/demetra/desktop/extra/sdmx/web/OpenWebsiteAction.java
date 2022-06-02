@@ -57,7 +57,7 @@ public final class OpenWebsiteAction extends AbilityNodeAction<DataSource> imple
     }
 
     private URL getWebsite(DataSource dataSource) {
-        return TsManager.getDefault()
+        return TsManager.get()
                 .getProvider(SdmxWebProvider.class, dataSource)
                 .map(provider -> getWebsite(provider, dataSource))
                 .orElse(null);

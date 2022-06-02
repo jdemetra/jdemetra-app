@@ -20,7 +20,7 @@ import com.toedter.components.JSpinField;
 import demetra.desktop.components.ComponentCommand;
 import demetra.desktop.components.JTsGrowthChart;
 import demetra.desktop.components.TsSelectionBridge;
-import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.timeseries.TsCollection;
 import ec.util.various.swing.JCommand;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -73,7 +73,7 @@ public class TsGrowthChartCommands {
         @Override
         public void execute(JTsGrowthChart c) throws Exception {
             TsCollection col = TsCollection.of(c.computeGrowthData());
-            Transferable transferable = DataTransfer.getDefault().fromTsCollection(col);
+            Transferable transferable = DataTransferManager.get().fromTsCollection(col);
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
         }
     }

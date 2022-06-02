@@ -47,10 +47,10 @@ final class HtmlViewUI implements InternalUI<JHtmlView> {
         JHtmlPane result = new JHtmlPane();
         result.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         result.setComponentPopupMenu(createMenu(result).getPopupMenu());
-        result.setZoomRatio(DemetraUI.getDefault().getHtmlZoomRatio());
+        result.setZoomRatio(DemetraUI.get().getHtmlZoomRatio());
         DEFAULT_STYLE_CMD.executeSafely(result);
-        DemetraUI.getDefault()
-                .addWeakPropertyChangeListener(DemetraUI.HTML_ZOOM_RATIO_PROPERTY, o -> result.setZoomRatio(DemetraUI.getDefault().getHtmlZoomRatio()));
+        DemetraUI.get()
+                .addWeakPropertyChangeListener(DemetraUI.HTML_ZOOM_RATIO_PROPERTY, o -> result.setZoomRatio(DemetraUI.get().getHtmlZoomRatio()));
         return result;
     }
 

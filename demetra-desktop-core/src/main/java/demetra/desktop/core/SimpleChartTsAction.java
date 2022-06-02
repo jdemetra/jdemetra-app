@@ -16,11 +16,10 @@
  */
 package demetra.desktop.core;
 
-import demetra.desktop.TsActionsOpenSpi;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.parts.HasChart;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.util.NbComponents;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
@@ -33,13 +32,14 @@ import nbbrd.service.ServiceProvider;
 
 import java.beans.BeanInfo;
 import java.util.Optional;
+import demetra.desktop.TsActionOpenSpi;
 
 /**
  * @author Philippe Charles
  */
 @DirectImpl
 @ServiceProvider
-public final class SimpleChartTsAction implements TsActionsOpenSpi {
+public final class SimpleChartTsAction implements TsActionOpenSpi {
 
     @Override
     public String getName() {
@@ -67,7 +67,7 @@ public final class SimpleChartTsAction implements TsActionsOpenSpi {
         JTsChartTopComponent result = new JTsChartTopComponent();
         result.setName(topComponentName);
         result.setDisplayName(getDisplayName(ts));
-        result.setIcon(DataSourceProviderBuddySupport.getDefault().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
+        result.setIcon(DataSourceManager.get().getImage(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
 
         TsCollection col = TsCollection.of(ts);
 
@@ -78,12 +78,12 @@ public final class SimpleChartTsAction implements TsActionsOpenSpi {
         result.getChart().setLinesThickness(HasChart.LinesThickness.Thick);
         result.open();
 
-        TsManager.getDefault().loadAsync(col, TsInformationType.All, result.getChart()::replaceTsCollection);
+        TsManager.get().loadAsync(col, TsInformationType.All, result.getChart()::replaceTsCollection);
         return result;
     }
 
     private static String getDisplayName(Ts ts) {
-        Optional<DataSourceProvider> provider = TsManager.getDefault().getProvider(DataSourceProvider.class, ts.getMoniker());
+        Optional<DataSourceProvider> provider = TsManager.get().getProvider(DataSourceProvider.class, ts.getMoniker());
         if (provider.isPresent()) {
             Optional<DataSet> dataSet = provider.get().toDataSet(ts.getMoniker());
             if (dataSet.isPresent()) {

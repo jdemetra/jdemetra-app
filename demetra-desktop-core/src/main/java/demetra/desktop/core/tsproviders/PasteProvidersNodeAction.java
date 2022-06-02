@@ -17,7 +17,7 @@
 package demetra.desktop.core.tsproviders;
 
 import demetra.desktop.TsManager;
-import demetra.desktop.datatransfer.DataSourceTransfer;
+import demetra.desktop.datatransfer.DataSourceTransferManager;
 import demetra.desktop.datatransfer.DataTransfers;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceLoader;
@@ -36,21 +36,21 @@ public final class PasteProvidersNodeAction extends NodeAction {
     public static final String ID = "demetra.desktop.core.tsproviders.PasteProvidersAction";
 
     private static void pasteDataSource(DataSource source) {
-        TsManager.getDefault()
+        TsManager.get()
                 .getProvider(DataSourceLoader.class, source)
                 .ifPresent(loader -> loader.open(source));
     }
 
     @Override
     protected void performAction(Node[] activatedNodes) {
-        DataSourceTransfer.getDefault()
+        DataSourceTransferManager.get()
                 .getDataSource(DataTransfers.systemClipboardAsTransferable())
                 .ifPresent(PasteProvidersNodeAction::pasteDataSource);
     }
 
     @Override
     protected boolean enable(Node[] activatedNodes) {
-        return DataSourceTransfer.getDefault().canHandle(DataTransfers.systemClipboardAsTransferable());
+        return DataSourceTransferManager.get().canHandle(DataTransfers.systemClipboardAsTransferable());
     }
 
     @Override

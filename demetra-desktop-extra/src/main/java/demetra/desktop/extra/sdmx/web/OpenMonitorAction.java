@@ -57,7 +57,7 @@ public final class OpenMonitorAction extends AbilityNodeAction<DataSource> imple
     }
 
     private URL getMonitorWebsite(DataSource dataSource) {
-        return TsManager.getDefault()
+        return TsManager.get()
                 .getProvider(SdmxWebProvider.class, dataSource)
                 .map(provider -> getMonitorWebsite(provider, dataSource))
                 .orElse(null);

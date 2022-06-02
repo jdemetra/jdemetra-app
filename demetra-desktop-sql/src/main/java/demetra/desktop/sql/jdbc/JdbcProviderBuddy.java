@@ -105,7 +105,7 @@ public final class JdbcProviderBuddy implements DataSourceProviderBuddy, Configu
     }
 
     private Optional<JdbcProvider> getProvider() {
-        return TsManager.getDefault().getProvider(JdbcProvider.class, SOURCE);
+        return TsManager.get().getProvider(JdbcProvider.class, SOURCE);
     }
 
     // this overrides default connection supplier since we don't have JNDI in JavaSE

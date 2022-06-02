@@ -6,7 +6,7 @@ package demetra.desktop.core.star;
 
 import demetra.desktop.DemetraIcons;
 import demetra.desktop.nodes.NodeAnnotatorSpi;
-import demetra.desktop.star.StarList;
+import demetra.desktop.star.StarListManager;
 import demetra.tsprovider.DataSource;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
@@ -22,7 +22,7 @@ public class StarAnnotator implements NodeAnnotatorSpi {
 
     boolean isStarred(Node node) {
         DataSource dataSource = node.getLookup().lookup(DataSource.class);
-        return dataSource != null && StarList.getDefault().isStarred(dataSource);
+        return dataSource != null && StarListManager.get().isStarred(dataSource);
     }
 
     @Override

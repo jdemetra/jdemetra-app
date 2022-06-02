@@ -56,7 +56,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
 
 import demetra.desktop.components.TsIdentifier;
-import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.desktop.design.SwingComponent;
 import demetra.desktop.design.SwingProperty;
 import demetra.timeseries.Ts;
@@ -512,7 +512,7 @@ public final class JTsCheckLastList extends JComponent implements TimeSeriesComp
 
         @Override
         public void execute(JTsCheckLastList component) throws Exception {
-            Transferable t = DataTransfer.getDefault().fromTable(toTable(component));
+            Transferable t = DataTransferManager.get().fromTable(toTable(component));
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
     }

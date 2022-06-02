@@ -41,6 +41,6 @@ public final class JResidualsView extends JComponent implements TimeSeriesCompon
         this.tsData = HasTsDataSupport.of(this::firePropertyChange);
         this.obsFormat = HasObsFormatSupport.of(this::firePropertyChange);
 
-        ComponentBackend.getDefault().install(this);
+        ComponentBackendManager.get().install(this);
     }
 }

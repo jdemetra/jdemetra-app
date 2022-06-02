@@ -16,7 +16,7 @@
  */
 package demetra.desktop.properties;
 
-import demetra.desktop.completion.AutoCompletion;
+import demetra.desktop.completion.AutoCompletionManager;
 import demetra.desktop.design.SwingEditorAttribute;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.swing.JAutoCompletion;
@@ -122,7 +122,7 @@ public final class AutoCompletedPropertyEditor extends AbstractExPropertyEditor 
 
     private static void applyAutoCompletion(PropertyEnv env, JTextField component) {
         JAutoCompletion completion = attr(env, SERVICE_PATH_ATTRIBUTE, String.class)
-                .map(servicePath -> AutoCompletion.getDefault().bind(servicePath, component))
+                .map(servicePath -> AutoCompletionManager.get().bind(servicePath, component))
                 .orElseGet(() -> new JAutoCompletion(component));
         attr(env, AUTO_FOCUS_ATTRIBUTE, Boolean.class).ifPresent(completion::setAutoFocus);
         attr(env, DELAY_ATTRIBUTE, Integer.class).ifPresent(completion::setDelay);

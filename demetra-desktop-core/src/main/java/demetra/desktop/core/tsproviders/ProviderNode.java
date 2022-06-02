@@ -21,10 +21,10 @@ import demetra.desktop.TsManager;
 import demetra.desktop.core.actions.ConfigureNodeAction;
 import demetra.desktop.core.actions.OpenNodeAction;
 import demetra.desktop.core.interchange.ImportNodeAction;
-import demetra.desktop.datatransfer.DataSourceTransfer;
+import demetra.desktop.datatransfer.DataSourceTransferManager;
 import demetra.desktop.interchange.Importable;
 import demetra.desktop.nodes.Nodes;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.tsproviders.DataSourceProviderBuddyUtil;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceListener;
@@ -80,7 +80,7 @@ public final class ProviderNode extends AbstractNode {
                 abilities.add(new OpenableImpl());
                 abilities.add(new ImportableDataSource());
             }
-            DataSourceProviderBuddySupport.getDefault()
+            DataSourceManager.get()
                     .getConfigurable(provider.getSource())
                     .ifPresent(abilities::add);
         }
@@ -96,7 +96,7 @@ public final class ProviderNode extends AbstractNode {
 
     private Image lookupIcon(int type, boolean opened) {
         DataSourceProvider o = getLookup().lookup(DataSourceProvider.class);
-        return DataSourceProviderBuddySupport.getDefault().getImage(o.getSource(), type, opened);
+        return DataSourceManager.get().getImage(o.getSource(), type, opened);
     }
 
     @Override
@@ -112,13 +112,13 @@ public final class ProviderNode extends AbstractNode {
     @Override
     protected Sheet createSheet() {
         DataSourceProvider o = getLookup().lookup(DataSourceProvider.class);
-        return DataSourceProviderBuddySupport.getDefault().getSheet(o.getSource());
+        return DataSourceManager.get().getSheet(o.getSource());
     }
 
     @Override
     public PasteType getDropType(Transferable t, int action, int index) {
         DataSourceLoader loader = getLookup().lookup(DataSourceLoader.class);
-        if (loader != null && DataSourceTransfer.getDefault().canHandle(t, loader.getSource())) {
+        if (loader != null && DataSourceTransferManager.get().canHandle(t, loader.getSource())) {
             return new PasteTypeImpl(t, loader);
         }
         return null;
@@ -199,7 +199,7 @@ public final class ProviderNode extends AbstractNode {
         public void open() {
             DataSourceLoader loader = getLookup().lookup(DataSourceLoader.class);
             Object bean = loader.newBean();
-            if (DataSourceProviderBuddySupport.getDefault().getBeanEditor(loader.getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
+            if (DataSourceManager.get().getBeanEditor(loader.getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
                 loader.open(loader.encodeBean(bean));
             }
         }
@@ -215,7 +215,7 @@ public final class ProviderNode extends AbstractNode {
         @Override
         public void importConfig(Config config) throws IllegalArgumentException {
             DataSource dataSource = DataSourceProviderBuddyUtil.getDataSource(config);
-            TsManager.getDefault()
+            TsManager.get()
                     .getProvider(DataSourceLoader.class, dataSource)
                     .ifPresent(provider -> {
                         provider.open(dataSource);
@@ -237,7 +237,7 @@ public final class ProviderNode extends AbstractNode {
 
         @Override
         public Transferable paste() throws IOException {
-            DataSourceTransfer.getDefault().getDataSource(t, loader.getSource())
+            DataSourceTransferManager.get().getDataSource(t, loader.getSource())
                     .ifPresent(loader::open);
             return null;
         }

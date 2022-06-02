@@ -71,7 +71,7 @@ public final class ColorSchemeAutoCompletionService implements AutoCompletionSpi
 
     private static List<ColorScheme> getColorSchemes(String term) {
         Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
-        return ColorSchemeManager.getDefault().getColorSchemes().stream()
+        return ColorSchemeManager.get().getColorSchemes().stream()
                 .filter(o -> filter.test(o.getName()) || filter.test(o.getDisplayName()))
                 .sorted(Comparator.comparing(ColorScheme::getDisplayName))
                 .collect(Collectors.toList());

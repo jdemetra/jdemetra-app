@@ -80,7 +80,7 @@ public final class GlobalServiceProcessor extends CustomProcessor {
         return ElementFilter
                 .methodsIn(typeElement.getEnclosedElements())
                 .stream()
-                .filter(x -> x.getSimpleName().toString().equals("getDefault"))
+                .filter(x -> x.getSimpleName().toString().equals("get"))
                 .findFirst();
     }
 

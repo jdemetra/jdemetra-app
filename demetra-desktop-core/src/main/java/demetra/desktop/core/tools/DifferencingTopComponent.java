@@ -12,8 +12,8 @@ import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.components.tools.JAutoCorrelationsView;
 import demetra.desktop.components.tools.PeriodogramView;
-import demetra.desktop.datatransfer.DataTransfer;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.datatransfer.DataTransferManager;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.ui.processing.TsTopComponent;
 import demetra.timeseries.Ts;
@@ -169,7 +169,7 @@ public final class DifferencingTopComponent extends TopComponent  implements Has
             dropDataLabel.setVisible(false);
             tsLabel.setText(ts.getName());
             demetra.timeseries.TsMoniker moniker = ts.getMoniker();
-            tsLabel.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false));
+            tsLabel.setIcon(DataSourceManager.get().getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false));
             tsLabel.setToolTipText(tsLabel.getText() + (moniker.getSource() != null ? (" (" + moniker.getSource() + ")") : ""));
             tsLabel.setVisible(true);
         }
@@ -206,12 +206,12 @@ public final class DifferencingTopComponent extends TopComponent  implements Has
 
         @Override
         public boolean canImport(TransferHandler.TransferSupport support) {
-            return DataTransfer.getDefault().canImport(support.getDataFlavors());
+            return DataTransferManager.get().canImport(support.getDataFlavors());
         }
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            Optional<demetra.timeseries.Ts> s = DataTransfer.getDefault().toTs(support.getTransferable());
+            Optional<demetra.timeseries.Ts> s = DataTransferManager.get().toTs(support.getTransferable());
             if (s.isPresent()) {
                 setTs(s.get());
                 return true;

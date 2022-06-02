@@ -29,7 +29,7 @@ import java.util.List;
 @GlobalService
 public final class CheckLastReportManager {
 
-    public static CheckLastReportManager getDefault() {
+    public static CheckLastReportManager get() {
         return LazyGlobalService.get(CheckLastReportManager.class, CheckLastReportManager::new);
     }
 

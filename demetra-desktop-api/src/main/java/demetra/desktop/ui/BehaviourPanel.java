@@ -5,7 +5,7 @@
 package demetra.desktop.ui;
 
 import demetra.desktop.DemetraBehaviour;
-import demetra.desktop.TsActions;
+import demetra.desktop.TsActionManager;
 import demetra.desktop.concurrent.ThreadPoolSize;
 import demetra.desktop.concurrent.ThreadPriority;
 import java.awt.event.ItemEvent;
@@ -179,11 +179,11 @@ final class BehaviourPanel extends javax.swing.JPanel implements ItemListener{
     }// </editor-fold>//GEN-END:initComponents
 
     void load() {
-        DemetraBehaviour db = DemetraBehaviour.getDefault();
+        DemetraBehaviour db = DemetraBehaviour.get();
         showUnavailableCheckBox.setSelected(db.isShowUnavailableTsProviders());
         persistToolsContent.setSelected(db.isPersistToolsContent());
         persistOpenDataSources.setSelected(db.isPersistOpenedDataSources());
-        tsActionChoicePanel.setContent(TsActions.getDefault().getOpenActions());
+        tsActionChoicePanel.setContent(TsActionManager.get().getOpenActions());
         tsActionChoicePanel.setSelectedServiceName(db.getTsActionName());
 
         batchPoolSizeCombo.setModel(new DefaultComboBoxModel(ThreadPoolSize.values()));
@@ -193,7 +193,7 @@ final class BehaviourPanel extends javax.swing.JPanel implements ItemListener{
     }
 
     void store() {
-        DemetraBehaviour db = DemetraBehaviour.getDefault();
+        DemetraBehaviour db = DemetraBehaviour.get();
         db.setShowUnavailableTsProviders(showUnavailableCheckBox.isSelected());
         db.setPersistToolsContent(persistToolsContent.isSelected());
         db.setPersistOpenedDataSources(persistOpenDataSources.isSelected());

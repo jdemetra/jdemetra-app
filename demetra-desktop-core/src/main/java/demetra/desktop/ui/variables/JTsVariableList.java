@@ -20,7 +20,7 @@ import demetra.desktop.design.SwingAction;
 import demetra.desktop.DemetraBehaviour;
 import demetra.desktop.NamedService;
 import demetra.desktop.components.parts.HasTsActionSupport;
-import demetra.desktop.TsActions;
+import demetra.desktop.TsActionManager;
 import demetra.desktop.TsManager;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.util.ActionMaps;
@@ -52,7 +52,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import demetra.desktop.components.parts.HasTsAction;
 import ec.util.table.swing.JTables;
-import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.desktop.design.SwingComponent;
 import demetra.timeseries.DynamicTsDataSupplier;
 import demetra.timeseries.StaticTsDataSupplier;
@@ -192,7 +192,7 @@ public final class JTsVariableList extends JComponent implements HasTsAction {
 
         @Override
         public boolean canImport(TransferHandler.TransferSupport support) {
-            boolean result = DataTransfer.getDefault().canImport(support.getTransferable());
+            boolean result = DataTransferManager.get().canImport(support.getTransferable());
             if (result && support.isDrop()) {
                 support.setDropAction(COPY);
             }
@@ -201,9 +201,9 @@ public final class JTsVariableList extends JComponent implements HasTsAction {
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            return DataTransfer.getDefault()
+            return DataTransferManager.get()
                     .toTsCollectionStream(support.getTransferable())
-                    .map(col -> col.load(TsInformationType.All, TsManager.getDefault()))
+                    .map(col -> col.load(TsInformationType.All, TsManager.get()))
                     .filter(col -> !col.isEmpty())
                     .peek(JTsVariableList.this::appendTsVariables)
                     .count() > 0;
@@ -434,11 +434,11 @@ public final class JTsVariableList extends JComponent implements HasTsAction {
         public void execute(JTsVariableList c) throws Exception {
             String actionName = c.getTsAction();
             if (actionName == null) {
-                actionName = DemetraBehaviour.getDefault().getTsActionName();
+                actionName = DemetraBehaviour.get().getTsActionName();
             }
             String selectedVariable = getSelectedVariable(c);
             if (selectedVariable != null)
-            TsActions.getDefault().openWith(toTs(c.variables, selectedVariable), actionName);
+            TsActionManager.get().openWith(toTs(c.variables, selectedVariable), actionName);
         }
 
         @Override
@@ -479,7 +479,7 @@ public final class JTsVariableList extends JComponent implements HasTsAction {
 
         @Override
         public void execute(JTsVariableList c) throws Exception {
-            TsActions.getDefault().openWith(toTs(c.variables, getSelectedVariable(c)), tsAction.getName());
+            TsActionManager.get().openWith(toTs(c.variables, getSelectedVariable(c)), tsAction.getName());
         }
     }
 

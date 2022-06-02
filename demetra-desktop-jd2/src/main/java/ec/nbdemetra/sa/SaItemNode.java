@@ -8,7 +8,7 @@ package ec.nbdemetra.sa;
 import demetra.bridge.TsConverter;
 import demetra.desktop.nodes.ControlNode;
 import demetra.desktop.properties.NodePropertySetBuilder;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import ec.nbdemetra.ui.NbUtilities;
 import ec.tss.sa.SaItem;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
@@ -34,7 +34,7 @@ public class SaItemNode extends AbstractNode {
 
     private Image lookupIcon(int type, boolean opened) {
         SaItem item = getLookup().lookup(SaItem.class);
-        return DataSourceProviderBuddySupport.getDefault().getImage(TsConverter.toTsMoniker(item.getMoniker()), type, opened);
+        return DataSourceManager.get().getImage(TsConverter.toTsMoniker(item.getMoniker()), type, opened);
     }
 
     @Override

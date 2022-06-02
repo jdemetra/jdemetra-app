@@ -17,7 +17,6 @@
 package ec.nbdemetra.common;
 
 import demetra.desktop.Config;
-import demetra.desktop.TsActionsSaveSpi;
 import demetra.desktop.TsManager;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
@@ -44,13 +43,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
+import demetra.desktop.TsActionSaveSpi;
 
 /**
  * @author Philippe Charles
  * @since 2.2.0
  */
 @ServiceProvider
-public final class TxtTsSave implements TsActionsSaveSpi {
+public final class TxtTsSave implements TsActionSaveSpi {
 
     private final FileChooserBuilder fileChooser;
     private final OptionsBean options;
@@ -104,7 +104,7 @@ public final class TxtTsSave implements TsActionsSaveSpi {
         ph.progress("Loading time series");
         TsCollection content = data
                 .stream()
-                .map(col -> col.load(TsInformationType.All, TsManager.getDefault()))
+                .map(col -> col.load(TsInformationType.All, TsManager.get()))
                 .flatMap(TsCollection::stream)
                 .collect(TsCollection.toTsCollection());
 

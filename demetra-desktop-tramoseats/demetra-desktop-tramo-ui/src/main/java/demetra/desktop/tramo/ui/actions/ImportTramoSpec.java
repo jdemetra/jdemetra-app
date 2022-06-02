@@ -18,7 +18,7 @@ package demetra.desktop.tramo.ui.actions;
 
 import demetra.desktop.Config;
 import demetra.desktop.interchange.Importable;
-import demetra.desktop.interchange.Interchange;
+import demetra.desktop.interchange.InterchangeManager;
 import demetra.desktop.nodes.SingleNodeAction;
 import demetra.desktop.tramo.documents.TramoSpecManager;
 import demetra.desktop.workspace.WorkspaceFactory;
@@ -66,7 +66,7 @@ public class ImportTramoSpec extends SingleNodeAction<Node> implements Presenter
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = Interchange.getDefault().newImportMenu(getImportables());
+        JMenuItem result = InterchangeManager.get().newImportMenu(getImportables());
         result.setText(Bundle.CTL_ImportTramoSpec());
         return result;
     }

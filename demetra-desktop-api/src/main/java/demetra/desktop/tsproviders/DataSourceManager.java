@@ -59,18 +59,18 @@ import org.openide.nodes.Node;
  * @author Philippe Charles
  */
 @GlobalService
-public final class DataSourceProviderBuddySupport {
+public final class DataSourceManager {
 
     @NonNull
-    public static DataSourceProviderBuddySupport getDefault() {
-        return LazyGlobalService.get(DataSourceProviderBuddySupport.class, DataSourceProviderBuddySupport::new);
+    public static DataSourceManager get() {
+        return LazyGlobalService.get(DataSourceManager.class, DataSourceManager::new);
     }
 
     private final CollectionSupplier<DataSourceProviderBuddy> providers;
     private final ImageStrategy images;
     private final SheetStrategy sheets;
 
-    private DataSourceProviderBuddySupport() {
+    private DataSourceManager() {
         this.providers = DataSourceProviderBuddyLoader::get;
         this.images = new DefaultImageStrategy();
         this.sheets = new DefaultSheetStrategy();
@@ -337,7 +337,7 @@ public final class DataSourceProviderBuddySupport {
         }
 
         private static List<Sheet.Set> sheetSetsOfProvider(String providerName) {
-            return TsManager.getDefault()
+            return TsManager.get()
                     .getProvider(DataSourceProvider.class, providerName)
                     .map(DefaultSheetStrategy::sheetSetsOfProvider)
                     .orElseGet(Collections::emptyList);
@@ -392,7 +392,7 @@ public final class DataSourceProviderBuddySupport {
             NodePropertySetBuilder b = new NodePropertySetBuilder().name("DataSource");
             b.with(String.class).select(dataSource, "getProviderName", null).display("Source").add();
             b.with(String.class).select(dataSource, "getVersion", null).display("Version").add();
-            Optional<DataSourceLoader> loader = TsManager.getDefault().getProvider(DataSourceLoader.class, dataSource);
+            Optional<DataSourceLoader> loader = TsManager.get().getProvider(DataSourceLoader.class, dataSource);
             if (loader.isPresent()) {
                 Object bean = loader.get().decodeBean(dataSource);
                 beanFunc.apply(bean).stream()

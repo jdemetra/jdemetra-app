@@ -93,6 +93,6 @@ public final class SdmxFileProviderBuddy implements DataSourceProviderBuddy, Con
     }
 
     private static Optional<SdmxFileProvider> lookupProvider() {
-        return TsManager.getDefault().getProvider(SdmxFileProvider.class);
+        return TsManager.get().getProvider(SdmxFileProvider.class);
     }
 }

@@ -99,7 +99,7 @@
 //        ph.progress("Loading time series");
 //        TsCollection content = data
 //                .stream()
-//                .map(col -> col.load(TsInformationType.All, TsManager.getDefault()))
+//                .map(col -> col.load(TsInformationType.All, TsManager.get()))
 //                .flatMap(TsCollection::stream)
 //                .collect(TsCollection.toTsCollection());
 //

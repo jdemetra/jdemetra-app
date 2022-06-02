@@ -54,7 +54,7 @@ public final class FrozenTsHelper {
         if (moniker.isProvided()) {
             return moniker;
         }
-        demetra.timeseries.Ts ts = TsManager.getDefault().makeTs(moniker, TsInformationType.MetaData);
+        demetra.timeseries.Ts ts = TsManager.get().makeTs(moniker, TsInformationType.MetaData);
         if (ts == null) {
             return null;
         }

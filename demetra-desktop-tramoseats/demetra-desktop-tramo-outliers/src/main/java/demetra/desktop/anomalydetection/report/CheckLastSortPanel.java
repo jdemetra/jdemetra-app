@@ -35,7 +35,7 @@ public class CheckLastSortPanel extends javax.swing.JPanel {
     }
     
     private void fillList() {
-        List<CheckLastReportFactory> factories = CheckLastReportManager.getDefault().getFactories();        
+        List<CheckLastReportFactory> factories = CheckLastReportManager.get().getFactories();        
         DefaultComboBoxModel<CheckLastReportFactory> model = new DefaultComboBoxModel(factories.toArray());
         reportCombo.setModel(model);
     }

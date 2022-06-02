@@ -35,7 +35,7 @@ public final class JHtmlView extends JComponent {
     private String html = DEFAULT_HTML;
 
     public JHtmlView() {
-        ComponentBackend.getDefault().install(this);
+        ComponentBackendManager.get().install(this);
         applyDesignTimeProperties();
     }
 

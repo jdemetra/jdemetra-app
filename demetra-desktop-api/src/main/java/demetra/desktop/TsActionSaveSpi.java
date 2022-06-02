@@ -24,7 +24,7 @@ import java.util.List;
         backend = NetBeansServiceBackend.class,
         singleton = true
 )
-public interface TsActionsSaveSpi extends NamedService {
+public interface TsActionSaveSpi extends NamedService {
 
     @OnEDT
     void save(@NonNull List<TsCollection> input);

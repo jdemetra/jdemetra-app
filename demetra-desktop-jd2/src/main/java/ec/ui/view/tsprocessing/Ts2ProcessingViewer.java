@@ -7,7 +7,7 @@ package ec.ui.view.tsprocessing;
 import demetra.bridge.TsConverter;
 import demetra.desktop.TsManager;
 import demetra.desktop.datatransfer.DataTransfer;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.timeseries.TsInformationType;
 import ec.tss.Ts;
 import ec.tss.documents.MultiTsDocument;
@@ -83,7 +83,7 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
         } else {
             dropDataLabely.setVisible(false);
             demetra.timeseries.TsMoniker monikery = TsConverter.toTsMoniker(input[0].getMoniker());
-            tsLabely.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(monikery, BeanInfo.ICON_COLOR_16x16, false));
+            tsLabely.setIcon(DataSourceManager.get().getIcon(monikery, BeanInfo.ICON_COLOR_16x16, false));
             tsLabely.setToolTipText(tsLabely.getText() + (monikery.getSource() != null ? (" (" + monikery.getSource() + ")") : ""));
             tsLabely.setVisible(true);
         }
@@ -93,7 +93,7 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
         } else {
             dropDataLabelz.setVisible(false);
             demetra.timeseries.TsMoniker monikerz = TsConverter.toTsMoniker(input[1].getMoniker());
-            tsLabelz.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(monikerz, BeanInfo.ICON_COLOR_16x16, false));
+            tsLabelz.setIcon(DataSourceManager.get().getIcon(monikerz, BeanInfo.ICON_COLOR_16x16, false));
             tsLabelz.setToolTipText(tsLabelz.getText() + (monikerz.getSource() != null ? (" (" + monikerz.getSource() + ")") : ""));
             tsLabelz.setVisible(true);
         }
@@ -130,7 +130,7 @@ public class Ts2ProcessingViewer extends DefaultProcessingViewer<MultiTsDocument
                     input = new Ts[2];
                 } else
                     input = input.clone();
-                input[pos] = TsConverter.fromTs(ts.get().load(TsInformationType.Data, TsManager.getDefault()));
+                input[pos] = TsConverter.fromTs(ts.get().load(TsInformationType.Data, TsManager.get()));
                 getDocument().setInput(input);
                 refreshAll();
                 return true;

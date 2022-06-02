@@ -17,7 +17,7 @@
 package demetra.desktop.core.interchange;
 
 import demetra.desktop.actions.Configurable;
-import demetra.desktop.interchange.Interchange;
+import demetra.desktop.interchange.InterchangeManager;
 import demetra.desktop.nodes.AbstractNodeBuilder;
 import demetra.desktop.nodes.NamedServiceNode;
 import org.openide.explorer.ExplorerManager;
@@ -92,7 +92,7 @@ final class InterchangePanel extends javax.swing.JPanel implements ExplorerManag
     }//GEN-LAST:event_editButtonActionPerformed
 
     void load() {
-        Stream<NamedServiceNode> nodes = Interchange.getDefault().all().stream().map(NamedServiceNode::new);
+        Stream<NamedServiceNode> nodes = InterchangeManager.get().all().stream().map(NamedServiceNode::new);
         em.setRootContext(new AbstractNodeBuilder().add(nodes).name("Interchange broker").build());
     }
 

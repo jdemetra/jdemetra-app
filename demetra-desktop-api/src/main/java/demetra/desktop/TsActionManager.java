@@ -38,20 +38,20 @@ import java.util.function.Predicate;
  * @author Philippe Charles
  */
 @GlobalService
-public final class TsActions {
+public final class TsActionManager {
 
     @NonNull
-    public static TsActions getDefault() {
-        return LazyGlobalService.get(TsActions.class, TsActions::new);
+    public static TsActionManager get() {
+        return LazyGlobalService.get(TsActionManager.class, TsActionManager::new);
     }
 
-    private TsActions() {
+    private TsActionManager() {
     }
 
     public static final String NO_ACTION = "";
 
-    private final CollectionSupplier<TsActionsOpenSpi> openActions = TsActionsOpenSpiLoader::get;
-    private final CollectionSupplier<TsActionsSaveSpi> saveActions = TsActionsSaveSpiLoader::get;
+    private final CollectionSupplier<TsActionOpenSpi> openActions = TsActionOpenSpiLoader::get;
+    private final CollectionSupplier<TsActionSaveSpi> saveActions = TsActionSaveSpiLoader::get;
 
     @NonNull
     public Collection<? extends NamedService> getOpenActions() {
@@ -71,7 +71,7 @@ public final class TsActions {
             return;
         }
 
-        Optional<? extends TsActionsOpenSpi> action = getByName(openActions, actionName);
+        Optional<? extends TsActionOpenSpi> action = getByName(openActions, actionName);
         if (action.isPresent()) {
             try {
                 action.get().open(data);
@@ -91,7 +91,7 @@ public final class TsActions {
             return;
         }
 
-        Optional<? extends TsActionsSaveSpi> action = getByName(saveActions, actionName);
+        Optional<? extends TsActionSaveSpi> action = getByName(saveActions, actionName);
         if (action.isPresent()) {
             try {
                 action.get().save(data);
@@ -106,7 +106,7 @@ public final class TsActions {
     private static <X extends NamedService> Optional<X> getByName(CollectionSupplier<X> list, String name) {
         return list.stream()
                 .map(o -> (X) o)
-                .filter(TsActions.byName(name))
+                .filter(TsActionManager.byName(name))
                 .findFirst();
     }
 

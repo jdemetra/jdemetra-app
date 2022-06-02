@@ -110,13 +110,13 @@ public final class Installer extends ModuleInstall {
         private void register(Iterable<? extends TsProvider> providers) {
             Preferences pathsNode = prefs.node("paths");
             for (TsProvider o : providers) {
-                TsManager.getDefault().register(o);
+                TsManager.get().register(o);
                 if (o instanceof FileLoader) {
                     tryGet(pathsNode, o.getSource(), pathsParser)
                             .ifPresent(((FileLoader) o)::setPaths);
                 }
             }
-//            TsManager.getDefault().register(new PocProvider());
+//            TsManager.get().register(new PocProvider());
         }
 
         private void unregister(Iterable<? extends TsProvider> providers) {
@@ -125,7 +125,7 @@ public final class Installer extends ModuleInstall {
                 if (o instanceof FileLoader) {
                     tryPut(pathsNode, o.getSource(), pathsFormatter, ((FileLoader) o).getPaths());
                 }
-                TsManager.getDefault().unregister(o);
+                TsManager.get().unregister(o);
             }
         }
 
@@ -143,7 +143,7 @@ public final class Installer extends ModuleInstall {
 
         @Override
         protected void onResultChanged(Lookup.Result<TsProvider> lookup) {
-            List<TsProvider> old = TsManager.getDefault().getProviders().collect(Collectors.toList());
+            List<TsProvider> old = TsManager.get().getProviders().collect(Collectors.toList());
             List<TsProvider> current = new ArrayList<>(lookup.allInstances());
 
             unregister(except(old, current));
@@ -153,18 +153,18 @@ public final class Installer extends ModuleInstall {
         @Override
         protected void onRestore(Lookup.Result<TsProvider> lookup) {
             register(lookup.allInstances());
-            LOGGER.debug("Loaded providers: [{}]", toString(TsManager.getDefault().getProviders()));
+            LOGGER.debug("Loaded providers: [{}]", toString(TsManager.get().getProviders()));
         }
 
         @Override
         protected void onClose(Lookup.Result<TsProvider> lookup) {
-            unregister(TsManager.getDefault().getProviders().collect(Collectors.toList()));
+            unregister(TsManager.get().getProviders().collect(Collectors.toList()));
             try {
                 prefs.flush();
             } catch (BackingStoreException ex) {
                 LOGGER.warn("Can't flush storage", ex);
             }
-            TsManager.getDefault().close();
+            TsManager.get().close();
         }
 
         @XmlRootElement(name = "paths")
@@ -240,17 +240,17 @@ public final class Installer extends ModuleInstall {
 
         @Override
         public void restore() {
-            DemetraUI ui = DemetraUI.getDefault();
+            DemetraUI ui = DemetraUI.get();
             tryGet(prefs.node(UI)).ifPresent(ui::setConfig);
-            DemetraBehaviour behaviour = DemetraBehaviour.getDefault();
+            DemetraBehaviour behaviour = DemetraBehaviour.get();
             tryGet(prefs.node(BEHAVIOUR)).ifPresent(behaviour::setConfig);
         }
 
         @Override
         public void close() {
-            DemetraUI ui = DemetraUI.getDefault();
+            DemetraUI ui = DemetraUI.get();
             put(prefs.node(UI), ui.getConfig());
-            DemetraBehaviour behaviour = DemetraBehaviour.getDefault();
+            DemetraBehaviour behaviour = DemetraBehaviour.get();
             put(prefs.node(BEHAVIOUR), behaviour.getConfig());
         }
     }

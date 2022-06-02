@@ -14,11 +14,11 @@ import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.components.parts.HasTsCollectionSupport;
-import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.desktop.datatransfer.DataTransfers;
 import demetra.desktop.notification.MessageType;
 import demetra.desktop.notification.NotifyUtil;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.ui.Menus;
 import demetra.desktop.ui.Menus.DynamicPopup;
 import demetra.desktop.ui.processing.DefaultProcessingViewer;
@@ -30,7 +30,7 @@ import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.JSpecSelectionComponent;
 import demetra.sa.SaItem;
 import demetra.desktop.sa.multiprocessing.ui.MultiProcessingController.SaProcessingState;
-import demetra.desktop.sa.ui.DemetraSaUI;
+import demetra.desktop.sa.ui.DemetraSaManager;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItemManager;
@@ -223,7 +223,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         super(controller);
         this.collection = HasTsCollectionSupport.of(this::firePropertyChange, TsInformationType.None);
         this.collection.setTsUpdateMode(TsUpdateMode.Append);
-        this.defaultSpecification = DemetraSaUI.getDefault().getDefaultSaSpec();
+        this.defaultSpecification = DemetraSaManager.get().getDefaultSaSpec();
 
         setName(controller.getDocument().getDisplayName());
         setDisplayName(controller.getDocument().getDisplayName());
@@ -523,10 +523,10 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     private boolean pasteTs(Transferable dataobj) {
-        long count = DataTransfer.getDefault()
+        long count = DataTransferManager.get()
                 .toTsCollectionStream(dataobj)
                 .map(col -> col
-                .load(demetra.timeseries.TsInformationType.All, TsManager.getDefault())
+                .load(demetra.timeseries.TsInformationType.All, TsManager.get())
                 .stream()
                 .map(Ts::freeze)
                 .collect(TsCollection.toTsCollection())
@@ -629,7 +629,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             });
         }
 
-        Transferable transferable = DataTransfer.getDefault().fromTsCollection(TsCollection.of(col));
+        Transferable transferable = DataTransferManager.get().fromTsCollection(TsCollection.of(col));
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
     }
 
@@ -956,7 +956,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         public Icon getIcon(SaNode item) {
-            return DataSourceProviderBuddySupport.getDefault().getIcon(item.getMoniker(), BeanInfo.ICON_COLOR_16x16, false);
+            return DataSourceManager.get().getIcon(item.getMoniker(), BeanInfo.ICON_COLOR_16x16, false);
         }
     }
 
@@ -1178,7 +1178,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 return null;
             }
 
-            DemetraBehaviour options = DemetraBehaviour.getDefault();
+            DemetraBehaviour options = DemetraBehaviour.get();
             int nThread = options.getBatchPoolSize().getSize();
             int priority = options.getBatchPriority().getPriority();
 

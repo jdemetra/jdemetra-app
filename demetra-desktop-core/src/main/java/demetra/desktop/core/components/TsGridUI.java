@@ -22,7 +22,7 @@ import demetra.desktop.components.TsFeatureHelper;
 import demetra.desktop.components.TsGridObs;
 import demetra.desktop.components.TsSelectionBridge;
 import demetra.desktop.components.parts.*;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.util.ActionMaps;
 import demetra.desktop.util.Collections2;
 import demetra.desktop.util.InputMaps;
@@ -679,7 +679,7 @@ public final class TsGridUI implements InternalUI<JTsGrid> {
             super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             demetra.timeseries.Ts ts = (demetra.timeseries.Ts) value;
             setText(ts.getName());
-            setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
+            setIcon(DataSourceManager.get().getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
             if (colorSchemeSupport != null && index != -1) {
                 if (isSelected) {
                     setBackground(colorSchemeSupport.getPlotColor());

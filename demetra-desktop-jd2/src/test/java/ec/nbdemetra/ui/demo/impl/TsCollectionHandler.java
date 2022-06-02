@@ -295,7 +295,7 @@ public final class TsCollectionHandler extends TypedDemoComponentHandler<HasTsCo
 
     static JButton createFakeProviderButton(HasTsCollection view) {
         JMenu menu = new JMenu();
-        TsManager.getDefault()
+        TsManager.get()
                 .getProviders()
                 .filter(PocProvider.class::isInstance)
                 .map(PocProvider.class::cast)
@@ -339,9 +339,9 @@ public final class TsCollectionHandler extends TypedDemoComponentHandler<HasTsCo
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            TsCollection col = TsManager.getDefault().getTsCollection(dataSource, TsInformationType.Definition).get();
+            TsCollection col = TsManager.get().getTsCollection(dataSource, TsInformationType.Definition).get();
             c.setTsCollection(c.getTsCollection().toBuilder().items(col.getItems()).build());
-            TsManager.getDefault().loadAsync(col, TsInformationType.All, c::replaceTsCollection);
+            TsManager.get().loadAsync(col, TsInformationType.All, c::replaceTsCollection);
         }
     }
 
@@ -355,9 +355,9 @@ public final class TsCollectionHandler extends TypedDemoComponentHandler<HasTsCo
 
         @Override
         public void execute(HasTsCollection c) throws Exception {
-            TsCollection col = TsManager.getDefault().getTsCollection(dataSet, TsInformationType.Definition).get();
+            TsCollection col = TsManager.get().getTsCollection(dataSet, TsInformationType.Definition).get();
             c.setTsCollection(c.getTsCollection().toBuilder().items(col.getItems()).build());
-            TsManager.getDefault().loadAsync(col, TsInformationType.All, c::replaceTsCollection);
+            TsManager.get().loadAsync(col, TsInformationType.All, c::replaceTsCollection);
         }
     }
 }

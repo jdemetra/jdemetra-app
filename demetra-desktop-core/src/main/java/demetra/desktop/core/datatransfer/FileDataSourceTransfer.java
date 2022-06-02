@@ -7,7 +7,7 @@ package demetra.desktop.core.datatransfer;
 import demetra.desktop.TsManager;
 import demetra.desktop.datatransfer.DataSourceTransferSpi;
 import demetra.desktop.datatransfer.DataTransfers;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.tsprovider.DataSourceLoader;
 import demetra.tsprovider.FileBean;
 import demetra.tsprovider.FileLoader;
@@ -44,7 +44,7 @@ public final class FileDataSourceTransfer implements DataSourceTransferSpi {
     public boolean canHandle(Transferable t, String providerName) {
         Optional<File> file = DataTransfers.getSingleFile(t);
         if (file.isPresent()) {
-            Optional<FileLoader> loader = TsManager.getDefault().getProvider(FileLoader.class, providerName);
+            Optional<FileLoader> loader = TsManager.get().getProvider(FileLoader.class, providerName);
             return loader.isPresent() && loader.get().accept(file.get());
         }
         return false;
@@ -58,7 +58,7 @@ public final class FileDataSourceTransfer implements DataSourceTransferSpi {
         if (loader.isPresent()) {
             FileBean bean = loader.get().newBean();
             bean.setFile(file);
-            if (DataSourceProviderBuddySupport.getDefault().getBeanEditor(loader.get().getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
+            if (DataSourceManager.get().getBeanEditor(loader.get().getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
                 return Optional.of(loader.get().encodeBean(bean));
             }
         }
@@ -68,17 +68,17 @@ public final class FileDataSourceTransfer implements DataSourceTransferSpi {
     @Override
     public Optional<demetra.tsprovider.DataSource> getDataSource(Transferable t, String providerName) {
         File file = DataTransfers.getSingleFile(t).get();
-        FileLoader loader = TsManager.getDefault().getProvider(FileLoader.class, providerName).get();
+        FileLoader loader = TsManager.get().getProvider(FileLoader.class, providerName).get();
         FileBean bean = loader.newBean();
         bean.setFile(file);
-        if (DataSourceProviderBuddySupport.getDefault().getBeanEditor(loader.getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
+        if (DataSourceManager.get().getBeanEditor(loader.getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
             return Optional.of(loader.encodeBean(bean));
         }
         return Optional.empty();
     }
 
     public static List<FileLoader> getLoaders(final File file) {
-        return TsManager.getDefault().getProviders()
+        return TsManager.get().getProviders()
                 .filter(FileLoader.class::isInstance)
                 .map(FileLoader.class::cast)
                 .filter(o -> o.accept(file))
@@ -101,6 +101,6 @@ public final class FileDataSourceTransfer implements DataSourceTransferSpi {
     private static void renderLoader(JLabel label, Object value) {
         DataSourceLoader loader = (DataSourceLoader) value;
         label.setText(loader.getDisplayName());
-        label.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(loader.getSource(), BeanInfo.ICON_COLOR_16x16, false));
+        label.setIcon(DataSourceManager.get().getIcon(loader.getSource(), BeanInfo.ICON_COLOR_16x16, false));
     }
 }

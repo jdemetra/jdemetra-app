@@ -19,7 +19,7 @@ package ec.nbdemetra.sa.revisionanalysis;
 import demetra.desktop.DemetraIcons;
 import demetra.desktop.components.JTsGrid;
 import demetra.desktop.design.SwingComponent;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import ec.util.list.swing.JLists;
@@ -118,7 +118,7 @@ public final class JTsComboGrid extends JComponent {
         } else {
             Ts ts = (Ts) value;
             label.setText(ts.getName());
-            label.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
+            label.setIcon(DataSourceManager.get().getIcon(ts.getMoniker(), BeanInfo.ICON_COLOR_16x16, false));
         }
     }
 }

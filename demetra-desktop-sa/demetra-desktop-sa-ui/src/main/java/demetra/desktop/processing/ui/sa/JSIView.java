@@ -183,7 +183,7 @@ public final class JSIView extends JComponent implements TimeSeriesComponent, Ha
         this.masterChart = createMasterChart(sRenderer, tRenderer, siMasterRenderer);
         this.detailChart = createDetailChart(sRenderer, tRenderer, siDetailRenderer);
         this.chartPanel = new JChartPanel(null);
-        this.numberFormat = DemetraUI.getDefault().getObsFormat().numberFormatter();
+        this.numberFormat = DemetraUI.get().getObsFormat().numberFormatter();
         initComponents();
     }
 
@@ -273,7 +273,7 @@ public final class JSIView extends JComponent implements TimeSeriesComponent, Ha
 
     private void onObsFormatChange() {
         // FIXME: never called
-        numberFormat = DemetraUI.getDefault().getObsFormat().numberFormatter();
+        numberFormat = DemetraUI.get().getObsFormat().numberFormatter();
     }
 
     private void onTsChange() {

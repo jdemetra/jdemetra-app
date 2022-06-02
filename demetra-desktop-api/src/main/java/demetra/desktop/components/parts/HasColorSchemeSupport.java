@@ -48,7 +48,7 @@ public class HasColorSchemeSupport {
         JMenu result = new JMenu("Color scheme");
         result.add(menuItemOf(component, null));
         result.addSeparator();
-        ColorSchemeManager.getDefault().getColorSchemes().forEach(o -> result.add(menuItemOf(component, o)));
+        ColorSchemeManager.get().getColorSchemes().forEach(o -> result.add(menuItemOf(component, o)));
         result.add(result);
         return result;
     }

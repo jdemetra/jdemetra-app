@@ -31,7 +31,7 @@ public class MruProvidersStep extends InstallerStep.LookupStep<IDataSourceProvid
     @Override
     protected void onResultChanged(Lookup.Result<IDataSourceProvider> lookup) {
         // won't be added twice
-        TsManager.getDefault().getProviders()
+        TsManager.get().getProviders()
                 .filter(DataSourceLoader.class::isInstance)
                 .map(DataSourceLoader.class::cast)
                 .forEach(o -> o.addDataSourceListener(listener));
@@ -40,7 +40,7 @@ public class MruProvidersStep extends InstallerStep.LookupStep<IDataSourceProvid
     @Override
     protected void onRestore(Lookup.Result<IDataSourceProvider> lookup) {
         MruPreferences.INSTANCE.load(prefs, MruList.getProvidersInstance());
-        TsManager.getDefault().getProviders()
+        TsManager.get().getProviders()
                 .filter(DataSourceLoader.class::isInstance)
                 .map(DataSourceLoader.class::cast)
                 .forEach(o -> o.addDataSourceListener(listener));
@@ -48,7 +48,7 @@ public class MruProvidersStep extends InstallerStep.LookupStep<IDataSourceProvid
 
     @Override
     protected void onClose(Lookup.Result<IDataSourceProvider> lookup) {
-        TsManager.getDefault().getProviders()
+        TsManager.get().getProviders()
                 .filter(DataSourceLoader.class::isInstance)
                 .map(DataSourceLoader.class::cast)
                 .forEach(o -> o.removeDataSourceListener(listener));
@@ -59,7 +59,7 @@ public class MruProvidersStep extends InstallerStep.LookupStep<IDataSourceProvid
 
         @Override
         public void opened(demetra.tsprovider.DataSource dataSource) {
-            TsManager.getDefault()
+            TsManager.get()
                     .getProvider(DataSourceProvider.class, dataSource)
                     .ifPresent(provider -> MruList.getProvidersInstance().add(new SourceId(dataSource, provider.getDisplayName(dataSource))));
         }

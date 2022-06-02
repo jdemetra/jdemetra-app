@@ -86,7 +86,7 @@ public final class TsAbleHandler extends TypedDemoComponentHandler<HasTs> {
     }
 
     private static JButton createFakeProviderButton(HasTs view) {
-        JMenu providerMenu = TsManager.getDefault()
+        JMenu providerMenu = TsManager.get()
                 .getProvider(DataSourceProvider.class, PocProvider.NAME)
                 .map(o -> createFakeProviderMenu(o, view))
                 .orElseGet(JMenu::new);
@@ -97,7 +97,7 @@ public final class TsAbleHandler extends TypedDemoComponentHandler<HasTs> {
     }
 
     private static void enableTickFeedback(JButton button) {
-        Optional<DataSourceProvider> p = TsManager.getDefault().getProvider(DataSourceProvider.class, PocProvider.NAME);
+        Optional<DataSourceProvider> p = TsManager.get().getProvider(DataSourceProvider.class, PocProvider.NAME);
         if (p.isPresent()) {
             DataSourceListener changeListener = new DataSourceListener() {
                 Icon icon1 = getIcon(FontAwesome.FA_DATABASE);
@@ -162,10 +162,10 @@ public final class TsAbleHandler extends TypedDemoComponentHandler<HasTs> {
 
         @Override
         public void execute(HasTs c) throws Exception {
-            Optional<Ts> ts = TsManager.getDefault().getTs(dataSet, TsInformationType.Definition);
+            Optional<Ts> ts = TsManager.get().getTs(dataSet, TsInformationType.Definition);
             if (ts.isPresent()) {
                 c.setTs(ts.get());
-                TsManager.getDefault().loadAsync(ts.get(), TsInformationType.All, c::updateTs);
+                TsManager.get().loadAsync(ts.get(), TsInformationType.All, c::updateTs);
             } else {
                 c.setTs(null);
             }

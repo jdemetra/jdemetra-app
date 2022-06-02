@@ -18,7 +18,7 @@ package demetra.desktop.core.tsproviders;
 
 import demetra.desktop.TsManager;
 import demetra.desktop.nodes.ExceptionNode;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.tsprovider.DataSourceProvider;
 import org.openide.nodes.Sheet;
 
@@ -45,12 +45,12 @@ final class ProviderExceptionNode extends ExceptionNode {
     @Override
     public String getDisplayName() {
         IOException ex = getLookup().lookup(IOException.class);
-        return TsManager.getDefault().getProvider(DataSourceProvider.class, providerName).get().getDisplayName(ex);
+        return TsManager.get().getProvider(DataSourceProvider.class, providerName).get().getDisplayName(ex);
     }
 
     private Image lookupIcon(int type, boolean opened) {
         IOException o = getLookup().lookup(IOException.class);
-        return DataSourceProviderBuddySupport.getDefault().getImage(providerName, o, type, opened);
+        return DataSourceManager.get().getImage(providerName, o, type, opened);
     }
 
     @Override
@@ -66,6 +66,6 @@ final class ProviderExceptionNode extends ExceptionNode {
     @Override
     protected Sheet createSheet() {
         IOException ex = getLookup().lookup(IOException.class);
-        return DataSourceProviderBuddySupport.getDefault().getSheet(providerName, ex);
+        return DataSourceManager.get().getSheet(providerName, ex);
     }
 }

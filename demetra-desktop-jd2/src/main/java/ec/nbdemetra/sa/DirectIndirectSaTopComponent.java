@@ -168,7 +168,7 @@ public final class DirectIndirectSaTopComponent extends TopComponent implements 
     private void initList() {
         inputList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             demetra.timeseries.TsData sum = inputList.getTsCollection()
-                    .load(demetra.timeseries.TsInformationType.Data, TsManager.getDefault())
+                    .load(demetra.timeseries.TsInformationType.Data, TsManager.get())
                     .stream()
                     .map(demetra.timeseries.Ts::getData)
                     .reduce(null, demetra.timeseries.TsData::add);

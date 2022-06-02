@@ -44,7 +44,7 @@ public class DataTransferTest {
     @Test
     @SuppressWarnings("null")
     public void testEmpty() {
-        DataTransfer empty = of();
+        DataTransferManager empty = of();
 
         assertThatThrownBy(() -> empty.fromTs(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> empty.fromTsCollection(null)).isInstanceOf(NullPointerException.class);
@@ -75,7 +75,7 @@ public class DataTransferTest {
         LocalObjectTransferable<demetra.timeseries.TsCollection> col = new LocalObjectTransferable<>(demetra.timeseries.TsCollection.EMPTY);
         Transferable multi = new ExTransferable.Multi(new Transferable[]{col});
 
-        DataTransfer local = of(new LocalObjectDataTransfer());
+        DataTransferManager local = of(new LocalObjectDataTransfer());
         assertThat(local.canImport(col)).isTrue();
         assertThat(local.canImport(multi)).isTrue();
         assertThat(local.toTsCollection(col)).contains(col.getValue());
@@ -83,19 +83,19 @@ public class DataTransferTest {
         assertThat(local.toTsCollectionStream(col)).containsExactly(col.getValue());
         assertThat(local.toTsCollectionStream(multi)).containsExactly(col.getValue());
 
-        DataTransfer empty = of();
+        DataTransferManager empty = of();
         assertThat(empty.canImport(col)).isFalse();
         assertThat(empty.canImport(multi)).isFalse();
         assertThat(empty.toTsCollection(col)).isEmpty();
         assertThat(empty.toTsCollectionStream(col)).isEmpty();
 
-        DataTransfer valid = of(new CustomHandler(DataFlavor.stringFlavor));
+        DataTransferManager valid = of(new CustomHandler(DataFlavor.stringFlavor));
         assertThat(valid.canImport(col)).isFalse();
         assertThat(valid.canImport(multi)).isFalse();
         assertThat(valid.toTsCollection(col)).isEmpty();
         assertThat(valid.toTsCollectionStream(col)).isEmpty();
 
-        DataTransfer invalid = of(new CustomHandler(LocalObjectDataTransfer.DATA_FLAVOR));
+        DataTransferManager invalid = of(new CustomHandler(LocalObjectDataTransfer.DATA_FLAVOR));
         assertThat(invalid.canImport(col)).isTrue();
         assertThat(invalid.canImport(multi)).isTrue();
         assertThat(invalid.toTsCollection(col)).isEmpty();
@@ -159,8 +159,8 @@ public class DataTransferTest {
         }).toMatrix(t)).isEmpty();
     }
 
-    private static DataTransfer of(DataTransferSpi... handlers) {
-        return new DataTransfer(CollectionSupplier.of(java.util.Arrays.asList(handlers)), Logger.getAnonymousLogger(), false);
+    private static DataTransferManager of(DataTransferSpi... handlers) {
+        return new DataTransferManager(CollectionSupplier.of(java.util.Arrays.asList(handlers)), Logger.getAnonymousLogger(), false);
     }
 
     private static class CustomHandler implements DataTransferSpi {

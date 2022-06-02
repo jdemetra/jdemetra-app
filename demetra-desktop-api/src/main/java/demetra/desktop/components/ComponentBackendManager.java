@@ -29,13 +29,13 @@ import java.util.Objects;
  * @author Philippe Charles
  */
 @GlobalService
-public final class ComponentBackend {
+public final class ComponentBackendManager {
 
-    public static ComponentBackend getDefault() {
-        return LazyGlobalService.get(ComponentBackend.class, ComponentBackend::new);
+    public static ComponentBackendManager get() {
+        return LazyGlobalService.get(ComponentBackendManager.class, ComponentBackendManager::new);
     }
 
-    private ComponentBackend() {
+    private ComponentBackendManager() {
     }
 
     private final CollectionSupplier<ComponentBackendSpi> providers = ComponentBackendSpiLoader::get;

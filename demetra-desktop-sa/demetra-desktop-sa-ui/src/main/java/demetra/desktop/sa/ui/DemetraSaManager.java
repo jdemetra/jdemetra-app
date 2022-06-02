@@ -48,14 +48,14 @@ import org.netbeans.api.options.OptionsDisplayer;
  * @author Mats Maggi
  */
 @GlobalService
-public final class DemetraSaUI implements PropertyChangeSource.WithWeakListeners, Persistable, Configurable {
+public final class DemetraSaManager implements PropertyChangeSource.WithWeakListeners, Persistable, Configurable {
 
     @NonNull
-    public static DemetraSaUI getDefault() {
-        return LazyGlobalService.get(DemetraSaUI.class, DemetraSaUI::new);
+    public static DemetraSaManager get() {
+        return LazyGlobalService.get(DemetraSaManager.class, DemetraSaManager::new);
     }
 
-    private DemetraSaUI() {
+    private DemetraSaManager() {
     }
 
     @lombok.experimental.Delegate(types = PropertyChangeSource.class)
@@ -222,6 +222,6 @@ public final class DemetraSaUI implements PropertyChangeSource.WithWeakListeners
         }
     }
 
-    private static final String DOMAIN = DemetraSaUI.class.getName(), NAME = "INSTANCE", VERSION = "";
+    private static final String DOMAIN = DemetraSaManager.class.getName(), NAME = "INSTANCE", VERSION = "";
 
 }

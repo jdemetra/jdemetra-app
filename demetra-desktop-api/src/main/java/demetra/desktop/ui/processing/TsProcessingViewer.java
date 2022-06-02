@@ -7,8 +7,8 @@ package demetra.desktop.ui.processing;
 import com.google.common.base.Strings;
 import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.TsManager;
-import demetra.desktop.datatransfer.DataTransfer;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.datatransfer.DataTransferManager;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.processing.ProcSpecification;
 import demetra.timeseries.Ts;
@@ -85,7 +85,7 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
             tsLabel.setText(MultiLineNameUtil.lastWithMax(displayName, 70));
             tsLabel.setToolTipText(!Strings.isNullOrEmpty(displayName) ? MultiLineNameUtil.toHtml(displayName) : null);
             TsMoniker moniker = input.getMoniker();
-            tsLabel.setIcon(DataSourceProviderBuddySupport.getDefault().getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false));
+            tsLabel.setIcon(DataSourceManager.get().getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false));
             tsLabel.setVisible(true);
             ProcSpecification spec = doc.getSpecification();
             specLabel.setText("Spec: " + spec.display());
@@ -98,14 +98,14 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
 
         @Override
         public boolean canImport(TransferSupport support) {
-            return DataTransfer.getDefault().canImport(support.getDataFlavors());
+            return DataTransferManager.get().canImport(support.getDataFlavors());
         }
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            Optional<Ts> ts = DataTransfer.getDefault().toTs(support.getTransferable());
+            Optional<Ts> ts = DataTransferManager.get().toTs(support.getTransferable());
             if (ts.isPresent()) {
-                Ts input = ts.get().load(TsInformationType.All, TsManager.getDefault()).freeze();
+                Ts input = ts.get().load(TsInformationType.All, TsManager.get()).freeze();
                 Ts old=getDocument().getInput();
                 TsProcessingViewer.this.firePropertyChange(INPUT_CHANGED, old, input);
                 return true;

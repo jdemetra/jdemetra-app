@@ -11,7 +11,7 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
-import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.desktop.datatransfer.DataTransfers;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.ui.ActiveViewAction;
@@ -42,7 +42,7 @@ public final class PasteTs extends ActiveViewAction<WorkspaceTsTopComponent> {
     protected void process(WorkspaceTsTopComponent cur) {
         WorkspaceTsTopComponent top = context();
         if (top != null) {
-            Optional<demetra.timeseries.Ts> s = DataTransfer.getDefault().toTs(DataTransfers.systemClipboardAsTransferable());
+            Optional<demetra.timeseries.Ts> s = DataTransferManager.get().toTs(DataTransfers.systemClipboardAsTransferable());
             if (!s.isPresent()) {
                 NotifyDescriptor nd = new NotifyDescriptor.Message("Unable to paste ts");
                 DialogDisplayer.getDefault().notify(nd);

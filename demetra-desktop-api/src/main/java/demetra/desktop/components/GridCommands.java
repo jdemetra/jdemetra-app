@@ -17,6 +17,7 @@
 package demetra.desktop.components;
 
 import demetra.data.Range;
+import demetra.desktop.datatransfer.DataTransferManager;
 import ec.util.grid.swing.GridModel;
 import ec.util.grid.swing.JGrid;
 import ec.util.various.swing.JCommand;
@@ -24,7 +25,6 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.swing.ListSelectionModel;
-import demetra.desktop.datatransfer.DataTransfer;
 import demetra.util.Table;
 
 /**
@@ -54,7 +54,7 @@ public class GridCommands {
         @Override
         public void execute(JGrid grid) {
             Table<?> table = toTable(grid);
-            Transferable t = DataTransfer.getDefault().fromTable(table);
+            Transferable t = DataTransferManager.get().fromTable(table);
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(t, null);
         }
 

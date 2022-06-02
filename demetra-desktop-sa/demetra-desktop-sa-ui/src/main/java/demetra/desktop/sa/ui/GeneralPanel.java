@@ -151,7 +151,7 @@ final class GeneralPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     void load() {
-        DemetraSaUI ui = DemetraSaUI.getDefault();
+        DemetraSaManager ui = DemetraSaManager.get();
         spectralLastYears.setValue(ui.getSpectralLastYears());
 
         estimationPolicyComboBox.setModel(new DefaultComboBoxModel(types));
@@ -172,7 +172,7 @@ final class GeneralPanel extends javax.swing.JPanel {
     }
 
     void store() {
-        DemetraSaUI ui = DemetraSaUI.getDefault();
+        DemetraSaManager ui = DemetraSaManager.get();
         ui.setSpectralLastYears((Integer) spectralLastYears.getValue());
         ui.setEstimationPolicyType((EstimationPolicyType) estimationPolicyComboBox.getSelectedItem());
         ui.setStabilityLength((Integer) stabilityLength.getValue());

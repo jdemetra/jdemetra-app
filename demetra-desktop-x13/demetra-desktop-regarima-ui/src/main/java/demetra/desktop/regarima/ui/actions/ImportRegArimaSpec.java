@@ -18,7 +18,7 @@ package demetra.desktop.regarima.ui.actions;
 
 import demetra.desktop.Config;
 import demetra.desktop.interchange.Importable;
-import demetra.desktop.interchange.Interchange;
+import demetra.desktop.interchange.InterchangeManager;
 import demetra.desktop.nodes.SingleNodeAction;
 import demetra.desktop.regarima.documents.RegArimaSpecManager;
 import demetra.desktop.workspace.WorkspaceFactory;
@@ -66,7 +66,7 @@ public class ImportRegArimaSpec extends SingleNodeAction<Node> implements Presen
 
     @Override
     public JMenuItem getPopupPresenter() {
-        JMenuItem result = Interchange.getDefault().newImportMenu(getImportables());
+        JMenuItem result = InterchangeManager.get().newImportMenu(getImportables());
         result.setText(Bundle.CTL_ImportRegArimaSpec());
         return result;
     }

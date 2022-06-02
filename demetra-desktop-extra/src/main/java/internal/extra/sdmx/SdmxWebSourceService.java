@@ -42,7 +42,7 @@ public final class SdmxWebSourceService implements AutoCompletionSpi {
     public JAutoCompletion bind(JTextComponent textComponent) {
         JAutoCompletion result = new JAutoCompletion(textComponent);
         result.setMinLength(0);
-        TsManager.getDefault()
+        TsManager.get()
                 .getProvider(SdmxWebProvider.class)
                 .ifPresent(provider -> {
                     SdmxAutoCompletion c = SdmxAutoCompletion.onWebSource(provider.getSdmxManager());

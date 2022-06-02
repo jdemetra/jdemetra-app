@@ -68,7 +68,7 @@ public final class TxtProviderBuddy implements DataSourceProviderBuddy {
 
     private Sheet.Set createSource(NodePropertySetBuilder b, TxtBean bean) {
         b.reset("Source");
-        TsManager.getDefault()
+        TsManager.get()
                 .getProvider(FileLoader.class, SOURCE)
                 .ifPresent(o -> TsProviderProperties.addFile(b, o, bean));
         addReaderProperty(b, bean);

@@ -27,14 +27,14 @@ import demetra.desktop.core.actions.RenameNodeAction;
 import demetra.desktop.core.actions.TsSaveNodeAction;
 import demetra.desktop.core.interchange.ExportNodeAction;
 import demetra.desktop.core.star.StarAction;
-import demetra.desktop.datatransfer.DataTransfer;
+import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.desktop.datatransfer.DataTransfers;
 import demetra.desktop.interchange.Exportable;
 import demetra.desktop.nodes.FailSafeChildFactory;
-import demetra.desktop.nodes.NodeAnnotator;
+import demetra.desktop.nodes.NodeAnnotatorManager;
 import demetra.desktop.nodes.Nodes;
-import demetra.desktop.star.StarList;
-import demetra.desktop.tsproviders.DataSourceProviderBuddySupport;
+import demetra.desktop.star.StarListManager;
+import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.tsproviders.DataSourceProviderBuddyUtil;
 import demetra.timeseries.TsInformationType;
 import demetra.tsprovider.DataSet;
@@ -106,14 +106,14 @@ public final class DataSourceNode extends AbstractNode {
             abilities.add(new NameableImpl());
             abilities.add(new TsCollectableImpl());
             abilities.add(new ReloadableImpl());
-            if (TsManager.getDefault().getProvider(DataSourceLoader.class, dataSource).isPresent()) {
+            if (TsManager.get().getProvider(DataSourceLoader.class, dataSource).isPresent()) {
                 abilities.add(new EditableImpl());
                 abilities.add(new ClosableImpl());
                 abilities.add(new ExportableAsXmlImpl());
             }
         }
         // 3. Name and display name
-        TsManager.getDefault()
+        TsManager.get()
                 .getProvider(DataSourceProvider.class, dataSource)
                 .ifPresent(provider -> setDisplayName(provider.getDisplayName(dataSource)));
     }
@@ -125,25 +125,25 @@ public final class DataSourceNode extends AbstractNode {
 
     private Image lookupIcon(int type, boolean opened) {
         DataSource o = getLookup().lookup(DataSource.class);
-        return DataSourceProviderBuddySupport.getDefault().getImage(o, type, opened);
+        return DataSourceManager.get().getImage(o, type, opened);
     }
 
     @Override
     public Image getIcon(int type) {
         Image image = lookupIcon(type, false);
-        return NodeAnnotator.getDefault().annotateIcon(this, image);
+        return NodeAnnotatorManager.get().annotateIcon(this, image);
     }
 
     @Override
     public Image getOpenedIcon(int type) {
         Image image = lookupIcon(type, true);
-        return NodeAnnotator.getDefault().annotateIcon(this, image);
+        return NodeAnnotatorManager.get().annotateIcon(this, image);
     }
 
     @Override
     protected Sheet createSheet() {
         DataSource o = getLookup().lookup(DataSource.class);
-        return DataSourceProviderBuddySupport.getDefault().getSheet(o);
+        return DataSourceManager.get().getSheet(o);
     }
 
     @Override
@@ -153,9 +153,9 @@ public final class DataSourceNode extends AbstractNode {
 
     private Transferable getData(TsInformationType type) throws IOException {
         DataSource dataSource = getLookup().lookup(DataSource.class);
-        return TsManager.getDefault()
+        return TsManager.get()
                 .getTsCollection(dataSource, type)
-                .map(DataTransfer.getDefault()::fromTsCollection)
+                .map(DataTransferManager.get()::fromTsCollection)
                 .orElseThrow(() -> new IOException("Cannot create the TS collection '" + getDisplayName() + "'; check the logs for further details."));
     }
 
@@ -169,7 +169,7 @@ public final class DataSourceNode extends AbstractNode {
         ExTransferable data = ExTransferable.create(getData(TsEventHelper.SHOULD_BE_NONE));
 
         DataSource dataSource = getLookup().lookup(DataSource.class);
-        TsManager.getDefault()
+        TsManager.get()
                 .getFile(dataSource)
                 .ifPresent(o -> data.put(new LocalFileTransferable(o)));
         return data;
@@ -189,7 +189,7 @@ public final class DataSourceNode extends AbstractNode {
 
         @Override
         protected boolean tryCreateKeys(List<Object> list) throws Exception {
-            Optional<DataSourceProvider> provider = TsManager.getDefault().getProvider(DataSourceProvider.class, dataSource);
+            Optional<DataSourceProvider> provider = TsManager.get().getProvider(DataSourceProvider.class, dataSource);
             if (provider.isPresent()) {
                 list.addAll(provider.get()
                         .children(dataSource));
@@ -216,7 +216,7 @@ public final class DataSourceNode extends AbstractNode {
         @Override
         public void reload() {
             DataSource dataSource = getLookup().lookup(DataSource.class);
-            Optional<DataSourceProvider> provider = TsManager.getDefault().getProvider(DataSourceProvider.class, dataSource);
+            Optional<DataSourceProvider> provider = TsManager.get().getProvider(DataSourceProvider.class, dataSource);
             if (provider.isPresent()) {
                 provider.get().reload(dataSource);
                 setChildren(Children.create(new DataSourceChildFactory(dataSource), true));
@@ -236,7 +236,7 @@ public final class DataSourceNode extends AbstractNode {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     DataSource dataSource = getLookup().lookup(DataSource.class);
-                    TsManager.getDefault()
+                    TsManager.get()
                             .getProvider(DataSourceProvider.class, dataSource)
                             .ifPresent(provider -> setDisplayName(provider.getDisplayName(dataSource)));
                 }
@@ -252,7 +252,7 @@ public final class DataSourceNode extends AbstractNode {
         @Override
         public boolean close() {
             DataSource dataSource = getLookup().lookup(DataSource.class);
-            return TsManager.getDefault()
+            return TsManager.get()
                     .getProvider(DataSourceLoader.class, dataSource)
                     .map(provider -> provider.close(dataSource))
                     .orElse(false);
@@ -264,13 +264,13 @@ public final class DataSourceNode extends AbstractNode {
         @Override
         public void edit() {
             DataSource dataSource = getLookup().lookup(DataSource.class);
-            DataSourceLoader loader = TsManager.getDefault().getProvider(DataSourceLoader.class, dataSource).get();
+            DataSourceLoader loader = TsManager.get().getProvider(DataSourceLoader.class, dataSource).get();
             Object bean = loader.decodeBean(dataSource);
-            if (DataSourceProviderBuddySupport.getDefault().getBeanEditor(loader.getSource(), "Edit data source").editBean(bean, Exceptions::printStackTrace)) {
+            if (DataSourceManager.get().getBeanEditor(loader.getSource(), "Edit data source").editBean(bean, Exceptions::printStackTrace)) {
                 loader.close(dataSource);
                 DataSource editedDataSource = loader.encodeBean(bean);
                 loader.open(editedDataSource);
-                StarList starList = StarList.getDefault();
+                StarListManager starList = StarListManager.get();
                 if (starList.isStarred(dataSource)) {
                     starList.toggle(dataSource);
                     starList.toggle(editedDataSource);
@@ -293,7 +293,7 @@ public final class DataSourceNode extends AbstractNode {
         @Override
         public demetra.timeseries.TsCollection getTsCollection() {
             DataSource dataSource = getLookup().lookup(DataSource.class);
-            return TsManager.getDefault()
+            return TsManager.get()
                     .getTsCollection(dataSource, TsEventHelper.SHOULD_BE_NONE)
                     .orElse(demetra.timeseries.TsCollection.EMPTY);
         }

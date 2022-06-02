@@ -55,7 +55,7 @@ public final class TswProviderBuddy implements DataSourceProviderBuddy {
 //        NodePropertySetBuilder b = new NodePropertySetBuilder();
 //
 //        b.reset("Source");
-//        TsManager.getDefault()
+//        TsManager.get()
 //                .getProvider(TswProvider.SOURCE)
 //                .map(TsConverter::fromTsProvider)
 //                .filter(TswProvider.class::isInstance)
