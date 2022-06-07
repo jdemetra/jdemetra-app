@@ -209,11 +209,23 @@
             <groupId>com.github.nbbrd.java-desktop-util</groupId>
             <artifactId>java-desktop-util-swing</artifactId>
             <version>${java-desktop-util.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.nbbrd.java-design-util</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.github.nbbrd.java-desktop-util</groupId>
             <artifactId>java-desktop-util-chart</artifactId>
             <version>${java-desktop-util.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.nbbrd.java-design-util</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.github.nbbrd.java-desktop-util</groupId>
