@@ -61,7 +61,7 @@ public final class DemetraSaUI implements PropertyChangeSource.WithWeakListeners
 
     @SwingProperty
     public static final String SPECTRAL_LAST_YEARS_PROPERTY = "spectralLastYears";
-    private static final int DEFAULT_SPECTRAL_LAST_YEARS = 8;
+    private static final int DEFAULT_SPECTRAL_LAST_YEARS = 0;
     private Integer spectralLastYears = DEFAULT_SPECTRAL_LAST_YEARS;
 
     public Integer getSpectralLastYears() {
@@ -72,6 +72,21 @@ public final class DemetraSaUI implements PropertyChangeSource.WithWeakListeners
         Integer old = this.spectralLastYears;
         spectralLastYears = lastYears != null ? lastYears : DEFAULT_SPECTRAL_LAST_YEARS;
         broadcaster.firePropertyChange(SPECTRAL_LAST_YEARS_PROPERTY, old, spectralLastYears);
+    }
+
+    @SwingProperty
+    public static final String SEASONALITY_LENGTH_PROPERTY = "seasonalityLength";
+    private static final int DEFAULT_SEASONALITY_LENGTH = 10;
+    private Integer seasonalityLength = DEFAULT_SEASONALITY_LENGTH;
+
+    public Integer getSeasonalityLength() {
+        return seasonalityLength;
+    }
+
+    public void setSeasonalityLength(Integer lastYears) {
+        Integer old = this.seasonalityLength;
+        seasonalityLength = lastYears != null ? lastYears : DEFAULT_SPECTRAL_LAST_YEARS;
+        broadcaster.firePropertyChange(SEASONALITY_LENGTH_PROPERTY, old, seasonalityLength);
     }
 
     @SwingProperty
@@ -164,6 +179,7 @@ public final class DemetraSaUI implements PropertyChangeSource.WithWeakListeners
     }
 
     private static final IntProperty SPECTRAL_LAST_YEARS_CONFIG = IntProperty.of(SPECTRAL_LAST_YEARS_PROPERTY, DEFAULT_SPECTRAL_LAST_YEARS);
+    private static final IntProperty SEASONALITY_LENGTH_CONFIG = IntProperty.of(SEASONALITY_LENGTH_PROPERTY, DEFAULT_SEASONALITY_LENGTH);
     private static final IntProperty STABILITY_LENGTH_CONFIG = IntProperty.of(STABILITY_LENGTH_PROPERTY, DEFAULT_STABILITY_LENGTH);
     private static final Property<EstimationPolicyType> ESTIMATION_POLICY_TYPE_CONFIG = Property.of(ESTIMATION_POLICY_TYPE_PROPERTY, DEFAULT_ESTIMATION_POLICY, Parser.onEnum(EstimationPolicyType.class), Formatter.onEnum());
     private static final Property<String> DEFAULT_SA_SPEC_CONFIG = Property.of(DEFAULT_SA_SPEC_PROPERTY, "", Parser.onString(), Formatter.onString());
@@ -177,8 +193,9 @@ public final class DemetraSaUI implements PropertyChangeSource.WithWeakListeners
     public Config getConfig() {
         Config.Builder b = Config.builder(DOMAIN, NAME, VERSION);
         SPECTRAL_LAST_YEARS_CONFIG.set(b::parameter, getSpectralLastYears());
-        ESTIMATION_POLICY_TYPE_CONFIG.set(b::parameter, getEstimationPolicyType());
+        SEASONALITY_LENGTH_CONFIG.set(b::parameter, getSeasonalityLength());
         STABILITY_LENGTH_CONFIG.set(b::parameter, getStabilityLength());
+        ESTIMATION_POLICY_TYPE_CONFIG.set(b::parameter, getEstimationPolicyType());
         DEFAULT_SA_SPEC_CONFIG.set(b::parameter, idOf(getDefaultSaSpec()));
         PRESPECIFIED_OUTLIERS_EDITOR_CONFIG.set(b::parameter, getPrespecifiedOutliersEditor());
         SELECTED_DIAG_FIELDS_CONFIG.set(b::parameter, getSelectedDiagFields().toArray(n->new String[n]));
@@ -190,8 +207,9 @@ public final class DemetraSaUI implements PropertyChangeSource.WithWeakListeners
     public void setConfig(Config config) {
         Config.checkDomain(config, DOMAIN);
         setSpectralLastYears(SPECTRAL_LAST_YEARS_CONFIG.get(config::getParameter));
-        setEstimationPolicyType(ESTIMATION_POLICY_TYPE_CONFIG.get(config::getParameter));
+        setSeasonalityLength(SEASONALITY_LENGTH_CONFIG.get(config::getParameter));
         setStabilityLength(STABILITY_LENGTH_CONFIG.get(config::getParameter));
+        setEstimationPolicyType(ESTIMATION_POLICY_TYPE_CONFIG.get(config::getParameter));
         setDefaultSaSpec(specOf(DEFAULT_SA_SPEC_CONFIG.get(config::getParameter)));
         setPrespecifiedOutliersEditor(PRESPECIFIED_OUTLIERS_EDITOR_CONFIG.get(config::getParameter));
         setSelectedDiagFields(Arrays.asList(SELECTED_DIAG_FIELDS_CONFIG.get(config::getParameter)));

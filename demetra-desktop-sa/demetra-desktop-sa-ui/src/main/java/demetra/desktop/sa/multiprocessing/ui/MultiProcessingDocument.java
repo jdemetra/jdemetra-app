@@ -189,6 +189,10 @@ public class MultiProcessingDocument implements Documented {
         current.removeAll(nodes);
     }
 
+    public void removeAll() {
+        current.clear();
+    }
+
     public void reset() {
         this.current.clear();
         current.addAll(of(initial.getItems()));

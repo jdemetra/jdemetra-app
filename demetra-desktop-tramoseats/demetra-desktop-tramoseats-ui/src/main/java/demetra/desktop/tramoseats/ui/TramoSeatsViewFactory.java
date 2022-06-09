@@ -13,6 +13,7 @@ import demetra.desktop.processing.ui.modelling.ModelRegressorsFactory;
 import demetra.desktop.processing.ui.modelling.NiidTestsFactory;
 import demetra.desktop.processing.ui.modelling.OutOfSampleTestFactory;
 import demetra.desktop.processing.ui.sa.SIFactory;
+import demetra.desktop.sa.ui.DemetraSaUI;
 import demetra.desktop.sa.ui.SaViews;
 import demetra.desktop.ui.processing.GenericChartUI;
 import demetra.desktop.ui.processing.GenericTableUI;
@@ -26,20 +27,32 @@ import demetra.desktop.ui.processing.stats.ResidualsDistUI;
 import demetra.desktop.ui.processing.stats.ResidualsUI;
 import demetra.desktop.ui.processing.stats.SpectrumUI;
 import demetra.html.HtmlElement;
+import demetra.html.HtmlElements;
+import demetra.html.HtmlFragment;
+import demetra.html.HtmlHeader;
 import demetra.html.core.HtmlDiagnosticsSummary;
 import demetra.information.InformationSet;
 import demetra.modelling.ComponentInformation;
 import demetra.modelling.ModellingDictionary;
 import demetra.modelling.SeriesInfo;
 import demetra.processing.ProcDiagnostic;
+import demetra.sa.ComponentDescriptor;
 import demetra.sa.ComponentType;
 import demetra.sa.SaDictionaries;
 import demetra.sa.SaManager;
 import demetra.sa.SaProcessingFactory;
+import demetra.sa.SeriesDecomposition;
+import demetra.sa.StationaryVarianceDecomposition;
+import demetra.sa.html.HtmlSeasonalityDiagnostics;
+import demetra.sa.html.HtmlSignificantSeasons;
+import demetra.sa.html.HtmlStationaryVarianceDecomposition;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDocument;
 import demetra.toolkit.dictionaries.Dictionary;
 import demetra.toolkit.dictionaries.RegressionDictionaries;
+import demetra.tramoseats.io.html.HtmlModelBasedRevisionsAnalysis;
+import demetra.tramoseats.io.html.HtmlSeatsGrowthRates;
+import demetra.tramoseats.io.html.HtmlWienerKolmogorovDiagnostics;
 import demetra.tramoseats.io.information.TramoSeatsSpecMapping;
 import demetra.util.Id;
 import demetra.util.LinearId;
@@ -49,10 +62,15 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
+import jdplus.sa.diagnostics.SignificantSeasonalityTest;
+import jdplus.sa.tests.SeasonalityTests;
 import jdplus.seats.SeatsResults;
+import jdplus.tramoseats.TramoSeatsDiagnostics;
 import jdplus.tramoseats.TramoSeatsResults;
 import jdplus.tramoseats.TramoSeatsDocument;
 import jdplus.ucarima.UcarimaModel;
+import jdplus.ucarima.WienerKolmogorovDiagnostics;
+import jdplus.ucarima.WienerKolmogorovEstimators;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -104,6 +122,11 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         return tr == null ? null : tr.getDecomposition();
     };
 
+    private final static Function<TramoSeatsDocument, TramoSeatsDiagnostics> DIAGSEXTRACTOR = source -> {
+        TramoSeatsResults tr = source.getResult();
+        return tr == null ? null : tr.getDiagnostics();
+    };
+
     private final static Function<TramoSeatsDocument, TsData> RESEXTRACTOR = MODELEXTRACTOR
             .andThen(regarima -> regarima.fullResiduals());
 
@@ -128,7 +151,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 //           s = s.select(sel).update(fs);
 //            es = es.select(sel).update(efs);
             EstimationUI.Information rslt
-                    = new EstimationUI.Information(s, null, s.fastFn(es, (a,b) -> a + b * 1.96), s.fastFn(es, (a, b) -> a - b * 1.96));
+                    = new EstimationUI.Information(s, null, s.fastFn(es, (a, b) -> a + b * 1.96), s.fastFn(es, (a, b) -> a - b * 1.96));
             rslt.markers = new LocalDateTime[]{x};
             return rslt;
         };
@@ -237,7 +260,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 
     }
 
-    //<editor-fold defaultstate="collapsed" desc="MAIN">
+//<editor-fold defaultstate="collapsed" desc="MAIN">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
     public static class MainSummaryFactory extends ProcDocumentItemFactory<TramoSeatsDocument, TramoSeatsDocument> {
 
@@ -485,7 +508,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     }
 //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="REGISTER SEATS">
+//<editor-fold defaultstate="collapsed" desc="SEATS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4000)
     public static class DecompositionSummaryFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
 
@@ -497,8 +520,8 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
                         }
                         UcarimaModel ucm = seats.getUcarimaModel();
                         return new demetra.html.modelling.HtmlUcarima(ucm.getModel(),
-                                Utility.getComponents(ucm),
-                                Utility.getComponentsName(ucm));
+                                SeatsResults.getComponents(ucm),
+                                SeatsResults.getComponentsName(ucm));
                     }),
                     new HtmlItemUI());
 
@@ -550,19 +573,6 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 
     }
 
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4200)
-    public static class ComponentsSeriesFactory extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
-
-        public ComponentsSeriesFactory() {
-            super(TramoSeatsDocument.class, DECOMPOSITION_CMPSERIES, s -> s, new GenericTableUI(true, cmpSeries()));
-        }
-
-        @Override
-        public int getPosition() {
-            return 4200;
-        }
-    }
-
 //    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 4210)
 //    public static class DecompositionWkComponentsFactory extends ItemFactory<WkInformation> {
 //
@@ -602,6 +612,18 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         }
     }
 
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4200)
+    public static class ComponentsSeriesFactory extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
+
+        public ComponentsSeriesFactory() {
+            super(TramoSeatsDocument.class, DECOMPOSITION_CMPSERIES, s -> s, new GenericTableUI(true, cmpSeries()));
+        }
+
+        @Override
+        public int getPosition() {
+            return 4200;
+        }
+    }
 //    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 402020)
 //    public static class DecompositionWkFinalsFactory extends ItemFactory<WkInformation> {
 //
@@ -615,94 +637,145 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 //        }
 //    }
 //
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 402030)
-//    public static class DecompositionWkErrorsFactory extends ItemFactory<WkInformation> {
-//
-//        public DecompositionWkErrorsFactory() {
-//            super(DECOMPOSITION_ERRORS, wkExtractor(), new WkErrorsUI());
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 402030;
-//        }
-//    }
-//
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 402050)
-//    public static class DecompositionGrowthFactory extends ItemFactory<CompositeResults> {
-//
-//        public DecompositionGrowthFactory() {
-//            super(DECOMPOSITION_RATES, new DefaultInformationExtractor<TramoSeatsDocument, CompositeResults>() {
-//                @Override
-//                public CompositeResults retrieve(TramoSeatsDocument source) {
-//                    CompositeResults results = source.getResults();
-//                    if (!results.isSuccessful()) {
-//                        return null;
-//                    } else {
-//                        return results;
-//                    }
-//                }
-//            }, new GrowthRatesUI());
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 402050;
-//        }
-//    }
-//
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 403000)
-//    public static class DecompositionTestsFactory extends ItemFactory<ModelBasedUI.Information> {
-//
-//        public DecompositionTestsFactory() {
-//            super(DECOMPOSITION_TESTS, new DefaultInformationExtractor<TramoSeatsDocument, ModelBasedUI.Information>() {
-//                @Override
-//                public ModelBasedUI.Information retrieve(TramoSeatsDocument source) {
-//                    SeatsResults rslt = source.getDecompositionPart();
-//                    if (rslt == null) {
-//                        return null;
-//                    }
-//                    ModelBasedUI.Information info = new ModelBasedUI.Information();
-//                    info.decomposition = rslt.getComponents();
-//                    info.ucm = rslt.getUcarimaModel();
-//                    info.err = rslt.getModel().getSer();
-//                    return info;
-//                }
-//            }, new ModelBasedUI());
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 403000;
-//        }
-//    }
-//
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 403010)
-//    public static class StationaryVarianceDecompositionFactory extends ItemFactory<StationaryVarianceDecomposition> {
-//
-//        public StationaryVarianceDecompositionFactory() {
-//            super(DECOMPOSITION_VAR, stvarExtractor(), new StvarUI());
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 403010;
-//        }
-//    }
-//
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 403005)
-//    public static class SignificantSeasonalityFactory extends ItemFactory<CompositeResults> {
-//
-//        public SignificantSeasonalityFactory() {
-//            super(DECOMPOSITION_SIGSEAS, saExtractor(), new SigSeasUI());
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 403005;
-//        }
-//    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4300)
+    public static class DecompositionWkErrorsFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public DecompositionWkErrorsFactory() {
+            super(TramoSeatsDocument.class, DECOMPOSITION_ERRORS, DECOMPOSITIONEXTRACTOR.andThen(
+                    (SeatsResults seats) -> {
+                        if (seats == null) {
+                            return null;
+                        }
+                        try {
+                            ComponentDescriptor[] descriptors = SeatsResults.airlineDescriptors.toArray(ComponentDescriptor[]::new);
+                            WienerKolmogorovEstimators estimators = new WienerKolmogorovEstimators(seats.getCompactUcarimaModel());
+                            int period = seats.getOriginalModel().getPeriod();
+                            return new HtmlModelBasedRevisionsAnalysis(period, estimators, descriptors);
+                        } catch (Exception err) {
+                        }
+                        return new HtmlFragment("Unable to compute model-based diagnostics");
+                    }
+            ), new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 4300;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4310)
+    public static class DecompositionGrowthFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public DecompositionGrowthFactory() {
+            super(TramoSeatsDocument.class, DECOMPOSITION_RATES, DECOMPOSITIONEXTRACTOR.andThen(
+                    (SeatsResults seats) -> {
+                        if (seats == null) {
+                            return null;
+                        }
+                        return new HtmlSeatsGrowthRates(seats);
+                    }
+            ), new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 4310;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4320)
+    public static class DecompositionTestsFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public DecompositionTestsFactory() {
+            super(TramoSeatsDocument.class, DECOMPOSITION_TESTS, DECOMPOSITIONEXTRACTOR.andThen(
+                    (SeatsResults seats) -> {
+                        if (seats == null) {
+                            return null;
+                        }
+                        try {
+                            SeriesDecomposition decomposition = seats.getInitialComponents();
+                            UcarimaModel ucm = seats.getCompactUcarimaModel();
+                            String[] desc = new String[]{"Trend", "Seasonally adjusted", "Seasonal", "Irregular"};
+                            int[] cmps = new int[]{1, -2, 2, 3};
+                            boolean[] signals = new boolean[]{true, false, true, true};
+                            double err = Math.sqrt(seats.getInnovationVariance());
+                            TsData t = decomposition.getSeries(ComponentType.Trend, ComponentInformation.Value);
+                            TsData s = decomposition.getSeries(ComponentType.Seasonal, ComponentInformation.Value);
+                            TsData i = decomposition.getSeries(ComponentType.Irregular, ComponentInformation.Value);
+                            TsData sa = decomposition.getSeries(ComponentType.SeasonallyAdjusted, ComponentInformation.Value);
+
+                            double[][] data = new double[][]{
+                                t.getValues().toArray(),
+                                sa == null ? null : sa.getValues().toArray(),
+                                s == null ? null : s.getValues().toArray(),
+                                i == null ? null : i.getValues().toArray()
+                            };
+                            WienerKolmogorovDiagnostics diags = WienerKolmogorovDiagnostics.make(ucm, err, data, cmps);
+                            if (diags != null) {
+                                return new HtmlWienerKolmogorovDiagnostics(diags, desc, signals, t.getAnnualFrequency());
+                            }
+                        } catch (Exception err) {
+                        }
+                        return new HtmlFragment("Unable to compute model-based diagnostics");
+                    }), new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 4320;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4900)
+    public static class SignificantSeasonalityFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public SignificantSeasonalityFactory() {
+            super(TramoSeatsDocument.class, DECOMPOSITION_SIGSEAS, DECOMPOSITIONEXTRACTOR.andThen(
+                    (SeatsResults seats) -> {
+                        if (seats == null) {
+                            return null;
+                        }
+                        TsData s = seats.getInitialComponents().getSeries(ComponentType.Seasonal, ComponentInformation.Value);
+                        TsData es = seats.getInitialComponents().getSeries(ComponentType.Seasonal, ComponentInformation.Stdev);
+                        TsData fs = seats.getInitialComponents().getSeries(ComponentType.Seasonal, ComponentInformation.Forecast);
+                        TsData fes = seats.getInitialComponents().getSeries(ComponentType.Seasonal, ComponentInformation.StdevForecast);
+                        int[] test99 = SignificantSeasonalityTest.test(s, es, fs, fes, 0.01);
+                        int[] test95 = SignificantSeasonalityTest.test(s, es, fs, fes, 0.05);
+                        return new HtmlSignificantSeasons(test99, test95);
+                    }
+            ), new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 4900;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4910)
+    public static class StationaryVarianceDecompositionFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public StationaryVarianceDecompositionFactory() {
+            super(TramoSeatsDocument.class, DECOMPOSITION_VAR, DIAGSEXTRACTOR.andThen(
+                    (TramoSeatsDiagnostics diags) -> {
+                        StationaryVarianceDecomposition decomp = diags.getVarianceDecomposition();
+                        if (decomp == null) {
+                            return null;
+                        }
+                        return new HtmlStationaryVarianceDecomposition(decomp);
+                    }),
+                    new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 4910;
+        }
+    }
 //</editor-fold>
+
 //<editor-fold defaultstate="collapsed" desc="DIAGNOSTICS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5000)
     public static class DiagnosticsSummaryFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
@@ -726,12 +799,241 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         }
     }
 
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5010)
+    public static class OriginalSeasonalityFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public OriginalSeasonalityFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_OSEASONALITY, (TramoSeatsDocument doc) -> {
+                TramoSeatsResults rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getPreprocessing().transformedSeries();
+                if (s == null) {
+                    return null;
+                }
+                return new HtmlElements(new HtmlHeader(1, "Original [transformed] series", true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 1, true, true), false));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5010;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5020)
+    public static class LinSeasonalityFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public LinSeasonalityFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_LSEASONALITY, (TramoSeatsDocument doc) -> {
+                TramoSeatsResults rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getPreprocessing().linearizedSeries();
+                if (s == null) {
+                    return null;
+                }
+                return new HtmlElements(new HtmlHeader(1, "Linearized series", true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 1, true, true), false));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5020;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5030)
+    public static class ResSeasonalityFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public ResSeasonalityFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_RSEASONALITY, (TramoSeatsDocument doc) -> {
+                TramoSeatsResults rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getPreprocessing().fullResiduals();
+                if (s == null) {
+                    return null;
+                }
+                return new HtmlElements(new HtmlHeader(1, "Full residuals", true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 0, false, true), true));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5030;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5040)
+    public static class SaSeasonalityFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public SaSeasonalityFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_SASEASONALITY, (TramoSeatsDocument doc) -> {
+                TramoSeatsResults rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getDecomposition().getInitialComponents().getSeries(ComponentType.SeasonallyAdjusted, ComponentInformation.Value);
+                if (s == null) {
+                    return null;
+                }
+                return new HtmlElements(new HtmlHeader(1, "[Linearized] seasonally adjusted series", true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 1, true, true), true));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5030;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5050)
+    public static class IrrSeasonalityFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public IrrSeasonalityFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_ISEASONALITY, (TramoSeatsDocument doc) -> {
+                TramoSeatsResults rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getDecomposition().getInitialComponents().getSeries(ComponentType.Irregular, ComponentInformation.Value);
+                if (s == null) {
+                    return null;
+                }
+                return new HtmlElements(new HtmlHeader(1, "[Linearized] irregular component", true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 0, false, true), true));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5050;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5060)
+    public static class LastResSeasonalityFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public LastResSeasonalityFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_LASTRSEASONALITY, (TramoSeatsDocument doc) -> {
+                TramoSeatsResults rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getPreprocessing().fullResiduals();
+                if (s == null) {
+                    return null;
+                }
+                StringBuilder header=new StringBuilder().append("Full residuals");
+                int ny = DemetraSaUI.get().getSeasonalityLength();
+                if (ny > 0) {
+                    s = s.drop(Math.max(0, s.length() - s.getAnnualFrequency() * ny), 0);
+                    header.append(" (last ").append(ny).append(" years)");
+                }
+                return new HtmlElements(new HtmlHeader(1, header.toString(), true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 0, false, true), true));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5060;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5070)
+    public static class LastSaSeasonalityFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public LastSaSeasonalityFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_LASTSASEASONALITY, (TramoSeatsDocument doc) -> {
+                TramoSeatsResults rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getDecomposition().getInitialComponents().getSeries(ComponentType.SeasonallyAdjusted, ComponentInformation.Value);
+                if (s == null) {
+                    return null;
+                }
+                StringBuilder header=new StringBuilder().append("[Linearized] seasonally adjusted series");
+                int ny = DemetraSaUI.get().getSeasonalityLength();
+                if (ny > 0) {
+                    s = s.drop(Math.max(0, s.length() - s.getAnnualFrequency() * ny - 1), 0);
+                    header.append(" (last ").append(ny).append(" years)");
+                }
+                return new HtmlElements(new HtmlHeader(1, header.toString(), true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 1, true, true), true));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5070;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5080)
+    public static class LastIrrSeasonalityFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public LastIrrSeasonalityFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_LASTISEASONALITY, (TramoSeatsDocument doc) -> {
+                TramoSeatsResults rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getDecomposition().getInitialComponents().getSeries(ComponentType.Irregular, ComponentInformation.Value);
+                if (s == null) {
+                    return null;
+                }
+                StringBuilder header=new StringBuilder().append("[Linearized] irregular component");
+                 int ny = DemetraSaUI.get().getSeasonalityLength();
+                if (ny > 0) {
+                    s = s.drop(Math.max(0, s.length() - s.getAnnualFrequency() * ny), 0);
+                    header.append(" (last ").append(ny).append(" years)");
+               }
+                return new HtmlElements(new HtmlHeader(1, header.toString(), true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 0, false, true), true));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5080;
+        }
+    }
+
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5310)
     public static class ModelResSpectrum extends ProcDocumentItemFactory<TramoSeatsDocument, TsData> {
 
         public ModelResSpectrum() {
             super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_SPECTRUM_RES,
-                    RESEXTRACTOR,
+                    RESEXTRACTOR.andThen(
+                            (TsData s) -> {
+                                if (s == null) {
+                                    return null;
+                                }
+                                int ny = DemetraSaUI.get().getSpectralLastYears();
+                                if (ny > 0) {
+                                    s = s.drop(Math.max(0, s.length() - s.getAnnualFrequency() * ny), 0);
+                                }
+                                return s;
+                            }
+                    ),
                     new SpectrumUI(true));
 
         }
@@ -741,6 +1043,67 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             return 5310;
         }
     }
-//</editor-fold>
 
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5320)
+    public static class DiagnosticsSpectrumIFactory extends ProcDocumentItemFactory<TramoSeatsDocument, TsData> {
+
+        public DiagnosticsSpectrumIFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_SPECTRUM_I,
+                    DECOMPOSITIONEXTRACTOR.andThen(
+                            (SeatsResults seats) -> {
+                                if (seats == null) {
+                                    return null;
+                                }
+                                TsData s = seats.getInitialComponents().getSeries(ComponentType.Irregular, ComponentInformation.Value);
+                                if (s == null) {
+                                    return null;
+                                }
+                                int ny = DemetraSaUI.get().getSpectralLastYears();
+                                if (ny > 0) {
+                                    s = s.drop(Math.max(0, s.length() - s.getAnnualFrequency() * ny), 0);
+                                }
+                                return s;
+                            }
+                    ),
+                    new SpectrumUI(false));
+        }
+
+        @Override
+        public int getPosition() {
+            return 5320;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5330)
+    public static class DiagnosticsSpectrumSaFactory extends ProcDocumentItemFactory<TramoSeatsDocument, TsData> {
+
+        public DiagnosticsSpectrumSaFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_SPECTRUM_SA,
+                    DECOMPOSITIONEXTRACTOR.andThen(
+                            (SeatsResults seats) -> {
+                                if (seats == null) {
+                                    return null;
+                                }
+                                TsData s = seats.getInitialComponents().getSeries(ComponentType.SeasonallyAdjusted, ComponentInformation.Value);
+                                if (s == null) {
+                                    return null;
+                                }
+                                s = s.delta(1);
+                                int ny = DemetraSaUI.get().getSpectralLastYears();
+                                if (ny > 0) {
+                                    s = s.drop(Math.max(0, s.length() - s.getAnnualFrequency() * ny), 0);
+                                }
+                                return s;
+                            }
+                    ),
+                    new SpectrumUI(false));
+        }
+
+        @Override
+        public int getPosition() {
+            return 5330;
+        }
+    }
+
+//</editor-fold>
 }
