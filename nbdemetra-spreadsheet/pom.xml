@@ -114,6 +114,8 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <!-- One dependency of com.github.nbbrd.spreadsheet4j:spreadsheet-poi seems to require some classes not found on classpath (org.objectweb.asm.*) -->
+                    <verifyRuntime>warn</verifyRuntime>
                     <publicPackages>
                         <publicPackage>ec.tss.sa.output</publicPackage>
                         <publicPackage>ec.tss.tsproviders.spreadsheet.*</publicPackage>
