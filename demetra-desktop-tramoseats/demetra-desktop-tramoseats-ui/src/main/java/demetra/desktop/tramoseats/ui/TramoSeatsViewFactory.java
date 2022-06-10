@@ -15,6 +15,9 @@ import demetra.desktop.processing.ui.modelling.OutOfSampleTestFactory;
 import demetra.desktop.processing.ui.sa.SIFactory;
 import demetra.desktop.sa.ui.DemetraSaUI;
 import demetra.desktop.sa.ui.SaViews;
+import demetra.desktop.sa.ui.WkComponentsUI;
+import demetra.desktop.sa.ui.WkInformation;
+import demetra.desktop.sa.ui.WkFinalEstimatorsUI;
 import demetra.desktop.ui.processing.GenericChartUI;
 import demetra.desktop.ui.processing.GenericTableUI;
 import demetra.desktop.ui.processing.HtmlItemUI;
@@ -573,19 +576,6 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 
     }
 
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 4210)
-//    public static class DecompositionWkComponentsFactory extends ItemFactory<WkInformation> {
-//
-//        public DecompositionWkComponentsFactory() {
-//            super(DECOMPOSITION_WK_COMPONENTS, wkExtractor(), new WkComponentsUI());
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 402010;
-//        }
-//    }
-//
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4110)
     public static class DecompositionStochTrendFactory extends ProcDocumentItemFactory<TramoSeatsDocument, EstimationUI.Information> {
 
@@ -624,19 +614,52 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             return 4200;
         }
     }
-//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 402020)
-//    public static class DecompositionWkFinalsFactory extends ItemFactory<WkInformation> {
-//
-//        public DecompositionWkFinalsFactory() {
-//            super(DECOMPOSITION_WK_FINALS, wkExtractor(), new WkFinalEstimatorsUI());
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 402020;
-//        }
-//    }
-//
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4210)
+    public static class DecompositionWkComponentsFactory extends ProcDocumentItemFactory<TramoSeatsDocument, WkInformation> {
+
+        public DecompositionWkComponentsFactory() {
+            super(TramoSeatsDocument.class, DECOMPOSITION_WK_COMPONENTS, DECOMPOSITIONEXTRACTOR.andThen(
+                    (SeatsResults seats) -> {
+                        if (seats == null) {
+                            return null;
+                        }
+                        ComponentDescriptor[] descriptors = SeatsResults.descriptors.toArray(ComponentDescriptor[]::new);
+                        WienerKolmogorovEstimators estimators = new WienerKolmogorovEstimators(seats.getUcarimaModel());
+                        int period = seats.getOriginalModel().getPeriod();
+                        return new WkInformation(estimators, descriptors, period);
+                    }),
+                     new WkComponentsUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 4210;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4220)
+    public static class DecompositionWkFinalFactory extends ProcDocumentItemFactory<TramoSeatsDocument, WkInformation> {
+
+        public DecompositionWkFinalFactory() {
+            super(TramoSeatsDocument.class, DECOMPOSITION_WK_FINALS, DECOMPOSITIONEXTRACTOR.andThen(
+                    (SeatsResults seats) -> {
+                        if (seats == null) {
+                            return null;
+                        }
+                        ComponentDescriptor[] descriptors = SeatsResults.descriptors.toArray(ComponentDescriptor[]::new);
+                        WienerKolmogorovEstimators estimators = new WienerKolmogorovEstimators(seats.getUcarimaModel());
+                        int period = seats.getOriginalModel().getPeriod();
+                        return new WkInformation(estimators, descriptors, period);
+                    }),
+                     new WkFinalEstimatorsUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 4220;
+        }
+    }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4300)
     public static class DecompositionWkErrorsFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
@@ -937,7 +960,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
                 if (s == null) {
                     return null;
                 }
-                StringBuilder header=new StringBuilder().append("Full residuals");
+                StringBuilder header = new StringBuilder().append("Full residuals");
                 int ny = DemetraSaUI.get().getSeasonalityLength();
                 if (ny > 0) {
                     s = s.drop(Math.max(0, s.length() - s.getAnnualFrequency() * ny), 0);
@@ -968,7 +991,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
                 if (s == null) {
                     return null;
                 }
-                StringBuilder header=new StringBuilder().append("[Linearized] seasonally adjusted series");
+                StringBuilder header = new StringBuilder().append("[Linearized] seasonally adjusted series");
                 int ny = DemetraSaUI.get().getSeasonalityLength();
                 if (ny > 0) {
                     s = s.drop(Math.max(0, s.length() - s.getAnnualFrequency() * ny - 1), 0);
@@ -999,12 +1022,12 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
                 if (s == null) {
                     return null;
                 }
-                StringBuilder header=new StringBuilder().append("[Linearized] irregular component");
-                 int ny = DemetraSaUI.get().getSeasonalityLength();
+                StringBuilder header = new StringBuilder().append("[Linearized] irregular component");
+                int ny = DemetraSaUI.get().getSeasonalityLength();
                 if (ny > 0) {
                     s = s.drop(Math.max(0, s.length() - s.getAnnualFrequency() * ny), 0);
                     header.append(" (last ").append(ny).append(" years)");
-               }
+                }
                 return new HtmlElements(new HtmlHeader(1, header.toString(), true),
                         new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 0, false, true), true));
 

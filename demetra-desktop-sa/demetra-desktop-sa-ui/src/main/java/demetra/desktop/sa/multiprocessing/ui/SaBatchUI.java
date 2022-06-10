@@ -30,7 +30,7 @@ import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.JSpecSelectionComponent;
 import demetra.sa.SaItem;
 import demetra.desktop.sa.multiprocessing.ui.MultiProcessingController.SaProcessingState;
-import demetra.desktop.sa.ui.DemetraSaManager;
+import demetra.desktop.sa.ui.DemetraSaUI;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItemManager;
@@ -225,7 +225,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         super(controller);
         this.collection = HasTsCollectionSupport.of(this::firePropertyChange, TsInformationType.None);
         this.collection.setTsUpdateMode(TsUpdateMode.Append);
-        this.defaultSpecification = DemetraSaManager.get().getDefaultSaSpec();
+        this.defaultSpecification = DemetraSaUI.get().getDefaultSaSpec();
 
         setName(controller.getDocument().getDisplayName());
         setDisplayName(controller.getDocument().getDisplayName());

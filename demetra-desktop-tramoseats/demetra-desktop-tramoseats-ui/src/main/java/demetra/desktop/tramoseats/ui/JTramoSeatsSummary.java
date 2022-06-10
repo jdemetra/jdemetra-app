@@ -12,7 +12,7 @@ import demetra.desktop.interfaces.Disposable;
 import demetra.desktop.processing.ui.sa.JSIView;
 import demetra.desktop.ui.Disposables;
 import demetra.desktop.ui.processing.TsViewToolkit;
-import demetra.desktop.util.ComponentDescriptor;
+import demetra.sa.ComponentDescriptor;
 import demetra.desktop.util.NbComponents;
 import demetra.modelling.SeriesInfo;
 import demetra.sa.SaDictionaries;
@@ -63,10 +63,10 @@ public final class JTramoSeatsSummary extends JComponent implements Disposable{
         int n = ucm.getComponentsCount();
         ArimaModel[] models = new ArimaModel[n + 1];
         for (int i = 0; i < n; ++i) {
-            models[i] = components[i].isSignal() ? ucm.getComponent(components[i].getCmp())
-                    : ucm.getComplement(components[i].getCmp());
+            models[i] = components[i].isSignal() ? ucm.getComponent(components[i].getComponent())
+                    : ucm.getComplement(components[i].getComponent());
         }
-        models[n] = ucm.getComponent(components[4].getCmp());
+        models[n] = ucm.getComponent(components[4].getComponent());
 
         return models;
     }

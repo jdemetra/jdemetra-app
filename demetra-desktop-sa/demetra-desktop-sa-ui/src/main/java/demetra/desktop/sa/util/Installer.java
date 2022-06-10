@@ -55,13 +55,13 @@ public final class Installer extends ModuleInstall {
 
         @Override
         public void restore() {
-            DemetraSaUI ui = DemetraSaUI.getDefault();
+            DemetraSaUI ui = DemetraSaUI.get();
             tryGet(prefs).ifPresent(ui::setConfig);
         }
 
         @Override
         public void close() {
-            DemetraSaUI ui = DemetraSaUI.getDefault();
+            DemetraSaUI ui = DemetraSaUI.get();
             put(prefs, ui.getConfig());
         }
     }
