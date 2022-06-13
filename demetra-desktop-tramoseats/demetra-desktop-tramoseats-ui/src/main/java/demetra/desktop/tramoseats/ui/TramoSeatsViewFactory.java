@@ -1127,6 +1127,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             return 5330;
         }
     }
-
+    
+    
 //</editor-fold>
 }

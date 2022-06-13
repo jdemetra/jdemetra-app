@@ -15,6 +15,8 @@ import demetra.desktop.util.Pool;
 
 /**
  * @author Philippe Charles
+ * @param <D>
+ * @param <C>
  */
 public abstract class PooledItemUI<D, C extends JComponent> implements ItemUI<D>, Pool.Factory<C> {
 
