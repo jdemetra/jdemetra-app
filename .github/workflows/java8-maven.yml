@@ -36,7 +36,7 @@ jobs:
       - name: Build and (headless) test with Maven
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: mvn -B -ntp package
+          run: mvn -U -B -ntp package
 
   snapshot-job:
     needs: build-and-test-job
