@@ -43,7 +43,7 @@ jobs:
       - name: Build and (headless) test with Maven
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: mvn -B package --file pom.xml
+          run: mvn -U -B package --file pom.xml
 
   release-job:
     needs: build-and-test-job
