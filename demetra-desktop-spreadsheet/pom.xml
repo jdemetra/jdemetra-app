@@ -13,9 +13,18 @@
     <name>JD3 - Desktop - Spreadsheet</name>
     <description>This module provides spreadsheet IO (such as Excel files) to Demetra.</description>
 
-    <properties>
-        <spreadsheet4j.version>2.2.5</spreadsheet4j.version>
-    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.github.nbbrd.spreadsheet4j</groupId>
+                <artifactId>spreadsheet-bom</artifactId>
+                <version>2.4.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <!-- NetBeans -->
         <dependency>
@@ -90,82 +99,30 @@
             <version>3.0.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>eu.europa.ec.joinup.sat</groupId>
                     <artifactId>demetra-tsp-api</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>javax.cache</groupId> 
-                    <artifactId>cache-api</artifactId> 
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
+                    <groupId>com.github.nbbrd.spreadsheet4j</groupId>
+                    <artifactId>spreadsheet-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <groupId>com.github.nbbrd.spreadsheet4j</groupId>
             <artifactId>spreadsheet-xmlss</artifactId>
-            <version>${spreadsheet4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-openide-util-lookup</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.github.nbbrd.java-io-util</groupId>
-                    <artifactId>java-io-xml</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <groupId>com.github.nbbrd.spreadsheet4j</groupId>
             <artifactId>spreadsheet-od</artifactId>
-            <version>${spreadsheet4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-openide-util-lookup</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.github.nbbrd.java-io-util</groupId>
-                    <artifactId>java-io-xml</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>eu.europa.ec.joinup.sat</groupId>
-            <artifactId>spreadsheet-poi</artifactId>
-            <version>${spreadsheet4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-openide-util-lookup</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.github.nbbrd.java-io-util</groupId>
-                    <artifactId>java-io-xml</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.github.nbbrd.spreadsheet4j</groupId>
+            <artifactId>spreadsheet-xl</artifactId>
         </dependency>
         <dependency>
-            <groupId>eu.europa.ec.joinup.sat</groupId>
+            <groupId>com.github.nbbrd.spreadsheet4j</groupId>
             <artifactId>spreadsheet-html</artifactId>
-            <version>${spreadsheet4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-openide-util-lookup</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.github.nbbrd.java-io-util</groupId>
-                    <artifactId>java-io-xml</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
@@ -187,8 +144,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>demetra.desktop.spreadsheet.*</publicPackage>
-                        <publicPackage>org.apache.poi.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
