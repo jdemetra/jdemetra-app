@@ -66,7 +66,7 @@ public final class JTsChartConfig {
     private static final class TsChartConfigHandler implements BeanHandler<JTsChartConfig, JTsChart> {
 
         @Override
-        public JTsChartConfig loadBean(JTsChart r) {
+        public JTsChartConfig load(JTsChart r) {
             ColorScheme colorScheme = r.getColorScheme();
             JTsChartConfig result = new JTsChartConfig();
             result.legendVisible = r.isLegendVisible();
@@ -80,7 +80,7 @@ public final class JTsChartConfig {
         }
 
         @Override
-        public void storeBean(JTsChart resource, JTsChartConfig bean) {
+        public void store(JTsChart resource, JTsChartConfig bean) {
             resource.setLegendVisible(bean.legendVisible);
             resource.setTitleVisible(bean.titleVisible);
             resource.setAxisVisible(bean.axisVisible);

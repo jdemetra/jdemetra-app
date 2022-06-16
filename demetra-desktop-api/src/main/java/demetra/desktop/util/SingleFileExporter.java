@@ -28,6 +28,7 @@ import org.openide.filesystems.FileChooserBuilder;
 import javax.swing.*;
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -35,6 +36,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import javax.swing.filechooser.FileFilter;
 
 /**
  *
@@ -151,6 +153,16 @@ public final class SingleFileExporter {
     @NonNull
     public static FileChooserBuilder newFileChooser(@NonNull Class type) {
         return new FileChooserBuilder(type).setSelectionApprover(overwriteApprover());
+    }
+
+    @NonNull
+    public static FileChooserBuilder newFileChooser(Class<?> preferencesKey, List<FileFilter> filters) {
+        FileChooserBuilder result = newFileChooser(preferencesKey);
+        filters.forEach(result::addFileFilter);
+        if (!filters.isEmpty()) {
+            result.setFileFilter(filters.get(0));
+        }
+        return result;
     }
 
     public static FileChooserBuilder.@NonNull SelectionApprover overwriteApprover() {

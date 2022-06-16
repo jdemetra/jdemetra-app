@@ -512,12 +512,12 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
     private static final class InternalConfigHandler implements BeanHandler<InternalConfig, TxtDataTransfer> {
 
         @Override
-        public InternalConfig loadBean(TxtDataTransfer resource) {
+        public InternalConfig load(TxtDataTransfer resource) {
             return resource.config;
         }
 
         @Override
-        public void storeBean(TxtDataTransfer resource, InternalConfig bean) {
+        public void store(TxtDataTransfer resource, InternalConfig bean) {
             resource.config = bean;
         }
     }

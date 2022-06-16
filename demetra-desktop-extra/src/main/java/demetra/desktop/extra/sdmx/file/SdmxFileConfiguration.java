@@ -3,6 +3,7 @@ package demetra.desktop.extra.sdmx.file;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import demetra.desktop.util.Caches;
 import demetra.desktop.util.Persistence;
+import demetra.tsprovider.util.PropertyHandler;
 import java.time.Clock;
 import java.util.Locale;
 import java.util.function.BiConsumer;
@@ -91,7 +92,7 @@ public class SdmxFileConfiguration {
             .builderOf(SdmxFileConfiguration.class)
             .name("INSTANCE")
             .version("VERSION")
-            .onString(LANGUAGES_PROPERTY, DEFAULT_LANGUAGES, SdmxFileConfiguration::getLanguages, SdmxFileConfiguration::setLanguages)
-            .onBoolean(NO_CACHE_PROPERTY, DEFAULT_NO_CACHE, SdmxFileConfiguration::isNoCache, SdmxFileConfiguration::setNoCache)
+            .with(PropertyHandler.onString(LANGUAGES_PROPERTY, DEFAULT_LANGUAGES), SdmxFileConfiguration::getLanguages, SdmxFileConfiguration::setLanguages)
+            .with(PropertyHandler.onBoolean(NO_CACHE_PROPERTY, DEFAULT_NO_CACHE), SdmxFileConfiguration::isNoCache, SdmxFileConfiguration::setNoCache)
             .build();
 }

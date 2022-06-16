@@ -6,6 +6,8 @@ import demetra.desktop.design.SwingProperty;
 import demetra.desktop.util.LazyGlobalService;
 import demetra.desktop.util.Persistence;
 import demetra.tsprovider.util.ObsFormat;
+import demetra.tsprovider.util.ObsFormatHandler;
+import demetra.tsprovider.util.PropertyHandler;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -117,59 +119,36 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
             .builderOf(DemetraUI.class)
             .name("demetra-ui")
             .version("3.0.0")
-            .onString(
-                    COLOR_SCHEME_NAME_PROPERTY,
-                    DEFAULT_COLOR_SCHEME_NAME,
+            .with(
+                    PropertyHandler.onString(COLOR_SCHEME_NAME_PROPERTY, DEFAULT_COLOR_SCHEME_NAME),
                     DemetraUI::getColorSchemeName,
                     DemetraUI::setColorSchemeName
             )
-            .onBoolean(
-                    POPUP_MENU_ICONS_VISIBLE_PROPERTY,
-                    DEFAULT_POPUP_MENU_ICONS_VISIBLE,
+            .with(
+                    PropertyHandler.onBoolean(POPUP_MENU_ICONS_VISIBLE_PROPERTY, DEFAULT_POPUP_MENU_ICONS_VISIBLE),
                     DemetraUI::isPopupMenuIconsVisible,
                     DemetraUI::setPopupMenuIconsVisible
             )
-            .onInt(
-                    HTML_ZOOM_RATIO_PROPERTY,
-                    DEFAULT_HTML_ZOOM_RATIO,
+            .with(
+                    PropertyHandler.onInteger(HTML_ZOOM_RATIO_PROPERTY, DEFAULT_HTML_ZOOM_RATIO),
                     DemetraUI::getHtmlZoomRatio,
                     DemetraUI::setHtmlZoomRatio
             )
-            .onConverter(
-                    new ObsFormatConverter(DEFAULT_OBS_FORMAT, "locale", "datePattern", "numberPattern"),
+            .with(
+                    ObsFormatHandler
+                            .builder()
+                            .locale(PropertyHandler.onLocale("locale", DEFAULT_OBS_FORMAT.getLocale()))
+                            .dateTimePattern(PropertyHandler.onString("dateTimePattern", DEFAULT_OBS_FORMAT.getDateTimePattern()))
+                            .numberPattern(PropertyHandler.onString("numberPattern", DEFAULT_OBS_FORMAT.getNumberPattern()))
+                            .ignoreNumberGrouping(PropertyHandler.onBoolean("ignoreNumberGrouping", DEFAULT_OBS_FORMAT.isIgnoreNumberGrouping()))
+                            .build(),
                     DemetraUI::getObsFormat,
                     DemetraUI::setObsFormat
             )
-            .onInt(
-                    GROWTH_LAST_YEARS_PROPERTY,
-                    DEFAULT_GROWTH_LAST_YEARS,
+            .with(
+                    PropertyHandler.onInteger(GROWTH_LAST_YEARS_PROPERTY, DEFAULT_GROWTH_LAST_YEARS),
                     DemetraUI::getGrowthLastYears,
                     DemetraUI::setGrowthLastYears
             )
             .build();
-
-    private static final class ObsFormatConverter implements Config.Converter<ObsFormat> {
-
-        private final ObsFormat defaultValue;
-
-        public ObsFormatConverter(ObsFormat defaultValue, String locale, String datePattern, String numberPattern) {
-            this.defaultValue = defaultValue;
-        }
-
-        @Override
-        public ObsFormat getDefaultValue() {
-            return defaultValue;
-        }
-
-        @Override
-        public ObsFormat get(Config config) {
-            // TODO
-            return defaultValue;
-        }
-
-        @Override
-        public void set(Config.Builder builder, ObsFormat value) {
-            // TODO
-        }
-    }
 }

@@ -4,6 +4,7 @@
  */
 package demetra.desktop;
 
+import demetra.desktop.util.IconFactory;
 import java.awt.*;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -15,7 +16,7 @@ import org.openide.util.ImageUtilities;
  *
  * @author Philippe Charles
  */
-public enum DemetraIcons implements Icon {
+public enum DemetraIcons implements Icon, IconFactory {
 
     COLOR_SWATCH_16("color-swatch_16x16.png"),
     DOCUMENT_PRINT_16("document-print_16x16.png"),
@@ -54,7 +55,7 @@ public enum DemetraIcons implements Icon {
     DemetraIcons(String path) {
         this.path = "demetra/desktop/icons/" + path;
     }
-
+    
     public ImageIcon getImageIcon() {
         return ImageUtilities.loadImageIcon(path, true);
     }
@@ -77,5 +78,10 @@ public enum DemetraIcons implements Icon {
     @Deprecated
     public static Icon getPopupMenuIcon(FontAwesome icon) {
         return DemetraUI.get().isPopupMenuIconsVisible() ? icon.getIcon(Color.BLACK, 13f) : null;
+    }
+
+    @Override
+    public Image getIcon(int type, boolean opened) {
+        return getImageIcon().getImage();
     }
 }

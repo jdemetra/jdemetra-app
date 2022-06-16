@@ -16,6 +16,7 @@
  */
 package demetra.desktop;
 
+import demetra.tsprovider.util.PropertyHandler;
 import internal.util.SortedMaps;
 import nbbrd.design.ThreadSafe;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -77,9 +78,29 @@ public class Config {
         P get(@NonNull Config config);
 
         void set(@NonNull Builder builder, @Nullable P value);
+
+        static <T> Converter<T> of(@lombok.NonNull PropertyHandler<T> handler) {
+            return new Converter<T>() {
+                @Override
+                public T getDefaultValue() {
+                    return handler.getDefaultValue();
+                }
+
+                @Override
+                public T get(Config config) {
+                    return handler.get(config::getParameter);
+                }
+
+                @Override
+                public void set(Builder builder, T value) {
+                    handler.set(builder::parameter, value);
+                }
+            };
+        }
     }
 
-    public static @NonNull Config checkDomain(@NonNull Config config, @NonNull String domain) throws IllegalArgumentException {
+    @NonNull
+    public static Config checkDomain(@NonNull Config config, @NonNull String domain) throws IllegalArgumentException {
         if (!domain.equals(config.getDomain())) {
             throw new IllegalArgumentException("Not produced here");
         }

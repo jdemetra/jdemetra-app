@@ -16,7 +16,8 @@
  */
 package demetra.desktop.beans;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  *
@@ -26,8 +27,21 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  */
 public interface BeanHandler<B, R> {
 
-    @NonNull
-    B loadBean(@NonNull R resource);
+    B load(R resource);
 
-    void storeBean(@NonNull R resource, @NonNull B bean);
+    void store(R resource, B bean);
+    
+    static <B, R> BeanHandler<B, R> of(Function<R, B> getter, BiConsumer<R, B> setter) {
+        return new BeanHandler<B, R>() {
+            @Override
+            public B load(R resource) {
+                return getter.apply(resource);
+            }
+
+            @Override
+            public void store(R resource, B bean) {
+                setter.accept(resource, bean);
+            }            
+        };
+    }
 }

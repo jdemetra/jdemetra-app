@@ -113,12 +113,12 @@ public final class CsvOutputBuddy implements OutputFactoryBuddy, Configurable, P
     private static final class CsvOutputBeanHandler implements BeanHandler<CsvOutputConfiguration, CsvOutputBuddy> {
 
         @Override
-        public CsvOutputConfiguration loadBean(CsvOutputBuddy resource) {
+        public CsvOutputConfiguration load(CsvOutputBuddy resource) {
             return resource.config.clone();
         }
 
         @Override
-        public void storeBean(CsvOutputBuddy resource, CsvOutputConfiguration bean) {
+        public void store(CsvOutputBuddy resource, CsvOutputConfiguration bean) {
             resource.config = bean;
         }
     }

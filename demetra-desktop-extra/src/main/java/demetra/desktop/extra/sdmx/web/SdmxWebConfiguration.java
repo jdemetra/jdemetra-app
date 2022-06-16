@@ -3,6 +3,7 @@ package demetra.desktop.extra.sdmx.web;
 import demetra.desktop.notification.MessageUtil;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import demetra.desktop.util.Persistence;
+import demetra.tsprovider.util.PropertyHandler;
 import internal.extra.sdmx.CustomNetwork;
 import internal.extra.sdmx.SdmxAutoCompletion;
 import java.io.File;
@@ -207,12 +208,12 @@ public class SdmxWebConfiguration {
             .builderOf(SdmxWebConfiguration.class)
             .name("INSTANCE")
             .version("VERSION")
-            .onFile(SOURCES_PROPERTY, DEFAULT_SOURCES, SdmxWebConfiguration::getSources, SdmxWebConfiguration::setSources)
-            .onString(LANGUAGES_PROPERTY, DEFAULT_LANGUAGES, SdmxWebConfiguration::getLanguages, SdmxWebConfiguration::setLanguages)
-            .onBoolean(CURL_BACKEND_PROPERTY, DEFAULT_CURL_BACKEND, SdmxWebConfiguration::isCurlBackend, SdmxWebConfiguration::setCurlBackend)
-            .onBoolean(NO_CACHE_PROPERTY, DEFAULT_NO_CACHE, SdmxWebConfiguration::isNoCache, SdmxWebConfiguration::setNoCache)
-            .onBoolean(AUTO_PROXY_PROPERTY, DEFAULT_AUTO_PROXY, SdmxWebConfiguration::isAutoProxy, SdmxWebConfiguration::setAutoProxy)
-            .onBoolean(NO_DEFAULT_SSL_PROPERTY, DEFAULT_NO_DEFAULT_SSL, SdmxWebConfiguration::isNoDefaultSSL, SdmxWebConfiguration::setNoDefaultSSL)
-            .onBoolean(NO_SYSTEM_SSL_PROPERTY, DEFAULT_NO_SYSTEM_SSL, SdmxWebConfiguration::isNoSystemSSL, SdmxWebConfiguration::setNoSystemSSL)
+            .with(PropertyHandler.onFile(SOURCES_PROPERTY, DEFAULT_SOURCES), SdmxWebConfiguration::getSources, SdmxWebConfiguration::setSources)
+            .with(PropertyHandler.onString(LANGUAGES_PROPERTY, DEFAULT_LANGUAGES), SdmxWebConfiguration::getLanguages, SdmxWebConfiguration::setLanguages)
+            .with(PropertyHandler.onBoolean(CURL_BACKEND_PROPERTY, DEFAULT_CURL_BACKEND), SdmxWebConfiguration::isCurlBackend, SdmxWebConfiguration::setCurlBackend)
+            .with(PropertyHandler.onBoolean(NO_CACHE_PROPERTY, DEFAULT_NO_CACHE), SdmxWebConfiguration::isNoCache, SdmxWebConfiguration::setNoCache)
+            .with(PropertyHandler.onBoolean(AUTO_PROXY_PROPERTY, DEFAULT_AUTO_PROXY), SdmxWebConfiguration::isAutoProxy, SdmxWebConfiguration::setAutoProxy)
+            .with(PropertyHandler.onBoolean(NO_DEFAULT_SSL_PROPERTY, DEFAULT_NO_DEFAULT_SSL), SdmxWebConfiguration::isNoDefaultSSL, SdmxWebConfiguration::setNoDefaultSSL)
+            .with(PropertyHandler.onBoolean(NO_SYSTEM_SSL_PROPERTY, DEFAULT_NO_SYSTEM_SSL), SdmxWebConfiguration::isNoSystemSSL, SdmxWebConfiguration::setNoSystemSSL)
             .build();
 }

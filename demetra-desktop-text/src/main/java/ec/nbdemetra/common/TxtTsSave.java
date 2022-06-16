@@ -17,13 +17,13 @@
 package ec.nbdemetra.common;
 
 import demetra.desktop.Config;
-import demetra.desktop.TsManager;
+import demetra.desktop.ConfigBean;
 import demetra.desktop.properties.NodePropertySetBuilder;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.util.SingleFileExporter;
 import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsInformationType;
 import demetra.desktop.DemetraIcons;
+import demetra.desktop.NamedServiceSupport;
+import demetra.desktop.Persistable;
 import demetra.desktop.datatransfer.ts.TxtDataTransfer;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
@@ -31,12 +31,9 @@ import internal.demetra.tsp.text.TxtFileFilter;
 import nbbrd.io.text.Formatter;
 import nbbrd.service.ServiceProvider;
 import org.netbeans.api.progress.ProgressHandle;
-import org.openide.filesystems.FileChooserBuilder;
 import org.openide.nodes.Sheet;
-import org.openide.util.ImageUtilities;
 
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -44,119 +41,126 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 import demetra.desktop.TsActionSaveSpi;
+import demetra.desktop.TsActionSaveSpiSupport;
+import static demetra.desktop.TsActionSaveSpiSupport.newEditor;
+import demetra.desktop.util.Persistence;
+import static demetra.desktop.util.SingleFileExporter.newFileChooser;
+import demetra.tsprovider.util.PropertyHandler;
+import nbbrd.design.MightBeGenerated;
 
 /**
  * @author Philippe Charles
  * @since 2.2.0
  */
-@ServiceProvider
-public final class TxtTsSave implements TsActionSaveSpi {
+@ServiceProvider(TsActionSaveSpi.class)
+public final class TxtTsSave implements TsActionSaveSpi, Persistable {
 
-    private final FileChooserBuilder fileChooser;
-    private final OptionsBean options;
+    @lombok.experimental.Delegate(types = Persistable.class)
+    private final OptionsBean configuration = new OptionsBean();
 
-    public TxtTsSave() {
-        this.fileChooser = SingleFileExporter.newFileChooser(TxtTsSave.class).setFileFilter(new SaveFileFilter());
-        this.options = new OptionsBean();
-    }
-
-    @Override
-    public String getName() {
-        return "TxtTsSave";
-    }
-
-    @Override
-    public String getDisplayName() {
-        return "Text file";
-    }
-
-    @Override
-    public Image getIcon(int type, boolean opened) {
-        return ImageUtilities.icon2Image(DemetraIcons.PUZZLE_16);
-    }
-
-    @Override
-    public void save(List<TsCollection> input) {
-        SingleFileExporter.saveToFile(fileChooser, o -> editBean(options), o -> store(input, o, options));
-    }
-
-    //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    @OnEDT
-    private static boolean editBean(OptionsBean bean) {
-        return new PropertySheetDialogBuilder().title("Options").editSheet(getSheet(bean));
-    }
+    @lombok.experimental.Delegate
+    private final TsActionSaveSpiSupport support = TsActionSaveSpiSupport
+            .builder()
+            .name(NamedServiceSupport
+                    .builder("TxtTsSave")
+                    .displayName("Text file")
+                    .icon(DemetraIcons.PUZZLE_16)
+                    .build())
+            .fileChooser(newFileChooser(TxtTsSave.class).setFileFilter(getFilter()))
+            .bean(configuration)
+            .editor(newEditor(OptionsBean.class, OptionsBean::asSheet))
+            .task(TxtTsSave::getTask)
+            .build();
 
     @OnEDT
-    private static void store(List<TsCollection> data, File file, OptionsBean opts) {
-        SingleFileExporter
-                .builder()
-                .file(file)
-                .progressLabel("Saving to text file")
-                .onErrorNotify("Saving to text file failed")
-                .onSuccessNotify("Text file saved")
-                .build()
-                .execAsync((f, ph) -> store(data, f, opts, ph));
+    private static SingleFileExporter.SingleFileTask getTask(List<TsCollection> data, Object options) {
+        TxtDataTransfer writer = ((OptionsBean) options).toHandler();
+        return (file, progress) -> store(file, progress, data, writer);
     }
 
     @OnAnyThread
-    private static void store(List<TsCollection> data, File file, OptionsBean options, ProgressHandle ph) throws IOException {
+    private static void store(File file, ProgressHandle ph, List<TsCollection> data, TxtDataTransfer writer) throws IOException {
         ph.start();
         ph.progress("Loading time series");
-        TsCollection content = data
-                .stream()
-                .map(col -> col.load(TsInformationType.All, TsManager.get()))
-                .flatMap(TsCollection::stream)
-                .collect(TsCollection.toTsCollection());
+        TsCollection content = TsActionSaveSpiSupport.flatLoad(data);
 
         ph.progress("Creating content");
-        TxtDataTransfer handler = new TxtDataTransfer();
-        Config config = handler.getConfig().toBuilder()
-                .parameter("beginPeriod", Formatter.onBoolean().formatAsString(options.beginPeriod))
-                .parameter("showDates", Formatter.onBoolean().formatAsString(options.showDates))
-                .parameter("showTitle", Formatter.onBoolean().formatAsString(options.showTitle))
-                .parameter("vertical", Formatter.onBoolean().formatAsString(options.vertical))
-                .build();
-        handler.setConfig(config);
-        String stringContent = handler.tsCollectionToString(content);
+        String stringContent = writer.tsCollectionToString(content);
 
         ph.progress("Writing file");
         Files.write(file.toPath(), Collections.singleton(stringContent), StandardCharsets.UTF_8);
     }
 
-    private static final class SaveFileFilter extends FileFilter {
+    private static FileFilter getFilter() {
+        TxtFileFilter delegate = new TxtFileFilter();
+        return TsActionSaveSpiSupport.newFileChooserFilter(delegate, delegate.getFileDescription());
+    }
 
-        private final TxtFileFilter delegate = new TxtFileFilter();
+    @lombok.Data
+    private static final class OptionsBean implements ConfigBean {
 
+        private static final String VERTICAL_PROPERTY = "vertical";
+        private static final boolean DEFAULT_VERTICAL = true;
+        private boolean vertical = DEFAULT_VERTICAL;
+
+        private static final String SHOW_DATES_PROPERTY = "showDates";
+        private static final boolean DEFAULT_SHOW_DATES = true;
+        private boolean showDates = DEFAULT_SHOW_DATES;
+
+        private static final String SHOW_TITLE_PROPERTY = "showTitle";
+        private static final boolean DEFAULT_SHOW_TITLE = true;
+        private boolean showTitle = DEFAULT_SHOW_TITLE;
+
+        private static final String BEGIN_PERIOD_PROPERTY = "beginPeriod";
+        private static final boolean DEFAULT_BEGIN_PERIOD = true;
+        private boolean beginPeriod = DEFAULT_BEGIN_PERIOD;
+
+        @MightBeGenerated
         @Override
-        public boolean accept(File f) {
-            return f.isDirectory() || delegate.accept(f);
+        public Sheet asSheet() {
+            Sheet result = new Sheet();
+            NodePropertySetBuilder b = new NodePropertySetBuilder();
+
+            b.withBoolean().select(VERTICAL_PROPERTY, this::isVertical, this::setVertical).display("Vertical alignment").add();
+            b.withBoolean().select(SHOW_DATES_PROPERTY, this::isShowDates, this::setShowDates).display("Include date headers").add();
+            b.withBoolean().select(SHOW_TITLE_PROPERTY, this::isShowTitle, this::setShowTitle).display("Include title headers").add();
+            b.withBoolean().select(BEGIN_PERIOD_PROPERTY, this::isBeginPeriod, this::setBeginPeriod).display("Begin period").add();
+            result.put(b.build());
+
+            return result;
         }
 
         @Override
-        public String getDescription() {
-            return delegate.getFileDescription();
+        public Config getConfig() {
+            return PERSISTENCE.loadConfig(this);
         }
+
+        @Override
+        public void setConfig(Config config) throws IllegalArgumentException {
+            PERSISTENCE.storeConfig(this, config);
+        }
+
+        TxtDataTransfer toHandler() {
+            TxtDataTransfer handler = new TxtDataTransfer();
+            Config config = handler.getConfig().toBuilder()
+                    .parameter("beginPeriod", Formatter.onBoolean().formatAsString(beginPeriod))
+                    .parameter("showDates", Formatter.onBoolean().formatAsString(showDates))
+                    .parameter("showTitle", Formatter.onBoolean().formatAsString(showTitle))
+                    .parameter("vertical", Formatter.onBoolean().formatAsString(vertical))
+                    .build();
+            handler.setConfig(config);
+            return handler;
+        }
+
+        @MightBeGenerated
+        static final Persistence<OptionsBean> PERSISTENCE = Persistence
+                .builderOf(OptionsBean.class)
+                .name("INSTANCE")
+                .version("VERSION")
+                .with(PropertyHandler.onBoolean(VERTICAL_PROPERTY, DEFAULT_VERTICAL), OptionsBean::isVertical, OptionsBean::setVertical)
+                .with(PropertyHandler.onBoolean(SHOW_DATES_PROPERTY, DEFAULT_SHOW_DATES), OptionsBean::isShowDates, OptionsBean::setShowDates)
+                .with(PropertyHandler.onBoolean(SHOW_TITLE_PROPERTY, DEFAULT_SHOW_TITLE), OptionsBean::isShowTitle, OptionsBean::setShowTitle)
+                .with(PropertyHandler.onBoolean(BEGIN_PERIOD_PROPERTY, DEFAULT_BEGIN_PERIOD), OptionsBean::isBeginPeriod, OptionsBean::setBeginPeriod)
+                .build();
     }
-
-    public static final class OptionsBean {
-
-        public boolean vertical = true;
-        public boolean showDates = true;
-        public boolean showTitle = true;
-        public boolean beginPeriod = true;
-    }
-
-    private static Sheet getSheet(OptionsBean bean) {
-        Sheet result = new Sheet();
-        NodePropertySetBuilder b = new NodePropertySetBuilder();
-
-        b.withBoolean().selectField(bean, "vertical").display("Vertical alignment").add();
-        b.withBoolean().selectField(bean, "showDates").display("Include date headers").add();
-        b.withBoolean().selectField(bean, "showTitle").display("Include title headers").add();
-        b.withBoolean().selectField(bean, "beginPeriod").display("Begin period").add();
-        result.put(b.build());
-
-        return result;
-    }
-    //</editor-fold>
 }

@@ -30,6 +30,7 @@ import static ec.util.various.swing.FontAwesome.FA_SEARCH;
 import ec.util.various.swing.JCommand;
 import demetra.desktop.util.FontAwesomeUtils;
 import demetra.desktop.components.parts.HasColorSchemeSupport;
+import ec.util.spreadsheet.BookFactoryLoader;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -49,7 +50,6 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
 import static org.openide.awt.DropDownButtonFactory.createDropDownButton;
-import org.openide.util.Lookup;
 
 /**
  *
@@ -61,7 +61,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
     private final View uniqueView;
 
     public SpreadSheetBasicFileHandler() {
-        this.factories = Lookup.getDefault().lookupAll(Book.Factory.class);
+        this.factories = BookFactoryLoader.get();
         this.uniqueView = new View();
     }
 
