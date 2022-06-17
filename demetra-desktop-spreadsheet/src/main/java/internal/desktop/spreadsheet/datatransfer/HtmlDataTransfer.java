@@ -107,12 +107,12 @@ public final class HtmlDataTransfer implements DataTransferSpi, Configurable, Pe
     private static final class HtmlBeanHandler implements BeanHandler<SpreadSheetDataTransferBean, HtmlDataTransfer> {
 
         @Override
-        public SpreadSheetDataTransferBean loadBean(HtmlDataTransfer resource) {
+        public SpreadSheetDataTransferBean load(HtmlDataTransfer resource) {
             return resource.config;
         }
 
         @Override
-        public void storeBean(HtmlDataTransfer resource, SpreadSheetDataTransferBean bean) {
+        public void store(HtmlDataTransfer resource, SpreadSheetDataTransferBean bean) {
             resource.config = bean;
         }
     }

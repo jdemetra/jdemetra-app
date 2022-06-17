@@ -20,11 +20,11 @@ public final class BeanConfigurator<B, R> implements ConfigEditor {
 
     @NonNull
     public Config getConfig(R resource) {
-        return converter.doForward(beanHandler.loadBean(resource));
+        return converter.doForward(beanHandler.load(resource));
     }
 
     public void setConfig(@NonNull R resource, @NonNull Config config) throws IllegalArgumentException {
-        beanHandler.storeBean(resource, converter.doBackward(config));
+        beanHandler.store(resource, converter.doBackward(config));
     }
 
     @Override

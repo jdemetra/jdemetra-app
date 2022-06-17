@@ -119,12 +119,12 @@ public final class XmlssDataTransfer implements DataTransferSpi, Configurable, P
     private static final class XmlssBeanHandler implements BeanHandler<SpreadSheetDataTransferBean, XmlssDataTransfer> {
 
         @Override
-        public SpreadSheetDataTransferBean loadBean(XmlssDataTransfer resource) {
+        public SpreadSheetDataTransferBean load(XmlssDataTransfer resource) {
             return resource.config;
         }
 
         @Override
-        public void storeBean(XmlssDataTransfer resource, SpreadSheetDataTransferBean bean) {
+        public void store(XmlssDataTransfer resource, SpreadSheetDataTransferBean bean) {
             resource.config = bean;
         }
     }

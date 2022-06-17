@@ -7,6 +7,7 @@ import demetra.desktop.design.GlobalService;
 import demetra.desktop.design.SwingProperty;
 import demetra.desktop.util.LazyGlobalService;
 import demetra.desktop.util.Persistence;
+import demetra.tsprovider.util.PropertyHandler;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.beans.PropertyChangeSupport;
@@ -146,38 +147,38 @@ public final class DemetraBehaviour implements PropertyChangeSource.WithWeakList
             .builderOf(DemetraBehaviour.class)
             .name("demetra-ui")
             .version("3.0.0")
-            .onBoolean(SHOW_UNAVAILABLE_TS_PROVIDERS_PROPERTY,
-                    DEFAULT_SHOW_UNAVAILABLE_TS_PROVIDERS,
+            .with(
+                    PropertyHandler.onBoolean(SHOW_UNAVAILABLE_TS_PROVIDERS_PROPERTY, DEFAULT_SHOW_UNAVAILABLE_TS_PROVIDERS),
                     DemetraBehaviour::isShowUnavailableTsProviders,
                     DemetraBehaviour::setShowUnavailableTsProviders
             )
-            .onBoolean(SHOW_TS_PROVIDER_NODES_PROPERTY,
-                    DEFAULT_SHOW_TS_PROVIDER_NODES,
+            .with(
+                    PropertyHandler.onBoolean(SHOW_TS_PROVIDER_NODES_PROPERTY, DEFAULT_SHOW_TS_PROVIDER_NODES),
                     DemetraBehaviour::isShowTsProviderNodes,
                     DemetraBehaviour::setShowTsProviderNodes
             )
-            .onString(TS_ACTION_NAME_PROPERTY,
-                    DEFAULT_TS_ACTION_NAME,
+            .with(
+                    PropertyHandler.onString(TS_ACTION_NAME_PROPERTY, DEFAULT_TS_ACTION_NAME),
                     DemetraBehaviour::getTsActionName,
                     DemetraBehaviour::setTsActionName
             )
-            .onBoolean(PERSIST_TOOLS_CONTENT_PROPERTY,
-                    DEFAULT_PERSIST_TOOLS_CONTENT,
+            .with(
+                    PropertyHandler.onBoolean(PERSIST_TOOLS_CONTENT_PROPERTY, DEFAULT_PERSIST_TOOLS_CONTENT),
                     DemetraBehaviour::isPersistToolsContent,
                     DemetraBehaviour::setPersistToolsContent
             )
-            .onBoolean(PERSIST_OPENED_DATA_SOURCES_PROPERTY,
-                    DEFAULT_PERSIST_OPENED_DATA_SOURCES,
+            .with(
+                    PropertyHandler.onBoolean(PERSIST_OPENED_DATA_SOURCES_PROPERTY, DEFAULT_PERSIST_OPENED_DATA_SOURCES),
                     DemetraBehaviour::isPersistOpenedDataSources,
                     DemetraBehaviour::setPersistOpenedDataSources
             )
-            .onEnum(BATCH_POOL_SIZE_PROPERTY,
-                    DEFAULT_BATCH_POOL_SIZE,
+            .with(
+                    PropertyHandler.onEnum(BATCH_POOL_SIZE_PROPERTY, DEFAULT_BATCH_POOL_SIZE),
                     DemetraBehaviour::getBatchPoolSize,
                     DemetraBehaviour::setBatchPoolSize
             )
-            .onEnum(BATCH_PRIORITY_PROPERTY,
-                    DEFAULT_BATCH_PRIORITY,
+            .with(
+                    PropertyHandler.onEnum(BATCH_PRIORITY_PROPERTY, DEFAULT_BATCH_PRIORITY),
                     DemetraBehaviour::getBatchPriority,
                     DemetraBehaviour::setBatchPriority
             )

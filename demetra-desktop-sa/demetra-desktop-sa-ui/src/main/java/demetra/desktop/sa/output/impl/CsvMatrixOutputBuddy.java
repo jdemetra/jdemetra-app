@@ -109,12 +109,12 @@ public class CsvMatrixOutputBuddy implements OutputFactoryBuddy, Configurable, P
     private static final class CsvMatrixOutputBeanHandler implements BeanHandler<CsvMatrixOutputConfiguration, CsvMatrixOutputBuddy> {
 
         @Override
-        public CsvMatrixOutputConfiguration loadBean(CsvMatrixOutputBuddy resource) {
+        public CsvMatrixOutputConfiguration load(CsvMatrixOutputBuddy resource) {
             return resource.config.clone();
         }
 
         @Override
-        public void storeBean(CsvMatrixOutputBuddy resource, CsvMatrixOutputConfiguration bean) {
+        public void store(CsvMatrixOutputBuddy resource, CsvMatrixOutputConfiguration bean) {
             resource.config = bean;
         }
     }
