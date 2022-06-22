@@ -95,59 +95,7 @@ public final class Installer extends ModuleInstall {
     }
 
     //<editor-fold defaultstate="collapsed" desc="Steps implementation">
-    private static final class StarStep extends InstallerStep {
-
-        static final Logger LOGGER = LoggerFactory.getLogger(StarStep.class);
-        static final String DATASOURCE_PROPERTY = "StarDataSource";
-        final Preferences prefs = NbPreferences.forModule(StarStep.class).node("Star");
-
-        @Override
-        public void restore() {
-            StarList.getDefault().clear();
-
-            Parser<demetra.tsprovider.DataSource> parser = ec.tss.tsproviders.DataSource.xmlParser().andThen(TsConverter::toDataSource)::parse;
-
-            try {
-                for (String name : prefs.childrenNames()) {
-                    tryGet(prefs.node(name), DATASOURCE_PROPERTY, parser)
-                            .ifPresent(source -> StarList.getDefault().toggle(source));
-                }
-            } catch (BackingStoreException ex) {
-                LOGGER.warn("Can't get node list", ex);
-            }
-
-            for (demetra.tsprovider.DataSource o : StarList.getDefault()) {
-                TsManager.get()
-                        .getProvider(DataSourceLoader.class, o)
-                        .ifPresent(x -> x.open(o));
-            }
-        }
-
-        @Override
-        public void close() {
-            // clear the backing store
-            try {
-                for (String i : prefs.childrenNames()) {
-                    prefs.node(i).removeNode();
-                }
-            } catch (BackingStoreException ex) {
-                LOGGER.warn("Can't clear storage", ex);
-            }
-
-            Formatter<demetra.tsprovider.DataSource> formatter = ec.tss.tsproviders.DataSource.xmlFormatter(false).compose(TsConverter::fromDataSource)::format;
-
-            int i = 0;
-            for (demetra.tsprovider.DataSource o : StarList.getDefault()) {
-                Preferences node = prefs.node(String.valueOf(i++));
-                tryPut(node, DATASOURCE_PROPERTY, formatter, o);
-            }
-            try {
-                prefs.flush();
-            } catch (BackingStoreException ex) {
-                LOGGER.warn("Can't flush storage", ex);
-            }
-        }
-    }
+    private 
 
     private static final class JFreeChartStep extends InstallerStep {
 
