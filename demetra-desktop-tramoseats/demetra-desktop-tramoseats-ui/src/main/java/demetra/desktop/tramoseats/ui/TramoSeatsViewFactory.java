@@ -41,18 +41,23 @@ import demetra.modelling.SeriesInfo;
 import demetra.processing.ProcDiagnostic;
 import demetra.sa.ComponentDescriptor;
 import demetra.sa.ComponentType;
+import demetra.sa.EstimationPolicyType;
 import demetra.sa.SaDictionaries;
 import demetra.sa.SaManager;
 import demetra.sa.SaProcessingFactory;
 import demetra.sa.SeriesDecomposition;
 import demetra.sa.StationaryVarianceDecomposition;
+import demetra.sa.html.HtmlSaSlidingSpanSummary;
 import demetra.sa.html.HtmlSeasonalityDiagnostics;
 import demetra.sa.html.HtmlSignificantSeasons;
 import demetra.sa.html.HtmlStationaryVarianceDecomposition;
+import demetra.timeseries.Ts;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDocument;
+import demetra.timeseries.TsDomain;
 import demetra.toolkit.dictionaries.Dictionary;
 import demetra.toolkit.dictionaries.RegressionDictionaries;
+import demetra.tramoseats.TramoSeatsSpec;
 import demetra.tramoseats.io.html.HtmlModelBasedRevisionsAnalysis;
 import demetra.tramoseats.io.html.HtmlSeatsGrowthRates;
 import demetra.tramoseats.io.html.HtmlWienerKolmogorovDiagnostics;
@@ -68,9 +73,12 @@ import jdplus.regsarima.regular.RegSarimaModel;
 import jdplus.sa.diagnostics.SignificantSeasonalityTest;
 import jdplus.sa.tests.SeasonalityTests;
 import jdplus.seats.SeatsResults;
+import jdplus.timeseries.simplets.analysis.SlidingSpans;
 import jdplus.tramoseats.TramoSeatsDiagnostics;
 import jdplus.tramoseats.TramoSeatsResults;
 import jdplus.tramoseats.TramoSeatsDocument;
+import jdplus.tramoseats.TramoSeatsFactory;
+import jdplus.tramoseats.TramoSeatsKernel;
 import jdplus.ucarima.UcarimaModel;
 import jdplus.ucarima.WienerKolmogorovDiagnostics;
 import jdplus.ucarima.WienerKolmogorovEstimators;
@@ -629,7 +637,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
                         int period = seats.getOriginalModel().getPeriod();
                         return new WkInformation(estimators, descriptors, period);
                     }),
-                     new WkComponentsUI());
+                    new WkComponentsUI());
         }
 
         @Override
@@ -652,7 +660,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
                         int period = seats.getOriginalModel().getPeriod();
                         return new WkInformation(estimators, descriptors, period);
                     }),
-                     new WkFinalEstimatorsUI());
+                    new WkFinalEstimatorsUI());
         }
 
         @Override
@@ -1127,7 +1135,84 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             return 5330;
         }
     }
-    
-    
+
 //</editor-fold>
+//<editor-fold defaultstate="collapsed" desc="REGISTER SLIDING SPANS">
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6300)
+    public static class DiagnosticsSlidingSummaryFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
+
+        public DiagnosticsSlidingSummaryFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_SLIDING_SUMMARY, (TramoSeatsDocument source) -> {
+                TramoSeatsResults result = source.getResult();
+                if (result == null) {
+                    return null;
+                }
+                TsData input = source.getInput().getData();
+                TsDomain domain = input.getDomain();
+                TramoSeatsSpec pspec = TramoSeatsFactory.INSTANCE.generateSpec(source.getSpecification(), result);
+                TramoSeatsSpec nspec = TramoSeatsFactory.INSTANCE.refreshSpec(pspec, source.getSpecification(), EstimationPolicyType.FreeParameters, domain);
+                TramoSeatsKernel kernel = TramoSeatsKernel.of(nspec, source.getContext());
+                SlidingSpans<TramoSeatsResults> ss = new SlidingSpans<>(domain, d -> kernel.process(TsData.fitToDomain(input, d), null));
+                boolean mul = result.getFinals().getMode().isMultiplicative();
+                return new HtmlSaSlidingSpanSummary<>(ss, mul, (TramoSeatsResults cur) -> {
+                    if (cur == null) {
+                        return null;
+                    }
+                    return cur.getDecomposition().getFinalComponents().getSeries(ComponentType.Seasonal, ComponentInformation.Value);
+                }, (var cur) -> {
+                    if (cur == null) {
+                        return null;
+                    }
+                    TsData seas = cur.getDecomposition().getFinalComponents().getSeries(ComponentType.Seasonal, ComponentInformation.Value);
+                    TsData irr = cur.getDecomposition().getFinalComponents().getSeries(ComponentType.Irregular, ComponentInformation.Value);
+                    return (mul ? TsData.multiply(seas, irr) : TsData.add(seas, irr)).commit();
+                });
+            },
+                    new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 6300;
+        }
+    }
+
+//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 603010)
+//    public static class DiagnosticsSlidingSeasFactory extends ItemFactory<SlidingSpans> {
+//
+//        public DiagnosticsSlidingSeasFactory() {
+//            super(DIAGNOSTICS_SLIDING_SEAS, ssExtractor(), new SlidingSpansDetailUI(ModellingDictionary.S_CMP));
+//        }
+//
+//        @Override
+//        public int getPosition() {
+//            return 603010;
+//        }
+//    }
+//
+//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 603020)
+//    public static class DiagnosticsSlidingTdFactory extends SaDocumentViewFactory.DiagnosticsSlidingTdFactory<TramoSeatsDocument> {
+//
+//        public DiagnosticsSlidingTdFactory() {
+//            super(TramoSeatsDocument.class);
+//        }
+//
+//        @Override
+//        public int getPosition() {
+//            return 603020;
+//        }
+//    }
+//    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 603030)
+//    public static class DiagnosticsSlidingSaFactory extends SaDocumentViewFactory.DiagnosticsSlidingSaFactory<TramoSeatsDocument> {
+//
+//        public DiagnosticsSlidingSaFactory() {
+//            super(TramoSeatsDocument.class);
+//        }
+//
+//        @Override
+//        public int getPosition() {
+//            return 603030;
+//        }
+//    }
+    //</editor-fold>
 }
