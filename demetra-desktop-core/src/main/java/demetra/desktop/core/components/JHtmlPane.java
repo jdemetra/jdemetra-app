@@ -75,6 +75,9 @@ final class JHtmlPane extends JEditorPane implements HasZoomRatio {
 //                return doc;
 //            }
         });
+        // Fix font size on FlatLaf L&F
+        // See https://github.com/JFormDesigner/FlatLaf/issues/165
+        putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.FALSE);
     }
 
     private void registerActions() {
@@ -171,9 +174,11 @@ final class JHtmlPane extends JEditorPane implements HasZoomRatio {
     }
 
     private void updateInternalStyle() {
+        int fontSize = (getFont().getSize() * getZoomRatio() / 100);
+
         StyleSheet newStyle = new StyleSheet();
         newStyle.addStyleSheet(styleSheet);
-        newStyle.addRule("html { font-size: " + (getFont().getSize() * getZoomRatio() / 100) + "; }");
+        newStyle.addRule("html { font-size: " + fontSize + "; }");
 
         ((HTMLEditorKit) getEditorKit()).setStyleSheet(newStyle);
         // refresh stylesheet
