@@ -17,11 +17,13 @@
 package demetra.desktop.jfreechart;
 
 import demetra.timeseries.Ts;
+import demetra.timeseries.TsPeriod;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import org.jfree.data.DomainOrder;
 import org.jfree.data.general.AbstractSeriesDataset;
 import org.jfree.data.xy.IntervalXYDataset;
 
-import java.time.ZoneOffset;
 import java.util.List;
 
 /**
@@ -91,13 +93,13 @@ public final class TsXYDataset extends AbstractSeriesDataset implements Interval
 
     @Override
     public double getStartXValue(int series, int item) {
-        // Date in milliseconds !!
-        return 1000*delegate.get(series).getData().getDomain().get(item).start().toEpochSecond(ZoneOffset.UTC);
+        return toEpochMilli(getPeriod(series, item).start());
     }
 
     @Override
     public double getEndXValue(int series, int item) {
-        return 1000*delegate.get(series).getData().getDomain().get(item).end().toEpochSecond(ZoneOffset.UTC);
+        // FIXME: TsPeriod#end() is upper bound excluded but IntervalXYDataset#getEndXValue(int,int) is upper bound included !
+        return toEpochMilli(getPeriod(series, item).end());
     }
 
     @Override
@@ -107,12 +109,20 @@ public final class TsXYDataset extends AbstractSeriesDataset implements Interval
 
     @Override
     public double getXValue(int series, int item) {
-        // FIXME: use middle instead of start
-        return 1000*delegate.get(series).getData().getDomain().get(item).start().toEpochSecond(ZoneOffset.UTC);
+        // FIXME: use middle instead of start ?
+        return toEpochMilli(getPeriod(series, item).start());
     }
 
     @Override
     public double getYValue(int series, int item) {
         return delegate.get(series).getData().getValue(item);
+    }
+
+    private TsPeriod getPeriod(int series, int item) throws IndexOutOfBoundsException {
+        return delegate.get(series).getData().getDomain().get(item);
+    }
+
+    private long toEpochMilli(LocalDateTime dateTime) {
+        return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 }
