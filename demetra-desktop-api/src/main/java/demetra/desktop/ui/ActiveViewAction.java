@@ -9,14 +9,13 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
-import org.openide.windows.TopComponent;
 
 /**
  *
  * @author Jean Palate
  * @param <T> ActiveView
  */
-public abstract class ActiveViewAction<T extends ActiveView> extends AbstractAction implements ContextAwareAction {
+public abstract class ActiveViewAction<T extends ActiveView> extends AbstractAction implements ContextAwareAction  {
 
     private static <T extends ActiveView> T getUI(Class<T> tclass) {
         return ActiveViewManager.getInstance().getLookup().lookup(tclass);

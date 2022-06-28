@@ -15,7 +15,8 @@ import org.openide.util.Lookup;
         location = "Demetra",
         displayName = "#AdvancedOption_DisplayName_CommonUI",
         keywords = "#AdvancedOption_Keywords_CommonUI",
-        keywordsCategory = "Demetra/CommonUI"
+        keywordsCategory = "Demetra/CommonUI",
+        position=10
 )
 @org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_CommonUI=CommonUI", "AdvancedOption_Keywords_CommonUI=UI"})
 public final class CommonUIOptionsPanelController extends OptionsPanelController {

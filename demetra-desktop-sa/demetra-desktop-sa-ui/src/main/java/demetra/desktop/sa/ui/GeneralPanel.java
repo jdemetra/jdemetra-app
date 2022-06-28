@@ -19,19 +19,18 @@ import org.openide.awt.DropDownButtonFactory;
 import org.openide.util.ImageUtilities;
 
 final class GeneralPanel extends javax.swing.JPanel {
-
+    
     private final GeneralOptionsPanelController controller;
-
+    
     private final SpecSelectionComponent specComponent = new SpecSelectionComponent(true);
     private final JPopupMenu specPopup = new JPopupMenu();
-
+    
     private final JListSelection<String> fieldSelectionComponent = new JListSelection<>();
-
-
+    
     private EstimationPolicyType[] types = {EstimationPolicyType.Complete,
         EstimationPolicyType.FreeParameters,
         EstimationPolicyType.None};
-
+    
     GeneralPanel(GeneralOptionsPanelController controller) {
         this.controller = controller;
         initComponents();
@@ -56,8 +55,10 @@ final class GeneralPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         lastYearsPanel = new javax.swing.JPanel();
-        spectralLastYears = new javax.swing.JSpinner();
         spectralLabel = new javax.swing.JLabel();
+        spectralLength = new javax.swing.JSpinner();
+        seasonalityLabel = new javax.swing.JLabel();
+        seasonalityLength = new javax.swing.JSpinner();
         stabilityLabel = new javax.swing.JLabel();
         stabilityLength = new javax.swing.JSpinner();
         saPanel = new javax.swing.JPanel();
@@ -70,13 +71,17 @@ final class GeneralPanel extends javax.swing.JPanel {
 
         lastYearsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.lastYearsPanel.border.title"))); // NOI18N
 
-        spectralLastYears.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
-
         org.openide.awt.Mnemonics.setLocalizedText(spectralLabel, org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.spectralLabel.text")); // NOI18N
+
+        spectralLength.setModel(new javax.swing.SpinnerNumberModel());
+
+        org.openide.awt.Mnemonics.setLocalizedText(seasonalityLabel, org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.seasonalityLabel.text")); // NOI18N
+
+        seasonalityLength.setModel(new javax.swing.SpinnerNumberModel(10, 4, null, 1));
 
         org.openide.awt.Mnemonics.setLocalizedText(stabilityLabel, org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.stabilityLabel.text")); // NOI18N
 
-        stabilityLength.setModel(new javax.swing.SpinnerNumberModel(8, 1, null, 1));
+        stabilityLength.setModel(new javax.swing.SpinnerNumberModel(8, 4, null, 1));
 
         javax.swing.GroupLayout lastYearsPanelLayout = new javax.swing.GroupLayout(lastYearsPanel);
         lastYearsPanel.setLayout(lastYearsPanelLayout);
@@ -84,27 +89,36 @@ final class GeneralPanel extends javax.swing.JPanel {
             lastYearsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(lastYearsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(lastYearsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(stabilityLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(spectralLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(lastYearsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(spectralLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(lastYearsPanelLayout.createSequentialGroup()
+                        .addComponent(stabilityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(seasonalityLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(lastYearsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(spectralLastYears, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(stabilityLength, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lastYearsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(stabilityLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(seasonalityLength))
+                    .addComponent(spectralLength, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(53, 53, 53))
         );
         lastYearsPanelLayout.setVerticalGroup(
             lastYearsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(lastYearsPanelLayout.createSequentialGroup()
-                .addGroup(lastYearsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(spectralLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(lastYearsPanelLayout.createSequentialGroup()
-                        .addComponent(spectralLastYears, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(1, 1, 1)))
+                .addGap(0, 6, Short.MAX_VALUE)
+                .addGroup(lastYearsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(spectralLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(spectralLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(lastYearsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(stabilityLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(stabilityLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(seasonalityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(seasonalityLength))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(lastYearsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(stabilityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(stabilityLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         saPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(GeneralPanel.class, "GeneralPanel.saPanel.border.title"))); // NOI18N
@@ -134,34 +148,37 @@ final class GeneralPanel extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(revisionHistoryPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(saPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(lastYearsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(revisionHistoryPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(saPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
+                    .addComponent(lastYearsPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(lastYearsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(saPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(saPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(revisionHistoryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(revisionHistoryPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     void load() {
-        DemetraSaManager ui = DemetraSaManager.get();
-        spectralLastYears.setValue(ui.getSpectralLastYears());
-
+        DemetraSaUI ui = DemetraSaUI.get();
+        spectralLength.setValue(ui.getSpectralLastYears());
+        seasonalityLength.setValue(ui.getSeasonalityLength());
+        
+        stabilityLength.setValue(ui.getStabilityLength());
+        
         estimationPolicyComboBox.setModel(new DefaultComboBoxModel(types));
         estimationPolicyComboBox.setSelectedItem(ui.getEstimationPolicyType());
-
-        stabilityLength.setValue(ui.getStabilityLength());
-
+        
         specComponent.setSpecification(ui.getDefaultSaSpec());
         selectedSpecLabel.setText(ui.getDefaultSaSpec() == null ? "" : ui.getDefaultSaSpec().display());
-
 
 //        AbstractNodeBuilder root = new AbstractNodeBuilder();
 //        root.add(new AbstractNodeBuilder().name("Diagnostics")
@@ -170,18 +187,20 @@ final class GeneralPanel extends javax.swing.JPanel {
 //                .add(Lookup.getDefault().lookupAll(INbOutputFactory.class).stream().map(NamedServiceNode::new)).build());
 //        getDiagnosticsExplorerManager().setRootContext(root.build());
     }
-
+    
     void store() {
-        DemetraSaManager ui = DemetraSaManager.get();
-        ui.setSpectralLastYears((Integer) spectralLastYears.getValue());
-        ui.setEstimationPolicyType((EstimationPolicyType) estimationPolicyComboBox.getSelectedItem());
+        DemetraSaUI ui = DemetraSaUI.get();
+        ui.setSpectralLastYears((Integer) spectralLength.getValue());
+        ui.setSeasonalityLength((Integer) seasonalityLength.getValue());
+        
         ui.setStabilityLength((Integer) stabilityLength.getValue());
-
+        
+        ui.setEstimationPolicyType((EstimationPolicyType) estimationPolicyComboBox.getSelectedItem());
         ui.setDefaultSaSpec(specComponent.getSpecification());
 
 //        NamedServiceNode.storeAll(getDiagnosticsExplorerManager());
     }
-
+    
     boolean valid() {
         // TODO check whether form is consistent and complete
         return true;
@@ -194,10 +213,12 @@ final class GeneralPanel extends javax.swing.JPanel {
     private javax.swing.JPanel lastYearsPanel;
     private javax.swing.JPanel revisionHistoryPanel;
     private javax.swing.JPanel saPanel;
+    private javax.swing.JLabel seasonalityLabel;
+    private javax.swing.JSpinner seasonalityLength;
     private javax.swing.JLabel selectedSpecLabel;
     private javax.swing.JButton specButton;
     private javax.swing.JLabel spectralLabel;
-    private javax.swing.JSpinner spectralLastYears;
+    private javax.swing.JSpinner spectralLength;
     private javax.swing.JLabel stabilityLabel;
     private javax.swing.JSpinner stabilityLength;
     // End of variables declaration//GEN-END:variables

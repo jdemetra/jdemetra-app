@@ -28,6 +28,7 @@ import java.awt.*;
 import java.beans.PropertyVetoException;
 import java.time.LocalDateTime;
 import java.util.*;
+import jdplus.stats.DescriptiveStatistics;
 
 /**
  * @author Philippe Charles
@@ -233,11 +234,16 @@ public class ControlNode {
         b.reset("Data");
         demetra.timeseries.TsData data = ts.getData();
         if (!data.isEmpty()) {
+            DescriptiveStatistics stats=DescriptiveStatistics.of(data.getValues());
             b.with(TsUnit.class).select(data, "getTsUnit", null).display("TsUnit").add();
             b.with(String.class).select("startPeriod", ()->data.getDomain().getStartPeriod().display(), null).display("First period").add();
             b.with(String.class).select("lastPeriod", ()->data.getDomain().getLastPeriod().display(), null).display("Last period").add();
             b.withInt().select(data, "length", null).display("Obs count").add();
             b.with(demetra.timeseries.TsData.class).selectConst("values", data).display("Values").add();
+            b.withDouble().select("min", ()->stats.getMin(), null).display("Min").add();
+            b.withDouble().select("max", ()->stats.getMax(), null).display("Max").add();
+            b.withDouble().select("average", ()->stats.getAverage(), null).display("Average").add();
+            b.withDouble().select("stdev", ()->stats.getStdev(), null).display("Standard deviation").add();
         } else {
             b.with(String.class).selectConst("InvalidDataCause", data.getEmptyCause()).display("Invalid data cause").add();
         }

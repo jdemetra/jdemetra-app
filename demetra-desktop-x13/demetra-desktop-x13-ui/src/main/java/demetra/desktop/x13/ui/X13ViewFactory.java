@@ -13,6 +13,7 @@ import demetra.desktop.processing.ui.modelling.ModelRegressorsFactory;
 import demetra.desktop.processing.ui.modelling.NiidTestsFactory;
 import demetra.desktop.processing.ui.modelling.OutOfSampleTestFactory;
 import demetra.desktop.processing.ui.sa.SIFactory;
+import demetra.desktop.sa.ui.DemetraSaUI;
 import demetra.desktop.sa.ui.SaViews;
 import demetra.desktop.ui.processing.GenericChartUI;
 import demetra.desktop.ui.processing.GenericTableUI;
@@ -26,6 +27,8 @@ import demetra.desktop.ui.processing.stats.ResidualsUI;
 import demetra.desktop.ui.processing.stats.SpectrumUI;
 import demetra.html.AbstractHtmlElement;
 import demetra.html.HtmlElement;
+import demetra.html.HtmlElements;
+import demetra.html.HtmlHeader;
 import demetra.html.HtmlStream;
 import demetra.html.HtmlTag;
 import demetra.html.core.HtmlDiagnosticsSummary;
@@ -39,6 +42,7 @@ import demetra.sa.SaDictionaries;
 import demetra.sa.SaManager;
 import demetra.sa.SaProcessingFactory;
 import demetra.sa.SeriesDecomposition;
+import demetra.sa.html.HtmlSeasonalityDiagnostics;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDocument;
 import demetra.toolkit.dictionaries.Dictionary;
@@ -55,6 +59,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
+import jdplus.sa.tests.SeasonalityTests;
 import jdplus.x11.X11Results;
 import jdplus.x13.X13Document;
 import jdplus.x13.X13Results;
@@ -639,6 +644,236 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
         @Override
         public int getPosition() {
             return 5000;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5010)
+    public static class OriginalSeasonalityFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
+
+        public OriginalSeasonalityFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_OSEASONALITY, (X13Document doc) -> {
+                X13Results rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getPreprocessing().transformedSeries();
+                if (s == null) {
+                    return null;
+                }
+                return new HtmlElements(new HtmlHeader(1, "Original [transformed] series", true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 1, true, true), false));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5010;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5020)
+    public static class LinSeasonalityFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
+
+        public LinSeasonalityFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_LSEASONALITY, (X13Document doc) -> {
+                X13Results rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getPreprocessing().linearizedSeries();
+                if (s == null) {
+                    return null;
+                }
+                return new HtmlElements(new HtmlHeader(1, "Linearized series", true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 1, true, true), false));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5020;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5030)
+    public static class ResSeasonalityFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
+
+        public ResSeasonalityFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_RSEASONALITY, (X13Document doc) -> {
+                X13Results rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getPreprocessing().fullResiduals();
+                if (s == null) {
+                    return null;
+                }
+                return new HtmlElements(new HtmlHeader(1, "Full residuals", true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 0, false, true), true));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5030;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5040)
+    public static class SaSeasonalityFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
+
+        public SaSeasonalityFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_SASEASONALITY, (X13Document doc) -> {
+                X13Results rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getDecomposition().getD11();
+                if (s == null) {
+                    return null;
+                }
+                if (rslt.getDecomposition().getMode().isMultiplicative()) {
+                    s = s.log();
+                }
+                return new HtmlElements(new HtmlHeader(1, "[Linearized] seasonally adjusted series", true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 1, true, true), true));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5030;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5050)
+    public static class IrrSeasonalityFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
+
+        public IrrSeasonalityFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_ISEASONALITY, (X13Document doc) -> {
+                X13Results rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getDecomposition().getD13();
+                if (s == null) {
+                    return null;
+                }
+                if (rslt.getDecomposition().getMode().isMultiplicative()) {
+                    s = s.log();
+                }
+                return new HtmlElements(new HtmlHeader(1, "[Linearized] irregular component", true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 0, false, true), true));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5050;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5060)
+    public static class LastResSeasonalityFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
+
+        public LastResSeasonalityFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_LASTRSEASONALITY, (X13Document doc) -> {
+                X13Results rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getPreprocessing().fullResiduals();
+                if (s == null) {
+                    return null;
+                }
+                StringBuilder header = new StringBuilder().append("Full residuals");
+                int ny = DemetraSaUI.get().getSeasonalityLength();
+                if (ny > 0) {
+                    s = s.drop(Math.max(0, s.length() - s.getAnnualFrequency() * ny), 0);
+                    header.append(" (last ").append(ny).append(" years)");
+                }
+                return new HtmlElements(new HtmlHeader(1, header.toString(), true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 0, false, true), true));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5060;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5070)
+    public static class LastSaSeasonalityFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
+
+        public LastSaSeasonalityFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_LASTSASEASONALITY, (X13Document doc) -> {
+                X13Results rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getDecomposition().getD11();
+                if (s == null) {
+                    return null;
+                }
+                if (rslt.getDecomposition().getMode().isMultiplicative()) {
+                    s = s.log();
+                }
+                StringBuilder header = new StringBuilder().append("[Linearized] seasonally adjusted series");
+                int ny = DemetraSaUI.get().getSeasonalityLength();
+                if (ny > 0) {
+                    s = s.drop(Math.max(0, s.length() - s.getAnnualFrequency() * ny - 1), 0);
+                    header.append(" (last ").append(ny).append(" years)");
+                }
+                return new HtmlElements(new HtmlHeader(1, header.toString(), true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 1, true, true), true));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5070;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5080)
+    public static class LastIrrSeasonalityFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
+
+        public LastIrrSeasonalityFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_LASTISEASONALITY, (X13Document doc) -> {
+                X13Results rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                TsData s = rslt.getDecomposition().getD13();
+                if (s == null) {
+                    return null;
+                }
+                if (rslt.getDecomposition().getMode().isMultiplicative()) {
+                    s = s.log();
+                }
+                StringBuilder header = new StringBuilder().append("[Linearized] irregular component");
+                int ny = DemetraSaUI.get().getSeasonalityLength();
+                if (ny > 0) {
+                    s = s.drop(Math.max(0, s.length() - s.getAnnualFrequency() * ny), 0);
+                    header.append(" (last ").append(ny).append(" years)");
+                }
+                return new HtmlElements(new HtmlHeader(1, header.toString(), true),
+                        new HtmlSeasonalityDiagnostics(SeasonalityTests.seasonalityTest(s.getValues(), s.getAnnualFrequency(), 0, false, true), true));
+
+            }, new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 5080;
         }
     }
 

@@ -17,7 +17,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
 @ActionID(category = "SaProcessing",
-        id = "demetra.sa.multiprocessing.actions.Accept")
+        id = "demetra.desktop.sa.multiprocessing.actions.Accept")
 @ActionRegistration(displayName = "#CTL_Accept", lazy = false)
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.CONTEXTPATH, position = 1260),

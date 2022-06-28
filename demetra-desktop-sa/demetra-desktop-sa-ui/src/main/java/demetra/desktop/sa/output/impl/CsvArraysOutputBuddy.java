@@ -39,42 +39,41 @@ import demetra.desktop.Persistable;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.beans.BeanConfigurator;
 import demetra.desktop.sa.output.AbstractOutputNode;
+import demetra.desktop.sa.output.Arrays;
 import demetra.desktop.sa.output.OutputFactoryBuddy;
 import demetra.desktop.sa.output.OutputSelection;
-import demetra.desktop.sa.output.Series;
 import demetra.sa.SaManager;
 import demetra.sa.SaOutputFactory;
-import demetra.sa.csv.CsvLayout;
-import demetra.sa.csv.CsvOutputConfiguration;
-import demetra.sa.csv.CsvOutputFactory;
+import demetra.sa.csv.CsvArrayOutputConfiguration;
+import demetra.sa.csv.CsvArrayOutputFactory;
 
 /**
  *
  * @author Philippe Charles
  */
 @ServiceProvider(service = OutputFactoryBuddy.class, position = 1000)
-public final class CsvOutputBuddy implements OutputFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public final class CsvArraysOutputBuddy implements OutputFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
 
-    private final BeanConfigurator<CsvOutputConfiguration, CsvOutputBuddy> configurator = createConfigurator();
-    private CsvOutputConfiguration config = new CsvOutputConfiguration();
+    private final BeanConfigurator<CsvArrayOutputConfiguration, CsvArraysOutputBuddy> configurator = createConfigurator();
+    private CsvArrayOutputConfiguration config = new CsvArrayOutputConfiguration();
     
-    public CsvOutputBuddy(){
-        config.setSeries(OutputSelection.seriesItems(SaManager.processors()));
+    public CsvArraysOutputBuddy(){
+        config.setArrays(OutputSelection.arraysItems(SaManager.processors()));
     }
 
     @Override
     public AbstractOutputNode createNode() {
-        return new CsvNode(config);
+        return new CsvArraysNode(config);
     }
 
     @Override
     public String getName() {
-        return CsvOutputFactory.NAME;
+        return CsvArrayOutputFactory.NAME;
     }
 
     @Override
     public AbstractOutputNode createNodeFor(SaOutputFactory fac) {
-        return fac instanceof CsvOutputFactory ? new CsvNode(((CsvOutputFactory) fac).getConfiguration()) : null;
+        return fac instanceof CsvArrayOutputFactory ? new CsvArraysNode(((CsvArrayOutputFactory) fac).getConfiguration()) : null;
     }
 
     @Override
@@ -99,89 +98,89 @@ public final class CsvOutputBuddy implements OutputFactoryBuddy, Configurable, P
 
     @Override
     public void reset() {
-        config = new CsvOutputConfiguration();
+        config = new CsvArrayOutputConfiguration();
     }
 
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
-    private static BeanConfigurator<CsvOutputConfiguration, CsvOutputBuddy> createConfigurator() {
-        return new BeanConfigurator<>(new CsvOutputBeanHandler(), new CsvOutputConverter(), new CsvOutputBeanEditor());
+    private static BeanConfigurator<CsvArrayOutputConfiguration, CsvArraysOutputBuddy> createConfigurator() {
+        return new BeanConfigurator<>(new CsvArraysOutputBeanHandler(), new CsvArraysOutputConverter(), new CsvArraysOutputBeanEditor());
     }
 
-    private static final class CsvOutputBeanHandler implements BeanHandler<CsvOutputConfiguration, CsvOutputBuddy> {
+    private static final class CsvArraysOutputBeanHandler implements BeanHandler<CsvArrayOutputConfiguration, CsvArraysOutputBuddy> {
 
         @Override
-        public CsvOutputConfiguration load(CsvOutputBuddy resource) {
+        public CsvArrayOutputConfiguration load(CsvArraysOutputBuddy resource) {
             return resource.config.clone();
         }
 
         @Override
-        public void store(CsvOutputBuddy resource, CsvOutputConfiguration bean) {
+        public void store(CsvArraysOutputBuddy resource, CsvArrayOutputConfiguration bean) {
             resource.config = bean;
         }
     }
 
-    private static final class CsvOutputBeanEditor implements BeanEditor {
+    private static final class CsvArraysOutputBeanEditor implements BeanEditor {
 
         @Override
         public boolean editBean(Object bean) throws IntrospectionException {
             return new PropertySheetDialogBuilder()
-                    .title("Edit csv output config")
-                    .editNode(new CsvNode((CsvOutputConfiguration) bean));
+                    .title("Edit csv arrays output config")
+                    .editNode(new CsvArraysNode((CsvArrayOutputConfiguration) bean));
         }
     }
 
-    private static final class CsvOutputConverter implements Converter<CsvOutputConfiguration, Config> {
+    private static final class CsvArraysOutputConverter implements Converter<CsvArrayOutputConfiguration, Config> {
 
-        private final Property<CsvLayout> presentationParam = Property.of("presentation", CsvLayout.List, Parser.onEnum(CsvLayout.class), Formatter.onEnum());
+//        private final Property<CsvLayout> presentationParam = Property.of("presentation", CsvLayout.List, Parser.onEnum(CsvLayout.class), Formatter.onEnum());
         private final Property<File> folderParam = Property.of("folder", new File(""), Parser.onFile(), Formatter.onFile());
         private final Property<String> filePrefixParam = Property.of("filePrefix", "series", Parser.onString(), Formatter.onString());
-        private final Property<String> seriesParam = Property.of("series", "y,t,sa,s,i,ycal", Parser.onString(), Formatter.onString());
+        private final Property<String> arraysParam = Property.of("arrays", null, Parser.onString(), Formatter.onString());
         private final BooleanProperty fullNameParam = BooleanProperty.of("fullName", true);
 
         @Override
-        public Config doForward(CsvOutputConfiguration a) {
+        public Config doForward(CsvArrayOutputConfiguration a) {
             Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv", "");
-            presentationParam.set(result::parameter, a.getPresentation());
+//            presentationParam.set(result::parameter, a.getPresentation());
             folderParam.set(result::parameter, a.getFolder());
             filePrefixParam.set(result::parameter, a.getFilePrefix());
-            seriesParam.set(result::parameter, a.getSeries().stream().collect(Collectors.joining(",")));
+            arraysParam.set(result::parameter, a.getArrays().stream().collect(Collectors.joining(",")));
             fullNameParam.set(result::parameter, a.isFullName());
             return result.build();
         }
 
         @Override
-        public CsvOutputConfiguration doBackward(Config b) {
-            CsvOutputConfiguration result = new CsvOutputConfiguration();
-            result.setPresentation(presentationParam.get(b::getParameter));
+        public CsvArrayOutputConfiguration doBackward(Config b) {
+            CsvArrayOutputConfiguration result = new CsvArrayOutputConfiguration();
+//            result.setPresentation(presentationParam.get(b::getParameter));
             result.setFolder(folderParam.get(b::getParameter));
             result.setFilePrefix(filePrefixParam.get(b::getParameter));
-            result.setSeries(Splitter.on(",").trimResults().splitToList(seriesParam.get(b::getParameter)));
+            result.setArrays(Splitter.on(",").trimResults().splitToList(arraysParam.get(b::getParameter)));
             result.setFullName(fullNameParam.get(b::getParameter));
             return result;
         }
     }
 
-    private final static class CsvNode extends AbstractOutputNode<CsvOutputConfiguration> {
+    private final static class CsvArraysNode extends AbstractOutputNode<CsvArrayOutputConfiguration> {
 
-        private static CsvOutputConfiguration newConfiguration(){
-            CsvOutputConfiguration config = new CsvOutputConfiguration();
-            config.setSeries(OutputSelection.seriesItems(SaManager.processors()));
+        private static CsvArrayOutputConfiguration newConfiguration(){
+            CsvArrayOutputConfiguration config = new CsvArrayOutputConfiguration();
+            config.setArrays(OutputSelection.arraysItems(SaManager.processors()));
             return config;
         }
 
-        public CsvNode() {
+        public CsvArraysNode() {
             super(newConfiguration());
-            setDisplayName(CsvOutputFactory.NAME);
+            setDisplayName(CsvArrayOutputFactory.NAME);
         }
 
-        public CsvNode(CsvOutputConfiguration config) {
+        public CsvArraysNode(CsvArrayOutputConfiguration config) {
             super(config);
-            setDisplayName(CsvOutputFactory.NAME);
+            setDisplayName(CsvArrayOutputFactory.NAME);
         }
 
         @Override
         protected Sheet createSheet() {
-            CsvOutputConfiguration config = getLookup().lookup(CsvOutputConfiguration.class);
+            CsvArrayOutputConfiguration config = getLookup().lookup(CsvArrayOutputConfiguration.class);
 
             Sheet sheet = super.createSheet();
             NodePropertySetBuilder builder = new NodePropertySetBuilder();
@@ -191,22 +190,22 @@ public final class CsvOutputBuddy implements OutputFactoryBuddy, Configurable, P
             builder.with(String.class).select(config, "filePrefix").display("File Prefix").add();
             sheet.put(builder.build());
 
-            builder.reset("Layout");
-            builder.withEnum(CsvLayout.class).select(config, "Presentation").add();
+//            builder.reset("Layout");
+//            builder.withEnum(CsvLayout.class).select(config, "Presentation").add();
             builder.withBoolean().select(config, "FullName").display("Full series name")
                     .description("If true, the fully qualified name of the series will be used. "
                             + "If false, only the name of the series will be displayed.").add();
             sheet.put(builder.build());
 
             builder.reset("Content");
-            builder.with(List.class).select(config, "Series").editor(Series.class).add();
+            builder.with(List.class).select(config, "Arrays").editor(Arrays.class).add();
             sheet.put(builder.build());
             return sheet;
         }
 
         @Override
         public SaOutputFactory getFactory() {
-            return new CsvOutputFactory(getLookup().lookup(CsvOutputConfiguration.class));
+            return new CsvArrayOutputFactory(getLookup().lookup(CsvArrayOutputConfiguration.class));
         }
     }
     //</editor-fold>

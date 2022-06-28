@@ -21,10 +21,14 @@ import demetra.desktop.DemetraUI;
 import demetra.desktop.Persistable;
 import demetra.timeseries.TsProvider;
 import demetra.desktop.TsManager;
+import demetra.desktop.star.StarStep;
+import demetra.desktop.star.StarListManager;
 import demetra.desktop.tsproviders.DataSourceProviderBuddy;
 import demetra.desktop.ui.mru.MruProvidersStep;
 import demetra.desktop.ui.mru.MruWorkspacesStep;
 import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.tsprovider.DataSource;
+import demetra.tsprovider.DataSourceLoader;
 import demetra.tsprovider.FileLoader;
 import ec.util.chart.swing.Charts;
 import java.io.File;
@@ -47,6 +51,7 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.openide.modules.ModuleInstall;
 import org.openide.util.Lookup;
+import org.openide.util.NbPreferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,14 +59,14 @@ public final class Installer extends ModuleInstall {
 
     final static Logger LOGGER = LoggerFactory.getLogger(Installer.class);
 
-    public static final InstallerStep STEP = InstallerStep.all(
-            new AppVersionStep(),
+    public static final InstallerStep STEP = InstallerStep.all(new AppVersionStep(),
             new ProvidersV3Step(),
             new ProviderBuddyStep(),
             new TsVariableStep(),
             new MruProvidersStep(),
             new MruWorkspacesStep(),
             new JFreeChartStep(),
+            new StarStep(),
             new DemetraOptionsStep()
     );
 
@@ -232,6 +237,7 @@ public final class Installer extends ModuleInstall {
         }
     }
 
+   
     private static final class DemetraOptionsStep extends InstallerStep {
 
         final Preferences prefs = prefs().node("options");

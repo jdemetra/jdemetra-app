@@ -30,7 +30,7 @@ import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.JSpecSelectionComponent;
 import demetra.sa.SaItem;
 import demetra.desktop.sa.multiprocessing.ui.MultiProcessingController.SaProcessingState;
-import demetra.desktop.sa.ui.DemetraSaManager;
+import demetra.desktop.sa.ui.DemetraSaUI;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItemManager;
@@ -96,6 +96,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     private static final String REFRESH_MESSAGE = "Are you sure you want to refresh the data?";
     private static final String REFRESH_LOCAL_MESSAGE = "Are you sure you want to refresh the selected items?";
     private static final String DELETE_LOCAL_MESSAGE = "Are you sure you want to delete the selected items?";
+    private static final String DELETE_ALL_MESSAGE = "Are you sure you want to delete all items?";
+    private static final String RESET_MESSAGE = "Are you sure you want to reset this document?";
     private static final String PASTE_FAILED_MESSAGE = "Unable to paste data?";
 
     // MultiViewElement >
@@ -223,7 +225,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         super(controller);
         this.collection = HasTsCollectionSupport.of(this::firePropertyChange, TsInformationType.None);
         this.collection.setTsUpdateMode(TsUpdateMode.Append);
-        this.defaultSpecification = DemetraSaManager.get().getDefaultSaSpec();
+        this.defaultSpecification = DemetraSaUI.get().getDefaultSaSpec();
 
         setName(controller.getDocument().getDisplayName());
         setDisplayName(controller.getDocument().getDisplayName());
@@ -582,6 +584,35 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         redrawAll();
         controller.setSaProcessingState(SaProcessingState.READY);
         controller.getDocument().setDirty();
+        setSelection(null);
+    }
+
+    public void clear(boolean interactive) {
+        if (interactive) {
+            NotifyDescriptor nd = new NotifyDescriptor.Confirmation(DELETE_ALL_MESSAGE, NotifyDescriptor.OK_CANCEL_OPTION);
+            if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
+                return;
+            }
+        }
+        controller.getDocument().getElement().removeAll();
+        redrawAll();
+        controller.setSaProcessingState(SaProcessingState.READY);
+        controller.getDocument().setDirty();
+        setSelection(null);
+    }
+
+    public void reset(boolean interactive) {
+        if (interactive) {
+            NotifyDescriptor nd = new NotifyDescriptor.Confirmation(RESET_MESSAGE, NotifyDescriptor.OK_CANCEL_OPTION);
+            if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
+                return;
+            }
+        }
+        controller.getDocument().getElement().reset();
+        redrawAll();
+        controller.setSaProcessingState(SaProcessingState.READY);
+        controller.getDocument().setDirty();
+        setSelection(null);
     }
 
     public void copy() {
@@ -721,8 +752,9 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             buttonCollapse.setSelected(false);
             buttonCollapse.setEnabled(false);
             TsDocument doc = (TsDocument) detail.getDocument();
-            if (doc != null)
+            if (doc != null) {
                 doc.set((Ts) null);
+            }
         } else {
             SaItem output = item.getOutput();
             SaSpecification cspec = output.getDefinition().activeSpecification();
