@@ -50,6 +50,10 @@ import java.util.stream.Stream;
 
 import static demetra.desktop.actions.PrintableWithPreview.PRINT_ACTION;
 import static demetra.desktop.actions.ResetableZoom.RESET_ZOOM_ACTION;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.DateTickMarkPosition;
+import org.jfree.chart.plot.CombinedDomainXYPlot;
 
 public final class TsChartUI implements InternalUI<JTsChart> {
 
@@ -145,6 +149,14 @@ public final class TsChartUI implements InternalUI<JTsChart> {
                 return series < target.getTsCollection().size();
             }
         });
+        fixDateTickMarkPosition();
+    }
+    
+    private void fixDateTickMarkPosition() {
+        ChartPanel cp = (ChartPanel) chartPanel.getComponent(0);
+        CombinedDomainXYPlot plot = (CombinedDomainXYPlot) cp.getChart().getPlot();
+        DateAxis domainAxis = (DateAxis) plot.getDomainAxis();
+        domainAxis.setTickMarkPosition(DateTickMarkPosition.START);
     }
 
     //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
