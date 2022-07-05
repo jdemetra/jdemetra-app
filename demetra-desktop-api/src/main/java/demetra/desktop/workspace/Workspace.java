@@ -96,6 +96,7 @@ public class Workspace implements Disposable {
         item.setDisplayName(newName);
         WorkspaceFactory.Event ev = new WorkspaceFactory.Event(this, item.getId(), WorkspaceFactory.Event.ITEMRENAMED);
         WorkspaceFactory.getInstance().notifyEvent(ev);
+        dirty_ = true;
     }
 
     public <T> WorkspaceItem<T> searchDocumentByElement(T element) {
