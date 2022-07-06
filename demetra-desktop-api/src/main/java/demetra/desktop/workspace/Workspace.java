@@ -11,6 +11,7 @@ import demetra.desktop.interfaces.Disposable;
 import demetra.desktop.ui.mru.SourceId;
 import demetra.desktop.workspace.WorkspaceItemManager.ItemType;
 import demetra.util.Id;
+import demetra.util.LinearId;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,14 +64,14 @@ public class Workspace implements Disposable {
     public void sort() {
         Collections.sort(items_);
         dirty_ = true;
-        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(this, null, WorkspaceFactory.Event.SORT);
+        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(this, Id.empty(), WorkspaceFactory.Event.SORT);
         WorkspaceFactory.getInstance().notifyEvent(ev);
     }
 
     public void sortFamily(Id family) {
         items_.sort(new WorkspaceItem.InnerComparator(family));
         dirty_ = true;
-        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(this, null, WorkspaceFactory.Event.SORT);
+        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(this, Id.empty(), WorkspaceFactory.Event.SORT);
         WorkspaceFactory.getInstance().notifyEvent(ev);
     }
 
@@ -80,11 +81,14 @@ public class Workspace implements Disposable {
     }
 
     public void quietRemove(WorkspaceItem<?> item) {
+        item.quietCloseView();
         item.setOwner(null);
         items_.remove(item);
     }
 
     public void remove(WorkspaceItem<?> item) {
+        if ( ! item.closeView())
+            return;
         WorkspaceFactory.Event ev = new WorkspaceFactory.Event(this, item.getId(), WorkspaceFactory.Event.REMOVINGITEM);
         WorkspaceFactory.getInstance().notifyEvent(ev);
         item.setOwner(null);
@@ -276,7 +280,7 @@ public class Workspace implements Disposable {
             return;
         }
         getRepository().save(this, version, false);
-        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(this, null, WorkspaceFactory.Event.SAVE);
+        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(this, Id.empty(), WorkspaceFactory.Event.SAVE);
         WorkspaceFactory.getInstance().notifyEvent(ev);
     }
 
@@ -285,7 +289,7 @@ public class Workspace implements Disposable {
 //    }
     public void saveAs(DemetraVersion version) {
         getRepository().saveAs(this, version);
-        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(this, null, WorkspaceFactory.Event.SAVEAS);
+        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(this, Id.empty(), WorkspaceFactory.Event.SAVEAS);
         WorkspaceFactory.getInstance().notifyEvent(ev);
     }
 

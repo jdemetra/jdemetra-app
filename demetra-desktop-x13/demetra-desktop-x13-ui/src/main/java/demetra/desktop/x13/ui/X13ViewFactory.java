@@ -24,7 +24,9 @@ import demetra.desktop.ui.processing.ProcDocumentItemFactory;
 import demetra.desktop.ui.processing.ProcDocumentViewFactory;
 import demetra.desktop.ui.processing.stats.ResidualsDistUI;
 import demetra.desktop.ui.processing.stats.ResidualsUI;
+import demetra.desktop.ui.processing.stats.RevisionHistoryUI;
 import demetra.desktop.ui.processing.stats.SpectrumUI;
+import demetra.desktop.ui.processing.stats.StabilityUI;
 import demetra.html.AbstractHtmlElement;
 import demetra.html.HtmlElement;
 import demetra.html.HtmlElements;
@@ -33,11 +35,14 @@ import demetra.html.HtmlStream;
 import demetra.html.HtmlTag;
 import demetra.html.core.HtmlDiagnosticsSummary;
 import demetra.information.BasicInformationExtractor;
+import demetra.information.Explorable;
 import demetra.information.InformationSet;
 import demetra.modelling.ModellingDictionary;
 import demetra.modelling.SeriesInfo;
 import demetra.processing.ProcDiagnostic;
+import demetra.regarima.RegArimaSpec;
 import demetra.sa.ComponentType;
+import demetra.sa.EstimationPolicyType;
 import demetra.sa.SaDictionaries;
 import demetra.sa.SaManager;
 import demetra.sa.SaProcessingFactory;
@@ -45,6 +50,7 @@ import demetra.sa.SeriesDecomposition;
 import demetra.sa.html.HtmlSeasonalityDiagnostics;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDocument;
+import demetra.timeseries.TsDomain;
 import demetra.toolkit.dictionaries.Dictionary;
 import demetra.toolkit.dictionaries.RegressionDictionaries;
 import demetra.util.Id;
@@ -52,6 +58,7 @@ import demetra.util.LinearId;
 import demetra.x11.SeasonalFilterOption;
 import demetra.x11.X11Dictionaries;
 import demetra.x13.X13Dictionaries;
+import demetra.x13.X13Spec;
 import demetra.x13.io.information.X13SpecMapping;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,9 +67,16 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
 import jdplus.sa.tests.SeasonalityTests;
+import jdplus.timeseries.simplets.analysis.DiagnosticInfo;
+import jdplus.timeseries.simplets.analysis.MovingProcessing;
+import jdplus.timeseries.simplets.analysis.RevisionHistory;
 import jdplus.x11.X11Results;
 import jdplus.x13.X13Document;
+import jdplus.x13.X13Factory;
+import jdplus.x13.X13Kernel;
 import jdplus.x13.X13Results;
+import jdplus.x13.regarima.RegArimaFactory;
+import jdplus.x13.regarima.RegArimaKernel;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -293,6 +307,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
     }
 
 //</editor-fold>
+
 //<editor-fold defaultstate="collapsed" desc="PREPROCESSING-FORECASTS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3110)
     public static class ForecastsTable extends ProcDocumentItemFactory<X13Document, TsDocument> {
@@ -623,6 +638,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
         }
     }
 //</editor-fold>
+    
 //<editor-fold defaultstate="collapsed" desc="DIAGNOSTICS">
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5000)
@@ -894,4 +910,161 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
     }
 //</editor-fold>
 
+//<editor-fold defaultstate="collapsed" desc="REGISTER REVISION HISTORY VIEW">
+    
+    private static Function<X13Document, RevisionHistoryUI.Information> revisionExtractor(String info, DiagnosticInfo diag){
+        return (X13Document source) -> {
+                X13Results result = source.getResult();
+                if (result == null) {
+                    return null;
+                }
+                TsData input = source.getInput().getData();
+                TsDomain domain = input.getDomain();
+                X13Spec pspec = X13Factory.INSTANCE.generateSpec(source.getSpecification(), result);
+                X13Spec nspec = X13Factory.INSTANCE.refreshSpec(pspec, source.getSpecification(), DemetraSaUI.get().getEstimationPolicyType(), domain);
+                X13Kernel kernel = X13Kernel.of(nspec, source.getContext());
+                RevisionHistory<Explorable> rh = new RevisionHistory<>(domain, d -> kernel.process(TsData.fitToDomain(input, d), null));
+                return new RevisionHistoryUI.Information(info, diag, rh);
+        };
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6410)
+    public static class RevisionHistorySaFactory extends ProcDocumentItemFactory<X13Document, RevisionHistoryUI.Information> {
+
+        public RevisionHistorySaFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_REVISION_SA, revisionExtractor("sa", DiagnosticInfo.RelativeDifference) , new RevisionHistoryUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 6410;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6420)
+    public static class RevisionHistoryTrendFactory extends ProcDocumentItemFactory<X13Document, RevisionHistoryUI.Information> {
+
+        public RevisionHistoryTrendFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_REVISION_TREND, revisionExtractor("t", DiagnosticInfo.RelativeDifference) , new RevisionHistoryUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 6420;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6430)
+    public static class RevisionHistorySaChangesFactory extends ProcDocumentItemFactory<X13Document, RevisionHistoryUI.Information> {
+
+        public RevisionHistorySaChangesFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_REVISION_SA_CHANGES, revisionExtractor("sa", DiagnosticInfo.PeriodToPeriodGrowthDifference) , new RevisionHistoryUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 6430;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6440)
+    public static class RevisionHistoryTrendChangesFactory extends ProcDocumentItemFactory<X13Document, RevisionHistoryUI.Information> {
+
+        public RevisionHistoryTrendChangesFactory() {
+             super(X13Document.class, SaViews.DIAGNOSTICS_REVISION_TREND_CHANGES, revisionExtractor("t", DiagnosticInfo.PeriodToPeriodGrowthDifference) , new RevisionHistoryUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 6440;
+        }
+    }
+    //</editor-fold>
+    
+//<editor-fold defaultstate="collapsed" desc="REGISTER STABILITY VIEWS">
+    
+    private static Function<X13Document, StabilityUI.Information> stabilityExtractor(EstimationPolicyType policy, String[] items, String msg){
+        return (X13Document source) -> {
+                X13Results result = source.getResult();
+                if (result == null) {
+                    return null;
+                }
+                TsData input = source.getInput().getData();
+                TsDomain domain = input.getDomain();
+                RegArimaSpec pspec = RegArimaFactory.INSTANCE.generateSpec(source.getSpecification().getRegArima(), result.getPreprocessing().getDescription());
+                RegArimaSpec nspec = RegArimaFactory.INSTANCE.refreshSpec(pspec, source.getSpecification().getRegArima(), policy, domain);
+                RegArimaKernel kernel = RegArimaKernel.of(nspec, source.getContext());
+                MovingProcessing<Explorable> mp=new MovingProcessing<>(domain, (TsDomain d)->kernel.process(TsData.fitToDomain(input, d), null));
+                mp.setWindowLength(DemetraSaUI.get().getStabilityLength()*input.getAnnualFrequency());
+                return new StabilityUI.Information(mp, items, msg);
+        };
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6510)
+    public static class StabilityTDFactory extends ProcDocumentItemFactory<X13Document, StabilityUI.Information> {
+
+        public StabilityTDFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_STABILITY_TD,
+                    stabilityExtractor(DemetraSaUI.get().getEstimationPolicyType(), ITEMS, EXCEPTION), new StabilityUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 6510;
+        }
+        
+        private static final String EXCEPTION="No information available on trading days !";
+        private static final String[] ITEMS = new String[]{
+            "regression.td(1)",
+            "regression.td(2)",
+            "regression.td(3)",
+            "regression.td(4)",
+            "regression.td(5)",
+            "regression.td(6)",
+            "regression.td(7)"
+        };
+
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6520)
+    public static class StabilityEasterFactory extends ProcDocumentItemFactory<X13Document, StabilityUI.Information>  {
+
+        public StabilityEasterFactory() {
+           super(X13Document.class, SaViews.DIAGNOSTICS_STABILITY_EASTER,                    
+                   stabilityExtractor(DemetraSaUI.get().getEstimationPolicyType(), ITEMS, EXCEPTION), new StabilityUI());
+        }
+
+        private static final String EXCEPTION="No information available on Easter effects !";
+        private static final String[] ITEMS = new String[]{
+            "regression.easter"
+        };
+
+        @Override
+        public int getPosition() {
+            return 6520;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6530)
+    public static class StabilityArimaFactory extends ProcDocumentItemFactory<X13Document, StabilityUI.Information>  {
+
+        public StabilityArimaFactory() {
+           super(X13Document.class, SaViews.DIAGNOSTICS_STABILITY_ARIMA,
+                   stabilityExtractor(EstimationPolicyType.FreeParameters, ITEMS, EXCEPTION), new StabilityUI());
+        }
+        
+        @Override
+        public int getPosition() {
+            return 6530;
+        }
+        
+        private static final String EXCEPTION="No information available on the ARIMA model !";
+        private static final String[] ITEMS = new String[]{
+            "arima.phi(1)", "arima.phi(2)", "arima.phi(3)", "arima.phi(4)", 
+            "arima.theta(1)", "arima.theta(2)", "arima.theta(3)", "arima.theta(4)",
+            "arima.bphi(1)", "arima.btheta(1)"
+        };
+        
+    }
+    //</editor-fold>
 }

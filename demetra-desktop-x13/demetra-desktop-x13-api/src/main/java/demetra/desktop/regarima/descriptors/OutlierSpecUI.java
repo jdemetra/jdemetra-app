@@ -121,6 +121,7 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
             update(inner().toBuilder().type(new SingleOutlierSpec(o, 0)).build());
         } else {
             OutlierSpec.Builder builder = inner().toBuilder();
+            builder.clearTypes();
             for (SingleOutlierSpec spec : inner().getTypes()) {
                 if (!spec.getType().equals(o)) {
                     builder.type(spec);

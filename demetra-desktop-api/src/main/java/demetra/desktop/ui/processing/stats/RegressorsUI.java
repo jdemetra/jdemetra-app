@@ -5,7 +5,6 @@
 package demetra.desktop.ui.processing.stats;
 
 import demetra.desktop.ui.processing.ItemUI;
-import demetra.desktop.ui.processing.IProcDocumentView;
 import demetra.desktop.ui.processing.TsViewToolkit;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
@@ -25,9 +24,8 @@ import jdplus.regsarima.regular.RegSarimaModel;
 /**
  *
  * @author Jean Palate
- * @param <V>
  */
-public class RegressorsUI<V extends IProcDocumentView<?>> implements ItemUI<RegSarimaModel> {
+public class RegressorsUI implements ItemUI<RegSarimaModel> {
 
     @Override
     public JComponent getView(RegSarimaModel information) {
@@ -39,7 +37,6 @@ public class RegressorsUI<V extends IProcDocumentView<?>> implements ItemUI<RegS
         List<Ts> collection = new ArrayList<>();
         TsDomain domain = information.getDescription().getSeries().getDomain();
         TsPeriod start = domain.getStartPeriod();
-        int n = domain.getLength();
         Variable[] vars = information.getDescription().getVariables();
         if (vars != null) {
             for (Variable cur : vars) {

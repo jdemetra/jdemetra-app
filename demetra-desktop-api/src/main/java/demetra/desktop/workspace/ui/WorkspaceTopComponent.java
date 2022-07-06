@@ -25,15 +25,13 @@ import org.openide.nodes.Node;
  * @author Jean Palate
  * @param <T>
  */
-public abstract class WorkspaceTopComponent<T> extends TopComponent implements ActiveView, ExplorerManager.Provider, LookupListener {
+public abstract class WorkspaceTopComponent<T> extends TopComponent implements ActiveView, ExplorerManager.Provider {
 
     protected final WorkspaceItem<T> doc;
-    private final Lookup.Result<WorkspaceFactory.Event> wsevent;
 
 
     protected WorkspaceTopComponent(WorkspaceItem<T> doc) {
         this.doc = doc;
-        this.wsevent = WorkspaceFactory.getInstance().getLookup().lookupResult(WorkspaceFactory.Event.class);
         setDisplayName(doc.getDisplayName());
     }
 
@@ -77,43 +75,16 @@ public abstract class WorkspaceTopComponent<T> extends TopComponent implements A
     public void componentOpened() {
         super.componentOpened();
         doc.setView(this);
-        wsevent.addLookupListener(this);
         // TODO add custom code on component opening
     }
 
     @Override
     public void componentClosed() {
-        wsevent.removeLookupListener(this);
         doc.setView(null);
         super.componentClosed();
     }
 
     public void refresh() {
     }
-
-    @Override
-    public void resultChanged(LookupEvent le) {
-        Collection<? extends WorkspaceFactory.Event> all = wsevent.allInstances();
-        for (WorkspaceFactory.Event ev : all) {
-            if (ev.id.equals(doc.getId())) {
-                switch (ev.info) {
-                    case WorkspaceFactory.Event.REMOVINGITEM:
-                        SwingUtilities.invokeLater(this::close);
-                        break;
-                    case WorkspaceFactory.Event.ITEMCHANGED:
-                        //if (ev.source != this) {
-                            SwingUtilities.invokeLater(this::refresh);
-                        //}
-                        break;
-                    case WorkspaceFactory.Event.ITEMRENAMED:
-                        //if (ev.source != this) {
-                            SwingUtilities.invokeLater(()
-                                    -> this.setDisplayName(doc.getDisplayName()));
-                        //}
-                        break;
-                }
-            }
-        }
-    }
-
+ 
 }

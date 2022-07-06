@@ -232,7 +232,7 @@ public class WorkspaceItem<T> implements Modifiable, Comparable<WorkspaceItem> {
         if (!name_.equals(value)) {
             name_ = value;
             if (view_ != null) {
-                view_.setName(value);
+                view_.setDisplayName(value);
             }
             dirty_ = true;
         }
@@ -292,6 +292,17 @@ public class WorkspaceItem<T> implements Modifiable, Comparable<WorkspaceItem> {
         } catch (Exception err) {
             // shut down. Windows API could be not available
             return true;
+        }
+    }
+
+    public void quietCloseView() {
+        try {
+            if (view_ == null) {
+                return;
+            }
+            view_.close();
+        } catch (Exception err) {
+            // shut down. Windows API could be not available
         }
     }
 
