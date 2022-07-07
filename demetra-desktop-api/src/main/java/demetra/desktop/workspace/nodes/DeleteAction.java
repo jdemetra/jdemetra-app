@@ -17,7 +17,6 @@
 package demetra.desktop.workspace.nodes;
 
 import demetra.desktop.nodes.SingleNodeAction;
-import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;

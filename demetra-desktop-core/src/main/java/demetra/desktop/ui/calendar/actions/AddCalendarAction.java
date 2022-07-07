@@ -54,6 +54,7 @@ public final class AddCalendarAction extends AbstractAction implements Presenter
         "addCalendarAction.chained=Chained",
         "addCalendarAction.composite=Composite"
     })
+    
     @Override
     public JMenuItem getMenuPresenter() {
         JMenu result = new JMenu(Bundle.CTL_AddCalendarAction());

@@ -52,7 +52,7 @@ public class ItemWsNode extends WsNode {
     @Override
     public String getShortDescription() {
         WorkspaceItem<?> item = getItem();
-        if (!Strings.isNullOrEmpty(item.getComments())) {
+        if (item != null && !Strings.isNullOrEmpty(item.getComments())) {
             return MultiLineNameUtil.toHtml(item.getComments());
         } else {
             return null;

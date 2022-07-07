@@ -11,6 +11,7 @@ import demetra.timeseries.regression.TsDataSuppliers;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.explorer.ExplorerManager;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
@@ -36,9 +37,9 @@ preferredID = "VariablesTopComponent")
     "CTL_VariablesTopComponent=Variables Window",
     "HINT_VariablesTopComponent=This is a Variables window"
 })
-public final class VariablesTopComponent extends TopComponent {
+public final class VariablesTopComponent extends WorkspaceTopComponent<TsDataSuppliers> {
     
-    private final WorkspaceItem<TsDataSuppliers> variables;
+    private final ExplorerManager mgr = new ExplorerManager();
     
     private JTsVariableList list;
 
@@ -51,14 +52,14 @@ public final class VariablesTopComponent extends TopComponent {
     }
 
     public VariablesTopComponent(WorkspaceItem<TsDataSuppliers> doc) {
-        variables=doc;
+        super(doc);
         initDocument();
     }
 
     private void initDocument() {
         initComponents();
         setToolTipText(NbBundle.getMessage(VariablesTopComponent.class, "HINT_VariablesTopComponent"));
-        setName(variables.getDisplayName());
+        setName(doc.getDisplayName());
      }
 
     /**
@@ -70,7 +71,7 @@ public final class VariablesTopComponent extends TopComponent {
     private void initComponents() {
 
         setLayout(new java.awt.BorderLayout());
-        list=new JTsVariableList(variables.getElement());
+        list=new JTsVariableList(doc.getElement());
         add(list);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -87,6 +88,11 @@ public final class VariablesTopComponent extends TopComponent {
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
+    }
+
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return mgr;
     }
     
 }

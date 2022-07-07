@@ -21,7 +21,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
-@ActionID(category = "Tools", id = "demetra.desktop.ui.calendars.actions.RemoveCalendarAction")
+@ActionID(category = "Edit", id = "demetra.desktop.ui.calendars.actions.RemoveCalendarAction")
 @ActionRegistration(displayName = "#CTL_RemoveCalendarAction", lazy = false)
 @ActionReferences({
     @ActionReference(path = CalendarDocumentManager.ITEMPATH, position = 1422, separatorBefore = 1400)
@@ -56,13 +56,13 @@ public final class RemoveCalendarAction extends SingleNodeAction<ItemWsNode> {
     }
 
     @Messages({
-        "removeCalendar.dialog.title=Remove calendar",
-        "removeCalendar.dialog.message=Are you sure?"
+        "RemoveCalendar.dialog.title=Remove calendar",        
+        "RemoveCalendar.dialog.message=Are you sure?"
     })
     static void removeCalendar(CalendarDefinition p, ItemWsNode node) {
         DialogDescriptor.Confirmation dd = new DialogDescriptor.Confirmation(
-                Bundle.removeCalendar_dialog_message(),
-                Bundle.removeCalendar_dialog_title(),
+                Bundle.RemoveCalendar_dialog_message(),
+                Bundle.RemoveCalendar_dialog_title(),
                 NotifyDescriptor.YES_NO_OPTION);
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.YES_OPTION) {
             CalendarManager manager = ModellingContext.getActiveContext().getCalendars();

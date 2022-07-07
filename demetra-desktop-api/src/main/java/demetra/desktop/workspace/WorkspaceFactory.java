@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Lookup;
@@ -41,7 +42,7 @@ public class WorkspaceFactory implements LookupListener {
 
     public static final class Event {
 
-        public Event(final Workspace ws, final Id id, final int info) {
+        public Event(final Workspace ws, @NonNull final Id id, final int info) {
             workspace = ws;
             this.id = id;
             this.info = info;
@@ -51,11 +52,11 @@ public class WorkspaceFactory implements LookupListener {
         /**
          * 
          * @param ws The workspace concerned by the event
-         * @param id The id of the object concerned by the info. May be null
+         * @param id The id of the object concerned by the info.
          * @param info The code identifying the event
          * @param source The object that generated the event. May be null (unused)
          */
-        public Event(final Workspace ws, final Id id, final int info, final Object source) {
+        public Event(final Workspace ws, @NonNull final Id id, final int info, final Object source) {
             workspace = ws;
             this.id = id;
             this.info = info;
@@ -223,7 +224,7 @@ public class WorkspaceFactory implements LookupListener {
         ws_ = wks;
         ModellingContext.setActiveContext(ws_.getContext());
         if (event > 0) {
-            content.set(Collections.singleton(new Event(ws_, null, event)), null);
+            content.set(Collections.singleton(new Event(ws_, Id.empty(), event)), null);
         }
     }
 
@@ -313,7 +314,7 @@ public class WorkspaceFactory implements LookupListener {
             modules_.clear();
             modules_.addAll(workspaceManagersLookup.allInstances());
             wsTree_ = null;
-            Event ev = new Event(null, null, Event.MANAGERS_CHANGED);
+            Event ev = new Event(null, Id.empty(), Event.MANAGERS_CHANGED);
             notifyEvent(ev);
         } else if (le.getSource().equals(repositoryLookup)) {
             repositories_.clear();
