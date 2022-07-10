@@ -14,6 +14,6 @@ import demetra.sa.SaManager;
 public class Matrix extends ListSelectionEditor<String> {
 
     public Matrix() {
-        super(OutputSelection.seriesItems(SaManager.processors()));
+        super(OutputSelection.matrixItems(SaManager.processors()));
     }
 }

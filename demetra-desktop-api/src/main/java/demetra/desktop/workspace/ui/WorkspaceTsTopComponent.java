@@ -11,14 +11,13 @@ import demetra.desktop.ui.Menus;
 import demetra.desktop.ui.processing.DefaultProcessingViewer;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.ui.properties.l2fprod.UserInterfaceContext;
-import demetra.timeseries.TsDocument;
-import demetra.desktop.workspace.WorkspaceItem;
-import javax.swing.Action;
 import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.desktop.workspace.WorkspaceItem;
 import demetra.timeseries.Ts;
+import demetra.timeseries.TsDocument;
 import demetra.timeseries.TsInformationType;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import javax.swing.Action;
 import javax.swing.JMenu;
 
 /**
@@ -70,21 +69,18 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
     @Override
     public void componentOpened() {
         super.componentOpened();
-        panel.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent arg0) {
-                switch (arg0.getPropertyName()) {
-                    case DefaultProcessingViewer.INPUT_CHANGED:
-                        Object nval=arg0.getNewValue();
-                        if (nval instanceof Ts){
-                            setTs((Ts) nval);
-                        }
-                        break;
-                    case DefaultProcessingViewer.SPEC_CHANGED:
-                        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, WorkspaceTsTopComponent.this);
-                        WorkspaceFactory.getInstance().notifyEvent(ev);
-
-                }
+        panel.addPropertyChangeListener((PropertyChangeEvent arg0) -> {
+            switch (arg0.getPropertyName()) {
+                case DefaultProcessingViewer.INPUT_CHANGED:
+                    Object nval=arg0.getNewValue();
+                    if (nval instanceof Ts){
+                        setTs((Ts) nval);
+                    }
+                    break;
+                case DefaultProcessingViewer.SPEC_CHANGED:
+                    WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, WorkspaceTsTopComponent.this);
+                    WorkspaceFactory.getInstance().notifyEvent(ev);
+                    
             }
         });
 

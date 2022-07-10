@@ -18,13 +18,34 @@ package demetra.desktop.components.tools;
 
 import demetra.desktop.components.parts.*;
 import demetra.desktop.design.SwingComponent;
-import demetra.desktop.jfreechart.TsCharts;
 import demetra.desktop.jfreechart.BasicXYDataset;
+import demetra.desktop.jfreechart.TsCharts;
 import demetra.desktop.ui.StabilityTickUnit;
 import demetra.timeseries.TsDomain;
 import ec.util.chart.ColorScheme.KnownColor;
 import ec.util.chart.swing.Charts;
 import ec.util.chart.swing.SwingColorSchemeSupport;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Paint;
+import java.awt.Stroke;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
@@ -34,17 +55,6 @@ import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
-import java.text.DecimalFormat;
-import java.util.List;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Component displaying data regarding a model stability
@@ -153,7 +163,7 @@ public final class JStabilityView extends JComponent implements HasColorScheme {
                     for (Map.Entry<TsDomain, Double> e : i.data.entrySet()) {
                         if (cpt == item) {
                             TsDomain dom = e.getKey();
-                            return "(" + dom.toISO8601() + ": " + format.format(e.getValue());
+                            return "(" + dom.toString()+ ": " + format.format(e.getValue());
                         }
                         cpt++;
                     }
