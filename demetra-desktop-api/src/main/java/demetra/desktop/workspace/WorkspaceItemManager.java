@@ -5,8 +5,10 @@
 package demetra.desktop.workspace;
 
 import demetra.util.Id;
+import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Optional;
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
 import nbbrd.service.ServiceDefinition;
@@ -56,7 +58,20 @@ public interface WorkspaceItemManager<D> {
 
     String getActionsPath();
 
-    Action getPreferredItemAction(Id child);
+    default Action getPreferredItemAction(final Id child) {
+        return new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                WorkspaceItem<D> doc = (WorkspaceItem<D>) WorkspaceFactory.getInstance().getActiveWorkspace().searchDocument(child);
+                if (doc != null) {
+                    DocumentUIServices ui = DocumentUIServices.forDocument(doc.getElement().getClass());
+                    if (ui != null)
+                        ui.showDocument(doc);
+                }
+            }
+        };
+    }
 
     String getNextItemName(String name);
 

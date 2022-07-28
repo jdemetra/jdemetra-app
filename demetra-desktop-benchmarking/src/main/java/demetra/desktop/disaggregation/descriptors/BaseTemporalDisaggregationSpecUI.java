@@ -16,24 +16,28 @@
  */
 package demetra.desktop.disaggregation.descriptors;
 
+import demetra.desktop.descriptors.IPropertyDescriptors;
+import demetra.tempdisagg.univariate.TemporalDisaggregationSpec;
+
 
 /**
  *
  * @author Jean
  */
-public abstract class BaseTsDisaggregationSpecUI implements IPropertyDescriptors {
+abstract class BaseTemporalDisaggregationSpecUI implements IPropertyDescriptors{
 
-   final DisaggregationSpecification core;
-    final boolean ro_;
-    final TsDomain domain_;
-
-    public BaseTsDisaggregationSpecUI(DisaggregationSpecification spec, TsDomain domain, boolean ro) {
-        core = spec;
-        ro_ = ro;
-        domain_ = domain;
+    final TemporalDisaggregationSpecRoot root;
+         
+    BaseTemporalDisaggregationSpecUI(TemporalDisaggregationSpecRoot root){
+        this.root =root;
     }
-
-    public DisaggregationSpecification getCore() {
-        return core;
+    
+    TemporalDisaggregationSpec core(){return root.getCore();}
+    
+    boolean isRo(){return root.isRo();}
+    
+    void update(TemporalDisaggregationSpec nspec){
+        root.core=nspec;
     }
+   
 }

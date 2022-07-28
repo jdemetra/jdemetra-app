@@ -2,45 +2,58 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.disaggregation;
+package demetra.desktop.ui.processing;
 
 import com.google.common.collect.ObjectArrays;
+import demetra.desktop.components.JTsTable;
+import demetra.desktop.components.JTsTable.Column;
+import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.desktop.workspace.DocumentUIServices;
+import demetra.processing.ProcSpecification;
+import demetra.timeseries.MultiTsDocument;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsCollection;
 import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JToolBar;
 
 /**
  *
- * @author Jean
+ * @author Jean Palate
+ * @param <S>
+ * @param <D>
  */
-final class FixedRegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDocument> {
+public class TsRegressionProcessingViewer<S extends ProcSpecification, D extends MultiTsDocument<S, ?>> extends DefaultProcessingViewer<S, D> {
 
     // FACTORY METHODS >
-    public static FixedRegTsProcessingViewer create(MultiTsDocument doc) {
-        FixedRegTsProcessingViewer viewer = new FixedRegTsProcessingViewer(DefaultProcessingViewer.Type.APPLY);
+    public static <S extends ProcSpecification, D extends MultiTsDocument<S, ?>>  TsRegressionProcessingViewer<S, D> create(D doc, DocumentUIServices<S, D> uifac) {
+        TsRegressionProcessingViewer viewer = new TsRegressionProcessingViewer(uifac, Type.APPLY);
         if (doc != null) {
             viewer.setDocument(doc);
         }
         return viewer;
     }
     // visual components
-    private final JTsList yList, xList;
+    private final JTsTable yList, xList;
     private final JLabel specLabel;
     private boolean quietRefresh;
 
-    public FixedRegTsProcessingViewer(DefaultProcessingViewer.Type type) {
-        super(type);
-        yList = new JTsList();
+    public TsRegressionProcessingViewer(DocumentUIServices<S, D> ui, Type type) {
+        super(ui, type);
+        yList = new JTsTable();
         yList.setVisible(true);
         yList.setShowHeader(false);
         yList.setTsUpdateMode(TsUpdateMode.Single);
-        yList.setInformation(new InfoType[]{InfoType.Name});
-        xList = new JTsList();
+        yList.setColumns(Collections.singletonList(Column.NAME));
+        xList = new JTsTable();
         yList.setVisible(true);
         xList.setShowHeader(false);
-        xList.setInformation(new InfoType[]{InfoType.Name});
+        xList.setColumns(Collections.singletonList(Column.NAME));
         this.specLabel = new JLabel("Spec: ");
         specLabel.setVisible(true);
         xList.setPreferredSize(new Dimension(50, 60));
@@ -61,36 +74,34 @@ final class FixedRegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDo
 
         toolBar.setVisible(true);
 
-        // FIXME: there is a deadlock with Ts.Master#freeze() & TsFactory#update(TsInformation);
-        // these two lines force loading to prevent deadlock but might freeze EDT
-        xList.setFreezeOnImport(true);
-        yList.setFreezeOnImport(true);
-
-        xList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, evt -> {
+        xList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
             if (!quietRefresh) {
                 updateDocument();
             }
         });
-        yList.addPropertyChangeListener(JTsList.TS_COLLECTION_PROPERTY, evt -> {
+        yList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt-> {
             if (!quietRefresh) {
                 updateDocument();
             }
         });
     }
 
-    private void updateDocument() {
+    @Override
+    public void updateDocument() {
         try {
-
             quietRefresh = true;
-            Ts[] y = yList.getTsCollection().toArray();
-            if (y == null || y.length == 0) {
-                getDocument().setInput(null);
+            List<Ts> y = yList.getTsCollection().getItems();
+            if (y.isEmpty()) {
+                getDocument().set(Collections.emptyList());
             }
-            Ts[] x = xList.getTsCollection().toArray();
-            if (x == null || x.length == 0) {
-                getDocument().setInput(y);
+            List<Ts> x = xList.getTsCollection().getItems();
+            if (x.isEmpty()) {
+                getDocument().set(y);
             } else {
-                getDocument().setInput(ObjectArrays.concat(y[0], x));
+                List<Ts> all = new ArrayList<>();
+                all.addAll(y);
+                all.addAll(x);
+                getDocument().set(all);
             }
             refreshAll();
         } catch (Exception err) {
@@ -100,19 +111,19 @@ final class FixedRegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDo
     }
 
     private void updateList() {
-        Ts[] s = getDocument().getTs();
-        if (s == null || s.length == 0) {
-            yList.getTsCollection().clear();
-            xList.getTsCollection().clear();
+        List<Ts> s = getDocument().getInput();
+        if (s.isEmpty()) {
+            yList.setTsCollection(TsCollection.EMPTY);
+            xList.setTsCollection(TsCollection.EMPTY);
         } else {
-            yList.getTsCollection().replace(s[0]);
-            xList.getTsCollection().replace(Arrays.copyOfRange(s, 1, s.length));
+            yList.setTsCollection(TsCollection.of(s.get(0)));
+            xList.setTsCollection(TsCollection.of(s.subList(1, s.size())));
         }
     }
 
     public void refreshSpec() {
         MultiTsDocument doc = getDocument();
-        IProcSpecification spec = doc.getSpecification();
+        ProcSpecification spec = doc.getSpecification();
         specLabel.setText("Spec: " + (spec != null ? spec.toString() : ""));
     }
 
@@ -126,18 +137,5 @@ final class FixedRegTsProcessingViewer extends DefaultProcessingViewer<MultiTsDo
             updateList();
         } catch (Exception err) {
         }
-    }
-
-    @Override
-    public void refreshView() {
-        super.refreshView();
-        refreshSpec();
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        yList.dispose();
-        xList.dispose();
     }
 }

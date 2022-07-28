@@ -16,6 +16,8 @@
  */
 package demetra.desktop.disaggregation.descriptors;
 
+import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.tempdisagg.univariate.TemporalDisaggregationSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ import java.util.List;
  *
  * @author Jean
  */
-public class AdvancedSpecUI extends BaseTsDisaggregationSpecUI implements IObjectDescriptor<DisaggregationSpecification> {
+public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
 
     public static final String DISPLAYNAME = "Advanced options";
     public static final String EPS_NAME = "Precision", KF_NAME = "Method", ML_NAME = "ML estimation",
@@ -34,59 +36,71 @@ public class AdvancedSpecUI extends BaseTsDisaggregationSpecUI implements IObjec
             ZERO_DESC = "Zero initialization", TRUNCATED_DESC = "Lower bound for the estimated coefficient", DREGS_DESC = "Diffuse regression coefficients";
     public static final int EPS_ID = 0, KF_ID = 10, ML_ID = 15, ZERO_ID = 20, TRUNCATED_ID = 25, DREGS_ID = 30;
 
-    public AdvancedSpecUI(DisaggregationSpecification spec, TsDomain domain, boolean ro) {
-        super(spec, domain, ro);
+    @Override
+    public String toString() {
+        return "";
+    }
+
+    public AdvancedSpecUI(TemporalDisaggregationSpecRoot root) {
+        super(root);
     }
 
     public double getEpsilon() {
-        return core.getEpsilon();
+        return core().getEstimationPrecision();
     }
 
     public void setEpsilon(double eps) {
-        core.setEpsilon(eps);
-    }
-
-    public TsDisaggregation.SsfOption getMethod() {
-        return core.getOption();
-    }
-
-    public void setMethod(TsDisaggregation.SsfOption method) {
-        core.setOption(method);
+        update(core()
+                .toBuilder()
+                .estimationPrecision(eps)
+                .build());
     }
 
     public boolean isZeroInitialization() {
-        return core.isZeroInitialization();
+        return core().isZeroInitialization();
     }
 
     public void setZeroInitialization(boolean t) {
-        core.setZeroInitialization(t);
-        if (!core.getModel().isStationary() && !t) {
-            core.setConstant(false);
+
+        TemporalDisaggregationSpec.Builder builder = core().toBuilder();
+        builder.zeroInitialization(t);
+        if (!core().getResidualsModel().isStationary() && !t) {
+            builder.constant(false);
         }
+        update(builder.build());
     }
 
     public double getTruncatedRho() {
-        return core.getTruncatedRho();
+        return core().getTruncatedParameter();
     }
 
     public void setTruncatedRho(double t) {
-        core.setTruncatedRho(t);
+        update(core()
+                .toBuilder()
+                .truncatedParameter(t)
+                .build());
     }
 
     public boolean isDiffuseRegression() {
-        return core.isDiffuseRegression();
+        return core().isDiffuseRegressors();
     }
 
     public void setDiffuseRegression(boolean t) {
-        core.setDiffuseRegression(t);
+        update(core()
+                .toBuilder()
+                .diffuseRegressors(t)
+                .build());
     }
 
     public boolean isML() {
-        return core.isML();
+        return core().isMaximumLikelihood();
     }
 
     public void setML(boolean t) {
-        core.setML(t);
+        update(core()
+                .toBuilder()
+                .maximumLikelihood(t)
+                .build());
     }
 
     @Override
@@ -126,7 +140,7 @@ public class AdvancedSpecUI extends BaseTsDisaggregationSpecUI implements IObjec
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(EPS_NAME);
             desc.setShortDescription(EPS_DESC);
-            edesc.setReadOnly(ro_ || !core.getModel().hasParameter());
+            edesc.setReadOnly(isRo() || !core().getResidualsModel().hasParameter());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -140,8 +154,8 @@ public class AdvancedSpecUI extends BaseTsDisaggregationSpecUI implements IObjec
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(ZERO_NAME);
             desc.setShortDescription(ZERO_DESC);
-            edesc.setReadOnly(ro_ || core.getModel() == DisaggregationSpecification.Model.Wn
-            || core.getModel().getDifferencingOrder()>1);
+            edesc.setReadOnly(isRo() || core().getResidualsModel() == TemporalDisaggregationSpec.Model.Wn
+                    || core().getResidualsModel().getDifferencingOrder() > 1);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -155,8 +169,8 @@ public class AdvancedSpecUI extends BaseTsDisaggregationSpecUI implements IObjec
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(TRUNCATED_NAME);
             desc.setShortDescription(TRUNCATED_DESC);
-            edesc.setReadOnly(ro_ || ((core.getModel() != DisaggregationSpecification.Model.Ar1
-                    && core.getModel() != DisaggregationSpecification.Model.RwAr1) || core.getParameter().isFixed()));
+            edesc.setReadOnly(isRo() || ((core().getResidualsModel() != TemporalDisaggregationSpec.Model.Ar1
+                    && core().getResidualsModel() != TemporalDisaggregationSpec.Model.RwAr1) || core().getParameter().isFixed()));
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -170,7 +184,7 @@ public class AdvancedSpecUI extends BaseTsDisaggregationSpecUI implements IObjec
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(KF_NAME);
             desc.setShortDescription(KF_DESC);
-            edesc.setReadOnly(ro_ || !core.getModel().hasParameter() || core.getModel().isStationary());
+            edesc.setReadOnly(isRo() || !core().getResidualsModel().hasParameter() || core().getResidualsModel().isStationary());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -184,7 +198,7 @@ public class AdvancedSpecUI extends BaseTsDisaggregationSpecUI implements IObjec
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(ML_NAME);
             desc.setShortDescription(ML_DESC);
-            edesc.setReadOnly(ro_ || !core.getModel().hasParameter());
+            edesc.setReadOnly(isRo() || !core().getResidualsModel().hasParameter());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -198,7 +212,7 @@ public class AdvancedSpecUI extends BaseTsDisaggregationSpecUI implements IObjec
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(DREGS_NAME);
             desc.setShortDescription(DREGS_DESC);
-            edesc.setReadOnly(ro_ || !core.getModel().hasParameter());
+            edesc.setReadOnly(isRo() || !core().getResidualsModel().hasParameter());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

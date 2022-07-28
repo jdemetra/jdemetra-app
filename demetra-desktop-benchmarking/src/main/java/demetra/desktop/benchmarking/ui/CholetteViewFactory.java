@@ -16,6 +16,16 @@
  */
 package demetra.desktop.benchmarking.ui;
 
+import demetra.benchmarking.BenchmarkingDictionaries;
+import demetra.desktop.ui.processing.GenericChartUI;
+import demetra.desktop.ui.processing.IProcDocumentItemFactory;
+import demetra.desktop.ui.processing.IProcDocumentViewFactory;
+import demetra.desktop.ui.processing.ProcDocumentItemFactory;
+import demetra.desktop.ui.processing.ProcDocumentViewFactory;
+import demetra.util.Id;
+import demetra.util.LinearId;
+import java.util.concurrent.atomic.AtomicReference;
+import jdplus.benchmarking.univariate.CholetteDocument;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -27,14 +37,23 @@ public class CholetteViewFactory extends ProcDocumentViewFactory<CholetteDocumen
     public static final String INPUT = "Input", RESULTS = "Results";
     public static final Id RESULTS_MAIN = new LinearId(RESULTS);
 
-    private static final IProcDocumentViewFactory<CholetteDocument> INSTANCE = new CholetteViewFactory();
+     private static final AtomicReference<IProcDocumentViewFactory<CholetteDocument>> INSTANCE = new AtomicReference();
 
-    public static IProcDocumentViewFactory<CholetteDocument> getDefault() {
-        return INSTANCE;
+    public CholetteViewFactory() {
+        registerFromLookup(CholetteDocument.class);
     }
 
-    private CholetteViewFactory() {
-        registerFromLookup(CholetteDocument.class);
+    public static IProcDocumentViewFactory<CholetteDocument> getDefault() {
+        IProcDocumentViewFactory<CholetteDocument> fac = INSTANCE.get();
+        if (fac == null) {
+            fac = new CholetteViewFactory();
+            INSTANCE.lazySet(fac);
+        }
+        return fac;
+    }
+
+    public static void setDefault(IProcDocumentViewFactory<CholetteDocument> factory) {
+        INSTANCE.set(factory);
     }
 
     @Override
@@ -42,28 +61,19 @@ public class CholetteViewFactory extends ProcDocumentViewFactory<CholetteDocumen
         return RESULTS_MAIN; //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static class CholetteExtractor extends DefaultInformationExtractor<CholetteDocument, BenchmarkingResults> {
-
-        static final CholetteExtractor INSTANCE = new CholetteExtractor();
-
-        @Override
-        public BenchmarkingResults retrieve(CholetteDocument source) {
-            return source.getResults();
-        }
-    };
-
-    private static class ItemFactory<I> extends ComposedProcDocumentItemFactory<CholetteDocument, I> {
-
-        public ItemFactory(Id itemId, InformationExtractor<? super CholetteDocument, I> informationExtractor, ItemUI<? extends IProcDocumentView<CholetteDocument>, I> itemUI) {
-            super(CholetteDocument.class, itemId, informationExtractor, itemUI);
-        }
-    }
-
-    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 100000 + 1000)
-    public static class MainChartFactory extends ItemFactory<BenchmarkingResults> {
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 1000)
+    public static class MainChartFactory extends ProcDocumentItemFactory<CholetteDocument, CholetteDocument> {
 
         public MainChartFactory() {
-            super(RESULTS_MAIN, CholetteExtractor.INSTANCE, new GenericChartUI(true, BenchmarkingResults.ORIGINAL, BenchmarkingResults.BENCHMARKED));
+            super(CholetteDocument.class, 
+                    RESULTS_MAIN, 
+                    s-> s, 
+                    new GenericChartUI(true, new String[]{ BenchmarkingDictionaries.ORIGINAL, BenchmarkingDictionaries.BENCHMARKED}));
+        }
+
+        @Override
+        public int getPosition() {
+            return 1000;
         }
     }
 

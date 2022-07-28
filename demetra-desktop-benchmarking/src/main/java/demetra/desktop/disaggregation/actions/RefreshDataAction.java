@@ -16,6 +16,11 @@
  */
 package demetra.desktop.disaggregation.actions;
 
+import demetra.desktop.disaggregation.documents.TemporalDisaggregationDocumentManager;
+import demetra.desktop.nodes.SingleNodeAction;
+import demetra.desktop.workspace.WorkspaceItem;
+import demetra.desktop.workspace.nodes.ItemWsNode;
+import demetra.timeseries.MultiTsDocument;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
@@ -27,12 +32,12 @@ import org.openide.util.NbBundle.Messages;
 
 @ActionID(
     category = "Tools",
-id = "ec.nbdemetra.sa.disaggregation.RefreshDataAction")
+id = "demetra.desktop.disaggregation.actions.RefreshDataAction")
 @ActionRegistration(
     displayName = "#CTL_RefreshDataAction", lazy=false)
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "D-R"),
-    @ActionReference(path = TsDisaggregationModelManager.ITEMPATH, position = 1900)
+    @ActionReference(path = TemporalDisaggregationDocumentManager.ITEMPATH, position = 1900)
 })
 @Messages("CTL_RefreshDataAction=Refresh Data")
 public final class RefreshDataAction extends SingleNodeAction<ItemWsNode> {

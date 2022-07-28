@@ -14,20 +14,21 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.disaggregation;
+package demetra.desktop.benchmarking.documents;
 
+import internal.workspace.file.CholetteDocHandler;
 import java.util.Date;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author Jean
+ * @author palatej
  */
 @ServiceProvider(service = IWorkspaceItemRepository.class)
-public final class TsDisaggregationModelDocFileRepository extends DefaultFileItemRepository<TsDisaggregationModelDocument> {
+public final class CholetteDocFileRepository extends DefaultFileItemRepository<CholetteDocument> {
 
     @Deprecated
-    public static final String REPOSITORY = TsDisaggregationDocHandler.REPOSITORY;
+    public static final String REPOSITORY = CholetteDocHandler.REPOSITORY;
 
     @Override
     public String getRepository() {
@@ -35,27 +36,27 @@ public final class TsDisaggregationModelDocFileRepository extends DefaultFileIte
     }
 
     @Override
-    public boolean load(WorkspaceItem<TsDisaggregationModelDocument> item) {
-        return loadFile(item, (TsDisaggregationModelDocument o) -> {
+    public boolean load(WorkspaceItem<CholetteDocument> item) {
+        return loadFile(item, (CholetteDocument o) -> {
             item.setElement(o);
             item.resetDirty();
         });
     }
 
     @Override
-    public boolean save(WorkspaceItem<TsDisaggregationModelDocument> item) {
-        TsDisaggregationModelDocument element = item.getElement();
+    public boolean save(WorkspaceItem<CholetteDocument> item) {
+        CholetteDocument element = item.getElement();
         element.getMetaData().put(MetaData.DATE, new Date().toString());
         return storeFile(item, element, item::resetDirty);
     }
 
     @Override
-    public boolean delete(WorkspaceItem<TsDisaggregationModelDocument> doc) {
+    public boolean delete(WorkspaceItem<CholetteDocument> doc) {
         return deleteFile(doc);
     }
 
     @Override
-    public Class<TsDisaggregationModelDocument> getSupportedType() {
-        return TsDisaggregationModelDocument.class;
+    public Class<CholetteDocument> getSupportedType() {
+        return CholetteDocument.class;
     }
 }

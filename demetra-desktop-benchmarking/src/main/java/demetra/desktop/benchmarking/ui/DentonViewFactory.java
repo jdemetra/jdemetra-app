@@ -16,6 +16,16 @@
  */
 package demetra.desktop.benchmarking.ui;
 
+import demetra.benchmarking.BenchmarkingDictionaries;
+import demetra.desktop.ui.processing.GenericChartUI;
+import demetra.desktop.ui.processing.IProcDocumentItemFactory;
+import demetra.desktop.ui.processing.IProcDocumentViewFactory;
+import demetra.desktop.ui.processing.ProcDocumentItemFactory;
+import demetra.desktop.ui.processing.ProcDocumentViewFactory;
+import demetra.util.Id;
+import demetra.util.LinearId;
+import java.util.concurrent.atomic.AtomicReference;
+import jdplus.benchmarking.univariate.DentonDocument;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -27,14 +37,23 @@ public class DentonViewFactory extends ProcDocumentViewFactory<DentonDocument> {
     public static final String INPUT = "Input", RESULTS = "Results";
     public static final Id RESULTS_MAIN = new LinearId(RESULTS);
 
-    private static final IProcDocumentViewFactory<DentonDocument> INSTANCE = new DentonViewFactory();
+     private static final AtomicReference<IProcDocumentViewFactory<DentonDocument>> INSTANCE = new AtomicReference();
 
-    public static IProcDocumentViewFactory<DentonDocument> getDefault() {
-        return INSTANCE;
+    public DentonViewFactory() {
+        registerFromLookup(DentonDocument.class);
     }
 
-    private DentonViewFactory() {
-        registerFromLookup(DentonDocument.class);
+    public static IProcDocumentViewFactory<DentonDocument> getDefault() {
+        IProcDocumentViewFactory<DentonDocument> fac = INSTANCE.get();
+        if (fac == null) {
+            fac = new DentonViewFactory();
+            INSTANCE.lazySet(fac);
+        }
+        return fac;
+    }
+
+    public static void setDefault(IProcDocumentViewFactory<DentonDocument> factory) {
+        INSTANCE.set(factory);
     }
 
     @Override
@@ -42,28 +61,19 @@ public class DentonViewFactory extends ProcDocumentViewFactory<DentonDocument> {
         return RESULTS_MAIN; //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static class DentonExtractor extends DefaultInformationExtractor<DentonDocument, BenchmarkingResults> {
-
-        static final DentonExtractor INSTANCE = new DentonExtractor();
-
-        @Override
-        public BenchmarkingResults retrieve(DentonDocument source) {
-            return source.getResults();
-        }
-    };
-
-    private static class ItemFactory<I> extends ComposedProcDocumentItemFactory<DentonDocument, I> {
-
-        public ItemFactory(Id itemId, InformationExtractor<? super DentonDocument, I> informationExtractor, ItemUI<? extends IProcDocumentView<DentonDocument>, I> itemUI) {
-            super(DentonDocument.class, itemId, informationExtractor, itemUI);
-        }
-    }
-
-    @ServiceProvider(service = ProcDocumentItemFactory.class, position = 100000 + 1000)
-    public static class MainChartFactory extends ItemFactory<BenchmarkingResults> {
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 1000)
+    public static class MainChartFactory extends ProcDocumentItemFactory<DentonDocument, DentonDocument> {
 
         public MainChartFactory() {
-            super(RESULTS_MAIN, DentonExtractor.INSTANCE, new GenericChartUI(true, BenchmarkingResults.ORIGINAL, BenchmarkingResults.BENCHMARKED));
+            super(DentonDocument.class, 
+                    RESULTS_MAIN, 
+                    s-> s, 
+                    new GenericChartUI(true, new String[]{ BenchmarkingDictionaries.ORIGINAL, BenchmarkingDictionaries.BENCHMARKED}));
+        }
+
+        @Override
+        public int getPosition() {
+            return 1000;
         }
     }
 

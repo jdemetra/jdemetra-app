@@ -16,6 +16,9 @@
  */
 package demetra.desktop.benchmarking.descriptors;
 
+import demetra.benchmarking.univariate.DentonSpec;
+import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.desktop.descriptors.IObjectDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -25,12 +28,8 @@ import java.util.List;
  *
  * @author Jean Palate
  */
-public class DentonSpecUI implements IObjectDescriptor<DentonSpecification> {
+public class DentonSpecUI implements IObjectDescriptor<DentonSpec> {
 
-    static {
-        CustomPropertyEditorRegistry.INSTANCE.registerEnumEditor(BasicSpecUI.AggregationType.class);
-    }
-    
     public static final String DENTON = "Denton";
 
     @Override
@@ -38,31 +37,32 @@ public class DentonSpecUI implements IObjectDescriptor<DentonSpecification> {
         return DENTON;
     }
 
-    final DentonSpecification core;
+    private DentonSpec core;
+    private int period=12;
 
-    public DentonSpecUI(DentonSpecification spec) {
+    public DentonSpecUI(DentonSpec spec) {
         core = spec;
     }
 
     @Override
-    public DentonSpecification getCore() {
+    public DentonSpec getCore() {
         return core;
     }
 
-    public BasicSpecUI.AggregationType getType() {
-        return convert(core.getAggregationType());
+    public Utility.AggregationType getType() {
+        return Utility.convert(core.getAggregationType());
     }
 
-    public void setType(BasicSpecUI.AggregationType type) {
-        core.setAggregationType(convert(type));
+    public void setType(Utility.AggregationType type) {
+        core = core.toBuilder().aggregationType(Utility.convert(type)).build();
     }
 
     public int getDifferencing() {
-        return core.getDifferencingOrder();
+        return core.getDifferencing();
     }
 
     public void setDifferencing(int diff) {
-        core.setDifferencingOrder(diff);
+        core = core.toBuilder().differencing(diff).build();
     }
 
     public boolean isMultiplicative() {
@@ -70,25 +70,25 @@ public class DentonSpecUI implements IObjectDescriptor<DentonSpecification> {
     }
 
     public void setMultiplicative(boolean mul) {
-        core.setMultiplicative(mul);
+        core = core.toBuilder().modified(mul).build();
     }
 
     public boolean isModified() {
-        return core.isModifiedDenton();
+        return core.isModified();
     }
 
     public void setModified(boolean mod) {
-        core.setModifiedDenton(mod);
+        core = core.toBuilder().modified(mod).build();
     }
 
-    public TsFrequency getFrequency() {
-        return core.getDefaultFrequency();
+    public int getFrequency() {
+        return period;
     }
 
-    public void setFrequency(TsFrequency freq) {
-        core.setDefaultFrequency(freq);
+    public void setFrequency(int period) {
+        this.period=period;
     }
-    
+
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         List<EnhancedPropertyDescriptor> props = new ArrayList<>();
@@ -105,10 +105,6 @@ public class DentonSpecUI implements IObjectDescriptor<DentonSpecification> {
             props.add(desc);
         }
         desc = diffDesc();
-        if (desc != null) {
-            props.add(desc);
-        }
-        desc = freqDesc();
         if (desc != null) {
             props.add(desc);
         }
@@ -179,15 +175,15 @@ public class DentonSpecUI implements IObjectDescriptor<DentonSpecification> {
             return null;
         }
     }
-    
+
     @Override
     public String getDisplayName() {
         return DENTON; //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static final int TYPE_ID = 10, DIFF_ID = 40, MUL_ID = 20, MOD_ID = 30, DEFFREQ_ID=40;
+    private static final int TYPE_ID = 10, DIFF_ID = 40, MUL_ID = 20, MOD_ID = 30, DEFFREQ_ID = 40;
     private static final String TYPE_NAME = "Type", DIFF_NAME = "Differencing",
-            MUL_NAME = "Multiplicative", MOD_NAME = "Modified Denton", DEFFREQ_NAME="Default frequency",
+            MUL_NAME = "Multiplicative", MOD_NAME = "Modified Denton", DEFFREQ_NAME = "Default frequency",
             TYPE_DESC = "Type", DIFF_DESC = "Differencing order in the objective function",
-            MUL_DESC = "Multiplicative", MOD_DESC = "Modified Denton", DEFFREQ_DESC="Default frequency";
+            MUL_DESC = "Multiplicative", MOD_DESC = "Modified Denton", DEFFREQ_DESC = "Default frequency";
 }

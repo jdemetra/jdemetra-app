@@ -16,7 +16,27 @@
  */
 package demetra.desktop.disaggregation.ui;
 
+import demetra.data.AggregationType;
+import demetra.data.DoubleSeq;
+import demetra.data.Parameter;
+import demetra.html.AbstractHtmlElement;
+import demetra.html.HtmlStream;
+import demetra.html.HtmlTable;
+import demetra.html.HtmlTableCell;
+import demetra.html.HtmlTag;
+import demetra.html.modelling.HtmlDiffuseLikelihood;
+import demetra.math.matrices.Matrix;
+import demetra.tempdisagg.univariate.TemporalDisaggregationSpec;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsData;
+import demetra.timeseries.TsUnit;
 import java.io.IOException;
+import java.util.List;
+import jdplus.dstats.T;
+import jdplus.stats.DescriptiveStatistics;
+import jdplus.stats.likelihood.DiffuseConcentratedLikelihood;
+import jdplus.tempdisagg.univariate.TemporalDisaggregationDocument;
+import jdplus.tempdisagg.univariate.TemporalDisaggregationResults;
 
 /**
  *
@@ -25,13 +45,13 @@ import java.io.IOException;
 public class ModelSummary extends AbstractHtmlElement {
 
     //private 
-    private final DisaggregationResults results;
-    private final Ts[] input;
-    private final DisaggregationSpecification specification;
+    private final TemporalDisaggregationResults results;
+    private final List<Ts> input;
+    private final TemporalDisaggregationSpec specification;
 
-    public ModelSummary(TsDisaggregationModelDocument doc) {
-        this.results = doc.getResults();
-        this.input = doc.getTs();
+    public ModelSummary(TemporalDisaggregationDocument doc) {
+        this.results = doc.getResult();
+        this.input = doc.getInput();
         this.specification = doc.getSpecification();
     }
 
@@ -46,66 +66,67 @@ public class ModelSummary extends AbstractHtmlElement {
 
     private void writeLikelihood(HtmlStream stream) throws IOException {
         stream.write(HtmlTag.HEADER2, h2, "Likelihood statistics");
-        HtmlLikelihood ll = new HtmlLikelihood(results.getLikelihoodStatistics());
+        HtmlDiffuseLikelihood ll = new HtmlDiffuseLikelihood(results.getStats());
         stream.write(ll);
     }
 
     private void writeHeader(HtmlStream stream) throws IOException {
         String model;
-        switch (specification.getModel()) {
-            case Wn:
-                model = "OLS";
-                break;
-            case Ar1:
-                model = "Chow-Lin";
-                break;
-            case RwAr1:
-                model = "Litterman";
-                break;
-            default:
-                model = "Fernandez";
-                break;
-        }
+        model = switch (specification.getResidualsModel()) {
+            case Wn ->
+                "OLS";
+            case Ar1 ->
+                "Chow-Lin";
+            case RwAr1 ->
+                "Litterman";
+            default ->
+                "Fernandez";
+        };
         stream.write(HtmlTag.HEADER1, h1, model);
         stream.newLine();
 
     }
 
     private void writeModel(HtmlStream stream) throws IOException {
-        if (!specification.getModel().hasParameter()) {
+        if (!specification.getResidualsModel().hasParameter()) {
             return;
         }
         stream.write(HtmlTag.LINEBREAK);
         stream.write(HtmlTag.HEADER2, h2, "Model");
         stream.write("Rho = ");
         Parameter p = specification.getParameter();
+
         if (!p.isFixed()) {
-            p = results.getEstimatedParameter();
+            double[] parameters = results.getMaximum().getParameters();
+            p = Parameter.estimated(parameters[0]);
         }
 
         stream.write(p.getValue());
         if (!p.isFixed()) {
+            Matrix hessian = results.getMaximum().getHessian();
+            double scale = results.getLikelihood().ssq() / (results.getLikelihood().degreesOfFreedom() - 1);
             stream.write(" [");
-            stream.write(df4.format(p.getStde()));
+            stream.write(df4.format(Math.sqrt(hessian.get(0, 0) * scale)));
             stream.write("]");
         }
     }
 
     private void writeVariance(HtmlStream stream) throws IOException {
-        TsData bench = results.getData(DisaggregationResults.DISAGGREGATION, TsData.class);
-        TsData reg = results.getData(DisaggregationResults.REGEFFECT, TsData.class);
-        TsData smooth = results.getData(DisaggregationResults.SMOOTHING, TsData.class);
-        if (reg == null)
+        TsData bench = results.getDisaggregatedSeries();
+        TsData reg = results.getRegressionEffects();
+        TsData smooth = TsData.subtract(bench, reg);
+        if (reg == null) {
             return;
-        bench=bench.changeFrequency(TsFrequency.Yearly, TsAggregationType.Sum, true);
-        reg=reg.changeFrequency(TsFrequency.Yearly, TsAggregationType.Sum, true);
-        smooth=smooth.changeFrequency(TsFrequency.Yearly, TsAggregationType.Sum, true);
-        DescriptiveStatistics bstats = new DescriptiveStatistics(bench);
-        DescriptiveStatistics rstats = new DescriptiveStatistics(reg);
-        DescriptiveStatistics sstats = new DescriptiveStatistics(smooth);
-        
-        double varT=rstats.getVar()+sstats.getVar();
-        
+        }
+        TsData bencha = bench.aggregate(TsUnit.YEAR, AggregationType.Sum, true);
+        TsData rega = reg.aggregate(TsUnit.YEAR, AggregationType.Sum, true);
+        TsData smootha = smooth.aggregate(TsUnit.YEAR, AggregationType.Sum, true);
+        DescriptiveStatistics bstats = DescriptiveStatistics.of(bencha.getValues());
+        DescriptiveStatistics rstats = DescriptiveStatistics.of(rega.getValues());
+        DescriptiveStatistics sstats = DescriptiveStatistics.of(smootha.getValues());
+
+        double varT = rstats.getVar() + sstats.getVar();
+
         stream.write(HtmlTag.LINEBREAK);
         stream.write(HtmlTag.HEADER2, h2, "Variance");
         stream.open(new HtmlTable(0, 300));
@@ -116,25 +137,24 @@ public class ModelSummary extends AbstractHtmlElement {
         stream.open(HtmlTag.TABLEROW);
         stream.write(new HtmlTableCell("Indicators", 100));
         stream.write(new HtmlTableCell(format(rstats.getVar()), 100));
-        stream.write(new HtmlTableCell(df2.format(100.0 * rstats.getVar() /varT), 100));
+        stream.write(new HtmlTableCell(df2.format(100.0 * rstats.getVar() / varT), 100));
         stream.close(HtmlTag.TABLEROW);
         stream.open(HtmlTag.TABLEROW);
         stream.write(new HtmlTableCell("Smoothing", 100));
         stream.write(new HtmlTableCell(format(sstats.getVar()), 100));
-        stream.write(new HtmlTableCell(df2.format(100.0 * sstats.getVar() /varT), 100));
+        stream.write(new HtmlTableCell(df2.format(100.0 * sstats.getVar() / varT), 100));
         stream.close(HtmlTag.TABLEROW);
         stream.close(HtmlTag.TABLE);
     }
 
     private void writeRegression(HtmlStream stream) throws IOException {
         DiffuseConcentratedLikelihood ll = results.getLikelihood();
-        double[] b = ll.getB();
-        if (b == null) {
+        DoubleSeq b = ll.coefficients();
+        if (b.isEmpty()) {
             return;
         }
-        T t = new T();
-        int nhp = specification.getModel().getParametersCount();
-        t.setDegreesofFreedom(ll.getDegreesOfFreedom(true, nhp));
+        int nhp = specification.getResidualsModel().getParametersCount();
+        T t = new T(ll.degreesOfFreedom() - nhp);
 
         stream.write(HtmlTag.LINEBREAK);
         stream.write(HtmlTag.HEADER2, h2, "Regression model");
@@ -147,14 +167,14 @@ public class ModelSummary extends AbstractHtmlElement {
         stream.close(HtmlTag.TABLEROW);
 
         int idx = 0;
-        if (specification.getOption() != TsDisaggregation.SsfOption.DKF) {
-            idx = results.getEstimatedSsf().getNonStationaryDim();
-        }
+//        if (specification.getOption() != TsDisaggregation.SsfOption.DKF) {
+//            idx = results.getEstimatedSsf().getNonStationaryDim();
+//        }
         if (specification.isConstant()) {
             stream.open(HtmlTag.TABLEROW);
             stream.write(new HtmlTableCell("Constant", 100));
-            stream.write(new HtmlTableCell(format(b[idx]), 100));
-            double tval = ll.getTStat(idx, true, nhp);
+            stream.write(new HtmlTableCell(format(b.get(idx)), 100));
+            double tval = ll.tstat(idx, nhp, true);
             stream.write(new HtmlTableCell(formatT(tval), 100));
             double prob = 1 - t.getProbabilityForInterval(-tval, tval);
             stream.write(new HtmlTableCell(df4.format(prob), 100));
@@ -165,19 +185,19 @@ public class ModelSummary extends AbstractHtmlElement {
         if (specification.isTrend()) {
             stream.open(HtmlTag.TABLEROW);
             stream.write(new HtmlTableCell("Trend", 100));
-            stream.write(new HtmlTableCell(format(b[idx]), 100));
-            double tval = ll.getTStat(idx, true, nhp);
+            stream.write(new HtmlTableCell(format(b.get(idx)), 100));
+            double tval = ll.tstat(idx, nhp, true);
             stream.write(new HtmlTableCell(formatT(tval), 100));
             double prob = 1 - t.getProbabilityForInterval(-tval, tval);
             stream.write(new HtmlTableCell(df4.format(prob), 100));
             stream.close(HtmlTag.TABLEROW);
             ++idx;
         }
-        for (int j = 1; j < input.length; ++j, ++idx) {
+        for (int j = 1; j < input.size(); ++j, ++idx) {
             stream.open(HtmlTag.TABLEROW);
-            stream.write(new HtmlTableCell(input[j].getName(), 100));
-            stream.write(new HtmlTableCell(format(b[idx]), 100));
-            double tval = ll.getTStat(idx, true, nhp);
+            stream.write(new HtmlTableCell(input.get(j).getName(), 100));
+            stream.write(new HtmlTableCell(format(b.get(idx)), 100));
+            double tval = ll.tstat(idx, nhp, true);
             stream.write(new HtmlTableCell(formatT(tval), 100));
             double prob = 1 - t.getProbabilityForInterval(-tval, tval);
             stream.write(new HtmlTableCell(df4.format(prob), 100));

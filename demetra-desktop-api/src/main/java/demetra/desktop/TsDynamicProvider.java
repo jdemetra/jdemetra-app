@@ -17,10 +17,10 @@
 package demetra.desktop;
 
 import demetra.information.Explorable;
+import demetra.processing.ProcDocument;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
-import demetra.timeseries.TsDocument;
 import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsMoniker;
 import demetra.timeseries.TsProvider;
@@ -47,13 +47,13 @@ public final class TsDynamicProvider implements TsProvider {
     public TsDynamicProvider() {
     }
 
-    public static TsMoniker monikerOf(TsDocument doc, String id) {
+    public static TsMoniker monikerOf(ProcDocument doc, String id) {
         StringBuilder builder = new StringBuilder();
         builder.append(doc.getKey()).append('@').append(id);
         return TsMoniker.of(DYNAMIC, builder.toString());
     }
 
-    private static final Map< UUID, WeakReference<TsDocument>> DOCUMENTS = new HashMap<>();
+    private static final Map< UUID, WeakReference<ProcDocument>> DOCUMENTS = new HashMap<>();
 //    private static final Map< UUID, Set<String>> DOCITEMS = new HashMap<>();
 
     @Override
@@ -85,11 +85,11 @@ public final class TsDynamicProvider implements TsProvider {
                     return invalidTs(moniker, "invalid id");
                 }
                 UUID uuid = UUID.fromString(items[0]);
-                WeakReference<TsDocument> wdoc = DOCUMENTS.get(uuid);
+                WeakReference<ProcDocument> wdoc = DOCUMENTS.get(uuid);
                 if (wdoc == null) {
                     return invalidTs(moniker, "closed document");
                 }
-                TsDocument doc = wdoc.get();
+                ProcDocument doc = wdoc.get();
                 if (doc == null) {
                     return invalidTs(moniker, "closed document");
                 }
@@ -136,7 +136,7 @@ public final class TsDynamicProvider implements TsProvider {
 //            return Collections.unmodifiableSet(items);
 //        }
 //    }
-    public static void onDocumentClosing(TsDocument doc) {
+    public static void onDocumentClosing(ProcDocument doc) {
         if (doc == null) {
             return;
         }
@@ -147,7 +147,7 @@ public final class TsDynamicProvider implements TsProvider {
         }
     }
 
-    public static void onDocumentOpened(TsDocument doc) {
+    public static void onDocumentOpened(ProcDocument doc) {
         if (doc == null) {
             return;
         }
@@ -157,7 +157,7 @@ public final class TsDynamicProvider implements TsProvider {
         }
     }
 
-    public static void onDocumentChanged(TsDocument doc) {
+    public static void onDocumentChanged(ProcDocument doc) {
         if (doc == null) {
             return;
         }

@@ -16,6 +16,12 @@
  */
 package demetra.desktop.disaggregation.descriptors;
 
+import demetra.data.Parameter;
+import demetra.desktop.benchmarking.descriptors.Utility;
+import demetra.desktop.descriptors.DateSelectorUI;
+import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.tempdisagg.univariate.TemporalDisaggregationSpec;
+import demetra.timeseries.TimeSelector;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -25,107 +31,95 @@ import java.util.List;
  *
  * @author Jean Palate
  */
-public class BasicSpecUI extends BaseTsDisaggregationSpecUI implements IObjectDescriptor<DisaggregationSpecification> {
-
-    public static enum AggregationType {
-
-        Sum, Average, Last, First
-    }
-
-    public static AggregationType convert(TsAggregationType a) {
-        switch (a) {
-            case Average:
-                return AggregationType.Average;
-            case Last:
-                return AggregationType.Last;
-            case First:
-                return AggregationType.First;
-            default:
-                return AggregationType.Sum;
-        }
-    }
-
-    public static TsAggregationType convert(AggregationType a) {
-        switch (a) {
-            case Average:
-                return TsAggregationType.Average;
-            case Last:
-                return TsAggregationType.Last;
-            case First:
-                return TsAggregationType.First;
-            default:
-                return TsAggregationType.Sum;
-        }
-    }
+public class BasicSpecUI extends BaseTemporalDisaggregationSpecUI {
 
     public static final String DISPLAYNAME = "Basic";
     public static final String ERROR_NAME = "Error", PARAM_NAME = "Parameter", CONSTANT_NAME = "Constant", TREND_NAME = "Trend", TYPE_NAME = "Type", SPAN_NAME = "Estimation span", DEFFREQ_NAME = "Default frequency";
     public static final String ERROR_DESC = "Model of the regression error", PARAM_DESC = "Parameter", CONSTANT_DESC = "Constant", TREND_DESC = "Trend", TYPE_DESC = "Type", SPAN_DESC = "Estimation span", DEFFREQ_DESC = "Default frequency";
     public static final int SPAN_ID = 0, ERROR_ID = 5, PARAM_ID = 10, CONSTANT_ID = 15, TREND_ID = 20, TYPE_ID = 30, DEFFREQ_ID = 40;
 
-    public BasicSpecUI(DisaggregationSpecification spec, TsDomain domain, boolean ro) {
-        super(spec, domain, ro);
+    @Override
+    public String toString() {
+        return "";
     }
 
-    public DisaggregationSpecification.Model getErrorModel() {
-        return core.getModel();
+    public BasicSpecUI(TemporalDisaggregationSpecRoot root) {
+        super(root);
     }
 
-    public void setErrorModel(DisaggregationSpecification.Model model) {
-        core.setModel(model);
-        if (model.getDifferencingOrder() == 1 && !core.isZeroInitialization()) {
-            core.setConstant(false);
+    public TemporalDisaggregationSpec.Model getErrorModel() {
+        return core().getResidualsModel();
+    }
+
+    public void setErrorModel(TemporalDisaggregationSpec.Model model) {
+        TemporalDisaggregationSpec.Builder builder = core().toBuilder().residualsModel(model);
+        if (model.getDifferencingOrder() == 1 && !core().isZeroInitialization()) {
+            builder.constant(false);
         }
-        if (model.getDifferencingOrder() > 1 ) {
-            core.setZeroInitialization(false); // not supported
-            core.setConstant(false);
-            core.setTrend(false);
+        if (model.getDifferencingOrder() > 1) {
+            builder.zeroInitialization(false)
+                    .constant(false)
+                    .trend(false);
         }
+        update(builder.build());
     }
 
     public Parameter[] getParameter() {
-        return new Parameter[]{core.getParameter()};
+        return new Parameter[]{core().getParameter()};
     }
 
     public void setParameter(Parameter[] p) {
-        core.setParameter(p[0]);
+        update(core().toBuilder()
+                .parameter(p[0])
+                .build());
     }
 
     public boolean isConstant() {
-        return core.isConstant();
+        return core().isConstant();
     }
 
     public void setConstant(boolean cnt) {
-        core.setConstant(cnt);
+        update(core().toBuilder()
+                .constant(cnt)
+                .build());
     }
 
     public boolean isTrend() {
-        return core.isTrend();
+        return core().isTrend();
     }
 
     public void setTrend(boolean t) {
-        core.setTrend(t);
+        update(core().toBuilder()
+                .trend(t)
+                .build());
     }
 
-    public AggregationType getType() {
-        return convert(core.getType());
+    public Utility.AggregationType getType() {
+        return Utility.convert(core().getAggregationType());
     }
 
-    public void setType(AggregationType type) {
-        core.setType(convert(type));
+    public void setType(Utility.AggregationType type) {
+        update(core().toBuilder()
+                .aggregationType(Utility.convert(type))
+                .build());
     }
 
-    public TsFrequency getFrequency() {
-        return core.getDefaultFrequency();
+    public int getFrequency() {
+        return root.getPeriod();
     }
 
-    public void setFrequency(TsFrequency freq) {
-        core.setDefaultFrequency(freq);
+    public void setFrequency(int freq) {
+        root.period=freq;
     }
 
-    public TsPeriodSelectorUI getSpan() {
-        return new TsPeriodSelectorUI(core.getSpan(), domain_, ro_);
+    public DateSelectorUI getSpan() {
+        return new DateSelectorUI(core().getEstimationSpan(), isRo(), span->updateSpan(span));
     }
+
+    public void updateSpan(TimeSelector span){
+         update(core().toBuilder().estimationSpan(span).build());
+    }
+
 
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
@@ -168,7 +162,7 @@ public class BasicSpecUI extends BaseTsDisaggregationSpecUI implements IObjectDe
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setShortDescription(SPAN_DESC);
             desc.setDisplayName(SPAN_NAME);
-            edesc.setReadOnly(ro_);
+            edesc.setReadOnly(isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -182,7 +176,7 @@ public class BasicSpecUI extends BaseTsDisaggregationSpecUI implements IObjectDe
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(ERROR_NAME);
             desc.setShortDescription(ERROR_DESC);
-            edesc.setReadOnly(ro_);
+            edesc.setReadOnly(isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -196,8 +190,8 @@ public class BasicSpecUI extends BaseTsDisaggregationSpecUI implements IObjectDe
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(CONSTANT_NAME);
             desc.setShortDescription(CONSTANT_DESC);
-            edesc.setReadOnly(ro_ || (core.getModel().getDifferencingOrder()==1 && !core.isZeroInitialization())
-            || core.getModel().getDifferencingOrder()>1);
+            edesc.setReadOnly(isRo() || (core().getResidualsModel().getDifferencingOrder() == 1 && !core().isZeroInitialization())
+                    || core().getResidualsModel().getDifferencingOrder() > 1);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -205,7 +199,7 @@ public class BasicSpecUI extends BaseTsDisaggregationSpecUI implements IObjectDe
     }
 
     private EnhancedPropertyDescriptor parameterDesc() {
-        if (!core.getModel().hasParameter()) {
+        if (!core().getResidualsModel().hasParameter()) {
             return null;
         }
         try {
@@ -214,7 +208,7 @@ public class BasicSpecUI extends BaseTsDisaggregationSpecUI implements IObjectDe
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(PARAM_NAME);
             desc.setShortDescription(PARAM_DESC);
-            edesc.setReadOnly(ro_);
+            edesc.setReadOnly(isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -228,7 +222,7 @@ public class BasicSpecUI extends BaseTsDisaggregationSpecUI implements IObjectDe
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(TREND_NAME);
             desc.setShortDescription(TREND_DESC);
-            edesc.setReadOnly(ro_|| core.getModel().getDifferencingOrder()>1);
+            edesc.setReadOnly(isRo() || core().getResidualsModel().getDifferencingOrder() > 1);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -242,7 +236,7 @@ public class BasicSpecUI extends BaseTsDisaggregationSpecUI implements IObjectDe
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(TYPE_NAME);
             desc.setShortDescription(TYPE_DESC);
-            edesc.setReadOnly(ro_);
+            edesc.setReadOnly(isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -256,7 +250,7 @@ public class BasicSpecUI extends BaseTsDisaggregationSpecUI implements IObjectDe
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(DEFFREQ_NAME);
             desc.setShortDescription(DEFFREQ_DESC);
-            edesc.setReadOnly(ro_);
+            edesc.setReadOnly(isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

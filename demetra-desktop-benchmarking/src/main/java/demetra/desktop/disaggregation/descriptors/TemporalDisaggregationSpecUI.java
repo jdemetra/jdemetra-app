@@ -16,6 +16,9 @@
  */
 package demetra.desktop.disaggregation.descriptors;
 
+import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.desktop.descriptors.IObjectDescriptor;
+import demetra.tempdisagg.univariate.TemporalDisaggregationSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -25,31 +28,35 @@ import java.util.List;
  *
  * @author Jean
  */
-public class DefaultTsDisaggregationSpecUI extends BaseTsDisaggregationSpecUI implements IObjectDescriptor<DisaggregationSpecification> {
+public class TemporalDisaggregationSpecUI implements IObjectDescriptor<TemporalDisaggregationSpec> {
 
-    static {
-        CustomPropertyEditorRegistry.INSTANCE.registerEnumEditor(DisaggregationSpecification.Model.class);
-        CustomPropertyEditorRegistry.INSTANCE.registerEnumEditor(TsDisaggregation.SsfOption.class);
-    }
     public static final String DISPLAYNAME = "Disaggregation";
     public static final String BASIC_NAME = "Basic options", ADVANCED_NAME = "Advanced options";
     public static final String BASIC_DESC = "Basic options", ADVANCED_DESC = "Advanced options";
     public static final int BASIC_ID = 0, ADVANCED_ID = 10;
 
-    public DefaultTsDisaggregationSpecUI(DisaggregationSpecification spec, boolean ro) {
-        super(spec, null, ro);
+    private final TemporalDisaggregationSpecRoot root;
+    
+    @Override
+    public TemporalDisaggregationSpec getCore(){
+        return root.getCore();
     }
 
-    public DefaultTsDisaggregationSpecUI(DisaggregationSpecification spec, TsDomain domain, boolean ro) {
-        super(spec, domain, ro);
+    public TemporalDisaggregationSpecUI(TemporalDisaggregationSpec spec, boolean ro) {
+        root=new TemporalDisaggregationSpecRoot(spec, ro, 12);
     }
+
+    public TemporalDisaggregationSpecUI(TemporalDisaggregationSpecRoot root) {
+        this.root=root;
+    }
+
 
     public BasicSpecUI getBasic() {
-        return new BasicSpecUI(core, domain_, ro_);
+        return new BasicSpecUI(root);
     }
 
     public AdvancedSpecUI getAdvanced() {
-        return new AdvancedSpecUI(core, domain_, ro_);
+        return new AdvancedSpecUI(root);
     }
 
     @Override
@@ -73,7 +80,7 @@ public class DefaultTsDisaggregationSpecUI extends BaseTsDisaggregationSpecUI im
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(BASIC_NAME);
             desc.setShortDescription(BASIC_DESC);
-            edesc.setReadOnly(ro_);
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -87,7 +94,7 @@ public class DefaultTsDisaggregationSpecUI extends BaseTsDisaggregationSpecUI im
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(ADVANCED_NAME);
             desc.setShortDescription(ADVANCED_DESC);
-            edesc.setReadOnly(ro_);
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

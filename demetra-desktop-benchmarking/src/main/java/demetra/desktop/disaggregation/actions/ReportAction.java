@@ -16,10 +16,18 @@
  */
 package demetra.desktop.disaggregation.actions;
 
+import demetra.desktop.disaggregation.documents.DefaultReportFactory;
+import demetra.desktop.disaggregation.documents.TemporalDisaggregationDocumentManager;
+import demetra.desktop.workspace.Workspace;
+import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.desktop.workspace.WorkspaceItem;
+import demetra.desktop.workspace.WorkspaceItemManager;
+import demetra.desktop.workspace.nodes.WsNode;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedHashMap;
 import java.util.List;
+import jdplus.tempdisagg.univariate.TemporalDisaggregationDocument;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -28,11 +36,11 @@ import org.openide.util.NbBundle.Messages;
 
 @ActionID(
         category = "Tools",
-        id = "ec.nbdemetra.disaggregation.actions.ReportAction")
+        id = "demetra.desktop.disaggregation.actions.ReportAction")
 @ActionRegistration(
         displayName = "#CTL_ReportAction")
 @ActionReferences({
-    @ActionReference(path = TsDisaggregationModelManager.PATH, position = 1900),
+    @ActionReference(path = TemporalDisaggregationDocumentManager.PATH, position = 1900),
     @ActionReference(path = "Shortcuts", name = "R")})
 @Messages("CTL_ReportAction=CreateReport")
 public final class ReportAction implements ActionListener {
@@ -45,12 +53,12 @@ public final class ReportAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        IWorkspaceItemManager mgr = WorkspaceFactory.getInstance().getManager(context.lookup());
+        WorkspaceItemManager mgr = WorkspaceFactory.getInstance().getManager(context.lookup());
         if (mgr != null) {
             Workspace ws = context.getWorkspace();
-            List<WorkspaceItem<TsDisaggregationModelDocument>> docs = ws.searchDocuments(TsDisaggregationModelDocument.class);
-            LinkedHashMap<String, TsDisaggregationModelDocument> map=new LinkedHashMap<>();
-            for (WorkspaceItem<TsDisaggregationModelDocument> doc : docs){
+            List<WorkspaceItem<TemporalDisaggregationDocument>> docs = ws.searchDocuments(TemporalDisaggregationDocument.class);
+            LinkedHashMap<String, TemporalDisaggregationDocument> map=new LinkedHashMap<>();
+            for (WorkspaceItem<TemporalDisaggregationDocument> doc : docs){
                 map.put(doc.getDisplayName(), doc.getElement());
             }
             new DefaultReportFactory().createReport(map);

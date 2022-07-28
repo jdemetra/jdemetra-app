@@ -14,8 +14,15 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.disaggregation;
+package demetra.desktop.disaggregation.ui;
 
+import demetra.desktop.disaggregation.Bundle;
+import demetra.desktop.disaggregation.FixedRegTsProcessingViewer;
+import demetra.desktop.disaggregation.documents.TemporalDisaggregationDocumentManager;
+import demetra.desktop.util.NbUtilities;
+import demetra.desktop.workspace.WorkspaceItem;
+import demetra.desktop.workspace.ui.WorkspaceTopComponent;
+import jdplus.tempdisagg.univariate.TemporalDisaggregationDocument;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
@@ -23,30 +30,30 @@ import org.openide.windows.TopComponent;
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//ec.nbdemetra.disaggregation//TsDisaggregationModel//EN",
+@ConvertAsProperties(dtd = "-//demetra.desktop.disaggregation.ui//TemporalDisaggregationDocument//EN",
         autostore = false)
-@TopComponent.Description(preferredID = "TsDisaggregationModelTopComponent",
+@TopComponent.Description(preferredID = "TemporalDisaggregationDocumentTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-//@ActionID(category = "Temporal Disaggregation", id = "ec.nbdemetra.disaggregation.TsDisaggregationModelTopComponent")
+//@ActionID(category = "Temporal Disaggregation", id = "demetra.desktop.disaggregation.ui.TemporalDisaggregationDocumentTopComponent")
 //@ActionReference(path = "Menu/Statistical methods/Temporal Disaggregation", position = 1000)
 //@TopComponent.OpenActionRegistration(displayName = "#CTL_TsDisaggregationModelAction")
 @NbBundle.Messages({
-    "CTL_TsDisaggregationModelAction=Regression Model",
-    "CTL_TsDisaggregationModelTopComponent=Regression Model Window",
-    "HINT_TsDisaggregationModelTopComponent=This is a Regression Model window"
+    "CTL_TemporalDisaggregationDocumentAction=Regression Model",
+    "CTL_TemporalDisaggregationDocumentTopComponent=Regression Model Window",
+    "HINT_TemporalDisaggregationDocumentTopComponent=This is a Regression Model window"
 })
-public final class TsDisaggregationModelTopComponent extends WorkspaceTopComponent<TsDisaggregationModelDocument> {
+public final class TemporalDisaggregationDocumentTopComponent extends WorkspaceTopComponent<TemporalDisaggregationDocument> {
 
     protected FixedRegTsProcessingViewer panel;
 
-    public TsDisaggregationModelTopComponent() {
+    public TemporalDisaggregationDocumentTopComponent() {
         super(null);
         //initDocument();
     }
 
-    public TsDisaggregationModelTopComponent(WorkspaceItem<TsDisaggregationModelDocument> doc) {
+    public TemporalDisaggregationDocumentTopComponent(WorkspaceItem<TemporalDisaggregationDocument> doc) {
         super(doc);
         initDocument();
     }
@@ -67,9 +74,19 @@ public final class TsDisaggregationModelTopComponent extends WorkspaceTopCompone
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jSplitPane1 = new javax.swing.JSplitPane();
+        jSplitPane2 = new javax.swing.JSplitPane();
+
         setLayout(new java.awt.BorderLayout());
+
+        jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        jSplitPane1.setTopComponent(jSplitPane2);
+
+        add(jSplitPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JSplitPane jSplitPane2;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -103,11 +120,11 @@ public final class TsDisaggregationModelTopComponent extends WorkspaceTopCompone
 
     @Override
     protected String getContextPath() {
-        return TsDisaggregationModelManager.CONTEXTPATH;
+        return TemporalDisaggregationDocumentManager.CONTEXTPATH;
     }
 
     public void editNote() {
-        TsDisaggregationModelDocument element = getDocument().getElement();
+        TemporalDisaggregationDocument element = getDocument().getElement();
         NbUtilities.editNote(element);
     }
 }

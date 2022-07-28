@@ -14,11 +14,17 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.disaggregation;
+package demetra.desktop.disaggregation.documents;
 
+import demetra.data.AggregationType;
+import demetra.data.DoubleSeq;
 import demetra.desktop.ui.mru.SourceId;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.tempdisagg.univariate.TemporalDisaggregationSpec;
+import demetra.timeseries.Ts;
+import demetra.timeseries.TsData;
+import demetra.timeseries.TsUnit;
 import demetra.util.Paths;
 import java.awt.Dimension;
 import java.io.FileWriter;
@@ -32,6 +38,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.swing.JTextPane;
+import jdplus.dstats.T;
+import jdplus.stats.DescriptiveStatistics;
+import jdplus.stats.likelihood.DiffuseConcentratedLikelihood;
+import jdplus.stats.likelihood.LikelihoodStatistics;
 import jdplus.tempdisagg.univariate.TemporalDisaggregationDocument;
 import jdplus.tempdisagg.univariate.TemporalDisaggregationResults;
 import org.openide.DialogDescriptor;
@@ -177,29 +187,29 @@ public class DefaultReportFactory implements TemporalDisaggregationReportFactory
         items.add(cur);
     }
     
-    private double regSignificance(DisaggregationResults results) {
-        TsData reg = results.getData(DisaggregationResults.REGEFFECT, TsData.class);
+    private double regSignificance(TemporalDisaggregationResults results) {
+        TsData reg = results.getRegressionEffects();
         if (reg == null) {
             return 0;
         }
-        TsData smooth = results.getData(DisaggregationResults.SMOOTHING, TsData.class);
-        reg = reg.changeFrequency(TsFrequency.Yearly, TsAggregationType.Sum, true);
-        smooth = smooth.changeFrequency(TsFrequency.Yearly, TsAggregationType.Sum, true);
-        DescriptiveStatistics rstats = new DescriptiveStatistics(reg);
-        DescriptiveStatistics sstats = new DescriptiveStatistics(smooth);
+        TsData smooth = TsData.subtract(results.getOriginalSeries(), reg);
+        reg = reg.aggregate(TsUnit.YEAR, AggregationType.Sum, true);
+        smooth = smooth.aggregate(TsUnit.YEAR, AggregationType.Sum, true);
+        DescriptiveStatistics rstats = DescriptiveStatistics.of(reg.getValues());
+        DescriptiveStatistics sstats = DescriptiveStatistics.of(smooth.getValues());
         
         double varT = rstats.getVar() + sstats.getVar();
         return rstats.getVar() / varT;
     }
     
     private void writeModel(Writer out, TemporalDisaggregationDocument doc) throws IOException {
-        DisaggregationResults results = doc.getResults();
-        DisaggregationSpecification specification = doc.getSpecification();
+        TemporalDisaggregationResults results = doc.getResult();
+        TemporalDisaggregationSpec specification = doc.getSpecification();
         out.write(specification.toString());
-        if (specification.getModel().hasParameter()) {
+        if (specification.getResidualsModel().hasParameter()) {
             if (results != null) {
                 out.write("\trho=");
-                out.write(results.getEstimatedParameter().toString());
+                out.write(Double.toString(results.getMaximum().getParameters()[0]));
             } else if (specification.getParameter().isFixed()) {
                 out.write("\trho=");
                 out.write(specification.getParameter().toString());
@@ -216,32 +226,30 @@ public class DefaultReportFactory implements TemporalDisaggregationReportFactory
                 out.write("Trend");
                 out.write(NL);
             }
-            Ts[] input = doc.getTs();
-            for (int j = 1; j < input.length; ++j) {
-                out.write(input[j].getName());
+            List<Ts> input = doc.getInput();
+            for (int j = 1; j < input.size(); ++j) {
+                out.write(input.get(j).getName());
                 out.write(NL);
             }
             out.write(NL);
         } else {
             DiffuseConcentratedLikelihood ll = results.getLikelihood();
-            double[] b = ll.getB();
-            if (b == null) {
+            DoubleSeq b = ll.coefficients();
+            if (b.isEmpty())
                 return;
-            }
-            T t = new T();
-            int nhp = specification.getModel().getParametersCount();
-            t.setDegreesofFreedom(ll.getDegreesOfFreedom(true, nhp));
+            int nhp = results.getHyperParametersCount();
+            T t = new T(ll.degreesOfFreedom()-nhp);
             
             int idx = 0;
-            if (specification.getOption() != TsDisaggregation.SsfOption.DKF) {
-                idx = results.getEstimatedSsf().getNonStationaryDim();
-            }
+//            if (specification.getOption() != TsDisaggregation.SsfOption.DKF) {
+//                idx = results.getEstimatedSsf().getNonStationaryDim();
+//            }
             if (specification.isConstant()) {
                 out.write("Constant");
                 out.write('\t');
-                out.write(Double.toString(b[idx]));
+                out.write(Double.toString(b.get(idx)));
                 out.write('\t');
-                double tval = ll.getTStat(idx, true, nhp);
+                double tval = ll.tstat(idx, nhp, true);
                 double prob = 1 - t.getProbabilityForInterval(-tval, tval);
                 out.write(d3.format(prob));
                 out.write(NL);
@@ -250,21 +258,21 @@ public class DefaultReportFactory implements TemporalDisaggregationReportFactory
             if (specification.isTrend()) {
                 out.write("Trend");
                 out.write('\t');
-                out.write(Double.toString(b[idx]));
+                out.write(Double.toString(b.get(idx)));
                 out.write('\t');
-                double tval = ll.getTStat(idx, true, nhp);
+                double tval = ll.tstat(idx, nhp, true);
                 double prob = 1 - t.getProbabilityForInterval(-tval, tval);
                 out.write(d3.format(prob));
                 out.write(NL);
                 ++idx;
             }
-            Ts[] input = doc.getInput();
-            for (int j = 1; j < input.length; ++j, ++idx) {
-                out.write(input[j].getName());
+            List<Ts> input = doc.getInput();
+            for (int j = 1; j < input.size(); ++j, ++idx) {
+                out.write(input.get(j).getName());
                 out.write('\t');
-                out.write(Double.toString(b[idx]));
+                out.write(Double.toString(b.get(idx)));
                 out.write('\t');
-                double tval = ll.getTStat(idx, true, nhp);
+                double tval = ll.tstat(idx, nhp, true);
                 double prob = 1 - t.getProbabilityForInterval(-tval, tval);
                 out.write(d3.format(prob));
                 out.write(NL);
@@ -285,7 +293,7 @@ public class DefaultReportFactory implements TemporalDisaggregationReportFactory
             q[i++] = item.regQuality;
         }
         double n=q.length;        
-        DescriptiveStatistics stats = new DescriptiveStatistics(q);
+        DescriptiveStatistics stats = DescriptiveStatistics.ofInternal(q);
         
         out.write("Average: ");
         out.write(pc2.format(stats.getAverage()));

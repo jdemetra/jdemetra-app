@@ -16,9 +16,16 @@
  */
 package demetra.desktop.disaggregation.actions;
 
+import demetra.desktop.disaggregation.documents.TemporalDisaggregationDocumentManager;
+import demetra.desktop.workspace.Workspace;
+import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.desktop.workspace.WorkspaceItem;
+import demetra.desktop.workspace.WorkspaceItemManager;
+import demetra.desktop.workspace.nodes.WsNode;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import jdplus.tempdisagg.univariate.TemporalDisaggregationDocument;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
@@ -29,11 +36,11 @@ import org.openide.util.NbBundle.Messages;
 
 @ActionID(
         category = "Tools",
-        id = "ec.nbdemetra.disaggregation.actions.RefreshAllDataAction")
+        id = "demetra.desktop.disaggregation.actions.RefreshAllDataAction")
 @ActionRegistration(
         displayName = "#CTL_RefreshAllDataAction")
 @ActionReferences({
-    @ActionReference(path = TsDisaggregationModelManager.PATH, position = 1600, separatorBefore = 1300),
+    @ActionReference(path = TemporalDisaggregationDocumentManager.PATH, position = 1600, separatorBefore = 1300),
     @ActionReference(path = "Shortcuts", name = "A")})
 @Messages("CTL_RefreshAllDataAction=Refresh all")
 public final class RefreshAllDataAction implements ActionListener {
@@ -47,15 +54,15 @@ public final class RefreshAllDataAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        IWorkspaceItemManager mgr = WorkspaceFactory.getInstance().getManager(context.lookup());
+        WorkspaceItemManager mgr = WorkspaceFactory.getInstance().getManager(context.lookup());
         if (mgr != null) {
             NotifyDescriptor nd = new NotifyDescriptor.Confirmation(REFRESH_MESSAGE, NotifyDescriptor.OK_CANCEL_OPTION);
             if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
                 return;
             }
             Workspace ws = context.getWorkspace();
-            List<WorkspaceItem<TsDisaggregationModelDocument>> docs = ws.searchDocuments(TsDisaggregationModelDocument.class);
-            for (WorkspaceItem<TsDisaggregationModelDocument> doc : docs) {
+            List<WorkspaceItem<TemporalDisaggregationDocument>> docs = ws.searchDocuments(TemporalDisaggregationDocument.class);
+            for (WorkspaceItem<TemporalDisaggregationDocument> doc : docs) {
                 doc.getElement().unfreezeTs();
             }
         }

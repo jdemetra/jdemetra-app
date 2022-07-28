@@ -71,15 +71,16 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
         super.componentOpened();
         panel.addPropertyChangeListener((PropertyChangeEvent arg0) -> {
             switch (arg0.getPropertyName()) {
-                case DefaultProcessingViewer.INPUT_CHANGED:
+                case DefaultProcessingViewer.INPUT_CHANGED -> {
                     Object nval=arg0.getNewValue();
                     if (nval instanceof Ts){
                         setTs((Ts) nval);
                     }
-                    break;
-                case DefaultProcessingViewer.SPEC_CHANGED:
+                }
+                case DefaultProcessingViewer.SPEC_CHANGED -> {
                     WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, WorkspaceTsTopComponent.this);
                     WorkspaceFactory.getInstance().notifyEvent(ev);
+                }
                     
             }
         });
