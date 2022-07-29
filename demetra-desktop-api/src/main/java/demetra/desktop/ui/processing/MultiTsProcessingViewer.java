@@ -8,7 +8,6 @@ import demetra.desktop.components.JTsTable;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.processing.ProcSpecification;
 import demetra.timeseries.MultiTsDocument;
-import demetra.timeseries.TsDocument;
 import java.awt.Font;
 import javax.swing.Box;
 import javax.swing.JLabel;
@@ -38,7 +37,7 @@ public class MultiTsProcessingViewer<S extends ProcSpecification, D extends Mult
     private final JLabel specLabel;
     private boolean quietRefresh;
     
-    public MultiTsProcessingViewer(DocumentUIServices ui, Type type) {
+    public MultiTsProcessingViewer(DocumentUIServices<S, D> ui, Type type) {
         super(ui, type);
         this.tsList = new JTsTable();
         tsList.setVisible(true);

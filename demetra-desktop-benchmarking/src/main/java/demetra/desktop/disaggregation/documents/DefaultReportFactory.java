@@ -1,12 +1,12 @@
 /*
- * Copyright 2013 National Bank of Belgium
- *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Copyright 2022 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  * 
- * http://ec.europa.eu/idabc/eupl
+ * https://joinup.ec.europa.eu/software/page/eupl
  * 
  * Unless required by applicable law or agreed to in writing, software 
  * distributed under the Licence is distributed on an "AS IS" basis,
@@ -31,6 +31,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -105,7 +106,7 @@ public class DefaultReportFactory implements TemporalDisaggregationReportFactory
                     try {
                         String sfile = file.getAbsolutePath();
                         sfile = Paths.changeExtension(sfile, "txt");
-                        try (FileWriter writer = new FileWriter(sfile)) {
+                        try (FileWriter writer = new FileWriter(sfile, Charset.defaultCharset())) {
                             writer.append(report);
                         }
                     } catch (IOException ex) {

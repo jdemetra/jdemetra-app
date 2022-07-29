@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2022 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * https://joinup.ec.europa.eu/software/page/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package demetra.desktop.disaggregation.documents;
 
@@ -20,15 +32,14 @@ import org.openide.util.lookup.ServiceProvider;
         position = 500)
 public class TemporalDisaggregationDocumentManager extends AbstractWorkspaceItemManager<TemporalDisaggregationDocument> {
 
-
-    public static final LinearId ID = new LinearId(TemporalDisaggregationSpec.FAMILY, "documents", TemporalDisaggregationSpec.METHOD);
-    public static final String PATH = "tramo.doc";
-    public static final String ITEMPATH = "tramo.doc.item";
-    public static final String CONTEXTPATH = "tramo.doc.context";
+    public static final LinearId ID = new LinearId("Temporal disaggregation", "Univariate", "Regression model");
+    public static final String PATH = "temporaldisaggregation.doc";
+    public static final String ITEMPATH = "temporaldisaggregation.doc.item";
+    public static final String CONTEXTPATH = "temporaldisaggregation.doc.context";
 
     @Override
     protected String getItemPrefix() {
-        return "TramoDoc";
+        return "TemporalDisaggregationDoc";
     }
 
     @Override

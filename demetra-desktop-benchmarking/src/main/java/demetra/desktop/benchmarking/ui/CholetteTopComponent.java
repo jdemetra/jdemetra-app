@@ -14,11 +14,20 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.benchmarking;
+package demetra.desktop.benchmarking.ui;
 
+import demetra.desktop.benchmarking.documents.CholetteDocumentManager;
+import demetra.desktop.ui.processing.Ts2ProcessingViewer;
+import demetra.desktop.workspace.DocumentUIServices;
+import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.desktop.workspace.WorkspaceItem;
+import demetra.desktop.workspace.ui.WorkspaceTopComponent;
+import jdplus.benchmarking.univariate.CholetteDocument;
+import jdplus.tempdisagg.univariate.TemporalDisaggregationDocument;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.explorer.ExplorerManager;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 
@@ -26,17 +35,17 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//ec.nbdemetra.benchmarking//Cholette//EN",
+        dtd = "-//demetra.desktop.benchmarking.ui//Cholette//EN",
         autostore = false)
 @TopComponent.Description(
         preferredID = "CholetteTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
-//@TopComponent.Registration(mode = "editor", openAtStartup = false)
-//@ActionID(category = "Window", id = "ec.nbdemetra.benchmarking.CholetteTopComponent")
-//@ActionReference(path = "Menu/Statistical methods/Benchmarking", position = 2000)
-//@TopComponent.OpenActionRegistration(
-//        displayName = "#CTL_CholetteAction")
+@TopComponent.Registration(mode = "editor", openAtStartup = false)
+@ActionID(category = "Window", id = "ec.nbdemetra.benchmarking.CholetteTopComponent")
+@ActionReference(path = "Menu/Statistical methods/Benchmarking", position = 2000)
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_CholetteAction")
 @Messages({
     "CTL_CholetteAction=Cholette",
     "CTL_CholetteTopComponent=Cholette Window",
@@ -44,12 +53,17 @@ import org.openide.windows.TopComponent;
 })
 public final class CholetteTopComponent extends WorkspaceTopComponent<CholetteDocument> {
 
+    private final ExplorerManager mgr = new ExplorerManager();
     protected Ts2ProcessingViewer panel;
 
-    public CholetteTopComponent() {
-        super(null);
-        //initDocument();
+    private static CholetteDocumentManager manager() {
+        return WorkspaceFactory.getInstance().getManager(CholetteDocumentManager.class);
     }
+
+    public CholetteTopComponent() {
+        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
+    }
+
 
     public CholetteTopComponent(WorkspaceItem<CholetteDocument> doc) {
         super(doc);
@@ -61,7 +75,7 @@ public final class CholetteTopComponent extends WorkspaceTopComponent<CholetteDo
         setToolTipText(Bundle.CTL_CholetteTopComponent());
         initComponents();
         //       node=new InternalNode();
-        panel = Ts2ProcessingViewer.create(this.getDocument().getElement(), "Series", "Constraint");
+        panel = Ts2ProcessingViewer.create(this.getDocument().getElement(), DocumentUIServices.forDocument(CholetteDocument.class), "Low-freq series", "High-freq series");
         add(panel);
     }
 
@@ -118,6 +132,13 @@ public final class CholetteTopComponent extends WorkspaceTopComponent<CholetteDo
     protected String getContextPath() {
         return CholetteDocumentManager.CONTEXTPATH; //To change body of generated methods, choose Tools | Templates.
     }
+    
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return mgr;
+    }
+
+    
 
 //    @Override
 //    public Node getNode() {

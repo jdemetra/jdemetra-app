@@ -40,7 +40,7 @@ public class GenericGrowthChartUI<D extends ProcDocument >implements ItemUI<D> {
             Ts x = TsFactory.getDefault().makeTs(moniker, TsInformationType.All); 
             items.add(x);
         }
-        return TsViewToolkit.getChart(items);
+        return TsViewToolkit.getGrowthChart(items);
     }
 
  }

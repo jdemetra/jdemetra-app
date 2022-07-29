@@ -1,12 +1,12 @@
 /*
- * Copyright 2013 National Bank of Belgium
- *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Copyright 2022 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  * 
- * http://ec.europa.eu/idabc/eupl
+ * https://joinup.ec.europa.eu/software/page/eupl
  * 
  * Unless required by applicable law or agreed to in writing, software 
  * distributed under the Licence is distributed on an "AS IS" basis,
@@ -16,14 +16,19 @@
  */
 package demetra.desktop.disaggregation.ui;
 
-import demetra.desktop.disaggregation.Bundle;
-import demetra.desktop.disaggregation.FixedRegTsProcessingViewer;
 import demetra.desktop.disaggregation.documents.TemporalDisaggregationDocumentManager;
+import demetra.desktop.ui.processing.TsRegressionProcessingViewer;
 import demetra.desktop.util.NbUtilities;
+import demetra.desktop.workspace.DocumentUIServices;
+import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.WorkspaceTopComponent;
 import jdplus.tempdisagg.univariate.TemporalDisaggregationDocument;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.ExplorerUtils;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -36,9 +41,9 @@ import org.openide.windows.TopComponent;
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-//@ActionID(category = "Temporal Disaggregation", id = "demetra.desktop.disaggregation.ui.TemporalDisaggregationDocumentTopComponent")
-//@ActionReference(path = "Menu/Statistical methods/Temporal Disaggregation", position = 1000)
-//@TopComponent.OpenActionRegistration(displayName = "#CTL_TsDisaggregationModelAction")
+@ActionID(category = "Temporal Disaggregation", id = "demetra.desktop.disaggregation.ui.TemporalDisaggregationDocumentTopComponent")
+@ActionReference(path = "Menu/Statistical methods/Temporal Disaggregation", position = 1000)
+@TopComponent.OpenActionRegistration(displayName = "#CTL_TemporalDisaggregationDocumentAction")
 @NbBundle.Messages({
     "CTL_TemporalDisaggregationDocumentAction=Regression Model",
     "CTL_TemporalDisaggregationDocumentTopComponent=Regression Model Window",
@@ -46,11 +51,15 @@ import org.openide.windows.TopComponent;
 })
 public final class TemporalDisaggregationDocumentTopComponent extends WorkspaceTopComponent<TemporalDisaggregationDocument> {
 
-    protected FixedRegTsProcessingViewer panel;
+    private final ExplorerManager mgr = new ExplorerManager();
+    protected TsRegressionProcessingViewer panel;
+
+    private static TemporalDisaggregationDocumentManager manager() {
+        return WorkspaceFactory.getInstance().getManager(TemporalDisaggregationDocumentManager.class);
+    }
 
     public TemporalDisaggregationDocumentTopComponent() {
-        super(null);
-        //initDocument();
+        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
     }
 
     public TemporalDisaggregationDocumentTopComponent(WorkspaceItem<TemporalDisaggregationDocument> doc) {
@@ -60,10 +69,16 @@ public final class TemporalDisaggregationDocumentTopComponent extends WorkspaceT
 
     public void initDocument() {
         setName(getDocument().getDisplayName());
-        setToolTipText(Bundle.HINT_TsDisaggregationModelTopComponent());
+        setToolTipText(Bundle.HINT_TemporalDisaggregationDocumentTopComponent());
         initComponents();
-        panel = FixedRegTsProcessingViewer.create(this.getDocument().getElement());
+        panel = TsRegressionProcessingViewer.create(this.getDocument().getElement(), DocumentUIServices.forDocument(TemporalDisaggregationDocument.class), false);
         add(panel);
+        associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
+    }
+
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return mgr;
     }
 
     /**

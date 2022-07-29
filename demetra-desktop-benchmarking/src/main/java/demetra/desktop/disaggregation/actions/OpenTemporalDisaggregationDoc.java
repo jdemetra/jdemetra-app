@@ -18,12 +18,12 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
 @ActionID(category = "Tools",
-id = "demetra.desktop.disaggregation.actions.OpenTemporalDisaggregationDoc")
-@ActionRegistration(displayName = "#CTL_OpenTramoDoc")
+id = "demetra.desktop.benchmarking.actions.OpenTemporalDisaggregationDoc")
+@ActionRegistration(displayName = "#CTL_OpenTemporalDisaggregationDoc")
 @ActionReferences({
     @ActionReference(path = TemporalDisaggregationDocumentManager.ITEMPATH, position = 1600, separatorBefore = 1590)
 })
-@NbBundle.Messages("CTL_OpenTramoDoc=Open")
+@NbBundle.Messages("CTL_OpenTemporalDisaggregationDoc=Open")
 public class OpenTemporalDisaggregationDoc implements ActionListener {
 
     private final WsNode context;

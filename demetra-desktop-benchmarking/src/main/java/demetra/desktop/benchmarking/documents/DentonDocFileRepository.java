@@ -14,26 +14,25 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.benchmarking;
+package demetra.desktop.benchmarking.documents;
 
-import internal.workspace.file.DentonDocHandler;
-import java.util.Date;
+import demetra.DemetraVersion;
+import demetra.desktop.workspace.AbstractFileItemRepository;
+import demetra.desktop.workspace.WorkspaceItem;
+import demetra.desktop.workspace.WorkspaceItemRepository;
+import demetra.tsprovider.TsMeta;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import jdplus.benchmarking.univariate.DentonDocument;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author palatej
  */
-@ServiceProvider(service = IWorkspaceItemRepository.class)
-public final class DentonDocFileRepository extends DefaultFileItemRepository<DentonDocument> {
-
-    @Deprecated
-    public static final String REPOSITORY = DentonDocHandler.REPOSITORY;
-
-    @Override
-    public String getRepository() {
-        return REPOSITORY;
-    }
+@ServiceProvider(service = WorkspaceItemRepository.class)
+public final class DentonDocFileRepository extends AbstractFileItemRepository< DentonDocument> {
 
     @Override
     public boolean load(WorkspaceItem<DentonDocument> item) {
@@ -44,10 +43,13 @@ public final class DentonDocFileRepository extends DefaultFileItemRepository<Den
     }
 
     @Override
-    public boolean save(WorkspaceItem<DentonDocument> item) {
-        DentonDocument element = item.getElement();
-        element.getMetaData().put(MetaData.DATE, new Date().toString());
-        return storeFile(item, element, item::resetDirty);
+    public boolean save(WorkspaceItem<DentonDocument> doc, DemetraVersion version) {
+        DentonDocument element = doc.getElement();
+
+        Map<String, String> meta = new HashMap<>(element.getMetadata());
+        TsMeta.TIMESTAMP.store(meta, LocalDateTime.now());
+        element.updateMetadata(meta);
+        return storeFile(doc, element, version, doc::resetDirty);
     }
 
     @Override
@@ -59,4 +61,5 @@ public final class DentonDocFileRepository extends DefaultFileItemRepository<Den
     public Class<DentonDocument> getSupportedType() {
         return DentonDocument.class;
     }
+
 }

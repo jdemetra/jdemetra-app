@@ -16,24 +16,23 @@
  */
 package demetra.desktop.benchmarking.documents;
 
-import internal.workspace.file.CholetteDocHandler;
-import java.util.Date;
+import demetra.DemetraVersion;
+import demetra.desktop.workspace.AbstractFileItemRepository;
+import demetra.desktop.workspace.WorkspaceItem;
+import demetra.desktop.workspace.WorkspaceItemRepository;
+import demetra.tsprovider.TsMeta;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import jdplus.benchmarking.univariate.CholetteDocument;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author palatej
  */
-@ServiceProvider(service = IWorkspaceItemRepository.class)
-public final class CholetteDocFileRepository extends DefaultFileItemRepository<CholetteDocument> {
-
-    @Deprecated
-    public static final String REPOSITORY = CholetteDocHandler.REPOSITORY;
-
-    @Override
-    public String getRepository() {
-        return REPOSITORY;
-    }
+@ServiceProvider(service = WorkspaceItemRepository.class)
+public final class CholetteDocFileRepository extends AbstractFileItemRepository< CholetteDocument > {
 
     @Override
     public boolean load(WorkspaceItem<CholetteDocument> item) {
@@ -44,10 +43,13 @@ public final class CholetteDocFileRepository extends DefaultFileItemRepository<C
     }
 
     @Override
-    public boolean save(WorkspaceItem<CholetteDocument> item) {
-        CholetteDocument element = item.getElement();
-        element.getMetaData().put(MetaData.DATE, new Date().toString());
-        return storeFile(item, element, item::resetDirty);
+    public boolean save(WorkspaceItem<CholetteDocument> doc, DemetraVersion version) {
+        CholetteDocument element = doc.getElement();
+       
+        Map<String, String> meta=new HashMap<>(element.getMetadata());
+        TsMeta.TIMESTAMP.store(meta, LocalDateTime.now());
+        element.updateMetadata(meta);
+        return storeFile(doc, element, version, doc::resetDirty);
     }
 
     @Override
@@ -59,4 +61,5 @@ public final class CholetteDocFileRepository extends DefaultFileItemRepository<C
     public Class<CholetteDocument> getSupportedType() {
         return CholetteDocument.class;
     }
+
 }
