@@ -77,12 +77,6 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
     }
 
     @Override
-    public void onDocumentChanged() {
-        super.onDocumentChanged();
-        TsDynamicProvider.onDocumentChanged(getDocument());
-    }
-
-    @Override
     public void refreshHeader() {
         TsDocument doc = getDocument();
         if (doc == null || doc.getInput() == null) {
@@ -116,7 +110,7 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
         public boolean importData(TransferHandler.TransferSupport support) {
             Optional<Ts> ts = DataTransferManager.get().toTs(support.getTransferable());
             if (ts.isPresent()) {
-                Ts input = ts.get().load(TsInformationType.All, TsManager.get()).freeze();
+                Ts input = ts.get();
                 Ts old=getDocument().getInput();
                 TsProcessingViewer.this.firePropertyChange(INPUT_CHANGED, old, input);
                 return true;

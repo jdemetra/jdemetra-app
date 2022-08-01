@@ -7,7 +7,6 @@ package demetra.desktop.ui.processing;
 import demetra.desktop.TsDynamicProvider;
 import demetra.processing.ProcDocument;
 import demetra.timeseries.Ts;
-import demetra.timeseries.TsDocument;
 import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsMoniker;

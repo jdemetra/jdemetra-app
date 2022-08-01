@@ -6,6 +6,7 @@ package demetra.desktop.ui.processing;
 
 import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.datatransfer.DataTransferManager;
+import static demetra.desktop.ui.processing.DefaultProcessingViewer.INPUT_CHANGED;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.processing.ProcSpecification;
 import demetra.timeseries.MultiTsDocument;
@@ -75,12 +76,6 @@ public class Ts2ProcessingViewer<S extends ProcSpecification, D extends MultiTsD
     }
 
     @Override
-    public void onDocumentChanged() {
-        super.onDocumentChanged();
-        TsDynamicProvider.onDocumentChanged(getDocument());
-    }
-
-    @Override
     public void refreshHeader() {
         MultiTsDocument doc = getDocument();
         if (doc == null) {
@@ -144,8 +139,7 @@ public class Ts2ProcessingViewer<S extends ProcSpecification, D extends MultiTsD
                 } else {
                     nts.add(ts.get());
                 }
-                getDocument().set(nts);
-                refreshAll();
+                 Ts2ProcessingViewer.this.firePropertyChange(INPUT_CHANGED, input, nts);
                 return true;
             }
             return false;

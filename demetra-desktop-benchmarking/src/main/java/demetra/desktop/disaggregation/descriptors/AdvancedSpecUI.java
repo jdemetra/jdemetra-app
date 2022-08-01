@@ -169,8 +169,7 @@ public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(TRUNCATED_NAME);
             desc.setShortDescription(TRUNCATED_DESC);
-            edesc.setReadOnly(isRo() || ((core().getResidualsModel() != TemporalDisaggregationSpec.Model.Ar1
-                    && core().getResidualsModel() != TemporalDisaggregationSpec.Model.RwAr1) || core().getParameter().isFixed()));
+            edesc.setReadOnly(isRo() || (core().getResidualsModel() != TemporalDisaggregationSpec.Model.Ar1 || core().getParameter().isFixed()));
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

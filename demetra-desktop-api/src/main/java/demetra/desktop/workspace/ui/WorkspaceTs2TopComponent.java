@@ -6,17 +6,17 @@ package demetra.desktop.workspace.ui;
 
 import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.TsManager;
-import demetra.desktop.components.parts.HasTs;
 import demetra.desktop.ui.Menus;
 import demetra.desktop.ui.processing.DefaultProcessingViewer;
-import demetra.desktop.ui.processing.TsProcessingViewer;
-import demetra.desktop.ui.properties.l2fprod.UserInterfaceContext;
+import demetra.desktop.ui.processing.Ts2ProcessingViewer;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
+import demetra.timeseries.MultiTsDocument;
 import demetra.timeseries.Ts;
-import demetra.timeseries.TsDocument;
 import demetra.timeseries.TsInformationType;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.Action;
 import javax.swing.JMenu;
 
@@ -25,37 +25,36 @@ import javax.swing.JMenu;
  * @author Jean Palate
  * @param <T>
  */
-public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extends WorkspaceTopComponent<T> implements HasTs {
+public abstract class WorkspaceTs2TopComponent<T extends MultiTsDocument<?, ?>> extends WorkspaceTopComponent<T> {
 
-    protected TsProcessingViewer<?, ?> panel;
+    protected Ts2ProcessingViewer<?, ?> panel;
 
-    protected WorkspaceTsTopComponent(WorkspaceItem<T> doc) {
+    protected WorkspaceTs2TopComponent(WorkspaceItem<T> doc) {
         super(doc);
     }
 
-    public void updateUserInterfaceContext() {
-        if (doc == null) {
-            return;
-        }
-        T element = doc.getElement();
-        if (element == null) {
-            UserInterfaceContext.INSTANCE.setDomain(null);
-        } else {
-            Ts s = element.getInput();
-            if (s == null) {
-                UserInterfaceContext.INSTANCE.setDomain(null);
-            } else {
-                UserInterfaceContext.INSTANCE.setDomain(s.getData().getDomain());
-            }
-        }
-    }
-
-    @Override
-    public void componentActivated() {
-        super.componentActivated();
-        updateUserInterfaceContext();
-    }
-
+//    public void updateUserInterfaceContext() {
+//        if (doc == null) {
+//            return;
+//        }
+//        T element = doc.getElement();
+//        if (element == null) {
+//            UserInterfaceContext.INSTANCE.setDomain(null);
+//        } else {
+//            Ts s = element.getInput();
+//            if (s == null) {
+//                UserInterfaceContext.INSTANCE.setDomain(null);
+//            } else {
+//                UserInterfaceContext.INSTANCE.setDomain(s.getData().getDomain());
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void componentActivated() {
+//        super.componentActivated();
+//        updateUserInterfaceContext();
+//    }
     @Override
     public Action[] getActions() {
         return Menus.createActions(super.getActions(), WorkspaceFactory.TSCONTEXTPATH, getContextPath());
@@ -72,16 +71,17 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
         panel.addPropertyChangeListener((PropertyChangeEvent arg0) -> {
             switch (arg0.getPropertyName()) {
                 case DefaultProcessingViewer.INPUT_CHANGED -> {
-                    Object nval=arg0.getNewValue();
-                    if (nval instanceof Ts ts){
-                        setTs(ts);
+                    Object nval = arg0.getNewValue();
+                    if (nval instanceof List) {
+                        setTs((List<Ts>) nval);
                     }
                 }
                 case DefaultProcessingViewer.SPEC_CHANGED -> {
-                    WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, WorkspaceTsTopComponent.this);
+                    WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, WorkspaceTs2TopComponent.this);
                     WorkspaceFactory.getInstance().notifyEvent(ev);
                 }
-                    
+
+
             }
         });
 
@@ -100,7 +100,7 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
     }
 
     @Override
-    public boolean hasContextMenu(){
+    public boolean hasContextMenu() {
         return true;
     }
 
@@ -110,20 +110,20 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
         return true;
     }
 
-    @Override
-    public demetra.timeseries.Ts getTs() {
-        return panel.getDocument().getInput();
-    }
+    public void setTs(List<Ts> lts) {
 
-    @Override
-    public void setTs(demetra.timeseries.Ts ts) {
-        Ts cts;
-        if (TsManager.isDynamic(ts)) {
-            cts = ts.freeze();
-        } else {
-            cts = ts.load(TsInformationType.All, TsManager.get());
+        List<Ts> clts = new ArrayList<>();
+
+        for (Ts ts : lts) {
+            Ts cts;
+            if (TsManager.isDynamic(ts)) {
+                cts = ts.freeze();
+            } else {
+                cts = ts.load(TsInformationType.All, TsManager.get());
+            }
+            clts.add(cts);
         }
-        panel.getDocument().set(cts);
+        panel.getDocument().set(clts);
         panel.updateButtons(null);
         getDocument().setDirty();
         WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);

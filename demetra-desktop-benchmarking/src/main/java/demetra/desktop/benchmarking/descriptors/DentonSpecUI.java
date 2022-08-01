@@ -38,8 +38,7 @@ public class DentonSpecUI implements IObjectDescriptor<DentonSpec> {
     }
 
     private DentonSpec core;
-    private int period=12;
-
+ 
     public DentonSpecUI(DentonSpec spec) {
         core = spec;
     }
@@ -70,7 +69,7 @@ public class DentonSpecUI implements IObjectDescriptor<DentonSpec> {
     }
 
     public void setMultiplicative(boolean mul) {
-        core = core.toBuilder().modified(mul).build();
+        core = core.toBuilder().multiplicative(mul).build();
     }
 
     public boolean isModified() {
@@ -82,11 +81,11 @@ public class DentonSpecUI implements IObjectDescriptor<DentonSpec> {
     }
 
     public int getFrequency() {
-        return period;
+        return core.getDefaultPeriod();
     }
 
     public void setFrequency(int period) {
-        this.period=period;
+        core=core.toBuilder().defaultPeriod(period).build();
     }
 
     @Override
@@ -105,6 +104,10 @@ public class DentonSpecUI implements IObjectDescriptor<DentonSpec> {
             props.add(desc);
         }
         desc = diffDesc();
+        if (desc != null) {
+            props.add(desc);
+        }
+        desc = freqDesc();
         if (desc != null) {
             props.add(desc);
         }

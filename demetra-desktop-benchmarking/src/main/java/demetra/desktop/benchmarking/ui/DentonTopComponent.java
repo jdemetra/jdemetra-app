@@ -22,6 +22,7 @@ import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.WorkspaceTopComponent;
+import demetra.desktop.workspace.ui.WorkspaceTs2TopComponent;
 import jdplus.benchmarking.univariate.DentonDocument;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -51,10 +52,9 @@ import org.openide.windows.TopComponent;
     "CTL_DentonTopComponent=Denton Window",
     "HINT_DentonTopComponent=This is a Denton window"
 })
-public final class DentonTopComponent extends WorkspaceTopComponent<DentonDocument> {
+public final class DentonTopComponent extends WorkspaceTs2TopComponent<DentonDocument> {
 
     private final ExplorerManager mgr = new ExplorerManager();
-    protected Ts2ProcessingViewer panel;
 
      private static DentonDocumentManager manager() {
         return WorkspaceFactory.getInstance().getManager(DentonDocumentManager.class);
@@ -75,6 +75,7 @@ public final class DentonTopComponent extends WorkspaceTopComponent<DentonDocume
         initComponents();
         panel = Ts2ProcessingViewer.create(this.getDocument().getElement(), DocumentUIServices.forDocument(DentonDocument.class), "Low-freq series", "High-freq series");
         add(panel);
+        panel.refreshHeader();
     }
 
     /**
@@ -90,22 +91,6 @@ public final class DentonTopComponent extends WorkspaceTopComponent<DentonDocume
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-    @Override
-    public void componentOpened() {
-        super.componentOpened();
-        if (panel != null) {
-            panel.doLayout();
-        }
-    }
-
-    @Override
-    public void componentClosed() {
-        super.componentClosed();
-        if (panel != null) {
-            panel.dispose();
-        }
-    }
-
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles

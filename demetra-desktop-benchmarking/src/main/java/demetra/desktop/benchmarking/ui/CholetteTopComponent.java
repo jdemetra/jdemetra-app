@@ -17,11 +17,17 @@
 package demetra.desktop.benchmarking.ui;
 
 import demetra.desktop.benchmarking.documents.CholetteDocumentManager;
+import demetra.desktop.ui.processing.DefaultProcessingViewer;
 import demetra.desktop.ui.processing.Ts2ProcessingViewer;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.WorkspaceTopComponent;
+import demetra.desktop.workspace.ui.WorkspaceTs2TopComponent;
+import demetra.desktop.workspace.ui.WorkspaceTsTopComponent;
+import demetra.timeseries.Ts;
+import java.beans.PropertyChangeEvent;
+import java.util.List;
 import jdplus.benchmarking.univariate.CholetteDocument;
 import jdplus.tempdisagg.univariate.TemporalDisaggregationDocument;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -51,10 +57,9 @@ import org.openide.windows.TopComponent;
     "CTL_CholetteTopComponent=Cholette Window",
     "HINT_CholetteTopComponent=This is a Cholette window"
 })
-public final class CholetteTopComponent extends WorkspaceTopComponent<CholetteDocument> {
+public final class CholetteTopComponent extends WorkspaceTs2TopComponent<CholetteDocument> {
 
     private final ExplorerManager mgr = new ExplorerManager();
-    protected Ts2ProcessingViewer panel;
 
     private static CholetteDocumentManager manager() {
         return WorkspaceFactory.getInstance().getManager(CholetteDocumentManager.class);
@@ -63,7 +68,6 @@ public final class CholetteTopComponent extends WorkspaceTopComponent<CholetteDo
     public CholetteTopComponent() {
         this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
     }
-
 
     public CholetteTopComponent(WorkspaceItem<CholetteDocument> doc) {
         super(doc);
@@ -77,6 +81,7 @@ public final class CholetteTopComponent extends WorkspaceTopComponent<CholetteDo
         //       node=new InternalNode();
         panel = Ts2ProcessingViewer.create(this.getDocument().getElement(), DocumentUIServices.forDocument(CholetteDocument.class), "Low-freq series", "High-freq series");
         add(panel);
+        panel.refreshHeader();
     }
 
 //    private UniCholetteSpecification getSpecification(){
@@ -100,23 +105,8 @@ public final class CholetteTopComponent extends WorkspaceTopComponent<CholetteDo
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-    @Override
-    public void componentOpened() {
-        super.componentOpened();
-        if (panel != null) {
-            panel.doLayout();
-        }
-    }
 
-    @Override
-    public void componentClosed() {
-        super.componentClosed();
-        if (panel != null) {
-            panel.dispose();
-        }
-    }
-
-    void writeProperties(java.util.Properties p) {
+     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
@@ -132,13 +122,11 @@ public final class CholetteTopComponent extends WorkspaceTopComponent<CholetteDo
     protected String getContextPath() {
         return CholetteDocumentManager.CONTEXTPATH; //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Override
     public ExplorerManager getExplorerManager() {
         return mgr;
     }
-
-    
 
 //    @Override
 //    public Node getNode() {

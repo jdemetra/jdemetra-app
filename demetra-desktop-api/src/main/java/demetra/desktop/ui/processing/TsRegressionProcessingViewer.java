@@ -9,11 +9,14 @@ import demetra.desktop.components.JTsTable;
 import demetra.desktop.components.JTsTable.Column;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.workspace.DocumentUIServices;
+import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.desktop.workspace.ui.WorkspaceTsTopComponent;
 import demetra.processing.ProcSpecification;
 import demetra.timeseries.MultiTsDocument;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import java.awt.Dimension;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -86,13 +89,7 @@ public class TsRegressionProcessingViewer<S extends ProcSpecification, D extends
                 updateDocument();
             }
         });
-    }
-
-    @Override
-    public void onDocumentChanged() {
-        super.onDocumentChanged();
-        TsDynamicProvider.onDocumentChanged(getDocument());
-    }
+     }
 
     @Override
     public void refreshHeader() {
@@ -122,7 +119,7 @@ public class TsRegressionProcessingViewer<S extends ProcSpecification, D extends
             xList.setTsCollection(TsCollection.of(s.subList(1, s.size())));
         }
     }
-    
+
     @Override
     public void updateDocument() {
         try {

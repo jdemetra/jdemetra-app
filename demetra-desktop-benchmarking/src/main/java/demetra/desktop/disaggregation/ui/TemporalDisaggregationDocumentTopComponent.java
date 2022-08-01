@@ -16,13 +16,17 @@
  */
 package demetra.desktop.disaggregation.ui;
 
+import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.disaggregation.documents.TemporalDisaggregationDocumentManager;
+import demetra.desktop.ui.processing.DefaultProcessingViewer;
 import demetra.desktop.ui.processing.TsRegressionProcessingViewer;
 import demetra.desktop.util.NbUtilities;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.WorkspaceTopComponent;
+import demetra.desktop.workspace.ui.WorkspaceTsTopComponent;
+import java.beans.PropertyChangeEvent;
 import jdplus.tempdisagg.univariate.TemporalDisaggregationDocument;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -65,6 +69,11 @@ public final class TemporalDisaggregationDocumentTopComponent extends WorkspaceT
     public TemporalDisaggregationDocumentTopComponent(WorkspaceItem<TemporalDisaggregationDocument> doc) {
         super(doc);
         initDocument();
+    }
+
+    @Override
+    public void refresh() {
+        panel.onDocumentChanged();
     }
 
     public void initDocument() {
@@ -110,11 +119,21 @@ public final class TemporalDisaggregationDocumentTopComponent extends WorkspaceT
         if (panel != null) {
             panel.doLayout();
         }
+        TsDynamicProvider.onDocumentOpened(panel.getDocument());
+        panel.addPropertyChangeListener((PropertyChangeEvent arg0) -> {
+            switch (arg0.getPropertyName()) {
+                case DefaultProcessingViewer.SPEC_CHANGED -> {
+                    WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
+                    WorkspaceFactory.getInstance().notifyEvent(ev);
+                }
+            }
+        });
     }
 
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
+        TsDynamicProvider.onDocumentClosing(panel.getDocument());
         super.componentClosed();
         if (panel != null) {
             panel.dispose();

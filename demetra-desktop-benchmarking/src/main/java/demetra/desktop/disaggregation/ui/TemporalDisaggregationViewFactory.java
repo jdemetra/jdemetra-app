@@ -16,7 +16,6 @@
  */
 package demetra.desktop.disaggregation.ui;
 
-import demetra.benchmarking.BenchmarkingDictionaries;
 import demetra.data.AggregationType;
 import demetra.desktop.ui.processing.GenericChartUI;
 import demetra.desktop.ui.processing.GenericTableUI;
@@ -30,6 +29,7 @@ import demetra.desktop.ui.processing.StaticGrowthChartUI;
 import demetra.desktop.ui.processing.stats.ResidualsDistUI;
 import demetra.desktop.ui.processing.stats.ResidualsUI;
 import demetra.html.HtmlElement;
+import demetra.tempdisagg.univariate.TemporalDisaggregationDictionaries;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsUnit;
@@ -157,8 +157,8 @@ public class TemporalDisaggregationViewFactory extends ProcDocumentViewFactory<T
     public static class MainChartFactory extends ProcDocumentItemFactory<TemporalDisaggregationDocument, TemporalDisaggregationDocument> {
 
         public MainChartFactory() {
-            super(TemporalDisaggregationDocument.class, MAIN_CHART, s->s, new GenericChartUI(true, BenchmarkingDictionaries.DISAGG,
-                    BenchmarkingDictionaries.LDISAGG, BenchmarkingDictionaries.UDISAGG));
+            super(TemporalDisaggregationDocument.class, MAIN_CHART, s->s, new GenericChartUI(true, TemporalDisaggregationDictionaries.DISAGG,
+                    TemporalDisaggregationDictionaries.LDISAGG, TemporalDisaggregationDictionaries.UDISAGG));
         }
 
         @Override
@@ -171,8 +171,8 @@ public class TemporalDisaggregationViewFactory extends ProcDocumentViewFactory<T
     public static class MainTableFactory extends ProcDocumentItemFactory<TemporalDisaggregationDocument, TemporalDisaggregationDocument> {
 
         public MainTableFactory() {
-            super(TemporalDisaggregationDocument.class, MAIN_TABLE, s->s, new GenericTableUI(true, BenchmarkingDictionaries.DISAGG,
-                    BenchmarkingDictionaries.EDISAGG));
+            super(TemporalDisaggregationDocument.class, MAIN_TABLE, s->s, new GenericTableUI(true, TemporalDisaggregationDictionaries.DISAGG,
+                    TemporalDisaggregationDictionaries.EDISAGG));
         }
 
         @Override
@@ -182,11 +182,11 @@ public class TemporalDisaggregationViewFactory extends ProcDocumentViewFactory<T
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 1050)
-    public static class MainDecompositionFactory extends ProcDocumentItemFactory<TemporalDisaggregationDocument, TemporalDisaggregationResults> {
+    public static class MainDecompositionFactory extends ProcDocumentItemFactory<TemporalDisaggregationDocument, TemporalDisaggregationDocument> {
 
         public MainDecompositionFactory() {
-            super(TemporalDisaggregationDocument.class, MAIN_TABLE, RSLTEXTRACTOR, new GenericChartUI(true, BenchmarkingDictionaries.DISAGG,
-                    BenchmarkingDictionaries.REGEFFECT, BenchmarkingDictionaries.SMOOTHINGEFFECT));
+            super(TemporalDisaggregationDocument.class, MAIN_DECOMPOSITION, s->s, new GenericChartUI(true, TemporalDisaggregationDictionaries.DISAGG,
+                    TemporalDisaggregationDictionaries.REGEFFECT, TemporalDisaggregationDictionaries.SMOOTHINGEFFECT));
         }
 
         @Override

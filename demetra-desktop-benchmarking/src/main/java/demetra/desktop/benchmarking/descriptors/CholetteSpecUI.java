@@ -80,6 +80,14 @@ public class CholetteSpecUI implements IObjectDescriptor<CholetteSpec> {
         core=core.toBuilder().bias(r).build();
     }
 
+    public int getFrequency() {
+        return core.getDefaultPeriod();
+    }
+
+    public void setFrequency(int period) {
+        core=core.toBuilder().defaultPeriod(period).build();
+    }
+
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         List<EnhancedPropertyDescriptor> props = new ArrayList<>();
@@ -99,6 +107,10 @@ public class CholetteSpecUI implements IObjectDescriptor<CholetteSpec> {
         if (desc != null) {
             props.add(desc);
         }
+//        desc = freqDesc();
+//        if (desc != null) {
+//            props.add(desc);
+//        }
         return props;
     }
 
@@ -154,14 +166,27 @@ public class CholetteSpecUI implements IObjectDescriptor<CholetteSpec> {
         }
     }
 
+    private EnhancedPropertyDescriptor freqDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("Frequency", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DEFFREQ_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(DEFFREQ_NAME);
+            desc.setShortDescription(DEFFREQ_DESC);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
     @Override
     public String getDisplayName() {
         return CHOLETTE; //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static final int TYPE_ID = 0, BIAS_ID = 10, RHO_ID = 20, LAMBDA_ID = 30;
+    private static final int TYPE_ID = 0, BIAS_ID = 10, RHO_ID = 20, LAMBDA_ID = 30, DEFFREQ_ID=40;
     private static final String TYPE_NAME = "Type", BIAS_NAME = "Bias correction",
-            RHO_NAME = "Rho", LAMBDA_NAME = "Lambda",
+            RHO_NAME = "Rho", LAMBDA_NAME = "Lambda", DEFFREQ_NAME = "Default frequency",
             TYPE_DESC = "Type", BIAS_DESC = "Bias correction",
-            RHO_DESC = "Rho", LAMBDA_DESC = "Lambda";
+            RHO_DESC = "Rho", LAMBDA_DESC = "Lambda", DEFFREQ_DESC = "Default frequency";
 }
