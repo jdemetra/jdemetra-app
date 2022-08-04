@@ -27,7 +27,7 @@ import javax.swing.JMenu;
  */
 public abstract class WorkspaceTs2TopComponent<T extends MultiTsDocument<?, ?>> extends WorkspaceTopComponent<T> {
 
-    protected Ts2ProcessingViewer<?, ?> panel;
+    private Ts2ProcessingViewer<?, ?> panel;
 
     protected WorkspaceTs2TopComponent(WorkspaceItem<T> doc) {
         super(doc);
@@ -65,9 +65,15 @@ public abstract class WorkspaceTs2TopComponent<T extends MultiTsDocument<?, ?>> 
         panel.onDocumentChanged();
     }
 
+    protected abstract Ts2ProcessingViewer initViewer();
+
     @Override
     public void componentOpened() {
         super.componentOpened();
+        panel = initViewer();
+        WorkspaceItem<T> d = getDocument();
+        add(panel);
+        panel.refreshHeader();
         panel.addPropertyChangeListener((PropertyChangeEvent arg0) -> {
             switch (arg0.getPropertyName()) {
                 case DefaultProcessingViewer.INPUT_CHANGED -> {
@@ -77,10 +83,9 @@ public abstract class WorkspaceTs2TopComponent<T extends MultiTsDocument<?, ?>> 
                     }
                 }
                 case DefaultProcessingViewer.SPEC_CHANGED -> {
-                    WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, WorkspaceTs2TopComponent.this);
+                    WorkspaceFactory.Event ev = new WorkspaceFactory.Event(d.getOwner(), d.getId(), WorkspaceFactory.Event.ITEMCHANGED, WorkspaceTs2TopComponent.this);
                     WorkspaceFactory.getInstance().notifyEvent(ev);
                 }
-
 
             }
         });
@@ -125,8 +130,9 @@ public abstract class WorkspaceTs2TopComponent<T extends MultiTsDocument<?, ?>> 
         }
         panel.getDocument().set(clts);
         panel.updateButtons(null);
-        getDocument().setDirty();
-        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
+        WorkspaceItem<T> d = getDocument();
+        d.setDirty();
+        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(d.getOwner(), d.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
         WorkspaceFactory.getInstance().notifyEvent(ev);
 
     }

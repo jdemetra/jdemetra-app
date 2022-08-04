@@ -14,7 +14,7 @@ import javax.swing.Icon;
  * @param <D>
  */
 public abstract class AbstractWorkspaceItemManager<D> implements WorkspaceItemManager<D> {
-
+    
     protected abstract String getItemPrefix();
 
     protected boolean isUsed(String name) {

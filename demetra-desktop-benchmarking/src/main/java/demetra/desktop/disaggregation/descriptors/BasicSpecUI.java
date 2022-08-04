@@ -105,11 +105,11 @@ public class BasicSpecUI extends BaseTemporalDisaggregationSpecUI {
     }
 
     public int getFrequency() {
-        return root.getPeriod();
+        return core().getDefaultPeriod();
     }
 
     public void setFrequency(int freq) {
-        root.period=freq;
+        update(core().toBuilder().defaultPeriod(freq).build());
     }
 
     public DateSelectorUI getSpan() {

@@ -45,12 +45,13 @@ public final class TramoSeatsTopComponent extends WorkspaceTsTopComponent<TramoS
     }
 
     public TramoSeatsTopComponent() {
-        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
+        this(null);
     }
 
     public TramoSeatsTopComponent(WorkspaceItem<TramoSeatsDocument> doc) {
         super(doc);
-        initDocument();
+        initComponents();
+        setToolTipText(NbBundle.getMessage(TramoSeatsTopComponent.class, "HINT_TramoSeatsTopComponent"));
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
@@ -59,14 +60,16 @@ public final class TramoSeatsTopComponent extends WorkspaceTsTopComponent<TramoS
         return mgr;
     }
 
-    private void initDocument() {
-        initComponents();
-        setToolTipText(NbBundle.getMessage(TramoSeatsTopComponent.class, "HINT_TramoSeatsTopComponent"));
-        setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(TramoSeatsDocument.class));
-        this.add(panel);
-        panel.refreshHeader();
+    @Override
+    public WorkspaceItem<TramoSeatsDocument> newDocument() {
+        return manager().create(WorkspaceFactory.getInstance().getActiveWorkspace());
     }
+
+    @Override
+    protected TsProcessingViewer initViewer() {
+        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(TramoSeatsDocument.class));
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.

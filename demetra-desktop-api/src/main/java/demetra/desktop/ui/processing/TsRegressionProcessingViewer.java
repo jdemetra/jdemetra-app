@@ -4,19 +4,15 @@
  */
 package demetra.desktop.ui.processing;
 
-import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.components.JTsTable;
 import demetra.desktop.components.JTsTable.Column;
 import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.workspace.DocumentUIServices;
-import demetra.desktop.workspace.WorkspaceFactory;
-import demetra.desktop.workspace.ui.WorkspaceTsTopComponent;
 import demetra.processing.ProcSpecification;
 import demetra.timeseries.MultiTsDocument;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import java.awt.Dimension;
-import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +39,6 @@ public class TsRegressionProcessingViewer<S extends ProcSpecification, D extends
     // visual components
     private final JTsTable yList, xList;
     private final JLabel specLabel;
-    private boolean quietRefresh;
 
     public TsRegressionProcessingViewer(DocumentUIServices<S, D> ui, Type type, boolean singleX) {
         super(ui, type);
@@ -78,27 +73,25 @@ public class TsRegressionProcessingViewer<S extends ProcSpecification, D extends
         toolBar.add(Box.createHorizontalStrut(100), 11);
 
         toolBar.setVisible(true);
+    }
 
+    
+    public void initialize() {
+        updateList();
         xList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
-            if (!quietRefresh) {
-                updateDocument();
-            }
+            updateInput();
+            onDocumentChanged();
         });
         yList.addPropertyChangeListener(JTsTable.TS_COLLECTION_PROPERTY, evt -> {
-            if (!quietRefresh) {
-                updateDocument();
-            }
+            updateInput();
+            onDocumentChanged();
         });
-     }
+    }
 
     @Override
     public void refreshHeader() {
         try {
-            if (quietRefresh) {
-                return;
-            }
             refreshSpec();
-            updateList();
         } catch (Exception err) {
         }
     }
@@ -120,27 +113,19 @@ public class TsRegressionProcessingViewer<S extends ProcSpecification, D extends
         }
     }
 
-    @Override
-    public void updateDocument() {
-        try {
-            quietRefresh = true;
-            List<Ts> y = yList.getTsCollection().getItems();
-            if (y.isEmpty()) {
-                getDocument().set(Collections.emptyList());
-            }
-            List<Ts> x = xList.getTsCollection().getItems();
-            if (x.isEmpty()) {
-                getDocument().set(y);
-            } else {
-                List<Ts> all = new ArrayList<>();
-                all.addAll(y);
-                all.addAll(x);
-                getDocument().set(all);
-            }
-            refreshAll();
-        } catch (Exception err) {
-        } finally {
-            quietRefresh = false;
+    private void updateInput() {
+        List<Ts> y = yList.getTsCollection().getItems();
+        if (y.isEmpty()) {
+            getDocument().set(Collections.emptyList());
+        }
+        List<Ts> x = xList.getTsCollection().getItems();
+        if (x.isEmpty()) {
+            getDocument().set(y);
+        } else {
+            List<Ts> all = new ArrayList<>();
+            all.addAll(y);
+            all.addAll(x);
+            getDocument().set(all);
         }
     }
 }

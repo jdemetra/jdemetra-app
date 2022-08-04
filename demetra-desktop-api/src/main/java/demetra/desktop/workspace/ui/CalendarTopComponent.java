@@ -20,22 +20,22 @@ import org.openide.util.NbBundle.Messages;
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//demetra.desktop.workspace.ui//Calendar//EN",
-autostore = false)
+        autostore = false)
 @TopComponent.Description(preferredID = "CalendarTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_NEVER)
+        //iconBase="SET/PATH/TO/ICON/HERE", 
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "demetra.desktop.workspace.ui.CalendarTopComponent")
 @TopComponent.OpenActionRegistration(displayName = "#CTL_CalendarAction",
-preferredID = "CalendarTopComponent")
+        preferredID = "CalendarTopComponent")
 @Messages({
     "CTL_CalendarAction=Calendar",
     "CTL_CalendarTopComponent=Calendar Window",
     "HINT_CalendarTopComponent=This is a Calendar window"
 })
-public final class CalendarTopComponent extends WorkspaceTopComponent<CalendarDefinition>{
+public final class CalendarTopComponent extends WorkspaceTopComponent<CalendarDefinition> {
 
-    private final transient ExplorerManager explorerManager=new ExplorerManager();
+    private final transient ExplorerManager explorerManager = new ExplorerManager();
     private final JCalendarView view = new JCalendarView();
 
     public CalendarTopComponent() {
@@ -45,18 +45,23 @@ public final class CalendarTopComponent extends WorkspaceTopComponent<CalendarDe
 
     public CalendarTopComponent(WorkspaceItem<CalendarDefinition> calendar) {
         super(calendar);
-         initComponents();
-        setName(calendar.getId().toString());
-        setDisplayName(calendar.getDisplayName());
+        initComponents();
         setToolTipText(Bundle.HINT_CalendarTopComponent());
         view.setCalendar(calendar.getElement());
         add(view, BorderLayout.CENTER);
     }
 
     @Override
+    public WorkspaceItem<CalendarDefinition> newDocument() {
+        return (WorkspaceItem<CalendarDefinition>) WorkspaceFactory.getInstance().getActiveWorkspace().
+                searchDocument(CalendarDocumentManager.ID, CalendarManager.DEF);
+    }
+
+    @Override
     public ExplorerManager getExplorerManager() {
         return explorerManager;
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -83,9 +88,8 @@ public final class CalendarTopComponent extends WorkspaceTopComponent<CalendarDe
     }
 
     @Override
-    public void refresh(){
+    public void refresh() {
         view.setCalendar(getDocument().getElement());
     }
-    
-    
+
 }

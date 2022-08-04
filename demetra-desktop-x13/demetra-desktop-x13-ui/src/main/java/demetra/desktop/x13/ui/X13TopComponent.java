@@ -23,10 +23,10 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//demetra.desktop.x13.ui//X13//EN",
-autostore = false)
+        autostore = false)
 @TopComponent.Description(preferredID = "X13TopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_NEVER)
+        //iconBase="SET/PATH/TO/ICON/HERE", 
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Seasonal Adjustment", id = "demetra.desktop.x13.ui.X13TopComponent")
 @ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Single Analysis", position = 1010)
@@ -45,13 +45,19 @@ public final class X13TopComponent extends WorkspaceTsTopComponent<X13Document> 
     }
 
     public X13TopComponent() {
-        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
+        this(null);
     }
 
     public X13TopComponent(WorkspaceItem<X13Document> doc) {
         super(doc);
-        initDocument();
+        initComponents();
+        setToolTipText(NbBundle.getMessage(X13TopComponent.class, "HINT_X13TopComponent"));
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
+    }
+
+    @Override
+    public WorkspaceItem<X13Document> newDocument() {
+        return manager().create(WorkspaceFactory.getInstance().getActiveWorkspace());
     }
 
     @Override
@@ -59,14 +65,11 @@ public final class X13TopComponent extends WorkspaceTsTopComponent<X13Document> 
         return mgr;
     }
 
-    private void initDocument() {
-        initComponents();
-        setToolTipText(NbBundle.getMessage(X13TopComponent.class, "HINT_X13TopComponent"));
-        setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(X13Document.class));
-        this.add(panel);
-        panel.refreshHeader();
+    @Override
+    protected TsProcessingViewer initViewer() {
+        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(X13Document.class));
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.

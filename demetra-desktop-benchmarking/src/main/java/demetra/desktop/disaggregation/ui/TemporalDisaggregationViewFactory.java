@@ -255,14 +255,7 @@ public class TemporalDisaggregationViewFactory extends ProcDocumentViewFactory<T
                         if (result == null) {
                             return null;
                         }
-                        TsData res = result.getResiduals();
-                        NiidTests niid = NiidTests.builder()
-                                .data(res.getValues())
-                                .hyperParametersCount(result.getHyperParametersCount())
-                                .period(res.getAnnualFrequency())
-                                .defaultTestsLength()
-                                .build();
-                        return new demetra.html.stats.HtmlNiidTest(niid);
+                        return new demetra.html.stats.HtmlNiidTest(result.getResidualsDiagnostics().getNiid());
                     },
                     new HtmlItemUI());
         }
@@ -296,7 +289,7 @@ public class TemporalDisaggregationViewFactory extends ProcDocumentViewFactory<T
 
     private final static Function<TemporalDisaggregationDocument, TsData> RESEXTRACTOR = source -> {
         TemporalDisaggregationResults result = source.getResult();
-        return result == null ? null : result.getResiduals();
+        return result == null ? null : result.getResidualsDiagnostics().getFullResiduals();
     };
 
 //  private final static Function<TemporalDisaggregationDocument, TsData> LLEXTRACTOR = source -> {

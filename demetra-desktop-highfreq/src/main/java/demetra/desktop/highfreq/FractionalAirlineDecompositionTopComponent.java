@@ -43,12 +43,13 @@ public final class FractionalAirlineDecompositionTopComponent extends WorkspaceT
     }
 
     public FractionalAirlineDecompositionTopComponent() {
-        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
+        this(null);
     }
 
     public FractionalAirlineDecompositionTopComponent(WorkspaceItem<FractionalAirlineDecompositionDocument> doc) {
         super(doc);
-        initDocument();
+        initComponents();
+        setToolTipText(NbBundle.getMessage(FractionalAirlineDecompositionTopComponent.class, "HINT_FractionalAirlineDecompositionTopComponent"));
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
@@ -57,13 +58,14 @@ public final class FractionalAirlineDecompositionTopComponent extends WorkspaceT
         return mgr;
     }
 
-    private void initDocument() {
-        initComponents();
-        setToolTipText(NbBundle.getMessage(FractionalAirlineDecompositionTopComponent.class, "HINT_FractionalAirlineDecompositionTopComponent"));
-        setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(FractionalAirlineDecompositionDocument.class));
-        this.add(panel);
-        panel.refreshHeader();
+    @Override
+    protected TsProcessingViewer initViewer() {
+        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(FractionalAirlineDecompositionDocument.class));
+   }
+
+    @Override
+    public WorkspaceItem<FractionalAirlineDecompositionDocument> newDocument() {
+        return manager().create(WorkspaceFactory.getInstance().getActiveWorkspace());
     }
 
     /**

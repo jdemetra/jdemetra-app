@@ -21,7 +21,6 @@ import demetra.desktop.ui.processing.Ts2ProcessingViewer;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
-import demetra.desktop.workspace.ui.WorkspaceTopComponent;
 import demetra.desktop.workspace.ui.WorkspaceTs2TopComponent;
 import jdplus.benchmarking.univariate.DentonDocument;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -56,26 +55,29 @@ public final class DentonTopComponent extends WorkspaceTs2TopComponent<DentonDoc
 
     private final ExplorerManager mgr = new ExplorerManager();
 
-     private static DentonDocumentManager manager() {
+    private static DentonDocumentManager manager() {
         return WorkspaceFactory.getInstance().getManager(DentonDocumentManager.class);
     }
 
     public DentonTopComponent() {
-        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
+        this(null);
     }
 
     public DentonTopComponent(WorkspaceItem<DentonDocument> doc) {
         super(doc);
-        initDocument();
+        initComponents();
+        setToolTipText(Bundle.CTL_DentonTopComponent());
     }
 
-    public void initDocument() {
-        setName(getDocument().getDisplayName());
-        setToolTipText(Bundle.CTL_CholetteTopComponent());
-        initComponents();
-        panel = Ts2ProcessingViewer.create(this.getDocument().getElement(), DocumentUIServices.forDocument(DentonDocument.class), "Low-freq series", "High-freq series");
-        add(panel);
-        panel.refreshHeader();
+    @Override
+    protected Ts2ProcessingViewer initViewer() {
+        //       node=new InternalNode();
+        return Ts2ProcessingViewer.create(this.getElement(), DocumentUIServices.forDocument(DentonDocument.class), "Low-freq series", "High-freq series");
+    }
+
+    @Override
+    public WorkspaceItem<DentonDocument> newDocument() {
+        return manager().create(WorkspaceFactory.getInstance().getActiveWorkspace());
     }
 
     /**
@@ -107,11 +109,10 @@ public final class DentonTopComponent extends WorkspaceTs2TopComponent<DentonDoc
     protected String getContextPath() {
         return DentonDocumentManager.CONTEXTPATH; //To change body of generated methods, choose Tools | Templates.
     }
-    
-        @Override
+
+    @Override
     public ExplorerManager getExplorerManager() {
         return mgr;
     }
-
 
 }

@@ -28,5 +28,4 @@ public class TemporalDisaggregationSpecRoot  {
     
     TemporalDisaggregationSpec core;
     boolean ro;
-    int period=12;
 }

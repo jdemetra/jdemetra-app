@@ -763,8 +763,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             if (doc != null && cspec.getClass().isInstance(doc.getSpecification())) {
                 // same document. To be updated
                 doc.setAll(cspec, ts, output.getEstimation().getResults());
-                detail.updateDocument();
-                TsDynamicProvider.onDocumentChanged(doc);
+                detail.onDocumentChanged();
             } else {
                 DocumentUIServices ui = DocumentUIServices.forSpec(cspec.getClass());
                 if (ui == null) {

@@ -18,7 +18,6 @@ package demetra.desktop.disaggregation.documents;
 
 import demetra.desktop.workspace.AbstractWorkspaceItemManager;
 import demetra.desktop.workspace.WorkspaceItemManager;
-import demetra.tempdisagg.univariate.TemporalDisaggregationSpec;
 import demetra.util.Id;
 import demetra.util.LinearId;
 import jdplus.tempdisagg.univariate.TemporalDisaggregationDocument;

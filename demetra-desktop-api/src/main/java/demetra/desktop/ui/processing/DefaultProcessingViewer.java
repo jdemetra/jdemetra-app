@@ -125,13 +125,10 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         return procView == null ? null : procView.getDocument();
     }
 
-    public void updateDocument() {
-        D doc = getDocument();
-        originalSpec = doc.getSpecification();
-        initSpecView(doc);
-        refreshHeader();
-    }
-
+    /**
+     * Set a new document and update the graphical interface
+     * @param doc 
+     */
     public void setDocument(D doc) {
         dirty = false;
 
@@ -310,6 +307,9 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         specPanel.validate();
     }
 
+    /**
+     * Called when the content of the document has changed
+     */
     public void onDocumentChanged() {
         refreshAll();
         TsDynamicProvider.onDocumentChanged(getDocument());

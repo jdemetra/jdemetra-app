@@ -43,7 +43,7 @@ public class TemporalDisaggregationSpecUI implements IObjectDescriptor<TemporalD
     }
 
     public TemporalDisaggregationSpecUI(TemporalDisaggregationSpec spec, boolean ro) {
-        root=new TemporalDisaggregationSpecRoot(spec, ro, 12);
+        root=new TemporalDisaggregationSpecRoot(spec, ro);
     }
 
     public TemporalDisaggregationSpecUI(TemporalDisaggregationSpecRoot root) {
