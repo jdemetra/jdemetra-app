@@ -18,12 +18,12 @@ package demetra.desktop.benchmarking.ui;
 
 import demetra.benchmarking.BenchmarkingDictionaries;
 import demetra.desktop.ui.processing.GenericChartUI;
+import demetra.desktop.ui.processing.GenericTableUI;
 import demetra.desktop.ui.processing.IProcDocumentItemFactory;
 import demetra.desktop.ui.processing.IProcDocumentViewFactory;
 import demetra.desktop.ui.processing.ProcDocumentItemFactory;
 import demetra.desktop.ui.processing.ProcDocumentViewFactory;
 import demetra.util.Id;
-import demetra.util.LinearId;
 import java.util.concurrent.atomic.AtomicReference;
 import jdplus.benchmarking.univariate.CholetteDocument;
 import org.openide.util.lookup.ServiceProvider;
@@ -34,8 +34,6 @@ import org.openide.util.lookup.ServiceProvider;
  */
 public class CholetteViewFactory extends ProcDocumentViewFactory<CholetteDocument> {
 
-    public static final String INPUT = "Input", RESULTS = "Results";
-    public static final Id RESULTS_MAIN = new LinearId(RESULTS);
 
      private static final AtomicReference<IProcDocumentViewFactory<CholetteDocument>> INSTANCE = new AtomicReference();
 
@@ -58,22 +56,54 @@ public class CholetteViewFactory extends ProcDocumentViewFactory<CholetteDocumen
 
     @Override
     public Id getPreferredView() {
-        return RESULTS_MAIN; //To change body of generated methods, choose Tools | Templates.
+        return BenchmarkingViewFactory.RESULTS_MAIN; //To change body of generated methods, choose Tools | Templates.
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 1000)
+    public static class InputDataFactory extends ProcDocumentItemFactory<CholetteDocument, CholetteDocument> {
+
+        public InputDataFactory() {
+            super(CholetteDocument.class, 
+                    BenchmarkingViewFactory.INPUT_DATA, 
+                    s-> s, 
+                    new GenericTableUI(true, new String[]{ BenchmarkingDictionaries.ORIGINAL, BenchmarkingDictionaries.TARGET}));
+        }
+
+        @Override
+        public int getPosition() {
+            return 1000;
+        }
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 1010)
+    public static class BIRatioFactory extends ProcDocumentItemFactory<CholetteDocument, CholetteDocument> {
+
+        public BIRatioFactory() {
+            super(CholetteDocument.class, 
+                    BenchmarkingViewFactory.INPUT_BI, 
+                    s-> s, 
+                    new GenericChartUI(true, new String[]{ BenchmarkingDictionaries.BIRATIO}));
+        }
+
+        @Override
+        public int getPosition() {
+            return 1010;
+        }
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
     public static class MainChartFactory extends ProcDocumentItemFactory<CholetteDocument, CholetteDocument> {
 
         public MainChartFactory() {
             super(CholetteDocument.class, 
-                    RESULTS_MAIN, 
+                    BenchmarkingViewFactory.RESULTS_MAIN, 
                     s-> s, 
                     new GenericChartUI(true, new String[]{ BenchmarkingDictionaries.ORIGINAL, BenchmarkingDictionaries.BENCHMARKED}));
         }
 
         @Override
         public int getPosition() {
-            return 1000;
+            return 2000;
         }
     }
 

@@ -206,7 +206,7 @@ public final class TsDynamicProvider implements TsProvider {
             n = source.getData(item.now, TsData.class);
             if (n != null && ! n.isEmpty()) {
                 beg = n.getStart().start().toLocalDate();
-                end = n.getEnd().end().toLocalDate();
+                end = n.getDomain().getLastPeriod().start().toLocalDate();
             }
         }
         if (item.fore != null) {
