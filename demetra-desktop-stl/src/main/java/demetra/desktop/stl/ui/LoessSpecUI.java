@@ -7,7 +7,7 @@ package demetra.desktop.stl.ui;
 import demetra.data.WeightFunction;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.descriptors.IPropertyDescriptors;
-import demetra.stl.LoessSpecification;
+import demetra.stl.LoessSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -26,17 +26,17 @@ public class LoessSpecUI implements IPropertyDescriptors {
         return "";
     }
 
-    private LoessSpecification loess;
-    private final Consumer<LoessSpecification> callback;
+    private LoessSpec loess;
+    private final Consumer<LoessSpec> callback;
     private final boolean ro;
 
-    public LoessSpecUI(LoessSpecification loess, boolean ro, Consumer<LoessSpecification> callback) {
+    public LoessSpecUI(LoessSpec loess, boolean ro, Consumer<LoessSpec> callback) {
         this.loess = loess;
         this.ro = ro;
         this.callback = callback;
     }
 
-    public LoessSpecification getCore() {
+    public LoessSpec getCore() {
         return loess;
     }
 

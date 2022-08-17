@@ -9,9 +9,10 @@ import demetra.desktop.stl.ui.StlPlusSpecUI;
 import demetra.desktop.ui.processing.IProcDocumentView;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceItem;
+import demetra.stl.MStlSpec;
 import java.awt.Color;
 import javax.swing.Icon;
-import demetra.stl.StlSpecification;
+import demetra.stl.StlSpec;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -20,7 +21,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author PALATEJ
  */
 @ServiceProvider(service = DocumentUIServices.class)
-public class StlPlusUIFactory implements DocumentUIServices<StlSpecification, StlPlusDocument> {
+public class StlPlusUIFactory implements DocumentUIServices<MStlSpec, StlPlusDocument> {
 
 //    public static StlPlusUIFactory INSTANCE=new StlPlusUIFactory();
     @Override
@@ -29,7 +30,7 @@ public class StlPlusUIFactory implements DocumentUIServices<StlSpecification, St
     }
 
     @Override
-    public IObjectDescriptor<StlSpecification> getSpecificationDescriptor(StlPlusDocument doc) {
+    public IObjectDescriptor<MStlSpec> getSpecificationDescriptor(StlPlusDocument doc) {
         return new StlPlusSpecUI(doc.getSpecification(), false);
     }
 
@@ -39,8 +40,8 @@ public class StlPlusUIFactory implements DocumentUIServices<StlSpecification, St
     }
 
     @Override
-    public Class<StlSpecification> getSpecType() {
-        return StlSpecification.class;
+    public Class<MStlSpec> getSpecType() {
+        return MStlSpec.class;
     }
 
     @Override

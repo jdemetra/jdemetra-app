@@ -10,7 +10,7 @@ import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.util.Id;
 import demetra.util.LinearId;
-import demetra.stl.StlSpecification;
+import demetra.stl.MStlSpec;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -19,10 +19,10 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = WorkspaceItemManager.class,
         position = 500)
-public class StlPlusDocumentManager extends AbstractWorkspaceTsItemManager<StlSpecification, StlPlusDocument> {
+public class StlPlusDocumentManager extends AbstractWorkspaceTsItemManager<MStlSpec, StlPlusDocument> {
 
 
-    public static final LinearId ID = new LinearId(StlSpecification.FAMILY, "documents", StlSpecification.METHOD);
+    public static final LinearId ID = new LinearId(MStlSpec.FAMILY, "documents", MStlSpec.METHOD);
     public static final String PATH = "stlplus.doc";
     public static final String ITEMPATH = "stlplus.doc.item";
     public static final String CONTEXTPATH = "stlplus.doc.context";
