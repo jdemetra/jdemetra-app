@@ -6,7 +6,7 @@ package demetra.desktop.stl.ui;
 
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.descriptors.IObjectDescriptor;
-import demetra.stl.SeasonalSpecification;
+import demetra.stl.SeasonalSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -18,29 +18,29 @@ import org.openide.util.NbBundle;
  *
  * @author PALATEJ
  */
-public class SeasonalSpecUI implements IObjectDescriptor<SeasonalSpecification> {
+public class SeasonalSpecUI implements IObjectDescriptor<SeasonalSpec> {
 
     @Override
     public String toString() {
         return "seasonal-" + seasSpec.getPeriod();
     }
 
-    private SeasonalSpecification seasSpec;
-    private final Consumer<SeasonalSpecification> callback;
+    private SeasonalSpec seasSpec;
+    private final Consumer<SeasonalSpec> callback;
     private final boolean ro;
 
     @Override
-    public SeasonalSpecification getCore() {
+    public SeasonalSpec getCore() {
         return seasSpec;
     }
     
     public SeasonalSpecUI(){
-        seasSpec=new SeasonalSpecification();
+        seasSpec=new SeasonalSpec();
         ro=false;
         callback=null;
     }
 
-    public SeasonalSpecUI(SeasonalSpecification loess, boolean ro, Consumer<SeasonalSpecification> callback) {
+    public SeasonalSpecUI(SeasonalSpec loess, boolean ro, Consumer<SeasonalSpec> callback) {
         this.seasSpec = loess;
         this.ro = ro;
         this.callback = callback;
