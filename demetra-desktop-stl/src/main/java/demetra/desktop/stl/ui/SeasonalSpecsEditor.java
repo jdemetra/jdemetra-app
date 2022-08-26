@@ -6,7 +6,7 @@ package demetra.desktop.stl.ui;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import demetra.desktop.ui.properties.l2fprod.ArrayEditorDialog;
-import demetra.stl.SeasonalSpecification;
+import demetra.stl.SeasonalSpec;
 import demetra.timeseries.regression.Ramp;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -20,7 +20,7 @@ import javax.swing.SwingUtilities;
  */
 public class SeasonalSpecsEditor extends AbstractPropertyEditor {
 
-    private SeasonalSpecification[] seasSpecs;
+    private SeasonalSpec[] seasSpecs;
 
     public SeasonalSpecsEditor() {
         editor = new JButton(new AbstractAction("...") {
@@ -46,8 +46,8 @@ public class SeasonalSpecsEditor extends AbstractPropertyEditor {
     }
 
     private void setDescriptors(List<SeasonalSpecUI> elements) {
-        SeasonalSpecification[] old=seasSpecs;
-        seasSpecs = new SeasonalSpecification[elements.size()];
+        SeasonalSpec[] old=seasSpecs;
+        seasSpecs = new SeasonalSpec[elements.size()];
         for (int i = 0; i < seasSpecs.length; ++i) {
             seasSpecs[i] = elements.get(i).getCore();
         }
@@ -61,11 +61,11 @@ public class SeasonalSpecsEditor extends AbstractPropertyEditor {
 
     @Override
     public void setValue(Object value) {
-        if (null != value && value instanceof SeasonalSpecification[]) {
-            seasSpecs = ((SeasonalSpecification[]) value).clone();
+        if (null != value && value instanceof SeasonalSpec[]) {
+            seasSpecs = ((SeasonalSpec[]) value).clone();
         }
         else {
-            seasSpecs = new SeasonalSpecification[0];
+            seasSpecs = new SeasonalSpec[0];
         }
     }
     

@@ -57,7 +57,7 @@ public class StlPlusExtractor extends InformationMapping<StlPlusResults> {
         set(SaDictionaries.SA, TsData.class, source
                 -> source.getSa());
         set(SaDictionaries.S, TsData.class, source
-                -> source.getSeasonal());
+                -> source.seasonal());
         set(SaDictionaries.I, TsData.class, source
                 -> source.getIrregular());
         set(SY, TsData.class, source
@@ -65,14 +65,14 @@ public class StlPlusExtractor extends InformationMapping<StlPlusResults> {
             int freq = freq(source);
             if (freq<=0)
                 return null;
-            return source.getSeasons().get(freq);
+            return source.getSeasonals().get(freq);
         });
         set(SW, TsData.class, source
                 -> {
             int freq = freq(source);
             if (freq != 365)
                 return null;
-            return source.getSeasons().get(7);
+            return source.getSeasonals().get(7);
         });
      }
 
