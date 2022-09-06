@@ -66,6 +66,15 @@
             </dependency>
             <!-- < import of jdemetra deps -->
 
+            <!-- dependencies  -->
+            <dependency>
+                <groupId>com.github.nbbrd.java-io-util</groupId>
+                <artifactId>java-io-bom</artifactId>
+                <version>0.0.19</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            
             <!-- NetBeans deps > -->
             <dependency>
                 <groupId>org.netbeans.api</groupId>
@@ -442,7 +451,7 @@
                                             <onlyWhenRelease>true</onlyWhenRelease>
                                         </requireReleaseDeps>
                                         <CheckMavenCentral
-                                                implementation="org.kordamp.maven.enforcer.checker.CheckMavenCentral">
+                                            implementation="org.kordamp.maven.enforcer.checker.CheckMavenCentral">
                                             <release>false</release>
                                             <strict>false</strict>
                                         </CheckMavenCentral>
