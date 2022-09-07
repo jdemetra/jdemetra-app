@@ -32,7 +32,7 @@ public final class RefreshRegCoefficients extends ActiveViewAction<SaBatchUI> {
 
     @Override
     protected void process(SaBatchUI ui) {
-        ui.refresh(EstimationPolicyType.Fixed, true, true);
+        ui.refresh(EstimationPolicyType.FixedParameters, true, true);
     }
 
     @Override

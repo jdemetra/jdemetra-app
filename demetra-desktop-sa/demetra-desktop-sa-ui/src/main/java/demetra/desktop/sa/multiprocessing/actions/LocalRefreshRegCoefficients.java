@@ -32,7 +32,7 @@ public final class LocalRefreshRegCoefficients extends ActiveViewAction<SaBatchU
 
     @Override
     protected void process(SaBatchUI ui) {
-        ui.refresh(EstimationPolicyType.Fixed, true, false);
+        ui.refresh(EstimationPolicyType.FixedParameters, true, false);
     }
 
     @Override
