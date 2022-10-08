@@ -26,14 +26,9 @@ import demetra.desktop.sa.multiprocessing.ui.SaBatchUI;
 import demetra.desktop.sa.output.OutputPanel;
 import demetra.desktop.ui.ActiveViewAction;
 import demetra.desktop.workspace.WorkspaceItem;
-import demetra.sa.SaDocument;
 import demetra.sa.SaItem;
-import demetra.sa.SaItems;
 import demetra.sa.SaOutputFactory;
-import demetra.sa.SaSpecification;
-import demetra.sa.csv.CsvMatrixOutput;
 import demetra.sa.csv.CsvMatrixOutputFactory;
-import demetra.sa.csv.CsvOutput;
 import demetra.sa.csv.CsvOutputFactory;
 import demetra.util.LinearId;
 
@@ -111,12 +106,10 @@ public final class Output extends ActiveViewAction<SaBatchUI> {
 
     @Nullable
     private File getExportFolder(SaOutputFactory output) {
-         if (output instanceof CsvMatrixOutputFactory) {
-            CsvMatrixOutputFactory fac=(CsvMatrixOutputFactory) output;
+         if (output instanceof CsvMatrixOutputFactory fac) {
             return fac.getConfiguration().getFolder();
         }
-        if (output instanceof CsvOutputFactory) {
-              CsvOutputFactory fac=(CsvOutputFactory) output;
+        if (output instanceof CsvOutputFactory fac) {
             return fac.getConfiguration().getFolder();
         }
         return null;

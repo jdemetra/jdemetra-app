@@ -224,7 +224,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     public SaBatchUI(MultiProcessingController controller) {
         super(controller);
         this.collection = HasTsCollectionSupport.of(this::firePropertyChange, TsInformationType.None);
-        this.collection.setTsUpdateMode(TsUpdateMode.Append);
+        collection.setTsUpdateMode(TsUpdateMode.Replace);
         this.defaultSpecification = DemetraSaUI.get().getDefaultSaSpec();
 
         setName(controller.getDocument().getDisplayName());
@@ -295,28 +295,19 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         add(visualRepresentation, BorderLayout.CENTER);
         addPropertyChangeListener(evt -> {
             switch (evt.getPropertyName()) {
-                case HasTsCollection.DROP_CONTENT_PROPERTY:
-                case HasTsCollection.FREEZE_ON_IMPORT_PROPERTY:
-                case HasTsCollection.TS_COLLECTION_PROPERTY:
-                case HasTsCollection.TS_SELECTION_MODEL_PROPERTY:
-                case HasTsCollection.TS_UPDATE_MODE_PROPERTY:
+                case HasTsCollection.DROP_CONTENT_PROPERTY, HasTsCollection.FREEZE_ON_IMPORT_PROPERTY, HasTsCollection.TS_COLLECTION_PROPERTY, HasTsCollection.TS_SELECTION_MODEL_PROPERTY, HasTsCollection.TS_UPDATE_MODE_PROPERTY ->
                     onCollectionChange();
-                    break;
-                case DEFAULT_SPECIFICATION_PROPERTY:
+                case DEFAULT_SPECIFICATION_PROPERTY ->
                     onDefaultSpecificationChange();
-                    break;
-                case PROCESSING_PROPERTY:
+                case PROCESSING_PROPERTY ->
                     onProcessingChange();
-                    break;
-                case SELECTION_PROPERTY:
+                case SELECTION_PROPERTY ->
                     onSelectionChange();
-                    break;
             }
         });
         master.addMouseListener(new DynamicPopup(MultiProcessingManager.LOCALPATH));
         master.setDropMode(DropMode.ON);
         master.setTransferHandler(HasTsCollectionSupport.newTransferHandler(collection));
-        collection.setTsUpdateMode(TsUpdateMode.Replace);
         deleteActionPanel = new DeleteActionPanel();
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
@@ -491,7 +482,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     public void refresh(EstimationPolicyType policy, int nback, boolean interactive, boolean all) {
         if (interactive) {
-            NotifyDescriptor nd = new NotifyDescriptor.Confirmation(REFRESH_LOCAL_MESSAGE, NotifyDescriptor.OK_CANCEL_OPTION);
+            NotifyDescriptor nd = new NotifyDescriptor.Confirmation(all ? REFRESH_MESSAGE : REFRESH_LOCAL_MESSAGE, NotifyDescriptor.OK_CANCEL_OPTION);
             if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
                 return;
             }
@@ -503,7 +494,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             controller.getDocument().getElement().refresh(policy, nback, item -> sel.contains(item));
         }
         controller.getDocument().setDirty();
-        start(true);
+        showDetails(null);
+//        start(true);
     }
 
     public void paste(boolean interactive) {
@@ -754,6 +746,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             TsDocument doc = (TsDocument) detail.getDocument();
             if (doc != null) {
                 doc.set((Ts) null);
+                detail.onDocumentChanged();
             }
         } else {
             SaItem output = item.getOutput();

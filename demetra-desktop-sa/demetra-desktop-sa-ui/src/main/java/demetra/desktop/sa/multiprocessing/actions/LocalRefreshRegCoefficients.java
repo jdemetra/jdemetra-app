@@ -38,6 +38,6 @@ public final class LocalRefreshRegCoefficients extends ActiveViewAction<SaBatchU
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew() && ui.getSelectionCount() == 1;
+        enabled = ui != null && !ui.getElement().isNew() && ui.getSelectionCount() > 0;
     }
 }

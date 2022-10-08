@@ -17,7 +17,7 @@ import org.openide.util.NbBundle;
 
 @ActionID(category = "SaProcessing",
         id = "demetra.desktop.sa.multiprocessing.actions.LocalRefreshArima")
-@ActionRegistration(displayName = "#CTL_LocalRefreshArima", lazy=true)
+@ActionRegistration(displayName = "#CTL_LocalRefreshArima", lazy = true)
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.LOCALPATH + LocalRefreshPartial.PATH, position = 1260)
 })
@@ -38,6 +38,6 @@ public final class LocalRefreshArima extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew()&& ui.getSelectionCount() == 1;
+        enabled = ui != null && !ui.getElement().isNew() && ui.getSelectionCount() > 0;
     }
 }

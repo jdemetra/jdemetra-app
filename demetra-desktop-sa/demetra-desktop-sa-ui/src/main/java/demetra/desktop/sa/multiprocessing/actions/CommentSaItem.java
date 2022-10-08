@@ -73,6 +73,7 @@ public final class CommentSaItem extends ActiveViewAction<SaBatchUI> {
                     return;
                 }
                 item.setOutput(output.withComment(area.getText().trim()));
+                cur.getController().getDocument().setDirty();
             }
         }
     }

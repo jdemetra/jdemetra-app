@@ -38,6 +38,6 @@ public final class LocalRefreshParameters extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew() && ui.getSelectionCount() == 1;
+        enabled = ui != null && !ui.getElement().isNew() && ui.getSelectionCount() > 0;
     }
 }
