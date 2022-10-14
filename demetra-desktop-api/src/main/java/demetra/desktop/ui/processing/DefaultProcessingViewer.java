@@ -127,7 +127,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
     /**
      * Set a new document and update the graphical interface
-     * @param doc 
+     *
+     * @param doc
      */
     public void setDocument(D doc) {
         dirty = false;
@@ -238,7 +239,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     S ospec = doc.getSpecification();
                     doc.set(pspec);
                     updateButtons(BUTTON_APPLY);
-                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, pspec);
+                    //DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, pspec);
                 }
             }};
         PropertySheetPanel specView = factory.getSpecView(specDescriptor);
@@ -257,7 +258,11 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                     doc.set(pspec);
                     updateButtons(BUTTON_APPLY);
                     dirty = true;
-                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, pspec);
+                    refreshView();
+                    if (isHeaderVisible()) {
+                        refreshHeader();
+                    }
+                    //DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, pspec);
                 }
             },
             new AbstractAction(BUTTON_RESTORE) {
@@ -323,6 +328,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         if (isHeaderVisible()) {
             refreshHeader();
         }
+        initSpecView();
     }
 
     public void refreshHeader() {
