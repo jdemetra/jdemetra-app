@@ -11,7 +11,6 @@
     <name>JD3 - Desktop - STS</name>
     <modules>
         <module>demetra-desktop-sts-api</module>
-        <module>demetra-desktop-sts-ui</module>
     </modules>
     <properties>
         <jd3-sts.version>1.0.0-SNAPSHOT</jd3-sts.version>

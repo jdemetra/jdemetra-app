@@ -63,6 +63,7 @@
         <module>demetra-desktop-highfreq</module>
         <module>demetra-desktop-stl</module>
         <module>demetra-desktop-benchmarking</module>
+        <module>demetra-desktop-sts</module>
     </modules>
 
     <dependencyManagement>
