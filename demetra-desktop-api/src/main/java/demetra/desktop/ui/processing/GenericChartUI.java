@@ -7,7 +7,6 @@ package demetra.desktop.ui.processing;
 import demetra.desktop.TsDynamicProvider;
 import demetra.processing.ProcDocument;
 import demetra.timeseries.Ts;
-import demetra.timeseries.TsDocument;
 import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsMoniker;
@@ -21,7 +20,7 @@ import javax.swing.JComponent;
  * @author Jean Palate
  * @param <D> Document type
  */
-public class GenericChartUI<D extends TsDocument<?,?> >implements ItemUI<TsDocument> {
+public class GenericChartUI<D extends ProcDocument >implements ItemUI<D> {
 
     private final List<String> names_;
     private final boolean full_;
@@ -33,7 +32,7 @@ public class GenericChartUI<D extends TsDocument<?,?> >implements ItemUI<TsDocum
 
 
     @Override
-    public JComponent getView(TsDocument doc) {
+    public JComponent getView(D doc) {
 
         List<Ts> items=new ArrayList<>();
         for (String s : names_){

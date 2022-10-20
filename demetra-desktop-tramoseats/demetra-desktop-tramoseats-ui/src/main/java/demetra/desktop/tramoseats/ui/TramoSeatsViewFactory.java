@@ -450,6 +450,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 
         public PreprocessingDetFactory() {
             super(TramoSeatsDocument.class, SaViews.PREPROCESSING_DET, source -> source, new GenericTableUI(false,
+                    SaDictionaries.PREPROCESSING, ModellingDictionary.YCAL,
                     SaDictionaries.PREPROCESSING, ModellingDictionary.Y_LIN,
                     SaDictionaries.PREPROCESSING, ModellingDictionary.DET,
                     SaDictionaries.PREPROCESSING, ModellingDictionary.CAL,
@@ -560,7 +561,6 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             generateId("Trend (lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.T_LIN)),
             generateId("Seasonal (lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.S_LIN)),
             generateId("Irregular (lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.I_LIN)),
-            generateId("Series (lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.Y_LIN)),
             generateStdErrorId("Seasonally adjusted (stde lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.SA_LIN)),
             generateStdErrorId("Trend (stde lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.T_LIN)),
             generateStdErrorId("Seasonal (stde lin)", Dictionary.concatenate(SaDictionaries.DECOMPOSITION, SaDictionaries.S_LIN)),

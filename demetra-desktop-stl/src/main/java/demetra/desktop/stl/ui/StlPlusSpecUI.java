@@ -7,6 +7,7 @@ package demetra.desktop.stl.ui;
 import demetra.data.WeightFunction;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.descriptors.IObjectDescriptor;
+import demetra.stl.MStlSpec;
 import demetra.stl.SeasonalSpec;
 import demetra.stl.StlSpec;
 import java.beans.IntrospectionException;
@@ -20,16 +21,16 @@ import org.openide.util.NbBundle.Messages;
  *
  * @author Jean Palate
  */
-public class StlPlusSpecUI implements IObjectDescriptor<StlSpec> {
+public class StlPlusSpecUI implements IObjectDescriptor<MStlSpec> {
 
     private final StlPlusSpecRoot root;
 
     @Override
-    public StlSpec getCore() {
+    public MStlSpec getCore() {
         return root.core;
     }
 
-    public StlPlusSpecUI(StlSpec spec, boolean ro) {
+    public StlPlusSpecUI(MStlSpec spec, boolean ro) {
         root = new StlPlusSpecRoot(spec, ro);
     }
 

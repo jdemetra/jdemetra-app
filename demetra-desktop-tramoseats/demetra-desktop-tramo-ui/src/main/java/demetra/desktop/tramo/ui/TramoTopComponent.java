@@ -45,12 +45,13 @@ public final class TramoTopComponent extends WorkspaceTsTopComponent<TramoDocume
     }
 
     public TramoTopComponent() {
-        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
+        this(null);
     }
 
     public TramoTopComponent(WorkspaceItem<TramoDocument> doc) {
         super(doc);
-        initDocument();
+        initComponents();
+        setToolTipText(NbBundle.getMessage(TramoTopComponent.class, "HINT_TramoTopComponent"));
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
@@ -59,13 +60,14 @@ public final class TramoTopComponent extends WorkspaceTsTopComponent<TramoDocume
         return mgr;
     }
 
-    private void initDocument() {
-        initComponents();
-        setToolTipText(NbBundle.getMessage(TramoTopComponent.class, "HINT_TramoTopComponent"));
-        setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(TramoDocument.class));
-        this.add(panel);
-        panel.refreshHeader();
+    @Override
+    protected TsProcessingViewer initViewer() {
+        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(TramoDocument.class));
+    }
+
+    @Override
+    public WorkspaceItem<TramoDocument> newDocument() {
+        return manager().create(WorkspaceFactory.getInstance().getActiveWorkspace());
     }
 
     /**

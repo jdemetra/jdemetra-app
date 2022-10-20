@@ -8,7 +8,7 @@ import demetra.desktop.ui.properties.l2fprod.ArrayRenderer;
 import demetra.desktop.ui.properties.l2fprod.CustomPropertyEditorRegistry;
 import demetra.desktop.ui.properties.l2fprod.CustomPropertyRendererFactory;
 import demetra.stl.SeasonalSpec;
-import demetra.stl.StlSpec;
+import demetra.stl.MStlSpec;
 
 
 
@@ -24,7 +24,7 @@ public class StlPlusSpecRoot  {
         CustomPropertyEditorRegistry.INSTANCE.register(SeasonalSpec[].class, new SeasonalSpecsEditor());
         CustomPropertyRendererFactory.INSTANCE.getRegistry().registerRenderer(SeasonalSpec[].class, new ArrayRenderer());
     }
-
-    StlSpec core;
+    
+    MStlSpec core;
     boolean ro;
 }

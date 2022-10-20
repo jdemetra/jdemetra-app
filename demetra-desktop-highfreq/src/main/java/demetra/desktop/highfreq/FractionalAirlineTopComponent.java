@@ -43,12 +43,13 @@ public final class FractionalAirlineTopComponent extends WorkspaceTsTopComponent
     }
 
     public FractionalAirlineTopComponent() {
-        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
+        this(null);
     }
 
     public FractionalAirlineTopComponent(WorkspaceItem<FractionalAirlineDocument> doc) {
         super(doc);
-        initDocument();
+        initComponents();
+        setToolTipText(NbBundle.getMessage(FractionalAirlineTopComponent.class, "HINT_FractionalAirlineTopComponent"));
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
@@ -57,13 +58,14 @@ public final class FractionalAirlineTopComponent extends WorkspaceTsTopComponent
         return mgr;
     }
 
-    private void initDocument() {
-        initComponents();
-        setToolTipText(NbBundle.getMessage(FractionalAirlineTopComponent.class, "HINT_FractionalAirlineTopComponent"));
-        setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(FractionalAirlineDocument.class));
-        this.add(panel);
-        panel.refreshHeader();
+    @Override
+    protected TsProcessingViewer initViewer() {
+        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(FractionalAirlineDocument.class));
+    }
+
+    @Override
+    public WorkspaceItem<FractionalAirlineDocument> newDocument() {
+        return manager().create(WorkspaceFactory.getInstance().getActiveWorkspace());
     }
 
     /**

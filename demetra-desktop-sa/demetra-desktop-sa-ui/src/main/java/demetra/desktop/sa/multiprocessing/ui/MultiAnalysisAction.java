@@ -39,6 +39,7 @@ public final class MultiAnalysisAction implements ActionListener {
     }
 
     public static TopComponent createView(final WorkspaceItem<MultiProcessingDocument> doc) {
+        boolean dirty = doc.isDirty();
         final MultiProcessingController controller = new MultiProcessingController(doc);
         SaBatchUI processingView = new SaBatchUI(controller);
         SummaryView summaryView = new SummaryView(controller);
@@ -49,12 +50,15 @@ public final class MultiAnalysisAction implements ActionListener {
             new QuickAndDirtyDescription("Summary", summaryView),
             new QuickAndDirtyDescription("Matrix", matrixView)};
 
-        final TopComponent result = MultiViewFactory.createMultiView(descriptions, descriptions[0], states->{
+        final TopComponent result = MultiViewFactory.createMultiView(descriptions, descriptions[0], states -> {
             controller.dispose();
             return true;
-                });
+        });
         result.setName(doc.getDisplayName());
         doc.setView(result);
+        if (!dirty) {
+            doc.resetDirty();
+        }
 
         DemetraSaUI demetraUI = DemetraSaUI.get();
 
@@ -62,23 +66,17 @@ public final class MultiAnalysisAction implements ActionListener {
 
         controller.addPropertyChangeListener(evt -> {
             switch (controller.getSaProcessingState()) {
-                case DONE:
+                case DONE -> {
                     result.makeBusy(false);
                     result.setAttentionHighlight(true);
-                    break;
-                case STARTED:
-                    result.makeBusy(true);
-                    break;
-                case CANCELLED:
-                    result.makeBusy(false);
-                    break;
-                case READY:
+                }
+                case STARTED -> result.makeBusy(true);
+                case CANCELLED -> result.makeBusy(false);
+                case READY -> {
                     result.makeBusy(false);
                     result.setAttentionHighlight(false);
-                    break;
-                case PENDING:
-                    result.makeBusy(false);
-                    break;
+                }
+                case PENDING -> result.makeBusy(false);
             }
         });
         return result;

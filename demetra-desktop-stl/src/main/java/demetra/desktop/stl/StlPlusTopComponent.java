@@ -43,12 +43,13 @@ public final class StlPlusTopComponent extends WorkspaceTsTopComponent<StlPlusDo
     }
 
     public StlPlusTopComponent() {
-        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
+        this(null);
     }
 
     public StlPlusTopComponent(WorkspaceItem<StlPlusDocument> doc) {
         super(doc);
-        initDocument();
+        initComponents();
+        setToolTipText(NbBundle.getMessage(StlPlusTopComponent.class, "HINT_StlPlusTopComponent"));
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
@@ -57,13 +58,15 @@ public final class StlPlusTopComponent extends WorkspaceTsTopComponent<StlPlusDo
         return mgr;
     }
 
-    private void initDocument() {
-        initComponents();
-        setToolTipText(NbBundle.getMessage(StlPlusTopComponent.class, "HINT_StlPlusTopComponent"));
-        setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(StlPlusDocument.class));
-        this.add(panel);
-        panel.refreshHeader();
+    @Override
+    protected TsProcessingViewer initViewer() {
+        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(StlPlusDocument.class));
+    }
+
+
+    @Override
+    public WorkspaceItem<StlPlusDocument> newDocument() {
+        return manager().create(WorkspaceFactory.getInstance().getActiveWorkspace());
     }
 
     /**

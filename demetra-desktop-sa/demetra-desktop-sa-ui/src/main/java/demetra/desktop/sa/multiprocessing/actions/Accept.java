@@ -8,8 +8,6 @@ import demetra.desktop.sa.multiprocessing.ui.MultiProcessingManager;
 import demetra.desktop.sa.multiprocessing.ui.SaBatchUI;
 import demetra.desktop.sa.multiprocessing.ui.SaNode;
 import demetra.desktop.ui.ActiveViewAction;
-import demetra.processing.ProcQuality;
-import demetra.sa.SaItem;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -61,6 +59,7 @@ public final class Accept extends ActiveViewAction<SaBatchUI> {
                 }
             }
         }
+        cur.getController().getDocument().setDirty();
         cur.redrawAll();
     }
 

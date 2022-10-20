@@ -45,12 +45,13 @@ public final class RegArimaTopComponent extends WorkspaceTsTopComponent<RegArima
     }
 
     public RegArimaTopComponent() {
-        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
+        this(null);
     }
 
     public RegArimaTopComponent(WorkspaceItem<RegArimaDocument> doc) {
         super(doc);
-        initDocument();
+        initComponents();
+        setToolTipText(NbBundle.getMessage(RegArimaTopComponent.class, "HINT_RegArimaTopComponent"));
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
@@ -59,13 +60,14 @@ public final class RegArimaTopComponent extends WorkspaceTsTopComponent<RegArima
         return mgr;
     }
 
-    private void initDocument() {
-        initComponents();
-        setToolTipText(NbBundle.getMessage(RegArimaTopComponent.class, "HINT_RegArimaTopComponent"));
-        setName(getDocument().getDisplayName());
-        panel = TsProcessingViewer.create(getDocument().getElement(), DocumentUIServices.forDocument(RegArimaDocument.class));
-        this.add(panel);
-        panel.refreshHeader();
+    @Override
+    protected TsProcessingViewer initViewer() {
+        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(RegArimaDocument.class));
+    }
+
+    @Override
+    public WorkspaceItem<RegArimaDocument> newDocument() {
+        return manager().create(WorkspaceFactory.getInstance().getActiveWorkspace());
     }
 
     /**

@@ -27,17 +27,19 @@ import javax.swing.JMenu;
  */
 public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extends WorkspaceTopComponent<T> implements HasTs {
 
-    protected TsProcessingViewer<?, ?> panel;
+    private TsProcessingViewer<?, ?> panel;
 
     protected WorkspaceTsTopComponent(WorkspaceItem<T> doc) {
         super(doc);
     }
+    
+    protected abstract TsProcessingViewer initViewer();
 
     public void updateUserInterfaceContext() {
-        if (doc == null) {
+        if (getDocument() == null) {
             return;
         }
-        T element = doc.getElement();
+        T element = getElement();
         if (element == null) {
             UserInterfaceContext.INSTANCE.setDomain(null);
         } else {
@@ -69,17 +71,22 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
     @Override
     public void componentOpened() {
         super.componentOpened();
+        panel=initViewer();
+        add(panel);
+        panel.refreshHeader();
+         WorkspaceItem<T> d = getDocument();
         panel.addPropertyChangeListener((PropertyChangeEvent arg0) -> {
             switch (arg0.getPropertyName()) {
-                case DefaultProcessingViewer.INPUT_CHANGED:
+                case DefaultProcessingViewer.INPUT_CHANGED -> {
                     Object nval=arg0.getNewValue();
-                    if (nval instanceof Ts){
-                        setTs((Ts) nval);
+                    if (nval instanceof Ts ts){
+                        setTs(ts);
                     }
-                    break;
-                case DefaultProcessingViewer.SPEC_CHANGED:
-                    WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, WorkspaceTsTopComponent.this);
+                }
+                case DefaultProcessingViewer.SPEC_CHANGED -> {
+                    WorkspaceFactory.Event ev = new WorkspaceFactory.Event(d.getOwner(), d.getId(), WorkspaceFactory.Event.ITEMCHANGED, WorkspaceTsTopComponent.this);
                     WorkspaceFactory.getInstance().notifyEvent(ev);
+                }
                     
             }
         });
@@ -125,7 +132,8 @@ public abstract class WorkspaceTsTopComponent<T extends TsDocument<?, ?>> extend
         panel.getDocument().set(cts);
         panel.updateButtons(null);
         getDocument().setDirty();
-        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(doc.getOwner(), doc.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
+        WorkspaceItem<T> d = getDocument();
+        WorkspaceFactory.Event ev = new WorkspaceFactory.Event(d.getOwner(), d.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
         WorkspaceFactory.getInstance().notifyEvent(ev);
 
     }

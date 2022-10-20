@@ -17,6 +17,7 @@
 package demetra.desktop.stl.ui;
 
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.stl.MStlSpec;
 import demetra.stl.SeasonalSpec;
 import demetra.stl.StlSpec;
 import java.beans.IntrospectionException;
@@ -66,17 +67,17 @@ public class SeasonalsUI extends BaseStlPlusSpecUI {
         }
     }
 
-//    public SeasonalSpec[] getSeasonalFilters() {
-//        return root.core.getSeasonalSpecs().toArray(n -> new SeasonalSpec[n]);
-//    }
-//
-//    public void setSeasonalFilters(SeasonalSpec[] specs) {
-//        StlSpec.Builder builder = root.core.toBuilder().clearSeasonalSpecs();
-//        for (int i = 0; i < specs.length; ++i) {
-//            builder.seasonalSpec(specs[i]);
-//        }
-//        root.core = builder.build();
-//    }
+    public SeasonalSpec[] getSeasonalFilters() {
+        return root.core.getSeasonalSpecs().toArray(n -> new SeasonalSpec[n]);
+    }
+
+    public void setSeasonalFilters(SeasonalSpec[] specs) {
+        MStlSpec.Builder builder = root.core.toBuilder().clearSeasonalSpecs();
+        for (int i = 0; i < specs.length; ++i) {
+            builder.seasonalSpec(specs[i]);
+        }
+        root.core = builder.build();
+    }
 
     private static final int SEAS_ID = 1;
 

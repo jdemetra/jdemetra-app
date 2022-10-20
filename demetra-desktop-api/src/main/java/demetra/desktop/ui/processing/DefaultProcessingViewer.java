@@ -1,6 +1,7 @@
 package demetra.desktop.ui.processing;
 
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
+import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.components.JExceptionPanel;
 import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.interfaces.Disposable;
@@ -14,6 +15,7 @@ import demetra.util.Arrays2;
 import demetra.util.Id;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import javax.swing.*;
@@ -71,15 +73,15 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         tree.setRootVisible(false);
         tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         this.explorerManager = new ExplorerManager();
-        explorerManager.addPropertyChangeListener(evt -> {
+        explorerManager.addPropertyChangeListener((PropertyChangeEvent evt) -> {
             switch (evt.getPropertyName()) {
-                case ExplorerManager.PROP_SELECTED_NODES:
+                case ExplorerManager.PROP_SELECTED_NODES -> {
                     Node[] nodes = (Node[]) evt.getNewValue();
                     if (nodes.length > 0) {
                         Id id = nodes[0].getLookup().lookup(Id.class);
                         showComponent(id);
                     }
-                    break;
+                }
             }
         });
 
@@ -123,13 +125,11 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         return procView == null ? null : procView.getDocument();
     }
 
-    public void updateDocument() {
-        D doc = getDocument();
-        originalSpec = doc.getSpecification();
-        initSpecView(doc);
-        refreshHeader();
-    }
-
+    /**
+     * Set a new document and update the graphical interface
+     *
+     * @param doc
+     */
     public void setDocument(D doc) {
         dirty = false;
 
@@ -236,10 +236,9 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     S pspec = specDescriptor.getCore();
-                    S ospec = doc.getSpecification();
                     doc.set(pspec);
                     updateButtons(BUTTON_APPLY);
-                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, pspec);
+                    updateResults();
                 }
             }};
         PropertySheetPanel specView = factory.getSpecView(specDescriptor);
@@ -254,11 +253,11 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     S pspec = specDescriptor.getCore();
-                    S ospec = doc.getSpecification();
+//                    S ospec = doc.getSpecification();
                     doc.set(pspec);
                     updateButtons(BUTTON_APPLY);
                     dirty = true;
-                    DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, pspec);
+                    updateResults();
                 }
             },
             new AbstractAction(BUTTON_RESTORE) {
@@ -308,8 +307,12 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         specPanel.validate();
     }
 
+    /**
+     * Called when the content of the document has changed
+     */
     public void onDocumentChanged() {
         refreshAll();
+        TsDynamicProvider.onDocumentChanged(getDocument());
     }
 
     /**
@@ -320,7 +323,20 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         if (isHeaderVisible()) {
             refreshHeader();
         }
+        initSpecView();
     }
+    
+    /**
+     * Refresh all parts of the view
+     */
+    public void updateResults() {
+        refreshView();
+        if (isHeaderVisible()) {
+            refreshHeader();
+        }
+        TsDynamicProvider.onDocumentChanged(getDocument());
+    }
+    
 
     public void refreshHeader() {
         // do nothing
@@ -358,8 +374,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
     private void showComponent(Id id) {
         Component oldView = splitter.getBottomComponent();
-        if (oldView instanceof Disposable) {
-            ((Disposable) oldView).dispose();
+        if (oldView instanceof Disposable disposable) {
+            disposable.dispose();
         }
 
         JComponent newView;
