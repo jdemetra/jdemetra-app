@@ -17,15 +17,12 @@
 package demetra.desktop.ui.processing;
 
 import com.google.common.base.Strings;
-import demetra.desktop.TsDynamicProvider;
-import demetra.desktop.TsManager;
 import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.processing.ProcSpecification;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsDocument;
-import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsMoniker;
 import demetra.util.MultiLineNameUtil;
 

@@ -393,6 +393,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
                     //                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.EE),
                     //                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.OUT), 
                     //                    BasicInformationExtractor.concatenate(SaDictionaries.PREPROCESSING, ModellingDictionary.FULL_RES)));
+                    SaDictionaries.PREPROCESSING, ModellingDictionary.YCAL,
                     SaDictionaries.PREPROCESSING, ModellingDictionary.Y_LIN,
                     SaDictionaries.PREPROCESSING, ModellingDictionary.DET,
                     SaDictionaries.PREPROCESSING, ModellingDictionary.CAL,

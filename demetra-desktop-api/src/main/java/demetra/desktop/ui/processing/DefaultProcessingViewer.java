@@ -236,10 +236,9 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     S pspec = specDescriptor.getCore();
-                    S ospec = doc.getSpecification();
                     doc.set(pspec);
                     updateButtons(BUTTON_APPLY);
-                    //DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, pspec);
+                    updateResults();
                 }
             }};
         PropertySheetPanel specView = factory.getSpecView(specDescriptor);
@@ -254,15 +253,11 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     S pspec = specDescriptor.getCore();
-                    S ospec = doc.getSpecification();
+//                    S ospec = doc.getSpecification();
                     doc.set(pspec);
                     updateButtons(BUTTON_APPLY);
                     dirty = true;
-                    refreshView();
-                    if (isHeaderVisible()) {
-                        refreshHeader();
-                    }
-                    //DefaultProcessingViewer.this.firePropertyChange(SPEC_CHANGED, ospec, pspec);
+                    updateResults();
                 }
             },
             new AbstractAction(BUTTON_RESTORE) {
@@ -330,6 +325,18 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
         }
         initSpecView();
     }
+    
+    /**
+     * Refresh all parts of the view
+     */
+    public void updateResults() {
+        refreshView();
+        if (isHeaderVisible()) {
+            refreshHeader();
+        }
+        TsDynamicProvider.onDocumentChanged(getDocument());
+    }
+    
 
     public void refreshHeader() {
         // do nothing
@@ -367,8 +374,8 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
 
     private void showComponent(Id id) {
         Component oldView = splitter.getBottomComponent();
-        if (oldView instanceof Disposable) {
-            ((Disposable) oldView).dispose();
+        if (oldView instanceof Disposable disposable) {
+            disposable.dispose();
         }
 
         JComponent newView;

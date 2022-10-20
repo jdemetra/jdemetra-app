@@ -450,6 +450,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
 
         public PreprocessingDetFactory() {
             super(TramoSeatsDocument.class, SaViews.PREPROCESSING_DET, source -> source, new GenericTableUI(false,
+                    SaDictionaries.PREPROCESSING, ModellingDictionary.YCAL,
                     SaDictionaries.PREPROCESSING, ModellingDictionary.Y_LIN,
                     SaDictionaries.PREPROCESSING, ModellingDictionary.DET,
                     SaDictionaries.PREPROCESSING, ModellingDictionary.CAL,
