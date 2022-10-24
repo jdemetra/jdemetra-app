@@ -12,7 +12,7 @@
     <packaging>nbm</packaging>
  
     <properties>
-        <slf4j.version>1.7.33</slf4j.version>
+        <slf4j.version>2.0.3</slf4j.version>
         <guava.version>30.1.1-jre</guava.version>
     </properties>
    
