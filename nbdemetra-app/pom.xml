@@ -5,7 +5,7 @@
     <parent>
         <groupId>eu.europa.ec.joinup.sat</groupId>
         <artifactId>nbdemetra-parent</artifactId>
-        <version>2.2.4-SNAPSHOT</version>
+        <version>2.2.4-RC1</version>
     </parent>
 
     <artifactId>nbdemetra-app</artifactId>
@@ -30,14 +30,14 @@
             <artifactId>platform</artifactId>
             <type>pom</type>
             <exclusions>
-                <exclusion> 
-                    <groupId>org.netbeans.api</groupId> 
-                    <artifactId>org-netbeans-libs-testng</artifactId> 
-                </exclusion> 
-                <exclusion> 
-                    <groupId>org.netbeans.modules</groupId> 
-                    <artifactId>org-netbeans-modules-junitlib</artifactId> 
-                </exclusion> 
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-libs-testng</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.modules</groupId>
+                    <artifactId>org-netbeans-modules-junitlib</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.netbeans.api</groupId>
                     <artifactId>org-netbeans-modules-javahelp</artifactId>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>org.netbeans.modules</groupId>
             <artifactId>org-netbeans-modules-dbapi</artifactId>
-            <version>${netbeans.version}</version> 
+            <version>${netbeans.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.netbeans.api</groupId>
@@ -70,7 +70,7 @@
         <dependency>
             <groupId>org.netbeans.modules</groupId>
             <artifactId>org-netbeans-modules-projectapi-nb</artifactId>
-            <version>${netbeans.version}</version> 
+            <version>${netbeans.version}</version>
         </dependency>
 
         <!-- JD+ modules -->
@@ -84,7 +84,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nbdemetra-ui</artifactId>   
+            <artifactId>nbdemetra-ui</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -123,99 +123,124 @@
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
-<!--                    <finalName>${project.artifactId}-${project.version}-bin</finalName>-->
+                    <!--                    <finalName>${project.artifactId}-${project.version}-bin</finalName>-->
                     <installersFilePrefix>${project.x.fileName}-${project.version}-setup</installersFilePrefix>
-<!--                    <installerPack200Enable>false</installerPack200Enable>-->
                     <etcConfFile>src/main/resources/nbdemetra.conf</etcConfFile>
-                </configuration>
-            </plugin>
-
-            <!-- Copies files to binaries -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.x.binaries}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.directory}</directory>
-                                    <includes>
-                                        <include>${project.build.finalName}.zip</include>
-                                        <include>${project.build.finalName}.zip.asc</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Renames binaries -->
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <move todir="${project.x.binaries}">
-                                    <fileset dir="${project.x.binaries}">
-                                        <include name="**/${project.build.finalName}.zip*"/>
-                                    </fileset>
-                                    <mapper type="glob" from="${project.build.finalName}.zip*" to="${project.build.finalName}-bin.zip*"/>
-                                </move>
-                                <move todir="${project.x.binaries}">
-                                    <fileset dir="${project.x.binaries}">
-                                        <include name="**/${project.artifactId}-*"/>
-                                    </fileset>
-                                    <mapper type="glob" from="${project.artifactId}-*" to="${project.x.fileName}-*"/>
-                                </move>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Generates SHA256 on binaries -->
-            <plugin>
-                <groupId>net.nicoulaj.maven.plugins</groupId>
-                <artifactId>checksum-maven-plugin</artifactId>
-                <version>1.11</version>
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>files</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <algorithms>
-                        <algorithm>SHA-256</algorithm>
-                    </algorithms>
-                    <fileSets>
-                        <fileSet>
-                            <directory>${project.x.binaries}</directory>
-                            <excludes>
-                                <exclude>*.sha256</exclude>
-                                <exclude>*.asc</exclude>
-                            </excludes>
-                        </fileSet>
-                    </fileSets>
-                    <csvSummary>false</csvSummary>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>full-release</id>
+            <build>
+                <plugins>
+                    <!-- Generates setups -->
+                    <plugin>
+                        <groupId>org.apache.netbeans.utilities</groupId>
+                        <artifactId>nbm-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>build-installers</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Copies files to binaries -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.x.binaries}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>${project.build.finalName}.zip</include>
+                                                <include>${project.build.finalName}.zip.asc</include>
+                                                <include>${project.x.fileName}-${project.version}-setup-*</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Renames binaries -->
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <move todir="${project.x.binaries}">
+                                            <fileset dir="${project.x.binaries}">
+                                                <include name="**/${project.build.finalName}.zip*"/>
+                                            </fileset>
+                                            <mapper type="glob" from="${project.build.finalName}.zip*"
+                                                    to="${project.build.finalName}-bin.zip*"/>
+                                        </move>
+                                        <move todir="${project.x.binaries}">
+                                            <fileset dir="${project.x.binaries}">
+                                                <include name="**/${project.artifactId}-*"/>
+                                            </fileset>
+                                            <mapper type="glob" from="${project.artifactId}-*"
+                                                    to="${project.x.fileName}-*"/>
+                                        </move>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Generates SHA256 on binaries -->
+                    <plugin>
+                        <groupId>net.nicoulaj.maven.plugins</groupId>
+                        <artifactId>checksum-maven-plugin</artifactId>
+                        <version>1.11</version>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>files</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <algorithms>
+                                <algorithm>SHA-256</algorithm>
+                            </algorithms>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.x.binaries}</directory>
+                                    <excludes>
+                                        <exclude>*.sha256</exclude>
+                                        <exclude>*.asc</exclude>
+                                    </excludes>
+                                </fileSet>
+                            </fileSets>
+                            <csvSummary>false</csvSummary>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
