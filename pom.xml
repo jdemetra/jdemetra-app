@@ -75,7 +75,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            
+
             <!-- NetBeans deps > -->
             <dependency>
                 <groupId>org.netbeans.api</groupId>
@@ -458,7 +458,7 @@
                                             <onlyWhenRelease>true</onlyWhenRelease>
                                         </requireReleaseDeps>
                                         <CheckMavenCentral
-                                            implementation="org.kordamp.maven.enforcer.checker.CheckMavenCentral">
+                                                implementation="org.kordamp.maven.enforcer.checker.CheckMavenCentral">
                                             <release>false</release>
                                             <strict>false</strict>
                                         </CheckMavenCentral>
@@ -537,6 +537,30 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Gitflow automation -->
+        <profile>
+            <id>gitflow-automation</id>
+            <activation>
+                <property>
+                    <name>!skipGitflowAutomation</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.amashchenko.maven.plugin</groupId>
+                        <artifactId>gitflow-maven-plugin</artifactId>
+                        <version>1.19.0</version>
+                        <configuration>
+                            <gitFlowConfig>
+                                <versionTagPrefix>v</versionTagPrefix>
+                            </gitFlowConfig>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
