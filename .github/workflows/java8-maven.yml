@@ -72,6 +72,14 @@ jobs:
           SIGN_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           SIGN_KEY_PASS: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
+      - name: Dryrun release assets with Maven
+        run: mvn -B -ntp install -DskipTests=true -P full-release -Djreleaser.dry.run=true
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.MAVEN_GPG_PUBLIC_KEY }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
   release-job:
     needs: build-and-test-job
     if: startsWith(github.repository, 'jdemetra/') && startsWith(github.ref, 'refs/tags/v')
@@ -107,18 +115,10 @@ jobs:
           # Fix https://issues.sonatype.org/browse/OSSRH-66257
           MAVEN_OPTS: "--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
 
-      - name: Build assets with Maven
-        run: mvn -B -ntp install -DskipTests=true -P base-deploy,full-release
+      - name: Release assets with Maven
+        run: mvn -B -ntp install -DskipTests=true -P full-release
         env:
-          SIGN_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-          SIGN_KEY_PASS: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-
-      - name: Create dummy file if no assets
-        run: test -d "binaries" || (mkdir binaries && echo "no assets" > binaries/no_assets.txt)
-
-      - name: Create draft release and upload assets
-        uses: xresloader/upload-to-github-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          file: 'binaries/*'
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.MAVEN_GPG_PUBLIC_KEY }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}

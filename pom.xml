@@ -11,6 +11,7 @@
     <name>NbDemetra - Parent</name>
     <description>Econometric software for seasonal adjustment and other time series methods (JDemetra+)</description>
     <url>https://github.com/jdemetra/jdemetra-app</url>
+    <inceptionYear>2013</inceptionYear>
 
     <licenses>
         <license>
@@ -352,18 +353,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- Clean binaries directory -->
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>binaries</directory>
-                        </fileset>
-                    </filesets>
-                </configuration>
             </plugin>
 
             <plugin>
