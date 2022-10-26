@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.openide.filesystems.FileChooserBuilder;
 
@@ -60,8 +61,30 @@ public class TsSaveUtil {
         }
     }
 
+    @Deprecated
     @NonNull
     public FileChooserBuilder fileChooser(@NonNull Class type) {
         return new FileChooserBuilder(type).setSelectionApprover(SingleFileExporter.overwriteApprover());
+    }
+
+    @NonNull
+    public FileChooserBuilder fileChooser(@NonNull Class type, javax.swing.filechooser.@NonNull FileFilter fileFilter) {
+        return new FileChooserBuilder(type)
+                .setSelectionApprover(new SaveSelectionApprover(fileFilter))
+                .setFileFilter(fileFilter);
+    }
+
+    @lombok.RequiredArgsConstructor
+    private static final class SaveSelectionApprover implements FileChooserBuilder.SelectionApprover {
+
+        @lombok.NonNull
+        private final javax.swing.filechooser.FileFilter fileFilter;
+        private final FileChooserBuilder.SelectionApprover overwriteApprover = SingleFileExporter.overwriteApprover();
+
+        @Override
+        public boolean approve(File[] selection) {
+            return overwriteApprover.approve(selection)
+                    && Stream.of(selection).allMatch(fileFilter::accept);
+        }
     }
 }

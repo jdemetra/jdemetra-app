@@ -1,3 +1,4 @@
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -33,6 +34,7 @@ The main changes of this release are some bug fixes in SA processing, the migrat
 - ![IO] Fix issues with high memory usage in some OpenDocument files
 - ![IO] Fix Zip64 issue in some Excel files
 - ![UI] Fix colors on look&feel update
+- ![UI] Fix TS export using invalid file name
 - ![OTHER] Fix setups on JDK14+ due to pack200 removal
 
 ## [2.2.3] - 2020-07-07

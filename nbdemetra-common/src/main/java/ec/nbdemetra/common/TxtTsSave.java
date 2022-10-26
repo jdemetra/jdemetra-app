@@ -55,7 +55,7 @@ public final class TxtTsSave implements ITsSave {
     private final OptionsBean options;
 
     public TxtTsSave() {
-        this.fileChooser = TsSaveUtil.fileChooser(TxtTsSave.class).setFileFilter(new SaveFileFilter());
+        this.fileChooser = TsSaveUtil.fileChooser(TxtTsSave.class, new SaveFileFilter());
         this.options = new OptionsBean();
     }
 
