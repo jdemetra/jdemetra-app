@@ -88,7 +88,10 @@ public final class SpreadsheetTsSave implements TsActionSaveSpi, Persistable {
 
     @OnAnyThread
     private static void store(File file, ProgressHandle ph, List<TsCollection> data, GridWriter writer) throws IOException {
-        Book.Factory factory = getFactories().filter(o -> o.accept(file)).findFirst().orElseThrow(() -> new IOException("Cannot find spreadsheet factory"));
+        Book.Factory factory = getFactories()
+                .filter(o -> o.accept(file))
+                .findFirst()
+                .orElseThrow(() -> new IOException("Cannot find spreadsheet factory for file '" + file + "'"));
 
         ph.progress("Loading time series");
         TsCollection content = TsActionSaveSpiSupport.flatLoad(data);

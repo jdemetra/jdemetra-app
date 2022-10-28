@@ -1,17 +1,17 @@
 /*
  * Copyright 2016 National Bank of Belgium
- * 
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved 
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package demetra.desktop.util;
@@ -26,8 +26,10 @@ import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileChooserBuilder;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -36,10 +38,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import javax.swing.filechooser.FileFilter;
+import java.util.stream.Stream;
 
 /**
- *
  * @author Philippe Charles
  * @since 2.2.0
  */
@@ -151,25 +152,28 @@ public final class SingleFileExporter {
     }
 
     @NonNull
-    public static FileChooserBuilder newFileChooser(@NonNull Class type) {
-        return new FileChooserBuilder(type).setSelectionApprover(overwriteApprover());
+    public static FileChooserBuilder newFileChooser(@NonNull Class<?> preferencesKey) {
+        return newFileChooser(preferencesKey, Collections.emptyList());
     }
 
     @NonNull
     public static FileChooserBuilder newFileChooser(Class<?> preferencesKey, List<FileFilter> filters) {
-        FileChooserBuilder result = newFileChooser(preferencesKey);
-        filters.forEach(result::addFileFilter);
+        FileChooserBuilder result = new FileChooserBuilder(preferencesKey);
         if (!filters.isEmpty()) {
+            filters.forEach(result::addFileFilter);
             result.setFileFilter(filters.get(0));
+            result.setSelectionApprover(new AndThenApprover(new FileFilterApprover(filters), overwriteApprover()));
+        } else {
+            result.setSelectionApprover(overwriteApprover());
         }
         return result;
     }
 
     public static FileChooserBuilder.@NonNull SelectionApprover overwriteApprover() {
-        return SaveSelectionApprover.INSTANCE;
+        return OverwriteApprover.INSTANCE;
     }
 
-    private enum SaveSelectionApprover implements FileChooserBuilder.SelectionApprover {
+    private enum OverwriteApprover implements FileChooserBuilder.SelectionApprover {
 
         INSTANCE;
 
@@ -180,6 +184,34 @@ public final class SingleFileExporter {
                 return DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.OK_OPTION;
             }
             return selection.length != 0;
+        }
+    }
+
+    @lombok.RequiredArgsConstructor
+    private static final class FileFilterApprover implements FileChooserBuilder.SelectionApprover {
+
+        @lombok.NonNull
+        private final List<FileFilter> fileFilters;
+
+        @Override
+        public boolean approve(File[] selection) {
+            return Stream.of(selection).allMatch(this::approve);
+        }
+
+        private boolean approve(File file) {
+            return fileFilters.isEmpty() || fileFilters.stream().anyMatch(fileFilter -> fileFilter.accept(file));
+        }
+    }
+
+    @lombok.RequiredArgsConstructor
+    private static final class AndThenApprover implements FileChooserBuilder.SelectionApprover {
+
+        private final FileChooserBuilder.SelectionApprover first;
+        private final FileChooserBuilder.SelectionApprover second;
+
+        @Override
+        public boolean approve(File[] selection) {
+            return first.approve(selection) && second.approve(selection);
         }
     }
 }
