@@ -2,4 +2,4 @@ Manifest-Version: 1.0
 OpenIDE-Module-Localizing-Bundle: demetra/desktop/api/Bundle.properties
 OpenIDE-Module-Install: demetra/desktop/util/Installer.class
 OpenIDE-Module-Layer: demetra/desktop/api/layer.xml
-
+OpenIDE-Module-Java-Dependencies: Java > 17

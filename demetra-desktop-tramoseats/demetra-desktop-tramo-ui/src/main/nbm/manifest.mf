@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
 OpenIDE-Module-Localizing-Bundle: demetra/desktop/tramo/ui/Bundle.properties
 OpenIDE-Module-Layer: demetra/desktop/tramo/ui/layer.xml
+OpenIDE-Module-Java-Dependencies: Java > 17
 

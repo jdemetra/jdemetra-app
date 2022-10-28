@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
 OpenIDE-Module-Localizing-Bundle: ec/nbdemetra/jdbc/Bundle.properties
 OpenIDE-Module-Display-Category: IO
+OpenIDE-Module-Java-Dependencies: Java > 17
