@@ -17,27 +17,36 @@
 package demetra.desktop.sa.diagnostics;
 
 import demetra.desktop.NamedService;
-import demetra.desktop.util.NetBeansServiceBackend;
 import demetra.desktop.DemetraIcons;
+import demetra.sa.SaDiagnosticsFactory;
 import java.awt.Image;
-import nbbrd.service.Quantifier;
-import nbbrd.service.ServiceDefinition;
+import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 
 /**
  *
- * @author Philippe Charles
- * @since 2.1.0
+ * Link between the GUI and the actual SaDiagnosticsFactory
  */
-@ServiceDefinition(
-        quantifier = Quantifier.MULTIPLE,
-        backend = NetBeansServiceBackend.class,
-        singleton = true
-)
-public abstract class SaDiagnosticsFactoryBuddy implements NamedService {
+public interface SaDiagnosticsFactoryBuddy extends NamedService {
+
+    AbstractSaDiagnosticsNode createNode();
+    
+    AbstractSaDiagnosticsNode createNodeFor(SaDiagnosticsFactory factory);
+    
+    SaDiagnosticsFactory createFactory();
 
     @Override
-    public Image getIcon(int type, boolean opened) {
+    default String getDisplayName() {
+        return getName();
+    }
+
+    @Override
+    default Image getIcon(int type, boolean opened) {
         return ImageUtilities.icon2Image(DemetraIcons.PUZZLE_16);
+    }
+
+    @Override
+    default Sheet createSheet() {
+        return new Sheet();
     }
 }
