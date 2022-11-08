@@ -38,7 +38,6 @@ import demetra.desktop.Converter;
 import demetra.desktop.Persistable;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.beans.BeanConfigurator;
-import demetra.desktop.properties.ListSelectionEditor;
 import demetra.desktop.sa.output.AbstractOutputNode;
 import demetra.desktop.sa.output.Matrix;
 import demetra.sa.csv.CsvMatrixOutputConfiguration;

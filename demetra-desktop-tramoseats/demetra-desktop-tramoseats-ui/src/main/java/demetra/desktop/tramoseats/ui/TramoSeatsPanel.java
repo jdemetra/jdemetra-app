@@ -4,10 +4,18 @@
  */
 package demetra.desktop.tramoseats.ui;
 
+import demetra.desktop.actions.Configurable;
+import demetra.desktop.actions.Resetable;
+import demetra.desktop.nodes.AbstractNodeBuilder;
+import demetra.desktop.nodes.NamedServiceNode;
+import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddy;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
 import org.openide.explorer.ExplorerManager;
+import org.openide.nodes.Node;
+import org.openide.util.Lookup;
 
 final class TramoSeatsPanel extends javax.swing.JPanel {
 
@@ -17,8 +25,19 @@ final class TramoSeatsPanel extends javax.swing.JPanel {
         this.controller = controller;
         initComponents();
         // TODO listen to changes in form fields and call controller.changed()
+        getDiagnosticsExplorerManager().addPropertyChangeListener((PropertyChangeEvent evt) -> {
+            if (ExplorerManager.PROP_SELECTED_NODES.equals(evt.getPropertyName())) {
+                Node[] nodes = (Node[]) evt.getNewValue();
+                editDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(Configurable.class) != null);
+                resetDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(Resetable.class) != null);
+            }
+        });
     }
 
+    private ExplorerManager getDiagnosticsExplorerManager() {
+        return ((ExplorerManager.Provider) diagnosticsPanel).getExplorerManager();
+
+    }
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -131,10 +150,9 @@ final class TramoSeatsPanel extends javax.swing.JPanel {
             diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(diagnosticsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(diagnosticsView, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE))
-                .addGap(0, 15, Short.MAX_VALUE))
+                .addGroup(diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(diagnosticsView, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         outputPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(TramoSeatsPanel.class, "TramoSeatsPanel.outputPanel.border.title"))); // NOI18N
@@ -168,10 +186,12 @@ final class TramoSeatsPanel extends javax.swing.JPanel {
             outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(outputPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(outputView, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE))
-                .addGap(0, 18, Short.MAX_VALUE))
+                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, outputPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(outputView, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -193,7 +213,7 @@ final class TramoSeatsPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(diagnosticsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(outputPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(outputPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -243,9 +263,9 @@ final class TramoSeatsPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_selectedDiagButtonActionPerformed
 
     private void editDiagnosticActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDiagnosticActionPerformed
-//        if (getDiagnosticsExplorerManager().getSelectedNodes() != null && getDiagnosticsExplorerManager().getSelectedNodes().length != 0) {
-//            getDiagnosticsExplorerManager().getSelectedNodes()[0].getPreferredAction().actionPerformed(evt);
-//        }
+        if (getDiagnosticsExplorerManager().getSelectedNodes() != null && getDiagnosticsExplorerManager().getSelectedNodes().length != 0) {
+            getDiagnosticsExplorerManager().getSelectedNodes()[0].getPreferredAction().actionPerformed(evt);
+        }
     }//GEN-LAST:event_editDiagnosticActionPerformed
 
     private void resetDiagnosticActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetDiagnosticActionPerformed
@@ -264,13 +284,10 @@ final class TramoSeatsPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_editOutputActionPerformed
 
     void load() {
-        // TODO read settings and initialize GUI
-        // Example:        
-        // someCheckBox.setSelected(Preferences.userNodeForPackage(TramoSeatsPanel.class).getBoolean("someFlag", false));
-        // or for org.openide.util with API spec. version >= 7.4:
-        // someCheckBox.setSelected(NbPreferences.forModule(TramoSeatsPanel.class).getBoolean("someFlag", false));
-        // or:
-        // someTextField.setText(SomeSystemOption.getDefault().getSomeStringProperty());
+        AbstractNodeBuilder root = new AbstractNodeBuilder();
+        root.add(new AbstractNodeBuilder().name("Diagnostics")
+                .add(Lookup.getDefault().lookupAll(TramoSeatsDiagnosticsFactoryBuddy.class).stream().map(NamedServiceNode::new)).build());
+        getDiagnosticsExplorerManager().setRootContext(root.build());
     }
 
     void store() {

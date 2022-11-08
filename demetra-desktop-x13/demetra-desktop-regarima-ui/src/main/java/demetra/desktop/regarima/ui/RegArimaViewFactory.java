@@ -80,7 +80,7 @@ public class RegArimaViewFactory extends ProcDocumentViewFactory<RegArimaDocumen
         public SpecFactory() {
             super(RegArimaDocument.class, RegSarimaViews.INPUT_SPEC,
                     (RegArimaDocument doc) -> {
-                        InformationSet info = RegArimaSpecMapping.write(doc.getSpecification(), true);
+                        InformationSet info = RegArimaSpecMapping.write(doc.getSpecification(), doc.getInput().getData().getDomain(), true);
                         return new demetra.html.core.HtmlInformationSet(info);
                     },
                     new HtmlItemUI()

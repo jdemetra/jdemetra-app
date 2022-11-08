@@ -12,6 +12,7 @@ import demetra.desktop.processing.ui.modelling.ModelArimaFactory;
 import demetra.desktop.processing.ui.modelling.ModelRegressorsFactory;
 import demetra.desktop.processing.ui.modelling.NiidTestsFactory;
 import demetra.desktop.processing.ui.modelling.OutOfSampleTestFactory;
+import demetra.desktop.processing.ui.sa.BenchmarkingUI;
 import demetra.desktop.processing.ui.sa.SIFactory;
 import demetra.desktop.sa.ui.DemetraSaUI;
 import demetra.desktop.sa.ui.SaViews;
@@ -66,6 +67,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
+import jdplus.sa.SaBenchmarkingResults;
 import jdplus.sa.tests.SeasonalityTests;
 import jdplus.timeseries.simplets.analysis.DiagnosticInfo;
 import jdplus.timeseries.simplets.analysis.MovingProcessing;
@@ -137,7 +139,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
         public SpecFactory() {
             super(X13Document.class, SaViews.INPUT_SPEC,
                     (X13Document doc) -> {
-                        InformationSet info = X13SpecMapping.write(doc.getSpecification(), true);
+                        InformationSet info = X13SpecMapping.write(doc.getSpecification(), doc.getInput().getData().getDomain(), true);
                         return new demetra.html.core.HtmlInformationSet(info);
                     },
                     new HtmlItemUI()
@@ -910,6 +912,34 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
         }
     }
 //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="BENCHMARKING">
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4900)
+    public static class BenchmarkingFactory extends ProcDocumentItemFactory<X13Document, BenchmarkingUI.Input> {
+
+        public BenchmarkingFactory() {
+            super(X13Document.class, SaViews.BENCHMARKING_SUMMARY, (X13Document doc) -> {
+                X13Results rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                SaBenchmarkingResults benchmarking = rslt.getBenchmarking();
+                if (benchmarking == null) {
+                    return null;
+                }
+                boolean mul = rslt.getDecomposition().getMode().isMultiplicative();
+                return new BenchmarkingUI.Input(mul, benchmarking);
+            }, new BenchmarkingUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 4900;
+        }
+
+    }
+//</editor-fold>
+
 
 //<editor-fold defaultstate="collapsed" desc="REGISTER REVISION HISTORY VIEW">
     

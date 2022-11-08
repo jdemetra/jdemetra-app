@@ -12,6 +12,7 @@ import demetra.desktop.processing.ui.modelling.ModelArimaFactory;
 import demetra.desktop.processing.ui.modelling.ModelRegressorsFactory;
 import demetra.desktop.processing.ui.modelling.NiidTestsFactory;
 import demetra.desktop.processing.ui.modelling.OutOfSampleTestFactory;
+import demetra.desktop.processing.ui.sa.BenchmarkingUI;
 import demetra.desktop.processing.ui.sa.SIFactory;
 import demetra.desktop.sa.ui.DemetraSaUI;
 import demetra.desktop.sa.ui.SaViews;
@@ -73,6 +74,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import jdplus.regsarima.regular.RegSarimaModel;
+import jdplus.sa.SaBenchmarkingResults;
 import jdplus.sa.diagnostics.SignificantSeasonalityTest;
 import jdplus.sa.tests.SeasonalityTests;
 import jdplus.seats.SeatsResults;
@@ -207,7 +209,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         public SpecFactory() {
             super(TramoSeatsDocument.class, SaViews.INPUT_SPEC,
                     (TramoSeatsDocument doc) -> {
-                        InformationSet info = TramoSeatsSpecMapping.write(doc.getSpecification(), true);
+                        InformationSet info = TramoSeatsSpecMapping.write(doc.getSpecification(), doc.getInput().getData().getDomain(), true);
                         return new demetra.html.core.HtmlInformationSet(info);
                     },
                     new HtmlItemUI()
@@ -372,7 +374,6 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     }
 
 //</editor-fold>
-    
 //<editor-fold defaultstate="collapsed" desc="PREPROCESSING-FORECASTS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3110)
     public static class ForecastsTable extends ProcDocumentItemFactory<TramoSeatsDocument, TsDocument> {
@@ -816,6 +817,33 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     }
 //</editor-fold>
 
+//<editor-fold defaultstate="collapsed" desc="BENCHMARKING">
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4900)
+    public static class BenchmarkingFactory extends ProcDocumentItemFactory<TramoSeatsDocument, BenchmarkingUI.Input> {
+
+        public BenchmarkingFactory() {
+            super(TramoSeatsDocument.class, SaViews.BENCHMARKING_SUMMARY, (TramoSeatsDocument doc) -> {
+                TramoSeatsResults rslt = doc.getResult();
+                if (rslt == null) {
+                    return null;
+                }
+                SaBenchmarkingResults benchmarking = rslt.getBenchmarking();
+                if (benchmarking == null) {
+                    return null;
+                }
+                boolean mul = rslt.getFinals().getMode().isMultiplicative();
+                return new BenchmarkingUI.Input(mul, benchmarking);
+            }, new BenchmarkingUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 4900;
+        }
+
+    }
+//</editor-fold>
+
 //<editor-fold defaultstate="collapsed" desc="DIAGNOSTICS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 5000)
     public static class DiagnosticsSummaryFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
@@ -1146,7 +1174,6 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     }
 
 //</editor-fold>
-    
 //<editor-fold defaultstate="collapsed" desc="REGISTER SLIDING SPANS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6300)
     public static class DiagnosticsSlidingSummaryFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
@@ -1188,30 +1215,28 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     }
 
     //</editor-fold>
-    
 //<editor-fold defaultstate="collapsed" desc="REGISTER REVISION HISTORY VIEW">
-    
-    private static Function<TramoSeatsDocument, RevisionHistoryUI.Information> revisionExtractor(String info, DiagnosticInfo diag){
+    private static Function<TramoSeatsDocument, RevisionHistoryUI.Information> revisionExtractor(String info, DiagnosticInfo diag) {
         return (TramoSeatsDocument source) -> {
-                TramoSeatsResults result = source.getResult();
-                if (result == null) {
-                    return null;
-                }
-                TsData input = source.getInput().getData();
-                TsDomain domain = input.getDomain();
-                TramoSeatsSpec pspec = TramoSeatsFactory.INSTANCE.generateSpec(source.getSpecification(), result);
-                TramoSeatsSpec nspec = TramoSeatsFactory.INSTANCE.refreshSpec(pspec, source.getSpecification(), DemetraSaUI.get().getEstimationPolicyType(), domain);
-                TramoSeatsKernel kernel = TramoSeatsKernel.of(nspec, source.getContext());
-                RevisionHistory<Explorable> rh = new RevisionHistory<>(domain, d -> kernel.process(TsData.fitToDomain(input, d), null));
-                return new RevisionHistoryUI.Information(info, diag, rh);
+            TramoSeatsResults result = source.getResult();
+            if (result == null) {
+                return null;
+            }
+            TsData input = source.getInput().getData();
+            TsDomain domain = input.getDomain();
+            TramoSeatsSpec pspec = TramoSeatsFactory.INSTANCE.generateSpec(source.getSpecification(), result);
+            TramoSeatsSpec nspec = TramoSeatsFactory.INSTANCE.refreshSpec(pspec, source.getSpecification(), DemetraSaUI.get().getEstimationPolicyType(), domain);
+            TramoSeatsKernel kernel = TramoSeatsKernel.of(nspec, source.getContext());
+            RevisionHistory<Explorable> rh = new RevisionHistory<>(domain, d -> kernel.process(TsData.fitToDomain(input, d), null));
+            return new RevisionHistoryUI.Information(info, diag, rh);
         };
     }
-    
+
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6410)
     public static class RevisionHistorySaFactory extends ProcDocumentItemFactory<TramoSeatsDocument, RevisionHistoryUI.Information> {
 
         public RevisionHistorySaFactory() {
-            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_REVISION_SA, revisionExtractor("sa", DiagnosticInfo.RelativeDifference) , new RevisionHistoryUI());
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_REVISION_SA, revisionExtractor("sa", DiagnosticInfo.RelativeDifference), new RevisionHistoryUI());
         }
 
         @Override
@@ -1224,7 +1249,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     public static class RevisionHistoryTrendFactory extends ProcDocumentItemFactory<TramoSeatsDocument, RevisionHistoryUI.Information> {
 
         public RevisionHistoryTrendFactory() {
-            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_REVISION_TREND, revisionExtractor("t", DiagnosticInfo.RelativeDifference) , new RevisionHistoryUI());
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_REVISION_TREND, revisionExtractor("t", DiagnosticInfo.RelativeDifference), new RevisionHistoryUI());
         }
 
         @Override
@@ -1237,7 +1262,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     public static class RevisionHistorySaChangesFactory extends ProcDocumentItemFactory<TramoSeatsDocument, RevisionHistoryUI.Information> {
 
         public RevisionHistorySaChangesFactory() {
-            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_REVISION_SA_CHANGES, revisionExtractor("sa", DiagnosticInfo.PeriodToPeriodGrowthDifference) , new RevisionHistoryUI());
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_REVISION_SA_CHANGES, revisionExtractor("sa", DiagnosticInfo.PeriodToPeriodGrowthDifference), new RevisionHistoryUI());
         }
 
         @Override
@@ -1250,7 +1275,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     public static class RevisionHistoryTrendChangesFactory extends ProcDocumentItemFactory<TramoSeatsDocument, RevisionHistoryUI.Information> {
 
         public RevisionHistoryTrendChangesFactory() {
-             super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_REVISION_TREND_CHANGES, revisionExtractor("t", DiagnosticInfo.PeriodToPeriodGrowthDifference) , new RevisionHistoryUI());
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_REVISION_TREND_CHANGES, revisionExtractor("t", DiagnosticInfo.PeriodToPeriodGrowthDifference), new RevisionHistoryUI());
         }
 
         @Override
@@ -1259,26 +1284,25 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         }
     }
     //</editor-fold>
-    
+
 //<editor-fold defaultstate="collapsed" desc="REGISTER STABILITY VIEWS">
-    
-    private static Function<TramoSeatsDocument, StabilityUI.Information> stabilityExtractor(EstimationPolicyType policy, String[] items, String msg){
+    private static Function<TramoSeatsDocument, StabilityUI.Information> stabilityExtractor(EstimationPolicyType policy, String[] items, String msg) {
         return (TramoSeatsDocument source) -> {
-                TramoSeatsResults result = source.getResult();
-                if (result == null) {
-                    return null;
-                }
-                TsData input = source.getInput().getData();
-                TsDomain domain = input.getDomain();
-                TramoSpec pspec = TramoFactory.INSTANCE.generateSpec(source.getSpecification().getTramo(), result.getPreprocessing().getDescription());
-                TramoSpec nspec = TramoFactory.INSTANCE.refreshSpec(pspec, source.getSpecification().getTramo(), policy, domain);
-                TramoKernel kernel = TramoKernel.of(nspec, source.getContext());
-                MovingProcessing<Explorable> mp=new MovingProcessing<>(domain, (TsDomain d)->kernel.process(TsData.fitToDomain(input, d), null));
-                mp.setWindowLength(DemetraSaUI.get().getStabilityLength()*input.getAnnualFrequency());
-                return new StabilityUI.Information(mp, items, msg);
+            TramoSeatsResults result = source.getResult();
+            if (result == null) {
+                return null;
+            }
+            TsData input = source.getInput().getData();
+            TsDomain domain = input.getDomain();
+            TramoSpec pspec = TramoFactory.INSTANCE.generateSpec(source.getSpecification().getTramo(), result.getPreprocessing().getDescription());
+            TramoSpec nspec = TramoFactory.INSTANCE.refreshSpec(pspec, source.getSpecification().getTramo(), policy, domain);
+            TramoKernel kernel = TramoKernel.of(nspec, source.getContext());
+            MovingProcessing<Explorable> mp = new MovingProcessing<>(domain, (TsDomain d) -> kernel.process(TsData.fitToDomain(input, d), null));
+            mp.setWindowLength(DemetraSaUI.get().getStabilityLength() * input.getAnnualFrequency());
+            return new StabilityUI.Information(mp, items, msg);
         };
     }
-    
+
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6510)
     public static class StabilityTDFactory extends ProcDocumentItemFactory<TramoSeatsDocument, StabilityUI.Information> {
 
@@ -1291,8 +1315,8 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         public int getPosition() {
             return 6510;
         }
-        
-        private static final String EXCEPTION="No information available on trading days !";
+
+        private static final String EXCEPTION = "No information available on trading days !";
         private static final String[] ITEMS = new String[]{
             "regression.td(1)",
             "regression.td(2)",
@@ -1306,14 +1330,14 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6520)
-    public static class StabilityEasterFactory extends ProcDocumentItemFactory<TramoSeatsDocument, StabilityUI.Information>  {
+    public static class StabilityEasterFactory extends ProcDocumentItemFactory<TramoSeatsDocument, StabilityUI.Information> {
 
         public StabilityEasterFactory() {
-           super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_STABILITY_EASTER,                    
-                   stabilityExtractor(DemetraSaUI.get().getEstimationPolicyType(), ITEMS, EXCEPTION), new StabilityUI());
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_STABILITY_EASTER,
+                    stabilityExtractor(DemetraSaUI.get().getEstimationPolicyType(), ITEMS, EXCEPTION), new StabilityUI());
         }
 
-        private static final String EXCEPTION="No information available on Easter effects !";
+        private static final String EXCEPTION = "No information available on Easter effects !";
         private static final String[] ITEMS = new String[]{
             "regression.easter"
         };
@@ -1325,24 +1349,24 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6530)
-    public static class StabilityArimaFactory extends ProcDocumentItemFactory<TramoSeatsDocument, StabilityUI.Information>  {
+    public static class StabilityArimaFactory extends ProcDocumentItemFactory<TramoSeatsDocument, StabilityUI.Information> {
 
         public StabilityArimaFactory() {
-           super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_STABILITY_ARIMA,
-                   stabilityExtractor(EstimationPolicyType.FreeParameters, ITEMS, EXCEPTION), new StabilityUI());
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_STABILITY_ARIMA,
+                    stabilityExtractor(EstimationPolicyType.FreeParameters, ITEMS, EXCEPTION), new StabilityUI());
         }
-        
+
         @Override
         public int getPosition() {
             return 6530;
         }
-        
-        private static final String EXCEPTION="No information available on the ARIMA model !";
+
+        private static final String EXCEPTION = "No information available on the ARIMA model !";
         private static final String[] ITEMS = new String[]{
             "arima.phi(1)", "arima.phi(2)", "arima.phi(3)", "arima.theta(1)", "arima.theta(2)", "arima.theta(3)",
             "arima.bphi(1)", "arima.btheta(1)"
         };
-        
+
     }
     //</editor-fold>
 }
