@@ -139,7 +139,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
         public SpecFactory() {
             super(X13Document.class, SaViews.INPUT_SPEC,
                     (X13Document doc) -> {
-                        InformationSet info = X13SpecMapping.write(doc.getSpecification(), true);
+                        InformationSet info = X13SpecMapping.write(doc.getSpecification(), doc.getInput().getData().getDomain(), true);
                         return new demetra.html.core.HtmlInformationSet(info);
                     },
                     new HtmlItemUI()

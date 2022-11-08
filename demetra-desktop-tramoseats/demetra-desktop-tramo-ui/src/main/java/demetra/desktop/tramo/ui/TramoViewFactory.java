@@ -78,7 +78,7 @@ public class TramoViewFactory extends ProcDocumentViewFactory<TramoDocument> {
         public SpecFactory() {
             super(TramoDocument.class, RegSarimaViews.INPUT_SPEC,
                     (TramoDocument doc) -> {
-                        InformationSet info = TramoSpecMapping.write(doc.getSpecification(), true);
+                        InformationSet info = TramoSpecMapping.write(doc.getSpecification(), doc.getInput().getData().getDomain(), true);
                         return new demetra.html.core.HtmlInformationSet(info);
                     },
                     new HtmlItemUI()

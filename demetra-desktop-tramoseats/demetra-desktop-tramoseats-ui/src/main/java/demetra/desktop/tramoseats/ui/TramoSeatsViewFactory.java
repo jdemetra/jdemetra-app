@@ -209,7 +209,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         public SpecFactory() {
             super(TramoSeatsDocument.class, SaViews.INPUT_SPEC,
                     (TramoSeatsDocument doc) -> {
-                        InformationSet info = TramoSeatsSpecMapping.write(doc.getSpecification(), true);
+                        InformationSet info = TramoSeatsSpecMapping.write(doc.getSpecification(), doc.getInput().getData().getDomain(), true);
                         return new demetra.html.core.HtmlInformationSet(info);
                     },
                     new HtmlItemUI()
