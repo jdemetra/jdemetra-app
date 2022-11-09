@@ -14,26 +14,26 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.x13.diagnostics.impl;
+package demetra.desktop.tramoseats.diagnostics.impl;
 
-import demetra.desktop.sa.diagnostics.SaOutOfSampleDiagnosticsBuddy;
-import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddy;
+import demetra.desktop.sa.diagnostics.SaOutliersDiagnosticsBuddy;
+import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddy;
 import demetra.sa.SaDiagnosticsFactory;
-import jdplus.sa.diagnostics.SaOutOfSampleDiagnosticsFactory;
-import jdplus.x13.X13Results;
+import jdplus.sa.diagnostics.SaOutliersDiagnosticsFactory;
+import jdplus.tramoseats.TramoSeatsResults;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author palatej
  */
-@ServiceProvider(service = X13DiagnosticsFactoryBuddy.class, position = 1130)
-public class X13OutOfSampleDiagnosticsBuddy extends SaOutOfSampleDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy {
+@ServiceProvider(service = TramoSeatsDiagnosticsFactoryBuddy.class, position = 1110)
+public class TramoSeatsOutliersDiagnosticsBuddy extends SaOutliersDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy {
 
     @Override
     public SaDiagnosticsFactory createFactory() {
-        return new SaOutOfSampleDiagnosticsFactory<>(config,
-                (X13Results r) -> r.getDiagnostics().getGenericDiagnostics().forecastingTest());
+        return new SaOutliersDiagnosticsFactory<>(config,
+                (TramoSeatsResults r) -> r.getPreprocessing());
     }
 
 }

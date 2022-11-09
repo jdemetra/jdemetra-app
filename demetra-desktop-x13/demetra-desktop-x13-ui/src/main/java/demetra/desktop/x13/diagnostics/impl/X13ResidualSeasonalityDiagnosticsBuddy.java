@@ -16,24 +16,21 @@
  */
 package demetra.desktop.x13.diagnostics.impl;
 
-import demetra.desktop.sa.diagnostics.SaOutOfSampleDiagnosticsBuddy;
+import demetra.desktop.sa.diagnostics.ResidualSeasonalityDiagnosticsBuddy;
 import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddy;
 import demetra.sa.SaDiagnosticsFactory;
-import jdplus.sa.diagnostics.SaOutOfSampleDiagnosticsFactory;
-import jdplus.x13.X13Results;
+import jdplus.sa.diagnostics.ResidualSeasonalityDiagnosticsFactory;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author palatej
  */
-@ServiceProvider(service = X13DiagnosticsFactoryBuddy.class, position = 1130)
-public class X13OutOfSampleDiagnosticsBuddy extends SaOutOfSampleDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy {
+@ServiceProvider(service = X13DiagnosticsFactoryBuddy.class, position = 1220)
+public class X13ResidualSeasonalityDiagnosticsBuddy extends ResidualSeasonalityDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy {
 
     @Override
     public SaDiagnosticsFactory createFactory() {
-        return new SaOutOfSampleDiagnosticsFactory<>(config,
-                (X13Results r) -> r.getDiagnostics().getGenericDiagnostics().forecastingTest());
+        return new ResidualSeasonalityDiagnosticsFactory(config);
     }
-
 }

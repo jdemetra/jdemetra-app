@@ -147,7 +147,6 @@ public abstract class SaOutOfSampleDiagnosticsBuddy implements SaDiagnosticsFact
             }).display("Test on variance").add();
             sheet.put(builder.build());
 
-            builder = new NodePropertySetBuilder();
             builder.reset("Thresholds");
             builder.withDouble().select("bad", config::getBadThreshold, d -> {
                 config = config.toBuilder().badThreshold(d).build();
@@ -157,7 +156,6 @@ public abstract class SaOutOfSampleDiagnosticsBuddy implements SaDiagnosticsFact
             }).display("Uncertain").add();
             sheet.put(builder.build());
 
-            builder = new NodePropertySetBuilder();
             builder.reset("Other");
             builder.withDouble().select("length", config::getOutOfSampleLength, d -> {
                 config = config.toBuilder().outOfSampleLength(d).build();
