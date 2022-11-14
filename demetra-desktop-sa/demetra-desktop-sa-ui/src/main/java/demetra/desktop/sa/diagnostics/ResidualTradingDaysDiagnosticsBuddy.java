@@ -17,21 +17,11 @@
 package demetra.desktop.sa.diagnostics;
 
 import demetra.desktop.Config;
-import demetra.desktop.ConfigEditor;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.Persistable;
-import demetra.desktop.actions.Configurable;
-import demetra.desktop.actions.Resetable;
-import demetra.desktop.beans.BeanConfigurator;
-import demetra.desktop.beans.BeanEditor;
-import demetra.desktop.beans.BeanHandler;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.sa.output.OutputFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
-import java.beans.IntrospectionException;
 import jdplus.sa.diagnostics.ResidualTradingDaysDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.ResidualTradingDaysDiagnosticsFactory;
 import nbbrd.io.text.DoubleProperty;
@@ -40,24 +30,44 @@ import nbbrd.io.text.DoubleProperty;
  *
  * @author Mats Maggi
  */
-public abstract class ResidualTradingDaysDiagnosticsBuddy implements SaDiagnosticsFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public class ResidualTradingDaysDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy<ResidualTradingDaysDiagnosticsConfiguration, ResidualTradingDaysDiagnosticsBuddy.Bean> {
 
-    private static final BeanConfigurator<ResidualTradingDaysDiagnosticsConfiguration, ResidualTradingDaysDiagnosticsBuddy> configurator = createConfigurator();
+    @lombok.Data
+    public static class Bean {
 
-    protected ResidualTradingDaysDiagnosticsConfiguration config = ResidualTradingDaysDiagnosticsConfiguration.getDefault();
+        private boolean active;
+        private double severeThreshold;
+        private double badThreshold;
+        private double uncertainThreshold;
 
-    @Override
-    public AbstractSaDiagnosticsNode createNode() {
-        return new ResidualTradingDaysDiagnosticsBuddy.ResidualTradingDaysDiagnosticsNode<>(config);
+        public static Bean of(ResidualTradingDaysDiagnosticsConfiguration config) {
+            Bean bean = new Bean();
+            bean.active = config.isActive();
+            bean.severeThreshold = config.getSevereThreshold();
+            bean.badThreshold = config.getBadThreshold();
+            bean.uncertainThreshold = config.getUncertainThreshold();
+            return bean;
+        }
+
+        public ResidualTradingDaysDiagnosticsConfiguration asCore() {
+            return ResidualTradingDaysDiagnosticsConfiguration.builder()
+                    .active(active)
+                    .severeThreshold(severeThreshold)
+                    .badThreshold(badThreshold)
+                    .uncertainThreshold(uncertainThreshold)
+                    .build();
+        }
+    }
+
+    private static final Converter<Bean, ResidualTradingDaysDiagnosticsConfiguration> BEANCONVERTER = new BeanConverter();
+
+    protected ResidualTradingDaysDiagnosticsBuddy() {
+        super(new ResidualTradingDaysDiagnosticsBuddy.CoreConverter(), BEANCONVERTER);
     }
 
     @Override
-    public AbstractSaDiagnosticsNode createNodeFor(SaDiagnosticsFactory fac) {
-        if (fac instanceof ResidualTradingDaysDiagnosticsFactory ofac) {
-            return new ResidualTradingDaysDiagnosticsBuddy.ResidualTradingDaysDiagnosticsNode(ofac.getConfiguration());
-        } else {
-            return null;
-        }
+    public AbstractSaDiagnosticsNode createNode() {
+        return new DiagnosticsNode(bean());
     }
 
     @Override
@@ -66,37 +76,30 @@ public abstract class ResidualTradingDaysDiagnosticsBuddy implements SaDiagnosti
     }
 
     @Override
-    public void configure() {
-        Configurable.configure(this, this);
-    }
-
-    @Override
-    public Config getConfig() {
-        return configurator.getConfig(this);
-    }
-
-    @Override
-    public void setConfig(Config config) throws IllegalArgumentException {
-        configurator.setConfig(this, config);
-    }
-
-    @Override
-    public Config editConfig(Config config) throws IllegalArgumentException {
-        return configurator.editConfig(config);
-    }
-
-    @Override
     public void reset() {
-        config = ResidualTradingDaysDiagnosticsConfiguration.getDefault();
+        setCore(ResidualTradingDaysDiagnosticsConfiguration.getDefault());
     }
 
-    static final class SaResidualTradingDaysDiagnosticsConverter implements Converter<ResidualTradingDaysDiagnosticsConfiguration, Config> {
+    static final class BeanConverter implements Converter<Bean, ResidualTradingDaysDiagnosticsConfiguration> {
+
+        @Override
+        public ResidualTradingDaysDiagnosticsConfiguration doForward(Bean a) {
+            return a.asCore();
+        }
+
+        @Override
+        public Bean doBackward(ResidualTradingDaysDiagnosticsConfiguration b) {
+            return Bean.of(b);
+        }
+    }
+
+    static final class CoreConverter implements Converter<ResidualTradingDaysDiagnosticsConfiguration, Config> {
 
         private final BooleanProperty activeParam = BooleanProperty.of("active", ResidualTradingDaysDiagnosticsConfiguration.ACTIVE);
         private final DoubleProperty severeParam = DoubleProperty.of("severeThreshold", ResidualTradingDaysDiagnosticsConfiguration.SEV);
         private final DoubleProperty badParam = DoubleProperty.of("badThreshold", ResidualTradingDaysDiagnosticsConfiguration.BAD);
         private final DoubleProperty uncertainParam = DoubleProperty.of("uncertainThreshold", ResidualTradingDaysDiagnosticsConfiguration.UNC);
- 
+
         @Override
         public Config doForward(ResidualTradingDaysDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv_Matrix", "");
@@ -118,10 +121,10 @@ public abstract class ResidualTradingDaysDiagnosticsBuddy implements SaDiagnosti
         }
     }
 
-    static class ResidualTradingDaysDiagnosticsNode<R> extends AbstractSaDiagnosticsNode<ResidualTradingDaysDiagnosticsConfiguration, R> {
+    static class DiagnosticsNode extends AbstractSaDiagnosticsNode<Bean> {
 
-        public ResidualTradingDaysDiagnosticsNode(ResidualTradingDaysDiagnosticsConfiguration config) {
-            super(config);
+        public DiagnosticsNode(Bean bean) {
+            super(bean);
         }
 
         @Override
@@ -130,50 +133,14 @@ public abstract class ResidualTradingDaysDiagnosticsBuddy implements SaDiagnosti
 
             NodePropertySetBuilder builder = new NodePropertySetBuilder();
             builder.reset("Behaviour");
-            builder.withBoolean().select("active", config::isActive, active -> activate(active)).display("Enabled").add();
+            builder.withBoolean().select(bean, "active").display("Enabled").add();
             sheet.put(builder.build());
             builder.reset("Thresholds");
-            builder.withDouble().select("severe", config::getSevereThreshold, d -> {
-                config = config.toBuilder().severeThreshold(d).build();
-            }).display("Severe").add();
-            builder.withDouble().select("bad", config::getBadThreshold, d -> {
-                config = config.toBuilder().badThreshold(d).build();
-            }).display("Bad").add();
-            builder.withDouble().select("uncertain", config::getUncertainThreshold, d -> {
-                config = config.toBuilder().uncertainThreshold(d).build();
-            }).display("Uncertain").add();
+            builder.withDouble().select(bean, "severeThreshold").display("Severe").add();
+            builder.withDouble().select(bean, "badThreshold").display("Bad").add();
+            builder.withDouble().select(bean, "uncertainThreshold").display("Uncertain").add();
             sheet.put(builder.build());
             return sheet;
         }
-    }
-
-    static final class Handler implements BeanHandler<ResidualTradingDaysDiagnosticsConfiguration, ResidualTradingDaysDiagnosticsBuddy> {
-
-        @Override
-        public ResidualTradingDaysDiagnosticsConfiguration load(ResidualTradingDaysDiagnosticsBuddy resource) {
-            return resource.config;
-        }
-
-        @Override
-        public void store(ResidualTradingDaysDiagnosticsBuddy resource, ResidualTradingDaysDiagnosticsConfiguration bean) {
-            resource.config = bean;
-        }
-    }
-
-    private static final class Editor implements BeanEditor {
-
-        @Override
-        public boolean editBean(Object bean) throws IntrospectionException {
-            return new PropertySheetDialogBuilder()
-                    .title("Edit residual trading days diagnostics")
-                    .editNode(new ResidualTradingDaysDiagnosticsBuddy.ResidualTradingDaysDiagnosticsNode<>((ResidualTradingDaysDiagnosticsConfiguration) bean));
-        }
-    }
-
-    private static BeanConfigurator<ResidualTradingDaysDiagnosticsConfiguration, ResidualTradingDaysDiagnosticsBuddy> createConfigurator() {
-        return new BeanConfigurator<>(new Handler(),
-                new ResidualTradingDaysDiagnosticsBuddy.SaResidualTradingDaysDiagnosticsConverter(),
-                new Editor()
-        );
     }
 }

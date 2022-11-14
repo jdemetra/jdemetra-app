@@ -19,7 +19,9 @@ package demetra.desktop.tramoseats.diagnostics.impl;
 import demetra.desktop.sa.diagnostics.SpectralDiagnosticsBuddy;
 import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddy;
 import demetra.sa.SaDiagnosticsFactory;
+import jdplus.sa.diagnostics.SpectralDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.SpectralDiagnosticsFactory;
+import jdplus.tramoseats.TramoSeatsResults;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -27,11 +29,15 @@ import org.openide.util.lookup.ServiceProvider;
  * @author palatej
  */
 @ServiceProvider(service = TramoSeatsDiagnosticsFactoryBuddy.class, position = 1210)
-public class TramoSeatsSpectralDiagnosticsBuddy extends SpectralDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy {
+public final class TramoSeatsSpectralDiagnosticsBuddy extends SpectralDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy<SpectralDiagnosticsConfiguration> {
 
+    public TramoSeatsSpectralDiagnosticsBuddy(){
+        this.setActiveDiagnosticsConfiguration(SpectralDiagnosticsConfiguration.getDefault());
+    }
+    
     @Override
-    public SaDiagnosticsFactory createFactory() {
-        return new SpectralDiagnosticsFactory<>(config);
+    public SpectralDiagnosticsFactory<TramoSeatsResults> createFactory() {
+        return new SpectralDiagnosticsFactory<>(this.getActiveDiagnosticsConfiguration());
     }
 
 }

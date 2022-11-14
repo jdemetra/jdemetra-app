@@ -17,23 +17,14 @@
 package demetra.desktop.x13.diagnostics.impl;
 
 import demetra.desktop.Config;
-import demetra.desktop.ConfigEditor;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.Persistable;
-import demetra.desktop.actions.Configurable;
-import demetra.desktop.actions.Resetable;
-import demetra.desktop.beans.BeanConfigurator;
-import demetra.desktop.beans.BeanEditor;
-import demetra.desktop.beans.BeanHandler;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
+import demetra.desktop.sa.diagnostics.AbstractSaDiagnosticsFactoryBuddy;
 import demetra.desktop.sa.diagnostics.AbstractSaDiagnosticsNode;
 import demetra.desktop.sa.output.OutputFactoryBuddy;
 import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
-import java.beans.IntrospectionException;
 import jdplus.x13.diagnostics.MDiagnosticsConfiguration;
 import jdplus.x13.diagnostics.MDiagnosticsFactory;
 import nbbrd.io.text.DoubleProperty;
@@ -44,28 +35,51 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Mats Maggi
  */
 @ServiceProvider(service = X13DiagnosticsFactoryBuddy.class, position = 1400)
-public class MDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public class MDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy<MDiagnosticsConfiguration, MDiagnosticsBuddy.Bean>
+        implements X13DiagnosticsFactoryBuddy<MDiagnosticsConfiguration> {
 
-    private static final BeanConfigurator<MDiagnosticsConfiguration, MDiagnosticsBuddy> configurator = createConfigurator();
+    @lombok.Data
+    public static class Bean {
 
-    protected MDiagnosticsConfiguration config = MDiagnosticsConfiguration.getDefault();
+        private boolean active;
+        private double severeThreshold;
+        private double badThreshold;
+        private boolean all;
+
+        public static Bean of(MDiagnosticsConfiguration config) {
+            Bean bean = new Bean();
+            bean.active = config.isActive();
+            bean.severeThreshold = config.getSevereThreshold();
+            bean.badThreshold = config.getBadThreshold();
+            bean.all = config.isAll();
+            return bean;
+        }
+
+        public MDiagnosticsConfiguration asCore() {
+            return MDiagnosticsConfiguration.builder()
+                    .active(active)
+                    .severeThreshold(severeThreshold)
+                    .badThreshold(badThreshold)
+                    .all(all)
+                    .build();
+        }
+    }
+
+    private static final Converter<Bean, MDiagnosticsConfiguration> BEANCONVERTER = new BeanConverter();
+
+    public MDiagnosticsBuddy() {
+        super(new CoreConverter(), BEANCONVERTER);
+        this.setActiveDiagnosticsConfiguration(MDiagnosticsConfiguration.getDefault());
+    }
 
     @Override
-    public SaDiagnosticsFactory createFactory() {
-        return new MDiagnosticsFactory(config);
+    public MDiagnosticsFactory createFactory() {
+        return new MDiagnosticsFactory(this.getActiveDiagnosticsConfiguration());
     }
+
     @Override
     public AbstractSaDiagnosticsNode createNode() {
-        return new MDiagnosticsBuddy.MDiagnosticsNode<>(config);
-    }
-
-    @Override
-    public AbstractSaDiagnosticsNode createNodeFor(SaDiagnosticsFactory fac) {
-        if (fac instanceof MDiagnosticsFactory ofac) {
-            return new MDiagnosticsBuddy.MDiagnosticsNode(ofac.getConfiguration());
-        } else {
-            return null;
-        }
+        return new DiagnosticsNode(bean());
     }
 
     @Override
@@ -74,37 +88,30 @@ public class MDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy, Configurab
     }
 
     @Override
-    public void configure() {
-        Configurable.configure(this, this);
-    }
-
-    @Override
-    public Config getConfig() {
-        return configurator.getConfig(this);
-    }
-
-    @Override
-    public void setConfig(Config config) throws IllegalArgumentException {
-        configurator.setConfig(this, config);
-    }
-
-    @Override
-    public Config editConfig(Config config) throws IllegalArgumentException {
-        return configurator.editConfig(config);
-    }
-
-    @Override
     public void reset() {
-        config = MDiagnosticsConfiguration.getDefault();
+        setCore(MDiagnosticsConfiguration.getDefault());
     }
 
-    static final class MDiagnosticsConverter implements Converter<MDiagnosticsConfiguration, Config> {
+    static final class BeanConverter implements Converter<Bean, MDiagnosticsConfiguration> {
+
+        @Override
+        public MDiagnosticsConfiguration doForward(Bean a) {
+            return a.asCore();
+        }
+
+        @Override
+        public Bean doBackward(MDiagnosticsConfiguration b) {
+            return Bean.of(b);
+        }
+    }
+
+    static final class CoreConverter implements Converter<MDiagnosticsConfiguration, Config> {
 
         private final BooleanProperty activeParam = BooleanProperty.of("active", MDiagnosticsConfiguration.ACTIVE);
         private final DoubleProperty severeParam = DoubleProperty.of("severeThreshold", MDiagnosticsConfiguration.SEVERE);
         private final DoubleProperty badParam = DoubleProperty.of("badThreshold", MDiagnosticsConfiguration.BAD);
         private final BooleanProperty allParam = BooleanProperty.of("all", MDiagnosticsConfiguration.ALL);
- 
+
         @Override
         public Config doForward(MDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv_Matrix", "");
@@ -126,10 +133,10 @@ public class MDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy, Configurab
         }
     }
 
-    static class MDiagnosticsNode<R> extends AbstractSaDiagnosticsNode<MDiagnosticsConfiguration, R> {
+    static class DiagnosticsNode extends AbstractSaDiagnosticsNode<Bean> {
 
-        public MDiagnosticsNode(MDiagnosticsConfiguration config) {
-            super(config);
+        public DiagnosticsNode(Bean bean) {
+            super(bean);
         }
 
         @Override
@@ -138,50 +145,15 @@ public class MDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy, Configurab
 
             NodePropertySetBuilder builder = new NodePropertySetBuilder();
             builder.reset("Behaviour");
-            builder.withBoolean().select("active", config::isActive, active -> activate(active)).display("Enabled").add();
+            builder.withBoolean().select(bean, "active").display("Enabled").add();
             sheet.put(builder.build());
-            builder.withBoolean().select("all", config::isAll, b -> {
-                config = config.toBuilder().all(b).build();
-            }).display("All").add();
+            builder.withBoolean().select(bean, "all").display("All").add();
             builder.reset("Thresholds");
-            builder.withDouble().select("severe", config::getSevereThreshold, d -> {
-                config = config.toBuilder().severeThreshold(d).build();
-            }).display("Severe").add();
-            builder.withDouble().select("bad", config::getBadThreshold, d -> {
-                config = config.toBuilder().badThreshold(d).build();
-            }).display("Bad").add();
+            builder.withDouble().select(bean, "severeThreshold").display("Severe").add();
+            builder.withDouble().select(bean, "badThreshold").display("Bad").add();
             sheet.put(builder.build());
             return sheet;
         }
     }
 
-    static final class Handler implements BeanHandler<MDiagnosticsConfiguration, MDiagnosticsBuddy> {
-
-        @Override
-        public MDiagnosticsConfiguration load(MDiagnosticsBuddy resource) {
-            return resource.config;
-        }
-
-        @Override
-        public void store(MDiagnosticsBuddy resource, MDiagnosticsConfiguration bean) {
-            resource.config = bean;
-        }
-    }
-
-    private static final class Editor implements BeanEditor {
-
-        @Override
-        public boolean editBean(Object bean) throws IntrospectionException {
-            return new PropertySheetDialogBuilder()
-                    .title("Edit M-diagnostics")
-                    .editNode(new MDiagnosticsBuddy.MDiagnosticsNode<>((MDiagnosticsConfiguration) bean));
-        }
-    }
-
-    private static BeanConfigurator<MDiagnosticsConfiguration, MDiagnosticsBuddy> createConfigurator() {
-        return new BeanConfigurator<>(new Handler(),
-                new MDiagnosticsBuddy.MDiagnosticsConverter(),
-                new Editor()
-        );
-    }
 }

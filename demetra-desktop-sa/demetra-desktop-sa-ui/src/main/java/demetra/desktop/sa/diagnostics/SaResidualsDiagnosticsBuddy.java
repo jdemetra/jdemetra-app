@@ -17,21 +17,10 @@
 package demetra.desktop.sa.diagnostics;
 
 import demetra.desktop.Config;
-import demetra.desktop.ConfigEditor;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.Persistable;
-import demetra.desktop.actions.Configurable;
-import demetra.desktop.actions.Resetable;
-import demetra.desktop.beans.BeanConfigurator;
-import demetra.desktop.beans.BeanEditor;
-import demetra.desktop.beans.BeanHandler;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
-import demetra.desktop.sa.output.OutputFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
-import java.beans.IntrospectionException;
 import jdplus.regarima.diagnostics.ResidualsDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.SaResidualsDiagnosticsFactory;
 import nbbrd.io.text.DoubleProperty;
@@ -40,24 +29,57 @@ import nbbrd.io.text.DoubleProperty;
  *
  * @author Mats Maggi
  */
-public abstract class SaResidualsDiagnosticsBuddy implements SaDiagnosticsFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public class SaResidualsDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy<ResidualsDiagnosticsConfiguration, SaResidualsDiagnosticsBuddy.Bean> {
 
-    private static final BeanConfigurator<ResidualsDiagnosticsConfiguration, SaResidualsDiagnosticsBuddy> configurator = createConfigurator();
+    @lombok.Data
+    public static class Bean {
 
-    protected ResidualsDiagnosticsConfiguration config = ResidualsDiagnosticsConfiguration.getDefault();
+        private boolean active;
+        private double badThresholdForNormality, uncertainThresholdForNormality;
+        private double severeThresholdForTradingDaysPeak, badThresholdForTradingDaysPeak,
+                uncertainThresholdForTradingDaysPeak;
+        private double severeThresholdForSeasonalPeaks,
+                badThresholdForSeasonalPeaks,
+                uncertainThresholdForSeasonalPeaks;
 
-    @Override
-    public AbstractSaDiagnosticsNode createNode() {
-        return new SaResidualsDiagnosticsBuddy.ResidualsDiagnosticsNode<>(config);
+        static Bean of(ResidualsDiagnosticsConfiguration config) {
+            Bean bean = new Bean();
+            bean.active = config.isActive();
+            bean.badThresholdForNormality = config.getBadThresholdForNormality();
+            bean.uncertainThresholdForNormality = config.getUncertainThresholdForNormality();
+            bean.severeThresholdForSeasonalPeaks = config.getSevereThresholdForSeasonalPeaks();
+            bean.badThresholdForSeasonalPeaks = config.getUncertainThresholdForSeasonalPeaks();
+            bean.uncertainThresholdForSeasonalPeaks = config.getUncertainThresholdForSeasonalPeaks();
+            bean.severeThresholdForTradingDaysPeak = config.getBadThresholdForTradingDaysPeak();
+            bean.badThresholdForTradingDaysPeak = config.getBadThresholdForTradingDaysPeak();
+            bean.uncertainThresholdForTradingDaysPeak = config.getUncertainThresholdForTradingDaysPeak();
+            return bean;
+        }
+
+        ResidualsDiagnosticsConfiguration asCore() {
+            return ResidualsDiagnosticsConfiguration.builder()
+                    .active(active)
+                    .badThresholdForNormality(badThresholdForNormality)
+                    .uncertainThresholdForNormality(uncertainThresholdForNormality)
+                    .severeThresholdForSeasonalPeaks(severeThresholdForSeasonalPeaks)
+                    .badThresholdForSeasonalPeaks(badThresholdForSeasonalPeaks)
+                    .uncertainThresholdForSeasonalPeaks(uncertainThresholdForSeasonalPeaks)
+                    .severeThresholdForTradingDaysPeak(severeThresholdForTradingDaysPeak)
+                    .badThresholdForTradingDaysPeak(badThresholdForTradingDaysPeak)
+                    .uncertainThresholdForTradingDaysPeak(uncertainThresholdForTradingDaysPeak)
+                    .build();
+        }
+    }
+
+    private static final Converter<Bean, ResidualsDiagnosticsConfiguration> BEANCONVERTER = new BeanConverter();
+
+    protected SaResidualsDiagnosticsBuddy() {
+        super(new CoreConverter(), BEANCONVERTER);
     }
 
     @Override
-    public AbstractSaDiagnosticsNode createNodeFor(SaDiagnosticsFactory fac) {
-        if (fac instanceof SaResidualsDiagnosticsFactory ofac) {
-            return new SaResidualsDiagnosticsBuddy.ResidualsDiagnosticsNode(ofac.getConfiguration());
-        } else {
-            return null;
-        }
+    public AbstractSaDiagnosticsNode createNode() {
+        return new DiagnosticsNode(bean());
     }
 
     @Override
@@ -66,31 +88,24 @@ public abstract class SaResidualsDiagnosticsBuddy implements SaDiagnosticsFactor
     }
 
     @Override
-    public void configure() {
-        Configurable.configure(this, this);
-    }
-
-    @Override
-    public Config getConfig() {
-        return configurator.getConfig(this);
-    }
-
-    @Override
-    public void setConfig(Config config) throws IllegalArgumentException {
-        configurator.setConfig(this, config);
-    }
-
-    @Override
-    public Config editConfig(Config config) throws IllegalArgumentException {
-        return configurator.editConfig(config);
-    }
-
-    @Override
     public void reset() {
-        config = ResidualsDiagnosticsConfiguration.getDefault();
+        setCore(ResidualsDiagnosticsConfiguration.getDefault());
     }
 
-    static final class SaResidualsDiagnosticsConverter implements Converter<ResidualsDiagnosticsConfiguration, Config> {
+    static final class BeanConverter implements Converter<Bean, ResidualsDiagnosticsConfiguration> {
+
+        @Override
+        public ResidualsDiagnosticsConfiguration doForward(Bean a) {
+            return a.asCore();
+        }
+
+        @Override
+        public Bean doBackward(ResidualsDiagnosticsConfiguration b) {
+            return Bean.of(b);
+        }
+    }
+
+    static final class CoreConverter implements Converter<ResidualsDiagnosticsConfiguration, Config> {
 
         private final BooleanProperty activeParam = BooleanProperty.of("active", ResidualsDiagnosticsConfiguration.ACTIVE);
         private final DoubleProperty nBadParam = DoubleProperty.of("badNormalityThreshold", ResidualsDiagnosticsConfiguration.NBAD);
@@ -104,7 +119,7 @@ public abstract class SaResidualsDiagnosticsBuddy implements SaDiagnosticsFactor
 
         @Override
         public Config doForward(ResidualsDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv_Matrix", "");
+            Config.Builder result = Config.builder("diagnostics", this.getClass().getName(), "");
             activeParam.set(result::parameter, a.isActive());
             nBadParam.set(result::parameter, a.getBadThresholdForNormality());
             nUncertainParam.set(result::parameter, a.getUncertainThresholdForNormality());
@@ -133,10 +148,10 @@ public abstract class SaResidualsDiagnosticsBuddy implements SaDiagnosticsFactor
         }
     }
 
-    static class ResidualsDiagnosticsNode<R> extends AbstractSaDiagnosticsNode<ResidualsDiagnosticsConfiguration, R> {
+    static class DiagnosticsNode extends AbstractSaDiagnosticsNode<Bean> {
 
-        public ResidualsDiagnosticsNode(ResidualsDiagnosticsConfiguration config) {
-            super(config);
+        public DiagnosticsNode(Bean bean) {
+            super(bean);
         }
 
         @Override
@@ -145,56 +160,41 @@ public abstract class SaResidualsDiagnosticsBuddy implements SaDiagnosticsFactor
 
             NodePropertySetBuilder builder = new NodePropertySetBuilder();
             builder.reset("Behaviour");
-            builder.withBoolean().select("active", config::isActive, active -> activate(active)).display("Enabled").add();
+            builder.withBoolean().select(bean, "active").display("Enabled").add();
             sheet.put(builder.build());
             builder.reset("Normality");
             builder.withDouble()
-                    .select("nbad", config::getBadThresholdForNormality, d -> {
-                config = config.toBuilder().badThresholdForNormality(d).build();
-            })
+                    .select(bean, "badThresholdForNormality")
                     .display("Bad")
                     .add();
-            builder.withDouble().select("nuncertain", config::getUncertainThresholdForNormality, d -> {
-                config = config.toBuilder().uncertainThresholdForNormality(d).build();
-            })
-                    .display("Uncertain")
-                    .add();
-            sheet.put(builder.build());
-            builder.reset("Trading days");
             builder.withDouble()
-                    .select("tdsevere", config::getSevereThresholdForTradingDaysPeak, d -> {
-                config = config.toBuilder().severeThresholdForTradingDaysPeak(d).build();
-            })
-                    .display("Severe")
-                    .add();
-            builder.withDouble()
-                    .select("tdbad", config::getBadThresholdForTradingDaysPeak, d -> {
-                config = config.toBuilder().badThresholdForTradingDaysPeak(d).build();
-            })
-                    .display("Bad")
-                    .add();
-            builder.withDouble().select("tduncertain", config::getUncertainThresholdForTradingDaysPeak, d -> {
-                config = config.toBuilder().uncertainThresholdForTradingDaysPeak(d).build();
-            })
+                    .select(bean, "uncertainThresholdForNormality")
                     .display("Uncertain")
                     .add();
             sheet.put(builder.build());
             builder.reset("Seasonal");
             builder.withDouble()
-                    .select("ssevere", config::getSevereThresholdForSeasonalPeaks, d -> {
-                config = config.toBuilder().severeThresholdForTradingDaysPeak(d).build();
-            })
+                    .select(bean, "severeThresholdForSeasonalPeaks")
                     .display("Severe")
                     .add();
             builder.withDouble()
-                    .select("sbad", config::getBadThresholdForSeasonalPeaks, d -> {
-                config = config.toBuilder().badThresholdForSeasonalPeaks(d).build();
-            })
+                    .select(bean, "badThresholdForSeasonalPeaks")
                     .display("Bad")
                     .add();
-            builder.withDouble().select("suncertain", config::getUncertainThresholdForSeasonalPeaks, d -> {
-                config = config.toBuilder().uncertainThresholdForSeasonalPeaks(d).build();
-            })
+            builder.withDouble().select(bean, "uncertainThresholdForSeasonalPeaks")
+                    .display("Uncertain")
+                    .add();
+            sheet.put(builder.build());
+            builder.reset("Trading days");
+            builder.withDouble()
+                    .select(bean, "severeThresholdForTradingDaysPeak")
+                    .display("Severe")
+                    .add();
+            builder.withDouble()
+                    .select(bean, "badThresholdForTradingDaysPeak")
+                    .display("Bad")
+                    .add();
+            builder.withDouble().select(bean, "uncertainThresholdForTradingDaysPeak")
                     .display("Uncertain")
                     .add();
             sheet.put(builder.build());
@@ -203,33 +203,4 @@ public abstract class SaResidualsDiagnosticsBuddy implements SaDiagnosticsFactor
         }
     }
 
-    static final class Handler implements BeanHandler<ResidualsDiagnosticsConfiguration, SaResidualsDiagnosticsBuddy> {
-
-        @Override
-        public ResidualsDiagnosticsConfiguration load(SaResidualsDiagnosticsBuddy resource) {
-            return resource.config;
-        }
-
-        @Override
-        public void store(SaResidualsDiagnosticsBuddy resource, ResidualsDiagnosticsConfiguration bean) {
-            resource.config = bean;
-        }
-    }
-
-    private static final class Editor implements BeanEditor {
-
-        @Override
-        public boolean editBean(Object bean) throws IntrospectionException {
-            return new PropertySheetDialogBuilder()
-                    .title("Edit diagnostics on residuals")
-                    .editNode(new SaResidualsDiagnosticsBuddy.ResidualsDiagnosticsNode<>((ResidualsDiagnosticsConfiguration) bean));
-        }
-    }
-
-    private static BeanConfigurator<ResidualsDiagnosticsConfiguration, SaResidualsDiagnosticsBuddy> createConfigurator() {
-        return new BeanConfigurator<>(new Handler(),
-                new SaResidualsDiagnosticsBuddy.SaResidualsDiagnosticsConverter(),
-                new Editor()
-        );
-    }
 }

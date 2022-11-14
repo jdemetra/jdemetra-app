@@ -19,7 +19,9 @@ package demetra.desktop.tramoseats.diagnostics.impl;
 import demetra.desktop.sa.diagnostics.ResidualSeasonalityDiagnosticsBuddy;
 import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddy;
 import demetra.sa.SaDiagnosticsFactory;
+import jdplus.sa.diagnostics.ResidualSeasonalityDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.ResidualSeasonalityDiagnosticsFactory;
+import jdplus.tramoseats.TramoSeatsResults;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -27,11 +29,15 @@ import org.openide.util.lookup.ServiceProvider;
  * @author palatej
  */
 @ServiceProvider(service = TramoSeatsDiagnosticsFactoryBuddy.class, position = 1220)
-public class TramoSeatsResidualSeasonalityDiagnosticsBuddy extends ResidualSeasonalityDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy {
+public final class TramoSeatsResidualSeasonalityDiagnosticsBuddy extends ResidualSeasonalityDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy<ResidualSeasonalityDiagnosticsConfiguration> {
+
+    public TramoSeatsResidualSeasonalityDiagnosticsBuddy() {
+        this.setActiveDiagnosticsConfiguration(ResidualSeasonalityDiagnosticsConfiguration.getDefault());
+    }
 
     @Override
-    public SaDiagnosticsFactory createFactory() {
-        return new ResidualSeasonalityDiagnosticsFactory(config);
+    public ResidualSeasonalityDiagnosticsFactory<TramoSeatsResults> createFactory() {
+        return new ResidualSeasonalityDiagnosticsFactory<>(this.getActiveDiagnosticsConfiguration());
     }
 
 }

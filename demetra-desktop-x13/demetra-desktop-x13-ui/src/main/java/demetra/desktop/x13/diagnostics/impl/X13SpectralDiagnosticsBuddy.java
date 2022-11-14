@@ -19,7 +19,9 @@ package demetra.desktop.x13.diagnostics.impl;
 import demetra.desktop.sa.diagnostics.SpectralDiagnosticsBuddy;
 import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddy;
 import demetra.sa.SaDiagnosticsFactory;
+import jdplus.sa.diagnostics.SpectralDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.SpectralDiagnosticsFactory;
+import jdplus.x13.X13Results;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -27,11 +29,15 @@ import org.openide.util.lookup.ServiceProvider;
  * @author palatej
  */
 @ServiceProvider(service = X13DiagnosticsFactoryBuddy.class, position = 1210)
-public class X13SpectralDiagnosticsBuddy extends SpectralDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy {
+public final class X13SpectralDiagnosticsBuddy extends SpectralDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy<SpectralDiagnosticsConfiguration> {
 
+    public X13SpectralDiagnosticsBuddy(){
+        this.setActiveDiagnosticsConfiguration(SpectralDiagnosticsConfiguration.getDefault());
+    }
+    
     @Override
-    public SaDiagnosticsFactory createFactory() {
-        return new SpectralDiagnosticsFactory<>(config);
+    public SpectralDiagnosticsFactory<X13Results> createFactory() {
+        return new SpectralDiagnosticsFactory<>(this.getActiveDiagnosticsConfiguration());
     }
 
 }

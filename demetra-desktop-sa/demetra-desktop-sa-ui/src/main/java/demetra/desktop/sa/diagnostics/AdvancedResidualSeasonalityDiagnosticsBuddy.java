@@ -17,21 +17,11 @@
 package demetra.desktop.sa.diagnostics;
 
 import demetra.desktop.Config;
-import demetra.desktop.ConfigEditor;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.Persistable;
-import demetra.desktop.actions.Configurable;
-import demetra.desktop.actions.Resetable;
-import demetra.desktop.beans.BeanConfigurator;
-import demetra.desktop.beans.BeanEditor;
-import demetra.desktop.beans.BeanHandler;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.sa.output.OutputFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
-import java.beans.IntrospectionException;
 import jdplus.regarima.diagnostics.OutliersDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.AdvancedResidualSeasonalityDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.AdvancedResidualSeasonalityDiagnosticsFactory;
@@ -41,24 +31,51 @@ import nbbrd.io.text.DoubleProperty;
  *
  * @author Mats Maggi
  */
-public abstract class AdvancedResidualSeasonalityDiagnosticsBuddy implements SaDiagnosticsFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public class AdvancedResidualSeasonalityDiagnosticsBuddy
+        extends AbstractSaDiagnosticsFactoryBuddy<AdvancedResidualSeasonalityDiagnosticsConfiguration, AdvancedResidualSeasonalityDiagnosticsBuddy.Bean> {
 
-    private static final BeanConfigurator<AdvancedResidualSeasonalityDiagnosticsConfiguration, AdvancedResidualSeasonalityDiagnosticsBuddy> configurator = createConfigurator();
+    @lombok.Data
+    public static final class Bean {
 
-    protected AdvancedResidualSeasonalityDiagnosticsConfiguration config = AdvancedResidualSeasonalityDiagnosticsConfiguration.getDefault();
+        private boolean active;
+        private double severeThreshold;
+        private double badThreshold;
+        private double uncertainThreshold;
+        private boolean qs;
+        private boolean ftest;
 
-    @Override
-    public AbstractSaDiagnosticsNode createNode() {
-        return new AdvancedResidualSeasonalityDiagnosticsBuddy.AdvancedResidualSeasonalityDiagnosticsNode<>(config);
+        static Bean of(AdvancedResidualSeasonalityDiagnosticsConfiguration config) {
+            Bean bean = new Bean();
+            bean.active = config.isActive();
+            bean.severeThreshold = config.getSevereThreshold();
+            bean.badThreshold = config.getBadThreshold();
+            bean.uncertainThreshold = config.getUncertainThreshold();
+            bean.qs = config.isQs();
+            bean.ftest = config.isFtest();
+            return bean;
+        }
+
+        AdvancedResidualSeasonalityDiagnosticsConfiguration asCore() {
+            return AdvancedResidualSeasonalityDiagnosticsConfiguration.builder()
+                    .active(active)
+                    .severeThreshold(severeThreshold)
+                    .badThreshold(badThreshold)
+                    .uncertainThreshold(uncertainThreshold)
+                    .qs(qs)
+                    .ftest(ftest)
+                    .build();
+        }
+    }
+    
+    private static final Converter<Bean, AdvancedResidualSeasonalityDiagnosticsConfiguration> BEANCONVERTER=new BeanConverter();
+            
+    protected AdvancedResidualSeasonalityDiagnosticsBuddy() {
+        super(new CoreConverter(), BEANCONVERTER);
     }
 
     @Override
-    public AbstractSaDiagnosticsNode createNodeFor(SaDiagnosticsFactory fac) {
-        if (fac instanceof AdvancedResidualSeasonalityDiagnosticsFactory ofac) {
-            return new AdvancedResidualSeasonalityDiagnosticsBuddy.AdvancedResidualSeasonalityDiagnosticsNode(ofac.getConfiguration());
-        } else {
-            return null;
-        }
+    public AbstractSaDiagnosticsNode createNode() {
+        return new DiagnosticsNode(bean());
     }
 
     @Override
@@ -67,31 +84,25 @@ public abstract class AdvancedResidualSeasonalityDiagnosticsBuddy implements SaD
     }
 
     @Override
-    public void configure() {
-        Configurable.configure(this, this);
-    }
-
-    @Override
-    public Config getConfig() {
-        return configurator.getConfig(this);
-    }
-
-    @Override
-    public void setConfig(Config config) throws IllegalArgumentException {
-        configurator.setConfig(this, config);
-    }
-
-    @Override
-    public Config editConfig(Config config) throws IllegalArgumentException {
-        return configurator.editConfig(config);
-    }
-
-    @Override
     public void reset() {
-        config = AdvancedResidualSeasonalityDiagnosticsConfiguration.getDefault();
+        setCore(AdvancedResidualSeasonalityDiagnosticsConfiguration.getDefault());
+    }
+    
+    static final class BeanConverter implements Converter<Bean, AdvancedResidualSeasonalityDiagnosticsConfiguration>{
+
+        @Override
+        public AdvancedResidualSeasonalityDiagnosticsConfiguration doForward(Bean a) {
+            return a.asCore();
+        }
+
+        @Override
+        public Bean doBackward(AdvancedResidualSeasonalityDiagnosticsConfiguration b) {
+            return Bean.of(b);
+        }
+
     }
 
-    static final class SaAdvancedResidualSeasonalityDiagnosticsConverter implements Converter<AdvancedResidualSeasonalityDiagnosticsConfiguration, Config> {
+    static final class CoreConverter implements Converter<AdvancedResidualSeasonalityDiagnosticsConfiguration, Config> {
 
         private final BooleanProperty activeParam = BooleanProperty.of("active", AdvancedResidualSeasonalityDiagnosticsConfiguration.ACTIVE);
         private final DoubleProperty severeParam = DoubleProperty.of("severeThreshold", OutliersDiagnosticsConfiguration.SEV);
@@ -125,10 +136,10 @@ public abstract class AdvancedResidualSeasonalityDiagnosticsBuddy implements SaD
         }
     }
 
-    static class AdvancedResidualSeasonalityDiagnosticsNode<R> extends AbstractSaDiagnosticsNode<AdvancedResidualSeasonalityDiagnosticsConfiguration, R> {
+    static class DiagnosticsNode extends AbstractSaDiagnosticsNode<Bean> {
 
-        public AdvancedResidualSeasonalityDiagnosticsNode(AdvancedResidualSeasonalityDiagnosticsConfiguration config) {
-            super(config);
+        public DiagnosticsNode(Bean bean) {
+            super(bean);
         }
 
         @Override
@@ -138,42 +149,32 @@ public abstract class AdvancedResidualSeasonalityDiagnosticsBuddy implements SaD
             NodePropertySetBuilder builder = new NodePropertySetBuilder();
             builder.reset("Behaviour");
             builder.withBoolean()
-                    .select("active", config::isActive, active -> activate(active))
+                    .select(bean, "active")
                     .display("Enabled")
                     .add();
             sheet.put(builder.build());
             builder.reset("Tests");
             builder.withBoolean()
-                    .select("qs", config::isQs, ok -> {
-                config = config.toBuilder().qs(ok).build();
-            })
+                    .select(bean, "qs")
                     .display("QS test")
                     .add();
             builder.withBoolean()
-                    .select("ftest", config::isFtest, ok -> {
-                config = config.toBuilder().ftest(ok).build();
-            })
+                    .select(bean, "ftest")
                     .display("F Test on seas. dummies")
                     .add();
             sheet.put(builder.build());
 
             builder.reset("Thresholds");
             builder.withDouble()
-                    .select("severe", config::getSevereThreshold, d -> {
-                config = config.toBuilder().severeThreshold(d).build();
-            })
+                    .select(bean, "severeThreshold")
                     .display("Severe")
                     .add();
             builder.withDouble()
-                    .select("bad", config::getBadThreshold, d -> {
-                config = config.toBuilder().badThreshold(d).build();
-            })
+                    .select(bean, "badThreshold")
                     .display("Bad")
                     .add();
             builder.withDouble()
-                    .select("uncertain", config::getUncertainThreshold, d -> {
-                config = config.toBuilder().uncertainThreshold(d).build();
-            })
+                    .select(bean, "uncertainThreshold")
                     .display("Uncertain")
                     .add();
             sheet.put(builder.build());
@@ -182,33 +183,4 @@ public abstract class AdvancedResidualSeasonalityDiagnosticsBuddy implements SaD
         }
     }
 
-    static final class Handler implements BeanHandler<AdvancedResidualSeasonalityDiagnosticsConfiguration, AdvancedResidualSeasonalityDiagnosticsBuddy> {
-
-        @Override
-        public AdvancedResidualSeasonalityDiagnosticsConfiguration load(AdvancedResidualSeasonalityDiagnosticsBuddy resource) {
-            return resource.config;
-        }
-
-        @Override
-        public void store(AdvancedResidualSeasonalityDiagnosticsBuddy resource, AdvancedResidualSeasonalityDiagnosticsConfiguration bean) {
-            resource.config = bean;
-        }
-    }
-
-    private static final class Editor implements BeanEditor {
-
-        @Override
-        public boolean editBean(Object bean) throws IntrospectionException {
-            return new PropertySheetDialogBuilder()
-                    .title("Edit advanced reisdual seasoanlity diagnostics")
-                    .editNode(new AdvancedResidualSeasonalityDiagnosticsBuddy.AdvancedResidualSeasonalityDiagnosticsNode<>((AdvancedResidualSeasonalityDiagnosticsConfiguration) bean));
-        }
-    }
-
-    private static BeanConfigurator<AdvancedResidualSeasonalityDiagnosticsConfiguration, AdvancedResidualSeasonalityDiagnosticsBuddy> createConfigurator() {
-        return new BeanConfigurator<>(new Handler(),
-                new AdvancedResidualSeasonalityDiagnosticsBuddy.SaAdvancedResidualSeasonalityDiagnosticsConverter(),
-                new Editor()
-        );
-    }
 }

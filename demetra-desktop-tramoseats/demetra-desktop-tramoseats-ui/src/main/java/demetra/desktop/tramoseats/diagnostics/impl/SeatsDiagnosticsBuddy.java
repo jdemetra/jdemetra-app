@@ -17,23 +17,14 @@
 package demetra.desktop.tramoseats.diagnostics.impl;
 
 import demetra.desktop.Config;
-import demetra.desktop.ConfigEditor;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.Persistable;
-import demetra.desktop.actions.Configurable;
-import demetra.desktop.actions.Resetable;
-import demetra.desktop.beans.BeanConfigurator;
-import demetra.desktop.beans.BeanEditor;
-import demetra.desktop.beans.BeanHandler;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
+import demetra.desktop.sa.diagnostics.AbstractSaDiagnosticsFactoryBuddy;
 import demetra.desktop.sa.diagnostics.AbstractSaDiagnosticsNode;
 import demetra.desktop.sa.output.OutputFactoryBuddy;
 import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
-import java.beans.IntrospectionException;
 import jdplus.seats.diagnostics.SeatsDiagnosticsConfiguration;
 import jdplus.seats.diagnostics.SeatsDiagnosticsFactory;
 import jdplus.tramoseats.TramoSeatsResults;
@@ -45,28 +36,48 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Mats Maggi
  */
 @ServiceProvider(service = TramoSeatsDiagnosticsFactoryBuddy.class, position = 1400)
-public class SeatsDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public final class SeatsDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy<SeatsDiagnosticsConfiguration, SeatsDiagnosticsBuddy.Bean> 
+        implements TramoSeatsDiagnosticsFactoryBuddy<SeatsDiagnosticsConfiguration> {
 
-    private static final BeanConfigurator<SeatsDiagnosticsConfiguration, SeatsDiagnosticsBuddy> configurator = createConfigurator();
+    @lombok.Data
+    public static class Bean {
 
-    protected SeatsDiagnosticsConfiguration config = SeatsDiagnosticsConfiguration.getDefault();
+        private boolean active;
+        private double badThreshold;
+        private double uncertainThreshold;
+
+        public static Bean of(SeatsDiagnosticsConfiguration config) {
+            Bean bean = new Bean();
+            bean.active = config.isActive();
+            bean.badThreshold = config.getBadThreshold();
+            bean.uncertainThreshold = config.getUncertainThreshold();
+            return bean;
+        }
+
+        public SeatsDiagnosticsConfiguration asCore() {
+            return SeatsDiagnosticsConfiguration.builder()
+                    .active(active)
+                    .badThreshold(badThreshold)
+                    .uncertainThreshold(uncertainThreshold)
+                    .build();
+        }
+    }
+
+    private static final Converter<Bean, SeatsDiagnosticsConfiguration> BEANCONVERTER = new BeanConverter();
+
+    public SeatsDiagnosticsBuddy() {
+        super(new CoreConverter(), BEANCONVERTER);
+         this.setActiveDiagnosticsConfiguration(SeatsDiagnosticsConfiguration.getDefault());
+    }
 
     @Override
-    public SaDiagnosticsFactory createFactory() {
-        return new SeatsDiagnosticsFactory<>(config, (TramoSeatsResults r) -> r.getDiagnostics().getSpecificDiagnostics());
+    public SeatsDiagnosticsFactory<TramoSeatsResults> createFactory() {
+        return new SeatsDiagnosticsFactory<>(core(), (TramoSeatsResults r) -> r.getDiagnostics().getSpecificDiagnostics());
     }
+
     @Override
     public AbstractSaDiagnosticsNode createNode() {
-        return new SeatsDiagnosticsBuddy.DiagnosticsNode<>(config);
-    }
-
-    @Override
-    public AbstractSaDiagnosticsNode createNodeFor(SaDiagnosticsFactory fac) {
-        if (fac instanceof SeatsDiagnosticsFactory ofac) {
-            return new SeatsDiagnosticsBuddy.DiagnosticsNode(ofac.getConfiguration());
-        } else {
-            return null;
-        }
+        return new DiagnosticsNode(bean());
     }
 
     @Override
@@ -75,36 +86,29 @@ public class SeatsDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy,
     }
 
     @Override
-    public void configure() {
-        Configurable.configure(this, this);
-    }
-
-    @Override
-    public Config getConfig() {
-        return configurator.getConfig(this);
-    }
-
-    @Override
-    public void setConfig(Config config) throws IllegalArgumentException {
-        configurator.setConfig(this, config);
-    }
-
-    @Override
-    public Config editConfig(Config config) throws IllegalArgumentException {
-        return configurator.editConfig(config);
-    }
-
-    @Override
     public void reset() {
-        config = SeatsDiagnosticsConfiguration.getDefault();
+        setCore(SeatsDiagnosticsConfiguration.getDefault());
     }
 
-    static final class DiagnosticsConverter implements Converter<SeatsDiagnosticsConfiguration, Config> {
+    static final class BeanConverter implements Converter<Bean, SeatsDiagnosticsConfiguration> {
+
+        @Override
+        public SeatsDiagnosticsConfiguration doForward(Bean a) {
+            return a.asCore();
+        }
+
+        @Override
+        public Bean doBackward(SeatsDiagnosticsConfiguration b) {
+            return Bean.of(b);
+        }
+    }
+
+    static final class CoreConverter implements Converter<SeatsDiagnosticsConfiguration, Config> {
 
         private final BooleanProperty activeParam = BooleanProperty.of("active", SeatsDiagnosticsConfiguration.ACTIVE);
         private final DoubleProperty uncertainParam = DoubleProperty.of("severeThreshold", SeatsDiagnosticsConfiguration.UNC);
         private final DoubleProperty badParam = DoubleProperty.of("badThreshold", SeatsDiagnosticsConfiguration.BAD);
- 
+
         @Override
         public Config doForward(SeatsDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv_Matrix", "");
@@ -124,10 +128,10 @@ public class SeatsDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy,
         }
     }
 
-    static class DiagnosticsNode<R> extends AbstractSaDiagnosticsNode<SeatsDiagnosticsConfiguration, R> {
+    static class DiagnosticsNode extends AbstractSaDiagnosticsNode<Bean> {
 
-        public DiagnosticsNode(SeatsDiagnosticsConfiguration config) {
-            super(config);
+        public DiagnosticsNode(Bean bean) {
+            super(bean);
         }
 
         @Override
@@ -136,47 +140,13 @@ public class SeatsDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy,
 
             NodePropertySetBuilder builder = new NodePropertySetBuilder();
             builder.reset("Behaviour");
-            builder.withBoolean().select("active", config::isActive, active -> activate(active)).display("Enabled").add();
+            builder.withBoolean().select(bean, "active").display("Enabled").add();
             sheet.put(builder.build());
             builder.reset("Thresholds");
-            builder.withDouble().select("bad", config::getBadThreshold, d -> {
-                config = config.toBuilder().badThreshold(d).build();
-            }).display("Bad").add();
-            builder.withDouble().select("uncertain", config::getUncertainThreshold, d -> {
-                config = config.toBuilder().uncertainThreshold(d).build();
-            }).display("Uncertain").add();
+            builder.withDouble().select(bean, "badThreshold").display("Bad").add();
+            builder.withDouble().select(bean, "uncertainThreshold").display("Uncertain").add();
             sheet.put(builder.build());
             return sheet;
         }
-    }
-
-    static final class Handler implements BeanHandler<SeatsDiagnosticsConfiguration, SeatsDiagnosticsBuddy> {
-
-        @Override
-        public SeatsDiagnosticsConfiguration load(SeatsDiagnosticsBuddy resource) {
-            return resource.config;
-        }
-
-        @Override
-        public void store(SeatsDiagnosticsBuddy resource, SeatsDiagnosticsConfiguration bean) {
-            resource.config = bean;
-        }
-    }
-
-    private static final class Editor implements BeanEditor {
-
-        @Override
-        public boolean editBean(Object bean) throws IntrospectionException {
-            return new PropertySheetDialogBuilder()
-                    .title("Edit M-diagnostics")
-                    .editNode(new SeatsDiagnosticsBuddy.DiagnosticsNode<>((SeatsDiagnosticsConfiguration) bean));
-        }
-    }
-
-    private static BeanConfigurator<SeatsDiagnosticsConfiguration, SeatsDiagnosticsBuddy> createConfigurator() {
-        return new BeanConfigurator<>(new Handler(),
-                new SeatsDiagnosticsBuddy.DiagnosticsConverter(),
-                new Editor()
-        );
     }
 }

@@ -18,7 +18,7 @@ package demetra.desktop.x13.diagnostics.impl;
 
 import demetra.desktop.sa.diagnostics.SaResidualsDiagnosticsBuddy;
 import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
+import jdplus.regarima.diagnostics.ResidualsDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.SaResidualsDiagnosticsFactory;
 import jdplus.x13.X13Results;
 import org.openide.util.lookup.ServiceProvider;
@@ -28,11 +28,15 @@ import org.openide.util.lookup.ServiceProvider;
  * @author palatej
  */
 @ServiceProvider(service = X13DiagnosticsFactoryBuddy.class, position = 1100)
-public class X13ResidualsDiagnosticsBuddy extends SaResidualsDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy {
+public final class X13ResidualsDiagnosticsBuddy extends SaResidualsDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy<ResidualsDiagnosticsConfiguration> {
 
+    public X13ResidualsDiagnosticsBuddy(){
+        this.setActiveDiagnosticsConfiguration(ResidualsDiagnosticsConfiguration.getDefault());
+    }
+    
     @Override
-    public SaDiagnosticsFactory createFactory() {
-        return new SaResidualsDiagnosticsFactory<>(config,
+    public SaResidualsDiagnosticsFactory<X13Results> createFactory() {
+        return new SaResidualsDiagnosticsFactory<>(this.getActiveDiagnosticsConfiguration(),
                 (X13Results r) -> r.getPreprocessing());
     }
 

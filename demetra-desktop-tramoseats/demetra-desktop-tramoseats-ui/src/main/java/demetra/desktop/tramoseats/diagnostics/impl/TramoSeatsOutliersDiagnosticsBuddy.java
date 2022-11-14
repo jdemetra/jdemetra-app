@@ -18,7 +18,7 @@ package demetra.desktop.tramoseats.diagnostics.impl;
 
 import demetra.desktop.sa.diagnostics.SaOutliersDiagnosticsBuddy;
 import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
+import jdplus.regarima.diagnostics.OutliersDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.SaOutliersDiagnosticsFactory;
 import jdplus.tramoseats.TramoSeatsResults;
 import org.openide.util.lookup.ServiceProvider;
@@ -28,11 +28,15 @@ import org.openide.util.lookup.ServiceProvider;
  * @author palatej
  */
 @ServiceProvider(service = TramoSeatsDiagnosticsFactoryBuddy.class, position = 1110)
-public class TramoSeatsOutliersDiagnosticsBuddy extends SaOutliersDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy {
+public final class TramoSeatsOutliersDiagnosticsBuddy extends SaOutliersDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy<OutliersDiagnosticsConfiguration> {
+
+    public TramoSeatsOutliersDiagnosticsBuddy() {
+        this.setActiveDiagnosticsConfiguration(OutliersDiagnosticsConfiguration.getDefault());
+    }
 
     @Override
-    public SaDiagnosticsFactory createFactory() {
-        return new SaOutliersDiagnosticsFactory<>(config,
+    public SaOutliersDiagnosticsFactory<TramoSeatsResults> createFactory() {
+        return new SaOutliersDiagnosticsFactory<>(this.getActiveDiagnosticsConfiguration(),
                 (TramoSeatsResults r) -> r.getPreprocessing());
     }
 

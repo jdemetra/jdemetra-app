@@ -17,12 +17,15 @@
 package demetra.desktop.tramoseats.diagnostics;
 
 import demetra.desktop.sa.diagnostics.SaDiagnosticsFactoryBuddy;
+import demetra.processing.DiagnosticsConfiguration;
+import demetra.sa.SaDiagnosticsFactory;
+import jdplus.tramoseats.TramoSeatsResults;
 
 /**
  *
- * @author Philippe Charles
- * @since 2.1.0
  */
-public interface TramoSeatsDiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy {
+public interface TramoSeatsDiagnosticsFactoryBuddy<C extends DiagnosticsConfiguration> extends SaDiagnosticsFactoryBuddy<C> {
 
+   SaDiagnosticsFactory<C, TramoSeatsResults> createFactory();
+ 
 }

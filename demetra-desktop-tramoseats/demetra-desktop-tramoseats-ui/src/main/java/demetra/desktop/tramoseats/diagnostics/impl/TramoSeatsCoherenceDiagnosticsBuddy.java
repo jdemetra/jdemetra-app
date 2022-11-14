@@ -20,6 +20,7 @@ import demetra.desktop.sa.diagnostics.CoherenceDiagnosticsBuddy;
 import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddy;
 import demetra.sa.SaDiagnosticsFactory;
 import jdplus.sa.diagnostics.CoherenceDiagnostics;
+import jdplus.sa.diagnostics.CoherenceDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.CoherenceDiagnosticsFactory;
 import jdplus.tramoseats.TramoSeatsResults;
 import org.openide.util.lookup.ServiceProvider;
@@ -29,14 +30,18 @@ import org.openide.util.lookup.ServiceProvider;
  * @author palatej
  */
 @ServiceProvider(service = TramoSeatsDiagnosticsFactoryBuddy.class, position = 1000)
-public class TramoSeatsCoherenceDiagnosticsBuddy extends CoherenceDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy {
+public final class TramoSeatsCoherenceDiagnosticsBuddy extends CoherenceDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy<CoherenceDiagnosticsConfiguration> {
+
+    public TramoSeatsCoherenceDiagnosticsBuddy() {
+        setActiveDiagnosticsConfiguration(CoherenceDiagnosticsConfiguration.getDefault());
+    }
 
     @Override
-    public SaDiagnosticsFactory createFactory() {
-        return new CoherenceDiagnosticsFactory<>(config,
-        (TramoSeatsResults r) -> {
-                            return new CoherenceDiagnostics.Input(r.getFinals().getMode(), r);
-                        });
+    public CoherenceDiagnosticsFactory<TramoSeatsResults> createFactory() {
+        return new CoherenceDiagnosticsFactory<>(getActiveDiagnosticsConfiguration(),
+                (TramoSeatsResults r) -> {
+                    return new CoherenceDiagnostics.Input(r.getFinals().getMode(), r);
+                });
     }
 
 }

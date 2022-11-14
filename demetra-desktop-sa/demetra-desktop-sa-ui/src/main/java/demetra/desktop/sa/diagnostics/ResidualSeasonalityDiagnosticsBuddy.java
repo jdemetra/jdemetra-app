@@ -17,21 +17,11 @@
 package demetra.desktop.sa.diagnostics;
 
 import demetra.desktop.Config;
-import demetra.desktop.ConfigEditor;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.Persistable;
-import demetra.desktop.actions.Configurable;
-import demetra.desktop.actions.Resetable;
-import demetra.desktop.beans.BeanConfigurator;
-import demetra.desktop.beans.BeanEditor;
-import demetra.desktop.beans.BeanHandler;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.sa.output.OutputFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
-import java.beans.IntrospectionException;
 import jdplus.sa.diagnostics.ResidualSeasonalityDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.ResidualSeasonalityDiagnosticsFactory;
 import nbbrd.io.text.DoubleProperty;
@@ -40,24 +30,63 @@ import nbbrd.io.text.DoubleProperty;
  *
  * @author Mats Maggi
  */
-public abstract class ResidualSeasonalityDiagnosticsBuddy implements SaDiagnosticsFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public class ResidualSeasonalityDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy<ResidualSeasonalityDiagnosticsConfiguration, ResidualSeasonalityDiagnosticsBuddy.Bean> {
 
-    private static final BeanConfigurator<ResidualSeasonalityDiagnosticsConfiguration, ResidualSeasonalityDiagnosticsBuddy> configurator = createConfigurator();
+    @lombok.Data
+    public static class Bean {
 
-    protected ResidualSeasonalityDiagnosticsConfiguration config = ResidualSeasonalityDiagnosticsConfiguration.getDefault();
+        private boolean active;
+        private double severeThresholdForSa;
+        private double badThresholdForSa;
+        private double uncertainThresholdForSa;
+        private double severeThresholdForIrregular;
+        private double badThresholdForIrregular;
+        private double uncertainThresholdForIrregular;
+        private double severeThresholdForLastSa;
+        private double badThresholdForLastSa;
+        private double uncertainThresholdForLastSa;
 
-    @Override
-    public AbstractSaDiagnosticsNode createNode() {
-        return new ResidualSeasonalityDiagnosticsBuddy.ResidualSeasonalityDiagnosticsNode<>(config);
+        public static Bean of(ResidualSeasonalityDiagnosticsConfiguration config) {
+            Bean bean = new Bean();
+            bean.active = config.isActive();
+            bean.severeThresholdForSa = config.getSevereThresholdForSa();
+            bean.badThresholdForSa = config.getBadThresholdForSa();
+            bean.uncertainThresholdForSa = config.getUncertainThresholdForSa();
+            bean.severeThresholdForIrregular = config.getSevereThresholdForIrregular();
+            bean.badThresholdForIrregular = config.getBadThresholdForIrregular();
+            bean.uncertainThresholdForIrregular = config.getUncertainThresholdForIrregular();
+            bean.severeThresholdForLastSa = config.getSevereThresholdForLastSa();
+            bean.badThresholdForLastSa = config.getBadThresholdForLastSa();
+            bean.uncertainThresholdForLastSa = config.getUncertainThresholdForLastSa();
+            return bean;
+
+        }
+
+        public ResidualSeasonalityDiagnosticsConfiguration asCore() {
+            return ResidualSeasonalityDiagnosticsConfiguration.builder()
+                    .active(active)
+                    .severeThresholdForSa(severeThresholdForSa)
+                    .badThresholdForSa(badThresholdForSa)
+                    .uncertainThresholdForSa(uncertainThresholdForSa)
+                    .severeThresholdForIrregular(severeThresholdForIrregular)
+                    .badThresholdForIrregular(badThresholdForIrregular)
+                    .uncertainThresholdForIrregular(uncertainThresholdForIrregular)
+                    .severeThresholdForLastSa(severeThresholdForLastSa)
+                    .badThresholdForLastSa(badThresholdForLastSa)
+                    .uncertainThresholdForLastSa(uncertainThresholdForLastSa)
+                    .build();
+        }
+    }
+
+    private static final Converter<Bean, ResidualSeasonalityDiagnosticsConfiguration> BEANCONVERTER = new BeanConverter();
+
+    protected ResidualSeasonalityDiagnosticsBuddy() {
+        super(new CoreConverter(), BEANCONVERTER);
     }
 
     @Override
-    public AbstractSaDiagnosticsNode createNodeFor(SaDiagnosticsFactory fac) {
-        if (fac instanceof ResidualSeasonalityDiagnosticsFactory ofac) {
-            return new ResidualSeasonalityDiagnosticsBuddy.ResidualSeasonalityDiagnosticsNode(ofac.getConfiguration());
-        } else {
-            return null;
-        }
+    public AbstractSaDiagnosticsNode createNode() {
+        return new ResidualSeasonalityDiagnosticsBuddy.DiagnosticsNode(bean());
     }
 
     @Override
@@ -66,31 +95,24 @@ public abstract class ResidualSeasonalityDiagnosticsBuddy implements SaDiagnosti
     }
 
     @Override
-    public void configure() {
-        Configurable.configure(this, this);
-    }
-
-    @Override
-    public Config getConfig() {
-        return configurator.getConfig(this);
-    }
-
-    @Override
-    public void setConfig(Config config) throws IllegalArgumentException {
-        configurator.setConfig(this, config);
-    }
-
-    @Override
-    public Config editConfig(Config config) throws IllegalArgumentException {
-        return configurator.editConfig(config);
-    }
-
-    @Override
     public void reset() {
-        config = ResidualSeasonalityDiagnosticsConfiguration.getDefault();
+        setCore(ResidualSeasonalityDiagnosticsConfiguration.getDefault());
     }
 
-    static final class SaResidualSeasonalityDiagnosticsConverter implements Converter<ResidualSeasonalityDiagnosticsConfiguration, Config> {
+    static final class BeanConverter implements Converter<Bean, ResidualSeasonalityDiagnosticsConfiguration> {
+
+        @Override
+        public ResidualSeasonalityDiagnosticsConfiguration doForward(Bean a) {
+            return a.asCore();
+        }
+
+        @Override
+        public Bean doBackward(ResidualSeasonalityDiagnosticsConfiguration b) {
+            return Bean.of(b);
+        }
+    }
+
+    static final class CoreConverter implements Converter<ResidualSeasonalityDiagnosticsConfiguration, Config> {
 
         private final BooleanProperty activeParam = BooleanProperty.of("active", ResidualSeasonalityDiagnosticsConfiguration.ACTIVE);
         private final DoubleProperty severeSaParam = DoubleProperty.of("sevSaThreshold", ResidualSeasonalityDiagnosticsConfiguration.SASEV);
@@ -136,10 +158,10 @@ public abstract class ResidualSeasonalityDiagnosticsBuddy implements SaDiagnosti
         }
     }
 
-    static class ResidualSeasonalityDiagnosticsNode<R> extends AbstractSaDiagnosticsNode<ResidualSeasonalityDiagnosticsConfiguration, R> {
+    static class DiagnosticsNode extends AbstractSaDiagnosticsNode<Bean> {
 
-        public ResidualSeasonalityDiagnosticsNode(ResidualSeasonalityDiagnosticsConfiguration config) {
-            super(config);
+        public DiagnosticsNode(Bean bean) {
+            super(bean);
         }
 
         @Override
@@ -148,100 +170,52 @@ public abstract class ResidualSeasonalityDiagnosticsBuddy implements SaDiagnosti
 
             NodePropertySetBuilder builder = new NodePropertySetBuilder();
             builder.reset("Behaviour");
-            builder.withBoolean().select("active", config::isActive, active -> activate(active)).display("Enabled").add();
+            builder.withBoolean().select(bean, "active").display("Enabled").add();
             sheet.put(builder.build());
             builder.reset("Residual seasonality in SA (thresholds)");
             builder.withDouble()
-                    .select("sevsa", config::getSevereThresholdForSa, d -> {
-                config = config.toBuilder().severeThresholdForSa(d).build();
-            })
+                    .select(bean, "severeThresholdForSa")
                     .display("Severe")
                     .add();
             builder.withDouble()
-                    .select("badsa", config::getBadThresholdForSa, d -> {
-                config = config.toBuilder().badThresholdForSa(d).build();
-            })
+                    .select(bean, "badThresholdForSa")
                     .display("Bad")
                     .add();
             builder.withDouble()
-                    .select("uncsa", config::getUncertainThresholdForSa, d -> {
-                config = config.toBuilder().uncertainThresholdForSa(d).build();
-            })
+                    .select(bean, "uncertainThresholdForSa")
                     .display("Uncertain")
                     .add();
             sheet.put(builder.build());
             builder.reset("Residual seasonality in Irr. (thresholds)r");
             builder.withDouble()
-                    .select("sevirr", config::getSevereThresholdForIrregular, d -> {
-                config = config.toBuilder().severeThresholdForIrregular(d).build();
-            })
+                    .select(bean, "severeThresholdForIrregular")
                     .display("Severe")
                     .add();
             builder.withDouble()
-                    .select("badirr", config::getBadThresholdForIrregular, d -> {
-                config = config.toBuilder().badThresholdForIrregular(d).build();
-            })
+                    .select(bean, "badThresholdForIrregular")
                     .display("Bad")
                     .add();
             builder.withDouble()
-                    .select("uncirr", config::getUncertainThresholdForIrregular, d -> {
-                config = config.toBuilder().uncertainThresholdForIrregular(d).build();
-            })
+                    .select(bean, "uncertainThresholdForIrregular")
                     .display("Uncertain")
                     .add();
             sheet.put(builder.build());
             builder.reset("Residual seasonality in Last SA (thresholds)");
             builder.withDouble()
-                    .select("sevlsa", config::getSevereThresholdForLastSa, d -> {
-                config = config.toBuilder().severeThresholdForLastSa(d).build();
-            })
+                    .select(bean, "severeThresholdForLastSa")
                     .display("Severe")
                     .add();
             builder.withDouble()
-                    .select("badlsa", config::getBadThresholdForLastSa, d -> {
-                config = config.toBuilder().badThresholdForLastSa(d).build();
-            })
+                    .select(bean, "badThresholdForLastSa")
                     .display("Bad")
                     .add();
             builder.withDouble()
-                    .select("unclsa", config::getUncertainThresholdForLastSa, d -> {
-                config = config.toBuilder().uncertainThresholdForLastSa(d).build();
-            })
+                    .select(bean, "uncertainThresholdForLastSa")
                     .display("Uncertain")
                     .add();
             sheet.put(builder.build());
 
             return sheet;
         }
-    }
-
-    static final class Handler implements BeanHandler<ResidualSeasonalityDiagnosticsConfiguration, ResidualSeasonalityDiagnosticsBuddy> {
-
-        @Override
-        public ResidualSeasonalityDiagnosticsConfiguration load(ResidualSeasonalityDiagnosticsBuddy resource) {
-            return resource.config;
-        }
-
-        @Override
-        public void store(ResidualSeasonalityDiagnosticsBuddy resource, ResidualSeasonalityDiagnosticsConfiguration bean) {
-            resource.config = bean;
-        }
-    }
-
-    private static final class Editor implements BeanEditor {
-
-        @Override
-        public boolean editBean(Object bean) throws IntrospectionException {
-            return new PropertySheetDialogBuilder()
-                    .title("Edit residual seasonality diagnostics")
-                    .editNode(new ResidualSeasonalityDiagnosticsBuddy.ResidualSeasonalityDiagnosticsNode<>((ResidualSeasonalityDiagnosticsConfiguration) bean));
-        }
-    }
-
-    private static BeanConfigurator<ResidualSeasonalityDiagnosticsConfiguration, ResidualSeasonalityDiagnosticsBuddy> createConfigurator() {
-        return new BeanConfigurator<>(new Handler(),
-                new ResidualSeasonalityDiagnosticsBuddy.SaResidualSeasonalityDiagnosticsConverter(),
-                new Editor()
-        );
     }
 }

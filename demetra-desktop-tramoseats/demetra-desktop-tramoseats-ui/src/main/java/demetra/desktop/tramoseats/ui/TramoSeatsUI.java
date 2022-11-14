@@ -11,7 +11,6 @@ import demetra.tsprovider.util.ObsFormat;
 import demetra.tsprovider.util.ObsFormatHandler;
 import demetra.tsprovider.util.PropertyHandler;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.beans.PropertyChangeSupport;
 import nbbrd.design.MightBeGenerated;
@@ -30,51 +29,6 @@ public final class TramoSeatsUI implements PropertyChangeSource.WithWeakListener
     @lombok.experimental.Delegate(types = PropertyChangeSource.class)
     private final PropertyChangeSupport broadcaster = new PropertyChangeSupport(this);
 
-    @SwingProperty
-    public static final String COLOR_SCHEME_NAME_PROPERTY = "colorSchemeName";
-    private static final String DEFAULT_COLOR_SCHEME_NAME = "Smart";
-    private String colorSchemeName = DEFAULT_COLOR_SCHEME_NAME;
-
-    @NonNull
-    public String getColorSchemeName() {
-        return colorSchemeName;
-    }
-
-    public void setColorSchemeName(@Nullable String colorSchemeName) {
-        String old = this.colorSchemeName;
-        this.colorSchemeName = colorSchemeName != null ? colorSchemeName : DEFAULT_COLOR_SCHEME_NAME;
-        broadcaster.firePropertyChange(COLOR_SCHEME_NAME_PROPERTY, old, this.colorSchemeName);
-    }
-
-    @SwingProperty
-    public static final String POPUP_MENU_ICONS_VISIBLE_PROPERTY = "popupMenuIconsVisible";
-    private static final boolean DEFAULT_POPUP_MENU_ICONS_VISIBLE = false;
-    private boolean popupMenuIconsVisible = DEFAULT_POPUP_MENU_ICONS_VISIBLE;
-
-    public boolean isPopupMenuIconsVisible() {
-        return popupMenuIconsVisible;
-    }
-
-    public void setPopupMenuIconsVisible(boolean visible) {
-        boolean old = this.popupMenuIconsVisible;
-        this.popupMenuIconsVisible = visible;
-        broadcaster.firePropertyChange(POPUP_MENU_ICONS_VISIBLE_PROPERTY, old, this.popupMenuIconsVisible);
-    }
-
-    @SwingProperty
-    public static final String HTML_ZOOM_RATIO_PROPERTY = "htmlZoomRatio";
-    private static final int DEFAULT_HTML_ZOOM_RATIO = 100;
-    private int htmlZoomRatio = DEFAULT_HTML_ZOOM_RATIO;
-
-    public int getHtmlZoomRatio() {
-        return this.htmlZoomRatio;
-    }
-
-    public void setHtmlZoomRatio(int htmlZoomRatio) {
-        int old = this.htmlZoomRatio;
-        this.htmlZoomRatio = htmlZoomRatio >= 10 && htmlZoomRatio <= 200 ? htmlZoomRatio : DEFAULT_HTML_ZOOM_RATIO;
-        broadcaster.firePropertyChange(HTML_ZOOM_RATIO_PROPERTY, old, this.htmlZoomRatio);
-    }
 
     @SwingProperty
     public static final String OBS_FORMAT_PROPERTY = "obsFormat";
@@ -121,18 +75,6 @@ public final class TramoSeatsUI implements PropertyChangeSource.WithWeakListener
             .builderOf(TramoSeatsUI.class)
             .name("demetra-ui")
             .version("3.0.0")
-            .with(PropertyHandler.onString(COLOR_SCHEME_NAME_PROPERTY, DEFAULT_COLOR_SCHEME_NAME),
-                    TramoSeatsUI::getColorSchemeName,
-                    TramoSeatsUI::setColorSchemeName
-            )
-            .with(PropertyHandler.onBoolean(POPUP_MENU_ICONS_VISIBLE_PROPERTY, DEFAULT_POPUP_MENU_ICONS_VISIBLE),
-                    TramoSeatsUI::isPopupMenuIconsVisible,
-                    TramoSeatsUI::setPopupMenuIconsVisible
-            )
-            .with(PropertyHandler.onInteger(HTML_ZOOM_RATIO_PROPERTY, DEFAULT_HTML_ZOOM_RATIO),
-                    TramoSeatsUI::getHtmlZoomRatio,
-                    TramoSeatsUI::setHtmlZoomRatio
-            )
             .with(ObsFormatHandler
                             .builder()
                             .locale(PropertyHandler.onLocale("locale", DEFAULT_OBS_FORMAT.getLocale()))

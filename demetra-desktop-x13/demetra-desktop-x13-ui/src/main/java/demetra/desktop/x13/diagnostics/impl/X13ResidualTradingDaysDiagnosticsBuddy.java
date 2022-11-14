@@ -18,7 +18,7 @@ package demetra.desktop.x13.diagnostics.impl;
 
 import demetra.desktop.sa.diagnostics.ResidualTradingDaysDiagnosticsBuddy;
 import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
+import jdplus.sa.diagnostics.ResidualTradingDaysDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.ResidualTradingDaysDiagnosticsFactory;
 import jdplus.x13.X13Results;
 import org.openide.util.lookup.ServiceProvider;
@@ -28,11 +28,15 @@ import org.openide.util.lookup.ServiceProvider;
  * @author palatej
  */
 @ServiceProvider(service = X13DiagnosticsFactoryBuddy.class, position = 1230)
-public class X13ResidualTradingDaysDiagnosticsBuddy extends ResidualTradingDaysDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy {
+public final class X13ResidualTradingDaysDiagnosticsBuddy extends ResidualTradingDaysDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy<ResidualTradingDaysDiagnosticsConfiguration> {
 
+    public X13ResidualTradingDaysDiagnosticsBuddy(){
+        this.setActiveDiagnosticsConfiguration(ResidualTradingDaysDiagnosticsConfiguration.getDefault());
+    }
+    
     @Override
-    public SaDiagnosticsFactory createFactory() {
-        return new ResidualTradingDaysDiagnosticsFactory<>(config,
+    public ResidualTradingDaysDiagnosticsFactory<X13Results> createFactory() {
+        return new ResidualTradingDaysDiagnosticsFactory<>(this.getActiveDiagnosticsConfiguration(),
         (X13Results r) -> r.getDiagnostics().getGenericDiagnostics().residualTradingDaysTests());
     }
 }

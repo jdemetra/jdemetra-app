@@ -16,9 +16,12 @@
  */
 package demetra.desktop.sa.diagnostics;
 
+import demetra.desktop.Config;
 import demetra.desktop.NamedService;
 import demetra.desktop.DemetraIcons;
-import demetra.sa.SaDiagnosticsFactory;
+import demetra.desktop.Persistable;
+import demetra.desktop.actions.Resetable;
+import demetra.processing.DiagnosticsConfiguration;
 import java.awt.Image;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
@@ -26,14 +29,31 @@ import org.openide.util.ImageUtilities;
 /**
  *
  * Link between the GUI and the actual SaDiagnosticsFactory
- */
-public interface SaDiagnosticsFactoryBuddy extends NamedService {
+ * @param <C> Actual converter
+  */
+public interface SaDiagnosticsFactoryBuddy<C extends DiagnosticsConfiguration>  extends NamedService, Persistable, Resetable{
+    
+    /**
+     * Configuration after edition. Not necessary applied
+     * @return 
+     */
+   C getCurrentDiagnosticsConfiguration();
 
-    AbstractSaDiagnosticsNode createNode();
+    /**
+     * Active (used in the algorithms) configuration
+     * @return 
+     */
+    C getActiveDiagnosticsConfiguration();
     
-    AbstractSaDiagnosticsNode createNodeFor(SaDiagnosticsFactory factory);
+    void setActiveDiagnosticsConfiguration(C config);
+
+    boolean editConfiguration();
     
-    SaDiagnosticsFactory createFactory();
+    void commit();
+    
+    void restore();
+    
+    boolean valid();
 
     @Override
     default String getDisplayName() {

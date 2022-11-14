@@ -14,20 +14,29 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.x13.diagnostics;
+package demetra.desktop.tramoseats.diagnostics.impl;
 
-import demetra.desktop.sa.diagnostics.SaDiagnosticsFactoryBuddy;
-import demetra.processing.DiagnosticsConfiguration;
-import demetra.sa.SaDiagnosticsFactory;
-import jdplus.x13.X13Results;
+import demetra.desktop.Config;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
- * @author Philippe Charles
- * @since 2.1.0
+ * @author palatej
  */
-public interface X13DiagnosticsFactoryBuddy <C extends DiagnosticsConfiguration> extends SaDiagnosticsFactoryBuddy<C> {
+public class TramoSeatsAdvancedResidualSeasonalityDiagnosticsBuddyTest {
+    
+    public TramoSeatsAdvancedResidualSeasonalityDiagnosticsBuddyTest() {
+    }
 
-   SaDiagnosticsFactory<C, X13Results> createFactory();
- 
+    @Test
+    public void testAll(){
+        TramoSeatsAdvancedResidualSeasonalityDiagnosticsBuddy buddy=new TramoSeatsAdvancedResidualSeasonalityDiagnosticsBuddy();
+        Config config = buddy.getConfig();
+        buddy.setConfig(config);
+        buddy.createFactory();
+//        System.out.println(buddy.getDisplayName());
+        buddy.reset();
+    }
+    
 }

@@ -17,21 +17,11 @@
 package demetra.desktop.sa.diagnostics;
 
 import demetra.desktop.Config;
-import demetra.desktop.ConfigEditor;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.Persistable;
-import demetra.desktop.actions.Configurable;
-import demetra.desktop.actions.Resetable;
-import demetra.desktop.beans.BeanConfigurator;
-import demetra.desktop.beans.BeanEditor;
-import demetra.desktop.beans.BeanHandler;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.sa.output.OutputFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
-import java.beans.IntrospectionException;
 import jdplus.regarima.diagnostics.OutliersDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.SaOutliersDiagnosticsFactory;
 import nbbrd.io.text.DoubleProperty;
@@ -40,24 +30,44 @@ import nbbrd.io.text.DoubleProperty;
  *
  * @author Mats Maggi
  */
-public abstract class SaOutliersDiagnosticsBuddy implements SaDiagnosticsFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public class SaOutliersDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy<OutliersDiagnosticsConfiguration, SaOutliersDiagnosticsBuddy.Bean> {
 
-    private static final BeanConfigurator<OutliersDiagnosticsConfiguration, SaOutliersDiagnosticsBuddy> configurator = createConfigurator();
+    @lombok.Data
+    public static class Bean {
 
-    protected OutliersDiagnosticsConfiguration config = OutliersDiagnosticsConfiguration.getDefault();
+        private boolean active;
+        private double severeThreshold;
+        private double badThreshold;
+        private double uncertainThreshold;
 
-    @Override
-    public AbstractSaDiagnosticsNode createNode() {
-        return new SaOutliersDiagnosticsBuddy.OutliersDiagnosticsNode<>(config);
+        public static Bean of(OutliersDiagnosticsConfiguration config) {
+            Bean bean = new Bean();
+            bean.active = config.isActive();
+            bean.severeThreshold = config.getSevereThreshold();
+            bean.badThreshold = config.getBadThreshold();
+            bean.uncertainThreshold = config.getUncertainThreshold();
+            return bean;
+        }
+
+        public OutliersDiagnosticsConfiguration asCore() {
+            return OutliersDiagnosticsConfiguration.builder()
+                    .active(active)
+                    .severeThreshold(severeThreshold)
+                    .badThreshold(badThreshold)
+                    .uncertainThreshold(uncertainThreshold)
+                    .build();
+        }
+    }
+
+    private static final Converter<Bean, OutliersDiagnosticsConfiguration> BEANCONVERTER = new BeanConverter();
+
+    protected SaOutliersDiagnosticsBuddy() {
+        super(new CoreConverter(), BEANCONVERTER);
     }
 
     @Override
-    public AbstractSaDiagnosticsNode createNodeFor(SaDiagnosticsFactory fac) {
-        if (fac instanceof SaOutliersDiagnosticsFactory ofac) {
-            return new SaOutliersDiagnosticsBuddy.OutliersDiagnosticsNode(ofac.getConfiguration());
-        } else {
-            return null;
-        }
+    public AbstractSaDiagnosticsNode createNode() {
+        return new DiagnosticsNode(bean());
     }
 
     @Override
@@ -66,31 +76,24 @@ public abstract class SaOutliersDiagnosticsBuddy implements SaDiagnosticsFactory
     }
 
     @Override
-    public void configure() {
-        Configurable.configure(this, this);
-    }
-
-    @Override
-    public Config getConfig() {
-        return configurator.getConfig(this);
-    }
-
-    @Override
-    public void setConfig(Config config) throws IllegalArgumentException {
-        configurator.setConfig(this, config);
-    }
-
-    @Override
-    public Config editConfig(Config config) throws IllegalArgumentException {
-        return configurator.editConfig(config);
-    }
-
-    @Override
     public void reset() {
-        config = OutliersDiagnosticsConfiguration.getDefault();
+        setCore(OutliersDiagnosticsConfiguration.getDefault());
     }
 
-    static final class SaOutliersDiagnosticsConverter implements Converter<OutliersDiagnosticsConfiguration, Config> {
+    static final class BeanConverter implements Converter<Bean, OutliersDiagnosticsConfiguration> {
+
+        @Override
+        public OutliersDiagnosticsConfiguration doForward(Bean a) {
+            return a.asCore();
+        }
+
+        @Override
+        public Bean doBackward(OutliersDiagnosticsConfiguration b) {
+            return Bean.of(b);
+        }
+    }
+
+    static final class CoreConverter implements Converter<OutliersDiagnosticsConfiguration, Config> {
 
         private final BooleanProperty activeParam = BooleanProperty.of("active", OutliersDiagnosticsConfiguration.ACTIVE);
         private final DoubleProperty severeParam = DoubleProperty.of("severeThreshold", OutliersDiagnosticsConfiguration.SEV);
@@ -118,10 +121,10 @@ public abstract class SaOutliersDiagnosticsBuddy implements SaDiagnosticsFactory
         }
     }
 
-    static class OutliersDiagnosticsNode<R> extends AbstractSaDiagnosticsNode<OutliersDiagnosticsConfiguration, R> {
+    static class DiagnosticsNode extends AbstractSaDiagnosticsNode<Bean> {
 
-        public OutliersDiagnosticsNode(OutliersDiagnosticsConfiguration config) {
-            super(config);
+        public DiagnosticsNode(Bean bean) {
+            super(bean);
         }
 
         @Override
@@ -130,57 +133,21 @@ public abstract class SaOutliersDiagnosticsBuddy implements SaDiagnosticsFactory
 
             NodePropertySetBuilder builder = new NodePropertySetBuilder();
             builder.reset("Behaviour");
-            builder.withBoolean().select("active", config::isActive, active -> activate(active)).display("Enabled").add();
+            builder.withBoolean().select(bean, "active").display("Enabled").add();
             sheet.put(builder.build());
 
             builder.reset("Thresholds");
             builder.withDouble()
-                    .select("severe", config::getSevereThreshold, d -> {
-                        config = config.toBuilder().severeThreshold(d).build();
-                    })
+                    .select(bean, "severeThreshold")
                     .display("Severe").add();
             builder.withDouble()
-                    .select("bad", config::getBadThreshold, d -> {
-                        config = config.toBuilder().badThreshold(d).build();
-                    })
+                    .select(bean, "badThreshold")
                     .display("Bad").add();
             builder.withDouble()
-                    .select("uncertain", config::getUncertainThreshold, d -> {
-                        config = config.toBuilder().uncertainThreshold(d).build();
-                    })
+                    .select(bean, "uncertainThreshold")
                     .display("Uncertain").add();
             sheet.put(builder.build());
             return sheet;
         }
-    }
-
-    static final class Handler implements BeanHandler<OutliersDiagnosticsConfiguration, SaOutliersDiagnosticsBuddy> {
-
-        @Override
-        public OutliersDiagnosticsConfiguration load(SaOutliersDiagnosticsBuddy resource) {
-            return resource.config;
-        }
-
-        @Override
-        public void store(SaOutliersDiagnosticsBuddy resource, OutliersDiagnosticsConfiguration bean) {
-            resource.config = bean;
-        }
-    }
-
-    private static final class Editor implements BeanEditor {
-
-        @Override
-        public boolean editBean(Object bean) throws IntrospectionException {
-            return new PropertySheetDialogBuilder()
-                    .title("Edit outliers diagnostics")
-                    .editNode(new SaOutliersDiagnosticsBuddy.OutliersDiagnosticsNode<>((OutliersDiagnosticsConfiguration) bean));
-        }
-    }
-
-    private static BeanConfigurator<OutliersDiagnosticsConfiguration, SaOutliersDiagnosticsBuddy> createConfigurator() {
-        return new BeanConfigurator<>(new Handler(),
-                new SaOutliersDiagnosticsBuddy.SaOutliersDiagnosticsConverter(),
-                new Editor()
-        );
     }
 }

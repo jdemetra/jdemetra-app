@@ -18,8 +18,8 @@ package demetra.desktop.x13.diagnostics.impl;
 
 import demetra.desktop.sa.diagnostics.CoherenceDiagnosticsBuddy;
 import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
 import jdplus.sa.diagnostics.CoherenceDiagnostics;
+import jdplus.sa.diagnostics.CoherenceDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.CoherenceDiagnosticsFactory;
 import jdplus.x13.X13Results;
 import org.openide.util.lookup.ServiceProvider;
@@ -29,14 +29,18 @@ import org.openide.util.lookup.ServiceProvider;
  * @author palatej
  */
 @ServiceProvider(service = X13DiagnosticsFactoryBuddy.class, position = 1000)
-public class X13CoherenceDiagnosticsBuddy extends CoherenceDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy {
-
-    @Override
-    public SaDiagnosticsFactory createFactory() {
-        return new CoherenceDiagnosticsFactory<>(config,
-        (X13Results r) -> {
-                            return new CoherenceDiagnostics.Input(r.getDecomposition().getMode(), r);
-                        });
+public final class X13CoherenceDiagnosticsBuddy extends CoherenceDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy<CoherenceDiagnosticsConfiguration> {
+    
+    public X13CoherenceDiagnosticsBuddy() {
+        this.setActiveDiagnosticsConfiguration(CoherenceDiagnosticsConfiguration.getDefault());
     }
-
+    
+    @Override
+    public CoherenceDiagnosticsFactory<X13Results> createFactory() {
+        return new CoherenceDiagnosticsFactory<>(this.getActiveDiagnosticsConfiguration(),
+                (X13Results r) -> {
+                    return new CoherenceDiagnostics.Input(r.getDecomposition().getMode(), r);
+                });
+    }
+    
 }

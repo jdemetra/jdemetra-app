@@ -19,6 +19,8 @@ package demetra.desktop.tramoseats.diagnostics.impl;
 import demetra.desktop.sa.diagnostics.AdvancedResidualSeasonalityDiagnosticsBuddy;
 import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddy;
 import demetra.sa.SaDiagnosticsFactory;
+import jdplus.sa.diagnostics.AdvancedResidualSeasonalityDiagnostics;
+import jdplus.sa.diagnostics.AdvancedResidualSeasonalityDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.AdvancedResidualSeasonalityDiagnosticsFactory;
 import jdplus.tramoseats.TramoSeatsResults;
 import org.openide.util.lookup.ServiceProvider;
@@ -28,13 +30,20 @@ import org.openide.util.lookup.ServiceProvider;
  * @author palatej
  */
 @ServiceProvider(service = TramoSeatsDiagnosticsFactoryBuddy.class, position = 1200)
-public class TramoSeatsAdvancedResidualSeasonalityDiagnosticsBuddy extends AdvancedResidualSeasonalityDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy {
+public final class TramoSeatsAdvancedResidualSeasonalityDiagnosticsBuddy extends AdvancedResidualSeasonalityDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy<AdvancedResidualSeasonalityDiagnosticsConfiguration> {
 
+    public TramoSeatsAdvancedResidualSeasonalityDiagnosticsBuddy() {
+        setActiveDiagnosticsConfiguration(AdvancedResidualSeasonalityDiagnosticsConfiguration.getDefault());
+    }
+    
+//    @lombok.experimental.Delegate
+//    private final AdvancedResidualSeasonalityDiagnosticsBuddy delegate = new AdvancedResidualSeasonalityDiagnosticsBuddy();
+//
     @Override
-    public SaDiagnosticsFactory createFactory() {
-        return new AdvancedResidualSeasonalityDiagnosticsFactory<>(config,
-                        (TramoSeatsResults r) -> r.getDiagnostics().getGenericDiagnostics()
-                );
+    public AdvancedResidualSeasonalityDiagnosticsFactory<TramoSeatsResults> createFactory() {
+        return new AdvancedResidualSeasonalityDiagnosticsFactory<>(getActiveDiagnosticsConfiguration(),
+                (TramoSeatsResults r) -> r.getDiagnostics().getGenericDiagnostics()
+        );
     }
 
 }

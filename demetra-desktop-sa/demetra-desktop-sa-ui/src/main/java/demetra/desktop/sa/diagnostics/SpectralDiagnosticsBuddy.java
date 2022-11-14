@@ -17,21 +17,10 @@
 package demetra.desktop.sa.diagnostics;
 
 import demetra.desktop.Config;
-import demetra.desktop.ConfigEditor;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.Persistable;
-import demetra.desktop.actions.Configurable;
-import demetra.desktop.actions.Resetable;
-import demetra.desktop.beans.BeanConfigurator;
-import demetra.desktop.beans.BeanEditor;
-import demetra.desktop.beans.BeanHandler;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
-import demetra.desktop.sa.output.OutputFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
-import java.beans.IntrospectionException;
 import jdplus.sa.diagnostics.SpectralDiagnosticsFactory;
 import jdplus.sa.diagnostics.SpectralDiagnosticsConfiguration;
 import nbbrd.io.text.DoubleProperty;
@@ -41,24 +30,44 @@ import nbbrd.io.text.IntProperty;
  *
  * @author Mats Maggi
  */
-public abstract class SpectralDiagnosticsBuddy implements SaDiagnosticsFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public class SpectralDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy<SpectralDiagnosticsConfiguration, SpectralDiagnosticsBuddy.Bean> {
 
-    private static final BeanConfigurator<SpectralDiagnosticsConfiguration, SpectralDiagnosticsBuddy> configurator = createConfigurator();
+    @lombok.Data
+    public static class Bean {
 
-    protected SpectralDiagnosticsConfiguration config = SpectralDiagnosticsConfiguration.getDefault();
+        private boolean active;
+        private double sensibility;
+        private int length;
+        private boolean strict;
 
-    @Override
-    public AbstractSaDiagnosticsNode createNode() {
-        return new SpectralDiagnosticsBuddy.SpectralDiagnosticsNode<>(config);
+        static Bean of(SpectralDiagnosticsConfiguration config) {
+            Bean bean = new Bean();
+            bean.active = config.isActive();
+            bean.length = config.getLength();
+            bean.sensibility = config.getSensibility();
+            bean.strict = config.isStrict();
+
+            return bean;
+        }
+
+        SpectralDiagnosticsConfiguration asCore() {
+            return SpectralDiagnosticsConfiguration.builder()
+                    .active(active)
+                    .strict(strict)
+                    .length(length)
+                    .sensibility(sensibility)
+                    .build();
+        }
     }
 
+    private static final Converter<Bean, SpectralDiagnosticsConfiguration> BEANCONVERTER = new BeanConverter();
+
+    protected SpectralDiagnosticsBuddy() {
+        super(new CoreConverter(), BEANCONVERTER);
+    }
     @Override
-    public AbstractSaDiagnosticsNode createNodeFor(SaDiagnosticsFactory fac) {
-        if (fac instanceof SpectralDiagnosticsFactory ofac) {
-            return new SpectralDiagnosticsBuddy.SpectralDiagnosticsNode(ofac.getConfiguration());
-        } else {
-            return null;
-        }
+    public AbstractSaDiagnosticsNode createNode() {
+        return new DiagnosticsNode(bean());
     }
 
     @Override
@@ -67,31 +76,24 @@ public abstract class SpectralDiagnosticsBuddy implements SaDiagnosticsFactoryBu
     }
 
     @Override
-    public void configure() {
-        Configurable.configure(this, this);
-    }
-
-    @Override
-    public Config getConfig() {
-        return configurator.getConfig(this);
-    }
-
-    @Override
-    public void setConfig(Config config) throws IllegalArgumentException {
-        configurator.setConfig(this, config);
-    }
-
-    @Override
-    public Config editConfig(Config config) throws IllegalArgumentException {
-        return configurator.editConfig(config);
-    }
-
-    @Override
     public void reset() {
-        config = SpectralDiagnosticsConfiguration.getDefault();
+        setCore(SpectralDiagnosticsConfiguration.getDefault());
     }
 
-    static final class SaSpectralDiagnosticsConverter implements Converter<SpectralDiagnosticsConfiguration, Config> {
+    static final class BeanConverter implements Converter<Bean, SpectralDiagnosticsConfiguration> {
+
+        @Override
+        public SpectralDiagnosticsConfiguration doForward(Bean a) {
+            return a.asCore();
+        }
+
+        @Override
+        public Bean doBackward(SpectralDiagnosticsConfiguration b) {
+            return Bean.of(b);
+        }
+    }
+
+    static final class CoreConverter implements Converter<SpectralDiagnosticsConfiguration, Config> {
 
         private final BooleanProperty activeParam = BooleanProperty.of("active", SpectralDiagnosticsConfiguration.ACTIVE);
         private final DoubleProperty sensibilityParam = DoubleProperty.of("sensibility", SpectralDiagnosticsConfiguration.SENSIBILITY);
@@ -100,7 +102,7 @@ public abstract class SpectralDiagnosticsBuddy implements SaDiagnosticsFactoryBu
 
         @Override
         public Config doForward(SpectralDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv_Matrix", "");
+            Config.Builder result = Config.builder("diagnostics", "spectral_diagnostics", "3.0");
             activeParam.set(result::parameter, a.isActive());
             sensibilityParam.set(result::parameter, a.getSensibility());
             lengthParam.set(result::parameter, a.getLength());
@@ -116,44 +118,38 @@ public abstract class SpectralDiagnosticsBuddy implements SaDiagnosticsFactoryBu
                     .length(lengthParam.get(b::getParameter))
                     .strict(strictParam.get(b::getParameter))
                     .build();
-        }
+         }
     }
 
-    static class SpectralDiagnosticsNode<R> extends AbstractSaDiagnosticsNode<SpectralDiagnosticsConfiguration, R> {
+    private static class DiagnosticsNode extends AbstractSaDiagnosticsNode<Bean> {
 
-        public SpectralDiagnosticsNode(SpectralDiagnosticsConfiguration config) {
-            super(config);
+        public DiagnosticsNode(Bean bean) {
+            super(bean);
         }
 
         @Override
         protected Sheet createSheet() {
             Sheet sheet = super.createSheet();
-
+            
             NodePropertySetBuilder builder = new NodePropertySetBuilder();
             builder.reset("Behaviour");
             builder.withBoolean()
-                    .select("active", config::isActive, active -> activate(active))
+                    .select(bean, "active")
                     .display("Enabled")
                     .add();
             builder.withBoolean()
-                    .select("strict", config::isStrict, strict -> {
-                        config = config.toBuilder().strict(strict).build();
-                    })
+                    .select(bean, "strict")
                     .display("Strict")
                     .add();
             sheet.put(builder.build());
 
             builder.reset("Properties");
             builder.withDouble()
-                    .select("sensibility", config::getSensibility, d -> {
-                        config = config.toBuilder().sensibility(d).build();
-                    })
+                    .select(bean, "sensibility")
                     .display("Sensibility")
                     .add();
             builder.withInt()
-                    .select("length", config::getLength, l -> {
-                        config = config.toBuilder().length(l).build();
-                    })
+                    .select(bean, "length")
                     .display("Length")
                     .add();
             sheet.put(builder.build());
@@ -162,33 +158,4 @@ public abstract class SpectralDiagnosticsBuddy implements SaDiagnosticsFactoryBu
         }
     }
 
-    static final class Handler implements BeanHandler<SpectralDiagnosticsConfiguration, SpectralDiagnosticsBuddy> {
-
-        @Override
-        public SpectralDiagnosticsConfiguration load(SpectralDiagnosticsBuddy resource) {
-            return resource.config;
-        }
-
-        @Override
-        public void store(SpectralDiagnosticsBuddy resource, SpectralDiagnosticsConfiguration bean) {
-            resource.config = bean;
-        }
-    }
-
-    private static final class Editor implements BeanEditor {
-
-        @Override
-        public boolean editBean(Object bean) throws IntrospectionException {
-            return new PropertySheetDialogBuilder()
-                    .title("Edit spectral diagnostics")
-                    .editNode(new SpectralDiagnosticsBuddy.SpectralDiagnosticsNode<>((SpectralDiagnosticsConfiguration) bean));
-        }
-    }
-
-    private static BeanConfigurator<SpectralDiagnosticsConfiguration, SpectralDiagnosticsBuddy> createConfigurator() {
-        return new BeanConfigurator<>(new Handler(),
-                new SpectralDiagnosticsBuddy.SaSpectralDiagnosticsConverter(),
-                new Editor()
-        );
-    }
 }

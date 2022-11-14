@@ -14,9 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.sa.util;
+package demetra.desktop.tramoseats.util;
 
-import demetra.desktop.sa.ui.DemetraSaUI;
+import demetra.desktop.Config;
+import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddies;
 import demetra.desktop.util.InstallerStep;
 import java.util.prefs.Preferences;
 import org.openide.modules.ModuleInstall;
@@ -28,7 +29,7 @@ public final class Installer extends ModuleInstall {
     final static Logger LOGGER = LoggerFactory.getLogger(Installer.class);
 
     public static final InstallerStep STEP = InstallerStep.all(
-            new DemetraSaOptionsStep()
+            new DemetraTramoSeatsDiagnosticsStep()
     );
 
     @Override
@@ -43,20 +44,27 @@ public final class Installer extends ModuleInstall {
         super.close();
     }
 
-    private static final class DemetraSaOptionsStep extends InstallerStep {
+    private static final class DemetraTramoSeatsDiagnosticsStep extends InstallerStep {
 
-        final Preferences prefs = prefs().node("options");
+        final Preferences prefs = prefs().node("diagnostics");
 
         @Override
         public void restore() {
-            DemetraSaUI ui = DemetraSaUI.get();
-            tryGet(prefs).ifPresent(ui::setConfig);
+            TramoSeatsDiagnosticsFactoryBuddies.getInstance().getFactories().forEach(buddy->{
+                    Preferences nprefs = prefs.node(buddy.getDisplayName());
+                    tryGet(nprefs).ifPresent(buddy::setConfig);
+            });
         }
 
         @Override
         public void close() {
-            DemetraSaUI ui = DemetraSaUI.get();
-            put(prefs, ui.getConfig());
+            TramoSeatsDiagnosticsFactoryBuddies.getInstance().getFactories().forEach(buddy->{
+                Config config = buddy.getConfig();
+                if (config != null){
+                    Preferences nprefs = prefs.node(buddy.getDisplayName());
+                    put(nprefs, config);
+                }
+            });
         }
     }
 }

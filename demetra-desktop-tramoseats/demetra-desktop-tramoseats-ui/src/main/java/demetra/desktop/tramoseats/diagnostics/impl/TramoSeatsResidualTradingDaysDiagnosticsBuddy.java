@@ -18,7 +18,7 @@ package demetra.desktop.tramoseats.diagnostics.impl;
 
 import demetra.desktop.sa.diagnostics.ResidualTradingDaysDiagnosticsBuddy;
 import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
+import jdplus.sa.diagnostics.ResidualTradingDaysDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.ResidualTradingDaysDiagnosticsFactory;
 import jdplus.tramoseats.TramoSeatsResults;
 import org.openide.util.lookup.ServiceProvider;
@@ -28,11 +28,15 @@ import org.openide.util.lookup.ServiceProvider;
  * @author palatej
  */
 @ServiceProvider(service = TramoSeatsDiagnosticsFactoryBuddy.class, position = 1230)
-public class TramoSeatsResidualTradingDaysDiagnosticsBuddy extends ResidualTradingDaysDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy {
+public final class TramoSeatsResidualTradingDaysDiagnosticsBuddy extends ResidualTradingDaysDiagnosticsBuddy implements TramoSeatsDiagnosticsFactoryBuddy<ResidualTradingDaysDiagnosticsConfiguration> {
 
+    public TramoSeatsResidualTradingDaysDiagnosticsBuddy(){
+        this.setActiveDiagnosticsConfiguration(ResidualTradingDaysDiagnosticsConfiguration.getDefault());
+    }
+    
     @Override
-    public SaDiagnosticsFactory createFactory() {
-        return new ResidualTradingDaysDiagnosticsFactory<>(config,
+    public ResidualTradingDaysDiagnosticsFactory createFactory() {
+        return new ResidualTradingDaysDiagnosticsFactory<>(this.getActiveDiagnosticsConfiguration(),
                 (TramoSeatsResults r) -> r.getDiagnostics().getGenericDiagnostics().residualTradingDaysTests());
     }
 

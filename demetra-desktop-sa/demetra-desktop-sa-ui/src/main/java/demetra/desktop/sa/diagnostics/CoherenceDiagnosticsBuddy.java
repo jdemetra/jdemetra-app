@@ -17,21 +17,11 @@
 package demetra.desktop.sa.diagnostics;
 
 import demetra.desktop.Config;
-import demetra.desktop.ConfigEditor;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.Persistable;
-import demetra.desktop.actions.Configurable;
-import demetra.desktop.actions.Resetable;
-import demetra.desktop.beans.BeanConfigurator;
-import demetra.desktop.beans.BeanEditor;
-import demetra.desktop.beans.BeanHandler;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.sa.output.OutputFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
-import java.beans.IntrospectionException;
 import jdplus.sa.diagnostics.CoherenceDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.CoherenceDiagnosticsFactory;
 import nbbrd.io.text.DoubleProperty;
@@ -41,24 +31,54 @@ import nbbrd.io.text.IntProperty;
  *
  * @author Mats Maggi
  */
-public abstract class CoherenceDiagnosticsBuddy implements SaDiagnosticsFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public class CoherenceDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy<CoherenceDiagnosticsConfiguration, CoherenceDiagnosticsBuddy.Bean> {
 
-    private static final BeanConfigurator<CoherenceDiagnosticsConfiguration, CoherenceDiagnosticsBuddy> configurator = createConfigurator();
+    @lombok.Data
+    public static class Bean {
 
-    protected CoherenceDiagnosticsConfiguration config = CoherenceDiagnosticsConfiguration.getDefault();
+        private boolean active;
+        private double tolerance;
+        private double errorThreshold;
+        private double severeThreshold;
+        private double badThreshold;
+        private double uncertainThreshold;
+        private int shortSeriesLimit;
 
-    @Override
-    public AbstractSaDiagnosticsNode createNode() {
-        return new CoherenceDiagnosticsBuddy.CoherenceDiagnosticsNode<>(config);
+        public static Bean of(CoherenceDiagnosticsConfiguration config) {
+            Bean bean = new Bean();
+            bean.active = config.isActive();
+            bean.errorThreshold = config.getErrorThreshold();
+            bean.severeThreshold = config.getSevereThreshold();
+            bean.badThreshold = config.getBadThreshold();
+            bean.uncertainThreshold = config.getUncertainThreshold();
+            bean.tolerance = config.getTolerance();
+            bean.shortSeriesLimit = config.getShortSeriesLimit();
+            return bean;
+        }
+
+        public CoherenceDiagnosticsConfiguration asCore() {
+            return CoherenceDiagnosticsConfiguration.builder()
+                    .active(active)
+                    .errorThreshold(errorThreshold)
+                    .severeThreshold(severeThreshold)
+                    .badThreshold(badThreshold)
+                    .uncertainThreshold(uncertainThreshold)
+                    .tolerance(tolerance)
+                    .shortSeriesLimit(shortSeriesLimit)
+                    .build();
+        }
+
+    }
+
+    private static final Converter<Bean, CoherenceDiagnosticsConfiguration> BEANCONVERTER = new BeanConverter();
+
+    protected CoherenceDiagnosticsBuddy() {
+        super(new CoreConverter(), BEANCONVERTER);
     }
 
     @Override
-    public AbstractSaDiagnosticsNode createNodeFor(SaDiagnosticsFactory fac) {
-        if (fac instanceof CoherenceDiagnosticsFactory ofac) {
-            return new CoherenceDiagnosticsBuddy.CoherenceDiagnosticsNode(ofac.getConfiguration());
-        } else {
-            return null;
-        }
+    public AbstractSaDiagnosticsNode createNode() {
+        return new DiagnosticsNode(bean());
     }
 
     @Override
@@ -67,31 +87,24 @@ public abstract class CoherenceDiagnosticsBuddy implements SaDiagnosticsFactoryB
     }
 
     @Override
-    public void configure() {
-        Configurable.configure(this, this);
-    }
-
-    @Override
-    public Config getConfig() {
-        return configurator.getConfig(this);
-    }
-
-    @Override
-    public void setConfig(Config config) throws IllegalArgumentException {
-        configurator.setConfig(this, config);
-    }
-
-    @Override
-    public Config editConfig(Config config) throws IllegalArgumentException {
-        return configurator.editConfig(config);
-    }
-
-    @Override
     public void reset() {
-        config = CoherenceDiagnosticsConfiguration.getDefault();
+        setCore(CoherenceDiagnosticsConfiguration.getDefault());
     }
 
-    static final class SaCoherenceDiagnosticsConverter implements Converter<CoherenceDiagnosticsConfiguration, Config> {
+    static final class BeanConverter implements Converter<Bean, CoherenceDiagnosticsConfiguration> {
+
+        @Override
+        public CoherenceDiagnosticsConfiguration doForward(Bean a) {
+            return a.asCore();
+        }
+
+        @Override
+        public Bean doBackward(CoherenceDiagnosticsConfiguration b) {
+            return Bean.of(b);
+        }
+    }
+
+    static final class CoreConverter implements Converter<CoherenceDiagnosticsConfiguration, Config> {
 
         private final BooleanProperty activeParam = BooleanProperty.of("active", CoherenceDiagnosticsConfiguration.ACTIVE);
         private final DoubleProperty tolParam = DoubleProperty.of("tolerance", CoherenceDiagnosticsConfiguration.TOL);
@@ -105,6 +118,7 @@ public abstract class CoherenceDiagnosticsBuddy implements SaDiagnosticsFactoryB
         public Config doForward(CoherenceDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv_Matrix", "");
             activeParam.set(result::parameter, a.isActive());
+            tolParam.set(result::parameter, a.getTolerance());
             errorParam.set(result::parameter, a.getErrorThreshold());
             severeParam.set(result::parameter, a.getSevereThreshold());
             badParam.set(result::parameter, a.getBadThreshold());
@@ -121,15 +135,16 @@ public abstract class CoherenceDiagnosticsBuddy implements SaDiagnosticsFactoryB
                     .severeThreshold(severeParam.get(b::getParameter))
                     .badThreshold(badParam.get(b::getParameter))
                     .uncertainThreshold(uncertainParam.get(b::getParameter))
+                    .tolerance(tolParam.get(b::getParameter))
                     .shortSeriesLimit(shortParam.get(b::getParameter))
                     .build();
         }
     }
 
-    static class CoherenceDiagnosticsNode<R> extends AbstractSaDiagnosticsNode<CoherenceDiagnosticsConfiguration, R> {
+    static class DiagnosticsNode extends AbstractSaDiagnosticsNode<Bean> {
 
-        public CoherenceDiagnosticsNode(CoherenceDiagnosticsConfiguration config) {
-            super(config);
+        public DiagnosticsNode(Bean bean) {
+            super(bean);
         }
 
         @Override
@@ -139,43 +154,37 @@ public abstract class CoherenceDiagnosticsBuddy implements SaDiagnosticsFactoryB
             NodePropertySetBuilder builder = new NodePropertySetBuilder();
             builder.reset("Behaviour");
             builder.withBoolean()
-                    .select("active", config::isActive, active -> activate(active))
+                    .select(bean, "active")
                     .display("Enabled")
                     .add();
             sheet.put(builder.build());
 
             builder.reset("Thresholds");
             builder.withDouble()
-                    .select("error", config::getErrorThreshold, d -> {
-                config = config.toBuilder().errorThreshold(d).build();
-            })
+                    .select(bean, "errorThreshold")
                     .display("Error")
                     .add();
             builder.withDouble()
-                    .select("Severe", config::getSevereThreshold, d -> {
-                config = config.toBuilder().severeThreshold(d).build();
-            })
+                    .select(bean, "severeThreshold")
                     .display("Severe")
                     .add();
             builder.withDouble()
-                    .select("bad", config::getBadThreshold, d -> {
-                config = config.toBuilder().badThreshold(d).build();
-            })
+                    .select(bean, "badThreshold")
                     .display("Bad")
                     .add();
             builder.withDouble()
-                    .select("uncertain", config::getUncertainThreshold, d -> {
-                config = config.toBuilder().uncertainThreshold(d).build();
-            })
+                    .select(bean, "uncertainThreshold")
                     .display("Uncertain")
                     .add();
             sheet.put(builder.build());
 
             builder.reset("Other");
+            builder.withDouble()
+                    .select(bean, "tolerance")
+                    .display("Tolerance")
+                    .add();
             builder.withInt()
-                    .select("shortSeriesLimit", config::getShortSeriesLimit, d -> {
-                config = config.toBuilder().shortSeriesLimit(d).build();
-            })
+                    .select(bean, "shortSeriesLimit")
                     .display("Short series limit")
                     .add();
             sheet.put(builder.build());
@@ -184,33 +193,4 @@ public abstract class CoherenceDiagnosticsBuddy implements SaDiagnosticsFactoryB
         }
     }
 
-    static final class Handler implements BeanHandler<CoherenceDiagnosticsConfiguration, CoherenceDiagnosticsBuddy> {
-
-        @Override
-        public CoherenceDiagnosticsConfiguration load(CoherenceDiagnosticsBuddy resource) {
-            return resource.config;
-        }
-
-        @Override
-        public void store(CoherenceDiagnosticsBuddy resource, CoherenceDiagnosticsConfiguration bean) {
-            resource.config = bean;
-        }
-    }
-
-    private static final class Editor implements BeanEditor {
-
-        @Override
-        public boolean editBean(Object bean) throws IntrospectionException {
-            return new PropertySheetDialogBuilder()
-                    .title("Edit coherence diagnostics")
-                    .editNode(new CoherenceDiagnosticsBuddy.CoherenceDiagnosticsNode<>((CoherenceDiagnosticsConfiguration) bean));
-        }
-    }
-
-    private static BeanConfigurator<CoherenceDiagnosticsConfiguration, CoherenceDiagnosticsBuddy> createConfigurator() {
-        return new BeanConfigurator<>(new Handler(),
-                new CoherenceDiagnosticsBuddy.SaCoherenceDiagnosticsConverter(),
-                new Editor()
-        );
-    }
 }
