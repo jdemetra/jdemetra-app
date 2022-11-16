@@ -1186,8 +1186,8 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
                 }
                 TsData input = source.getInput().getData();
                 TsDomain domain = input.getDomain();
-                TramoSeatsSpec pspec = TramoSeatsFactory.INSTANCE.generateSpec(source.getSpecification(), result);
-                TramoSeatsSpec nspec = TramoSeatsFactory.INSTANCE.refreshSpec(pspec, source.getSpecification(), EstimationPolicyType.FreeParameters, domain);
+                TramoSeatsSpec pspec = TramoSeatsFactory.getInstance().generateSpec(source.getSpecification(), result);
+                TramoSeatsSpec nspec = TramoSeatsFactory.getInstance().refreshSpec(pspec, source.getSpecification(), EstimationPolicyType.FreeParameters, domain);
                 TramoSeatsKernel kernel = TramoSeatsKernel.of(nspec, source.getContext());
                 SlidingSpans<TramoSeatsResults> ss = new SlidingSpans<>(domain, d -> kernel.process(TsData.fitToDomain(input, d), null));
                 boolean mul = result.getFinals().getMode().isMultiplicative();
@@ -1224,8 +1224,8 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             }
             TsData input = source.getInput().getData();
             TsDomain domain = input.getDomain();
-            TramoSeatsSpec pspec = TramoSeatsFactory.INSTANCE.generateSpec(source.getSpecification(), result);
-            TramoSeatsSpec nspec = TramoSeatsFactory.INSTANCE.refreshSpec(pspec, source.getSpecification(), DemetraSaUI.get().getEstimationPolicyType(), domain);
+            TramoSeatsSpec pspec = TramoSeatsFactory.getInstance().generateSpec(source.getSpecification(), result);
+            TramoSeatsSpec nspec = TramoSeatsFactory.getInstance().refreshSpec(pspec, source.getSpecification(), DemetraSaUI.get().getEstimationPolicyType(), domain);
             TramoSeatsKernel kernel = TramoSeatsKernel.of(nspec, source.getContext());
             RevisionHistory<Explorable> rh = new RevisionHistory<>(domain, d -> kernel.process(TsData.fitToDomain(input, d), null));
             return new RevisionHistoryUI.Information(info, diag, rh);
@@ -1294,8 +1294,8 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             }
             TsData input = source.getInput().getData();
             TsDomain domain = input.getDomain();
-            TramoSpec pspec = TramoFactory.INSTANCE.generateSpec(source.getSpecification().getTramo(), result.getPreprocessing().getDescription());
-            TramoSpec nspec = TramoFactory.INSTANCE.refreshSpec(pspec, source.getSpecification().getTramo(), policy, domain);
+            TramoSpec pspec = TramoFactory.getInstance().generateSpec(source.getSpecification().getTramo(), result.getPreprocessing().getDescription());
+            TramoSpec nspec = TramoFactory.getInstance().refreshSpec(pspec, source.getSpecification().getTramo(), policy, domain);
             TramoKernel kernel = TramoKernel.of(nspec, source.getContext());
             MovingProcessing<Explorable> mp = new MovingProcessing<>(domain, (TsDomain d) -> kernel.process(TsData.fitToDomain(input, d), null));
             mp.setWindowLength(DemetraSaUI.get().getStabilityLength() * input.getAnnualFrequency());

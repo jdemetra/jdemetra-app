@@ -18,7 +18,6 @@ package demetra.desktop.sa.util;
 
 import demetra.desktop.sa.ui.DemetraSaUI;
 import demetra.desktop.util.InstallerStep;
-import demetra.desktop.workspace.WorkspaceFactory;
 import java.util.prefs.Preferences;
 import org.openide.modules.ModuleInstall;
 import org.slf4j.Logger;
@@ -42,11 +41,6 @@ public final class Installer extends ModuleInstall {
     public void close() {
         STEP.close();
         super.close();
-    }
-
-    @Override
-    public boolean closing() {
-        return WorkspaceFactory.getInstance().closeWorkspace(true);
     }
 
     private static final class DemetraSaOptionsStep extends InstallerStep {

@@ -16,11 +16,9 @@
  */
 package demetra.desktop.tramoseats.diagnostics;
 
-import demetra.sa.SaDiagnosticsFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -59,12 +57,4 @@ public class TramoSeatsDiagnosticsFactoryBuddies implements LookupListener {
         return Collections.unmodifiableList(outputs);
     }
     
-    public Node createNodeFor(SaDiagnosticsFactory factory) {
-        for (TramoSeatsDiagnosticsFactoryBuddy fac : outputs){
-            Node node=fac.createNodeFor(factory);
-            if (node != null)
-                return node;
-        }
-        return Node.EMPTY;
-    }
 }

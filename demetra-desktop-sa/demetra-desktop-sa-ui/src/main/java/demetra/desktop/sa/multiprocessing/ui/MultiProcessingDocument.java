@@ -48,7 +48,7 @@ public class MultiProcessingDocument implements Documented {
     }
 
     private List<SaNode> of(List<SaItem> items) {
-        return items.stream().map(item -> SaNode.of(curId++, item)).collect(Collectors.<SaNode>toList());
+        return items.stream().map(item -> SaNode.of(curId++, item.copy())).collect(Collectors.<SaNode>toList());
     }
 
     public List<SaNode> getCurrent() {

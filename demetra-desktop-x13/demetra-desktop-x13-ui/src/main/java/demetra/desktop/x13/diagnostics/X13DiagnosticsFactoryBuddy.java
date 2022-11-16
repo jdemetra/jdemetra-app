@@ -17,12 +17,17 @@
 package demetra.desktop.x13.diagnostics;
 
 import demetra.desktop.sa.diagnostics.SaDiagnosticsFactoryBuddy;
+import demetra.processing.DiagnosticsConfiguration;
+import demetra.sa.SaDiagnosticsFactory;
+import jdplus.x13.X13Results;
 
 /**
  *
  * @author Philippe Charles
  * @since 2.1.0
  */
-public interface X13DiagnosticsFactoryBuddy extends SaDiagnosticsFactoryBuddy {
+public interface X13DiagnosticsFactoryBuddy <C extends DiagnosticsConfiguration> extends SaDiagnosticsFactoryBuddy<C> {
 
+   SaDiagnosticsFactory<C, X13Results> createFactory();
+ 
 }

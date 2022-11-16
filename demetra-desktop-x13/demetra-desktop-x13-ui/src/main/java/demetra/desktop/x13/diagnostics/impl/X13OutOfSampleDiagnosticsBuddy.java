@@ -18,7 +18,7 @@ package demetra.desktop.x13.diagnostics.impl;
 
 import demetra.desktop.sa.diagnostics.SaOutOfSampleDiagnosticsBuddy;
 import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
+import jdplus.regarima.diagnostics.OutOfSampleDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.SaOutOfSampleDiagnosticsFactory;
 import jdplus.x13.X13Results;
 import org.openide.util.lookup.ServiceProvider;
@@ -27,12 +27,16 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author palatej
  */
-@ServiceProvider(service = X13DiagnosticsFactoryBuddy.class, position = 1100)
-public class X13OutOfSampleDiagnosticsBuddy extends SaOutOfSampleDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy {
+@ServiceProvider(service = X13DiagnosticsFactoryBuddy.class, position = 1130)
+public final class X13OutOfSampleDiagnosticsBuddy extends SaOutOfSampleDiagnosticsBuddy implements X13DiagnosticsFactoryBuddy<OutOfSampleDiagnosticsConfiguration> {
 
+    public X13OutOfSampleDiagnosticsBuddy(){
+        this.setActiveDiagnosticsConfiguration(OutOfSampleDiagnosticsConfiguration.getDefault());
+    }
+    
     @Override
-    public SaDiagnosticsFactory createFactory() {
-        return new SaOutOfSampleDiagnosticsFactory<>(config,
+    public SaOutOfSampleDiagnosticsFactory<X13Results> createFactory() {
+        return new SaOutOfSampleDiagnosticsFactory<>(this.getActiveDiagnosticsConfiguration(),
                 (X13Results r) -> r.getDiagnostics().getGenericDiagnostics().forecastingTest());
     }
 

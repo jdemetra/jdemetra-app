@@ -17,21 +17,11 @@
 package demetra.desktop.sa.diagnostics;
 
 import demetra.desktop.Config;
-import demetra.desktop.ConfigEditor;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.Persistable;
-import demetra.desktop.actions.Configurable;
-import demetra.desktop.actions.Resetable;
-import demetra.desktop.beans.BeanConfigurator;
-import demetra.desktop.beans.BeanEditor;
-import demetra.desktop.beans.BeanHandler;
-import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.sa.output.OutputFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
-import java.beans.IntrospectionException;
 import jdplus.regarima.diagnostics.OutOfSampleDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.SaOutOfSampleDiagnosticsFactory;
 import nbbrd.io.text.DoubleProperty;
@@ -40,24 +30,50 @@ import nbbrd.io.text.DoubleProperty;
  *
  * @author Mats Maggi
  */
-public abstract class SaOutOfSampleDiagnosticsBuddy implements SaDiagnosticsFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public class SaOutOfSampleDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy<OutOfSampleDiagnosticsConfiguration, SaOutOfSampleDiagnosticsBuddy.Bean> {
 
-    private static final BeanConfigurator<OutOfSampleDiagnosticsConfiguration, SaOutOfSampleDiagnosticsBuddy> configurator = createConfigurator();
+    @lombok.Data
+    public static class Bean {
 
-    protected OutOfSampleDiagnosticsConfiguration config = OutOfSampleDiagnosticsConfiguration.getDefault();
+        private boolean active;
+        private double badThreshold;
+        private double uncertainThreshold;
+        private boolean diagnosticOnMean, diagnosticOnVariance;
+        private double outOfSampleLength;
 
-    @Override
-    public AbstractSaDiagnosticsNode createNode() {
-        return new SaOutOfSampleDiagnosticsBuddy.OutOfSampleDiagnosticsNode<>(config);
+        public static Bean of(OutOfSampleDiagnosticsConfiguration config) {
+            Bean bean = new Bean();
+            bean.active = config.isActive();
+            bean.diagnosticOnMean = config.isDiagnosticOnMean();
+            bean.diagnosticOnVariance = config.isDiagnosticOnVariance();
+            bean.badThreshold = config.getBadThreshold();
+            bean.uncertainThreshold = config.getUncertainThreshold();
+            bean.outOfSampleLength = config.getOutOfSampleLength();
+            return bean;
+        }
+
+        public OutOfSampleDiagnosticsConfiguration asCore() {
+            return OutOfSampleDiagnosticsConfiguration.builder()
+                    .active(active)
+                    .diagnosticOnMean(diagnosticOnMean)
+                    .diagnosticOnVariance(diagnosticOnVariance)
+                    .badThreshold(badThreshold)
+                    .uncertainThreshold(uncertainThreshold)
+                    .outOfSampleLength(outOfSampleLength)
+                    .build();
+        }
+
+    }
+
+    private static final Converter<Bean, OutOfSampleDiagnosticsConfiguration> BEANCONVERTER = new BeanConverter();
+
+    protected SaOutOfSampleDiagnosticsBuddy() {
+        super(new CoreConverter(), BEANCONVERTER);
     }
 
     @Override
-    public AbstractSaDiagnosticsNode createNodeFor(SaDiagnosticsFactory fac) {
-        if (fac instanceof SaOutOfSampleDiagnosticsFactory ofac) {
-            return new SaOutOfSampleDiagnosticsBuddy.OutOfSampleDiagnosticsNode(ofac.getConfiguration());
-        } else {
-            return null;
-        }
+    public AbstractSaDiagnosticsNode createNode() {
+        return new DiagnosticsNode(bean());
     }
 
     @Override
@@ -66,31 +82,24 @@ public abstract class SaOutOfSampleDiagnosticsBuddy implements SaDiagnosticsFact
     }
 
     @Override
-    public void configure() {
-        Configurable.configure(this, this);
-    }
-
-    @Override
-    public Config getConfig() {
-        return configurator.getConfig(this);
-    }
-
-    @Override
-    public void setConfig(Config config) throws IllegalArgumentException {
-        configurator.setConfig(this, config);
-    }
-
-    @Override
-    public Config editConfig(Config config) throws IllegalArgumentException {
-        return configurator.editConfig(config);
-    }
-
-    @Override
     public void reset() {
-        config = OutOfSampleDiagnosticsConfiguration.getDefault();
+        setCore(OutOfSampleDiagnosticsConfiguration.getDefault());
     }
 
-    static final class SaOutOfSampleDiagnosticsConverter implements Converter<OutOfSampleDiagnosticsConfiguration, Config> {
+    static final class BeanConverter implements Converter<Bean, OutOfSampleDiagnosticsConfiguration> {
+
+        @Override
+        public OutOfSampleDiagnosticsConfiguration doForward(Bean a) {
+            return a.asCore();
+        }
+
+        @Override
+        public Bean doBackward(OutOfSampleDiagnosticsConfiguration b) {
+            return Bean.of(b);
+        }
+    }
+
+    static final class CoreConverter implements Converter<OutOfSampleDiagnosticsConfiguration, Config> {
 
         private final BooleanProperty activeParam = BooleanProperty.of("active", OutOfSampleDiagnosticsConfiguration.ACTIVE);
         private final DoubleProperty badParam = DoubleProperty.of("badThreshold", OutOfSampleDiagnosticsConfiguration.BAD);
@@ -124,10 +133,10 @@ public abstract class SaOutOfSampleDiagnosticsBuddy implements SaDiagnosticsFact
         }
     }
 
-    static class OutOfSampleDiagnosticsNode<R> extends AbstractSaDiagnosticsNode<OutOfSampleDiagnosticsConfiguration, R> {
+    static class DiagnosticsNode extends AbstractSaDiagnosticsNode<Bean> {
 
-        public OutOfSampleDiagnosticsNode(OutOfSampleDiagnosticsConfiguration config) {
-            super(config);
+        public DiagnosticsNode(Bean bean) {
+            super(bean);
         }
 
         @Override
@@ -136,65 +145,24 @@ public abstract class SaOutOfSampleDiagnosticsBuddy implements SaDiagnosticsFact
 
             NodePropertySetBuilder builder = new NodePropertySetBuilder();
             builder.reset("Behaviour");
-            builder.withBoolean().select("active", config::isActive, active -> activate(active)).display("Enabled").add();
+            builder.withBoolean().select(bean, "active").display("Enabled").add();
             sheet.put(builder.build());
             builder.reset("Tests");
-            builder.withBoolean().select("mean", config::isDiagnosticOnMean, ok -> {
-                config = config.toBuilder().diagnosticOnMean(ok).build();
-            }).display("Test on mean").add();
-            builder.withBoolean().select("variance", config::isDiagnosticOnVariance, ok -> {
-                config = config.toBuilder().diagnosticOnVariance(ok).build();
-            }).display("Test on variance").add();
+            builder.withBoolean().select(bean, "diagnosticOnMean").display("Mean").add();
+            builder.withBoolean().select(bean, "diagnosticOnVariance").display("Variance").add();
             sheet.put(builder.build());
 
-            builder = new NodePropertySetBuilder();
             builder.reset("Thresholds");
-            builder.withDouble().select("bad", config::getBadThreshold, d -> {
-                config = config.toBuilder().badThreshold(d).build();
-            }).display("Bad").add();
-            builder.withDouble().select("uncertain", config::getUncertainThreshold, d -> {
-                config = config.toBuilder().uncertainThreshold(d).build();
-            }).display("Uncertain").add();
+            builder.withDouble().select(bean, "badThreshold").display("Bad").add();
+            builder.withDouble().select(bean, "uncertainThreshold").display("Uncertain").add();
             sheet.put(builder.build());
 
-            builder = new NodePropertySetBuilder();
             builder.reset("Other");
-            builder.withDouble().select("length", config::getOutOfSampleLength, d -> {
-                config = config.toBuilder().outOfSampleLength(d).build();
-            }).display("Uncertain").add();
+            builder.withDouble().select(bean, "outOfSampleLength").display("Uncertain").add();
             sheet.put(builder.build());
 
             return sheet;
         }
     }
 
-    static final class Handler implements BeanHandler<OutOfSampleDiagnosticsConfiguration, SaOutOfSampleDiagnosticsBuddy> {
-
-        @Override
-        public OutOfSampleDiagnosticsConfiguration load(SaOutOfSampleDiagnosticsBuddy resource) {
-            return resource.config;
-        }
-
-        @Override
-        public void store(SaOutOfSampleDiagnosticsBuddy resource, OutOfSampleDiagnosticsConfiguration bean) {
-            resource.config = bean;
-        }
-    }
-
-    private static final class Editor implements BeanEditor {
-
-        @Override
-        public boolean editBean(Object bean) throws IntrospectionException {
-            return new PropertySheetDialogBuilder()
-                    .title("Edit out of sample diagnostics")
-                    .editNode(new SaOutOfSampleDiagnosticsBuddy.OutOfSampleDiagnosticsNode<>((OutOfSampleDiagnosticsConfiguration) bean));
-        }
-    }
-
-    private static BeanConfigurator<OutOfSampleDiagnosticsConfiguration, SaOutOfSampleDiagnosticsBuddy> createConfigurator() {
-        return new BeanConfigurator<>(new Handler(),
-                new SaOutOfSampleDiagnosticsBuddy.SaOutOfSampleDiagnosticsConverter(),
-                new Editor()
-        );
-    }
 }

@@ -17,30 +17,22 @@
 package demetra.desktop.sa.diagnostics;
 
 import demetra.desktop.DemetraIcons;
-import demetra.processing.DiagnosticsConfiguration;
-import demetra.sa.SaDiagnosticsFactory;
 import java.awt.Image;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 
 /**
- * The node must be able to generate the corresponding output factory
- *
  * @author Jean Palate
+ * @param <B>
  * @param <T> Configuration
- * @param <R> Results
  */
-public abstract class AbstractSaDiagnosticsNode<T extends DiagnosticsConfiguration, R> extends AbstractNode {
+public abstract class AbstractSaDiagnosticsNode<B> extends AbstractNode {
 
-    protected T config;
+    protected B bean;
 
-    public AbstractSaDiagnosticsNode(T config) {
+    public AbstractSaDiagnosticsNode(B bean) {
         super(Children.LEAF);
-        this.config=config;
-    }
-
-    public void activate(boolean active) {
-        config = (T) config.activate(active);
+        this.bean=bean;
     }
 
     @Override

@@ -487,14 +487,21 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 return;
             }
         }
+        controller.getDocument().getElement().reset();
         if (all) {
             controller.getDocument().getElement().refresh(policy, nback, item -> true);
         } else {
             Set<SaNode> sel = Arrays.stream(selection).collect(Collectors.toSet());
             controller.getDocument().getElement().refresh(policy, nback, item -> sel.contains(item));
+            showDetails(null);
         }
         controller.getDocument().setDirty();
-        showDetails(null);
+        SaNode[] sel = getSelection();
+        if (sel != null && sel.length == 1) {
+            showDetails(sel[0]);
+        } else {
+            showDetails(null);
+        }
 //        start(true);
     }
 
@@ -801,7 +808,6 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 //        
         SaItem nitem = SaItem.builder()
                 .name(item.getName())
-                .comment(item.getComment())
                 .meta(item.getMeta())
                 .definition(def)
                 .estimation(estimation)
@@ -1103,15 +1109,18 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            label.setText("");
             SaNode item = (SaNode) value;
             if (!item.isProcessed()) {
-                label.setText("");
                 return label;
             }
             String[] warnings = item.results().getLog().
                     all().stream()
                     .filter(log -> log.getType() == InformationType.Warning)
                     .map(info -> info.getMsg()).toArray(n -> new String[n]);
+            if (warnings.length == 0) {
+                return label;
+            }
             char[] tmp = new char[warnings.length];
             Arrays.fill(tmp, '!');
             label.setText(String.valueOf(tmp));
@@ -1215,7 +1224,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 LOGGER.info("While processing SaItems", ex);
             }
 
-            if (tasks.size() > 0) {
+            if (!tasks.isEmpty()) {
                 if (worker != null && !worker.isCancelled()) {
                     NotifyUtil.show("SA Processing done !", "Processed " + tasks.size() + " items in " + stopwatch.stop(), MessageType.SUCCESS, null, null, null);
                 }
@@ -1239,7 +1248,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 result.add((Callable<String>) () -> {
                     o.process();
                     if (!o.getOutput().isProcessed()) {
-                        o.getOutput().process(context, false);
+                        o.getOutput().process(context, true);
                     }
                     publish(o);
                     SaEstimation result1 = o.getOutput().getEstimation();

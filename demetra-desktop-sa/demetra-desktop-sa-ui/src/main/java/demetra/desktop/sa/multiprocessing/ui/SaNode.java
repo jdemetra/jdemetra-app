@@ -55,7 +55,6 @@ public class SaNode {
                     .build();
             SaItem nitem=SaItem.builder()
                     .definition(ndefinition)
-                    .comment(item.getComment())
                     .name(item.getName())
                     .meta(item.getMeta())
                     .priority(item.getPriority())

@@ -12,7 +12,6 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.Parser;
-import org.openide.util.Exceptions;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.NbPreferences;
