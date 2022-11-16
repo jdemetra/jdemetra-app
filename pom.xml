@@ -374,6 +374,20 @@
                     <brandingToken>${brandingToken}</brandingToken>
                     <cluster>${brandingToken}</cluster>
                 </configuration>
+                <executions>
+                    <execution>
+                        <!-- List runtime dependencies for tests -->
+                        <id>list-runtime-dependencies</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                        <configuration>
+                            <targetManifestFile>${project.build.testOutputDirectory}/runtime-dependencies.mf</targetManifestFile>
+                            <verifyRuntime>skip</verifyRuntime>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
