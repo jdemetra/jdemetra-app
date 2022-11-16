@@ -951,8 +951,8 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
                 }
                 TsData input = source.getInput().getData();
                 TsDomain domain = input.getDomain();
-                X13Spec pspec = X13Factory.INSTANCE.generateSpec(source.getSpecification(), result);
-                X13Spec nspec = X13Factory.INSTANCE.refreshSpec(pspec, source.getSpecification(), DemetraSaUI.get().getEstimationPolicyType(), domain);
+                X13Spec pspec = X13Factory.getInstance().generateSpec(source.getSpecification(), result);
+                X13Spec nspec = X13Factory.getInstance().refreshSpec(pspec, source.getSpecification(), DemetraSaUI.get().getEstimationPolicyType(), domain);
                 X13Kernel kernel = X13Kernel.of(nspec, source.getContext());
                 RevisionHistory<Explorable> rh = new RevisionHistory<>(domain, d -> kernel.process(TsData.fitToDomain(input, d), null));
                 return new RevisionHistoryUI.Information(info, diag, rh);
@@ -1022,8 +1022,8 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
                 }
                 TsData input = source.getInput().getData();
                 TsDomain domain = input.getDomain();
-                RegArimaSpec pspec = RegArimaFactory.INSTANCE.generateSpec(source.getSpecification().getRegArima(), result.getPreprocessing().getDescription());
-                RegArimaSpec nspec = RegArimaFactory.INSTANCE.refreshSpec(pspec, source.getSpecification().getRegArima(), policy, domain);
+                RegArimaSpec pspec = RegArimaFactory.getInstance().generateSpec(source.getSpecification().getRegArima(), result.getPreprocessing().getDescription());
+                RegArimaSpec nspec = RegArimaFactory.getInstance().refreshSpec(pspec, source.getSpecification().getRegArima(), policy, domain);
                 RegArimaKernel kernel = RegArimaKernel.of(nspec, source.getContext());
                 MovingProcessing<Explorable> mp=new MovingProcessing<>(domain, (TsDomain d)->kernel.process(TsData.fitToDomain(input, d), null));
                 mp.setWindowLength(DemetraSaUI.get().getStabilityLength()*input.getAnnualFrequency());

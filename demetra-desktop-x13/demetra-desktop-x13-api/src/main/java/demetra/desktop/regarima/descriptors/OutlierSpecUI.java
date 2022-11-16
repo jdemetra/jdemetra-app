@@ -231,7 +231,7 @@ public class OutlierSpecUI extends BaseRegArimaSpecUI {
     })
     private EnhancedPropertyDescriptor spanDesc() {
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("Span", this.getClass());
+            PropertyDescriptor desc = new PropertyDescriptor("Span", this.getClass(), "getSpan", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SPAN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(Bundle.outlierSpecUI_spanDesc_name());

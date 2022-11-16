@@ -18,14 +18,14 @@ import javax.swing.SwingUtilities;
  */
 public class RampsEditor extends AbstractPropertyEditor {
 
-    private Ramp[] ramps_;
+    private Ramp[] ramps;
 
     public RampsEditor() {
         editor = new JButton(new AbstractAction("...") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 final ArrayEditorDialog<RampDescriptor> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
-                        null != ramps_ ? getDescriptors() : new RampDescriptor[]{}, RampDescriptor.class);
+                        null != ramps ? getDescriptors() : new RampDescriptor[]{}, RampDescriptor.class);
                 dialog.setTitle("Ramps");
                 dialog.setVisible(true);
                 if (dialog.isDirty()) {
@@ -36,34 +36,34 @@ public class RampsEditor extends AbstractPropertyEditor {
     }
 
     private RampDescriptor[] getDescriptors() {
-        RampDescriptor[] descs = new RampDescriptor[ramps_.length];
+        RampDescriptor[] descs = new RampDescriptor[ramps.length];
         for (int i = 0; i < descs.length; ++i) {
-            descs[i] = new RampDescriptor(ramps_[i]);
+            descs[i] = new RampDescriptor(ramps[i]);
         }
         return descs;
     }
 
     private void setDescriptors(List<RampDescriptor> elements) {
-        Ramp[] old=ramps_;
-        ramps_ = new Ramp[elements.size()];
-        for (int i = 0; i < ramps_.length; ++i) {
-            ramps_[i] = elements.get(i).getCore();
+        Ramp[] old=ramps;
+        ramps = new Ramp[elements.size()];
+        for (int i = 0; i < ramps.length; ++i) {
+            ramps[i] = elements.get(i).getCore();
         }
-        firePropertyChange(old, ramps_);
+        firePropertyChange(old, ramps);
     }
 
     @Override
     public Object getValue() {
-        return ramps_;
+        return ramps;
     }
 
     @Override
     public void setValue(Object value) {
         if (null != value && value instanceof Ramp[]) {
-            ramps_ = ((Ramp[]) value).clone();
+            ramps = ((Ramp[]) value).clone();
         }
         else {
-            ramps_ = new Ramp[0];
+            ramps = new Ramp[0];
         }
     }
 }

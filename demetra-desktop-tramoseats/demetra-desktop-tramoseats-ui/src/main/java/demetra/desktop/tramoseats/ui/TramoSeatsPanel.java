@@ -9,10 +9,14 @@ import demetra.desktop.actions.Resetable;
 import demetra.desktop.nodes.AbstractNodeBuilder;
 import demetra.desktop.nodes.NamedServiceNode;
 import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddy;
+import demetra.sa.SaDiagnosticsFactory;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.swing.JPanel;
+import jdplus.tramoseats.TramoSeatsFactory;
+import jdplus.tramoseats.TramoSeatsResults;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.explorer.ExplorerManager;
@@ -253,6 +257,14 @@ final class TramoSeatsPanel extends javax.swing.JPanel {
 
     void store() {
         Lookup.getDefault().lookupAll(TramoSeatsDiagnosticsFactoryBuddy.class).stream().forEach(TramoSeatsDiagnosticsFactoryBuddy::commit);
+        // updates the diagnostics factories of the main processor
+        Stream<SaDiagnosticsFactory<?, TramoSeatsResults>> map = Lookup.getDefault()
+                .lookupAll(TramoSeatsDiagnosticsFactoryBuddy.class)
+                .stream()
+                .map(buddy->(SaDiagnosticsFactory<?, TramoSeatsResults>) buddy.createFactory());
+        List<SaDiagnosticsFactory<?, TramoSeatsResults>> factories=new ArrayList();
+        map.forEach(fac->factories.add(fac));
+        TramoSeatsFactory.getInstance().resetDiagnosticFactories(factories);
         // TODO store modified settings
         // Example:
         // Preferences.userNodeForPackage(TramoSeatsPanel.class).putBoolean("someFlag", someCheckBox.isSelected());
