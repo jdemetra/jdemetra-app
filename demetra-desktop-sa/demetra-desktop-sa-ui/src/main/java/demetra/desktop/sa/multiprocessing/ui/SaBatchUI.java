@@ -8,8 +8,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import demetra.desktop.DemetraIcons;
 import demetra.desktop.DemetraBehaviour;
+import demetra.desktop.DemetraIcons;
 import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.parts.HasTsCollection;
@@ -18,6 +18,8 @@ import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.desktop.datatransfer.DataTransfers;
 import demetra.desktop.notification.MessageType;
 import demetra.desktop.notification.NotifyUtil;
+import demetra.desktop.sa.multiprocessing.ui.MultiProcessingController.SaProcessingState;
+import demetra.desktop.sa.ui.DemetraSaUI;
 import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.ui.Menus;
 import demetra.desktop.ui.Menus.DynamicPopup;
@@ -26,20 +28,18 @@ import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.util.ListTableModel;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.util.PopupMenuAdapter;
-import demetra.desktop.workspace.WorkspaceItem;
-import demetra.desktop.workspace.ui.JSpecSelectionComponent;
-import demetra.sa.SaItem;
-import demetra.desktop.sa.multiprocessing.ui.MultiProcessingController.SaProcessingState;
-import demetra.desktop.sa.ui.DemetraSaUI;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
+import demetra.desktop.workspace.ui.JSpecSelectionComponent;
 import demetra.processing.ProcQuality;
 import demetra.processing.ProcessingLog.InformationType;
 import demetra.sa.EstimationPolicyType;
 import demetra.sa.HasSaEstimation;
 import demetra.sa.SaDefinition;
 import demetra.sa.SaEstimation;
+import demetra.sa.SaItem;
 import demetra.sa.SaSpecification;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
@@ -50,6 +50,30 @@ import demetra.timeseries.regression.ModellingContext;
 import demetra.util.MultiLineNameUtil;
 import ec.util.grid.swing.XTable;
 import ec.util.table.swing.JTables;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.BeanInfo;
+import java.beans.PropertyChangeListener;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
@@ -58,34 +82,12 @@ import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.DropDownButtonFactory;
-import org.openide.util.ImageUtilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
-import java.awt.*;
-import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.beans.BeanInfo;
-import java.beans.PropertyChangeListener;
-import java.util.List;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
+import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Philippe Charles
@@ -487,21 +489,17 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 return;
             }
         }
-        controller.getDocument().getElement().reset();
         if (all) {
+            controller.getDocument().getElement().reset();
             controller.getDocument().getElement().refresh(policy, nback, item -> true);
         } else {
             Set<SaNode> sel = Arrays.stream(selection).collect(Collectors.toSet());
+            sel.forEach(n->n.setOutput(n.getOutput().copy()));
             controller.getDocument().getElement().refresh(policy, nback, item -> sel.contains(item));
-            showDetails(null);
         }
+        showDetails(null);
         controller.getDocument().setDirty();
-        SaNode[] sel = getSelection();
-        if (sel != null && sel.length == 1) {
-            showDetails(sel[0]);
-        } else {
-            showDetails(null);
-        }
+//        redrawAll();
 //        start(true);
     }
 
