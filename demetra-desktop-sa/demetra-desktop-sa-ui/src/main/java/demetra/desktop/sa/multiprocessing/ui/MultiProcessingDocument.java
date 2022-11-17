@@ -6,26 +6,21 @@ package demetra.desktop.sa.multiprocessing.ui;
 
 import demetra.sa.EstimationPolicy;
 import demetra.sa.EstimationPolicyType;
-import demetra.sa.SaDefinition;
 import demetra.sa.SaItem;
 import demetra.sa.SaItems;
 import demetra.sa.SaSpecification;
 import demetra.timeseries.TimeSelector;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsDomain;
-import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsInformationType;
-import demetra.timeseries.TsMoniker;
 import demetra.util.Documented;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -75,51 +70,69 @@ public class MultiProcessingDocument implements Documented {
     }
 
     public boolean isNew() {
-        return initial.isEmpty();
+        return initial == null;
     }
-    
+
     public void refresh(EstimationPolicy policy) {
+        if (initial == null) {
+            return;
+        }
         current.clear();
         current.addAll(of(initial.refresh(policy, TsInformationType.Data)));
     }
 
     public void refresh(EstimationPolicy policy, Predicate<SaNode> test) {
+        if (initial == null) {
+            return;
+        }
         for (int i = 0; i < current.size(); ++i) {
             SaNode cur = current.get(i);
-            if (test.test(cur)) {
-                SaNode n = SaNode.of(cur.getId(), cur.getOutput().refresh(policy, TsInformationType.Data));
+            int id=cur.getId();
+            if (id < initial.size() && test.test(cur)) {
+                SaItem item = initial.item(id);
+                SaNode n = SaNode.of(id, item.refresh(policy, TsInformationType.Data));
                 current.set(i, n);
             }
         }
     }
 
     public void refresh(EstimationPolicyType policy, TimeSelector span, Predicate<SaNode> test) {
+        if (initial == null) {
+            return;
+        }
         for (int i = 0; i < current.size(); ++i) {
             SaNode cur = current.get(i);
-            if (test.test(cur)) {
-                Ts ts = cur.getOutput().getDefinition().getTs();
+            int id=cur.getId();
+            if (id < initial.size() && test.test(cur)) {
+                SaItem item = initial.item(id);
+                Ts ts = item.getDefinition().getTs();
                 TsDomain domain = ts.getData().getDomain().select(span);
-                SaNode n = SaNode.of(cur.getId(), cur.getOutput().refresh(new EstimationPolicy(policy, domain), TsInformationType.Data));
+                SaNode n = SaNode.of(id, item.refresh(new EstimationPolicy(policy, domain), TsInformationType.Data));
                 current.set(i, n);
             }
         }
     }
 
     public void refresh(EstimationPolicyType policy, int nback, Predicate<SaNode> test) {
+        if (initial == null) {
+            return;
+        }
         for (int i = 0; i < current.size(); ++i) {
             SaNode cur = current.get(i);
-            if (test.test(cur)) {
+            int id=cur.getId();
+            if (id < initial.size() && test.test(cur)) {
+                SaItem item = initial.item(id);
                 TsDomain domain = null;
                 if (nback != 0) {
-                    Ts ts = cur.getOutput().getDefinition().getTs();
+                    Ts ts = item.getDefinition().getTs();
                     domain = ts.getData().getDomain();
                     if (nback < 0) {
                         nback = -nback * domain.getAnnualFrequency();
                     }
-                    domain=domain.drop(0, nback);
+                    domain = domain.drop(0, nback);
                 }
 
-                SaNode n = SaNode.of(cur.getId(), cur.getOutput().refresh(new EstimationPolicy(policy, domain), TsInformationType.Data));
+                SaNode n = SaNode.of(id, item.refresh(new EstimationPolicy(policy, domain), TsInformationType.Data));
                 current.set(i, n);
             }
         }

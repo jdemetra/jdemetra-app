@@ -127,7 +127,7 @@ public class ResidualSeasonalityDiagnosticsBuddy extends AbstractSaDiagnosticsFa
 
         @Override
         public Config doForward(ResidualSeasonalityDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv_Matrix", "");
+            Config.Builder result = Config.builder("diagnostics", ResidualSeasonalityDiagnosticsFactory.NAME, "");
             activeParam.set(result::parameter, a.isActive());
             severeSaParam.set(result::parameter, a.getSevereThresholdForSa());
             badSaParam.set(result::parameter, a.getBadThresholdForSa());

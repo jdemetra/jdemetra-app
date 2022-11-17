@@ -23,7 +23,6 @@ import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
 import demetra.desktop.sa.diagnostics.AbstractSaDiagnosticsFactoryBuddy;
 import demetra.desktop.sa.diagnostics.AbstractSaDiagnosticsNode;
-import demetra.desktop.sa.output.OutputFactoryBuddy;
 import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddy;
 import jdplus.x13.diagnostics.MDiagnosticsConfiguration;
 import jdplus.x13.diagnostics.MDiagnosticsFactory;
@@ -114,7 +113,7 @@ public class MDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy<MDiagno
 
         @Override
         public Config doForward(MDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv_Matrix", "");
+            Config.Builder result = Config.builder("diagnostics", MDiagnosticsFactory.NAME, "3.0");
             activeParam.set(result::parameter, a.isActive());
             severeParam.set(result::parameter, a.getSevereThreshold());
             badParam.set(result::parameter, a.getBadThreshold());

@@ -16,7 +16,6 @@
  */
 package demetra.desktop.sa.diagnostics;
 
-import demetra.desktop.Config;
 import demetra.desktop.NamedService;
 import demetra.desktop.DemetraIcons;
 import demetra.desktop.Persistable;

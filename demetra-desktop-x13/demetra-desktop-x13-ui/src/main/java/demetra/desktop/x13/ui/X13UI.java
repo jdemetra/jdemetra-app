@@ -1,12 +1,12 @@
-package demetra.desktop.tramoseats.ui;
+package demetra.desktop.x13.ui;
 
 import demetra.desktop.Config;
 import demetra.desktop.Persistable;
 import demetra.desktop.beans.PropertyChangeSource;
 import demetra.desktop.design.GlobalService;
-import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddy;
 import demetra.desktop.util.LazyGlobalService;
 import demetra.desktop.util.Persistence;
+import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddy;
 import demetra.sa.SaDiagnosticsFactory;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -14,32 +14,32 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import jdplus.tramoseats.TramoSeatsFactory;
-import jdplus.tramoseats.TramoSeatsResults;
+import jdplus.x13.X13Factory;
+import jdplus.x13.X13Results;
 import nbbrd.design.MightBeGenerated;
 import org.openide.util.Lookup;
 
 @GlobalService
-public final class TramoSeatsUI implements PropertyChangeSource.WithWeakListeners, Persistable {
+public final class X13UI implements PropertyChangeSource.WithWeakListeners, Persistable {
     
     public static void setDiagnostics(){
-        Lookup.getDefault().lookupAll(TramoSeatsDiagnosticsFactoryBuddy.class).stream().forEach(TramoSeatsDiagnosticsFactoryBuddy::commit);
+        Lookup.getDefault().lookupAll(X13DiagnosticsFactoryBuddy.class).stream().forEach(X13DiagnosticsFactoryBuddy::commit);
         // updates the diagnostics factories of the main processor
-        Stream<SaDiagnosticsFactory<?, TramoSeatsResults>> map = Lookup.getDefault()
-                .lookupAll(TramoSeatsDiagnosticsFactoryBuddy.class)
+        Stream<SaDiagnosticsFactory<?, X13Results>> map = Lookup.getDefault()
+                .lookupAll(X13DiagnosticsFactoryBuddy.class)
                 .stream()
-                .map(buddy->(SaDiagnosticsFactory<?, TramoSeatsResults>) buddy.createFactory());
-        List<SaDiagnosticsFactory<?, TramoSeatsResults>> factories=new ArrayList();
+                .map(buddy->(SaDiagnosticsFactory<?, X13Results>) buddy.createFactory());
+        List<SaDiagnosticsFactory<?, X13Results>> factories=new ArrayList();
         map.forEach(fac->factories.add(fac));
-        TramoSeatsFactory.getInstance().resetDiagnosticFactories(factories);
+        X13Factory.getInstance().resetDiagnosticFactories(factories);
     }
 
     @NonNull
-    public static TramoSeatsUI get() {
-        return LazyGlobalService.get(TramoSeatsUI.class, TramoSeatsUI::new);
+    public static X13UI get() {
+        return LazyGlobalService.get(X13UI.class, X13UI::new);
     }
 
-    private TramoSeatsUI() {
+    private X13UI() {
     }
 
     @lombok.experimental.Delegate(types = PropertyChangeSource.class)
@@ -58,8 +58,8 @@ public final class TramoSeatsUI implements PropertyChangeSource.WithWeakListener
     }
 
     @MightBeGenerated
-    private static final Persistence<TramoSeatsUI> PERSISTENCE = Persistence
-            .builderOf(TramoSeatsUI.class)
+    private static final Persistence<X13UI> PERSISTENCE = Persistence
+            .builderOf(X13UI.class)
             .name("demetra-ui")
             .version("3.0.0")
             .build();

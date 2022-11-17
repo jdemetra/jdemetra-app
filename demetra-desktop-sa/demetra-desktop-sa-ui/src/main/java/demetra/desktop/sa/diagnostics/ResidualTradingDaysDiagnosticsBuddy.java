@@ -21,7 +21,6 @@ import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.sa.output.OutputFactoryBuddy;
 import jdplus.sa.diagnostics.ResidualTradingDaysDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.ResidualTradingDaysDiagnosticsFactory;
 import nbbrd.io.text.DoubleProperty;
@@ -102,7 +101,7 @@ public class ResidualTradingDaysDiagnosticsBuddy extends AbstractSaDiagnosticsFa
 
         @Override
         public Config doForward(ResidualTradingDaysDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv_Matrix", "");
+            Config.Builder result = Config.builder("diagnostics", ResidualTradingDaysDiagnosticsFactory.NAME, "3.0");
             activeParam.set(result::parameter, a.isActive());
             severeParam.set(result::parameter, a.getSevereThreshold());
             badParam.set(result::parameter, a.getBadThreshold());

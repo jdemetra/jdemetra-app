@@ -13,6 +13,7 @@ import demetra.timeseries.Ts;
 import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsInformationType;
 import demetra.timeseries.TsMoniker;
+import demetra.timeseries.regression.ModellingContext;
 
 /**
  *
@@ -21,26 +22,64 @@ import demetra.timeseries.TsMoniker;
 @lombok.Data
 public class SaNode {
 
+    public static enum Status {
+
+        Unprocessed,
+        NoSpec,
+        NoData,
+        Pending,
+        Valid,
+        Invalid;
+
+        public boolean isError() {
+            return isProcessed() && this != Valid;
+        }
+
+        public boolean isProcessed() {
+            return this != Unprocessed && this != Pending;
+        }
+    }
+    
     final int id;
     final String name;
     final TsMoniker moniker;
     final SaSpecification spec;
 
     volatile SaItem output;
+    volatile Status status=Status.Unprocessed;
 
     public static SaNode of(int id, Ts ts, SaSpecification spec) {
         SaNode node = new SaNode(id, ts.getName(), ts.getMoniker(), spec);
         if (ts.getType().encompass(TsInformationType.Data)) {
             node.setOutput(SaItem.of(ts, spec));
+            node.status=Status.Unprocessed;
         }
         return node;
+    }
+    
+    private static Status status(SaItem item){
+        SaEstimation estimation = item.getEstimation();
+        if (estimation == null)
+            return Status.Unprocessed;
+        if (estimation.getResults() != null)
+            return Status.Valid;
+        return Status.Unprocessed;
     }
 
     public static SaNode of(int id, SaItem item) {
         SaDefinition definition = item.getDefinition();
         SaNode node = new SaNode(id, item.getName(), definition.getTs().getMoniker(), definition.activeSpecification());
         node.output = item;
+        node.status = status(item);
         return node;
+    }
+
+    void process(ModellingContext context, boolean verbose) {
+        boolean processed = output.process(context, verbose);
+        if (! processed)
+            status=Status.Invalid;
+        else
+            status=Status.Valid;
     }
 
     public SaNode with(SaSpecification nspec) {
@@ -75,8 +114,7 @@ public class SaNode {
     }
 
     public boolean isProcessed() {
-        SaItem o = output;
-        return o != null && o.isProcessed();
+        return status.isProcessed();
     }
 
     public SaSpecification domainSpec() {
