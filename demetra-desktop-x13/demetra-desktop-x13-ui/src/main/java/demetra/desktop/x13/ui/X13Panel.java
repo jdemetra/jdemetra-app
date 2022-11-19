@@ -11,6 +11,8 @@ import demetra.desktop.nodes.NamedServiceNode;
 import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddy;
 import java.beans.PropertyChangeEvent;
 import javax.swing.JPanel;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
@@ -49,10 +51,6 @@ final class X13Panel extends javax.swing.JPanel {
         editDiagnostic = new javax.swing.JButton();
         resetDiagnostic = new javax.swing.JButton();
         diagnosticsView = new org.openide.explorer.view.OutlineView("Diagnostics");
-        outputPanel = new ExtPanel();
-        jToolBar2 = new javax.swing.JToolBar();
-        editOutput = new javax.swing.JButton();
-        outputView = new org.openide.explorer.view.OutlineView("Diagnostics");
         componentsPanel = new javax.swing.JPanel();
         seriesSubPanel1 = new javax.swing.JPanel();
         selectedSeriesLabel = new javax.swing.JLabel();
@@ -68,6 +66,7 @@ final class X13Panel extends javax.swing.JPanel {
         jToolBar1.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jToolBar1.setRollover(true);
 
+        editDiagnostic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/x13/ui/preferences-system_16x16.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(editDiagnostic, org.openide.util.NbBundle.getMessage(X13Panel.class, "X13Panel.editDiagnostic.text")); // NOI18N
         editDiagnostic.setFocusable(false);
         editDiagnostic.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -79,6 +78,7 @@ final class X13Panel extends javax.swing.JPanel {
         });
         jToolBar1.add(editDiagnostic);
 
+        resetDiagnostic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/demetra/desktop/x13/ui/reset_16x16.png"))); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(resetDiagnostic, org.openide.util.NbBundle.getMessage(X13Panel.class, "X13Panel.resetDiagnostic.text")); // NOI18N
         resetDiagnostic.setFocusable(false);
         resetDiagnostic.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -103,49 +103,12 @@ final class X13Panel extends javax.swing.JPanel {
         );
         diagnosticsPanelLayout.setVerticalGroup(
             diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(diagnosticsPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(diagnosticsView, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
-
-        outputPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(X13Panel.class, "X13Panel.outputPanel.border.title"))); // NOI18N
-
-        jToolBar2.setOrientation(javax.swing.SwingConstants.VERTICAL);
-        jToolBar2.setRollover(true);
-
-        org.openide.awt.Mnemonics.setLocalizedText(editOutput, org.openide.util.NbBundle.getMessage(X13Panel.class, "X13Panel.editOutput.text")); // NOI18N
-        editOutput.setFocusable(false);
-        editOutput.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        editOutput.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        editOutput.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editOutputActionPerformed(evt);
-            }
-        });
-        jToolBar2.add(editOutput);
-
-        javax.swing.GroupLayout outputPanelLayout = new javax.swing.GroupLayout(outputPanel);
-        outputPanel.setLayout(outputPanelLayout);
-        outputPanelLayout.setHorizontalGroup(
-            outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(outputPanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, diagnosticsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(outputView, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(diagnosticsView, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE))
                 .addContainerGap())
-        );
-        outputPanelLayout.setVerticalGroup(
-            outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(outputPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(outputPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(outputView, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         componentsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(X13Panel.class, "X13Panel.componentsPanel.border.title"))); // NOI18N
@@ -194,12 +157,10 @@ final class X13Panel extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(componentsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 457, Short.MAX_VALUE)
+            .addComponent(componentsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(diagnosticsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(outputPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(diagnosticsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -207,10 +168,8 @@ final class X13Panel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(componentsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(diagnosticsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(outputPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(diagnosticsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -221,19 +180,20 @@ final class X13Panel extends javax.swing.JPanel {
     }//GEN-LAST:event_editDiagnosticActionPerformed
 
     private void resetDiagnosticActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetDiagnosticActionPerformed
-//        if (getDiagnosticsExplorerManager().getSelectedNodes() != null && getDiagnosticsExplorerManager().getSelectedNodes().length != 0) {
-//            NotifyDescriptor d = new NotifyDescriptor.Confirmation("Would you like to reset to default values ?", "Reset", NotifyDescriptor.YES_NO_OPTION);
-//            if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.YES_OPTION) {
-//                Node node = getDiagnosticsExplorerManager().getSelectedNodes()[0];
-//                IResetable r = node.getLookup().lookup(IResetable.class);
-//                r.reset();
-//            }
-//        }
+        Node[] sel = getDiagnosticsExplorerManager().getSelectedNodes();
+        if (sel == null || sel.length == 0) {
+            return;
+        }
+        Node node = sel[0];
+        Resetable r = node.getLookup().lookup(Resetable.class);
+        if (r == null) {
+            return;
+        }
+        NotifyDescriptor d = new NotifyDescriptor.Confirmation("Would you like to reset to default values ?", "Reset", NotifyDescriptor.YES_NO_OPTION);
+        if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.YES_OPTION) {
+            r.reset();
+        }
     }//GEN-LAST:event_resetDiagnosticActionPerformed
-
-    private void editOutputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editOutputActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_editOutputActionPerformed
 
     private void selectedSeriesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectedSeriesButtonActionPerformed
 //        fieldSelectionComponent.getSourceModel().clear();
@@ -278,25 +238,18 @@ final class X13Panel extends javax.swing.JPanel {
     }//GEN-LAST:event_selectedDiagButtonActionPerformed
 
     void load() {
-        AbstractNodeBuilder root = new AbstractNodeBuilder();
-        root.add(new AbstractNodeBuilder().name("Diagnostics")
-                .add(Lookup.getDefault().lookupAll(X13DiagnosticsFactoryBuddy.class).stream().map(NamedServiceNode::new)).build());
+        AbstractNodeBuilder root = new AbstractNodeBuilder()
+                .name("Diagnostics")
+                .add(Lookup.getDefault().lookupAll(X13DiagnosticsFactoryBuddy.class).stream().map(NamedServiceNode::new));
         getDiagnosticsExplorerManager().setRootContext(root.build());
     }
 
     void store() {
-        // TODO store modified settings
-        // Example:
-        // Preferences.userNodeForPackage(X13Panel.class).putBoolean("someFlag", someCheckBox.isSelected());
-        // or for org.openide.util with API spec. version >= 7.4:
-        // NbPreferences.forModule(X13Panel.class).putBoolean("someFlag", someCheckBox.isSelected());
-        // or:
-        // SomeSystemOption.getDefault().setSomeStringProperty(someTextField.getText());
+        X13UI.setDiagnostics();
     }
 
     boolean valid() {
-        // TODO check whether form is consistent and complete
-        return true;
+        return Lookup.getDefault().lookupAll(X13DiagnosticsFactoryBuddy.class).stream().allMatch(X13DiagnosticsFactoryBuddy::valid);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -304,13 +257,9 @@ final class X13Panel extends javax.swing.JPanel {
     private javax.swing.JPanel diagnosticsPanel;
     private org.openide.explorer.view.OutlineView diagnosticsView;
     private javax.swing.JButton editDiagnostic;
-    private javax.swing.JButton editOutput;
     private javax.swing.JLabel estimationLabel1;
     private javax.swing.JLabel estimationLabel6;
     private javax.swing.JToolBar jToolBar1;
-    private javax.swing.JToolBar jToolBar2;
-    private javax.swing.JPanel outputPanel;
-    private org.openide.explorer.view.OutlineView outputView;
     private javax.swing.JButton resetDiagnostic;
     private javax.swing.JButton selectedDiagButton;
     private javax.swing.JLabel selectedDiagLabel;

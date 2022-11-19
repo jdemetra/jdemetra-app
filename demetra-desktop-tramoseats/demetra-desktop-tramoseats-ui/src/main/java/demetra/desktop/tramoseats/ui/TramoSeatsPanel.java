@@ -9,14 +9,8 @@ import demetra.desktop.actions.Resetable;
 import demetra.desktop.nodes.AbstractNodeBuilder;
 import demetra.desktop.nodes.NamedServiceNode;
 import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
 import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 import javax.swing.JPanel;
-import jdplus.tramoseats.TramoSeatsFactory;
-import jdplus.tramoseats.TramoSeatsResults;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.explorer.ExplorerManager;
@@ -139,7 +133,6 @@ final class TramoSeatsPanel extends javax.swing.JPanel {
         });
         jToolBar1.add(resetDiagnostic);
 
-        diagnosticsView.setColumnHeader(null);
         diagnosticsView.setColumnHeaderView(null);
         diagnosticsView.setQuickSearchAllowed(false);
         diagnosticsView.setRowHeaderView(null);
@@ -160,15 +153,19 @@ final class TramoSeatsPanel extends javax.swing.JPanel {
             .addGroup(diagnosticsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(diagnosticsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(diagnosticsView, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(diagnosticsPanelLayout.createSequentialGroup()
+                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(70, 109, Short.MAX_VALUE))
+                    .addGroup(diagnosticsPanelLayout.createSequentialGroup()
+                        .addComponent(diagnosticsView, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(componentsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+            .addComponent(componentsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(diagnosticsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -179,7 +176,7 @@ final class TramoSeatsPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(componentsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(diagnosticsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(diagnosticsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -256,28 +253,11 @@ final class TramoSeatsPanel extends javax.swing.JPanel {
     }
 
     void store() {
-        Lookup.getDefault().lookupAll(TramoSeatsDiagnosticsFactoryBuddy.class).stream().forEach(TramoSeatsDiagnosticsFactoryBuddy::commit);
-        // updates the diagnostics factories of the main processor
-        Stream<SaDiagnosticsFactory<?, TramoSeatsResults>> map = Lookup.getDefault()
-                .lookupAll(TramoSeatsDiagnosticsFactoryBuddy.class)
-                .stream()
-                .map(buddy->(SaDiagnosticsFactory<?, TramoSeatsResults>) buddy.createFactory());
-        List<SaDiagnosticsFactory<?, TramoSeatsResults>> factories=new ArrayList();
-        map.forEach(fac->factories.add(fac));
-        TramoSeatsFactory.getInstance().resetDiagnosticFactories(factories);
-        // TODO store modified settings
-        // Example:
-        // Preferences.userNodeForPackage(TramoSeatsPanel.class).putBoolean("someFlag", someCheckBox.isSelected());
-        // or for org.openide.util with API spec. version >= 7.4:
-        // NbPreferences.forModule(TramoSeatsPanel.class).putBoolean("someFlag", someCheckBox.isSelected());
-        // or:
-        // SomeSystemOption.getDefault().setSomeStringProperty(someTextField.getText());
+        TramoSeatsUI.setDiagnostics();
     }
 
     boolean valid() {
-        Lookup.getDefault().lookupAll(TramoSeatsDiagnosticsFactoryBuddy.class).stream().allMatch(TramoSeatsDiagnosticsFactoryBuddy::valid);
-        // TODO check whether form is consistent and complete
-        return true;
+        return Lookup.getDefault().lookupAll(TramoSeatsDiagnosticsFactoryBuddy.class).stream().allMatch(TramoSeatsDiagnosticsFactoryBuddy::valid);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

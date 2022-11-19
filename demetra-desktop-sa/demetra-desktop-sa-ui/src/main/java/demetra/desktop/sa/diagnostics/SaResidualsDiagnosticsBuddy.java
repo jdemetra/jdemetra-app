@@ -119,7 +119,7 @@ public class SaResidualsDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBud
 
         @Override
         public Config doForward(ResidualsDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder("diagnostics", this.getClass().getName(), "");
+            Config.Builder result = Config.builder("diagnostics", "residuals", "3.0");
             activeParam.set(result::parameter, a.isActive());
             nBadParam.set(result::parameter, a.getBadThresholdForNormality());
             nUncertainParam.set(result::parameter, a.getUncertainThresholdForNormality());

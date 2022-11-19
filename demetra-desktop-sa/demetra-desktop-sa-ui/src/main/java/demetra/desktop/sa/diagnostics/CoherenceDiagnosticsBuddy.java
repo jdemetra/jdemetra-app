@@ -21,7 +21,6 @@ import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.sa.output.OutputFactoryBuddy;
 import jdplus.sa.diagnostics.CoherenceDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.CoherenceDiagnosticsFactory;
 import nbbrd.io.text.DoubleProperty;
@@ -116,7 +115,7 @@ public class CoherenceDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy
 
         @Override
         public Config doForward(CoherenceDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv_Matrix", "");
+            Config.Builder result = Config.builder("diagnostics", "coherence", "3.0");
             activeParam.set(result::parameter, a.isActive());
             tolParam.set(result::parameter, a.getTolerance());
             errorParam.set(result::parameter, a.getErrorThreshold());

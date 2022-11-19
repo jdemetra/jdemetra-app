@@ -102,7 +102,7 @@ public class SpectralDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy<
 
         @Override
         public Config doForward(SpectralDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder("diagnostics", "spectral_diagnostics", "3.0");
+            Config.Builder result = Config.builder("diagnostics", "spectrum", "3.0");
             activeParam.set(result::parameter, a.isActive());
             sensibilityParam.set(result::parameter, a.getSensibility());
             lengthParam.set(result::parameter, a.getLength());

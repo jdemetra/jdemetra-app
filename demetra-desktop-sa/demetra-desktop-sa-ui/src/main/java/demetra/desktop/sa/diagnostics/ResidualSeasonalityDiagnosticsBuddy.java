@@ -21,7 +21,6 @@ import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.sa.output.OutputFactoryBuddy;
 import jdplus.sa.diagnostics.ResidualSeasonalityDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.ResidualSeasonalityDiagnosticsFactory;
 import nbbrd.io.text.DoubleProperty;
@@ -127,7 +126,7 @@ public class ResidualSeasonalityDiagnosticsBuddy extends AbstractSaDiagnosticsFa
 
         @Override
         public Config doForward(ResidualSeasonalityDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv_Matrix", "");
+            Config.Builder result = Config.builder("diagnostics", "combined_seasonality", "");
             activeParam.set(result::parameter, a.isActive());
             severeSaParam.set(result::parameter, a.getSevereThresholdForSa());
             badSaParam.set(result::parameter, a.getBadThresholdForSa());

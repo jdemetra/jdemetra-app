@@ -238,7 +238,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         runButton = toolBarRepresentation.add(new AbstractAction("", DemetraIcons.COMPILE_16) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                start(false);
+                start(true);
             }
         });
         runButton.setDisabledIcon(ImageUtilities.createDisabledIcon(runButton.getIcon()));
@@ -395,13 +395,9 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         }
         if (selection.length > 0) {
             SaNode item = selection[0];
-            item.process();
-            if (!item.getOutput().isProcessed()) {
-                // TODO: put this in another thread
-                item.getOutput().compute(ModellingContext.getActiveContext(), true);
-                int idx = getElement().getCurrent().indexOf(item);
-                model.fireTableRowsUpdated(idx, idx);
-            }
+            item.process(ModellingContext.getActiveContext(), true);
+            int idx = getElement().getCurrent().indexOf(item);
+            model.fireTableRowsUpdated(idx, idx);
             showDetails(item);
         } else {
             showDetails(null);
@@ -440,9 +436,9 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
     // < GETTERS/SETTERS
 
-    public boolean start(boolean local) {
+    public boolean start(boolean all) {
         makeBusy(true);
-        worker = new SwingWorkerImpl(local);
+        worker = new SwingWorkerImpl(all);
         worker.addPropertyChangeListener(evt -> {
             switch (worker.getState()) {
                 case DONE:
@@ -490,17 +486,15 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             }
         }
         if (all) {
-            controller.getDocument().getElement().reset();
             controller.getDocument().getElement().refresh(policy, nback, item -> true);
         } else {
             Set<SaNode> sel = Arrays.stream(selection).collect(Collectors.toSet());
-            sel.forEach(n->n.setOutput(n.getOutput().copy()));
+            sel.forEach(n -> n.setOutput(n.getOutput().copy()));
             controller.getDocument().getElement().refresh(policy, nback, item -> sel.contains(item));
         }
         showDetails(null);
         controller.getDocument().setDirty();
-//        redrawAll();
-//        start(true);
+        start(all);
     }
 
     public void paste(boolean interactive) {
@@ -1014,24 +1008,24 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 return "";
             }
             EstimationPolicyType policy = item.getOutput().getDefinition().getPolicy();
-            switch (policy) {
-                case Fixed:
-                    return "Fixed model";
-                case FixedParameters:
-                    return "Reg. coefficients";
-                case FreeParameters:
-                    return "Arima parameters";
-                case LastOutliers:
-                    return "Last outliers";
-                case Outliers:
-                    return "Outliers";
-                case Outliers_StochasticComponent:
-                    return "Arima model";
-                case Complete:
-                    return "Concurrent";
-                default:
-                    return policy.name();
-            }
+            return switch (policy) {
+                case Fixed ->
+                    "Fixed model";
+                case FixedParameters ->
+                    "Reg. coefficients";
+                case FreeParameters ->
+                    "Arima parameters";
+                case LastOutliers ->
+                    "Last outliers";
+                case Outliers_StochasticComponent ->
+                    "Arima model";
+                case Complete ->
+                    "Concurrent";
+                case None ->
+                    "New";
+                default ->
+                    policy.name();
+            };
         }
     }
 
@@ -1039,20 +1033,21 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         @Override
         protected String getText(SaNode item) {
-            return item.isProcessed() ? "processed" : "";
+            return item.getStatus().toString();
         }
 
         @Override
         protected Color getColor(SaNode item) {
-            if (!item.isProcessed()) {
-                return Color.GRAY;
-            }
-            ProcQuality quality = item.results().getQuality();
-            if (quality == ProcQuality.Undefined) {
-                return Color.RED;
-            } else {
-                return null;
-            }
+            return switch (item.getStatus()) {
+                case Unprocessed ->
+                    Color.GRAY;
+                case Pending ->
+                    Color.ORANGE;
+                case Valid ->
+                    null;
+                default ->
+                    Color.RED;
+            };
         }
     }
 
@@ -1083,20 +1078,27 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
         Color getColor(ProcQuality quality) {
             switch (quality) {
-                case Error:
+                case Error -> {
                     return Color.RED.darker().darker();
-                case Severe:
+                }
+                case Severe -> {
                     return Color.RED.darker();
-                case Bad:
+                }
+                case Bad -> {
                     return Color.RED;
-                case Uncertain:
+                }
+                case Uncertain -> {
                     return Color.ORANGE.darker();
-                case Good:
+                }
+                case Good -> {
                     return Color.GREEN.darker();
-                case Accepted:
+                }
+                case Accepted -> {
                     return Color.GRAY;
-                case Undefined:
+                }
+                case Undefined -> {
                     return null;
+                }
             }
             throw new RuntimeException();
         }
@@ -1195,11 +1197,21 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     private class SwingWorkerImpl extends SwingWorker<Void, SaNode> {
 
-        private final boolean local;
+        private final SaNode[] items;
+        private final ModellingContext context = ModellingContext.getActiveContext();
 
-        public SwingWorkerImpl(boolean local) {
-
-            this.local = local && (selection != null && selection.length > 0);
+        public SwingWorkerImpl(boolean all) {
+            if (all) {
+                List<SaNode> current = getElement().getCurrent();
+                items = current.stream().filter(o -> !o.getOutput().isProcessed())
+                        .peek(o -> o.setStatus(SaNode.Status.Pending))
+                        .toArray(SaNode[]::new);
+            } else {
+                SaNode[] sel = getSelection();
+                items = Arrays.stream(sel).filter(o -> !o.getOutput().isProcessed())
+                        .peek(o -> o.setStatus(SaNode.Status.Pending))
+                        .toArray(SaNode[]::new);
+            }
         }
 
         @Override
@@ -1239,15 +1251,10 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         }
 
         private List<Callable<String>> createTasks() {
-            List<SaNode> items = getElement().getCurrent();
-            ModellingContext context = ModellingContext.getActiveContext();
-            List<Callable<String>> result = new ArrayList(items.size());
+            List<Callable<String>> result = new ArrayList(items.length);
             for (final SaNode o : items) {
                 result.add((Callable<String>) () -> {
-                    o.process();
-                    if (!o.getOutput().isProcessed()) {
-                        o.getOutput().process(context, true);
-                    }
+                    o.process(context, true);
                     publish(o);
                     SaEstimation result1 = o.getOutput().getEstimation();
                     String rslt = result1 == null ? " failed" : " processed";

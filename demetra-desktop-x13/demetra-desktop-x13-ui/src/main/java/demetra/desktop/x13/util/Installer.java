@@ -14,12 +14,12 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.tramoseats.util;
+package demetra.desktop.x13.util;
 
 import demetra.desktop.Config;
-import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddies;
-import demetra.desktop.tramoseats.ui.TramoSeatsUI;
 import demetra.desktop.util.InstallerStep;
+import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddies;
+import demetra.desktop.x13.ui.X13UI;
 import java.util.prefs.Preferences;
 import org.openide.modules.ModuleInstall;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public final class Installer extends ModuleInstall {
     final static Logger LOGGER = LoggerFactory.getLogger(Installer.class);
 
     public static final InstallerStep STEP = InstallerStep.all(
-            new DemetraTramoSeatsDiagnosticsStep()
+            new DemetraX13DiagnosticsStep()
     );
 
     @Override
@@ -45,22 +45,22 @@ public final class Installer extends ModuleInstall {
         super.close();
     }
 
-    private static final class DemetraTramoSeatsDiagnosticsStep extends InstallerStep {
+    private static final class DemetraX13DiagnosticsStep extends InstallerStep {
 
         final Preferences prefs = prefs().node("diagnostics");
 
         @Override
         public void restore() {
-            TramoSeatsDiagnosticsFactoryBuddies.getInstance().getFactories().forEach(buddy->{
+            X13DiagnosticsFactoryBuddies.getInstance().getFactories().forEach(buddy->{
                     Preferences nprefs = prefs.node(buddy.getDisplayName());
                     tryGet(nprefs).ifPresent(buddy::setConfig);
             });
-            TramoSeatsUI.setDiagnostics();
+            X13UI.setDiagnostics();
         }
 
         @Override
         public void close() {
-            TramoSeatsDiagnosticsFactoryBuddies.getInstance().getFactories().forEach(buddy->{
+            X13DiagnosticsFactoryBuddies.getInstance().getFactories().forEach(buddy->{
                 Config config = buddy.getConfig();
                 if (config != null){
                     Preferences nprefs = prefs.node(buddy.getDisplayName());

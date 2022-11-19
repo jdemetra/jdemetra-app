@@ -21,7 +21,6 @@ import demetra.desktop.properties.NodePropertySetBuilder;
 import org.openide.nodes.Sheet;
 import nbbrd.io.text.BooleanProperty;
 import demetra.desktop.Converter;
-import demetra.desktop.sa.output.OutputFactoryBuddy;
 import jdplus.regarima.diagnostics.OutOfSampleDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.SaOutOfSampleDiagnosticsFactory;
 import nbbrd.io.text.DoubleProperty;
@@ -110,7 +109,7 @@ public class SaOutOfSampleDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryB
 
         @Override
         public Config doForward(OutOfSampleDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv_Matrix", "");
+            Config.Builder result = Config.builder("diagnostics", "out_of_sample", "3.0");
             activeParam.set(result::parameter, a.isActive());
             badParam.set(result::parameter, a.getBadThreshold());
             uncertainParam.set(result::parameter, a.getUncertainThreshold());
