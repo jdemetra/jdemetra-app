@@ -140,7 +140,7 @@ public class MultiProcessingDocument implements Documented {
 
     public SaItems current(Map<String, String> nmeta) {
 
-        current.forEach(cur -> cur.process());
+        current.forEach(cur -> cur.prepare());
 
         return SaItems.builder()
                 .meta(nmeta)
@@ -212,6 +212,6 @@ public class MultiProcessingDocument implements Documented {
     }
 
     public SaItem[] all() {
-        return current.stream().peek(o -> o.process()).map(o -> o.getOutput()).toArray(n -> new SaItem[n]);
+        return current.stream().peek(o -> o.prepare()).map(o -> o.getOutput()).toArray(n -> new SaItem[n]);
     }
 }

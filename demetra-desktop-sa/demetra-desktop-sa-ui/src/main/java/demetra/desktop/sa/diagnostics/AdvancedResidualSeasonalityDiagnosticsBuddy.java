@@ -112,7 +112,7 @@ public class AdvancedResidualSeasonalityDiagnosticsBuddy
 
         @Override
         public Config doForward(AdvancedResidualSeasonalityDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder("diagnostics", AdvancedResidualSeasonalityDiagnosticsFactory.NAME, "3.0");
+            Config.Builder result = Config.builder("diagnostics", "residual_seasonality", "3.0");
             activeParam.set(result::parameter, a.isActive());
             severeParam.set(result::parameter, a.getSevereThreshold());
             badParam.set(result::parameter, a.getBadThreshold());

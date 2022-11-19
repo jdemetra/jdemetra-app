@@ -113,7 +113,7 @@ public class MDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy<MDiagno
 
         @Override
         public Config doForward(MDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder("diagnostics", MDiagnosticsFactory.NAME, "3.0");
+            Config.Builder result = Config.builder("diagnostics", "mstatistics", "3.0");
             activeParam.set(result::parameter, a.isActive());
             severeParam.set(result::parameter, a.getSevereThreshold());
             badParam.set(result::parameter, a.getBadThreshold());

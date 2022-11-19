@@ -115,7 +115,7 @@ public class CoherenceDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBuddy
 
         @Override
         public Config doForward(CoherenceDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder("diagnostics", CoherenceDiagnosticsFactory.NAME, "3.0");
+            Config.Builder result = Config.builder("diagnostics", "coherence", "3.0");
             activeParam.set(result::parameter, a.isActive());
             tolParam.set(result::parameter, a.getTolerance());
             errorParam.set(result::parameter, a.getErrorThreshold());

@@ -109,7 +109,7 @@ public class SaOutOfSampleDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryB
 
         @Override
         public Config doForward(OutOfSampleDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder("diagnostics", SaOutOfSampleDiagnosticsFactory.NAME, "3.0");
+            Config.Builder result = Config.builder("diagnostics", "out_of_sample", "3.0");
             activeParam.set(result::parameter, a.isActive());
             badParam.set(result::parameter, a.getBadThreshold());
             uncertainParam.set(result::parameter, a.getUncertainThreshold());

@@ -101,7 +101,7 @@ public class SaOutliersDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBudd
 
         @Override
         public Config doForward(OutliersDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder("diagnostics", SaOutliersDiagnosticsFactory.NAME, "3.0");
+            Config.Builder result = Config.builder("diagnostics", "outliers", "3.0");
             activeParam.set(result::parameter, a.isActive());
             severeParam.set(result::parameter, a.getSevereThreshold());
             badParam.set(result::parameter, a.getBadThreshold());

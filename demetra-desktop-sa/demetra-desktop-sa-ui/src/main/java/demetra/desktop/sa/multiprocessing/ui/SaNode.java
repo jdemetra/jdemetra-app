@@ -22,17 +22,19 @@ import demetra.timeseries.regression.ModellingContext;
 @lombok.Data
 public class SaNode {
 
+    /**
+     * Status of the processing
+     */
     public static enum Status {
 
         Unprocessed,
-        NoSpec,
         NoData,
         Pending,
         Valid,
         Invalid;
 
         public boolean isError() {
-            return isProcessed() && this != Valid;
+            return this == NoData || this == Invalid;
         }
 
         public boolean isProcessed() {
@@ -63,7 +65,7 @@ public class SaNode {
             return Status.Unprocessed;
         if (estimation.getResults() != null)
             return Status.Valid;
-        return Status.Unprocessed;
+        return Status.Unprocessed; // Invalid should be captured elsewhere
     }
 
     public static SaNode of(int id, SaItem item) {
@@ -73,13 +75,22 @@ public class SaNode {
         node.status = status(item);
         return node;
     }
+    
+    void prepare(){
+        if (output == null) {
+            Ts ts = TsFactory.getDefault().makeTs(moniker, TsInformationType.Data);
+            output = SaItem.of(ts, spec);
+        }
+    }
 
-    void process(ModellingContext context, boolean verbose) {
-        boolean processed = output.process(context, verbose);
-        if (! processed)
-            status=Status.Invalid;
-        else
-            status=Status.Valid;
+    public void process(ModellingContext context, boolean verbose) {
+        if (status.isProcessed())
+            return;
+        if (output == null) {
+            Ts ts = TsFactory.getDefault().makeTs(moniker, TsInformationType.Data);
+            output = SaItem.of(ts, spec);
+        }
+        status = output.process(context, verbose) ? Status.Valid : Status.Invalid;
     }
 
     public SaNode with(SaSpecification nspec) {
@@ -99,13 +110,6 @@ public class SaNode {
                     .priority(item.getPriority())
                     .build();
             return SaNode.of(id, nitem);
-        }
-    }
-
-    public void process() {
-        if (output == null) {
-            Ts ts = TsFactory.getDefault().makeTs(moniker, TsInformationType.Data);
-            output = SaItem.of(ts, spec);
         }
     }
 

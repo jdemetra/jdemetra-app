@@ -110,7 +110,7 @@ public final class SeatsDiagnosticsBuddy extends AbstractSaDiagnosticsFactoryBud
 
         @Override
         public Config doForward(SeatsDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder("diagnostics", SeatsDiagnosticsFactory.NAME, "3.0");
+            Config.Builder result = Config.builder("diagnostics", "seats", "3.0");
             activeParam.set(result::parameter, a.isActive());
             uncertainParam.set(result::parameter, a.getUncertainThreshold());
             badParam.set(result::parameter, a.getBadThreshold());

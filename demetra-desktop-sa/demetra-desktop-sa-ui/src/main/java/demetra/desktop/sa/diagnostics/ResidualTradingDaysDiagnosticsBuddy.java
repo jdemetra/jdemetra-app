@@ -101,7 +101,7 @@ public class ResidualTradingDaysDiagnosticsBuddy extends AbstractSaDiagnosticsFa
 
         @Override
         public Config doForward(ResidualTradingDaysDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder("diagnostics", ResidualTradingDaysDiagnosticsFactory.NAME, "3.0");
+            Config.Builder result = Config.builder("diagnostics", "residual_td", "3.0");
             activeParam.set(result::parameter, a.isActive());
             severeParam.set(result::parameter, a.getSevereThreshold());
             badParam.set(result::parameter, a.getBadThreshold());
