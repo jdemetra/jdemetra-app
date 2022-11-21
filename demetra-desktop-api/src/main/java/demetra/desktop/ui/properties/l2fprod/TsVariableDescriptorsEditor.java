@@ -27,7 +27,8 @@ public class TsVariableDescriptorsEditor extends AbstractPropertyEditor {
             @Override
             public void actionPerformed(ActionEvent e) {
                 final ArrayEditorDialog<TsVariableDescriptorUI> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
-                        null != descriptors_ ? getDescriptors() : new TsVariableDescriptorUI[]{}, TsVariableDescriptorUI.class);
+                        null != descriptors_ ? getDescriptors() : new TsVariableDescriptorUI[]{}, 
+                        TsVariableDescriptorUI::new, TsVariableDescriptorUI::duplicate);
                 dialog.setTitle("Variables");
                 dialog.setVisible(true);
                 if (dialog.isDirty()) {

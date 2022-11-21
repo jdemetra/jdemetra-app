@@ -3,6 +3,7 @@ package demetra.desktop;
 import demetra.desktop.beans.PropertyChangeSource;
 import demetra.desktop.design.GlobalService;
 import demetra.desktop.design.SwingProperty;
+import demetra.desktop.ui.properties.l2fprod.OutlierDefinitionsEditor;
 import demetra.desktop.util.LazyGlobalService;
 import demetra.desktop.util.Persistence;
 import demetra.tsprovider.util.ObsFormat;
@@ -104,6 +105,21 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
         broadcaster.firePropertyChange(GROWTH_LAST_YEARS_PROPERTY, old, growthLastYears);
     }
 
+    @SwingProperty
+    public static final String PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY = "prespecifiedOutliersEditor";
+    private static final OutlierDefinitionsEditor.PrespecificiedOutliersEditor DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR = OutlierDefinitionsEditor.PrespecificiedOutliersEditor.LIST;
+    private OutlierDefinitionsEditor.PrespecificiedOutliersEditor prespecifiedOutliersEditor = DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR;
+
+    public OutlierDefinitionsEditor.PrespecificiedOutliersEditor getPrespecifiedOutliersEditor() {
+        return prespecifiedOutliersEditor;
+    }
+
+    public void setPrespecifiedOutliersEditor(OutlierDefinitionsEditor.PrespecificiedOutliersEditor prespecifiedOutliersEditor) {
+        OutlierDefinitionsEditor.PrespecificiedOutliersEditor old = this.prespecifiedOutliersEditor;
+        this.prespecifiedOutliersEditor = prespecifiedOutliersEditor != null ? prespecifiedOutliersEditor : DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR;
+        broadcaster.firePropertyChange(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, old, this.prespecifiedOutliersEditor);
+    }
+
     @Override
     public Config getConfig() {
         return PERSISTENCE.loadConfig(this);
@@ -149,6 +165,11 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
                     PropertyHandler.onInteger(GROWTH_LAST_YEARS_PROPERTY, DEFAULT_GROWTH_LAST_YEARS),
                     DemetraUI::getGrowthLastYears,
                     DemetraUI::setGrowthLastYears
+            )
+            .with(
+                    PropertyHandler.onEnum(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR),
+                    DemetraUI::getPrespecifiedOutliersEditor,
+                    DemetraUI::setPrespecifiedOutliersEditor
             )
             .build();
 }

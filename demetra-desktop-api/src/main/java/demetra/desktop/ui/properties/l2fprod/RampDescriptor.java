@@ -9,6 +9,7 @@ import demetra.timeseries.regression.Ramp;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,43 +18,45 @@ import java.util.List;
  * @author Jean Palate
  */
 public class RampDescriptor implements IObjectDescriptor<Ramp> {
-    
-    private LocalDate start, end;
-    
+
+    private Ramp core;
+
     @Override
-    public String toString(){
+    public String toString() {
         return getCore().toString();
     }
-    
-    public RampDescriptor(){
-        start=LocalDate.now();
-        end=LocalDate.now();
+
+    public RampDescriptor() {
+        core = new Ramp(LocalDateTime.now(), LocalDateTime.now());
     }
 
-    public RampDescriptor(Ramp ramp){
-        start=ramp.getStart().toLocalDate();
-        end=ramp.getEnd().toLocalDate();
+    public RampDescriptor duplicate(){
+        return new RampDescriptor(core);
+    }
+
+    public RampDescriptor(Ramp ramp) {
+        core = ramp;
     }
 
     @Override
     public Ramp getCore() {
-        return new Ramp(start.atStartOfDay(), end.atStartOfDay());
-    }
-    
-    public LocalDate getStart(){
-        return start;
+        return core;
     }
 
-    public void setStart(LocalDate day){
-        start=day;
+    public LocalDate getStart() {
+        return core.getStart().toLocalDate();
     }
 
-    public LocalDate getEnd(){
-        return end;
+    public void setStart(LocalDate day) {
+        core = new Ramp(day.atStartOfDay(), core.getEnd());
     }
 
-    public void setEnd(LocalDate day){
-        end=day;
+    public LocalDate getEnd() {
+        return core.getEnd().toLocalDate();
+    }
+
+    public void setEnd(LocalDate day) {
+        core = new Ramp(core.getStart(), day.atStartOfDay());
     }
 
     @Override
@@ -100,5 +103,5 @@ public class RampDescriptor implements IObjectDescriptor<Ramp> {
     public String getDisplayName() {
         return "Ramp";
     }
-    
+
 }

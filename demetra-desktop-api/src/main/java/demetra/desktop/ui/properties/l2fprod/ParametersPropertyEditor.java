@@ -41,14 +41,11 @@ public class ParametersPropertyEditor extends AbstractPropertyEditor {
         if (null == t) {
             return ParameterType.Undefined;
         } else {
-            switch (t) {
-                case Initial:
-                    return ParameterType.Initial;
-                case Fixed:
-                    return ParameterType.Fixed;
-                default:
-                    return ParameterType.Undefined;
-            }
+            return switch (t) {
+                case Initial -> ParameterType.Initial;
+                case Fixed -> ParameterType.Fixed;
+                default -> ParameterType.Undefined;
+            };
         }
     }
 
@@ -142,14 +139,11 @@ public class ParametersPropertyEditor extends AbstractPropertyEditor {
                     public Object getValueAt(int row, int column) {
                         Parameter param = nparameters_[row];
 
-                        switch (column) {
-                            case 0:
-                                return param.getValue();
-                            case 1:
-                                return convert(param.getType());//== ParameterType.Fixed;
-                            default:
-                                return null;
-                        }
+                        return switch (column) {
+                            case 0 -> param.getValue();
+                            case 1 -> convert(param.getType());
+                            default -> null;
+                        }; //== ParameterType.Fixed;
                     }
 
                     @Override
@@ -157,13 +151,11 @@ public class ParametersPropertyEditor extends AbstractPropertyEditor {
                         Parameter param = nparameters_[row];
 
                         switch (column) {
-                            case 0:
+                            case 0 -> {
                                 double val = Double.parseDouble(aValue.toString());
                                 nparameters_[row] = Parameter.of(val, param.getType());
-                                break;
-                            case 1:
-                                nparameters_[row] = Parameter.of(param.getValue(), convert(aValue.toString()));
-                                break;
+                            }
+                            case 1 -> nparameters_[row] = Parameter.of(param.getValue(), convert(aValue.toString()));
                         }
 
                         fireTableCellUpdated(row, column);

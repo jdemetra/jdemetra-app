@@ -34,6 +34,10 @@ public class InterventionVariableDescriptor implements IObjectDescriptor<Interve
     public InterventionVariableDescriptor(InterventionVariable var) {
         core = var;
     }
+    
+    public InterventionVariableDescriptor duplicate(){
+        return new InterventionVariableDescriptor(core);
+    }
 
     @Override
     public InterventionVariable getCore() {

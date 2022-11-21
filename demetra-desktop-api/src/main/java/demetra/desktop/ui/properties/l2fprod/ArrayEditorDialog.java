@@ -16,37 +16,48 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import javax.swing.*;
 
 /**
  *
  * @author Demortier Jeremy
  * @author Mats Maggi
+ * @param <T>
  */
 public class ArrayEditorDialog<T> extends JDialog {
 
-    private final Class<T> c_;
-    private ArrayList<T> elementsList_;
-    private T cur_;
-    private boolean dirty_;
+    private final Supplier<T> newItem;
+    ;
+    private final T[] initialItems;
+    private List<T> currentList;
+    private T current;
+    private boolean dirty;
 
     public List<T> getElements() {
-        return elementsList_;
+        return currentList;
     }
 
     public boolean isDirty() {
-        return dirty_;
+        return dirty;
     }
 
-    public ArrayEditorDialog(final Window owner, T[] elements, Class<T> c) {
+    public ArrayEditorDialog(final Window owner, T[] elements, Supplier<T> newItem, Function<T, T> duplicate) {
         super(owner);
-        c_ = c;
-        elementsList_ = new ArrayList<>(Arrays.asList(elements));
+        this.newItem = newItem;
+        initialItems = elements;
+        if (duplicate == null) {
+            currentList = Arrays.<T>asList(elements);
+        } else {
+            currentList = Arrays.stream(elements).map(t -> duplicate.apply(t)).collect(Collectors.toCollection(ArrayList<T>::new));
+        }
 
         final JPanel pane = new JPanel(new BorderLayout());
         pane.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
-        final JList list = new JList(JLists.modelOf(elementsList_));
+        final JList list = new JList(JLists.modelOf(currentList));
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setPreferredSize(new Dimension(150, 200));
         pane.add(NbComponents.newJScrollPane(list), BorderLayout.WEST);
@@ -70,15 +81,15 @@ public class ArrayEditorDialog<T> extends JDialog {
 
             @Override
             public void focusLost(FocusEvent e) {
-                if (dirty_) {
-                    list.setModel(JLists.modelOf(elementsList_));
+                if (dirty) {
+                    list.setModel(JLists.modelOf(currentList));
                     list.invalidate();
                 }
             }
         });
 
         model.addPropertyChangeListener(evt -> {
-            dirty_ = true;
+            dirty = true;
             try {
                 Object o = list.getSelectedValue();
                 if (o != null) {
@@ -98,20 +109,15 @@ public class ArrayEditorDialog<T> extends JDialog {
         addButton.setPreferredSize(new Dimension(30, 30));
         addButton.setFocusPainted(false);
         addButton.addActionListener(event -> {
-            dirty_ = true;
-            try {
-                Constructor<T> constructor = c_.getConstructor();
-                final T o = constructor.newInstance();
-                elementsList_.add(o);
-                SwingUtilities.invokeLater(() -> {
-                    list.setModel(JLists.modelOf(elementsList_));
-                    list.setSelectedValue(o, true);
-                    list.invalidate();
-                });
+            dirty = true;
+            final T o = newItem.get();
+            currentList.add(o);
+            SwingUtilities.invokeLater(() -> {
+                list.setModel(JLists.modelOf(currentList));
+                list.setSelectedValue(o, true);
+                list.invalidate();
+            });
 
-            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                System.err.println(ex.getMessage());
-            }
         });
         buttonPane.add(addButton);
         final JButton deleteButton = new JButton(DemetraIcons.LIST_REMOVE_16);
@@ -120,13 +126,13 @@ public class ArrayEditorDialog<T> extends JDialog {
         deleteButton.setEnabled(false);
         deleteButton.addActionListener(event -> {
             try {
-                if (cur_ == null) {
+                if (current == null) {
                     return;
                 }
-                dirty_ = true;
-                elementsList_.remove(cur_);
+                dirty = true;
+                currentList.remove(current);
                 SwingUtilities.invokeLater(() -> {
-                    list.setModel(JLists.modelOf(elementsList_));
+                    list.setModel(JLists.modelOf(currentList));
                     list.invalidate();
                 });
 
@@ -144,10 +150,10 @@ public class ArrayEditorDialog<T> extends JDialog {
         clearButton.addActionListener(event -> {
             try {
                 if (list.getModel() != null) {
-                    dirty_ = true;
-                    elementsList_.clear();
+                    dirty = true;
+                    currentList.clear();
                     SwingUtilities.invokeLater(() -> {
-                        list.setModel(JLists.modelOf(elementsList_));
+                        list.setModel(JLists.modelOf(currentList));
                         list.invalidate();
                     });
                 }
@@ -158,11 +164,19 @@ public class ArrayEditorDialog<T> extends JDialog {
         buttonPane.add(clearButton);
 
         buttonPane.add(Box.createGlue());
-        final JButton okButton = new JButton("Done");
-        okButton.setPreferredSize(new Dimension(60, 27));
-        okButton.setFocusPainted(false);
+        final JButton okButton = new JButton("Ok");
+        okButton.setPreferredSize(new Dimension(80, 27));
         okButton.addActionListener(event -> ArrayEditorDialog.this.setVisible(false));
+        okButton.setFocusPainted(false);
         buttonPane.add(okButton);
+        final JButton cancelButton = new JButton("Cancel");
+        cancelButton.setPreferredSize(new Dimension(80, 27));
+        cancelButton.setFocusPainted(false);
+        cancelButton.addActionListener(event -> {
+            currentList = Arrays.asList(initialItems);
+            ArrayEditorDialog.this.setVisible(false);
+        });
+        buttonPane.add(cancelButton);
         buttonPane.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
         pane.add(buttonPane, BorderLayout.SOUTH);
         pane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -171,24 +185,24 @@ public class ArrayEditorDialog<T> extends JDialog {
             if (list.getSelectedValue() != null) {
                 deleteButton.setEnabled(true);
                 model.setProperties(PropertiesPanelFactory.INSTANCE.createProperties(list.getSelectedValue()));
-                cur_ = (T) list.getSelectedValue();
+                current = (T) list.getSelectedValue();
             } else {
                 deleteButton.setEnabled(false);
-                cur_ = null;
+                current = null;
                 model.setProperties(new Property[]{});
             }
         });
-        
-        list.addPropertyChangeListener(evt -> clearButton.setEnabled(list.getModel() != null && list.getModel().getSize() > 0));
-        
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent we) {
-                super.windowClosing(we);
-                elementsList_ = new ArrayList<>(Arrays.asList(elements));
-            }
-        });
 
+        list.addPropertyChangeListener(evt -> clearButton.setEnabled(list.getModel() != null && list.getModel().getSize() > 0));
+
+//        addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowClosing(WindowEvent we) {
+//                super.windowClosing(we);
+//                elementsList_ = new ArrayList<>(Arrays.asList(elements));
+//            }
+//        });
+//
         setMinimumSize(new Dimension(400, 200));
         setContentPane(pane);
         pack();

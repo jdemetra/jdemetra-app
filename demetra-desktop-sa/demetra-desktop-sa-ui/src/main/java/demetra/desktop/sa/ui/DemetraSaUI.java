@@ -134,21 +134,6 @@ public final class DemetraSaUI implements PropertyChangeSource.WithWeakListeners
     }
 
     @SwingProperty
-    public static final String PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY = "prespecifiedOutliersEditor";
-    private static final PrespecificiedOutliersEditor DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR = PrespecificiedOutliersEditor.CALENDAR_GRID;
-    private PrespecificiedOutliersEditor prespecifiedOutliersEditor = DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR;
-
-    public PrespecificiedOutliersEditor getPrespecifiedOutliersEditor() {
-        return prespecifiedOutliersEditor;
-    }
-
-    public void setPrespecifiedOutliersEditor(PrespecificiedOutliersEditor prespecifiedOutliersEditor) {
-        PrespecificiedOutliersEditor old = this.prespecifiedOutliersEditor;
-        this.prespecifiedOutliersEditor = prespecifiedOutliersEditor != null ? prespecifiedOutliersEditor : DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR;
-        broadcaster.firePropertyChange(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, old, this.prespecifiedOutliersEditor);
-    }
-
-    @SwingProperty
     public static final String SELECTED_DIAG_FIELDS_PROPERTY = "selectedDiagFields";
     private static final List<String> DEFAULT_SELECTED_DIAG_FIELDS = Collections.emptyList();
     private List<String> selectedDiagFields = DEFAULT_SELECTED_DIAG_FIELDS;
@@ -183,7 +168,6 @@ public final class DemetraSaUI implements PropertyChangeSource.WithWeakListeners
     private static final IntProperty STABILITY_LENGTH_CONFIG = IntProperty.of(STABILITY_LENGTH_PROPERTY, DEFAULT_STABILITY_LENGTH);
     private static final Property<EstimationPolicyType> ESTIMATION_POLICY_TYPE_CONFIG = Property.of(ESTIMATION_POLICY_TYPE_PROPERTY, DEFAULT_ESTIMATION_POLICY, Parser.onEnum(EstimationPolicyType.class), Formatter.onEnum());
     private static final Property<String> DEFAULT_SA_SPEC_CONFIG = Property.of(DEFAULT_SA_SPEC_PROPERTY, "", Parser.onString(), Formatter.onString());
-    private static final Property<PrespecificiedOutliersEditor> PRESPECIFIED_OUTLIERS_EDITOR_CONFIG = Property.of(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR, Parser.onEnum(PrespecificiedOutliersEditor.class), Formatter.onEnum());
     private static final Property<String[]> SELECTED_DIAG_FIELDS_CONFIG = Property.of(SELECTED_DIAG_FIELDS_PROPERTY, DEFAULT_SELECTED_DIAG_FIELDS.stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
     private static final Property<String[]> SELECTED_SERIES_FIELDS_CONFIG = Property.of(SELECTED_SERIES_FIELDS_PROPERTY, DEFAULT_SELECTED_SERIES_FIELDS.stream().toArray(String[]::new), Parser.onStringArray(), Formatter.onStringArray());
 
@@ -197,7 +181,6 @@ public final class DemetraSaUI implements PropertyChangeSource.WithWeakListeners
         STABILITY_LENGTH_CONFIG.set(b::parameter, getStabilityLength());
         ESTIMATION_POLICY_TYPE_CONFIG.set(b::parameter, getEstimationPolicyType());
         DEFAULT_SA_SPEC_CONFIG.set(b::parameter, idOf(getDefaultSaSpec()));
-        PRESPECIFIED_OUTLIERS_EDITOR_CONFIG.set(b::parameter, getPrespecifiedOutliersEditor());
         SELECTED_DIAG_FIELDS_CONFIG.set(b::parameter, getSelectedDiagFields().toArray(n->new String[n]));
         SELECTED_SERIES_FIELDS_CONFIG.set(b::parameter, getSelectedSeriesFields().toArray(n->new String[n]));
         return b.build();
@@ -211,7 +194,6 @@ public final class DemetraSaUI implements PropertyChangeSource.WithWeakListeners
         setStabilityLength(STABILITY_LENGTH_CONFIG.get(config::getParameter));
         setEstimationPolicyType(ESTIMATION_POLICY_TYPE_CONFIG.get(config::getParameter));
         setDefaultSaSpec(specOf(DEFAULT_SA_SPEC_CONFIG.get(config::getParameter)));
-        setPrespecifiedOutliersEditor(PRESPECIFIED_OUTLIERS_EDITOR_CONFIG.get(config::getParameter));
         setSelectedDiagFields(Arrays.asList(SELECTED_DIAG_FIELDS_CONFIG.get(config::getParameter)));
         setSelectedSeriesFields(Arrays.asList(SELECTED_SERIES_FIELDS_CONFIG.get(config::getParameter)));
     }

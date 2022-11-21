@@ -34,15 +34,19 @@ import org.openide.util.NbBundle.Messages;
  */
 public class RegressionSpecUI extends BaseRegArimaSpecUI {
 
-    private static IOutlier toOutlier(OutlierDefinition od, int period, double tc){
-        switch (od.getType()){
-            case AO: return new AdditiveOutlier(od.getPosition().atStartOfDay());
-            case LS: return new LevelShift(od.getPosition().atStartOfDay(), true);
-            case TC: return new TransitoryChange(od.getPosition().atStartOfDay(), tc);
-            case SO: return new PeriodicOutlier(od.getPosition().atStartOfDay(), period, true);
-            default:
-                return null;
-        }
+    private static IOutlier toOutlier(OutlierDefinition od, int period, double tc) {
+        return switch (od.getType()) {
+            case AO ->
+                new AdditiveOutlier(od.getPosition().atStartOfDay());
+            case LS ->
+                new LevelShift(od.getPosition().atStartOfDay(), true);
+            case TC ->
+                new TransitoryChange(od.getPosition().atStartOfDay(), tc);
+            case SO ->
+                new PeriodicOutlier(od.getPosition().atStartOfDay(), period, true);
+            default ->
+                null;
+        };
     }
 
     private RegressionSpec inner() {
@@ -100,17 +104,18 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
                 .stream()
                 .map(var -> {
                     IOutlier o = var.getCore();
-                    return new OutlierDefinition(o.getPosition().toLocalDate(), OutlierDefinition.OutlierType.valueOf(o.getCode()));
+                    return new OutlierDefinition(o.getPosition().toLocalDate(), OutlierDefinition.OutlierType.valueOf(o.getCode()), var.getCoefficient(0));
                 })
+                .sorted((o1, o2) -> o1.getPosition().compareTo(o2.getPosition()))
                 .toArray(n -> new OutlierDefinition[n]);
     }
 
     public void setPreSpecifiedOutliers(OutlierDefinition[] value) {
-        
-        double tc=core().getOutliers().getMonthlyTCRate();
+
+        double tc = core().getOutliers().getMonthlyTCRate();
         TsDomain domain = UserInterfaceContext.INSTANCE.getDomain();
-        int period=domain == null ? 0 : domain.getAnnualFrequency();
-        List<Variable<IOutlier>> list = Arrays.stream(value).map(v -> toOutlier(v, period, tc)).map(v-> Variable.<IOutlier>builder()
+        int period = domain == null ? 0 : domain.getAnnualFrequency();
+        List<Variable<IOutlier>> list = Arrays.stream(value).map(v -> toOutlier(v, period, tc)).map(v -> Variable.<IOutlier>builder()
                 .name(v.description(null))
                 .core(v)
                 .build())
@@ -193,8 +198,9 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         "regressionSpecUI.meanDesc.desc=[imean] Mean correction"
     })
     private EnhancedPropertyDescriptor meanDesc() {
-        if (core().isUsingAutoModel())
+        if (core().isUsingAutoModel()) {
             return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Mean", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, MEAN_ID);

@@ -22,7 +22,8 @@ public class InterventionVariablesEditor extends AbstractPropertyEditor {
             @Override
             public void actionPerformed(ActionEvent e) {
                 final ArrayEditorDialog<InterventionVariableDescriptor> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
-                        null != vars_ ? getDescriptors() : new InterventionVariableDescriptor[]{}, InterventionVariableDescriptor.class);
+                        null != vars_ ? getDescriptors() : new InterventionVariableDescriptor[]{}, 
+                        InterventionVariableDescriptor::new, InterventionVariableDescriptor::duplicate);
                 dialog.setTitle("Intervention variables");
                 dialog.setVisible(true);
                 if (dialog.isDirty()) {

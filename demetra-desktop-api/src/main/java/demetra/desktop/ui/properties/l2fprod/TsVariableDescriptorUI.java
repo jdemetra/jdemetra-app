@@ -33,6 +33,10 @@ public class TsVariableDescriptorUI implements IObjectDescriptor<TsContextVariab
     public TsVariableDescriptorUI(TsContextVariable desc) {
         core = desc;
     }
+    
+    public TsVariableDescriptorUI duplicate(){
+        return new TsVariableDescriptorUI(core);
+    }
 
     public UserVariable getName() {
         return new UserVariable(core.getId());

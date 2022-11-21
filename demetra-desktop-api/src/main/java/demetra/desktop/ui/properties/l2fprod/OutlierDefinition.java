@@ -16,6 +16,7 @@
  */
 package demetra.desktop.ui.properties.l2fprod;
 
+import demetra.data.Parameter;
 import demetra.information.InformationSet;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;
@@ -28,19 +29,33 @@ import nbbrd.design.Development;
  */
 @Development(status = Development.Status.Release)
 @lombok.Value
+@lombok.AllArgsConstructor
 public class OutlierDefinition {
 
     public static enum OutlierType {
         AO, LS, TC, SO;
     }
 
+    @lombok.With
     private LocalDate position;
+    @lombok.With
     private OutlierType type;
+    @lombok.With
+    private Parameter parameter;
+
+    public OutlierDefinition(LocalDate position, OutlierType type) {
+        this.position = position;
+        this.type = type;
+        this.parameter = Parameter.undefined();
+    }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(type).append(InformationSet.SEP).append(position.toString());
+        if (parameter.isFixed()) {
+            builder.append(" [").append(parameter.getValue()).append(']');
+        }
         return builder.toString();
     }
 
@@ -51,6 +66,9 @@ public class OutlierDefinition {
             StringBuilder builder = new StringBuilder();
             TsUnit unit = TsUnit.ofAnnualFrequency(freq);
             builder.append(type).append(InformationSet.SEP).append(TsPeriod.of(unit, position).display());
+            if (parameter.isFixed()) {
+                builder.append(" [").append(parameter.getValue()).append(']');
+            }
             return builder.toString();
         }
     }

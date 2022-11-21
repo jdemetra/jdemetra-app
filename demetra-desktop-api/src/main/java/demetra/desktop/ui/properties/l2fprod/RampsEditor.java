@@ -25,7 +25,8 @@ public class RampsEditor extends AbstractPropertyEditor {
             @Override
             public void actionPerformed(ActionEvent e) {
                 final ArrayEditorDialog<RampDescriptor> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
-                        null != ramps ? getDescriptors() : new RampDescriptor[]{}, RampDescriptor.class);
+                        null != ramps ? getDescriptors() : new RampDescriptor[]{}, 
+                        RampDescriptor::new, RampDescriptor::duplicate);
                 dialog.setTitle("Ramps");
                 dialog.setVisible(true);
                 if (dialog.isDirty()) {
