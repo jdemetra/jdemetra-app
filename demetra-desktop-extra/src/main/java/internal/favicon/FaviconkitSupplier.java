@@ -4,6 +4,7 @@ import com.google.common.net.InternetDomainName;
 import internal.util.http.HttpClient;
 import internal.util.http.HttpRequest;
 import internal.util.http.HttpResponse;
+
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -11,7 +12,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.imageio.ImageIO;
-import sdmxdl.format.MediaType;
+
+import nbbrd.io.net.MediaType;
 
 public final class FaviconkitSupplier implements FaviconSupplier {
 
@@ -22,11 +24,11 @@ public final class FaviconkitSupplier implements FaviconSupplier {
 
     @Override
     public Image getFaviconOrNull(URL url, HttpClient client) throws IOException {
-        try ( HttpResponse response = client.send(getFaviconRequest(url))) {
+        try (HttpResponse response = client.send(getFaviconRequest(url))) {
             if (isDefaultFavicon(response)) {
                 return null;
             }
-            try ( InputStream stream = response.getBody()) {
+            try (InputStream stream = response.getBody()) {
                 return resize(ImageIO.read(stream));
             }
         }
