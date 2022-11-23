@@ -8,7 +8,6 @@ import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import demetra.desktop.DemetraIcons;
 import demetra.desktop.DemetraUI;
 import demetra.desktop.ui.properties.l2fprod.OutlierCheckComboBox.CheckListItem;
-import demetra.desktop.ui.properties.l2fprod.OutlierDefinition.OutlierType;
 import demetra.desktop.util.NbComponents;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -49,11 +48,11 @@ import javax.swing.table.TableCellEditor;
  * @author Demortier Jeremy
  * @author Mats Maggi
  */
-public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
+public class OutlierDescriptorsEditor extends AbstractPropertyEditor {
 
-    private Map<LocalDate, List<OutlierDefinition>> definitions_;
+    private Map<LocalDate, List<OutlierDescriptor>> definitions_;
 
-    public OutlierDefinitionsEditor() {
+    public OutlierDescriptorsEditor() {
         editor = new JButton(new AbstractAction("...") {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -82,8 +81,8 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
                         table.getTableHeader().setReorderingAllowed(false);
                         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                         table.setCellSelectionEnabled(true);
-                        table.setDefaultEditor(OutlierType[].class, new OutlierTypeEditor());
-                        table.setDefaultRenderer(OutlierType[].class, new OutlierTypeRenderer());
+                        table.setDefaultEditor(OutlierDescriptor.OutlierType[].class, new OutlierTypeEditor());
+                        table.setDefaultRenderer(OutlierDescriptor[].class, new OutlierTypeRenderer());
                         table.setRowHeight(table.getRowHeight() * 2);
 
                         pane.add(NbComponents.newJScrollPane(table), BorderLayout.CENTER);
@@ -204,26 +203,26 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         if (cellEditor != null) {
             cellEditor.stopCellEditing();
         }
-        Map<LocalDate, List<OutlierDefinition>> old = definitions_;
-        Map<LocalDate, List<OutlierDefinition>> modelDefs = ((OutliersModel) table.getModel()).getDefinitions();
-        OutlierDefinition[] list = modelDefs
+        Map<LocalDate, List<OutlierDescriptor>> old = definitions_;
+        Map<LocalDate, List<OutlierDescriptor>> modelDefs = ((OutliersModel) table.getModel()).getDefinitions();
+        OutlierDescriptor[] list = modelDefs
                 .values()
                 .stream()
                 .flatMap(Collection::stream)
-                .toArray(OutlierDefinition[]::new);
+                .toArray(OutlierDescriptor[]::new);
         setValue(list);
-        OutlierDefinitionsEditor.this.firePropertyChange(old, definitions_);
+        OutlierDescriptorsEditor.this.firePropertyChange(old, definitions_);
     }
 
     private void setDescriptors(List<OutlierDescriptor> elements) {
-        Map<LocalDate, List<OutlierDefinition>> old = definitions_;
+        Map<LocalDate, List<OutlierDescriptor>> old = definitions_;
         definitions_ = new HashMap<>();
         for (OutlierDescriptor element : elements) {
             LocalDate key = element.getPosition();
             if (!definitions_.containsKey(key) || definitions_.get(key) == null) {
                 definitions_.put(key, new ArrayList<>());
             }
-            definitions_.get(key).add(element.getCore());
+            definitions_.get(key).add(element.duplicate());
         }
         firePropertyChange(old, definitions_);
     }
@@ -240,15 +239,15 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
     @Override
     public void setValue(Object value) {
         definitions_ = new HashMap<>();
-        if (value instanceof OutlierDefinition[]) {
-            OutlierDefinition[] outs = ((OutlierDefinition[]) value);
-            for (OutlierDefinition out : outs) {
+        if (value instanceof OutlierDescriptor[]) {
+            OutlierDescriptor[] outs = ((OutlierDescriptor[]) value);
+            for (OutlierDescriptor out : outs) {
                 LocalDate key = out.getPosition();
                 if (!definitions_.containsKey(key) || definitions_.get(key) == null) {
                     definitions_.put(key, new ArrayList<>());
                 }
                 // makes copies
-                definitions_.get(key).add(new OutlierDefinition(key, out.getType(), out.getParameter()));
+                definitions_.get(key).add(out.duplicate());
             }
         }
     }
@@ -258,7 +257,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         return definitions_
                 .values()
                 .stream().flatMap(Collection::stream)
-                .toArray(OutlierDefinition[]::new);
+                .toArray(OutlierDescriptor[]::new);
 
     }
 
@@ -267,10 +266,10 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         private final int firstYear_;
         private final int lastYear_;
         private final int freq_;
-        private final Map<LocalDate, List<OutlierDefinition>> defs_;
+        private final Map<LocalDate, List<OutlierDescriptor>> defs_;
         private final String[] months;
 
-        public Map<LocalDate, List<OutlierDefinition>> getDefinitions() {
+        public Map<LocalDate, List<OutlierDescriptor>> getDefinitions() {
             return defs_;
         }
 
@@ -286,7 +285,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
             return freq_;
         }
 
-        public OutliersModel(int first, int last, int freq, Map<LocalDate, List<OutlierDefinition>> defs) {
+        public OutliersModel(int first, int last, int freq, Map<LocalDate, List<OutlierDescriptor>> defs) {
             this.firstYear_ = first;
             this.lastYear_ = last;
             this.freq_ = freq;
@@ -331,7 +330,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
             if (columnIndex == 0) {
                 return Integer.class;
             } else {
-                return OutlierType[].class;
+                return OutlierDescriptor.OutlierType[].class;
             }
         }
 
@@ -352,7 +351,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
             }
             final LocalDate day = LocalDate.of(firstYear_ + row, (column - 1) * (12 / freq_) + 1, 1);
             if (defs_.containsKey(day)) {
-                return defs_.get(day).stream().map(OutlierDefinition::getType).toArray();
+                return defs_.get(day).stream().map(OutlierDescriptor::getType).toArray();
             } else {
                 return null;
             }
@@ -366,7 +365,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
 
                 Object[] values = (Object[]) aValue;
                 for (Object o : values) {
-                    OutlierDefinition toAdd = new OutlierDefinition(day, (OutlierType) o);
+                    OutlierDescriptor toAdd = new OutlierDescriptor(day, (OutlierDescriptor.OutlierType) o);
                     if (!defs_.get(day).contains(toAdd)) {
                         defs_.get(day).add(toAdd);
                     }
@@ -391,11 +390,11 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
             setHorizontalAlignment(JLabel.CENTER);
             if (null != value) {
                 Object[] input = (Object[]) value;
-                OutlierType[] oType = Arrays.copyOf(input, input.length, OutlierType[].class);
+                OutlierDescriptor.OutlierType[] oType = Arrays.copyOf(input, input.length, OutlierDescriptor.OutlierType[].class);
                 panel_.setLayout(new GridLayout(oType.length > 2 ? 2 : 1, 2));
                 panel_.setToolTipText(Arrays.stream(oType).map(Enum::toString).collect(Collectors.joining(", ")));
 
-                for (OutlierType t : oType) {
+                for (OutlierDescriptor.OutlierType t : oType) {
                     JLabel label = new JLabel(t.toString());
                     label.setHorizontalAlignment(JLabel.CENTER);
                     label.setOpaque(true);
@@ -418,12 +417,12 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         private final OutlierCheckComboBox box;
 
         public OutlierTypeEditor() {
-            OutlierType[] items = {
+            OutlierDescriptor.OutlierType[] items = {
                 null,
-                OutlierType.AO,
-                OutlierType.LS,
-                OutlierType.TC,
-                OutlierType.SO
+                OutlierDescriptor.OutlierType.AO,
+                OutlierDescriptor.OutlierType.LS,
+                OutlierDescriptor.OutlierType.TC,
+                OutlierDescriptor.OutlierType.SO
             };
             box = new OutlierCheckComboBox(items);
         }
@@ -437,7 +436,7 @@ public class OutlierDefinitionsEditor extends AbstractPropertyEditor {
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             box.uncheckAllItems();
             if (value != null) {
-                box.addSelectedItems(Arrays.stream((Object[]) value).map(o -> (OutlierType) o).toArray(OutlierType[]::new));
+                box.addSelectedItems(Arrays.stream((Object[]) value).map(o -> (OutlierDescriptor.OutlierType) o).toArray(OutlierDescriptor.OutlierType[]::new));
             }
 
             return box;

@@ -16,7 +16,6 @@
  */
 package demetra.desktop.ui.properties.l2fprod;
 
-import demetra.desktop.ui.properties.l2fprod.OutlierDefinition.OutlierType;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -41,27 +40,27 @@ import javax.swing.ListCellRenderer;
 final class OutlierCheckComboBox extends JComboBox {
 
     private List<CheckListItem> cbs;
-    private Map<OutlierType, Boolean> mapObjSelected;
+    private Map<OutlierDescriptor.OutlierType, Boolean> mapObjSelected;
     private final List<CheckComboBoxSelectionChangedListener> changedListeners = new ArrayList<>();
 
-    public OutlierCheckComboBox(final OutlierType[] objs) {
+    public OutlierCheckComboBox(final OutlierDescriptor.OutlierType[] objs) {
         this(objs, false);
     }
 
-    public OutlierCheckComboBox(final OutlierType[] objs, boolean selected) {
+    public OutlierCheckComboBox(final OutlierDescriptor.OutlierType[] objs, boolean selected) {
         resetItems(objs, selected);
     }
 
-    public OutlierCheckComboBox(final OutlierType[] objs, final Set<OutlierType> selected) {
+    public OutlierCheckComboBox(final OutlierDescriptor.OutlierType[] objs, final Set<OutlierDescriptor.OutlierType> selected) {
         mapObjSelected = new LinkedHashMap();
-        for (OutlierType item : objs) {
+        for (OutlierDescriptor.OutlierType item : objs) {
             mapObjSelected.put(item, selected.contains(item));
         }
 
         reset();
     }
 
-    public OutlierCheckComboBox(Map<OutlierType, Boolean> mapObjSelected) {
+    public OutlierCheckComboBox(Map<OutlierDescriptor.OutlierType, Boolean> mapObjSelected) {
         this.mapObjSelected = mapObjSelected;
         reset();
     }
@@ -98,34 +97,34 @@ final class OutlierCheckComboBox extends JComboBox {
         changedListeners.remove(l);
     }
 
-    public void resetItems(final OutlierType[] objs, boolean selected) {
+    public void resetItems(final OutlierDescriptor.OutlierType[] objs, boolean selected) {
         mapObjSelected = new LinkedHashMap();
-        for (OutlierType item : objs) {
+        for (OutlierDescriptor.OutlierType item : objs) {
             mapObjSelected.put(item, selected);
         }
 
         reset();
     }
 
-    public OutlierType[] getSelectedItems() {
-        List<OutlierType> ret = new ArrayList<>();
+    public OutlierDescriptor.OutlierType[] getSelectedItems() {
+        List<OutlierDescriptor.OutlierType> ret = new ArrayList<>();
         mapObjSelected.entrySet().stream().forEach((entry) -> {
-            OutlierType obj = entry.getKey();
+            OutlierDescriptor.OutlierType obj = entry.getKey();
             Boolean selected = entry.getValue();
             if (obj != null && selected) {
                 ret.add(obj);
             }
         });
 
-        return ret.toArray(new OutlierType[0]);
+        return ret.toArray(OutlierDescriptor.OutlierType[]::new);
     }
 
-    public void addSelectedItems(OutlierType[] objs) {
+    public void addSelectedItems(OutlierDescriptor.OutlierType[] objs) {
         if (objs == null) {
             return;
         }
 
-        for (OutlierType obj : objs) {
+        for (OutlierDescriptor.OutlierType obj : objs) {
             if (mapObjSelected.containsKey(obj)) {
                 mapObjSelected.put(obj, true);
             }
@@ -157,8 +156,8 @@ final class OutlierCheckComboBox extends JComboBox {
         cbs = new ArrayList<>();
 
         CheckListItem cb;
-        for (Map.Entry<OutlierType, Boolean> entry : mapObjSelected.entrySet()) {
-            OutlierType obj = entry.getKey();
+        for (Map.Entry<OutlierDescriptor.OutlierType, Boolean> entry : mapObjSelected.entrySet()) {
+            OutlierDescriptor.OutlierType obj = entry.getKey();
             Boolean selected = entry.getValue();
 
             cb = new CheckListItem(obj);
@@ -236,16 +235,16 @@ final class OutlierCheckComboBox extends JComboBox {
 
     static class CheckListItem extends JCheckBox {
 
-        private OutlierType type;
+        private OutlierDescriptor.OutlierType type;
 
-        public CheckListItem(OutlierType type) {
+        public CheckListItem(OutlierDescriptor.OutlierType type) {
             if (type != null) {
                 setText(type.toString());
                 this.type = type;
             }
         }
 
-        public OutlierType getType() {
+        public OutlierDescriptor.OutlierType getType() {
             return type;
         }
 

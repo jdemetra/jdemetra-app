@@ -7,7 +7,7 @@ package demetra.desktop.ui.properties.l2fprod;
 import demetra.data.Range;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.timeseries.regression.InterventionVariable;
-import demetra.desktop.descriptors.IObjectDescriptor;
+import demetra.timeseries.regression.Variable;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.time.LocalDateTime;
@@ -18,25 +18,34 @@ import java.util.List;
  *
  * @author Jean Palate
  */
-public class InterventionVariableDescriptor implements IObjectDescriptor<InterventionVariable> {
+public final class InterventionVariableDescriptor extends VariableDescriptor<InterventionVariable> {
+
+    private static int ID = 1;
+
+    @Override
+    public String getPrefix() {
+        return "IV-";
+    }
 
     private InterventionVariable core;
 
-    @Override
-    public String toString() {
-        return core.toString();
-    }
-
     public InterventionVariableDescriptor() {
+        super(ID++);
         core = InterventionVariable.empty();
     }
 
-    public InterventionVariableDescriptor(InterventionVariable var) {
-        core = var;
+    public InterventionVariableDescriptor(Variable<InterventionVariable> var) {
+        super(ID++, var);
+        core = var.getCore();
     }
-    
-    public InterventionVariableDescriptor duplicate(){
-        return new InterventionVariableDescriptor(core);
+
+    public InterventionVariableDescriptor(InterventionVariableDescriptor desc) {
+        super(desc);
+        core = desc.core;
+    }
+
+    public InterventionVariableDescriptor duplicate() {
+        return new InterventionVariableDescriptor(this);
     }
 
     @Override
@@ -47,7 +56,12 @@ public class InterventionVariableDescriptor implements IObjectDescriptor<Interve
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
-        EnhancedPropertyDescriptor desc = seqDesc();
+        EnhancedPropertyDescriptor desc;
+        desc = nameDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = seqDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -56,6 +70,14 @@ public class InterventionVariableDescriptor implements IObjectDescriptor<Interve
             descs.add(desc);
         }
         desc = deltaSDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = fixedParameterDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = parameterDesc();
         if (desc != null) {
             descs.add(desc);
         }
