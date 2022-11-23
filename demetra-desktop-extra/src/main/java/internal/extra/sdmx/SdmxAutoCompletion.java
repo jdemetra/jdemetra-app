@@ -205,7 +205,7 @@ public abstract class SdmxAutoCompletion {
 
         @Override
         public ListCellRenderer getRenderer() {
-            return CustomListCellRenderer.<Dataflow>of(flow -> flow.getRef() + "<br><i>" + flow.getLabel(), flow -> flow.getRef().toString());
+            return CustomListCellRenderer.<Dataflow>of(flow -> flow.getRef() + "<br><i>" + flow.getName(), flow -> flow.getRef().toString());
         }
 
         private List<Dataflow> load(String term) throws Exception {
@@ -221,8 +221,8 @@ public abstract class SdmxAutoCompletion {
         private List<Dataflow> filterAndSort(List<Dataflow> values, String term) {
             Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
             return values.stream()
-                    .filter(o -> filter.test(o.getLabel()) || filter.test(o.getRef().getId()))
-                    .sorted(Comparator.comparing(Dataflow::getLabel))
+                    .filter(o -> filter.test(o.getName()) || filter.test(o.getRef().getId()) || filter.test(o.getDescription()))
+                    .sorted(Comparator.comparing(Dataflow::getName))
                     .collect(toList());
         }
 
