@@ -80,6 +80,7 @@ public class SaNode {
         if (output == null) {
             Ts ts = TsFactory.getDefault().makeTs(moniker, TsInformationType.Data);
             output = SaItem.of(ts, spec);
+            status=Status.Unprocessed;
         }
     }
 

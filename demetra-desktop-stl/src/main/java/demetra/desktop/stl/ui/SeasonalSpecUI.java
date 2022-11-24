@@ -39,11 +39,15 @@ public class SeasonalSpecUI implements IObjectDescriptor<SeasonalSpec> {
         ro=false;
         callback=null;
     }
-
+    
     public SeasonalSpecUI(SeasonalSpec loess, boolean ro, Consumer<SeasonalSpec> callback) {
         this.seasSpec = loess;
         this.ro = ro;
         this.callback = callback;
+    }
+
+    public SeasonalSpecUI duplicate(){
+        return new SeasonalSpecUI(seasSpec, ro, callback);
     }
 
     public PeriodUI getPeriod() {

@@ -17,43 +17,50 @@ import java.util.List;
  * @author Jean Palate
  */
 public class SequenceDescriptor implements IObjectDescriptor<Sequence> {
-    
+
     private LocalDate start, end;
-    
+
     @Override
-    public String toString(){
+    public String toString() {
         return getCore().toString();
     }
-    
-    public SequenceDescriptor(){
-        start=LocalDate.now();
-        end=LocalDate.now();
+
+    public SequenceDescriptor() {
+        start = LocalDate.now();
+        end = LocalDate.now();
     }
 
-    public SequenceDescriptor(Sequence seq){
-        start=seq.getStart();
-        end=seq.getEnd();
+    public SequenceDescriptor(Sequence seq) {
+        start = seq.getStart();
+        end = seq.getEnd();
+    }
+
+    public SequenceDescriptor duplicate() {
+        SequenceDescriptor ndesc = new SequenceDescriptor();
+        ndesc.start = start;
+        ndesc.end = end;
+        return ndesc;
     }
 
     @Override
     public Sequence getCore() {
         return new Sequence(start, end);
     }
-    
-    public LocalDate getStart(){
+
+    public LocalDate getStart() {
         return start;
     }
 
-    public void setStart(LocalDate day){
-        start=day;
+    public void setStart(LocalDate day) {
+        start = day;
     }
 
-    public LocalDate getEnd(){
+    public LocalDate getEnd() {
         return end;
     }
 
-    public void setEnd(LocalDate day){
-        end=day;
+    public void setEnd(LocalDate day) {
+        end = day;
     }
 
     @Override
@@ -100,5 +107,5 @@ public class SequenceDescriptor implements IObjectDescriptor<Sequence> {
     public String getDisplayName() {
         return "Sequence";
     }
-    
+
 }

@@ -6,9 +6,11 @@ package demetra.desktop.ui.properties.l2fprod;
 
 import demetra.desktop.descriptors.*;
 import demetra.timeseries.regression.Ramp;
+import demetra.timeseries.regression.Variable;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,50 +18,64 @@ import java.util.List;
  *
  * @author Jean Palate
  */
-public class RampDescriptor implements IObjectDescriptor<Ramp> {
-    
-    private LocalDate start, end;
-    
+public class RampDescriptor extends VariableDescriptor<Ramp> {
+
     @Override
-    public String toString(){
-        return getCore().toString();
-    }
-    
-    public RampDescriptor(){
-        start=LocalDate.now();
-        end=LocalDate.now();
+    public String name() {
+        return "rp: " + VariableDescriptor.toShortString(core.getStart(), core.getEnd(), UserInterfaceContext.INSTANCE.getDomain());
     }
 
-    public RampDescriptor(Ramp ramp){
-        start=ramp.getStart().toLocalDate();
-        end=ramp.getEnd().toLocalDate();
+    private Ramp core;
+
+    public RampDescriptor() {
+        core = new Ramp(LocalDateTime.now(), LocalDateTime.now());
+    }
+
+    public RampDescriptor duplicate() {
+        return new RampDescriptor(this);
+    }
+
+    public RampDescriptor(Variable<Ramp> ramp) {
+        super(ramp);
+        core = ramp.getCore();
+        setName(ramp.getName());
+    }
+
+    public RampDescriptor(RampDescriptor desc) {
+        super(desc);
+        this.core = desc.core;
     }
 
     @Override
     public Ramp getCore() {
-        return new Ramp(start.atStartOfDay(), end.atStartOfDay());
-    }
-    
-    public LocalDate getStart(){
-        return start;
+        return core;
     }
 
-    public void setStart(LocalDate day){
-        start=day;
+    public LocalDate getStart() {
+        return core.getStart().toLocalDate();
     }
 
-    public LocalDate getEnd(){
-        return end;
+    public void setStart(LocalDate day) {
+        core = new Ramp(day.atStartOfDay(), core.getEnd());
     }
 
-    public void setEnd(LocalDate day){
-        end=day;
+    public LocalDate getEnd() {
+        return core.getEnd().toLocalDate();
+    }
+
+    public void setEnd(LocalDate day) {
+        core = new Ramp(core.getStart(), day.atStartOfDay());
     }
 
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
-        EnhancedPropertyDescriptor desc = startDesc();
+        EnhancedPropertyDescriptor desc;
+        desc = nameDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = startDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -67,10 +83,18 @@ public class RampDescriptor implements IObjectDescriptor<Ramp> {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = fixedParameterDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = parameterDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         return descs;
     }
-    private static final int START_ID = 1,
-            END_ID = 2;
+    private static final int START_ID = 10,
+            END_ID = 11;
 
     private EnhancedPropertyDescriptor startDesc() {
         try {
@@ -100,5 +124,5 @@ public class RampDescriptor implements IObjectDescriptor<Ramp> {
     public String getDisplayName() {
         return "Ramp";
     }
-    
+
 }

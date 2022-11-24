@@ -5,7 +5,7 @@
 package demetra.desktop.highfreq.ui;
 
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
-import demetra.desktop.ui.properties.l2fprod.OutlierDefinition;
+import demetra.desktop.ui.properties.l2fprod.OutlierDescriptor;
 import demetra.highfreq.RegressionSpec;
 import demetra.timeseries.regression.AdditiveOutlier;
 import demetra.timeseries.regression.IOutlier;
@@ -29,7 +29,7 @@ import org.openide.util.NbBundle;
  */
 public class RegressionSpecUI extends BaseFractionalAirlineSpecUI {
 
-    private static IOutlier toOutlier(OutlierDefinition od, int period, double tc) {
+    private static IOutlier toOutlier(OutlierDescriptor od, int period, double tc) {
         switch (od.getType()) {
             case AO:
                 return new AdditiveOutlier(od.getPosition().atStartOfDay());

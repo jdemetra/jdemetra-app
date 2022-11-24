@@ -25,7 +25,8 @@ public class SequencesEditor extends AbstractPropertyEditor {
             @Override
             public void actionPerformed(ActionEvent e) {
                 final ArrayEditorDialog<SequenceDescriptor> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
-                        null != seqs_ ? getDescriptors() : new SequenceDescriptor[]{}, SequenceDescriptor.class);
+                        null != seqs_ ? getDescriptors() : new SequenceDescriptor[]{}, 
+                        SequenceDescriptor::new, SequenceDescriptor::duplicate);
                 dialog.setTitle("Sequences");
                 dialog.setVisible(true);
                 if (dialog.isDirty()) {

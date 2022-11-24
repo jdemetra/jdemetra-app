@@ -2,13 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.ui.properties.l2fprod;
+package demetra.desktop.sa.properties.l2fprod;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
-import demetra.timeseries.regression.TsContextVariable;
-import demetra.timeseries.regression.TsVariable;
+import demetra.desktop.ui.properties.l2fprod.ArrayEditorDialog;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -18,20 +16,20 @@ import javax.swing.SwingUtilities;
  *
  * @author Demortier Jeremy
  */
-public class TsVariableDescriptorsEditor extends AbstractPropertyEditor {
+public class SaTsVariableDescriptorsEditor extends AbstractPropertyEditor {
 
-    private static final TsVariableDescriptor[] EMPTY= new TsVariableDescriptor[0];
+    private static final SaTsVariableDescriptor[] EMPTY= new SaTsVariableDescriptor[0];
 
-    private TsVariableDescriptor[] descriptors;
+    private SaTsVariableDescriptor[] descriptors;
 
-    public TsVariableDescriptorsEditor() {
+    public SaTsVariableDescriptorsEditor() {
         editor = new JButton(new AbstractAction("...") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                final ArrayEditorDialog<TsVariableDescriptor> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
+                final ArrayEditorDialog<SaTsVariableDescriptor> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
                         null != descriptors ? descriptors : EMPTY, 
-                        TsVariableDescriptor::new, 
-                        TsVariableDescriptor::duplicate);
+                        SaTsVariableDescriptor::new, 
+                        SaTsVariableDescriptor::duplicate);
                 dialog.setTitle("Variables");
                 dialog.setVisible(true);
                 if (dialog.isDirty()) {
@@ -42,10 +40,10 @@ public class TsVariableDescriptorsEditor extends AbstractPropertyEditor {
     }
 
 
-    private void setDescriptors(List<TsVariableDescriptor> elements) {
-        TsVariableDescriptor[] old = descriptors;
+    private void setDescriptors(List<SaTsVariableDescriptor> elements) {
+        SaTsVariableDescriptor[] old = descriptors;
         // check that the descriptors are well-formed
-       descriptors = elements.toArray(TsVariableDescriptor[]::new);
+       descriptors = elements.toArray(SaTsVariableDescriptor[]::new);
         firePropertyChange(old, descriptors);
     }
 
@@ -56,8 +54,8 @@ public class TsVariableDescriptorsEditor extends AbstractPropertyEditor {
 
     @Override
     public void setValue(Object value) {
-        if (null != value && value instanceof TsVariableDescriptor[] vars) {
-            TsVariableDescriptor[] old = descriptors;
+        if (null != value && value instanceof SaTsVariableDescriptor[] vars) {
+            SaTsVariableDescriptor[] old = descriptors;
             descriptors = vars;
             firePropertyChange(old, descriptors);
         }else

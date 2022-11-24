@@ -6,10 +6,15 @@ package demetra.desktop.regarima.descriptors;
 
 import demetra.data.Parameter;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
-import demetra.desktop.ui.properties.l2fprod.OutlierDefinition;
+import demetra.desktop.sa.properties.l2fprod.SaInterventionVariableDescriptor;
+import demetra.desktop.sa.properties.l2fprod.SaTsVariableDescriptor;
+import demetra.desktop.ui.properties.l2fprod.OutlierDescriptor;
+import demetra.desktop.ui.properties.l2fprod.RampDescriptor;
 import demetra.desktop.ui.properties.l2fprod.UserInterfaceContext;
 import demetra.modelling.TransformationType;
 import demetra.regarima.RegressionSpec;
+import demetra.sa.ComponentType;
+import demetra.sa.SaVariable;
 import demetra.timeseries.TsDomain;
 import demetra.timeseries.regression.AdditiveOutlier;
 import demetra.timeseries.regression.IOutlier;
@@ -34,15 +39,19 @@ import org.openide.util.NbBundle.Messages;
  */
 public class RegressionSpecUI extends BaseRegArimaSpecUI {
 
-    private static IOutlier toOutlier(OutlierDefinition od, int period, double tc){
-        switch (od.getType()){
-            case AO: return new AdditiveOutlier(od.getPosition().atStartOfDay());
-            case LS: return new LevelShift(od.getPosition().atStartOfDay(), true);
-            case TC: return new TransitoryChange(od.getPosition().atStartOfDay(), tc);
-            case SO: return new PeriodicOutlier(od.getPosition().atStartOfDay(), period, true);
-            default:
-                return null;
-        }
+    private static IOutlier toOutlier(OutlierDescriptor od, int period, double tc) {
+        return switch (od.getType()) {
+            case AO ->
+                new AdditiveOutlier(od.getPosition().atStartOfDay());
+            case LS ->
+                new LevelShift(od.getPosition().atStartOfDay(), true);
+            case TC ->
+                new TransitoryChange(od.getPosition().atStartOfDay(), tc);
+            case SO ->
+                new PeriodicOutlier(od.getPosition().atStartOfDay(), period, true);
+            default ->
+                null;
+        };
     }
 
     private RegressionSpec inner() {
@@ -95,72 +104,79 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         return Bundle.regressionSpecUI_getDisplayName();
     }
 
-    public OutlierDefinition[] getPreSpecifiedOutliers() {
+    public OutlierDescriptor[] getPreSpecifiedOutliers() {
         return inner().getOutliers()
                 .stream()
                 .map(var -> {
                     IOutlier o = var.getCore();
-                    return new OutlierDefinition(o.getPosition().toLocalDate(), OutlierDefinition.OutlierType.valueOf(o.getCode()));
+                    return new OutlierDescriptor(o.getPosition().toLocalDate(), OutlierDescriptor.OutlierType.valueOf(o.getCode()), var.getCoefficient(0), var.getName());
                 })
-                .toArray(n -> new OutlierDefinition[n]);
+                .sorted((o1, o2) -> o1.getPosition().compareTo(o2.getPosition()))
+                .toArray(n -> new OutlierDescriptor[n]);
     }
 
-    public void setPreSpecifiedOutliers(OutlierDefinition[] value) {
-        
-        double tc=core().getOutliers().getMonthlyTCRate();
+    public void setPreSpecifiedOutliers(OutlierDescriptor[] value) {
+
+        double tc = core().getOutliers().getMonthlyTCRate();
         TsDomain domain = UserInterfaceContext.INSTANCE.getDomain();
-        int period=domain == null ? 0 : domain.getAnnualFrequency();
-        List<Variable<IOutlier>> list = Arrays.stream(value).map(v -> toOutlier(v, period, tc)).map(v-> Variable.<IOutlier>builder()
-                .name(v.description(null))
-                .core(v)
+        int period = domain == null ? 0 : domain.getAnnualFrequency();
+        List<Variable<IOutlier>> list = Arrays.stream(value).map(v -> Variable.<IOutlier>builder()
+                .name(v.getName())
+                .core(toOutlier(v, period, tc))
                 .build())
                 .collect(Collectors.toList());
         update(inner().toBuilder().clearOutliers().outliers(list).build());
     }
 
-    public InterventionVariable[] getInterventionVariables() {
+    public SaInterventionVariableDescriptor[] getInterventionVariables() {
         return inner().getInterventionVariables()
                 .stream()
-                .map(var -> var.getCore())
-                .toArray(n -> new InterventionVariable[n]);
+                .map(var -> new SaInterventionVariableDescriptor(var))
+                .toArray(SaInterventionVariableDescriptor[]::new);
     }
 
-    public void setInterventionVariables(InterventionVariable[] value) {
+    public void setInterventionVariables(SaInterventionVariableDescriptor[] value) {
         List<Variable<InterventionVariable>> list = Arrays.stream(value).map(v -> Variable.<InterventionVariable>builder()
-                .name(v.description(null))
-                .core(v)
+                .name(v.getName())
+                .core(v.getCore())
+                .attribute(SaVariable.REGEFFECT, v.getRegressionEffect().name())
+                .coefficients(new Parameter[]{v.getCoefficient()})
                 .build())
                 .collect(Collectors.toList());
         update(inner().toBuilder().clearInterventionVariables().interventionVariables(list).build());
     }
 
-    public Ramp[] getRamps() {
+    public RampDescriptor[] getRamps() {
         return inner().getRamps()
                 .stream()
-                .map(var -> var.getCore())
-                .toArray(n -> new Ramp[n]);
+                .map(var -> new RampDescriptor(var))
+                .toArray(RampDescriptor[]::new);
     }
 
-    public void setRamps(Ramp[] value) {
+    public void setRamps(RampDescriptor[] value) {
         List<Variable<Ramp>> list = Arrays.stream(value).map(v -> Variable.<Ramp>builder()
-                .name(v.description(null))
-                .core(v)
+                .name(v.getName())
+                .core(v.getCore())
+                .attribute(SaVariable.REGEFFECT, ComponentType.Trend.name())
+                .coefficients(new Parameter[]{v.getCoefficient()})
                 .build())
                 .collect(Collectors.toList());
         update(inner().toBuilder().clearRamps().ramps(list).build());
     }
 
-    public TsContextVariable[] getUserDefinedVariables() {
+    public SaTsVariableDescriptor[] getUserDefinedVariables() {
         return inner().getUserDefinedVariables()
                 .stream()
-                .map(var -> var.getCore())
-                .toArray(n -> new TsContextVariable[n]);
+                .map(var -> new SaTsVariableDescriptor(var))
+                .toArray(SaTsVariableDescriptor[]::new);
     }
 
-    public void setUserDefinedVariables(TsContextVariable[] value) {
+    public void setUserDefinedVariables(SaTsVariableDescriptor[] value) {
         List<Variable<TsContextVariable>> list = Arrays.stream(value).map(v -> Variable.<TsContextVariable>builder()
-                .name(v.description(null))
-                .core(v)
+                .name(v.getName())
+                .core(v.getCore())
+                .coefficients(new Parameter[]{v.getCoefficient()})
+                .attribute(SaVariable.REGEFFECT, v.getRegressionEffect().name())
                 .build())
                 .collect(Collectors.toList());
         update(inner().toBuilder().clearUserDefinedVariables().userDefinedVariables(list).build());
@@ -193,8 +209,9 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         "regressionSpecUI.meanDesc.desc=[imean] Mean correction"
     })
     private EnhancedPropertyDescriptor meanDesc() {
-        if (core().isUsingAutoModel())
+        if (core().isUsingAutoModel()) {
             return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Mean", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, MEAN_ID);

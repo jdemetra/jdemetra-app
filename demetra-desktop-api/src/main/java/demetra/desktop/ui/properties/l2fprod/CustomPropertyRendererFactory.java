@@ -2,10 +2,6 @@ package demetra.desktop.ui.properties.l2fprod;
 
 import com.l2fprod.common.propertysheet.PropertyRendererRegistry;
 import demetra.data.Parameter;
-import demetra.timeseries.regression.InterventionVariable;
-import demetra.timeseries.regression.Ramp;
-import demetra.timeseries.regression.TsContextVariable;
-import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
@@ -19,11 +15,11 @@ public enum CustomPropertyRendererFactory {
     CustomPropertyRendererFactory() {
         registry_ = new PropertyRendererRegistry();
         registry_.registerRenderer(Parameter[].class, new ArrayRenderer());
-        registry_.registerRenderer(Ramp[].class, new ArrayRenderer());
-        registry_.registerRenderer(TsContextVariable[].class, new ArrayRenderer());
-        registry_.registerRenderer(InterventionVariable[].class, new ArrayRenderer());
+        registry_.registerRenderer(RampDescriptor[].class, new ArrayRenderer());
+        registry_.registerRenderer(TsVariableDescriptor[].class, new ArrayRenderer());
+        registry_.registerRenderer(InterventionVariableDescriptor[].class, new ArrayRenderer());
         registry_.registerRenderer(Sequence[].class, new ArrayRenderer());
-        registry_.registerRenderer(OutlierDefinition[].class, new ArrayRenderer());
+        registry_.registerRenderer(OutlierDescriptor[].class, new ArrayRenderer());
         registry_.registerRenderer(Coefficients.class, new ArrayRenderer());
     }
 

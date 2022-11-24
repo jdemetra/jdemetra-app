@@ -25,6 +25,7 @@ import demetra.desktop.ui.Menus;
 import demetra.desktop.ui.Menus.DynamicPopup;
 import demetra.desktop.ui.processing.DefaultProcessingViewer;
 import demetra.desktop.ui.processing.TsProcessingViewer;
+import demetra.desktop.ui.properties.l2fprod.UserInterfaceContext;
 import demetra.desktop.util.ListTableModel;
 import demetra.desktop.util.NbComponents;
 import demetra.desktop.util.PopupMenuAdapter;
@@ -746,6 +747,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             if (doc != null) {
                 doc.set((Ts) null);
                 detail.onDocumentChanged();
+                updateUserInterfaceContext(null);
             }
         } else {
             SaItem output = item.getOutput();
@@ -779,6 +781,15 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             detail.onDocumentChanged();
             buttonCollapse.setEnabled(true);
             detail.setSpecificationsVisible(buttonCollapse.isSelected());
+            updateUserInterfaceContext(ts);
+        }
+    }
+
+    private void updateUserInterfaceContext(Ts s) {
+        if (s == null) {
+            UserInterfaceContext.INSTANCE.setDomain(null);
+        } else {
+            UserInterfaceContext.INSTANCE.setDomain(s.getData().getDomain());
         }
     }
 

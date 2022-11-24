@@ -2,10 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.ui.properties.l2fprod;
+package demetra.desktop.sa.properties.l2fprod;
 
 import demetra.data.Range;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.desktop.ui.properties.l2fprod.UserInterfaceContext;
+import demetra.desktop.ui.properties.l2fprod.Sequence;
+import demetra.sa.ComponentType;
+import demetra.sa.SaVariable;
 import demetra.timeseries.regression.InterventionVariable;
 import demetra.timeseries.regression.Variable;
 import java.beans.IntrospectionException;
@@ -18,27 +22,33 @@ import java.util.List;
  *
  * @author Jean Palate
  */
-public final class InterventionVariableDescriptor extends VariableDescriptor<InterventionVariable> {
+public final class SaInterventionVariableDescriptor extends SaVariableDescriptor<InterventionVariable> {
 
     private InterventionVariable core;
 
-    public InterventionVariableDescriptor() {
+    public SaInterventionVariableDescriptor() {
         core = InterventionVariable.empty();
     }
+    
+    @Override
+    public ComponentType regressionEffect(){
+        return SaVariable.defaultComponentTypeOf(core);
+    }
 
-    public InterventionVariableDescriptor(Variable<InterventionVariable> var) {
+    public SaInterventionVariableDescriptor(Variable<InterventionVariable> var) {
         super(var);
         core = var.getCore();
         setName(var.getName());
+        setRegressionEffect(SaVariable.regressionEffect(var));
     }
 
-    public InterventionVariableDescriptor(InterventionVariableDescriptor desc) {
+    public SaInterventionVariableDescriptor(SaInterventionVariableDescriptor desc) {
         super(desc);
         core = desc.core;
     }
 
-    public InterventionVariableDescriptor duplicate() {
-        return new InterventionVariableDescriptor(this);
+    public SaInterventionVariableDescriptor duplicate() {
+        return new SaInterventionVariableDescriptor(this);
     }
     
     @Override
@@ -68,6 +78,10 @@ public final class InterventionVariableDescriptor extends VariableDescriptor<Int
             descs.add(desc);
         }
         desc = deltaSDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = regDesc();
         if (desc != null) {
             descs.add(desc);
         }

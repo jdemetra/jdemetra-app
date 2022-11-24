@@ -24,9 +24,10 @@ public class StringCollectionEditor extends AbstractPropertyEditor {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ArrayEditorDialog<String> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
-                    null != strings_ ? strings_ : new String[]{}, String.class);
+                    null != strings_ ? strings_ : new String[]{}, 
+                        ()->"", s->s);
                 dialog.setVisible(true);
-                setValue(dialog.getElements().toArray(new String[0]));
+                setValue(dialog.getElements().toArray(String[]::new));
             }
         });
     }

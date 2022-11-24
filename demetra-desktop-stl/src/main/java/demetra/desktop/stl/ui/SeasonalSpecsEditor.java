@@ -27,7 +27,8 @@ public class SeasonalSpecsEditor extends AbstractPropertyEditor {
             @Override
             public void actionPerformed(ActionEvent e) {
                 final ArrayEditorDialog<SeasonalSpecUI> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
-                        null != seasSpecs ? getDescriptors() : new SeasonalSpecUI[]{}, SeasonalSpecUI.class);
+                        null != seasSpecs ? getDescriptors() : new SeasonalSpecUI[]{}, 
+                        SeasonalSpecUI::new, SeasonalSpecUI::duplicate);
                 dialog.setTitle("Seasonal specs");
                 dialog.setVisible(true);
                 if (dialog.isDirty()) {
