@@ -31,7 +31,7 @@ public final class SaveWorkspaceAction extends AbstractAction{ // implements Con
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        WorkspaceFactory.getInstance().getActiveWorkspace().save(DemetraVersion.JD2);
+        WorkspaceFactory.getInstance().getActiveWorkspace().save(DemetraVersion.JD3);
     }
     
     @Override

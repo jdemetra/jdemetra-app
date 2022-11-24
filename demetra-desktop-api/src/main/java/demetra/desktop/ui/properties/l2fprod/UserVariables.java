@@ -9,23 +9,23 @@ package demetra.desktop.ui.properties.l2fprod;
  * @author Jean Palate
  */
 public class UserVariables {
-        private final String[] vars_;
+        private final String[] vars;
 
     public UserVariables(String... name) {
         if (name != null) {
-            this.vars_ = name;
+            this.vars = name;
         }
         else {
-            this.vars_ = new String[0];
+            this.vars = new String[0];
         }
     }
 
     public String[] getNames() {
-        return vars_;
+        return vars;
     }
 
     @Override
     public String toString() {
-        return (vars_ == null || vars_.length == 0) ? "Unused" : vars_.length + " vars";
+        return (vars == null || vars.length == 0) ? "Unused" : vars.length + " vars";
     }
 }

@@ -28,7 +28,7 @@ public enum CustomPropertyEditorRegistry {
         register(LocalDate.class, new JDayPropertyEditor());
         register(Parameter[].class, new ParametersPropertyEditor());
         register(RampDescriptor[].class, new RampsEditor());
-        register(TsContextVariable[].class, new TsVariableDescriptorsEditor());
+        register(TsVariableDescriptor[].class, new TsVariableDescriptorsEditor());
         register(InterventionVariableDescriptor[].class, new InterventionVariablesEditor());
         register(Sequence[].class, new SequencesEditor());
         register(OutlierDescriptor[].class, new OutlierDescriptorsEditor());

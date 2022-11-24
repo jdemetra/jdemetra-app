@@ -4,104 +4,142 @@
  */
 package demetra.desktop.ui.properties.l2fprod;
 
+import demetra.data.Parameter;
 import demetra.desktop.descriptors.*;
-import demetra.timeseries.regression.Ramp;
+import demetra.timeseries.TsDomain;
+import demetra.timeseries.TsPeriod;
+import demetra.timeseries.TsUnit;
+import demetra.timeseries.regression.ITsVariable;
+import demetra.timeseries.regression.Variable;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
  * @author Jean Palate
+ * @param <T>
  */
-public class RampDescriptor implements IObjectDescriptor<Ramp> {
+public abstract class VariableDescriptor<T extends ITsVariable> implements IObjectDescriptor<T> {
 
-    private Ramp core;
+    private String name;
+    private Parameter coefficient;
 
     @Override
     public String toString() {
-        return getCore().toString();
+        return getName();
     }
 
-    public RampDescriptor() {
-        core = new Ramp(LocalDateTime.now(), LocalDateTime.now());
+    protected VariableDescriptor() {
+        name = null;
+        coefficient = Parameter.undefined();
+    }
+    
+    public abstract String name();
+
+    protected VariableDescriptor(Variable<T> var) {
+        this.coefficient = var.getCoefficient(0);
+        this.name=null;
     }
 
-    public RampDescriptor duplicate(){
-        return new RampDescriptor(core);
+    protected VariableDescriptor(VariableDescriptor<T> desc) {
+        this.name = desc.name;
+        this.coefficient = desc.coefficient;
     }
 
-    public RampDescriptor(Ramp ramp) {
-        core = ramp;
+   public String getName() {
+        return name == null ? name() : name;
     }
 
-    @Override
-    public Ramp getCore() {
-        return core;
+    public void setName(String name) {
+        if (!name.isBlank() && !name.equals(name())) {
+            this.name = name;
+        }else
+            this.name=null;
     }
 
-    public LocalDate getStart() {
-        return core.getStart().toLocalDate();
+    public Parameter getCoefficient() {
+        return coefficient;
     }
 
-    public void setStart(LocalDate day) {
-        core = new Ramp(day.atStartOfDay(), core.getEnd());
+    public double getParameter() {
+        return coefficient.isDefined() ? coefficient.getValue() : null;
     }
 
-    public LocalDate getEnd() {
-        return core.getEnd().toLocalDate();
+    public void setParameter(double p) {
+        coefficient = p == 0 ? Parameter.undefined() : Parameter.fixed(p);
     }
 
-    public void setEnd(LocalDate day) {
-        core = new Ramp(core.getStart(), day.atStartOfDay());
+    public boolean isFixedParameter() {
+        return coefficient.isFixed();
     }
 
-    @Override
-    public List<EnhancedPropertyDescriptor> getProperties() {
-        ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
-        EnhancedPropertyDescriptor desc = startDesc();
-        if (desc != null) {
-            descs.add(desc);
+    public void setFixedParameter(boolean f) {
+        if (f && !coefficient.isFixed()) {
+            coefficient = Parameter.fixed(coefficient.getValue());
+        } else if (coefficient.isFixed()) {
+            if (coefficient.getValue() == 0) {
+                coefficient = Parameter.undefined();
+            } else {
+                coefficient = Parameter.initial(coefficient.getValue());
+            }
         }
-        desc = endDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        return descs;
     }
-    private static final int START_ID = 1,
-            END_ID = 2;
 
-    private EnhancedPropertyDescriptor startDesc() {
+    private static final int NAME_ID = 1, FIXEDPARAMETER_ID = 2, PARAMETER_ID = 3;
+
+    protected EnhancedPropertyDescriptor nameDesc() {
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("start", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, START_ID);
-            desc.setDisplayName("Start");
-            //edesc.setReadOnly(true);
+            PropertyDescriptor desc = new PropertyDescriptor("name", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, NAME_ID);
+            desc.setDisplayName("Name");
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
-    private EnhancedPropertyDescriptor endDesc() {
+    protected EnhancedPropertyDescriptor fixedParameterDesc() {
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("end", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, END_ID);
-            desc.setDisplayName("End");
-            //edesc.setReadOnly(true);
+            PropertyDescriptor desc = new PropertyDescriptor("fixedParameter", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FIXEDPARAMETER_ID);
+            desc.setDisplayName("Fixed Parameter");
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
-    @Override
-    public String getDisplayName() {
-        return "Ramp";
+    protected EnhancedPropertyDescriptor parameterDesc() {
+        if (!coefficient.isFixed()) {
+            return null;
+        }
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("parameter", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, PARAMETER_ID);
+            desc.setDisplayName("Parameter value");
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    public static String toShortString(LocalDateTime start, LocalDateTime end, TsDomain domain) {
+        int period = domain == null ? 0 : domain.getAnnualFrequency();
+        StringBuilder builder = new StringBuilder();
+        if (period <= 0) {
+            builder.append(start.toLocalDate().format(DateTimeFormatter.ISO_DATE))
+                    .append(" - ").append(end.toLocalDate().format(DateTimeFormatter.ISO_DATE));
+        } else {
+            TsUnit unit = TsUnit.ofAnnualFrequency(period);
+            TsPeriod pstart = TsPeriod.of(unit, start);
+            TsPeriod pend = TsPeriod.of(unit, end);
+            builder.append(pstart.display())
+                    .append(" - ").append(pend.display());
+
+        }
+        return builder.toString();
     }
 
 }

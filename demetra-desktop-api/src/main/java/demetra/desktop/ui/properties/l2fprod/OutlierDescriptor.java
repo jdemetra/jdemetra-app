@@ -28,6 +28,7 @@ import demetra.timeseries.regression.Variable;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,126 +37,122 @@ import java.util.List;
  * @author Mats Maggi
  */
 public class OutlierDescriptor implements IPropertyDescriptors {
-
+    
     public static enum OutlierType {
         AO, LS, TC, SO;
     }
-
+    
     private static final int NAME_ID = 0, POSITION_ID = 1, TYPE_ID = 2, FIXEDPARAMETER_ID = 3, PARAMETER_ID = 4;
     private LocalDate position;
     private OutlierType type;
     private Parameter parameter;
     private String name;
-    private boolean autoName;
-
+    
     public OutlierDescriptor() {
         position = LocalDate.now();
         type = OutlierType.AO;
         parameter = Parameter.undefined();
-        autoName = true;
-        name = name();
+        name = null;
     }
-
+    
     public OutlierDescriptor(LocalDate pos, OutlierType type) {
         this.position = pos;
         this.type = type;
         parameter = Parameter.undefined();
-        autoName = true;
-        name = name();
+        name = null;
     }
-
+    
     public OutlierDescriptor(LocalDate pos, OutlierType type, Parameter parameter, String name) {
         this.position = pos;
         this.type = type;
         this.parameter = parameter;
-        autoName = true;
-        if (name != null && !name.isBlank()) {
+        if (name != null && !name.isBlank() && !name.equals(name())) {
             this.name = name;
-            autoName = false;
         } else {
-            autoName = true;
-            this.name = name();
+            this.name = null;
         }
     }
-
+    
     public <O extends IOutlier> OutlierDescriptor(Variable<O> var) {
         O core = var.getCore();
         position = core.getPosition().toLocalDate();
         type = OutlierType.valueOf(core.getCode());
         parameter = var.getCoefficient(0);
-        autoName = false;
-        name = var.getName();
-        if (name == null || name.isBlank())
-            name=name();
+        String c = var.getName();
+        if (!c.isBlank() && !c.equals(name())) {
+            name = c;
+        }
     }
-
+    
     public OutlierDescriptor(OutlierDescriptor desc) {
         position = desc.position;
         type = desc.type;
         parameter = desc.parameter;
         name = desc.name;
-        autoName = desc.autoName;
     }
-
+    
     public OutlierDescriptor duplicate() {
         return new OutlierDescriptor(this);
     }
-
+    
     private String name() {
         TsDomain domain = UserInterfaceContext.INSTANCE.getDomain();
-        return toString(domain == null ? 0 : domain.getAnnualFrequency());
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        if (!name.equals(this.name)) {
-            this.name = name;
-            this.autoName = name.isBlank();
+        int freq = domain == null ? 0 : domain.getAnnualFrequency();
+        StringBuilder builder = new StringBuilder();
+        if (freq == 0) {
+            builder.append(type).append(InformationSet.SEP).append(position.format(DateTimeFormatter.ISO_DATE));
+            if (parameter.isFixed()) {
+                builder.append(" [").append(parameter.getValue()).append(']');
+            }
+        } else {
+            TsUnit unit = TsUnit.ofAnnualFrequency(freq);
+            builder.append(type).append(InformationSet.SEP).append(TsPeriod.of(unit, position).display());
+            if (parameter.isFixed()) {
+                builder.append(" [").append(parameter.getValue()).append(']');
+            }
         }
+        return builder.toString();
     }
-
-    public void setName(String name, boolean auto) {
-        this.name = name;
-        this.autoName = auto;
+    
+    public String getName() {
+        return name == null ? name() : name;
     }
-
+    
+    public void setName(String name) {
+        if (!name.isBlank() && !name.equals(name())) {
+            this.name = name;
+        }else
+            this.name=null;
+    }
+    
     public LocalDate getPosition() {
         return position;
     }
-
+    
     public void setPosition(LocalDate position) {
         this.position = position;
-        if (autoName) {
-            name = name();
-        }
     }
-
+    
     public OutlierType getType() {
         return type;
     }
-
+    
     public void setType(OutlierType type) {
         this.type = type;
-        if (autoName) {
-            name = name();
-        }
     }
-
+    
     public double getParameter() {
         return parameter.isDefined() ? parameter.getValue() : null;
     }
-
+    
     public void setParameter(double p) {
         parameter = p == 0 ? Parameter.undefined() : Parameter.fixed(p);
     }
-
+    
     public boolean isFixedParameter() {
         return parameter.isFixed();
     }
-
+    
     public void setFixedParameter(boolean f) {
         if (f && !parameter.isFixed()) {
             parameter = Parameter.fixed(parameter.getValue());
@@ -167,11 +164,11 @@ public class OutlierDescriptor implements IPropertyDescriptors {
             }
         }
     }
-
+    
     public Parameter getCoefficient() {
         return parameter;
     }
-
+    
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
@@ -198,12 +195,12 @@ public class OutlierDescriptor implements IPropertyDescriptors {
         }
         return descs;
     }
-
+    
     @Override
     public String getDisplayName() {
         return "Outlier";
     }
-
+    
     EnhancedPropertyDescriptor nameDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("name", this.getClass());
@@ -214,7 +211,7 @@ public class OutlierDescriptor implements IPropertyDescriptors {
             return null;
         }
     }
-
+    
     private EnhancedPropertyDescriptor positionDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("position", this.getClass());
@@ -225,7 +222,7 @@ public class OutlierDescriptor implements IPropertyDescriptors {
             return null;
         }
     }
-
+    
     private EnhancedPropertyDescriptor typeDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("type", this.getClass());
@@ -236,7 +233,7 @@ public class OutlierDescriptor implements IPropertyDescriptors {
             return null;
         }
     }
-
+    
     private EnhancedPropertyDescriptor fixedParameterDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("fixedParameter", this.getClass());
@@ -247,7 +244,7 @@ public class OutlierDescriptor implements IPropertyDescriptors {
             return null;
         }
     }
-
+    
     private EnhancedPropertyDescriptor parameterDesc() {
         if (!parameter.isFixed()) {
             return null;
@@ -261,27 +258,10 @@ public class OutlierDescriptor implements IPropertyDescriptors {
             return null;
         }
     }
-
+    
     @Override
     public String toString() {
         return getName();
     }
-
-    public String toString(int freq) {
-        if (!autoName) {
-            return name;
-        }
-        if (freq == 0) {
-            return toString();
-        } else {
-            StringBuilder builder = new StringBuilder();
-            TsUnit unit = TsUnit.ofAnnualFrequency(freq);
-            builder.append(type).append(InformationSet.SEP).append(TsPeriod.of(unit, position).display());
-            if (parameter.isFixed()) {
-                builder.append(" [").append(parameter.getValue()).append(']');
-            }
-            return builder.toString();
-        }
-    }
-
+    
 }

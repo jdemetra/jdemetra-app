@@ -6,6 +6,7 @@ package demetra.desktop.ui.properties.l2fprod;
 
 import demetra.desktop.descriptors.*;
 import demetra.timeseries.regression.Ramp;
+import demetra.timeseries.regression.Variable;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.time.LocalDate;
@@ -17,25 +18,32 @@ import java.util.List;
  *
  * @author Jean Palate
  */
-public class RampDescriptor implements IObjectDescriptor<Ramp> {
-
-    private Ramp core;
+public class RampDescriptor extends VariableDescriptor<Ramp> {
 
     @Override
-    public String toString() {
-        return getCore().toString();
+    public String name() {
+        return "rp: " + VariableDescriptor.toShortString(core.getStart(), core.getEnd(), UserInterfaceContext.INSTANCE.getDomain());
     }
+
+    private Ramp core;
 
     public RampDescriptor() {
         core = new Ramp(LocalDateTime.now(), LocalDateTime.now());
     }
 
-    public RampDescriptor duplicate(){
-        return new RampDescriptor(core);
+    public RampDescriptor duplicate() {
+        return new RampDescriptor(this);
     }
 
-    public RampDescriptor(Ramp ramp) {
-        core = ramp;
+    public RampDescriptor(Variable<Ramp> ramp) {
+        super(ramp);
+        core = ramp.getCore();
+        setName(ramp.getName());
+    }
+
+    public RampDescriptor(RampDescriptor desc) {
+        super(desc);
+        this.core = desc.core;
     }
 
     @Override
@@ -62,7 +70,12 @@ public class RampDescriptor implements IObjectDescriptor<Ramp> {
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
-        EnhancedPropertyDescriptor desc = startDesc();
+        EnhancedPropertyDescriptor desc;
+        desc = nameDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = startDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -70,10 +83,18 @@ public class RampDescriptor implements IObjectDescriptor<Ramp> {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = fixedParameterDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = parameterDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         return descs;
     }
-    private static final int START_ID = 1,
-            END_ID = 2;
+    private static final int START_ID = 10,
+            END_ID = 11;
 
     private EnhancedPropertyDescriptor startDesc() {
         try {

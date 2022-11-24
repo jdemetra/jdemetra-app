@@ -17,9 +17,14 @@
 package demetra.desktop.x13.util;
 
 import demetra.desktop.Config;
+import demetra.desktop.ui.properties.l2fprod.ArrayRenderer;
+import demetra.desktop.ui.properties.l2fprod.CustomPropertyEditorRegistry;
+import demetra.desktop.ui.properties.l2fprod.CustomPropertyRendererFactory;
 import demetra.desktop.util.InstallerStep;
+import demetra.desktop.x13.descriptors.SeasonalFilterPropertyEditor;
 import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddies;
 import demetra.desktop.x13.ui.X13UI;
+import demetra.x11.SeasonalFilterOption;
 import java.util.prefs.Preferences;
 import org.openide.modules.ModuleInstall;
 import org.slf4j.Logger;
@@ -30,7 +35,7 @@ public final class Installer extends ModuleInstall {
     final static Logger LOGGER = LoggerFactory.getLogger(Installer.class);
 
     public static final InstallerStep STEP = InstallerStep.all(
-            new DemetraX13DiagnosticsStep()
+            new DemetraX13DiagnosticsStep(), new PropertiesStep()
     );
 
     @Override
@@ -51,22 +56,38 @@ public final class Installer extends ModuleInstall {
 
         @Override
         public void restore() {
-            X13DiagnosticsFactoryBuddies.getInstance().getFactories().forEach(buddy->{
-                    Preferences nprefs = prefs.node(buddy.getDisplayName());
-                    tryGet(nprefs).ifPresent(buddy::setConfig);
+            X13DiagnosticsFactoryBuddies.getInstance().getFactories().forEach(buddy -> {
+                Preferences nprefs = prefs.node(buddy.getDisplayName());
+                tryGet(nprefs).ifPresent(buddy::setConfig);
             });
             X13UI.setDiagnostics();
         }
 
         @Override
         public void close() {
-            X13DiagnosticsFactoryBuddies.getInstance().getFactories().forEach(buddy->{
+            X13DiagnosticsFactoryBuddies.getInstance().getFactories().forEach(buddy -> {
                 Config config = buddy.getConfig();
-                if (config != null){
+                if (config != null) {
                     Preferences nprefs = prefs.node(buddy.getDisplayName());
                     put(nprefs, config);
                 }
             });
         }
     }
+
+    private static final class PropertiesStep extends InstallerStep {
+
+        @Override
+        public void restore() {
+            CustomPropertyEditorRegistry.INSTANCE.register(SeasonalFilterOption[].class, new SeasonalFilterPropertyEditor());
+            CustomPropertyRendererFactory.INSTANCE.getRegistry().registerRenderer(SeasonalFilterOption[].class, new ArrayRenderer());
+        }
+
+        @Override
+        public void close() {
+            CustomPropertyEditorRegistry.INSTANCE.unregister(SeasonalFilterOption[].class);
+            CustomPropertyEditorRegistry.INSTANCE.unregister(SeasonalFilterOption[].class);
+        }
+    }
+
 }

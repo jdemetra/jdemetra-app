@@ -6,6 +6,7 @@ package demetra.desktop.ui.properties.l2fprod;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import demetra.timeseries.regression.Ramp;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -18,17 +19,22 @@ import javax.swing.SwingUtilities;
  */
 public class RampsEditor extends AbstractPropertyEditor {
 
-    private Ramp[] ramps;
+    private static final RampDescriptor[] EMPTY = new RampDescriptor[0];
+
+    private RampDescriptor[] ramps;
 
     public RampsEditor() {
         editor = new JButton(new AbstractAction("...") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                final ArrayEditorDialog<RampDescriptor> dialog = new ArrayEditorDialog<>(SwingUtilities.getWindowAncestor(editor),
-                        null != ramps ? getDescriptors() : new RampDescriptor[]{}, 
-                        RampDescriptor::new, RampDescriptor::duplicate);
+                Window ancestor = SwingUtilities.getWindowAncestor(editor);
+                final ArrayEditorDialog<RampDescriptor> dialog = new ArrayEditorDialog<>(ancestor,
+                        null != ramps ? ramps : EMPTY,
+                        RampDescriptor::new,
+                        RampDescriptor::duplicate);
                 dialog.setTitle("Ramps");
                 dialog.setVisible(true);
+                dialog.setLocationRelativeTo(ancestor);
                 if (dialog.isDirty()) {
                     setDescriptors(dialog.getElements());
                 }
@@ -36,20 +42,9 @@ public class RampsEditor extends AbstractPropertyEditor {
         });
     }
 
-    private RampDescriptor[] getDescriptors() {
-        RampDescriptor[] descs = new RampDescriptor[ramps.length];
-        for (int i = 0; i < descs.length; ++i) {
-            descs[i] = new RampDescriptor(ramps[i]);
-        }
-        return descs;
-    }
-
     private void setDescriptors(List<RampDescriptor> elements) {
-        Ramp[] old=ramps;
-        ramps = new Ramp[elements.size()];
-        for (int i = 0; i < ramps.length; ++i) {
-            ramps[i] = elements.get(i).getCore();
-        }
+        RampDescriptor[] old = ramps;
+        ramps = elements.toArray(RampDescriptor[]::new);
         firePropertyChange(old, ramps);
     }
 
@@ -60,11 +55,12 @@ public class RampsEditor extends AbstractPropertyEditor {
 
     @Override
     public void setValue(Object value) {
-        if (null != value && value instanceof Ramp[]) {
-            ramps = ((Ramp[]) value).clone();
-        }
-        else {
-            ramps = new Ramp[0];
+        if (null != value && value instanceof RampDescriptor[] r) {
+            RampDescriptor[] old = ramps;
+            ramps = r;
+            firePropertyChange(old, ramps);
+        } else {
+            ramps = EMPTY;
         }
     }
 }

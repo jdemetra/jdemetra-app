@@ -22,7 +22,6 @@ import demetra.desktop.design.SwingProperty;
 import demetra.desktop.Persistable;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.beans.PropertyChangeSource;
-import demetra.desktop.ui.properties.l2fprod.OutlierDefinitionsEditor.PrespecificiedOutliersEditor;
 import demetra.desktop.util.LazyGlobalService;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
