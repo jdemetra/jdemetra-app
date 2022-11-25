@@ -6,6 +6,7 @@ package demetra.desktop.tramo.descriptors;
 
 import demetra.desktop.descriptors.IPropertyDescriptors;
 import demetra.arima.SarimaSpec;
+import demetra.modelling.TransformationType;
 import demetra.tramo.AutoModelSpec;
 import demetra.tramo.CalendarSpec;
 import demetra.tramo.EasterSpec;
@@ -31,6 +32,10 @@ abstract class BaseTramoSpecUI implements IPropertyDescriptors{
     TramoSpec core(){return root.getCore();}
     
     boolean isRo(){return root.ro;}
+    
+    boolean isTransformationDefined(){
+        return root.getCore().getTransform().getFunction() != TransformationType.Auto;
+    }
     
     void update(EstimateSpec spec) {
         root.core = root.core.toBuilder().estimate(spec).build();

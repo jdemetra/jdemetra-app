@@ -104,6 +104,13 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         return Bundle.regressionSpecUI_getDisplayName();
     }
 
+    public Parameter[] parameter(Parameter p) {
+        if (!isTransformationDefined()) {
+            p = Parameter.undefined();
+        }
+        return new Parameter[]{p};
+    }
+
     public OutlierDescriptor[] getPreSpecifiedOutliers() {
         return inner().getOutliers()
                 .stream()
@@ -123,6 +130,7 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         List<Variable<IOutlier>> list = Arrays.stream(value).map(v -> Variable.<IOutlier>builder()
                 .name(v.getName())
                 .core(toOutlier(v, period, tc))
+                .coefficients(parameter(v.getCoefficient()))
                 .build())
                 .collect(Collectors.toList());
         update(inner().toBuilder().clearOutliers().outliers(list).build());
@@ -140,7 +148,7 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
                 .name(v.getName())
                 .core(v.getCore())
                 .attribute(SaVariable.REGEFFECT, v.getRegressionEffect().name())
-                .coefficients(new Parameter[]{v.getCoefficient()})
+                .coefficients(parameter(v.getCoefficient()))
                 .build())
                 .collect(Collectors.toList());
         update(inner().toBuilder().clearInterventionVariables().interventionVariables(list).build());
@@ -158,7 +166,7 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
                 .name(v.getName())
                 .core(v.getCore())
                 .attribute(SaVariable.REGEFFECT, ComponentType.Trend.name())
-                .coefficients(new Parameter[]{v.getCoefficient()})
+                .coefficients(parameter(v.getCoefficient()))
                 .build())
                 .collect(Collectors.toList());
         update(inner().toBuilder().clearRamps().ramps(list).build());
@@ -175,7 +183,7 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         List<Variable<TsContextVariable>> list = Arrays.stream(value).map(v -> Variable.<TsContextVariable>builder()
                 .name(v.getName())
                 .core(v.getCore())
-                .coefficients(new Parameter[]{v.getCoefficient()})
+                .coefficients(parameter(v.getCoefficient()))
                 .attribute(SaVariable.REGEFFECT, v.getRegressionEffect().name())
                 .build())
                 .collect(Collectors.toList());
@@ -194,15 +202,6 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
-//    public Coefficients getFixedCoefficients() {
-//        Coefficients c = new Coefficients(inner().getAllFixedCoefficients());
-//        c.setAllNames(inner().getRegressionVariableNames(TsFrequency.Undefined));
-//        return c;
-//    }
-//
-//    public void setFixedCoefficients(Coefficients coeffs) {
-//        inner().setAllFixedCoefficients(coeffs.getFixedCoefficients());
-//    }
     private static final int MEAN_ID = 1, CALENDAR_ID = 2, PRESPEC_ID = 3, INTERV_ID = 4, RAMPS_ID = 5, USERDEF_ID = 6, FCOEFF_ID = 7;
 
     @Messages({
@@ -296,24 +295,24 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
-    @Messages({
-        "regressionSpecUI.fixedCoefficientsDesc.name=Fixed regression coefficients",
-        "regressionSpecUI.fixedCoefficientsDesc.desc="
-    })
-    private EnhancedPropertyDescriptor fixedCoefficientsDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("FixedCoefficients", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FCOEFF_ID);
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(Bundle.regressionSpecUI_fixedCoefficientsDesc_name());
-            desc.setShortDescription(Bundle.regressionSpecUI_fixedCoefficientsDesc_desc());
-            // Disabled when the transformation is on "auto"
-            edesc.setReadOnly(isRo() || core().getTransform().getFunction() == TransformationType.Auto);
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
+//    @Messages({
+//        "regressionSpecUI.fixedCoefficientsDesc.name=Fixed regression coefficients",
+//        "regressionSpecUI.fixedCoefficientsDesc.desc="
+//    })
+//    private EnhancedPropertyDescriptor fixedCoefficientsDesc() {
+//        try {
+//            PropertyDescriptor desc = new PropertyDescriptor("FixedCoefficients", this.getClass());
+//            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FCOEFF_ID);
+//            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+//            desc.setDisplayName(Bundle.regressionSpecUI_fixedCoefficientsDesc_name());
+//            desc.setShortDescription(Bundle.regressionSpecUI_fixedCoefficientsDesc_desc());
+//            // Disabled when the transformation is on "auto"
+//            edesc.setReadOnly(isRo() || core().getTransform().getFunction() == TransformationType.Auto);
+//            return edesc;
+//        } catch (IntrospectionException ex) {
+//            return null;
+//        }
+//    }
 
     @Messages({
         "regressionSpecUI.calendarDesc.name=Calendar",

@@ -121,12 +121,11 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
         TsDomain domain = UserInterfaceContext.INSTANCE.getDomain();
         int period = domain == null ? 0 : domain.getAnnualFrequency();
         List<Variable<IOutlier>> list = Arrays.stream(value).map(v -> {
-            Parameter parameter = v.getCoefficient();
             IOutlier o = toOutlier(v, period, tc);
             return Variable.<IOutlier>builder()
                     .name(v.getName())
                     .core(o)
-                    .coefficients(new Parameter[]{parameter.isFixed() ? parameter : Parameter.undefined()})
+                    .coefficients(parameter(v.getCoefficient()))
                     .build();
         }).collect(Collectors.toList());
         update(inner().toBuilder().clearOutliers().outliers(list).build());
@@ -139,11 +138,18 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
                 .toArray(SaInterventionVariableDescriptor[]::new);
     }
 
+    public Parameter[] parameter(Parameter p) {
+        if (!isTransformationDefined()) {
+            p = Parameter.undefined();
+        }
+        return new Parameter[]{p};
+    }
+
     public void setInterventionVariables(SaInterventionVariableDescriptor[] value) {
         List<Variable<InterventionVariable>> list = Arrays.stream(value).map(v -> Variable.<InterventionVariable>builder()
                 .name(v.getName())
                 .core(v.getCore())
-                .coefficients(new Parameter[]{v.getCoefficient()})
+                .coefficients(parameter(v.getCoefficient()))
                 .attribute(SaVariable.REGEFFECT, v.getRegressionEffect().name())
                 .build())
                 .collect(Collectors.toList());
@@ -161,7 +167,7 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
         List<Variable<Ramp>> list = Arrays.stream(value).map(v -> Variable.<Ramp>builder()
                 .name(v.getName())
                 .core(v.getCore())
-                .coefficients(new Parameter[]{v.getCoefficient()})
+                .coefficients(parameter(v.getCoefficient()))
                 .attribute(SaVariable.REGEFFECT, ComponentType.Trend.name())
                 .build())
                 .collect(Collectors.toList());
@@ -179,7 +185,7 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
         List<Variable<TsContextVariable>> list = Arrays.stream(value).map(v -> Variable.<TsContextVariable>builder()
                 .name(v.getName())
                 .core(v.getCore())
-                .coefficients(new Parameter[]{v.getCoefficient()})
+                .coefficients(parameter(v.getCoefficient()))
                 .attribute(SaVariable.REGEFFECT, v.getRegressionEffect().name())
                 .build())
                 .collect(Collectors.toList());
@@ -198,15 +204,6 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
         }
     }
 
-//    public Coefficients getFixedCoefficients() {
-//        Coefficients c = new Coefficients(inner().getAllFixedCoefficients());
-//        c.setAllNames(inner().getRegressionVariableNames(TsFrequency.Undefined));
-//        return c;
-//    }
-//
-//    public void setFixedCoefficients(Coefficients coeffs) {
-//        inner().setAllFixedCoefficients(coeffs.getFixedCoefficients());
-//    }
     private static final int MEAN_ID = 1, CALENDAR_ID = 2, PRESPEC_ID = 3, INTERV_ID = 4, RAMPS_ID = 5, USERDEF_ID = 6, FCOEFF_ID = 7;
 
     @Messages({

@@ -4,10 +4,12 @@
  */
 package demetra.desktop.tramo.descriptors;
 
+import demetra.data.Parameter;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.ui.properties.l2fprod.Holidays;
 import demetra.desktop.ui.properties.l2fprod.UserVariables;
 import demetra.desktop.modelling.util.TradingDaysSpecType;
+import demetra.desktop.ui.properties.l2fprod.NamedParameters;
 import demetra.timeseries.calendars.CalendarManager;
 import demetra.timeseries.calendars.LengthOfPeriodType;
 import demetra.timeseries.calendars.TradingDaysType;
@@ -16,6 +18,7 @@ import demetra.tramo.TradingDaysSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.openide.util.NbBundle.Messages;
 
@@ -69,6 +72,10 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = coeffDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         return descs;
     }
 
@@ -88,11 +95,6 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
         super(root);
     }
     
-    @Override
-    public boolean isRo(){
-        return super.isRo() || inner().hasFixedCoefficients();
-    }
-
     public TradingDaysSpecType getOption() {
         TradingDaysSpec spec = inner();
         if (spec.isUsed()) {
@@ -158,6 +160,46 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
                 update(TradingDaysSpec.userDefined(td.getUserVariables(), value));
                 break;
         }
+    }
+    
+    public boolean hasFixedCoefficients(){
+        return inner().hasFixedCoefficients();
+    }
+
+    public NamedParameters getCoefficients() {
+        TradingDaysSpec inner = inner();
+        NamedParameters np = new NamedParameters();
+        if (inner.getLengthOfPeriodType() != LengthOfPeriodType.None) {
+            np.add("lp", inner.getLpCoefficient());
+        }
+        if (inner.isDefaultTradingDays() || inner.isHolidays()) {
+            Parameter[] ptd = inner.getTdCoefficients();
+            int ntd = inner.getTradingDaysType().getVariablesCount() - 1;
+            String[] td = new String[ntd];
+            for (int i = 0; i < ntd; ++i) {
+                td[i] = "td-" + (i + 1);
+            }
+            np.addAll(td, ptd);
+        }
+        return np;
+    }
+
+    public void setCoefficients(NamedParameters p) {
+        Parameter[] parameters = p.parameters();
+        Parameter[] td;
+        Parameter lp;
+        if (inner().getLengthOfPeriodType() != LengthOfPeriodType.None) {
+            lp = parameters[0];
+            if (parameters.length > 1) {
+                td = Arrays.copyOfRange(parameters, 1, parameters.length);
+            } else {
+                td = null;
+            }
+        } else {
+            lp = null;
+            td = parameters;
+        }
+        update(inner().withCoefficients(td, lp));
     }
 
     public int getW() {
@@ -234,7 +276,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
         TradingDaysSpec td = inner();
         update(TradingDaysSpec.userDefined(vars.getNames(), td.getRegressionTestType()));
     }
-
+    
     public TradingDaysSpec.AutoMethod getAutomatic() {
         return inner().getAutomaticMethod();
     }
@@ -282,7 +324,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
     
     
 /////////////////////////////////////////////////////////
-    private static final int AUTO_ID = 0, PFTD_ID=10, OPTION_ID = 20, STOCK_ID = 30, HOLIDAYS_ID = 40, USER_ID = 50, TEST_ID = 1;
+    private static final int AUTO_ID = 0, PFTD_ID=10, OPTION_ID = 20, STOCK_ID = 30, HOLIDAYS_ID = 40, USER_ID = 50, TEST_ID = 1, COEFF_ID=100;
 
     @Messages({"tradingDaysSpecUI.optionDesc.name=option",
         "tradingDaysSpecUI.optionDesc.desc=Specifies the type of a calendar being assigned to the series (Default – default calendar without country-specific holidays; Stock – day-of-week effects for inventories and other stock reported for the w-th day of the month; Holidays – the calendar variables based on user-defined calendar possibly with country specific holidays; UserDefined – calendar variables specified by the user) or excludes calendar variables from the regression model (None)."
@@ -294,7 +336,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             desc.setDisplayName(Bundle.tradingDaysSpecUI_optionDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_optionDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(isRo() || hasFixedCoefficients());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -314,7 +356,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             desc.setDisplayName(Bundle.tradingDaysSpecUI_automaticDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_automaticDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(isRo() || hasFixedCoefficients());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -334,7 +376,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             desc.setDisplayName(Bundle.tradingDaysSpecUI_holidaysDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_holidaysDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(isRo() || hasFixedCoefficients());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -354,7 +396,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             desc.setDisplayName(Bundle.tradingDaysSpecUI_pftdDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_pftdDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(isRo() || hasFixedCoefficients());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -374,7 +416,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             desc.setDisplayName(Bundle.tradingDaysSpecUI_userDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_userDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(isRo() || hasFixedCoefficients());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -393,7 +435,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OPTION_ID);
             desc.setDisplayName(Bundle.tradingDaysSpecUI_testDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_testDesc_desc());
-            edesc.setReadOnly(isRo() || inner().isAutomatic());
+            edesc.setReadOnly(isRo() || inner().isAutomatic() || hasFixedCoefficients());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -412,7 +454,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OPTION_ID);
             desc.setDisplayName(Bundle.tradingDaysSpecUI_tdDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_tdDesc_desc());
-            edesc.setReadOnly(isRo() || inner().isAutomatic());
+            edesc.setReadOnly(isRo() || inner().isAutomatic() || hasFixedCoefficients());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -431,7 +473,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, STOCK_ID);
             desc.setDisplayName(Bundle.tradingDaysSpecUI_stdDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_stdDesc_desc());
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(isRo() || hasFixedCoefficients());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -450,10 +492,32 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OPTION_ID);
             desc.setDisplayName(Bundle.tradingDaysSpecUI_leapyearDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_leapyearDesc_desc());
-            edesc.setReadOnly(isRo() || inner().isAutomatic());
+            edesc.setReadOnly(isRo() || inner().isAutomatic() || hasFixedCoefficients());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
+    
+        @Messages({
+        "tradingDaysSpecUI.coeffDesc.name=Coefficients",
+        "tradingDaysSpecUI.coeffDesc.desc=Coefficients"
+    })
+    private EnhancedPropertyDescriptor coeffDesc() {
+        if (!inner().isDefined()) {
+            return null;
+        }
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("coefficients", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, COEFF_ID);
+            desc.setDisplayName(Bundle.tradingDaysSpecUI_coeffDesc_name());
+            desc.setShortDescription(Bundle.tradingDaysSpecUI_coeffDesc_desc());
+            edesc.setReadOnly(isRo() || !isTransformationDefined());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+
 }

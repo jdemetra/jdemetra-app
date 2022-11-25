@@ -68,6 +68,11 @@
             <groupId>com.github.nbbrd.java-io-util</groupId>
             <artifactId>java-io-xml-bind</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.4.0-b180830.0438</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

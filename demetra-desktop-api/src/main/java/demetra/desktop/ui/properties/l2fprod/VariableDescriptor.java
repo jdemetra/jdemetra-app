@@ -15,6 +15,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import org.openide.util.NbBundle;
 
 /**
  *
@@ -89,28 +90,31 @@ public abstract class VariableDescriptor<T extends ITsVariable> implements IObje
 
     private static final int NAME_ID = 1, FIXEDPARAMETER_ID = 2, PARAMETER_ID = 3;
 
+    @NbBundle.Messages("variableDescriptor.nameDesc.display=Name")
     protected EnhancedPropertyDescriptor nameDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("name", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, NAME_ID);
-            desc.setDisplayName("Name");
+            desc.setDisplayName(Bundle.variableDescriptor_nameDesc_display());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @NbBundle.Messages("variableDescriptor.fixedParamDesc.display=Fixed coeff.")
     protected EnhancedPropertyDescriptor fixedParameterDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("fixedParameter", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FIXEDPARAMETER_ID);
-            desc.setDisplayName("Fixed Parameter");
+            desc.setDisplayName(Bundle.variableDescriptor_fixedParamDesc_display());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
+    @NbBundle.Messages("variableDescriptor.paramDesc.display=Coefficient")
     protected EnhancedPropertyDescriptor parameterDesc() {
         if (!coefficient.isFixed()) {
             return null;
@@ -118,7 +122,7 @@ public abstract class VariableDescriptor<T extends ITsVariable> implements IObje
         try {
             PropertyDescriptor desc = new PropertyDescriptor("parameter", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, PARAMETER_ID);
-            desc.setDisplayName("Parameter value");
+            desc.setDisplayName(Bundle.variableDescriptor_paramDesc_display());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
