@@ -10,19 +10,14 @@ import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.text.NumberFormat;
-import java.util.Locale;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.NumberFormatter;
 
 /**
  *
@@ -200,133 +195,3 @@ public class ParametersPropertyEditor extends AbstractPropertyEditor {
     }
 }
 
-//class CustomNumberEditor extends DefaultCellEditor {
-//
-//    private final JSpinner spinner_;
-//    private JSpinner.NumberEditor editor;
-//    private JTextField textField;
-//    private boolean valueSet;
-//
-//    public CustomNumberEditor() {
-//        super(new JTextField());
-//        SpinnerNumberModel model = new SpinnerNumberModel(0, -2, 2, 0.05);
-//        spinner_ = new JSpinner(model);
-//        editor = ((JSpinner.NumberEditor) spinner_.getEditor());
-//        textField = editor.getTextField();
-//        textField.addFocusListener(new FocusListener() {
-//
-//            @Override
-//            public void focusGained(FocusEvent fe) {
-//                System.err.println("Got focus");
-//                //textField.setSelectionStart(0);
-//                //textField.setSelectionEnd(1);
-//                SwingUtilities.invokeLater(new Runnable() {
-//
-//                    @Override
-//                    public void run() {
-//                        if (valueSet) {
-//                            textField.setCaretPosition(1);
-//                        }
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void focusLost(FocusEvent fe) {
-//            }
-//        });
-//        textField.addActionListener(new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent ae) {
-//                stopCellEditing();
-//            }
-//        });
-//    }
-//
-//    @Override
-//    public Object getCellEditorValue() {
-//        return spinner_.getValue();
-//    }
-//
-//    @Override
-//    public Component getTableCellEditorComponent(JTable table, Object val, boolean isSelected, int row, int column) {
-//        if (!valueSet) {
-//            spinner_.setValue(val);
-//        }
-//        SwingUtilities.invokeLater(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                textField.requestFocus();
-//            }
-//        });
-//        return spinner_;
-//    }
-//
-//    @Override
-//    public boolean isCellEditable(EventObject eo) {
-//        System.err.println("isCellEditable");
-//        if (eo instanceof KeyEvent) {
-//            KeyEvent ke = (KeyEvent) eo;
-//            System.err.println("key event: " + ke.getKeyChar());
-//            textField.setText(String.valueOf(ke.getKeyChar()));
-//            //textField.select(1,1);
-//            //textField.setCaretPosition(1);
-//            //textField.moveCaretPosition(1);
-//            valueSet = true;
-//        }
-//        else {
-//            valueSet = false;
-//        }
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean stopCellEditing() {
-//        System.err.println("Stopping edit");
-//        try {
-//            editor.commitEdit();
-//            spinner_.commitEdit();
-//        }
-//        catch (java.text.ParseException e) {
-//            JOptionPane.showMessageDialog(null,
-//                    "Invalid val, discarding.");
-//        }
-//        return super.stopCellEditing();
-//    }
-//}
-class CustomNumberEditor extends DefaultCellEditor {
-
-    public CustomNumberEditor() {
-        super(new JFormattedTextField());
-        final JFormattedTextField editor = (JFormattedTextField) super.getComponent();
-        editor.setHorizontalAlignment(SwingConstants.RIGHT);
-        editor.setBorder(null);
-        Locale myLocale = Locale.getDefault(); // better still
-        NumberFormat fmt = NumberFormat.getInstance(myLocale);
-        editor.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new NumberFormatter(fmt)));
-        super.delegate = new EditorDelegate() {
-
-            @Override
-            public void setValue(Object value) {
-                editor.setValue(value != null ? ((Number) value).doubleValue() : value);
-            }
-
-            @Override
-            public Object getCellEditorValue() {
-                Object val = editor.getValue();
-                return val != null ? ((Number) val).doubleValue() : val;
-            }
-
-            @Override
-            public boolean stopCellEditing() {
-                try {
-                    editor.commitEdit();
-                } catch (java.text.ParseException e) {
-                }
-                return super.stopCellEditing();
-            }
-        };
-    }
-}

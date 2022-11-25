@@ -23,18 +23,14 @@ public class EasterSpecUI extends BaseTramoSpecUI {
     public String toString() {
         return getOption() == EasterSpec.Type.Unused ? "" : "in use";
     }
-
-    private EasterSpec inner() {
+    
+     private EasterSpec inner() {
         EasterSpec easter = core().getRegression().getCalendar().getEaster();
         return easter;
     }
 
     public EasterSpecUI(TramoSpecRoot root) {
         super(root);
-    }
-
-    public boolean isro() {
-        return super.isRo() || inner().hasFixedCoefficient();
     }
 
     public EasterSpec.Type getOption() {
@@ -171,12 +167,14 @@ public class EasterSpecUI extends BaseTramoSpecUI {
         "easterSpecUI.durationDesc.desc=Duration"
     })
     private EnhancedPropertyDescriptor durationDesc() {
+        if (getOption() == EasterSpec.Type.Unused )
+            return null;
         try {
             PropertyDescriptor desc = new PropertyDescriptor("duration", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DUR_ID);
             desc.setDisplayName(Bundle.easterSpecUI_durationDesc_name());
             desc.setShortDescription(Bundle.easterSpecUI_durationDesc_desc());
-            if (isRo() || getOption() == EasterSpec.Type.Unused || isFixedCoefficient()) {
+            if (isRo() || isFixedCoefficient()) {
                 edesc.setReadOnly(true);
             }
             return edesc;
@@ -189,12 +187,14 @@ public class EasterSpecUI extends BaseTramoSpecUI {
         "easterSpecUI.testDesc.name=Test",
         "easterSpecUI.testDesc.desc=Test",})
     private EnhancedPropertyDescriptor testDesc() {
+        if (getOption() == EasterSpec.Type.Unused )
+            return null;
         try {
             PropertyDescriptor desc = new PropertyDescriptor("test", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TEST_ID);
             desc.setDisplayName(Bundle.easterSpecUI_testDesc_name());
             desc.setShortDescription(Bundle.easterSpecUI_testDesc_desc());
-            if (isRo() || getOption() == EasterSpec.Type.Unused || isFixedCoefficient()) {
+            if (isRo() || isFixedCoefficient()) {
                 edesc.setReadOnly(true);
             }
             return edesc;
@@ -207,6 +207,8 @@ public class EasterSpecUI extends BaseTramoSpecUI {
         "easterSpecUI.julianDesc.desc=Use Julian Easter (expressed in Gregorian calendar)",
         "easterSpecUI.julianDesc.name=Julian",})
     private EnhancedPropertyDescriptor julianDesc() {
+        if (getOption() == EasterSpec.Type.Unused )
+            return null;
         try {
             PropertyDescriptor desc = new PropertyDescriptor("julian", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, JULIAN_ID);
@@ -244,16 +246,18 @@ public class EasterSpecUI extends BaseTramoSpecUI {
     }
 
     @Messages({
-        "easterSpecUI.fixedCoeffDesc.name=Fixed coefficient",
-        "easterSpecUI.fixedCoeffDesc.desc=Fixed coefficient"
+        "easterSpecUI.fixedCoeffDesc.name=Fixed coeff.",
+        "easterSpecUI.fixedCoeffDesc.desc=Fixed coeff."
     })
     private EnhancedPropertyDescriptor fixedCoeffDesc() {
+        if (getOption() == EasterSpec.Type.Unused )
+            return null;
         try {
             PropertyDescriptor desc = new PropertyDescriptor("fixedCoefficient", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FIXED_COEFF_ID);
             desc.setDisplayName(Bundle.easterSpecUI_fixedCoeffDesc_name());
             desc.setShortDescription(Bundle.easterSpecUI_fixedCoeffDesc_desc());
-            if (isRo() || getOption() == EasterSpec.Type.Unused || isTest()) {
+            if (isRo() || getOption() == EasterSpec.Type.Unused || isTest() || ! isTransformationDefined()) {
                 edesc.setReadOnly(true);
             }
             return edesc;

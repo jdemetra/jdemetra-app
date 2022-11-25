@@ -38,6 +38,7 @@ public enum CustomPropertyEditorRegistry {
         register(UserVariables.class, new UserVariablesEditor());
         register(Coefficients.class, new FixedCoefficientsEditor());
         registerEnumEditor(OutlierDescriptor.OutlierType.class, new OutlierTypeSelector());
+        register(NamedParameters.class, new NamedParametersEditor());
     }
 
     public PropertyEditorRegistry getRegistry() {

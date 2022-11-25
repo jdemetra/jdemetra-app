@@ -6,6 +6,7 @@ package demetra.desktop.regarima.descriptors;
 
 import demetra.desktop.descriptors.IPropertyDescriptors;
 import demetra.arima.SarimaSpec;
+import demetra.modelling.TransformationType;
 import demetra.regarima.OutlierSpec;
 import demetra.regarima.EstimateSpec;
 import demetra.regarima.AutoModelSpec;
@@ -36,6 +37,10 @@ abstract class BaseRegArimaSpecUI implements IPropertyDescriptors {
         return root.ro;
     }
 
+    boolean isTransformationDefined(){
+        return root.getCore().getTransform().getFunction() != TransformationType.Auto;
+    }
+    
     void update(BasicSpec spec) {
         root.core = root.core.toBuilder().basic(spec).build();
     }

@@ -102,6 +102,7 @@ public class SaNode {
             SaDefinition definition = item.getDefinition();
             SaDefinition ndefinition = definition.toBuilder()
                     .domainSpec(nspec)
+                    .estimationSpec(null)
                     .policy(EstimationPolicyType.None)
                     .build();
             SaItem nitem=SaItem.builder()
