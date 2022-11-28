@@ -70,6 +70,10 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = muDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         desc = calendarDesc();
         if (desc != null) {
             descs.add(desc);
@@ -202,7 +206,15 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
-    private static final int MEAN_ID = 1, CALENDAR_ID = 2, PRESPEC_ID = 3, INTERV_ID = 4, RAMPS_ID = 5, USERDEF_ID = 6, FCOEFF_ID = 7;
+    public Parameter getMu() {
+        return inner().getMean();
+    }
+
+    public void setMu(Parameter mu) {
+        update(inner().toBuilder().mean(mu).build());
+    }
+
+    private static final int MEAN_ID = 0, MU_ID = 1, CALENDAR_ID = 2, PRESPEC_ID = 3, INTERV_ID = 4, RAMPS_ID = 5, USERDEF_ID = 6, FCOEFF_ID = 7;
 
     @Messages({
         "regressionSpecUI.meanDesc.desc=[imean] Mean correction"
@@ -217,6 +229,25 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setShortDescription(Bundle.regressionSpecUI_meanDesc_desc());
             edesc.setReadOnly(isRo());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "regressionSpecUI.muDesc.desc=Mean coefficient"
+    })
+    private EnhancedPropertyDescriptor muDesc() {
+        if (core().isUsingAutoModel() || !isMean()) {
+            return null;
+        }
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("mu", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, MU_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setShortDescription(Bundle.regressionSpecUI_muDesc_desc());
+            edesc.setReadOnly(isRo() || !isTransformationDefined());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -313,7 +344,6 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
 //            return null;
 //        }
 //    }
-
     @Messages({
         "regressionSpecUI.calendarDesc.name=Calendar",
         "regressionSpecUI.calendarDesc.desc=Calendar effects"

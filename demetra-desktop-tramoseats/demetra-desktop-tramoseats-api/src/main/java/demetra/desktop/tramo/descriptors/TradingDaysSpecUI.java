@@ -11,6 +11,7 @@ import demetra.desktop.ui.properties.l2fprod.UserVariables;
 import demetra.desktop.modelling.util.TradingDaysSpecType;
 import demetra.desktop.ui.properties.l2fprod.NamedParameters;
 import demetra.timeseries.calendars.CalendarManager;
+import demetra.timeseries.calendars.DayClustering;
 import demetra.timeseries.calendars.LengthOfPeriodType;
 import demetra.timeseries.calendars.TradingDaysType;
 import demetra.tramo.RegressionTestType;
@@ -30,9 +31,9 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
 
     @Override
     public String toString() {
-        return  inner().isUsed() ? "in use" : "";
+        return inner().isUsed() ? "in use" : "";
     }
-    
+
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
@@ -87,14 +88,14 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
 
     private TradingDaysSpec inner() {
         TradingDaysSpec spec = core().getRegression().getCalendar().getTradingDays();
-        
+
         return spec;
     }
 
     TradingDaysSpecUI(TramoSpecRoot root) {
         super(root);
     }
-    
+
     public TradingDaysSpecType getOption() {
         TradingDaysSpec spec = inner();
         if (spec.isUsed()) {
@@ -124,7 +125,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
                 break;
             case Holidays:
                 update(automatic ? TradingDaysSpec.automaticHolidays(CalendarManager.DEF, spec.getAutomaticMethod(), spec.getProbabilityForFTest())
-                        :TradingDaysSpec.holidays(CalendarManager.DEF, TradingDaysType.TD7, LengthOfPeriodType.LengthOfPeriod, RegressionTestType.Separate_T));
+                        : TradingDaysSpec.holidays(CalendarManager.DEF, TradingDaysType.TD7, LengthOfPeriodType.LengthOfPeriod, RegressionTestType.Separate_T));
                 break;
             case Stock:
                 update(TradingDaysSpec.stockTradingDays(31, RegressionTestType.Separate_T));
@@ -144,9 +145,10 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
     public void setRegressionTestType(RegressionTestType value) {
         TradingDaysSpec td = inner();
         // No fixed coefficient (otherwise, read only)
-        if (value.equals(td.getRegressionTestType()))
+        if (value.equals(td.getRegressionTestType())) {
             return;
-        switch (getOption()){
+        }
+        switch (getOption()) {
             case Default:
                 update(TradingDaysSpec.td(td.getTradingDaysType(), td.getLengthOfPeriodType(), value));
                 break;
@@ -161,8 +163,8 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
                 break;
         }
     }
-    
-    public boolean hasFixedCoefficients(){
+
+    public boolean hasFixedCoefficients() {
         return inner().hasFixedCoefficients();
     }
 
@@ -173,13 +175,18 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             np.add("lp", inner.getLpCoefficient());
         }
         if (inner.isDefaultTradingDays() || inner.isHolidays()) {
-            Parameter[] ptd = inner.getTdCoefficients();
-            int ntd = inner.getTradingDaysType().getVariablesCount() - 1;
-            String[] td = new String[ntd];
-            for (int i = 0; i < ntd; ++i) {
-                td[i] = "td-" + (i + 1);
+            TradingDaysType type = inner.getTradingDaysType();
+            if (type != TradingDaysType.NONE) {
+                String[] names = type.contrastNames();
+                Parameter[] ptd = inner.getTdCoefficients();
+                np.addAll(names, ptd);
             }
-            np.addAll(td, ptd);
+        } else if (inner.isStockTradingDays()) {
+            String[] names = TradingDaysType.TD7.contrastNames();
+            Parameter[] ptd = inner.getTdCoefficients();
+            np.addAll(names, ptd);
+        }else if (inner.isUserDefined()){
+            np.addAll(inner.getUserVariables(), inner.getTdCoefficients());
         }
         return np;
     }
@@ -208,10 +215,11 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
 
     public void setW(int w) {
         TradingDaysSpec td = inner();
-        if (w == td.getStockTradingDays())
+        if (w == td.getStockTradingDays()) {
             return;
+        }
         update(TradingDaysSpec.stockTradingDays(w, td.getRegressionTestType()));
-        
+
     }
 
     public TradingDaysType getTradingDays() {
@@ -219,16 +227,17 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
     }
 
     public void setTradingDays(TradingDaysType value) {
-        if (value.equals(TradingDaysType.NONE)){
+        if (value.equals(TradingDaysType.NONE)) {
             setOption(TradingDaysSpecType.None);
             return;
         }
-            
+
         TradingDaysSpec td = inner();
         // No fixed coefficient (otherwise, read only)
-        if (value.equals(td.getTradingDaysType()))
+        if (value.equals(td.getTradingDaysType())) {
             return;
-        switch (getOption()){
+        }
+        switch (getOption()) {
             case Default:
                 update(TradingDaysSpec.td(value, td.getLengthOfPeriodType(), td.getRegressionTestType()));
                 break;
@@ -245,9 +254,10 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
     public void setLeapYear(LengthOfPeriodType value) {
         TradingDaysSpec td = inner();
         // No fixed coefficient (otherwise, read only)
-        if (value.equals(td.getLengthOfPeriodType()))
+        if (value.equals(td.getLengthOfPeriodType())) {
             return;
-        switch (getOption()){
+        }
+        switch (getOption()) {
             case Default:
                 update(TradingDaysSpec.td(td.getTradingDaysType(), value, td.getRegressionTestType()));
                 break;
@@ -276,7 +286,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
         TradingDaysSpec td = inner();
         update(TradingDaysSpec.userDefined(vars.getNames(), td.getRegressionTestType()));
     }
-    
+
     public TradingDaysSpec.AutoMethod getAutomatic() {
         return inner().getAutomaticMethod();
     }
@@ -284,35 +294,37 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
     public void setAutomatic(TradingDaysSpec.AutoMethod value) {
         TradingDaysSpec td = inner();
         // No fixed coefficient (otherwise, read only)
-        if (value.equals(td.getAutomaticMethod()))
+        if (value.equals(td.getAutomaticMethod())) {
             return;
-        if (value.equals(TradingDaysSpec.AutoMethod.Unused)){
+        }
+        if (value.equals(TradingDaysSpec.AutoMethod.Unused)) {
             update(TradingDaysSpec.td(TradingDaysType.TD2, LengthOfPeriodType.LeapYear, RegressionTestType.Joint_F));
-        }else{
+        } else {
             double pr = td.getProbabilityForFTest();
-            switch (getOption()){
+            switch (getOption()) {
                 case Default:
-                    update(TradingDaysSpec.automatic(value, 
+                    update(TradingDaysSpec.automatic(value,
                             pr != 0 ? pr : TradingDaysSpec.DEF_PFTD));
                     break;
                 case Holidays:
-                    update(TradingDaysSpec.automaticHolidays(td.getHolidays(), value, 
+                    update(TradingDaysSpec.automaticHolidays(td.getHolidays(), value,
                             pr != 0 ? pr : TradingDaysSpec.DEF_PFTD));
                     break;
             }
         }
     }
-    
-   public double getPftd() {
+
+    public double getPftd() {
         return inner().getProbabilityForFTest();
     }
 
     public void setPftd(double value) {
         TradingDaysSpec td = inner();
         // No fixed coefficient (otherwise, read only)
-        if (value == td.getProbabilityForFTest())
+        if (value == td.getProbabilityForFTest()) {
             return;
-        switch (getOption()){
+        }
+        switch (getOption()) {
             case Default:
                 update(TradingDaysSpec.automatic(td.getAutomaticMethod(), value));
                 break;
@@ -321,10 +333,9 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
                 break;
         }
     }
-    
-    
+
 /////////////////////////////////////////////////////////
-    private static final int AUTO_ID = 0, PFTD_ID=10, OPTION_ID = 20, STOCK_ID = 30, HOLIDAYS_ID = 40, USER_ID = 50, TEST_ID = 1, COEFF_ID=100;
+    private static final int AUTO_ID = 0, PFTD_ID = 10, OPTION_ID = 20, STOCK_ID = 30, HOLIDAYS_ID = 40, USER_ID = 50, TEST_ID = 1, COEFF_ID = 100;
 
     @Messages({"tradingDaysSpecUI.optionDesc.name=option",
         "tradingDaysSpecUI.optionDesc.desc=Specifies the type of a calendar being assigned to the series (Default – default calendar without country-specific holidays; Stock – day-of-week effects for inventories and other stock reported for the w-th day of the month; Holidays – the calendar variables based on user-defined calendar possibly with country specific holidays; UserDefined – calendar variables specified by the user) or excludes calendar variables from the regression model (None)."
@@ -387,7 +398,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
         "tradingDaysSpecUI.pftdDesc.desc=P-Value applied in the test specified by the automatic parameter to assess the significance of the pre-tested calendar effect and to decide if calendar effects are included into the TRAMO model."
     })
     private EnhancedPropertyDescriptor pftdDesc() {
-        if (! inner().isAutomatic()) {
+        if (!inner().isAutomatic()) {
             return null;
         }
         try {
@@ -402,7 +413,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             return null;
         }
     }
-    
+
     @Messages({"tradingDaysSpecUI.userDesc.name=User Variable",
         "tradingDaysSpecUI.userDesc.desc="
     })
@@ -498,8 +509,8 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             return null;
         }
     }
-    
-        @Messages({
+
+    @Messages({
         "tradingDaysSpecUI.coeffDesc.name=Coefficients",
         "tradingDaysSpecUI.coeffDesc.desc=Coefficients"
     })
@@ -518,6 +529,5 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             return null;
         }
     }
-
 
 }

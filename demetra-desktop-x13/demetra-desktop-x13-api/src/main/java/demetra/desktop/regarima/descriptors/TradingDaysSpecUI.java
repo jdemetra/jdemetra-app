@@ -153,13 +153,18 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
             np.add("lp", inner.getLpCoefficient());
         }
         if (inner.isDefaultTradingDays() || inner.isHolidays()) {
-            Parameter[] ptd = inner.getTdCoefficients();
-            int ntd = inner.getTradingDaysType().getVariablesCount() - 1;
-            String[] td = new String[ntd];
-            for (int i = 0; i < ntd; ++i) {
-                td[i] = "td-" + (i + 1);
+            TradingDaysType type = inner.getTradingDaysType();
+            if (type != TradingDaysType.NONE) {
+                String[] names = type.contrastNames();
+                Parameter[] ptd = inner.getTdCoefficients();
+                np.addAll(names, ptd);
             }
-            np.addAll(td, ptd);
+        } else if (inner.isStockTradingDays()) {
+            String[] names = TradingDaysType.TD7.contrastNames();
+            Parameter[] ptd = inner.getTdCoefficients();
+            np.addAll(names, ptd);
+        }else if (inner.isUserDefined()){
+            np.addAll(inner.getUserVariables(), inner.getTdCoefficients());
         }
         return np;
     }

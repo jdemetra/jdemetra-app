@@ -85,10 +85,6 @@ public final class SaInterventionVariableDescriptor extends SaVariableDescriptor
         if (desc != null) {
             descs.add(desc);
         }
-        desc = fixedParameterDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
         desc = parameterDesc();
         if (desc != null) {
             descs.add(desc);

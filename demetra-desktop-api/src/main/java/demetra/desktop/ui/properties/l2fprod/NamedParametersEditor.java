@@ -4,12 +4,9 @@ import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import demetra.data.Parameter;
 import demetra.desktop.util.NbComponents;
 import java.awt.BorderLayout;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -64,6 +61,7 @@ public class NamedParametersEditor extends AbstractPropertyEditor {
         }
     }
 
+    @Override
     public String getAsText() {
         return "";
     }
