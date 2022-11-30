@@ -30,8 +30,8 @@ public class X13UIFactory implements DocumentUIServices<X13Spec, X13Document> {
     }
 
     @Override
-    public IObjectDescriptor<X13Spec> getSpecificationDescriptor(X13Document doc) {
-        return new X13SpecUI(doc.getSpecification(), false);
+    public IObjectDescriptor<X13Spec> getSpecificationDescriptor(X13Spec spec) {
+        return new X13SpecUI(spec, false);
     }
 
     @Override

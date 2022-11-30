@@ -30,8 +30,8 @@ public class FractionalAirlineUIFactory implements DocumentUIServices<ExtendedAi
     }
 
     @Override
-    public IObjectDescriptor<ExtendedAirlineModellingSpec> getSpecificationDescriptor(FractionalAirlineDocument doc) {
-        return new FractionalAirlineSpecUI(doc.getSpecification(), false);
+    public IObjectDescriptor<ExtendedAirlineModellingSpec> getSpecificationDescriptor(ExtendedAirlineModellingSpec spec) {
+        return new FractionalAirlineSpecUI(spec, false);
     }
 
     @Override

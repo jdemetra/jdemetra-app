@@ -409,8 +409,8 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         if (!auto) {
             return null;
         }
-        boolean lp = inner().getLengthOfPeriodType() != LengthOfPeriodType.None;
-        if (!lp) {
+        boolean nolp = inner().getLengthOfPeriodType() == LengthOfPeriodType.None;
+        if (nolp) {
             return null;
         }
         try {

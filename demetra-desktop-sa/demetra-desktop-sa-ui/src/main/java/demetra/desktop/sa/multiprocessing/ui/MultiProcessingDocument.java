@@ -73,6 +73,14 @@ public class MultiProcessingDocument implements Documented {
         return initial == null;
     }
 
+    public boolean isNew(SaNode node) {
+        if (initial == null) {
+            return true;
+        } else {
+            return node.getId() >= initial.size();
+        }
+    }
+
     public void refresh(EstimationPolicy policy) {
         if (initial == null) {
             return;
@@ -87,7 +95,7 @@ public class MultiProcessingDocument implements Documented {
         }
         for (int i = 0; i < current.size(); ++i) {
             SaNode cur = current.get(i);
-            int id=cur.getId();
+            int id = cur.getId();
             if (id < initial.size() && test.test(cur)) {
                 SaItem item = initial.item(id);
                 SaNode n = SaNode.of(id, item.refresh(policy, TsInformationType.Data));
@@ -102,7 +110,7 @@ public class MultiProcessingDocument implements Documented {
         }
         for (int i = 0; i < current.size(); ++i) {
             SaNode cur = current.get(i);
-            int id=cur.getId();
+            int id = cur.getId();
             if (id < initial.size() && test.test(cur)) {
                 SaItem item = initial.item(id);
                 Ts ts = item.getDefinition().getTs();
@@ -119,7 +127,7 @@ public class MultiProcessingDocument implements Documented {
         }
         for (int i = 0; i < current.size(); ++i) {
             SaNode cur = current.get(i);
-            int id=cur.getId();
+            int id = cur.getId();
             if (id < initial.size() && test.test(cur)) {
                 SaItem item = initial.item(id);
                 TsDomain domain = null;
@@ -208,6 +216,7 @@ public class MultiProcessingDocument implements Documented {
 
     public void reset() {
         this.current.clear();
+        this.curId=0;
         current.addAll(of(initial.getItems()));
     }
 

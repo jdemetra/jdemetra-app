@@ -17,7 +17,7 @@ import org.openide.util.NbBundle.Messages;
         id = "demetra.desktop.ui.sa.multiprocessing.actions.DeleteAllItems")
 @ActionRegistration(displayName = "#CTL_DeleteAllItems", lazy=false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1345)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH, position = 1345, separatorBefore = 1344)
 })
 @Messages("CTL_DeleteAllItems=Clear")
 public final class DeleteAllItems extends ActiveViewAction<SaBatchUI> {

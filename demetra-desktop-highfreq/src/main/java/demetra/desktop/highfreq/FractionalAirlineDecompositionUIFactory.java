@@ -30,8 +30,8 @@ public class FractionalAirlineDecompositionUIFactory implements DocumentUIServic
     }
 
     @Override
-    public IObjectDescriptor<ExtendedAirlineDecompositionSpec> getSpecificationDescriptor(FractionalAirlineDecompositionDocument doc) {
-        return new FractionalAirlineDecompositionSpecUI(doc.getSpecification(), false);
+    public IObjectDescriptor<ExtendedAirlineDecompositionSpec> getSpecificationDescriptor(ExtendedAirlineDecompositionSpec spec) {
+        return new FractionalAirlineDecompositionSpecUI(spec, false);
     }
 
     @Override

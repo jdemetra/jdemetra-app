@@ -41,8 +41,8 @@ public class CholetteUIFactory implements DocumentUIServices<CholetteSpec, Chole
     }
 
     @Override
-    public IObjectDescriptor<CholetteSpec> getSpecificationDescriptor(CholetteDocument doc) {
-        return new CholetteSpecUI(doc.getSpecification());
+    public IObjectDescriptor<CholetteSpec> getSpecificationDescriptor(CholetteSpec spec) {
+        return new CholetteSpecUI(spec);
     }
 
     @Override

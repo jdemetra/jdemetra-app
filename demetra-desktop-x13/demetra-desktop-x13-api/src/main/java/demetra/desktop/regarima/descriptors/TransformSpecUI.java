@@ -20,9 +20,8 @@ import org.openide.util.NbBundle.Messages;
  * @author Jean Palate
  */
 public class TransformSpecUI extends BaseRegArimaSpecUI {
-    
-//    final Validator validator;
 
+//    final Validator validator;
     @Override
     public String toString() {
         return "";
@@ -36,15 +35,14 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
         super(root);
 //        validator=null;
     }
-    
+
 //    TransformSpecUI(RegArimaSpecRoot root, Validator validator) {
 //        super(root);
 //        this.validator=validator;
 //    }
-    
     @Override
-    public boolean isRo(){
-        return super.isRo() 
+    public boolean isRo() {
+        return super.isRo()
                 || core().getRegression().hasFixedCoefficients();
     }
 
@@ -54,27 +52,41 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
     }
 
     public void setFunction(TransformationType value) {
-        LengthOfPeriodType adjust=value != TransformationType.Log 
-                ? LengthOfPeriodType.None 
-                : LengthOfPeriodType.LeapYear;
+        TradingDaysSpec td = core().getRegression().getTradingDays();
+        boolean adjust = td.isAutoAdjust();
+        LengthOfPeriodType lpt = inner().getAdjust(), lpreg = td.getLengthOfPeriodType();
+        switch (value) {
+            case Auto -> {
+                if (lpt != LengthOfPeriodType.None) {
+                    lpreg = lpt;
+                }
+                lpt = LengthOfPeriodType.None;
+                adjust = true;
+            }
+            case Log -> adjust = false;
+            case None -> {
+                adjust = false;
+                if (lpt != LengthOfPeriodType.None) {
+                    lpreg = lpt;
+                }
+                lpt = LengthOfPeriodType.None;
+            }
+        }
         update(inner().toBuilder()
                 .function(value)
-                .adjust(adjust)
+                .adjust(lpt)
                 .build());
 
-        TradingDaysSpec td=core().getRegression().getTradingDays();
-        
         // Fn == None -> No autoadjust + Lp set if auto-adjust
-        
-        if ((td.isDefaultTradingDays() || td.isHolidays()) 
-                && (value != TransformationType.Auto && td.isAutoAdjust())){
+        if (td.isDefaultTradingDays() || td.isHolidays()) {
             // we need to update the trading days options
-            if (td.isDefaultTradingDays())
-                update(TradingDaysSpec.td(td.getTradingDaysType(), adjust,
-                        td.getRegressionTestType(), value == TransformationType.Auto));
-            else
-                update(TradingDaysSpec.holidays(td.getHolidays(), td.getTradingDaysType(), adjust,
-                        td.getRegressionTestType(), value == TransformationType.Auto));
+            if (td.isDefaultTradingDays()) {
+                update(TradingDaysSpec.td(td.getTradingDaysType(), lpreg,
+                        td.getRegressionTestType(), adjust));
+            } else {
+                update(TradingDaysSpec.holidays(td.getHolidays(), td.getTradingDaysType(), lpreg,
+                        td.getRegressionTestType(), adjust));
+            }
         }
     }
 
@@ -116,16 +128,17 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
 
     public void setAdjust(LengthOfPeriodType value) {
         update(inner().toBuilder().adjust(value).build());
-        TradingDaysSpec td=core().getRegression().getTradingDays();
-        if ((td.isDefaultTradingDays() || td.isHolidays()) 
-                && value != LengthOfPeriodType.None && td.getLengthOfPeriodType() != LengthOfPeriodType.None){
+        TradingDaysSpec td = core().getRegression().getTradingDays();
+        if ((td.isDefaultTradingDays() || td.isHolidays())
+                && value != LengthOfPeriodType.None && td.getLengthOfPeriodType() != LengthOfPeriodType.None) {
             // we need to update the trading days options
-            if (td.isDefaultTradingDays())
+            if (td.isDefaultTradingDays()) {
                 update(TradingDaysSpec.td(td.getTradingDaysType(), LengthOfPeriodType.None,
                         td.getRegressionTestType(), false));
-            else
+            } else {
                 update(TradingDaysSpec.holidays(td.getHolidays(), td.getTradingDaysType(), LengthOfPeriodType.None,
                         td.getRegressionTestType(), false));
+            }
         }
     }
 
@@ -173,8 +186,9 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
         "transformSpecUI.adjustDesc.desc=[adjust] Preadjustment of the series for length of period or leap year effects. The series is divided by the specified effect. Not available with the \"auto\" mode"
     })
     private EnhancedPropertyDescriptor adjustDesc() {
-        if (inner().getFunction() != TransformationType.Log)
+        if (inner().getFunction() != TransformationType.Log) {
             return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("adjust", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ADJUST_ID);

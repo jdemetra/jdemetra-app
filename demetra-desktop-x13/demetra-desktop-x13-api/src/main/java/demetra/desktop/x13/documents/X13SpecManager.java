@@ -13,6 +13,7 @@ import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.x13.X13Spec;
 import demetra.util.Id;
 import demetra.util.LinearId;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,8 +107,9 @@ public class X13SpecManager extends AbstractWorkspaceItemManager<X13Spec> {
 
         }
         final X13SpecUI ui = new X13SpecUI(xdoc.getElement(), xdoc.isReadOnly());
+        Frame owner = WindowManager.getDefault().getMainWindow();
         PropertiesDialog propDialog =
-                new PropertiesDialog(WindowManager.getDefault().getMainWindow(), true, ui,
+                new PropertiesDialog(owner, true, ui,
                 new AbstractAction("OK") {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -115,6 +117,7 @@ public class X13SpecManager extends AbstractWorkspaceItemManager<X13Spec> {
             }
         });
         propDialog.setTitle(xdoc.getDisplayName());
+        propDialog.setLocationRelativeTo(owner);
         propDialog.setVisible(true);
     }
     

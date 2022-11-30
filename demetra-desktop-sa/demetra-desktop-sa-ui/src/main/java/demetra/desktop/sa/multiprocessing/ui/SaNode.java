@@ -41,30 +41,32 @@ public class SaNode {
             return this != Unprocessed && this != Pending;
         }
     }
-    
+
     final int id;
     final String name;
     final TsMoniker moniker;
     final SaSpecification spec;
 
     volatile SaItem output;
-    volatile Status status=Status.Unprocessed;
+    volatile Status status = Status.Unprocessed;
 
     public static SaNode of(int id, Ts ts, SaSpecification spec) {
         SaNode node = new SaNode(id, ts.getName(), ts.getMoniker(), spec);
         if (ts.getType().encompass(TsInformationType.Data)) {
             node.setOutput(SaItem.of(ts, spec));
-            node.status=Status.Unprocessed;
+            node.status = Status.Unprocessed;
         }
         return node;
     }
-    
-    private static Status status(SaItem item){
+
+    private static Status status(SaItem item) {
         SaEstimation estimation = item.getEstimation();
-        if (estimation == null)
+        if (estimation == null) {
             return Status.Unprocessed;
-        if (estimation.getResults() != null)
+        }
+        if (estimation.getResults() != null) {
             return Status.Valid;
+        }
         return Status.Unprocessed; // Invalid should be captured elsewhere
     }
 
@@ -75,18 +77,19 @@ public class SaNode {
         node.status = status(item);
         return node;
     }
-    
-    void prepare(){
+
+    void prepare() {
         if (output == null) {
             Ts ts = TsFactory.getDefault().makeTs(moniker, TsInformationType.Data);
             output = SaItem.of(ts, spec);
-            status=Status.Unprocessed;
+            status = Status.Unprocessed;
         }
     }
 
     public void process(ModellingContext context, boolean verbose) {
-        if (status.isProcessed())
+        if (status.isProcessed()) {
             return;
+        }
         if (output == null) {
             Ts ts = TsFactory.getDefault().makeTs(moniker, TsInformationType.Data);
             output = SaItem.of(ts, spec);
@@ -94,7 +97,7 @@ public class SaNode {
         status = output.process(context, verbose) ? Status.Valid : Status.Invalid;
     }
 
-    public SaNode with(SaSpecification nspec) {
+    public SaNode withDomainSpecification(SaSpecification nspec) {
         SaItem item = output;
         if (item == null) {
             return new SaNode(id, name, moniker, nspec);
@@ -103,9 +106,30 @@ public class SaNode {
             SaDefinition ndefinition = definition.toBuilder()
                     .domainSpec(nspec)
                     .estimationSpec(null)
-                    .policy(EstimationPolicyType.None)
+                    .policy(EstimationPolicyType.Complete)
                     .build();
-            SaItem nitem=SaItem.builder()
+            SaItem nitem = SaItem.builder()
+                    .definition(ndefinition)
+                    .name(item.getName())
+                    .meta(item.getMeta())
+                    .priority(item.getPriority())
+                    .build();
+            return SaNode.of(id, nitem);
+        }
+    }
+
+    public SaNode withEstimationSpecification(SaSpecification nspec) {
+        SaItem item = output;
+        if (item == null) {
+            return new SaNode(id, name, moniker, nspec);
+        } else {
+            SaDefinition definition = item.getDefinition();
+            SaDefinition ndefinition = definition.toBuilder()
+                    .domainSpec(definition.getDomainSpec())
+                    .estimationSpec(nspec)
+                    .policy(EstimationPolicyType.Interactive)
+                    .build();
+            SaItem nitem = SaItem.builder()
                     .definition(ndefinition)
                     .name(item.getName())
                     .meta(item.getMeta())
@@ -121,6 +145,14 @@ public class SaNode {
 
     public boolean isProcessed() {
         return status.isProcessed();
+    }
+
+    public boolean isFrozen() {
+        if (output != null) {
+            return output.getDefinition().getTs().isFrozen();
+        } else {
+            return false;
+        }
     }
 
     public SaSpecification domainSpec() {

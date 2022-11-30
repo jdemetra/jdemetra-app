@@ -14,6 +14,7 @@ import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.tramoseats.TramoSeatsSpec;
 import demetra.util.Id;
 import demetra.util.LinearId;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,8 +109,9 @@ public class TramoSeatsSpecManager extends AbstractWorkspaceItemManager<TramoSea
 
         }
         final TramoSeatsSpecUI ui = new TramoSeatsSpecUI(xdoc.getElement(), xdoc.isReadOnly());
+        Frame owner = WindowManager.getDefault().getMainWindow();
         PropertiesDialog propDialog
-                = new PropertiesDialog(WindowManager.getDefault().getMainWindow(), true, ui,
+                = new PropertiesDialog(owner, true, ui,
                         new AbstractAction("OK") {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -117,6 +119,7 @@ public class TramoSeatsSpecManager extends AbstractWorkspaceItemManager<TramoSea
                     }
                 });
         propDialog.setTitle(xdoc.getDisplayName());
+        propDialog.setLocationRelativeTo(owner);
         propDialog.setVisible(true);
     }
 

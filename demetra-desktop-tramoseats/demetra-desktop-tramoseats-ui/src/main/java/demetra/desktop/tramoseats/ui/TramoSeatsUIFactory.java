@@ -29,8 +29,8 @@ public class TramoSeatsUIFactory implements DocumentUIServices<TramoSeatsSpec, T
     }
 
     @Override
-    public IObjectDescriptor<TramoSeatsSpec> getSpecificationDescriptor(TramoSeatsDocument doc) {
-        return new TramoSeatsSpecUI(doc.getSpecification(), false);
+    public IObjectDescriptor<TramoSeatsSpec> getSpecificationDescriptor(TramoSeatsSpec spec) {
+        return new TramoSeatsSpecUI(spec, false);
     }
 
     @Override

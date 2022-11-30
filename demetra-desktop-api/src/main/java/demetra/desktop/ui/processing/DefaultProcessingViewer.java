@@ -218,7 +218,7 @@ public class DefaultProcessingViewer<S extends ProcSpecification, D extends Proc
     }
 
     private void initSpecView(D document) {
-        specDescriptor = factory.getSpecificationDescriptor(document);
+        specDescriptor = factory.getSpecificationDescriptor(document.getSpecification());
         if (specDescriptor == null) {
             return;
         }

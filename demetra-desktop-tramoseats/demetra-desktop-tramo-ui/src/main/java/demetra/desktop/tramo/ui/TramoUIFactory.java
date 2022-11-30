@@ -31,8 +31,8 @@ public class TramoUIFactory implements DocumentUIServices<TramoSpec, TramoDocume
     }
 
     @Override
-    public IObjectDescriptor<TramoSpec> getSpecificationDescriptor(TramoDocument doc) {
-        return new TramoSpecUI(doc.getSpecification(), false);
+    public IObjectDescriptor<TramoSpec> getSpecificationDescriptor(TramoSpec spec) {
+        return new TramoSpecUI(spec, false);
     }
 
     @Override

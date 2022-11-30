@@ -8,7 +8,6 @@ import demetra.desktop.descriptors.*;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import demetra.desktop.ui.processing.IProcDocumentView;
 import demetra.desktop.ui.properties.l2fprod.PropertiesPanelFactory;
-import demetra.desktop.workspace.WorkspaceItem;
 import demetra.processing.ProcDocument;
 import demetra.processing.ProcSpecification;
 import java.awt.Color;
@@ -34,7 +33,7 @@ public interface DocumentUIServices<S extends ProcSpecification, D extends ProcD
 
     Class<S> getSpecType();
 
-    IObjectDescriptor<S> getSpecificationDescriptor(D document);
+    IObjectDescriptor<S> getSpecificationDescriptor(S specification);
 
     IProcDocumentView<D> getDocumentView(D document);
     

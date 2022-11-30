@@ -25,6 +25,7 @@ import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.tramo.TramoSpec;
 import demetra.util.Id;
 import demetra.util.LinearId;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,8 +122,9 @@ public class TramoSpecManager extends AbstractWorkspaceItemManager<TramoSpec> {
 
         }
         final TramoSpecUI ui = new TramoSpecUI(xdoc.getElement(), xdoc.isReadOnly());
+        Frame owner = WindowManager.getDefault().getMainWindow();
         PropertiesDialog propDialog
-                = new PropertiesDialog(WindowManager.getDefault().getMainWindow(), true, ui,
+                = new PropertiesDialog(owner, true, ui,
                         new AbstractAction("OK") {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -130,6 +132,7 @@ public class TramoSpecManager extends AbstractWorkspaceItemManager<TramoSpec> {
                     }
                 });
         propDialog.setTitle(xdoc.getDisplayName());
+        propDialog.setLocationRelativeTo(owner);
         propDialog.setVisible(true);
     }
 
