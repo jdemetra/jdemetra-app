@@ -351,6 +351,9 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
+                        <configuration>
+                            <semver>true</semver>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
