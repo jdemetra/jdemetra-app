@@ -17,8 +17,7 @@
 package demetra.desktop.tramoseats.diagnostics.impl;
 
 import demetra.desktop.Config;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 /**
  *

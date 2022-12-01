@@ -1,36 +1,27 @@
 package demetra.desktop.ui.properties.l2fprod;
 
-import demetra.desktop.descriptors.*;
-import com.l2fprod.common.propertysheet.DefaultProperty;
-import com.l2fprod.common.propertysheet.Property;
-import com.l2fprod.common.propertysheet.PropertySheet;
-import com.l2fprod.common.propertysheet.PropertySheetPanel;
-import com.l2fprod.common.propertysheet.PropertySheetTable;
-import com.l2fprod.common.propertysheet.PropertySheetTableModel;
-import java.awt.Dimension;
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyDescriptor;
+import com.l2fprod.common.propertysheet.*;
+import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.desktop.descriptors.IPropertyDescriptors;
+
+import javax.swing.*;
+import java.awt.*;
+import java.beans.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.swing.JOptionPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
 
 /**
- *
  * @author Demortier Jeremy
  */
+@lombok.extern.java.Log
 public enum PropertiesPanelFactory {
 
     INSTANCE;
-    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesPanelFactory.class);
 
     public PropertySheetPanel createPanel(final Object o) {
         return createPanel(o, null);
@@ -118,7 +109,7 @@ public enum PropertiesPanelFactory {
                     createRootProperties(o, info.getPropertyDescriptors(), result);
                 }
             } catch (IntrospectionException ex) {
-                LOGGER.error("", ex);
+                log.log(Level.SEVERE, "", ex);
             }
         }
         return result.toArray(new Property[0]);
@@ -133,10 +124,9 @@ public enum PropertiesPanelFactory {
                     createRootProperties((IPropertyDescriptors) inner, props, epd.getDescriptor().getDisplayName());
                 }
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                LOGGER.error("", ex);
+                log.log(Level.SEVERE, "", ex);
             }
         }
-
     }
 
     private void createRootProperties(final IPropertyDescriptors iprops, List<Property> props, String category) {
@@ -151,7 +141,7 @@ public enum PropertiesPanelFactory {
                 root.setCategory(category);//epd.getCategory());
                 props.add(root);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                LOGGER.error("", ex);
+                log.log(Level.SEVERE, "", ex);
             }
         }
 
@@ -168,7 +158,7 @@ public enum PropertiesPanelFactory {
                     createProperties((IPropertyDescriptors) inner, subProp);
                 }
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                LOGGER.error("", ex);
+                log.log(Level.SEVERE, "", ex);
             }
         }
     }
@@ -266,7 +256,7 @@ public enum PropertiesPanelFactory {
                 }
                 props.add(root);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                LOGGER.error("", ex);
+                log.log(Level.SEVERE, "", ex);
             }
         }
 

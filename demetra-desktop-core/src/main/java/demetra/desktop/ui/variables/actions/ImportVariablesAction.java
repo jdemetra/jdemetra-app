@@ -16,19 +16,11 @@
  */
 package demetra.desktop.ui.variables.actions;
 
-import com.google.common.collect.ImmutableList;
 import demetra.desktop.Config;
-import demetra.desktop.interchange.Importable;
-import demetra.desktop.nodes.SingleNodeAction;
-import javax.swing.JMenuItem;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
-import org.openide.awt.ActionRegistration;
-import org.openide.util.NbBundle.Messages;
-import org.openide.util.actions.Presenter;
 import demetra.desktop.Converter;
+import demetra.desktop.interchange.Importable;
 import demetra.desktop.interchange.InterchangeManager;
+import demetra.desktop.nodes.SingleNodeAction;
 import demetra.desktop.ui.variables.VariablesDocumentManager;
 import demetra.desktop.workspace.Workspace;
 import demetra.desktop.workspace.WorkspaceFactory;
@@ -37,6 +29,15 @@ import demetra.desktop.workspace.nodes.ItemWsNode;
 import demetra.timeseries.regression.ModellingContext;
 import demetra.timeseries.regression.TsDataSuppliers;
 import demetra.util.NameManager;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle.Messages;
+import org.openide.util.actions.Presenter;
+
+import javax.swing.*;
+import java.util.List;
 
 /**
  *
@@ -51,7 +52,7 @@ import demetra.util.NameManager;
 public final class ImportVariablesAction extends SingleNodeAction<ItemWsNode> implements Presenter.Popup {
 
     private static final Converter<Config, TsDataSuppliers> CONVERTER = new VariablesConfig().reverse();
-    private static final ImmutableList<Importable> IMPORTABLES = ImmutableList.of(new ImportableVariables());
+    private static final List<Importable> IMPORTABLES = List.of(new ImportableVariables());
 
     public ImportVariablesAction() {
         super(ItemWsNode.class);

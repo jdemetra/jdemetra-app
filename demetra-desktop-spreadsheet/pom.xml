@@ -91,10 +91,6 @@
             <artifactId>demetra-desktop-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>demetra-desktop-jd2</artifactId>
-        </dependency-->
 
         <!-- JDemetra -->
         <dependency>

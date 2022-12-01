@@ -4,7 +4,6 @@
  */
 package demetra.desktop.workspace.nodes;
 
-import com.google.common.base.Strings;
 import demetra.desktop.util.NbUtilities;
 import demetra.desktop.workspace.Workspace;
 import demetra.desktop.workspace.WorkspaceFactory;
@@ -52,7 +51,7 @@ public class ItemWsNode extends WsNode {
     @Override
     public String getShortDescription() {
         WorkspaceItem<?> item = getItem();
-        if (item != null && !Strings.isNullOrEmpty(item.getComments())) {
+        if (item != null && item.getComments() != null && !item.getComments().isEmpty()) {
             return MultiLineNameUtil.toHtml(item.getComments());
         } else {
             return null;

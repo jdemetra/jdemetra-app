@@ -34,7 +34,6 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-db</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -64,35 +63,15 @@
             <artifactId>demetra-desktop-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>demetra-desktop-jd2</artifactId>
-        </dependency-->
 
         <!-- JDemetra -->
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
             <artifactId>demetra-tsp-sql-core</artifactId>
             <version>3.0.0-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>eu.europa.ec.joinup.sat</groupId>
-                    <artifactId>demetra-tss</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>eu.europa.ec.joinup.sat</groupId>
-                    <artifactId>demetra-utils</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
+
+        <!-- ODBC driver at runtime -->
         <dependency>
             <groupId>com.github.nbbrd.java-sql-util</groupId>
             <artifactId>java-sql-lhod</artifactId>

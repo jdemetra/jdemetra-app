@@ -4,26 +4,18 @@
  */
 package demetra.desktop.ui.calendar.actions;
 
-import com.google.common.collect.ImmutableList;
 import demetra.desktop.nodes.SingleNodeAction;
-import demetra.desktop.workspace.CalendarDocumentManager;
 import demetra.desktop.ui.calendar.ChainedGregorianCalendarPanel;
 import demetra.desktop.ui.calendar.CompositeGregorianCalendarPanel;
 import demetra.desktop.ui.calendar.NationalCalendarPanel;
+import demetra.desktop.workspace.CalendarDocumentManager;
 import demetra.desktop.workspace.Workspace;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.ItemWsNode;
-import demetra.timeseries.calendars.Calendar;
-import demetra.timeseries.calendars.CalendarDefinition;
-import demetra.timeseries.calendars.CalendarManager;
-import demetra.timeseries.calendars.ChainedCalendar;
-import demetra.timeseries.calendars.CompositeCalendar;
-import demetra.timeseries.calendars.Holiday;
+import demetra.timeseries.calendars.*;
 import demetra.timeseries.regression.ModellingContext;
 import demetra.util.WeightedItem;
-import java.time.LocalDate;
-import java.util.Collection;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -32,6 +24,11 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 @ActionID(category = "Tools", id = "demetra.desktop.ui.calendars.actions.EditCalendarAction")
 @ActionRegistration(displayName = "#CTL_EditCalendarAction", lazy = false)
@@ -94,7 +91,7 @@ public final class EditCalendarAction extends SingleNodeAction<ItemWsNode> {
 
         NationalCalendarPanel panel = new NationalCalendarPanel();
         panel.setCalendarName(oldName);
-        panel.setHolidays(ImmutableList.copyOf(p.getHolidays()));
+        panel.setHolidays(Arrays.asList(p.getHolidays()));
 
         DialogDescriptor dd = panel.createDialogDescriptor(Bundle.editNationalCalendar_dialog_title());
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
@@ -134,12 +131,12 @@ public final class EditCalendarAction extends SingleNodeAction<ItemWsNode> {
         String oldName = manager.get(p);
 
         CompositeGregorianCalendarPanel panel = new CompositeGregorianCalendarPanel(oldName);
-        panel.setWeightedItems(ImmutableList.copyOf(p.getCalendars()));
+        panel.setWeightedItems(Arrays.asList(p.getCalendars()));
 
         DialogDescriptor dd = panel.createDialogDescriptor(Bundle.editCompositeCalendar_dialog_title());
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
             String name = panel.getCalendarName();
-            ImmutableList<WeightedItem<String>> weightedItems = panel.getWeightedItems();
+            List<WeightedItem<String>> weightedItems = panel.getWeightedItems();
             CompositeCalendar newObj = new CompositeCalendar(weightedItems.toArray(new WeightedItem[weightedItems.size()]));
             replace(manager, oldName, name, newObj, node);
         }

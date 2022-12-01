@@ -20,14 +20,11 @@ import demetra.desktop.Config;
 import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddies;
 import demetra.desktop.tramoseats.ui.TramoSeatsUI;
 import demetra.desktop.util.InstallerStep;
-import java.util.prefs.Preferences;
 import org.openide.modules.ModuleInstall;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.prefs.Preferences;
 
 public final class Installer extends ModuleInstall {
-
-    final static Logger LOGGER = LoggerFactory.getLogger(Installer.class);
 
     public static final InstallerStep STEP = InstallerStep.all(
             new DemetraTramoSeatsDiagnosticsStep()

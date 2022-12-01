@@ -4,45 +4,28 @@
  */
 package demetra.desktop.ui.calendar;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import demetra.desktop.DemetraIcons;
 import demetra.desktop.util.IDialogDescriptorProvider;
 import demetra.desktop.util.ListenerState;
-import demetra.timeseries.calendars.CalendarManager;
-import demetra.timeseries.calendars.EasterRelatedDay;
-import demetra.timeseries.calendars.FixedDay;
-import demetra.timeseries.calendars.FixedWeekDay;
-import demetra.timeseries.calendars.Holiday;
-import demetra.timeseries.calendars.PrespecifiedHoliday;
-import demetra.timeseries.calendars.SingleDate;
+import demetra.timeseries.calendars.*;
 import demetra.timeseries.regression.ModellingContext;
 import demetra.util.Arrays2;
 import demetra.util.Constraint;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import org.openide.DialogDescriptor;
 import org.openide.awt.DropDownButtonFactory;
 import org.openide.explorer.ExplorerManager;
-import org.openide.nodes.AbstractNode;
-import org.openide.nodes.ChildFactory;
-import org.openide.nodes.Children;
-import org.openide.nodes.Node;
-import org.openide.nodes.NodeEvent;
-import org.openide.nodes.NodeListener;
-import org.openide.nodes.NodeMemberEvent;
-import org.openide.nodes.NodeReorderEvent;
+import org.openide.nodes.*;
 import org.openide.util.WeakListeners;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  *
@@ -57,7 +40,7 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
     public static final String JULIAN_EASTER_PROPERTY = "julianEaster";
     // PROPERTIES
     private String calendarName;
-    private ImmutableList<Holiday> holidays;
+    private List<Holiday> holidays;
     // OTHER
     final ExplorerManager em;
     final ListOfSpecialDayEvent childFactory;
@@ -70,7 +53,7 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
      */
     public NationalCalendarPanel() {
         this.calendarName = "";
-        this.holidays = ImmutableList.of();
+        this.holidays = Collections.emptyList();
  
         this.em = new ExplorerManager();
         this.childFactory = new ListOfSpecialDayEvent();
@@ -153,11 +136,11 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
     }
 
     private void updateFromBeans() {
-        ImmutableList.Builder<Holiday> tmp = ImmutableList.builder();
+        List<Holiday> tmp = new ArrayList<>();
         for (HasHoliday o : this.childFactory.beans) {
             tmp.add(o.toHoliday());
         }
-        setHolidays(tmp.build());
+        setHolidays(tmp);
 
     }
 
@@ -303,13 +286,13 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
         firePropertyChange(CALENDAR_NAME_PROPERTY, old, this.calendarName);
     }
 
-    public ImmutableList<Holiday> getHolidays() {
+    public List<Holiday> getHolidays() {
         return holidays;
     }
 
-    public void setHolidays(ImmutableList<Holiday> events) {
-        ImmutableList<Holiday> old = this.holidays;
-        this.holidays = events != null ? events : ImmutableList.of();
+    public void setHolidays(List<Holiday> events) {
+        List<Holiday> old = this.holidays;
+        this.holidays = events != null ? events : Collections.emptyList();
         firePropertyChange(SPECIAL_DAY_EVENTS_PROPERTY, old, this.holidays);
     }
 
@@ -471,8 +454,8 @@ public class NationalCalendarPanel extends JPanel implements ExplorerManager.Pro
         SPECIAL_DAY_EVENTS {
             @Override
             public String check(NationalConstraintData t) {
-                ImmutableList<Holiday> events = t.panel.getHolidays();
-                if (Sets.newHashSet(events).size() != events.size()) {
+                List<Holiday> events = t.panel.getHolidays();
+                if (new HashSet<>(events).size() != events.size()) {
                     return "There are duplicated events";
                 }
                 return null;

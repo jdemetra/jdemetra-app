@@ -4,28 +4,16 @@
  */
 package demetra.desktop.ui.calendar.actions;
 
-import com.google.common.collect.ImmutableList;
-import demetra.desktop.workspace.CalendarDocumentManager;
 import demetra.desktop.ui.calendar.ChainedGregorianCalendarPanel;
 import demetra.desktop.ui.calendar.CompositeGregorianCalendarPanel;
 import demetra.desktop.ui.calendar.NationalCalendarPanel;
+import demetra.desktop.workspace.CalendarDocumentManager;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.nodes.ItemWsNode;
-import demetra.timeseries.calendars.Calendar;
-import demetra.timeseries.calendars.CalendarDefinition;
-import demetra.timeseries.calendars.CalendarManager;
-import demetra.timeseries.calendars.ChainedCalendar;
-import demetra.timeseries.calendars.CompositeCalendar;
-import demetra.timeseries.calendars.Holiday;
+import demetra.timeseries.calendars.*;
 import demetra.timeseries.regression.ModellingContext;
 import demetra.util.WeightedItem;
-import java.awt.event.ActionEvent;
-import java.time.LocalDate;
-import java.util.Collection;
-import javax.swing.AbstractAction;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -35,6 +23,12 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 
 @ActionID(category = "Tools", id = "demetra.desktop.ui.calendars.actions.AddCalendarAction")
 @ActionRegistration(displayName = "#CTL_AddCalendarAction", lazy = false)
@@ -131,7 +125,7 @@ public final class AddCalendarAction extends AbstractAction implements Presenter
 
         DialogDescriptor dd = panel.createDialogDescriptor(Bundle.addCompositeCalendar_dialog_title());
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
-            ImmutableList<WeightedItem<String>> weightedItems = panel.getWeightedItems();
+            List<WeightedItem<String>> weightedItems = panel.getWeightedItems();
             CompositeCalendar newObj = new CompositeCalendar(weightedItems.toArray(new WeightedItem[weightedItems.size()]));
             add(manager, panel.getCalendarName(), newObj);
         }

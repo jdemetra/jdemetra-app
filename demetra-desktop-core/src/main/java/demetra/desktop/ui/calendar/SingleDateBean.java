@@ -4,12 +4,11 @@
  */
 package demetra.desktop.ui.calendar;
 
-import com.google.common.base.MoreObjects;
 import demetra.desktop.beans.PropertyChangeSource;
 import demetra.desktop.design.SwingProperty;
-import static demetra.desktop.ui.calendar.AbstractEventBean.WEIGHT_PROPERTY;
 import demetra.timeseries.calendars.Holiday;
 import demetra.timeseries.calendars.SingleDate;
+
 import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
 
@@ -17,6 +16,7 @@ import java.time.LocalDate;
  *
  * @author Philippe Charles
  */
+@lombok.ToString
 public class SingleDateBean implements HasHoliday, PropertyChangeSource.WithWeakListeners {
 
     // PROPERTIES DEFINITIONS
@@ -69,10 +69,5 @@ public class SingleDateBean implements HasHoliday, PropertyChangeSource.WithWeak
     @Override
     public Holiday toHoliday() {
         return new SingleDate(date, weight);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this).add("date", date).add("weigth", getWeight()).toString();
     }
 }

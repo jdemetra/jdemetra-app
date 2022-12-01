@@ -16,7 +16,6 @@
  */
 package demetra.desktop.ui.processing;
 
-import com.google.common.base.Preconditions;
 import demetra.desktop.components.JExceptionPanel;
 import demetra.desktop.design.SwingComponent;
 import demetra.processing.ProcDocument;
@@ -85,7 +84,8 @@ public abstract class ProcDocumentItemFactory<D extends ProcDocument, I> impleme
 
     @Override
     public JComponent getView(ProcDocument document) {
-        Preconditions.checkArgument(getDocumentType().isInstance(document), "Invalid document type");
+        if(!getDocumentType().isInstance(document))
+            throw new IllegalArgumentException("Invalid document type");
         D source = getDocumentType().cast(document);
         if (async) {
             return new JAsyncView(source);
