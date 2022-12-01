@@ -16,7 +16,6 @@
  */
 package demetra.desktop.ui.processing;
 
-import com.google.common.base.Strings;
 import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.workspace.DocumentUIServices;
@@ -85,7 +84,7 @@ public class TsProcessingViewer<S extends ProcSpecification, D extends TsDocumen
             Ts input = doc.getInput();
             String displayName = (input).getName();
             tsLabel.setText(MultiLineNameUtil.lastWithMax(displayName, 70));
-            tsLabel.setToolTipText(!Strings.isNullOrEmpty(displayName) ? MultiLineNameUtil.toHtml(displayName) : null);
+            tsLabel.setToolTipText(displayName != null && !displayName.isEmpty() ? MultiLineNameUtil.toHtml(displayName) : null);
             TsMoniker moniker = input.getMoniker();
             tsLabel.setIcon(DataSourceManager.get().getIcon(moniker, BeanInfo.ICON_COLOR_16x16, false));
             tsLabel.setVisible(true);

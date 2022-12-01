@@ -4,17 +4,18 @@
  */
 package demetra.desktop.ui.calendar;
 
-import com.google.common.base.MoreObjects;
 import demetra.desktop.design.SwingProperty;
 import demetra.timeseries.ValidityPeriod;
 import demetra.timeseries.calendars.EasterRelatedDay;
 import demetra.timeseries.calendars.Holiday;
+
 import java.time.LocalDate;
 
 /**
  *
  * @author Philippe Charles
  */
+@lombok.ToString
 public class EasterRelatedEventBean extends AbstractEventBean {
 
     // PROPERTIES DEFINITIONS
@@ -64,10 +65,5 @@ public class EasterRelatedEventBean extends AbstractEventBean {
             return EasterRelatedDay.julian(offset, getWeight(), validityPeriod());
         else
             return EasterRelatedDay.gregorian(offset, getWeight(), validityPeriod());
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this).add("offset", offset).add("start", getStart()).add("end", getEnd()).add("weigth", getWeight()).toString();
     }
 }

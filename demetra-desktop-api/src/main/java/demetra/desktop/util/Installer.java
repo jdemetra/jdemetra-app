@@ -1,17 +1,17 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  *
  * http://ec.europa.eu/idabc/eupl
  *
- * Unless required by applicable law or agreed to in writing, software 
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package demetra.desktop.util;
@@ -19,26 +19,15 @@ package demetra.desktop.util;
 import demetra.desktop.DemetraBehaviour;
 import demetra.desktop.DemetraUI;
 import demetra.desktop.Persistable;
-import demetra.timeseries.TsProvider;
 import demetra.desktop.TsManager;
 import demetra.desktop.star.StarStep;
 import demetra.desktop.tsproviders.DataSourceProviderBuddy;
 import demetra.desktop.ui.mru.MruProvidersStep;
 import demetra.desktop.ui.mru.MruWorkspacesStep;
 import demetra.desktop.workspace.WorkspaceFactory;
+import demetra.timeseries.TsProvider;
 import demetra.tsprovider.FileLoader;
 import ec.util.chart.swing.Charts;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.Parser;
 import nbbrd.io.xml.bind.Jaxb;
@@ -48,12 +37,22 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.openide.modules.ModuleInstall;
 import org.openide.util.Lookup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@lombok.extern.java.Log
 public final class Installer extends ModuleInstall {
-
-    final static Logger LOGGER = LoggerFactory.getLogger(Installer.class);
 
     public static final InstallerStep STEP = InstallerStep.all(new AppVersionStep(),
             new ProvidersV3Step(),
@@ -93,7 +92,7 @@ public final class Installer extends ModuleInstall {
                 System.setProperty("netbeans.buildnumber", p.getProperty("version"));
                 p.clear();
             } catch (IOException ex) {
-                LOGGER.warn("While loading version", ex);
+                log.log(Level.WARNING, "While loading version", ex);
             }
         }
     }
@@ -154,7 +153,7 @@ public final class Installer extends ModuleInstall {
         @Override
         protected void onRestore(Lookup.Result<TsProvider> lookup) {
             register(lookup.allInstances());
-            LOGGER.debug("Loaded providers: [{}]", toString(TsManager.get().getProviders()));
+            log.log(Level.FINE, "Loaded providers: [{}]", toString(TsManager.get().getProviders()));
         }
 
         @Override
@@ -163,7 +162,7 @@ public final class Installer extends ModuleInstall {
             try {
                 prefs.flush();
             } catch (BackingStoreException ex) {
-                LOGGER.warn("Can't flush storage", ex);
+                log.log(Level.WARNING, "Can't flush storage", ex);
             }
             TsManager.get().close();
         }
@@ -229,11 +228,11 @@ public final class Installer extends ModuleInstall {
         public void restore() {
             ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
             BarRenderer.setDefaultBarPainter(new StandardBarPainter());
-            LOGGER.info("ChartPanel buffer " + (Charts.USE_CHART_PANEL_BUFFER ? "enabled" : "disabled"));
+            log.log(Level.INFO, "ChartPanel buffer " + (Charts.USE_CHART_PANEL_BUFFER ? "enabled" : "disabled"));
         }
     }
 
-   
+
     private static final class DemetraOptionsStep extends InstallerStep {
 
         final Preferences prefs = prefs().node("options");

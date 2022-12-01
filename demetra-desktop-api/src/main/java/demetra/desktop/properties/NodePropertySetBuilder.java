@@ -19,7 +19,6 @@ package demetra.desktop.properties;
 import demetra.desktop.util.Collections2;
 import ec.util.completion.AutoCompletionSource;
 import ec.util.completion.AutoCompletionSources;
-import internal.util.Strings;
 import nbbrd.design.BuilderPattern;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -38,11 +37,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static demetra.desktop.util.JTextComponents.fixMaxDecimals;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Builder that simplifies the creation of property sheets.
@@ -220,16 +219,16 @@ public final class NodePropertySetBuilder {
 
     public Sheet.Set build() {
         Sheet.Set result = name != null ? new Sheet.Set() : Sheet.createPropertiesSet();
-        if (!Strings.isNullOrEmpty(name)) {
+        if (name != null && !name.isEmpty()) {
             result.setName(name);
         }
-        if (!Strings.isNullOrEmpty(tabName)) {
+        if (tabName != null && !tabName.isEmpty()) {
             result.setValue("tabName", tabName);
         }
-        if (!Strings.isNullOrEmpty(displayName)) {
+        if (displayName != null && !displayName.isEmpty()) {
             result.setDisplayName(displayName);
         }
-        if (!Strings.isNullOrEmpty(shortDescription)) {
+        if (shortDescription != null && !shortDescription.isEmpty()) {
             result.setShortDescription(shortDescription);
         }
         result.put(Collections2.toArray(nodeProperties, Node.Property.class));

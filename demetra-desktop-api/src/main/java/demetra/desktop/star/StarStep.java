@@ -9,23 +9,22 @@ import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsProvider;
 import demetra.tsprovider.DataSource;
 import demetra.tsprovider.DataSourceLoader;
-import java.util.Comparator;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-import java.util.stream.Stream;
 import nbbrd.io.text.Formatter;
 import nbbrd.io.text.Parser;
 import org.openide.util.NbPreferences;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
+import java.util.stream.Stream;
 
 /**
- *
  * @author Philippe Charles
  */
+@lombok.extern.java.Log
 public class StarStep extends InstallerStep {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(StarStep.class);
     static final String DATASOURCE_PROPERTY = "StarDataSource";
     final Preferences prefs = NbPreferences.forModule(StarStep.class).node("Star");
 
@@ -48,7 +47,7 @@ public class StarStep extends InstallerStep {
                         }
                     });
         } catch (BackingStoreException ex) {
-            LOGGER.warn("Can't get star items", ex);
+            log.log(Level.WARNING, "Can't get star items", ex);
         }
 
         for (DataSource o : StarListManager.get()) {
@@ -72,7 +71,7 @@ public class StarStep extends InstallerStep {
         try {
             prefs.flush();
         } catch (BackingStoreException ex) {
-            LOGGER.warn("Can't flush storage", ex);
+            log.log(Level.WARNING, "Can't flush storage", ex);
         }
     }
 }

@@ -1,65 +1,42 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package demetra.desktop.anomalydetection.ui;
 
 import com.google.common.base.Stopwatch;
-import demetra.desktop.notification.MessageType;
-import demetra.desktop.notification.NotifyUtil;
-import demetra.timeseries.TsCollection;
 import demetra.desktop.DemetraBehaviour;
-import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
 import demetra.desktop.DemetraIcons;
 import demetra.desktop.anomalydetection.AnomalyItem;
 import demetra.desktop.anomalydetection.ControlNode;
 import demetra.desktop.anomalydetection.report.CheckLastReportAction;
-import demetra.desktop.util.NbComponents;
+import demetra.desktop.components.JTsChart;
+import demetra.desktop.components.parts.HasTsCollection.TsUpdateMode;
+import demetra.desktop.concurrent.UIExecutors;
+import demetra.desktop.notification.MessageType;
+import demetra.desktop.notification.NotifyUtil;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
 import demetra.desktop.tools.ToolsPersistence;
-import demetra.desktop.components.JTsChart;
-import demetra.desktop.concurrent.UIExecutors;
 import demetra.desktop.ui.ActiveView;
 import demetra.desktop.ui.ActiveViewManager;
+import demetra.desktop.util.NbComponents;
+import demetra.timeseries.TsCollection;
 import demetra.tramo.TramoSpec;
 import ec.util.list.swing.JLists;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyVetoException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.OptionalInt;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import javax.swing.AbstractAction;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JPopupMenu;
-import javax.swing.JSplitPane;
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
-import javax.swing.SwingWorker;
 import jdplus.regsarima.regular.CheckLast;
 import jdplus.tramo.TramoKernel;
-
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.netbeans.core.spi.multiview.CloseOperationState;
@@ -75,8 +52,17 @@ import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyVetoException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.OptionalInt;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
 
 /**
  * Top Component for Check Last batch processing
@@ -92,13 +78,13 @@ import org.slf4j.LoggerFactory;
 @ActionReference(path = "Menu/Statistical methods/Anomaly Detection")
 @TopComponent.OpenActionRegistration(displayName = "#CTL_CheckLastTopComponentAction")
 @NbBundle.Messages({
-    "CTL_CheckLastTopComponentAction=Check Last",
-    "CTL_CheckLastTopComponent=Check Last Batch Window",
-    "HINT_CheckLastTopComponent=This is a Check Last Batch Window"
+        "CTL_CheckLastTopComponentAction=Check Last",
+        "CTL_CheckLastTopComponent=Check Last Batch Window",
+        "HINT_CheckLastTopComponent=This is a Check Last Batch Window"
 })
+@lombok.extern.java.Log
 public final class CheckLastTopComponent extends TopComponent implements ExplorerManager.Provider, MultiViewElement, ActiveView {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CheckLastTopComponent.class);
     public static final String DEFAULT_SPECIFICATION_PROPERTY = "specificationProperty";
     public static final String STATE_PROPERTY = "state";
     // Main Components
@@ -248,7 +234,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
                     try {
                         s = (TramoSpec) TramoSpec.class.getDeclaredField(source.getText()).get(TramoSpec.DEFAULT);
                     } catch (IllegalAccessException | NoSuchFieldException | SecurityException ex) {
-                        LOGGER.error("Tramo Specification " + source.getText() + " can't be accessed !");
+                        log.log(Level.SEVERE, "Tramo Specification " + source.getText() + " can't be accessed !");
                     }
                     view.setSpec(s);
                 }
@@ -339,7 +325,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
         super.componentShowing();
     }
     // </editor-fold>
-    
+
     // <editor-fold defaultstate="collapsed" desc="Getters / Setters">
     @Override
     public ExplorerManager getExplorerManager() {
@@ -388,7 +374,7 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
             if (tasks == null) {
                 return null;
             }
-            ntasks=tasks.size();
+            ntasks = tasks.size();
 
             DemetraBehaviour options = DemetraBehaviour.get();
 
@@ -397,17 +383,17 @@ public final class CheckLastTopComponent extends TopComponent implements Explore
             try {
                 executorService.invokeAll(tasks);
             } catch (InterruptedException ex) {
-                LOGGER.info("Check Last interrupted while processing items");
+                log.log(Level.INFO, "Check Last interrupted while processing items");
             }
 
             if (tasks.size() > 0) {
                 NotifyUtil.show("Check Last done !", "Processed " + tasks.size() + " items in " + stopwatch.stop(), MessageType.SUCCESS, null, null, null);
-                if (! ActiveViewManager.getInstance().isActive(CheckLastTopComponent.this)) {
+                if (!ActiveViewManager.getInstance().isActive(CheckLastTopComponent.this)) {
                     requestAttention(false);
                 }
             }
 
-            LOGGER.info("Task: {} items in {} by {} executors with priority {}", tasks.size(), stopwatch.stop(), options.getBatchPoolSize(), options.getBatchPriority());
+            log.log(Level.INFO, String.format("Task: %s items in %s by %s executors with priority %s", tasks.size(), stopwatch.stop(), options.getBatchPoolSize(), options.getBatchPriority()));
 
             executorService.shutdown();
 

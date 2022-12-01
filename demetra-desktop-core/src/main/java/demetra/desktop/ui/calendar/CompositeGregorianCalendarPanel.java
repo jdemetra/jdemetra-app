@@ -4,43 +4,32 @@
  */
 package demetra.desktop.ui.calendar;
 
-import com.google.common.collect.ImmutableList;
-import demetra.desktop.design.SwingProperty;
-import demetra.desktop.beans.PropertyChangeSource;
 import demetra.desktop.DemetraIcons;
+import demetra.desktop.beans.PropertyChangeSource;
+import demetra.desktop.design.SwingProperty;
+import demetra.desktop.properties.NodePropertySetBuilder;
 import demetra.desktop.util.IDialogDescriptorProvider;
 import demetra.desktop.util.ListenerState;
-import demetra.desktop.properties.NodePropertySetBuilder;
 import demetra.timeseries.calendars.CalendarManager;
 import demetra.timeseries.regression.ModellingContext;
 import demetra.util.Arrays2;
 import demetra.util.Constraint;
 import demetra.util.WeightedItem;
-import java.awt.Image;
+import org.openide.DialogDescriptor;
+import org.openide.explorer.ExplorerManager;
+import org.openide.nodes.*;
+import org.openide.util.WeakListeners;
+import org.openide.util.lookup.Lookups;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import org.openide.DialogDescriptor;
-import org.openide.explorer.ExplorerManager;
-import org.openide.nodes.AbstractNode;
-import org.openide.nodes.ChildFactory;
-import org.openide.nodes.Children;
-import org.openide.nodes.Node;
-import org.openide.nodes.NodeEvent;
-import org.openide.nodes.NodeListener;
-import org.openide.nodes.NodeMemberEvent;
-import org.openide.nodes.NodeReorderEvent;
-import org.openide.nodes.Sheet;
-import org.openide.util.WeakListeners;
-import org.openide.util.lookup.Lookups;
+import java.util.*;
 
 /**
  *
@@ -53,7 +42,7 @@ public class CompositeGregorianCalendarPanel extends JPanel implements ExplorerM
     public static final String WEIGHTED_ITEMS_PROPERTY = "weightedItems";
     // PROPERTIES
     private String calendarName;
-    private ImmutableList<WeightedItem<String>> weightedItems;
+    private List<WeightedItem<String>> weightedItems;
     // OTHER
     final ExplorerManager em;
     final NameTextFieldListener nameTextFieldListener;
@@ -66,7 +55,7 @@ public class CompositeGregorianCalendarPanel extends JPanel implements ExplorerM
     public CompositeGregorianCalendarPanel(String initialCalendarName) {
         this.initialCalendarName = initialCalendarName;
         this.calendarName = initialCalendarName != null ? initialCalendarName : "";
-        this.weightedItems = ImmutableList.of();
+        this.weightedItems = Collections.emptyList();
 
         this.em = new ExplorerManager();
 
@@ -188,13 +177,13 @@ public class CompositeGregorianCalendarPanel extends JPanel implements ExplorerM
         firePropertyChange(CALENDAR_NAME_PROPERTY, old, this.calendarName);
     }
 
-    public ImmutableList<WeightedItem<String>> getWeightedItems() {
+    public List<WeightedItem<String>> getWeightedItems() {
         return weightedItems;
     }
 
-    public void setWeightedItems(ImmutableList<WeightedItem<String>> weightedItems) {
-        ImmutableList<WeightedItem<String>> old = this.weightedItems;
-        this.weightedItems = weightedItems != null ? weightedItems : ImmutableList.of();
+    public void setWeightedItems(List<WeightedItem<String>> weightedItems) {
+        List<WeightedItem<String>> old = this.weightedItems;
+        this.weightedItems = weightedItems != null ? weightedItems : Collections.emptyList();
         firePropertyChange(WEIGHTED_ITEMS_PROPERTY, old, this.weightedItems);
     }
     //</editor-fold>
@@ -331,13 +320,13 @@ public class CompositeGregorianCalendarPanel extends JPanel implements ExplorerM
         void fireDataChange() {
             if (state == ListenerState.READY) {
                 state = ListenerState.SENDING;
-                ImmutableList.Builder<WeightedItem<String>> tmp = ImmutableList.builder();
+                List<WeightedItem<String>> tmp = new ArrayList<>();
                 for (WeightedItemBean o : beans) {
                     if (o.isUsed()) {
                         tmp.add(o.toItem());
                     }
                 }
-                setWeightedItems(tmp.build());
+                setWeightedItems(tmp);
                 state = ListenerState.READY;
             }
         }

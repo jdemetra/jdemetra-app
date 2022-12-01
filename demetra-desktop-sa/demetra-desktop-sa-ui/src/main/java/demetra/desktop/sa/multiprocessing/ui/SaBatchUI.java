@@ -6,7 +6,6 @@ package demetra.desktop.sa.multiprocessing.ui;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
-import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.desktop.DemetraBehaviour;
 import demetra.desktop.DemetraIcons;
@@ -36,45 +35,12 @@ import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.desktop.workspace.ui.JSpecSelectionComponent;
 import demetra.processing.ProcQuality;
 import demetra.processing.ProcessingLog.InformationType;
-import demetra.sa.EstimationPolicyType;
-import demetra.sa.HasSaEstimation;
-import demetra.sa.SaDefinition;
-import demetra.sa.SaEstimation;
-import demetra.sa.SaItem;
-import demetra.sa.SaSpecification;
-import demetra.timeseries.Ts;
-import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsData;
-import demetra.timeseries.TsDocument;
-import demetra.timeseries.TsInformationType;
+import demetra.sa.*;
+import demetra.timeseries.*;
 import demetra.timeseries.regression.ModellingContext;
 import demetra.util.MultiLineNameUtil;
 import ec.util.grid.swing.XTable;
 import ec.util.table.swing.JTables;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.beans.BeanInfo;
-import java.beans.PropertyChangeListener;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewElement;
@@ -87,13 +53,35 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+import java.awt.*;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.BeanInfo;
+import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  * @author Philippe Charles
  * @author Mats Maggi
  */
+@lombok.extern.java.Log
 public class SaBatchUI extends AbstractSaProcessingTopComponent implements MultiViewElement, HasTsCollection, ExplorerManager.Provider {
 
     private static final String REFRESH_MESSAGE = "Are you sure you want to refresh the data?";
@@ -190,7 +178,6 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     // CONSTANTS
-    private static final Logger LOGGER = LoggerFactory.getLogger(SaBatchUI.class);
     // PROPERTIES DEFINITIONS
     public static final String DEFAULT_SPECIFICATION_PROPERTY = "specificationProperty";
     public static final String PROCESSING_PROPERTY = "processing";
@@ -984,7 +971,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         @Override
         protected String getToolTipText(SaNode item) {
             String name = item.getName();
-            return !Strings.isNullOrEmpty(name) ? MultiLineNameUtil.toHtml(name) : null;
+            return name != null && !name.isEmpty() ? MultiLineNameUtil.toHtml(name) : null;
         }
 
         @Override
@@ -1159,8 +1146,9 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             if (item.getOutput() == null) {
                 return null;
             }
-            if (!Strings.isNullOrEmpty(item.getOutput().getComment())) {
-                return MultiLineNameUtil.toHtml(item.getOutput().getComment());
+            String comment = item.getOutput().getComment();
+            if (comment != null && !comment.isEmpty()) {
+                return MultiLineNameUtil.toHtml(comment);
             } else {
                 return null;
             }
@@ -1176,7 +1164,8 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
             if (item.getOutput() == null) {
                 return null;
             }
-            if (!Strings.isNullOrEmpty(item.getOutput().getComment())) {
+            String comment = item.getOutput().getComment();
+            if (comment != null && !comment.isEmpty()) {
                 return DemetraIcons.COMMENT;
             } else {
                 return null;
@@ -1242,7 +1231,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 executorService.invokeAll(tasks);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
-                LOGGER.info("While processing SaItems", ex);
+                log.log(Level.INFO, "While processing SaItems", ex);
             }
 
             if (!tasks.isEmpty()) {
@@ -1255,7 +1244,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 }
             }
 
-            LOGGER.info("Task: {} items in {} by {} executors with priority {}", tasks.size(), stopwatch.stop(), nThread, priority);
+            log.log(Level.INFO, String.format("Task: %s items in %s by %s executors with priority %s", tasks.size(), stopwatch.stop(), nThread, priority));
             executorService.shutdown();
             return null;
 

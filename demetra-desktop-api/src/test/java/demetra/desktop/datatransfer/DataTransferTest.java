@@ -21,7 +21,7 @@ import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsUnit;
 import demetra.util.Table;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openide.util.datatransfer.ExTransferable;
 
 import java.awt.datatransfer.DataFlavor;

@@ -25,14 +25,11 @@ import demetra.desktop.x13.descriptors.SeasonalFilterPropertyEditor;
 import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddies;
 import demetra.desktop.x13.ui.X13UI;
 import demetra.x11.SeasonalFilterOption;
-import java.util.prefs.Preferences;
 import org.openide.modules.ModuleInstall;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.prefs.Preferences;
 
 public final class Installer extends ModuleInstall {
-
-    final static Logger LOGGER = LoggerFactory.getLogger(Installer.class);
 
     public static final InstallerStep STEP = InstallerStep.all(
             new DemetraX13DiagnosticsStep(), new PropertiesStep()
